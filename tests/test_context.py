@@ -64,7 +64,7 @@ class StaticContextTest(CoverageTest):
             for data in datas:
                 combined.update(data)
 
-            self.assertEqual(combined.measured_contexts(), {'red', 'blue'})
+            assert combined.measured_contexts() == {'red', 'blue'}
 
             full_names = {os.path.basename(f): f for f in combined.measured_files()}
             self.assertCountEqual(full_names, ['red.py', 'blue.py'])
@@ -75,7 +75,7 @@ class StaticContextTest(CoverageTest):
             def assert_combined_lines(filename, context, lines):
                 # pylint: disable=cell-var-from-loop
                 combined.set_query_context(context)
-                self.assertEqual(combined.lines(filename), lines)
+                assert combined.lines(filename) == lines
 
             assert_combined_lines(fred, 'red', self.LINES)
             assert_combined_lines(fred, 'blue', [])
@@ -89,7 +89,7 @@ class StaticContextTest(CoverageTest):
             for data in datas:
                 combined.update(data)
 
-            self.assertEqual(combined.measured_contexts(), {'red', 'blue'})
+            assert combined.measured_contexts() == {'red', 'blue'}
 
             full_names = {os.path.basename(f): f for f in combined.measured_files()}
             self.assertCountEqual(full_names, ['red.py', 'blue.py'])
@@ -100,7 +100,7 @@ class StaticContextTest(CoverageTest):
             def assert_combined_lines(filename, context, lines):
                 # pylint: disable=cell-var-from-loop
                 combined.set_query_context(context)
-                self.assertEqual(combined.lines(filename), lines)
+                assert combined.lines(filename) == lines
 
             assert_combined_lines(fred, 'red', self.LINES)
             assert_combined_lines(fred, 'blue', [])
@@ -110,7 +110,7 @@ class StaticContextTest(CoverageTest):
             def assert_combined_arcs(filename, context, lines):
                 # pylint: disable=cell-var-from-loop
                 combined.set_query_context(context)
-                self.assertEqual(combined.arcs(filename), lines)
+                assert combined.arcs(filename) == lines
 
             assert_combined_arcs(fred, 'red', self.ARCS)
             assert_combined_arcs(fred, 'blue', [])
@@ -251,40 +251,38 @@ class QualnameTest(CoverageTest):
     run_in_temp_dir = False
 
     def test_method(self):
-        self.assertEqual(Parent().meth(), "tests.test_context.Parent.meth")
+        assert Parent().meth() == "tests.test_context.Parent.meth"
 
     def test_inherited_method(self):
-        self.assertEqual(Child().meth(), "tests.test_context.Parent.meth")
+        assert Child().meth() == "tests.test_context.Parent.meth"
 
     def test_mi_inherited_method(self):
-        self.assertEqual(MultiChild().meth(), "tests.test_context.Parent.meth")
+        assert MultiChild().meth() == "tests.test_context.Parent.meth"
 
     def test_no_arguments(self):
-        self.assertEqual(no_arguments(), "tests.test_context.no_arguments")
+        assert no_arguments() == "tests.test_context.no_arguments"
 
     def test_plain_old_function(self):
-        self.assertEqual(
-            plain_old_function(0, 1), "tests.test_context.plain_old_function")
+        assert plain_old_function(0, 1) == "tests.test_context.plain_old_function"
 
     def test_fake_out(self):
-        self.assertEqual(fake_out(0), "tests.test_context.fake_out")
+        assert fake_out(0) == "tests.test_context.fake_out"
 
     def test_property(self):
-        self.assertEqual(
-            Parent().a_property, "tests.test_context.Parent.a_property")
+        assert Parent().a_property == "tests.test_context.Parent.a_property"
 
     def test_changeling(self):
         c = Child()
         c.meth = patch_meth
-        self.assertEqual(c.meth(c), "tests.test_context.patch_meth")
+        assert c.meth(c) == "tests.test_context.patch_meth"
 
     def test_oldstyle(self):
         if not env.PY2:
             self.skipTest("Old-style classes are only in Python 2")
-        self.assertEqual(OldStyle().meth(), "tests.test_context.OldStyle.meth")
-        self.assertEqual(OldChild().meth(), "tests.test_context.OldStyle.meth")
+        assert OldStyle().meth() == "tests.test_context.OldStyle.meth"
+        assert OldChild().meth() == "tests.test_context.OldStyle.meth"
 
     def test_bug_829(self):
         # A class with a name like a function shouldn't confuse qualname_from_frame.
         class test_something(object):               # pylint: disable=unused-variable
-            self.assertEqual(get_qualname(), None)
+            assert get_qualname() == None

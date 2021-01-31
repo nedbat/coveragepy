@@ -28,23 +28,23 @@ class FileReporterTest(UsingModulesMixin, CoverageTest):
         acu = PythonFileReporter("aa/afile.py")
         bcu = PythonFileReporter("aa/bb/bfile.py")
         ccu = PythonFileReporter("aa/bb/cc/cfile.py")
-        self.assertEqual(acu.relative_filename(), "aa/afile.py")
-        self.assertEqual(bcu.relative_filename(), "aa/bb/bfile.py")
-        self.assertEqual(ccu.relative_filename(), "aa/bb/cc/cfile.py")
-        self.assertEqual(acu.source(), "# afile.py\n")
-        self.assertEqual(bcu.source(), "# bfile.py\n")
-        self.assertEqual(ccu.source(), "# cfile.py\n")
+        assert acu.relative_filename() == "aa/afile.py"
+        assert bcu.relative_filename() == "aa/bb/bfile.py"
+        assert ccu.relative_filename() == "aa/bb/cc/cfile.py"
+        assert acu.source() == "# afile.py\n"
+        assert bcu.source() == "# bfile.py\n"
+        assert ccu.source() == "# cfile.py\n"
 
     def test_odd_filenames(self):
         acu = PythonFileReporter("aa/afile.odd.py")
         bcu = PythonFileReporter("aa/bb/bfile.odd.py")
         b2cu = PythonFileReporter("aa/bb.odd/bfile.py")
-        self.assertEqual(acu.relative_filename(), "aa/afile.odd.py")
-        self.assertEqual(bcu.relative_filename(), "aa/bb/bfile.odd.py")
-        self.assertEqual(b2cu.relative_filename(), "aa/bb.odd/bfile.py")
-        self.assertEqual(acu.source(), "# afile.odd.py\n")
-        self.assertEqual(bcu.source(), "# bfile.odd.py\n")
-        self.assertEqual(b2cu.source(), "# bfile.py\n")
+        assert acu.relative_filename() == "aa/afile.odd.py"
+        assert bcu.relative_filename() == "aa/bb/bfile.odd.py"
+        assert b2cu.relative_filename() == "aa/bb.odd/bfile.py"
+        assert acu.source() == "# afile.odd.py\n"
+        assert bcu.source() == "# bfile.odd.py\n"
+        assert b2cu.source() == "# bfile.py\n"
 
     def test_modules(self):
         import aa
@@ -54,12 +54,12 @@ class FileReporterTest(UsingModulesMixin, CoverageTest):
         acu = PythonFileReporter(aa)
         bcu = PythonFileReporter(aa.bb)
         ccu = PythonFileReporter(aa.bb.cc)
-        self.assertEqual(acu.relative_filename(), native("aa/__init__.py"))
-        self.assertEqual(bcu.relative_filename(), native("aa/bb/__init__.py"))
-        self.assertEqual(ccu.relative_filename(), native("aa/bb/cc/__init__.py"))
-        self.assertEqual(acu.source(), "# aa\n")
-        self.assertEqual(bcu.source(), "# bb\n")
-        self.assertEqual(ccu.source(), "")  # yes, empty
+        assert acu.relative_filename() == native("aa/__init__.py")
+        assert bcu.relative_filename() == native("aa/bb/__init__.py")
+        assert ccu.relative_filename() == native("aa/bb/cc/__init__.py")
+        assert acu.source() == "# aa\n"
+        assert bcu.source() == "# bb\n"
+        assert ccu.source() == ""  # yes, empty
 
     def test_module_files(self):
         import aa.afile
@@ -69,12 +69,12 @@ class FileReporterTest(UsingModulesMixin, CoverageTest):
         acu = PythonFileReporter(aa.afile)
         bcu = PythonFileReporter(aa.bb.bfile)
         ccu = PythonFileReporter(aa.bb.cc.cfile)
-        self.assertEqual(acu.relative_filename(), native("aa/afile.py"))
-        self.assertEqual(bcu.relative_filename(), native("aa/bb/bfile.py"))
-        self.assertEqual(ccu.relative_filename(), native("aa/bb/cc/cfile.py"))
-        self.assertEqual(acu.source(), "# afile.py\n")
-        self.assertEqual(bcu.source(), "# bfile.py\n")
-        self.assertEqual(ccu.source(), "# cfile.py\n")
+        assert acu.relative_filename() == native("aa/afile.py")
+        assert bcu.relative_filename() == native("aa/bb/bfile.py")
+        assert ccu.relative_filename() == native("aa/bb/cc/cfile.py")
+        assert acu.source() == "# afile.py\n"
+        assert bcu.source() == "# bfile.py\n"
+        assert ccu.source() == "# cfile.py\n"
 
     def test_comparison(self):
         acu = FileReporter("aa/afile.py")
@@ -100,5 +100,5 @@ class FileReporterTest(UsingModulesMixin, CoverageTest):
 
         ecu = PythonFileReporter(egg1)
         eecu = PythonFileReporter(egg1.egg1)
-        self.assertEqual(ecu.source(), u"")
-        self.assertIn(u"# My egg file!", eecu.source().splitlines())
+        assert ecu.source() == u""
+        assert u"# My egg file!" in eecu.source().splitlines()

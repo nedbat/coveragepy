@@ -322,7 +322,7 @@ class LoopArcTest(CoverageTest):
                     return 1
             """)
         out = self.run_command("coverage run --branch --source=. main.py")
-        self.assertEqual(out, 'done\n')
+        assert out == 'done\n'
         if env.PYBEHAVIOR.keep_constant_test:
             num_stmts = 3
         elif env.PYBEHAVIOR.nix_while_true:
@@ -332,7 +332,7 @@ class LoopArcTest(CoverageTest):
         expected = "zero.py {n} {n} 0 0 0% 1-3".format(n=num_stmts)
         report = self.report_from_command("coverage report -m")
         squeezed = self.squeezed_lines(report)
-        self.assertIn(expected, squeezed[3])
+        assert expected in squeezed[3]
 
     def test_bug_496_continue_in_constant_while(self):
         # https://github.com/nedbat/coveragepy/issues/496
@@ -1086,7 +1086,7 @@ class YieldTest(CoverageTest):
                 ".2 23 34 45 52 2.",
             arcz_missing="2.",
         )
-        self.assertEqual(self.stdout(), "20\n12\n")
+        assert self.stdout() == "20\n12\n"
 
     def test_yield_from(self):
         if not env.PYBEHAVIOR.yield_from:
@@ -1387,7 +1387,7 @@ class MiscArcTest(CoverageTest):
                 print(len(data))
                 """
             self.check_coverage(code, arcs=[(-1, 1), (1, 2*n+4), (2*n+4, -1)])
-            self.assertEqual(self.stdout().split()[-1], str(n))
+            assert self.stdout().split()[-1] == str(n)
 
     def test_partial_generators(self):
         # https://github.com/nedbat/coveragepy/issues/475
@@ -1410,14 +1410,10 @@ class MiscArcTest(CoverageTest):
         filename = self.last_module_name + ".py"
         fr = cov._get_file_reporter(filename)
         arcs_executed = cov._analyze(filename).arcs_executed()
-        self.assertEqual(
-            fr.missing_arc_description(3, -3, arcs_executed),
+        assert fr.missing_arc_description(3, -3, arcs_executed) == \
             "line 3 didn't finish the generator expression on line 3"
-        )
-        self.assertEqual(
-            fr.missing_arc_description(4, -4, arcs_executed),
+        assert fr.missing_arc_description(4, -4, arcs_executed) == \
             "line 4 didn't run the generator expression on line 4"
-        )
 
 
 class DecoratorArcTest(CoverageTest):
@@ -1620,7 +1616,7 @@ class AsyncTest(CoverageTest):
                 "-89 9C C-8",
             arcz_unpredicted="5-3 9-8",
         )
-        self.assertEqual(self.stdout(), "Compute 1 + 2 ...\n1 + 2 = 3\n")
+        assert self.stdout() == "Compute 1 + 2 ...\n1 + 2 = 3\n"
 
     def test_async_for(self):
         self.check_coverage("""\
@@ -1657,7 +1653,7 @@ class AsyncTest(CoverageTest):
                 "-AB BC C-A DE E-A ",       # __anext__
             arcz_unpredicted="CD",
         )
-        self.assertEqual(self.stdout(), "a\nb\nc\n.\n")
+        assert self.stdout() == "a\nb\nc\n.\n"
 
     def test_async_with(self):
         self.check_coverage("""\

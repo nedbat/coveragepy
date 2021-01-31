@@ -15,6 +15,7 @@ from coverage.env import C_TRACER
 
 from tests.coveragetest import CoverageTest
 from tests.helpers import re_line, re_lines
+import re
 
 
 class InfoFormatterTest(CoverageTest):
@@ -38,7 +39,7 @@ class InfoFormatterTest(CoverageTest):
             '                                jkl',
             '                       nothing: -none-',
         ]
-        self.assertEqual(expected, lines)
+        assert expected == lines
 
     def test_info_formatter_with_generator(self):
         lines = list(info_formatter(('info%d' % i, i) for i in range(3)))
@@ -47,10 +48,10 @@ class InfoFormatterTest(CoverageTest):
             '                         info1: 1',
             '                         info2: 2',
         ]
-        self.assertEqual(expected, lines)
+        assert expected == lines
 
     def test_too_long_label(self):
-        with self.assertRaises(AssertionError):
+        with pytest.raises(AssertionError):
             list(info_formatter([('this label is way too long and will not fit', 23)]))
 
 
@@ -118,20 +119,20 @@ class DebugTraceTest(CoverageTest):
         out_lines = self.f1_debug_output([])
 
         # We should have no output at all.
-        self.assertFalse(out_lines)
+        assert not out_lines
 
     def test_debug_trace(self):
         out_lines = self.f1_debug_output(["trace"])
 
         # We should have a line like "Tracing 'f1.py'"
-        self.assertIn("Tracing 'f1.py'", out_lines)
+        assert "Tracing 'f1.py'" in out_lines
 
         # We should have lines like "Not tracing 'collector.py'..."
         coverage_lines = re_lines(
             out_lines,
             r"^Not tracing .*: is part of coverage.py$"
             )
-        self.assertTrue(coverage_lines)
+        assert coverage_lines
 
     def test_debug_trace_pid(self):
         out_lines = self.f1_debug_output(["trace", "pid"])
@@ -139,11 +140,11 @@ class DebugTraceTest(CoverageTest):
         # Now our lines are always prefixed with the process id.
         pid_prefix = r"^%5d\.[0-9a-f]{4}: " % os.getpid()
         pid_lines = re_lines(out_lines, pid_prefix)
-        self.assertEqual(pid_lines, out_lines)
+        assert pid_lines == out_lines
 
         # We still have some tracing, and some not tracing.
-        self.assertTrue(re_lines(out_lines, pid_prefix + "Tracing "))
-        self.assertTrue(re_lines(out_lines, pid_prefix + "Not tracing "))
+        assert re_lines(out_lines, pid_prefix + "Tracing ")
+        assert re_lines(out_lines, pid_prefix + "Not tracing ")
 
     def test_debug_callers(self):
         out_lines = self.f1_debug_output(["pid", "dataop", "dataio", "callers"])
@@ -153,15 +154,15 @@ class DebugTraceTest(CoverageTest):
         real_messages = re_lines(out_lines, r":\d+", match=False).splitlines()
         frame_pattern = r"\s+f1_debug_output : .*tests[/\\]test_debug.py:\d+$"
         frames = re_lines(out_lines, frame_pattern).splitlines()
-        self.assertEqual(len(real_messages), len(frames))
+        assert len(real_messages) == len(frames)
 
         last_line = out_lines.splitlines()[-1]
 
         # The details of what to expect on the stack are empirical, and can change
         # as the code changes. This test is here to ensure that the debug code
         # continues working. It's ok to adjust these details over time.
-        self.assertRegex(real_messages[-1], r"^\s*\d+\.\w{4}: Adding file tracers: 0 files")
-        self.assertRegex(last_line, r"\s+add_file_tracers : .*coverage[/\\]sqldata.py:\d+$")
+        assert re.search(r"^\s*\d+\.\w{4}: Adding file tracers: 0 files", real_messages[-1])
+        assert re.search(r"\s+add_file_tracers : .*coverage[/\\]sqldata.py:\d+$", last_line)
 
     def test_debug_config(self):
         out_lines = self.f1_debug_output(["config"])
@@ -175,11 +176,9 @@ class DebugTraceTest(CoverageTest):
             """.split()
         for label in labels:
             label_pat = r"^\s*%s: " % label
-            self.assertEqual(
-                len(re_lines(out_lines, label_pat).splitlines()),
-                1,
-                msg="Incorrect lines for %r" % label,
-            )
+            assert len(re_lines(out_lines, label_pat).splitlines()) == \
+                1, \
+                "Incorrect lines for %r" % label
 
     def test_debug_sys(self):
         out_lines = self.f1_debug_output(["sys"])
@@ -191,11 +190,9 @@ class DebugTraceTest(CoverageTest):
             """.split()
         for label in labels:
             label_pat = r"^\s*%s: " % label
-            self.assertEqual(
-                len(re_lines(out_lines, label_pat).splitlines()),
-                1,
-                msg="Incorrect lines for %r" % label,
-            )
+            assert len(re_lines(out_lines, label_pat).splitlines()) == \
+                1, \
+                "Incorrect lines for %r" % label
 
     def test_debug_sys_ctracer(self):
         out_lines = self.f1_debug_output(["sys"])
@@ -204,7 +201,7 @@ class DebugTraceTest(CoverageTest):
             expected = "CTracer: available"
         else:
             expected = "CTracer: unavailable"
-        self.assertEqual(expected, tracer_line)
+        assert expected == tracer_line
 
 
 def f_one(*args, **kwargs):
@@ -227,15 +224,15 @@ class ShortStackTest(CoverageTest):
 
     def test_short_stack(self):
         stack = f_one().splitlines()
-        self.assertGreater(len(stack), 10)
-        self.assertIn("f_three", stack[-1])
-        self.assertIn("f_two", stack[-2])
-        self.assertIn("f_one", stack[-3])
+        assert len(stack) > 10
+        assert "f_three" in stack[-1]
+        assert "f_two" in stack[-2]
+        assert "f_one" in stack[-3]
 
     def test_short_stack_limit(self):
         stack = f_one(limit=5).splitlines()
-        self.assertEqual(len(stack), 5)
+        assert len(stack) == 5
 
     def test_short_stack_skip(self):
         stack = f_one(skip=1).splitlines()
-        self.assertIn("f_two", stack[-1])
+        assert "f_two" in stack[-1]

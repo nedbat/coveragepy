@@ -30,10 +30,10 @@ class FilesTest(CoverageTest):
     def test_simple(self):
         self.make_file("hello.py")
         files.set_relative_directory()
-        self.assertEqual(files.relative_filename(u"hello.py"), u"hello.py")
+        assert files.relative_filename(u"hello.py") == u"hello.py"
         a = self.abs_path("hello.py")
-        self.assertNotEqual(a, "hello.py")
-        self.assertEqual(files.relative_filename(a), "hello.py")
+        assert a != "hello.py"
+        assert files.relative_filename(a) == "hello.py"
 
     def test_peer_directories(self):
         self.make_file("sub/proj1/file1.py")
@@ -43,8 +43,8 @@ class FilesTest(CoverageTest):
         d = os.path.normpath("sub/proj1")
         self.chdir(d)
         files.set_relative_directory()
-        self.assertEqual(files.relative_filename(a1), "file1.py")
-        self.assertEqual(files.relative_filename(a2), a2)
+        assert files.relative_filename(a1) == "file1.py"
+        assert files.relative_filename(a2) == a2
 
     def test_filepath_contains_absolute_prefix_twice(self):
         # https://github.com/nedbat/coveragepy/issues/194
@@ -55,7 +55,7 @@ class FilesTest(CoverageTest):
         d = abs_file(os.curdir)
         trick = os.path.splitdrive(d)[1].lstrip(os.path.sep)
         rel = os.path.join('sub', trick, 'file1.py')
-        self.assertEqual(files.relative_filename(abs_file(rel)), rel)
+        assert files.relative_filename(abs_file(rel)) == rel
 
     def test_canonical_filename_ensure_cache_hit(self):
         self.make_file("sub/proj1/file1.py")
@@ -63,12 +63,11 @@ class FilesTest(CoverageTest):
         self.chdir(d)
         files.set_relative_directory()
         canonical_path = files.canonical_filename('sub/proj1/file1.py')
-        self.assertEqual(canonical_path, self.abs_path('file1.py'))
+        assert canonical_path == self.abs_path('file1.py')
         # After the filename has been converted, it should be in the cache.
-        self.assertIn('sub/proj1/file1.py', files.CANONICAL_FILENAME_CACHE)
-        self.assertEqual(
-            files.canonical_filename('sub/proj1/file1.py'),
-            self.abs_path('file1.py'))
+        assert 'sub/proj1/file1.py' in files.CANONICAL_FILENAME_CACHE
+        assert files.canonical_filename('sub/proj1/file1.py') == \
+            self.abs_path('file1.py')
 
 
 @pytest.mark.parametrize("original, flat", [
@@ -149,10 +148,8 @@ class MatcherTest(CoverageTest):
     def assertMatches(self, matcher, filepath, matches):
         """The `matcher` should agree with `matches` about `filepath`."""
         canonical = files.canonical_filename(filepath)
-        self.assertEqual(
-            matcher.match(canonical), matches,
+        assert matcher.match(canonical) == matches, \
             "File %s should have matched as %s" % (filepath, matches)
-        )
 
     def test_tree_matcher(self):
         matches_to_try = [
@@ -167,7 +164,7 @@ class MatcherTest(CoverageTest):
             files.canonical_filename("sub3/file4.py"),
             ]
         tm = TreeMatcher(trees)
-        self.assertEqual(tm.info(), trees)
+        assert tm.info() == trees
         for filepath, matches in matches_to_try:
             self.assertMatches(tm, filepath, matches)
 
@@ -190,16 +187,12 @@ class MatcherTest(CoverageTest):
         ]
         modules = ['test', 'py.test', 'mymain']
         mm = ModuleMatcher(modules)
-        self.assertEqual(
-            mm.info(),
+        assert mm.info() == \
             modules
-        )
         for modulename, matches in matches_to_try:
-            self.assertEqual(
-                mm.match(modulename),
-                matches,
-                modulename,
-            )
+            assert mm.match(modulename) == \
+                matches, \
+                modulename
 
     def test_fnmatch_matcher(self):
         matches_to_try = [
@@ -210,7 +203,7 @@ class MatcherTest(CoverageTest):
             (self.make_file("sub3/file5.c"), False),
         ]
         fnm = FnmatchMatcher(["*.py", "*/sub2/*"])
-        self.assertEqual(fnm.info(), ["*.py", "*/sub2/*"])
+        assert fnm.info() == ["*.py", "*/sub2/*"]
         for filepath, matches in matches_to_try:
             self.assertMatches(fnm, filepath, matches)
 
@@ -244,11 +237,11 @@ class PathAliasesTest(CoverageTest):
         aliases.pprint()
         print(inp)
         print(out)
-        self.assertEqual(aliases.map(inp), files.canonical_filename(out))
+        assert aliases.map(inp) == files.canonical_filename(out)
 
     def assert_unchanged(self, aliases, inp):
         """Assert that `inp` mapped through `aliases` is unchanged."""
-        self.assertEqual(aliases.map(inp), inp)
+        assert aliases.map(inp) == inp
 
     def test_noop(self):
         aliases = PathAliases()
@@ -283,11 +276,11 @@ class PathAliasesTest(CoverageTest):
     def test_cant_have_wildcard_at_end(self):
         aliases = PathAliases()
         msg = "Pattern must not end with wildcards."
-        with self.assertRaisesRegex(CoverageException, msg):
+        with pytest.raises(CoverageException, match=msg):
             aliases.add("/ned/home/*", "fooey")
-        with self.assertRaisesRegex(CoverageException, msg):
+        with pytest.raises(CoverageException, match=msg):
             aliases.add("/ned/home/*/", "fooey")
-        with self.assertRaisesRegex(CoverageException, msg):
+        with pytest.raises(CoverageException, match=msg):
             aliases.add("/ned/home/*/*/", "fooey")
 
     def test_no_accidental_munging(self):
@@ -418,4 +411,4 @@ class WindowsFileTest(CoverageTest):
         super(WindowsFileTest, self).setUp()
 
     def test_actual_path(self):
-        self.assertEqual(actual_path(r'c:\Windows'), actual_path(r'C:\wINDOWS'))
+        assert actual_path(r'c:\Windows') == actual_path(r'C:\wINDOWS')

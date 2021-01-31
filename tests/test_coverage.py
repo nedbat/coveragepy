@@ -9,6 +9,7 @@ from coverage import env
 from coverage.misc import CoverageException
 
 from tests.coveragetest import CoverageTest
+import pytest
 
 
 class TestCoverageTest(CoverageTest):
@@ -50,7 +51,7 @@ class TestCoverageTest(CoverageTest):
 
     def test_failed_coverage(self):
         # If the lines are wrong, the message shows right and wrong.
-        with self.assertRaisesRegex(AssertionError, r"\[1, 2] != \[1]"):
+        with pytest.raises(AssertionError, match=r"\[1, 2] != \[1]"):
             self.check_coverage("""\
                 a = 1
                 b = 2
@@ -59,7 +60,7 @@ class TestCoverageTest(CoverageTest):
             )
         # If the list of lines possibilities is wrong, the msg shows right.
         msg = r"None of the lines choices matched \[1, 2]"
-        with self.assertRaisesRegex(AssertionError, msg):
+        with pytest.raises(AssertionError, match=msg):
             self.check_coverage("""\
                 a = 1
                 b = 2
@@ -67,7 +68,7 @@ class TestCoverageTest(CoverageTest):
                 ([1], [2])
             )
         # If the missing lines are wrong, the message shows right and wrong.
-        with self.assertRaisesRegex(AssertionError, r"'3' != '37'"):
+        with pytest.raises(AssertionError, match=r"'3' != '37'"):
             self.check_coverage("""\
                 a = 1
                 if a == 2:
@@ -78,7 +79,7 @@ class TestCoverageTest(CoverageTest):
             )
         # If the missing lines possibilities are wrong, the msg shows right.
         msg = r"None of the missing choices matched '3'"
-        with self.assertRaisesRegex(AssertionError, msg):
+        with pytest.raises(AssertionError, match=msg):
             self.check_coverage("""\
                 a = 1
                 if a == 2:
@@ -90,14 +91,14 @@ class TestCoverageTest(CoverageTest):
 
     def test_exceptions_really_fail(self):
         # An assert in the checked code will really raise up to us.
-        with self.assertRaisesRegex(AssertionError, "This is bad"):
+        with pytest.raises(AssertionError, match="This is bad"):
             self.check_coverage("""\
                 a = 1
                 assert a == 99, "This is bad"
                 """
                 )
         # Other exceptions too.
-        with self.assertRaisesRegex(ZeroDivisionError, "division"):
+        with pytest.raises(ZeroDivisionError, match="division"):
             self.check_coverage("""\
                 a = 1
                 assert a == 1, "This is good"
@@ -1844,7 +1845,7 @@ class ModuleTest(CoverageTest):
         coverage.Coverage()
 
     def test_old_name_and_new_name(self):
-        self.assertIs(coverage.coverage, coverage.Coverage)
+        assert coverage.coverage is coverage.Coverage
 
 
 class ReportingTest(CoverageTest):
@@ -1857,19 +1858,19 @@ class ReportingTest(CoverageTest):
     def test_no_data_to_report_on_annotate(self):
         # Reporting with no data produces a nice message and no output
         # directory.
-        with self.assertRaisesRegex(CoverageException, "No data to report."):
+        with pytest.raises(CoverageException, match="No data to report."):
             self.command_line("annotate -d ann")
         self.assert_doesnt_exist("ann")
 
     def test_no_data_to_report_on_html(self):
         # Reporting with no data produces a nice message and no output
         # directory.
-        with self.assertRaisesRegex(CoverageException, "No data to report."):
+        with pytest.raises(CoverageException, match="No data to report."):
             self.command_line("html -d htmlcov")
         self.assert_doesnt_exist("htmlcov")
 
     def test_no_data_to_report_on_xml(self):
         # Reporting with no data produces a nice message.
-        with self.assertRaisesRegex(CoverageException, "No data to report."):
+        with pytest.raises(CoverageException, match="No data to report."):
             self.command_line("xml")
         self.assert_doesnt_exist("coverage.xml")

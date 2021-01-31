@@ -80,7 +80,7 @@ class RecursionTest(CoverageTest):
 
     def test_long_recursion(self):
         # We can't finish a very deep recursion, but we don't crash.
-        with self.assertRaises(RuntimeError):
+        with pytest.raises(RuntimeError):
             self.check_coverage("""\
                 def recur(n):
                     if n == 0:
@@ -125,16 +125,15 @@ class RecursionTest(CoverageTest):
             expected_missing += [9, 10, 11]
 
         _, statements, missing, _ = cov.analysis("recur.py")
-        self.assertEqual(statements, [1, 2, 3, 5, 7, 8, 9, 10, 11])
-        self.assertEqual(expected_missing, missing)
+        assert statements == [1, 2, 3, 5, 7, 8, 9, 10, 11]
+        assert expected_missing == missing
 
         # Get a warning about the stackoverflow effect on the tracing function.
         if pytrace:                                 # pragma: no metacov
-            self.assertEqual(cov._warnings,
+            assert cov._warnings == \
                 ["Trace function changed, measurement is likely wrong: None"]
-                )
         else:
-            self.assertEqual(cov._warnings, [])
+            assert cov._warnings == []
 
 
 class MemoryLeakTest(CoverageTest):
@@ -224,9 +223,9 @@ class MemoryFumblingTest(CoverageTest):
             print("Final None refcount: %d" % (sys.getrefcount(None)))
             """)
         status, out = self.run_command_status("python main.py")
-        self.assertEqual(status, 0)
-        self.assertIn("Final None refcount", out)
-        self.assertNotIn("Fatal", out)
+        assert status == 0
+        assert "Final None refcount" in out
+        assert "Fatal" not in out
 
 
 class PyexpatTest(CoverageTest):
@@ -268,20 +267,18 @@ class PyexpatTest(CoverageTest):
         self.start_import_stop(cov, "outer")
 
         _, statements, missing, _ = cov.analysis("trydom.py")
-        self.assertEqual(statements, [1, 3, 8, 9, 10, 11, 13])
-        self.assertEqual(missing, [])
+        assert statements == [1, 3, 8, 9, 10, 11, 13]
+        assert missing == []
 
         _, statements, missing, _ = cov.analysis("outer.py")
-        self.assertEqual(statements, [101, 102])
-        self.assertEqual(missing, [])
+        assert statements == [101, 102]
+        assert missing == []
 
         # Make sure pyexpat isn't recorded as a source file.
         # https://github.com/nedbat/coveragepy/issues/419
         files = cov.get_data().measured_files()
-        self.assertFalse(
-            any(f.endswith("pyexpat.c") for f in files),
+        assert not any(f.endswith("pyexpat.c") for f in files), \
             "Pyexpat.c is in the measured files!: %r:" % (files,)
-        )
 
 
 class ExceptionTest(CoverageTest):
@@ -393,7 +390,7 @@ class ExceptionTest(CoverageTest):
                 for lines in lines_expected.values():
                     lines[:] = [l for l in lines if l not in invisible]
 
-            self.assertEqual(clean_lines, lines_expected)
+            assert clean_lines == lines_expected
 
 
 class DoctestTest(CoverageTest):
@@ -451,11 +448,11 @@ class GettraceTest(CoverageTest):
         cov = coverage.Coverage(source=["sample"])
         self.start_import_stop(cov, "main")
 
-        self.assertEqual(self.stdout(), "10\n7\n3\n5\n9\n12\n")
+        assert self.stdout() == "10\n7\n3\n5\n9\n12\n"
 
         _, statements, missing, _ = cov.analysis("sample.py")
-        self.assertEqual(statements, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12])
-        self.assertEqual(missing, [])
+        assert statements == [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+        assert missing == []
 
     def test_setting_new_trace_function(self):
         # https://github.com/nedbat/coveragepy/issues/436
@@ -489,15 +486,13 @@ class GettraceTest(CoverageTest):
 
         out = self.stdout().replace(self.last_module_name, "coverage_test")
 
-        self.assertEqual(
-            out,
+        assert out == \
             (
                 "call: coverage_test.py @ 10\n"
                 "line: coverage_test.py @ 11\n"
                 "line: coverage_test.py @ 12\n"
                 "return: coverage_test.py @ 12\n"
-            ),
-        )
+            )
 
     @pytest.mark.expensive
     def test_atexit_gettrace(self):             # pragma: no metacov
@@ -523,13 +518,13 @@ class GettraceTest(CoverageTest):
             # This will show what the trace function is at the end of the program.
             """)
         status, out = self.run_command_status("python atexit_gettrace.py")
-        self.assertEqual(status, 0)
+        assert status == 0
         if env.PYPY and env.PYPYVERSION >= (5, 4):
             # Newer PyPy clears the trace function before atexit runs.
-            self.assertEqual(out, "None\n")
+            assert out == "None\n"
         else:
             # Other Pythons leave the trace function in place.
-            self.assertEqual(out, "trace_function\n")
+            assert out == "trace_function\n"
 
 
 class ExecTest(CoverageTest):
@@ -557,11 +552,11 @@ class ExecTest(CoverageTest):
         self.start_import_stop(cov, "main")
 
         _, statements, missing, _ = cov.analysis("main.py")
-        self.assertEqual(statements, [1, 2, 3, 4, 35])
-        self.assertEqual(missing, [])
+        assert statements == [1, 2, 3, 4, 35]
+        assert missing == []
         _, statements, missing, _ = cov.analysis("to_exec.py")
-        self.assertEqual(statements, [31])
-        self.assertEqual(missing, [])
+        assert statements == [31]
+        assert missing == []
 
     def test_unencodable_filename(self):
         # https://github.com/nedbat/coveragepy/issues/891
@@ -609,4 +604,4 @@ class MockingProtectionTest(CoverageTest):
         import py_compile
         py_compile.compile("bug416a.py")
         out = self.run_command("coverage run bug416.py")
-        self.assertEqual(out, "in test\nbug416a.py\n23\n17\n")
+        assert out == "in test\nbug416a.py\n23\n17\n"

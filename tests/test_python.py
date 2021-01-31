@@ -28,7 +28,7 @@ class GetZipBytesTest(CoverageTest):
             filename = filename.replace("/", os.sep)
             zip_data = get_zip_bytes(filename)
             zip_text = zip_data.decode(encoding)
-            self.assertIn('All OK', zip_text)
+            assert 'All OK' in zip_text
             # Run the code to see that we really got it encoded properly.
             __import__("encoded_"+encoding)
 

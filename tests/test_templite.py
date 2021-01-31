@@ -9,6 +9,7 @@ import re
 from coverage.templite import Templite, TempliteSyntaxError, TempliteValueError
 
 from tests.coveragetest import CoverageTest
+import pytest
 
 # pylint: disable=possibly-unused-variable
 
@@ -39,7 +40,7 @@ class TempliteTest(CoverageTest):
         # If result is None, then an exception should have prevented us getting
         # to here.
         assert result is not None
-        self.assertEqual(actual, result)
+        assert actual == result
 
     def assertSynErr(self, msg):
         """Assert that a `TempliteSyntaxError` will happen.
@@ -48,15 +49,13 @@ class TempliteTest(CoverageTest):
 
         """
         pat = "^" + re.escape(msg) + "$"
-        return self.assertRaisesRegex(TempliteSyntaxError, pat)
+        return pytest.raises(TempliteSyntaxError, match=pat)
 
     def test_passthrough(self):
         # Strings without variables are passed through unchanged.
-        self.assertEqual(Templite("Hello").render(), "Hello")
-        self.assertEqual(
-            Templite("Hello, 20% fun time!").render(),
+        assert Templite("Hello").render() == "Hello"
+        assert Templite("Hello, 20% fun time!").render() == \
             "Hello, 20% fun time!"
-            )
 
     def test_variables(self):
         # Variables use {{var}} syntax.
@@ -64,7 +63,7 @@ class TempliteTest(CoverageTest):
 
     def test_undefined_variables(self):
         # Using undefined names is an error.
-        with self.assertRaisesRegex(Exception, "'name'"):
+        with pytest.raises(Exception, match="'name'"):
             self.try_render("Hi, {{name}}!")
 
     def test_pipes(self):
@@ -87,8 +86,8 @@ class TempliteTest(CoverageTest):
             }
 
         template = Templite("This is {{name|upper}}{{punct}}", globs)
-        self.assertEqual(template.render({'name':'Ned'}), "This is NED!")
-        self.assertEqual(template.render({'name':'Ben'}), "This is BEN!")
+        assert template.render({'name':'Ned'}) == "This is NED!"
+        assert template.render({'name':'Ben'}) == "This is BEN!"
 
     def test_attribute(self):
         # Variables' attributes can be accessed with dots.
@@ -298,7 +297,7 @@ class TempliteTest(CoverageTest):
     def test_exception_during_evaluation(self):
         # TypeError: Couldn't evaluate {{ foo.bar.baz }}:
         regex = "^Couldn't evaluate None.bar$"
-        with self.assertRaisesRegex(TempliteValueError, regex):
+        with pytest.raises(TempliteValueError, match=regex):
             self.try_render(
                 "Hey {{foo.bar.baz}} there", {'foo': None}, "Hey ??? there"
             )

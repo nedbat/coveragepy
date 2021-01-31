@@ -46,5 +46,5 @@ class CollectorTest(CoverageTest):
 
         # Double-check that our files were checked.
         abs_files = {os.path.abspath(f) for f in should_trace_hook.filenames}
-        self.assertIn(os.path.abspath("f1.py"), abs_files)
-        self.assertIn(os.path.abspath("f2.py"), abs_files)
+        assert os.path.abspath("f1.py") in abs_files
+        assert os.path.abspath("f2.py") in abs_files
