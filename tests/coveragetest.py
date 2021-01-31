@@ -134,7 +134,7 @@ class CoverageTest(
         self.last_module_name = 'coverage_test_' + str(random.random())[2:]
         return self.last_module_name
 
-    def assert_equal_arcs(self, a1, a2, msg=None):
+    def _assert_equal_arcs(self, a1, a2, msg=None):
         """Assert that the arc lists `a1` and `a2` are equal."""
         # Make them into multi-line strings so we can see what's going wrong.
         s1 = arcs_to_arcz_repr(a1)
@@ -225,17 +225,17 @@ class CoverageTest(
             # print("Executed:")
             # print(" actual:", sorted(set(analysis.arcs_executed())))
             with self.delayed_assertions():
-                self.assert_equal_arcs(
+                self._assert_equal_arcs(
                     arcs, analysis.arc_possibilities(),
                     "Possible arcs differ: minus is expected, plus is actual"
                 )
 
-                self.assert_equal_arcs(
+                self._assert_equal_arcs(
                     arcs_missing, analysis.arcs_missing(),
                     "Missing arcs differ: minus is expected, plus is actual"
                 )
 
-                self.assert_equal_arcs(
+                self._assert_equal_arcs(
                     arcs_unpredicted, analysis.arcs_unpredicted(),
                     "Unpredicted arcs differ: minus is expected, plus is actual"
                 )
