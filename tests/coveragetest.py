@@ -5,6 +5,7 @@
 
 import contextlib
 import datetime
+import difflib
 import functools
 import glob
 import os
@@ -16,10 +17,7 @@ import sys
 import types
 
 import pytest
-from unittest_mixins import (
-    EnvironmentAwareMixin, StdStreamCapturingMixin, TempDirMixin,
-    DelayedAssertionMixin,
-)
+from unittest_mixins import EnvironmentAwareMixin, StdStreamCapturingMixin, TempDirMixin
 
 import coverage
 from coverage import env
@@ -67,7 +65,6 @@ class CoverageTest(
     EnvironmentAwareMixin,
     StdStreamCapturingMixin,
     TempDirMixin,
-    DelayedAssertionMixin,
     CoverageTestMethodsMixin,
     TestCase,
 ):
@@ -134,12 +131,22 @@ class CoverageTest(
         self.last_module_name = 'coverage_test_' + str(random.random())[2:]
         return self.last_module_name
 
-    def _assert_equal_arcs(self, a1, a2, msg=None):
-        """Assert that the arc lists `a1` and `a2` are equal."""
+    def _check_arcs(self, a1, a2, arc_type):
+        """Check that the arc lists `a1` and `a2` are equal.
+
+        If they are equal, return empty string. If they are unequal, return
+        a string explaining what is different.
+        """
         # Make them into multi-line strings so we can see what's going wrong.
         s1 = arcs_to_arcz_repr(a1)
         s2 = arcs_to_arcz_repr(a2)
-        assert s1 == s2, msg
+        if s1 != s2:
+            lines1 = s1.splitlines(keepends=True)
+            lines2 = s2.splitlines(keepends=True)
+            diff = "".join(difflib.ndiff(lines1, lines2))
+            return "\n" + arc_type + " arcs differ: minus is expected, plus is actual\n" + diff
+        else:
+            return ""
 
     def check_coverage(
         self, text, lines=None, missing="", report="",
@@ -225,21 +232,14 @@ class CoverageTest(
             # print(" actual:", analysis.arc_possibilities())
             # print("Executed:")
             # print(" actual:", sorted(set(analysis.arcs_executed())))
-            with self.delayed_assertions():
-                self._assert_equal_arcs(
-                    arcs, analysis.arc_possibilities(),
-                    "Possible arcs differ: minus is expected, plus is actual"
-                )
-
-                self._assert_equal_arcs(
-                    arcs_missing, analysis.arcs_missing(),
-                    "Missing arcs differ: minus is expected, plus is actual"
-                )
-
-                self._assert_equal_arcs(
-                    arcs_unpredicted, analysis.arcs_unpredicted(),
-                    "Unpredicted arcs differ: minus is expected, plus is actual"
-                )
+            # TODO: this would be nicer with pytest-check, once we can run that.
+            msg = (
+                self._check_arcs(arcs, analysis.arc_possibilities(), "Possible") +
+                self._check_arcs(arcs_missing, analysis.arcs_missing(), "Missing") +
+                self._check_arcs(arcs_unpredicted, analysis.arcs_unpredicted(), "Unpredicted")
+            )
+            if msg:
+                assert False, msg
 
         if report:
             frep = StringIO()

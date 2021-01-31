@@ -270,13 +270,10 @@ class LoopArcTest(CoverageTest):
         # With "while 1", the loop knows it's constant.
         if env.PYBEHAVIOR.keep_constant_test:
             arcz = ".1 12 23 34 45 36 62 57 7."
-            arcz_missing = ""
         elif env.PYBEHAVIOR.nix_while_true:
             arcz = ".1 13 34 45 36 63 57 7."
-            arcz_missing = ""
         else:
             arcz = ".1 12 23 34 45 36 63 57 7."
-            arcz_missing = ""
         self.check_coverage("""\
             a, i = 1, 0
             while 1:
@@ -287,7 +284,6 @@ class LoopArcTest(CoverageTest):
             assert a == 4 and i == 3
             """,
             arcz=arcz,
-            arcz_missing=arcz_missing,
             )
 
     def test_while_true(self):
