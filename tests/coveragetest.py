@@ -5,6 +5,7 @@
 
 import contextlib
 import datetime
+import difflib
 import functools
 import glob
 import os
@@ -16,10 +17,7 @@ import sys
 import types
 
 import pytest
-from unittest_mixins import (
-    EnvironmentAwareMixin, StdStreamCapturingMixin, TempDirMixin,
-    DelayedAssertionMixin,
-)
+from unittest_mixins import EnvironmentAwareMixin, StdStreamCapturingMixin, TempDirMixin
 
 import coverage
 from coverage import env
@@ -67,7 +65,6 @@ class CoverageTest(
     EnvironmentAwareMixin,
     StdStreamCapturingMixin,
     TempDirMixin,
-    DelayedAssertionMixin,
     CoverageTestMethodsMixin,
     TestCase,
 ):
@@ -134,12 +131,22 @@ class CoverageTest(
         self.last_module_name = 'coverage_test_' + str(random.random())[2:]
         return self.last_module_name
 
-    def assert_equal_arcs(self, a1, a2, msg=None):
-        """Assert that the arc lists `a1` and `a2` are equal."""
+    def _check_arcs(self, a1, a2, arc_type):
+        """Check that the arc lists `a1` and `a2` are equal.
+
+        If they are equal, return empty string. If they are unequal, return
+        a string explaining what is different.
+        """
         # Make them into multi-line strings so we can see what's going wrong.
         s1 = arcs_to_arcz_repr(a1)
         s2 = arcs_to_arcz_repr(a2)
-        self.assertMultiLineEqual(s1, s2, msg)
+        if s1 != s2:
+            lines1 = s1.splitlines(keepends=True)
+            lines2 = s2.splitlines(keepends=True)
+            diff = "".join(difflib.ndiff(lines1, lines2))
+            return "\n" + arc_type + " arcs differ: minus is expected, plus is actual\n" + diff
+        else:
+            return ""
 
     def check_coverage(
         self, text, lines=None, missing="", report="",
@@ -198,7 +205,7 @@ class CoverageTest(
             if isinstance(lines[0], int):
                 # lines is just a list of numbers, it must match the statements
                 # found in the code.
-                self.assertEqual(statements, lines)
+                assert statements == lines, "{!r} != {!r}".format(statements, lines)
             else:
                 # lines is a list of possible line number lists, one of them
                 # must match.
@@ -210,7 +217,8 @@ class CoverageTest(
 
             missing_formatted = analysis.missing_formatted()
             if isinstance(missing, string_class):
-                self.assertEqual(missing_formatted, missing)
+                msg = "{!r} != {!r}".format(missing_formatted, missing)
+                assert missing_formatted == missing, msg
             else:
                 for missing_list in missing:
                     if missing_formatted == missing_list:
@@ -224,27 +232,20 @@ class CoverageTest(
             # print(" actual:", analysis.arc_possibilities())
             # print("Executed:")
             # print(" actual:", sorted(set(analysis.arcs_executed())))
-            with self.delayed_assertions():
-                self.assert_equal_arcs(
-                    arcs, analysis.arc_possibilities(),
-                    "Possible arcs differ: minus is expected, plus is actual"
-                )
-
-                self.assert_equal_arcs(
-                    arcs_missing, analysis.arcs_missing(),
-                    "Missing arcs differ: minus is expected, plus is actual"
-                )
-
-                self.assert_equal_arcs(
-                    arcs_unpredicted, analysis.arcs_unpredicted(),
-                    "Unpredicted arcs differ: minus is expected, plus is actual"
-                )
+            # TODO: this would be nicer with pytest-check, once we can run that.
+            msg = (
+                self._check_arcs(arcs, analysis.arc_possibilities(), "Possible") +
+                self._check_arcs(arcs_missing, analysis.arcs_missing(), "Missing") +
+                self._check_arcs(arcs_unpredicted, analysis.arcs_unpredicted(), "Unpredicted")
+            )
+            if msg:
+                assert False, msg
 
         if report:
             frep = StringIO()
             cov.report(mod, file=frep, show_missing=True)
             rep = " ".join(frep.getvalue().split("\n")[2].split()[1:])
-            self.assertEqual(report, rep)
+            assert report == rep, "{!r} != {!r}".format(report, rep)
 
         return cov
 
@@ -313,19 +314,19 @@ class CoverageTest(
     def assert_exists(self, fname):
         """Assert that `fname` is a file that exists."""
         msg = "File %r should exist" % fname
-        self.assertTrue(os.path.exists(fname), msg)
+        assert os.path.exists(fname), msg
 
     def assert_doesnt_exist(self, fname):
         """Assert that `fname` is a file that doesn't exist."""
         msg = "File %r shouldn't exist" % fname
-        self.assertTrue(not os.path.exists(fname), msg)
+        assert not os.path.exists(fname), msg
 
     def assert_file_count(self, pattern, count):
         """Assert that there are `count` files matching `pattern`."""
         files = sorted(glob.glob(pattern))
         msg = "There should be {} files matching {!r}, but there are these: {}"
         msg = msg.format(count, pattern, files)
-        self.assertEqual(len(files), count, msg)
+        assert len(files) == count, msg
 
     def assert_starts_with(self, s, prefix, msg=None):
         """Assert that `s` starts with `prefix`."""
@@ -335,8 +336,8 @@ class CoverageTest(
     def assert_recent_datetime(self, dt, seconds=10, msg=None):
         """Assert that `dt` marks a time at most `seconds` seconds ago."""
         age = datetime.datetime.now() - dt
-        self.assertGreaterEqual(age.total_seconds(), 0, msg)
-        self.assertLessEqual(age.total_seconds(), seconds, msg)
+        assert age.total_seconds() >= 0, msg
+        assert age.total_seconds() <= seconds, msg
 
     def command_line(self, args, ret=OK):
         """Run `args` through the command line.
@@ -351,7 +352,7 @@ class CoverageTest(
 
         """
         ret_actual = command_line(args)
-        self.assertEqual(ret_actual, ret)
+        assert ret_actual == ret, "{!r} != {!r}".format(ret_actual, ret)
 
     # Some distros rename the coverage command, and need a way to indicate
     # their new command name to the tests. This is here for them to override,
@@ -454,13 +455,13 @@ class CoverageTest(
     def report_from_command(self, cmd):
         """Return the report from the `cmd`, with some convenience added."""
         report = self.run_command(cmd).replace('\\', '/')
-        self.assertNotIn("error", report.lower())
+        assert "error" not in report.lower()
         return report
 
     def report_lines(self, report):
         """Return the lines of the report, as a list."""
         lines = report.split('\n')
-        self.assertEqual(lines[-1], "")
+        assert lines[-1] == ""
         return lines[:-1]
 
     def line_count(self, report):

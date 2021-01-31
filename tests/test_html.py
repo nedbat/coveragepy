@@ -13,6 +13,7 @@ import re
 import sys
 
 import mock
+import pytest
 from unittest_mixins import change_dir
 
 import coverage
@@ -86,7 +87,7 @@ class HtmlTestHelpers(CoverageTest):
         """Extract the timestamp from `html`, and assert it is recent."""
         timestamp_pat = r"created at (\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2})"
         m = re.search(timestamp_pat, html)
-        self.assertTrue(m, "Didn't find a timestamp!")
+        assert m, "Didn't find a timestamp!"
         timestamp = datetime.datetime(*map(int, m.groups()))
         # The timestamp only records the minute, so the delta could be from
         # 12:00 to 12:01:59, or two minutes.
@@ -177,7 +178,7 @@ class HtmlDeltaTest(HtmlTestHelpers, CoverageTest):
 
         # Because the source change was only a comment, the index is the same.
         index2 = self.get_html_index_content()
-        self.assertMultiLineEqual(index1, index2)
+        assert index1 == index2
 
     def test_html_delta_from_coverage_change(self):
         # HTML generation can create only the files that have changed.
@@ -220,7 +221,7 @@ class HtmlDeltaTest(HtmlTestHelpers, CoverageTest):
         assert "htmlcov/main_file_py.html" in self.files_written
 
         index2 = self.get_html_index_content()
-        self.assertMultiLineEqual(index1, index2)
+        assert index1 == index2
 
     def test_html_delta_from_coverage_version_change(self):
         # HTML generation can create only the files that have changed.
@@ -244,7 +245,7 @@ class HtmlDeltaTest(HtmlTestHelpers, CoverageTest):
 
         index2 = self.get_html_index_content()
         fixed_index2 = index2.replace("XYZZY", self.real_coverage_version)
-        self.assertMultiLineEqual(index1, fixed_index2)
+        assert index1 == fixed_index2
 
     def test_file_becomes_100(self):
         self.create_initial_files()
@@ -270,7 +271,7 @@ class HtmlDeltaTest(HtmlTestHelpers, CoverageTest):
         with open("htmlcov/status.json") as status_json:
             status_data = json.load(status_json)
 
-        self.assertEqual(status_data['format'], 2)
+        assert status_data['format'] == 2
         status_data['format'] = 99
         with open("htmlcov/status.json", "w") as status_json:
             json.dump(status_data, status_json)
@@ -292,44 +293,36 @@ class HtmlTitleTest(HtmlTestHelpers, CoverageTest):
         self.create_initial_files()
         self.run_coverage()
         index = self.get_html_index_content()
-        self.assertIn("<title>Coverage report</title>", index)
-        self.assertIn("<h1>Coverage report:", index)
+        assert "<title>Coverage report</title>" in index
+        assert "<h1>Coverage report:" in index
 
     def test_title_set_in_config_file(self):
         self.create_initial_files()
         self.make_file(".coveragerc", "[html]\ntitle = Metrics & stuff!\n")
         self.run_coverage()
         index = self.get_html_index_content()
-        self.assertIn("<title>Metrics &amp; stuff!</title>", index)
-        self.assertIn("<h1>Metrics &amp; stuff!:", index)
+        assert "<title>Metrics &amp; stuff!</title>" in index
+        assert "<h1>Metrics &amp; stuff!:" in index
 
     def test_non_ascii_title_set_in_config_file(self):
         self.create_initial_files()
         self.make_file(".coveragerc", "[html]\ntitle = «ταБЬℓσ» numbers")
         self.run_coverage()
         index = self.get_html_index_content()
-        self.assertIn(
-            "<title>&#171;&#964;&#945;&#1041;&#1068;&#8467;&#963;&#187;"
-            " numbers", index
-        )
-        self.assertIn(
-            "<h1>&#171;&#964;&#945;&#1041;&#1068;&#8467;&#963;&#187;"
-            " numbers", index
-        )
+        assert "<title>&#171;&#964;&#945;&#1041;&#1068;&#8467;&#963;&#187; numbers" in index
+        assert "<h1>&#171;&#964;&#945;&#1041;&#1068;&#8467;&#963;&#187; numbers" in index
 
     def test_title_set_in_args(self):
         self.create_initial_files()
         self.make_file(".coveragerc", "[html]\ntitle = Good title\n")
         self.run_coverage(htmlargs=dict(title="«ταБЬℓσ» & stüff!"))
         index = self.get_html_index_content()
-        self.assertIn(
-            "<title>&#171;&#964;&#945;&#1041;&#1068;&#8467;&#963;&#187;"
-            " &amp; st&#252;ff!</title>", index
+        expected = (
+            "<title>&#171;&#964;&#945;&#1041;&#1068;&#8467;&#963;&#187; " +
+            "&amp; st&#252;ff!</title>"
         )
-        self.assertIn(
-            "<h1>&#171;&#964;&#945;&#1041;&#1068;&#8467;&#963;&#187;"
-            " &amp; st&#252;ff!:", index
-        )
+        assert expected in index
+        assert "<h1>&#171;&#964;&#945;&#1041;&#1068;&#8467;&#963;&#187; &amp; st&#252;ff!:" in index
 
 
 class HtmlWithUnparsableFilesTest(HtmlTestHelpers, CoverageTest):
@@ -342,7 +335,7 @@ class HtmlWithUnparsableFilesTest(HtmlTestHelpers, CoverageTest):
         self.start_import_stop(cov, "main")
         self.make_file("innocuous.py", "<h1>This isn't python!</h1>")
         msg = "Couldn't parse '.*innocuous.py' as Python source: .* at line 1"
-        with self.assertRaisesRegex(NotPython, msg):
+        with pytest.raises(NotPython, match=msg):
             cov.html_report()
 
     def test_dotpy_not_python_ignored(self):
@@ -352,20 +345,11 @@ class HtmlWithUnparsableFilesTest(HtmlTestHelpers, CoverageTest):
         self.start_import_stop(cov, "main")
         self.make_file("innocuous.py", "<h1>This isn't python!</h1>")
         cov.html_report(ignore_errors=True)
-        self.assertEqual(
-            len(cov._warnings),
-            1,
-            "Expected a warning to be thrown when an invalid python file is parsed")
-        self.assertIn(
-            "Couldn't parse Python file",
-            cov._warnings[0],
-            "Warning message should be in 'invalid file' warning"
-        )
-        self.assertIn(
-            "innocuous.py",
-            cov._warnings[0],
-            "Filename should be in 'invalid file' warning"
-        )
+        msg = "Expected a warning to be thrown when an invalid python file is parsed"
+        assert 1 == len(cov._warnings), msg
+        msg = "Warning message should be in 'invalid file' warning"
+        assert "Couldn't parse Python file" in cov._warnings[0], msg
+        assert "innocuous.py" in cov._warnings[0], "Filename should be in 'invalid file' warning"
         self.assert_exists("htmlcov/index.html")
         # This would be better as a glob, if the HTML layout changes:
         self.assert_doesnt_exist("htmlcov/innocuous.html")
@@ -380,7 +364,7 @@ class HtmlWithUnparsableFilesTest(HtmlTestHelpers, CoverageTest):
         # Before reporting, change it to be an HTML file.
         self.make_file("innocuous.html", "<h1>This isn't python at all!</h1>")
         output = self.run_command("coverage html")
-        self.assertEqual(output.strip(), "No data to report.")
+        assert output.strip() == "No data to report."
 
     def test_execed_liar_ignored(self):
         # Jinja2 sets __file__ to be a non-Python file, and then execs code.
@@ -428,13 +412,13 @@ class HtmlWithUnparsableFilesTest(HtmlTestHelpers, CoverageTest):
 
         with open("sub/not_ascii.py", "rb") as f:
             undecodable = f.read()
-        self.assertIn(b"?\xcb!", undecodable)
+        assert b"?\xcb!" in undecodable
 
         cov.html_report()
 
         html_report = self.get_html_report_content("sub/not_ascii.py")
         expected = "# Isn't this great?&#65533;!"
-        self.assertIn(expected, html_report)
+        assert expected in html_report
 
     def test_formfeeds(self):
         # https://github.com/nedbat/coveragepy/issues/360
@@ -444,7 +428,7 @@ class HtmlWithUnparsableFilesTest(HtmlTestHelpers, CoverageTest):
         cov.html_report()
 
         formfeed_html = self.get_html_report_content("formfeed.py")
-        self.assertIn("line_two", formfeed_html)
+        assert "line_two" in formfeed_html
 
 
 class HtmlTest(HtmlTestHelpers, CoverageTest):
@@ -462,7 +446,7 @@ class HtmlTest(HtmlTestHelpers, CoverageTest):
         missing_file = os.path.join(self.temp_dir, "sub", "another.py")
         missing_file = os.path.realpath(missing_file)
         msg = "(?i)No source for code: '%s'" % re.escape(missing_file)
-        with self.assertRaisesRegex(NoSource, msg):
+        with pytest.raises(NoSource, match=msg):
             cov.html_report()
 
     def test_extensionless_file_collides_with_extension(self):
@@ -538,7 +522,7 @@ class HtmlTest(HtmlTestHelpers, CoverageTest):
             normal()
         """)
         res = self.run_coverage(covargs=dict(source="."), htmlargs=dict(skip_covered=True))
-        self.assertEqual(res, 100.0)
+        assert res == 100.0
         self.assert_doesnt_exist("htmlcov/main_file_py.html")
 
     def make_init_and_main(self):
@@ -588,7 +572,7 @@ class HtmlStaticFileTest(CoverageTest):
 
         with open("htmlcov/jquery.min.js") as f:
             jquery = f.read()
-        self.assertEqual(jquery, "Not Really JQuery!")
+        assert jquery == "Not Really JQuery!"
 
     def test_copying_static_files_from_system_in_dir(self):
         # Make a new place for static files.
@@ -611,7 +595,7 @@ class HtmlStaticFileTest(CoverageTest):
             the_file = os.path.basename(fpath)
             with open(os.path.join("htmlcov", the_file)) as f:
                 contents = f.read()
-            self.assertEqual(contents, "Not real.")
+            assert contents == "Not real."
 
     def test_cant_find_static_files(self):
         # Make the path point to useless places.
@@ -621,7 +605,7 @@ class HtmlStaticFileTest(CoverageTest):
         cov = coverage.Coverage()
         self.start_import_stop(cov, "main")
         msg = "Couldn't find static file u?'.*'"
-        with self.assertRaisesRegex(CoverageException, msg):
+        with pytest.raises(CoverageException, match=msg):
             cov.html_report()
 
 def filepath_to_regex(path):

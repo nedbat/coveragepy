@@ -35,10 +35,9 @@ class TestingTest(TestCase):
 
     def test_assert_count_equal(self):
         self.assertCountEqual(set(), set())
-        self.assertCountEqual({1,2,3}, {3,1,2})
-        with self.assertRaises(AssertionError):
+        with pytest.raises(AssertionError):
             self.assertCountEqual({1,2,3}, set())
-        with self.assertRaises(AssertionError):
+        with pytest.raises(AssertionError):
             self.assertCountEqual({1,2,3}, {4,5,6})
 
 
@@ -49,11 +48,11 @@ class CoverageTestTest(CoverageTest):
         self.make_file("whoville.txt", "We are here!")
         self.assert_exists("whoville.txt")
         self.assert_doesnt_exist("shadow.txt")
-        msg = "False is not true : File 'whoville.txt' shouldn't exist"
-        with self.assertRaisesRegex(AssertionError, msg):
+        msg = "File 'whoville.txt' shouldn't exist"
+        with pytest.raises(AssertionError, match=msg):
             self.assert_doesnt_exist("whoville.txt")
-        msg = "False is not true : File 'shadow.txt' should exist"
-        with self.assertRaisesRegex(AssertionError, msg):
+        msg = "File 'shadow.txt' should exist"
+        with pytest.raises(AssertionError, match=msg):
             self.assert_exists("shadow.txt")
 
     def test_file_count(self):
@@ -65,27 +64,27 @@ class CoverageTestTest(CoverageTest):
         self.assert_file_count("afile.*", 1)
         self.assert_file_count("*.q", 0)
         msg = re.escape(
-            "3 != 13 : There should be 13 files matching 'a*.txt', but there are these: "
+            "There should be 13 files matching 'a*.txt', but there are these: "
             "['abcde.txt', 'afile.txt', 'axczz.txt']"
         )
-        with self.assertRaisesRegex(AssertionError, msg):
+        with pytest.raises(AssertionError, match=msg):
             self.assert_file_count("a*.txt", 13)
         msg = re.escape(
-            "2 != 12 : There should be 12 files matching '*c*.txt', but there are these: "
+            "There should be 12 files matching '*c*.txt', but there are these: "
             "['abcde.txt', 'axczz.txt']"
         )
-        with self.assertRaisesRegex(AssertionError, msg):
+        with pytest.raises(AssertionError, match=msg):
             self.assert_file_count("*c*.txt", 12)
         msg = re.escape(
-            "1 != 11 : There should be 11 files matching 'afile.*', but there are these: "
+            "There should be 11 files matching 'afile.*', but there are these: "
             "['afile.txt']"
         )
-        with self.assertRaisesRegex(AssertionError, msg):
+        with pytest.raises(AssertionError, match=msg):
             self.assert_file_count("afile.*", 11)
         msg = re.escape(
-            "0 != 10 : There should be 10 files matching '*.q', but there are these: []"
+            "There should be 10 files matching '*.q', but there are these: []"
         )
-        with self.assertRaisesRegex(AssertionError, msg):
+        with pytest.raises(AssertionError, match=msg):
             self.assert_file_count("*.q", 10)
 
     def test_assert_startwith(self):
@@ -93,10 +92,10 @@ class CoverageTestTest(CoverageTest):
         self.assert_starts_with("xyz\nabc", "xy")
         self.assert_starts_with("xyzzy", ("x", "z"))
         msg = re.escape("'xyz' doesn't start with 'a'")
-        with self.assertRaisesRegex(AssertionError, msg):
+        with pytest.raises(AssertionError, match=msg):
             self.assert_starts_with("xyz", "a")
         msg = re.escape("'xyz\\nabc' doesn't start with 'a'")
-        with self.assertRaisesRegex(AssertionError, msg):
+        with pytest.raises(AssertionError, match=msg):
             self.assert_starts_with("xyz\nabc", "a")
 
     def test_assert_recent_datetime(self):
@@ -107,17 +106,17 @@ class CoverageTestTest(CoverageTest):
         # Default delta is 10 seconds.
         self.assert_recent_datetime(now_delta(0))
         self.assert_recent_datetime(now_delta(-9))
-        with self.assertRaises(AssertionError):
+        with pytest.raises(AssertionError):
             self.assert_recent_datetime(now_delta(-11))
-        with self.assertRaises(AssertionError):
+        with pytest.raises(AssertionError):
             self.assert_recent_datetime(now_delta(1))
 
         # Delta is settable.
         self.assert_recent_datetime(now_delta(0), seconds=120)
         self.assert_recent_datetime(now_delta(-100), seconds=120)
-        with self.assertRaises(AssertionError):
+        with pytest.raises(AssertionError):
             self.assert_recent_datetime(now_delta(-1000), seconds=120)
-        with self.assertRaises(AssertionError):
+        with pytest.raises(AssertionError):
             self.assert_recent_datetime(now_delta(1), seconds=120)
 
     def test_assert_warnings(self):
@@ -143,13 +142,13 @@ class CoverageTestTest(CoverageTest):
 
         # But if there are a bunch of expected warnings, they have to all happen.
         warn_regex = r"Didn't find warning 'You' in \['Hello there!'\]"
-        with self.assertRaisesRegex(AssertionError, warn_regex):
+        with pytest.raises(AssertionError, match=warn_regex):
             with self.assert_warnings(cov, ["Hello.*!", "You"]):
                 cov._warn("Hello there!")
 
         # Make a different warning than expected, it should raise an assertion.
         warn_regex = r"Didn't find warning 'Not me' in \['Hello there!'\]"
-        with self.assertRaisesRegex(AssertionError, warn_regex):
+        with pytest.raises(AssertionError, match=warn_regex):
             with self.assert_warnings(cov, ["Not me"]):
                 cov._warn("Hello there!")
 
@@ -159,13 +158,13 @@ class CoverageTestTest(CoverageTest):
 
         # But it should fail if the unexpected warning does appear.
         warn_regex = r"Found warning 'Bye' in \['Hi', 'Bye'\]"
-        with self.assertRaisesRegex(AssertionError, warn_regex):
+        with pytest.raises(AssertionError, match=warn_regex):
             with self.assert_warnings(cov, ["Hi"], not_warnings=["Bye"]):
                 cov._warn("Hi")
                 cov._warn("Bye")
 
         # assert_warnings shouldn't hide a real exception.
-        with self.assertRaisesRegex(ZeroDivisionError, "oops"):
+        with pytest.raises(ZeroDivisionError, match="oops"):
             with self.assert_warnings(cov, ["Hello there!"]):
                 raise ZeroDivisionError("oops")
 
@@ -178,7 +177,7 @@ class CoverageTestTest(CoverageTest):
 
         # If you said there would be no warnings, and there were, fail!
         warn_regex = r"Unexpected warnings: \['Watch out!'\]"
-        with self.assertRaisesRegex(AssertionError, warn_regex):
+        with pytest.raises(AssertionError, match=warn_regex):
             with self.assert_warnings(cov, []):
                 cov._warn("Watch out!")
 
@@ -192,21 +191,21 @@ class CoverageTestTest(CoverageTest):
             print(os.environ['COV_FOOBAR'])
             """)
         out = self.run_command("python showme.py").splitlines()
-        self.assertEqual(actual_path(out[0]), actual_path(sys.executable))
-        self.assertEqual(out[1], os.__file__)
-        self.assertEqual(out[2], 'XYZZY')
+        assert actual_path(out[0]) == actual_path(sys.executable)
+        assert out[1] == os.__file__
+        assert out[2] == 'XYZZY'
 
         # Try it with a "coverage debug sys" command.
         out = self.run_command("coverage debug sys")
 
         executable = re_line(out, "executable:")
         executable = executable.split(":", 1)[1].strip()
-        self.assertTrue(_same_python_executable(executable, sys.executable))
+        assert _same_python_executable(executable, sys.executable)
 
         # "environment: COV_FOOBAR = XYZZY" or "COV_FOOBAR = XYZZY"
         environ = re_line(out, "COV_FOOBAR")
         _, _, environ = environ.rpartition(":")
-        self.assertEqual(environ.strip(), "COV_FOOBAR = XYZZY")
+        assert environ.strip() == "COV_FOOBAR = XYZZY"
 
     def test_run_command_stdout_stderr(self):
         # run_command should give us both stdout and stderr.
@@ -216,8 +215,8 @@ class CoverageTestTest(CoverageTest):
             print("StdOut")
             """)
         out = self.run_command("python outputs.py")
-        self.assertIn("StdOut\n", out)
-        self.assertIn("StdErr\n", out)
+        assert "StdOut\n" in out
+        assert "StdErr\n" in out
 
 
 class CheckUniqueFilenamesTest(CoverageTest):
@@ -243,7 +242,7 @@ class CheckUniqueFilenamesTest(CoverageTest):
         assert stub.method("file2", 1723, b="what") == (23, "file2", 1723, "what")
 
         # A duplicate file name trips an assertion.
-        with self.assertRaises(AssertionError):
+        with pytest.raises(AssertionError):
             stub.method("file1")
 
 

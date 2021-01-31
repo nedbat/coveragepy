@@ -9,6 +9,7 @@ import os.path
 import re
 from xml.etree import ElementTree
 
+import pytest
 from unittest_mixins import change_dir
 
 import coverage
@@ -87,11 +88,11 @@ class XmlTestHelpersTest(XmlTestHelpers, CoverageTest):
         self.assert_source(dom, "something")
         self.assert_source(dom, "another")
 
-        with self.assertRaises(AssertionError):
+        with pytest.raises(AssertionError):
             self.assert_source(dom, "hello")
-        with self.assertRaises(AssertionError):
+        with pytest.raises(AssertionError):
             self.assert_source(dom, "foo")
-        with self.assertRaises(AssertionError):
+        with pytest.raises(AssertionError):
             self.assert_source(dom, "thing")
 
 
@@ -274,10 +275,7 @@ class XmlPackageStructureTest(XmlTestHelpers, CoverageTest):
 
     def assert_package_and_class_tags(self, cov, result):
         """Check the XML package and class tags from `cov` match `result`."""
-        self.assertEqual(
-            unbackslash(list(self.package_and_class_tags(cov))),
-            unbackslash(result),
-            )
+        assert unbackslash(list(self.package_and_class_tags(cov))) == unbackslash(result)
 
     def test_package_names(self):
         self.make_tree(width=1, depth=3)

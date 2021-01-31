@@ -157,7 +157,7 @@ def run_tests_with_coverage(tracer, *runner_args):
     try:
         # Re-import coverage to get it coverage tested!  I don't understand all
         # the mechanics here, but if I don't carry over the imported modules
-        # (in covmods), then things go haywire (os == None, eventually).
+        # (in covmods), then things go haywire (os is None, eventually).
         covmods = {}
         covdir = os.path.split(coverage.__file__)[0]
         # We have to make a list since we'll be deleting in the loop.

@@ -24,36 +24,36 @@ class HasherTest(CoverageTest):
         h2.update("Goodbye!")
         h3 = Hasher()
         h3.update("Hello, world!")
-        self.assertNotEqual(h1.hexdigest(), h2.hexdigest())
-        self.assertEqual(h1.hexdigest(), h3.hexdigest())
+        assert h1.hexdigest() != h2.hexdigest()
+        assert h1.hexdigest() == h3.hexdigest()
 
     def test_bytes_hashing(self):
         h1 = Hasher()
         h1.update(b"Hello, world!")
         h2 = Hasher()
         h2.update(b"Goodbye!")
-        self.assertNotEqual(h1.hexdigest(), h2.hexdigest())
+        assert h1.hexdigest() != h2.hexdigest()
 
     def test_unicode_hashing(self):
         h1 = Hasher()
         h1.update(u"Hello, world! \N{SNOWMAN}")
         h2 = Hasher()
         h2.update(u"Goodbye!")
-        self.assertNotEqual(h1.hexdigest(), h2.hexdigest())
+        assert h1.hexdigest() != h2.hexdigest()
 
     def test_dict_hashing(self):
         h1 = Hasher()
         h1.update({'a': 17, 'b': 23})
         h2 = Hasher()
         h2.update({'b': 23, 'a': 17})
-        self.assertEqual(h1.hexdigest(), h2.hexdigest())
+        assert h1.hexdigest() == h2.hexdigest()
 
     def test_dict_collision(self):
         h1 = Hasher()
         h1.update({'a': 17, 'b': {'c': 1, 'd': 2}})
         h2 = Hasher()
         h2.update({'a': 17, 'b': {'c': 1}, 'd': 2})
-        self.assertNotEqual(h1.hexdigest(), h2.hexdigest())
+        assert h1.hexdigest() != h2.hexdigest()
 
 
 class RemoveFileTest(CoverageTest):
@@ -72,7 +72,7 @@ class RemoveFileTest(CoverageTest):
     def test_actual_errors(self):
         # Errors can still happen.
         # ". is a directory" on Unix, or "Access denied" on Windows
-        with self.assertRaises(OSError):
+        with pytest.raises(OSError):
             file_be_gone(".")
 
 
