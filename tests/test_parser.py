@@ -5,13 +5,14 @@
 
 import textwrap
 
+import pytest
+
 from coverage import env
 from coverage.misc import NotPython
 from coverage.parser import PythonParser
 
 from tests.coveragetest import CoverageTest, xfail
 from tests.helpers import arcz_to_arcs
-import pytest
 
 
 class PythonParserTest(CoverageTest):

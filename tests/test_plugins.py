@@ -7,6 +7,8 @@ import inspect
 import os.path
 from xml.etree import ElementTree
 
+import pytest
+
 import coverage
 from coverage import env
 from coverage.backward import StringIO, import_local_file
@@ -18,7 +20,6 @@ import coverage.plugin
 
 from tests.coveragetest import CoverageTest
 from tests.helpers import CheckUniqueFilenames
-import pytest
 
 
 class FakeConfig(object):

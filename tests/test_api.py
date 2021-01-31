@@ -12,6 +12,7 @@ import shutil
 import sys
 import textwrap
 
+import pytest
 from unittest_mixins import change_dir
 
 import coverage
@@ -22,7 +23,6 @@ from coverage.files import abs_file, relative_filename
 from coverage.misc import CoverageException
 
 from tests.coveragetest import CoverageTest, CoverageTestMethodsMixin, TESTS_DIR, UsingModulesMixin
-import pytest
 
 
 class ApiTest(CoverageTest):

@@ -11,6 +11,8 @@ import os.path
 import re
 import sys
 
+import pytest
+
 from coverage import env
 from coverage.backward import binary_bytes
 from coverage.execfile import run_python_file, run_python_module
@@ -18,7 +20,6 @@ from coverage.files import python_reported_file
 from coverage.misc import NoCode, NoSource
 
 from tests.coveragetest import CoverageTest, TESTS_DIR, UsingModulesMixin
-import pytest
 
 TRY_EXECFILE = os.path.join(TESTS_DIR, "modules/process_test/try_execfile.py")
 

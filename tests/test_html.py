@@ -13,6 +13,7 @@ import re
 import sys
 
 import mock
+import pytest
 from unittest_mixins import change_dir
 
 import coverage
@@ -26,7 +27,6 @@ from coverage.report import get_analysis_to_report
 from tests.coveragetest import CoverageTest, TESTS_DIR
 from tests.goldtest import gold_path
 from tests.goldtest import compare, contains, doesnt_contain, contains_any
-import pytest
 
 
 class HtmlTestHelpers(CoverageTest):

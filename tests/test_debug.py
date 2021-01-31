@@ -4,6 +4,7 @@
 """Tests of coverage/debug.py"""
 
 import os
+import re
 
 import pytest
 
@@ -15,7 +16,6 @@ from coverage.env import C_TRACER
 
 from tests.coveragetest import CoverageTest
 from tests.helpers import re_line, re_lines
-import re
 
 
 class InfoFormatterTest(CoverageTest):

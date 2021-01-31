@@ -4,12 +4,13 @@
 
 """Tests for coverage.py."""
 
+import pytest
+
 import coverage
 from coverage import env
 from coverage.misc import CoverageException
 
 from tests.coveragetest import CoverageTest
-import pytest
 
 
 class TestCoverageTest(CoverageTest):

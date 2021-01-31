@@ -7,13 +7,14 @@ import os.path
 import re
 import textwrap
 
+import pytest
+
 from coverage import env
 from coverage.phystokens import source_token_lines, source_encoding
 from coverage.phystokens import neuter_encoding_declaration, compile_unicode
 from coverage.python import get_python_source
 
 from tests.coveragetest import CoverageTest, TESTS_DIR
-import pytest
 
 
 # A simple program and its token stream.

@@ -11,6 +11,7 @@ import sqlite3
 import threading
 
 import mock
+import pytest
 
 from coverage.data import CoverageData, combine_parallel_data
 from coverage.data import add_data_to_hash, line_counts
@@ -19,7 +20,6 @@ from coverage.files import PathAliases, canonical_filename
 from coverage.misc import CoverageException
 
 from tests.coveragetest import CoverageTest
-import pytest
 
 
 LINES_1 = {

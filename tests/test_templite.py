@@ -6,10 +6,11 @@
 
 import re
 
+import pytest
+
 from coverage.templite import Templite, TempliteSyntaxError, TempliteValueError
 
 from tests.coveragetest import CoverageTest
-import pytest
 
 # pylint: disable=possibly-unused-variable
 

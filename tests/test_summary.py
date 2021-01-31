@@ -10,6 +10,8 @@ import os.path
 import py_compile
 import re
 
+import pytest
+
 import coverage
 from coverage import env
 from coverage.backward import StringIO
@@ -19,7 +21,6 @@ from coverage.misc import CoverageException, output_encoding
 from coverage.summary import SummaryReporter
 
 from tests.coveragetest import CoverageTest, TESTS_DIR, UsingModulesMixin
-import pytest
 
 
 class SummaryTest(UsingModulesMixin, CoverageTest):

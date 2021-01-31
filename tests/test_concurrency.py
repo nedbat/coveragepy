@@ -6,6 +6,7 @@
 import glob
 import os
 import random
+import re
 import sys
 import threading
 import time
@@ -20,7 +21,6 @@ from coverage.files import abs_file
 
 from tests.coveragetest import CoverageTest
 from tests.helpers import remove_files
-import re
 
 
 # These libraries aren't always available, we'll skip tests if they aren't.

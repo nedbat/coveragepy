@@ -7,13 +7,13 @@
 from collections import OrderedDict
 
 import mock
+import pytest
 
 import coverage
 from coverage.misc import CoverageException
 
 from tests.coveragetest import CoverageTest, UsingModulesMixin
 from tests.helpers import without_module
-import pytest
 
 
 class ConfigTest(CoverageTest):
