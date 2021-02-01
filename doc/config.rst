@@ -319,7 +319,7 @@ missing lines.  See :ref:`cmd_report` for more information.
 
 ``sort`` (string, default "Name"): Sort the text report by the named column.
 Allowed values are "Name", "Stmts", "Miss", "Branch", "BrPart", or "Cover".
-Prefix with ``-`` for descending sort (e.g. "-cover").
+Prefix with ``-`` for descending sort (for example, "-cover").
 
 
 .. _config_html:

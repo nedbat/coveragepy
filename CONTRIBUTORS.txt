@@ -19,6 +19,7 @@ Anthony Sottile
 Arcadiy Ivanov
 Aron Griffis
 Artem Dayneko
+Arthur Deygin
 Ben Finney
 Bernát Gábor
 Bill Hart
