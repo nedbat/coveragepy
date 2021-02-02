@@ -193,33 +193,39 @@ class RunModuleTest(UsingModulesMixin, CoverageTest):
 
     def test_runmod1(self):
         run_python_module(["runmod1", "hello"])
-        assert self.stderr() == ""
-        assert self.stdout() == "runmod1: passed hello\n"
+        out, err = self.stdouterr()
+        assert out == "runmod1: passed hello\n"
+        assert err == ""
 
     def test_runmod2(self):
         run_python_module(["pkg1.runmod2", "hello"])
-        assert self.stderr() == ""
-        assert self.stdout() == "pkg1.__init__: pkg1\nrunmod2: passed hello\n"
+        out, err = self.stdouterr()
+        assert out == "pkg1.__init__: pkg1\nrunmod2: passed hello\n"
+        assert err == ""
 
     def test_runmod3(self):
         run_python_module(["pkg1.sub.runmod3", "hello"])
-        assert self.stderr() == ""
-        assert self.stdout() == "pkg1.__init__: pkg1\nrunmod3: passed hello\n"
+        out, err = self.stdouterr()
+        assert out == "pkg1.__init__: pkg1\nrunmod3: passed hello\n"
+        assert err == ""
 
     def test_pkg1_main(self):
         run_python_module(["pkg1", "hello"])
-        assert self.stderr() == ""
-        assert self.stdout() == "pkg1.__init__: pkg1\npkg1.__main__: passed hello\n"
+        out, err = self.stdouterr()
+        assert out == "pkg1.__init__: pkg1\npkg1.__main__: passed hello\n"
+        assert err == ""
 
     def test_pkg1_sub_main(self):
         run_python_module(["pkg1.sub", "hello"])
-        assert self.stderr() == ""
-        assert self.stdout() == "pkg1.__init__: pkg1\npkg1.sub.__main__: passed hello\n"
+        out, err = self.stdouterr()
+        assert out == "pkg1.__init__: pkg1\npkg1.sub.__main__: passed hello\n"
+        assert err == ""
 
     def test_pkg1_init(self):
         run_python_module(["pkg1.__init__", "wut?"])
-        assert self.stderr() == ""
-        assert self.stdout() == "pkg1.__init__: pkg1\npkg1.__init__: __main__\n"
+        out, err = self.stdouterr()
+        assert out == "pkg1.__init__: pkg1\npkg1.__init__: __main__\n"
+        assert err == ""
 
     def test_no_such_module(self):
         with pytest.raises(NoSource, match="No module named '?i_dont_exist'?"):

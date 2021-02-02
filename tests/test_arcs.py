@@ -1370,7 +1370,8 @@ class MiscArcTest(CoverageTest):
         # opcodes.
         # Note that we no longer interpret bytecode at all, but it couldn't
         # hurt to keep the test...
-        for n in [10, 50, 100, 500, 1000, 2000]:
+        sizes = [10, 50, 100, 500, 1000, 2000]
+        for n in sizes:
             code = """\
                 data = [
                 """ + "".join("""\
@@ -1383,7 +1384,7 @@ class MiscArcTest(CoverageTest):
                 print(len(data))
                 """
             self.check_coverage(code, arcs=[(-1, 1), (1, 2*n+4), (2*n+4, -1)])
-            assert self.stdout().split()[-1] == str(n)
+        assert self.stdout().split() == [str(n) for n in sizes]
 
     def test_partial_generators(self):
         # https://github.com/nedbat/coveragepy/issues/475
