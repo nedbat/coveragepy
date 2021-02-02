@@ -6,7 +6,6 @@
 import contextlib
 import datetime
 import difflib
-import functools
 import glob
 import os
 import os.path
@@ -14,20 +13,19 @@ import random
 import re
 import shlex
 import sys
-import types
 
 import pytest
 from unittest_mixins import EnvironmentAwareMixin, StdStreamCapturingMixin, TempDirMixin
 
 import coverage
 from coverage import env
-from coverage.backunittest import TestCase, unittest
+from coverage.backunittest import TestCase
 from coverage.backward import StringIO, import_local_file, string_class, shlex_quote
 from coverage.cmdline import CoverageScript
-from coverage.misc import StopEverything
 
 from tests.helpers import arcs_to_arcz_repr, arcz_to_arcs
 from tests.helpers import run_command, SuperModuleCleaner
+from tests.mixins import StopEverythingMixin
 
 
 # Status returns for the command line.
@@ -37,35 +35,11 @@ OK, ERR = 0, 1
 TESTS_DIR = os.path.dirname(__file__)
 
 
-def convert_skip_exceptions(method):
-    """A decorator for test methods to convert StopEverything to SkipTest."""
-    @functools.wraps(method)
-    def _wrapper(*args, **kwargs):
-        try:
-            result = method(*args, **kwargs)
-        except StopEverything:
-            raise unittest.SkipTest("StopEverything!")
-        return result
-    return _wrapper
-
-
-class SkipConvertingMetaclass(type):
-    """Decorate all test methods to convert StopEverything to SkipTest."""
-    def __new__(cls, name, bases, attrs):
-        for attr_name, attr_value in attrs.items():
-            if attr_name.startswith('test_') and isinstance(attr_value, types.FunctionType):
-                attrs[attr_name] = convert_skip_exceptions(attr_value)
-
-        return super(SkipConvertingMetaclass, cls).__new__(cls, name, bases, attrs)
-
-
-CoverageTestMethodsMixin = SkipConvertingMetaclass('CoverageTestMethodsMixin', (), {})
-
 class CoverageTest(
     EnvironmentAwareMixin,
     StdStreamCapturingMixin,
     TempDirMixin,
-    CoverageTestMethodsMixin,
+    StopEverythingMixin,
     TestCase,
 ):
     """A base class for coverage.py test cases."""
