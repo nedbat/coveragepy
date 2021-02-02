@@ -17,11 +17,12 @@ from coverage.backunittest import TestCase, unittest
 from coverage.files import actual_path
 from coverage.misc import StopEverything
 
-from tests.coveragetest import CoverageTest, convert_skip_exceptions
+from tests.coveragetest import CoverageTest
 from tests.helpers import (
     arcs_to_arcz_repr, arcz_to_arcs,
     CheckUniqueFilenames, re_lines, re_line, without_module,
 )
+from tests.mixins import convert_skip_exceptions
 
 
 def test_xdist_sys_path_nuttiness_is_fixed():

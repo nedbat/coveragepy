@@ -22,7 +22,7 @@ from coverage.data import line_counts
 from coverage.files import abs_file, relative_filename
 from coverage.misc import CoverageException
 
-from tests.coveragetest import CoverageTest, CoverageTestMethodsMixin, TESTS_DIR, UsingModulesMixin
+from tests.coveragetest import CoverageTest, StopEverythingMixin, TESTS_DIR, UsingModulesMixin
 
 
 class ApiTest(CoverageTest):
@@ -520,10 +520,8 @@ class ApiTest(CoverageTest):
         self.start_import_stop(cov, "hello")
         cov.get_data()
 
-        out = self.stdout()
+        out, err = self.stdouterr()
         assert "Hello\n" in out
-
-        err = self.stderr()
         assert textwrap.dedent("""\
             Coverage.py warning: Module sys has no Python source. (module-not-python)
             Coverage.py warning: Module xyzzy was never imported. (module-not-imported)
@@ -544,10 +542,8 @@ class ApiTest(CoverageTest):
         self.start_import_stop(cov, "hello")
         cov.get_data()
 
-        out = self.stdout()
+        out, err = self.stdouterr()
         assert "Hello\n" in out
-
-        err = self.stderr()
         assert "Coverage.py warning: Module sys has no Python source. (module-not-python)" in err
         assert "module-not-imported" not in err
         assert "no-data-collected" not in err
@@ -794,7 +790,7 @@ class NamespaceModuleTest(UsingModulesMixin, CoverageTest):
             cov.report()
 
 
-class IncludeOmitTestsMixin(UsingModulesMixin, CoverageTestMethodsMixin):
+class IncludeOmitTestsMixin(UsingModulesMixin, StopEverythingMixin):
     """Test methods for coverage methods taking include and omit."""
 
     # We don't write any source files, but the data file will collide with

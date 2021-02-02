@@ -545,8 +545,9 @@ class CmdLineTest(BaseCmdLineTest):
         # config file.
         self.command_line("run --concurrency=multiprocessing --branch foo.py", ret=ERR)
         msg = "Options affecting multiprocessing must only be specified in a configuration file."
-        assert msg in self.stderr()
-        assert "Remove --branch from the command line." in self.stderr()
+        _, err = self.stdouterr()
+        assert msg in err
+        assert "Remove --branch from the command line." in err
 
     def test_run_debug(self):
         self.cmd_executes("run --debug=opt1 foo.py", """\
@@ -915,8 +916,9 @@ class CmdMainTest(CoverageTest):
     def test_raise(self):
         ret = coverage.cmdline.main(['raise'])
         assert ret == 1
-        assert self.stdout() == ""
-        err = self.stderr().split('\n')
+        out, err = self.stdouterr()
+        assert out == ""
+        err = err.split('\n')
         assert err[0] == 'Traceback (most recent call last):'
         assert err[-3] == '    raise Exception("oh noes!")'
         assert err[-2] == 'Exception: oh noes!'
