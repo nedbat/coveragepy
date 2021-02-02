@@ -18,16 +18,8 @@ class TestCase(unittest.TestCase):
     `unittest` doesn't have them.
 
     """
-    # pylint: disable=signature-differs, deprecated-method
+    # pylint: disable=signature-differs
 
     if not unittest_has('assertCountEqual'):
         def assertCountEqual(self, *args, **kwargs):
             return self.assertItemsEqual(*args, **kwargs)
-
-    if not unittest_has('assertRaisesRegex'):
-        def assertRaisesRegex(self, *args, **kwargs):
-            return self.assertRaisesRegexp(*args, **kwargs)
-
-    if not unittest_has('assertRegex'):
-        def assertRegex(self, *args, **kwargs):
-            return self.assertRegexpMatches(*args, **kwargs)
