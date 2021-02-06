@@ -1568,7 +1568,6 @@ class ProcessStartupWithSourceTest(ProcessCoverageMixin, CoverageTest):
 
     """
 
-    @pytest.mark.skipif(env.METACOV, reason="Can't test sub-process pth file during metacoverage")
     def assert_pth_and_source_work_together(
         self, dashm, package, source
     ):
