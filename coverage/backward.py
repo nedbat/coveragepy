@@ -78,7 +78,9 @@ except ImportError:
 
 try:
     import reprlib
-except ImportError:
+except ImportError:             # pragma: part covered
+    # We need this on Python 2, but in testing environments, a backport is
+    # installed, so this import isn't used.
     import repr as reprlib
 
 # A function to iterate listlessly over a dict's items, and one to get the
