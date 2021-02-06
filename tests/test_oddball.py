@@ -493,11 +493,10 @@ class GettraceTest(CoverageTest):
         assert expected == out
 
     @pytest.mark.expensive
-    def test_atexit_gettrace(self):             # pragma: no metacov
+    @pytest.mark.skipif(env.METACOV, reason="Can't set trace functions during meta-coverage")
+    def test_atexit_gettrace(self):
         # This is not a test of coverage at all, but of our understanding
         # of this edge-case behavior in various Pythons.
-        if env.METACOV:
-            self.skipTest("Can't set trace functions during meta-coverage")
 
         self.make_file("atexit_gettrace.py", """\
             import atexit, sys
