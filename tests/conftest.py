@@ -82,7 +82,7 @@ def fix_xdist_sys_path():
     See: https://github.com/pytest-dev/pytest-xdist/issues/376
 
     """
-    if os.environ.get('PYTEST_XDIST_WORKER', ''):
+    if os.environ.get('PYTEST_XDIST_WORKER', ''):       # pragma: part covered
         # We are running in an xdist worker.
         if sys.path[1] == '':
             # xdist has set sys.path[1] to ''.  Clobber it.
