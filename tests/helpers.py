@@ -3,6 +3,7 @@
 
 """Helpers for coverage.py tests."""
 
+import collections
 import glob
 import os
 import re
@@ -222,3 +223,13 @@ def without_module(using_module, missing_module_name):
 
     """
     return mock.patch.object(using_module, missing_module_name, None)
+
+
+def assert_count_equal(a, b):
+    """
+    A pytest-friendly implementation of assertCountEqual.
+
+    Assert that `a` and `b` have the same elements, but maybe in different order.
+    This only works for hashable elements.
+    """
+    assert collections.Counter(list(a)) == collections.Counter(list(b))

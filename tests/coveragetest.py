@@ -13,17 +13,17 @@ import random
 import re
 import shlex
 import sys
+import unittest
 
 import pytest
 from unittest_mixins import EnvironmentAwareMixin, TempDirMixin
 
 import coverage
 from coverage import env
-from coverage.backunittest import TestCase
 from coverage.backward import StringIO, import_local_file, string_class, shlex_quote
 from coverage.cmdline import CoverageScript
 
-from tests.helpers import arcs_to_arcz_repr, arcz_to_arcs
+from tests.helpers import arcs_to_arcz_repr, arcz_to_arcs, assert_count_equal
 from tests.helpers import run_command, SuperModuleCleaner
 from tests.mixins import StdStreamCapturingMixin, StopEverythingMixin
 
@@ -40,7 +40,7 @@ class CoverageTest(
     StdStreamCapturingMixin,
     TempDirMixin,
     StopEverythingMixin,
-    TestCase,
+    unittest.TestCase,
 ):
     """A base class for coverage.py test cases."""
 
@@ -283,7 +283,7 @@ class CoverageTest(
         """Assert that `flist1` and `flist2` are the same set of file names."""
         flist1_nice = [self.nice_file(f) for f in flist1]
         flist2_nice = [self.nice_file(f) for f in flist2]
-        self.assertCountEqual(flist1_nice, flist2_nice)
+        assert_count_equal(flist1_nice, flist2_nice)
 
     def assert_exists(self, fname):
         """Assert that `fname` is a file that exists."""

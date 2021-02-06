@@ -23,6 +23,7 @@ from coverage.files import abs_file, relative_filename
 from coverage.misc import CoverageException
 
 from tests.coveragetest import CoverageTest, StopEverythingMixin, TESTS_DIR, UsingModulesMixin
+from tests.helpers import assert_count_equal
 
 
 class ApiTest(CoverageTest):
@@ -43,7 +44,7 @@ class ApiTest(CoverageTest):
         """Assert that the files here are `files`, ignoring the usual junk."""
         here = os.listdir(".")
         here = self.clean_files(here, ["*.pyc", "__pycache__", "*$py.class"])
-        self.assertCountEqual(here, files)
+        assert_count_equal(here, files)
 
     def test_unexecuted_file(self):
         cov = coverage.Coverage()

@@ -6,6 +6,7 @@
 import pytest
 
 from tests.coveragetest import CoverageTest
+from tests.helpers import assert_count_equal
 
 import coverage
 from coverage import env
@@ -1732,4 +1733,4 @@ class LineDataTest(CoverageTest):
 
         data = cov.get_data()
         fun1_lines = data.lines(abs_file("fun1.py"))
-        self.assertCountEqual(fun1_lines, [1, 2, 5])
+        assert_count_equal(fun1_lines, [1, 2, 5])

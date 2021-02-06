@@ -19,6 +19,7 @@ from coverage import env
 # Pytest will rewrite assertions in test modules, but not elsewhere.
 # This tells pytest to also rewrite assertions in coveragetest.py.
 pytest.register_assert_rewrite("tests.coveragetest")
+pytest.register_assert_rewrite("tests.helpers")
 
 # Pytest can take additional options:
 # $set_env.py: PYTEST_ADDOPTS - Extra arguments to pytest.

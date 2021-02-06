@@ -8,18 +8,18 @@ import datetime
 import os
 import re
 import sys
+import unittest
 
 import pytest
 
 import coverage
 from coverage import tomlconfig
-from coverage.backunittest import TestCase, unittest
 from coverage.files import actual_path
 from coverage.misc import StopEverything
 
 from tests.coveragetest import CoverageTest
 from tests.helpers import (
-    arcs_to_arcz_repr, arcz_to_arcs,
+    arcs_to_arcz_repr, arcz_to_arcs, assert_count_equal,
     CheckUniqueFilenames, re_lines, re_line, without_module,
 )
 from tests.mixins import convert_skip_exceptions
@@ -31,15 +31,13 @@ def test_xdist_sys_path_nuttiness_is_fixed():
     assert os.environ.get('PYTHONPATH') is None
 
 
-class TestingTest(TestCase):
-    """Tests of helper methods on `backunittest.TestCase`."""
-
-    def test_assert_count_equal(self):
-        self.assertCountEqual(set(), set())
-        with pytest.raises(AssertionError):
-            self.assertCountEqual({1,2,3}, set())
-        with pytest.raises(AssertionError):
-            self.assertCountEqual({1,2,3}, {4,5,6})
+def test_assert_count_equal():
+    assert_count_equal(set(), set())
+    assert_count_equal({"a": 1, "b": 2}, ["b", "a"])
+    with pytest.raises(AssertionError):
+        assert_count_equal({1,2,3}, set())
+    with pytest.raises(AssertionError):
+        assert_count_equal({1,2,3}, {4,5,6})
 
 
 class CoverageTestTest(CoverageTest):

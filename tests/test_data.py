@@ -20,6 +20,7 @@ from coverage.files import PathAliases, canonical_filename
 from coverage.misc import CoverageException
 
 from tests.coveragetest import CoverageTest
+from tests.helpers import assert_count_equal
 
 
 LINES_1 = {
@@ -82,23 +83,23 @@ class DataTestHelpers(CoverageTest):
 
     def assert_measured_files(self, covdata, measured):
         """Check that `covdata`'s measured files are `measured`."""
-        self.assertCountEqual(covdata.measured_files(), measured)
+        assert_count_equal(covdata.measured_files(), measured)
 
     def assert_lines1_data(self, covdata):
         """Check that `covdata` has the data from LINES1."""
         self.assert_line_counts(covdata, SUMMARY_1)
         self.assert_measured_files(covdata, MEASURED_FILES_1)
-        self.assertCountEqual(covdata.lines("a.py"), A_PY_LINES_1)
+        assert_count_equal(covdata.lines("a.py"), A_PY_LINES_1)
         assert not covdata.has_arcs()
 
     def assert_arcs3_data(self, covdata):
         """Check that `covdata` has the data from ARCS3."""
         self.assert_line_counts(covdata, SUMMARY_3)
         self.assert_measured_files(covdata, MEASURED_FILES_3)
-        self.assertCountEqual(covdata.lines("x.py"), X_PY_LINES_3)
-        self.assertCountEqual(covdata.arcs("x.py"), X_PY_ARCS_3)
-        self.assertCountEqual(covdata.lines("y.py"), Y_PY_LINES_3)
-        self.assertCountEqual(covdata.arcs("y.py"), Y_PY_ARCS_3)
+        assert_count_equal(covdata.lines("x.py"), X_PY_LINES_3)
+        assert_count_equal(covdata.arcs("x.py"), X_PY_ARCS_3)
+        assert_count_equal(covdata.lines("y.py"), Y_PY_LINES_3)
+        assert_count_equal(covdata.arcs("y.py"), Y_PY_ARCS_3)
         assert covdata.has_arcs()
 
 
