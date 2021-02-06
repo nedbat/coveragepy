@@ -618,10 +618,9 @@ class ProcessTest(CoverageTest):
         assert "warning" not in out
         assert "Exception" not in out
 
+    @pytest.mark.skipif(env.METACOV, reason="Can't test tracers changing during metacoverage")
     def test_warnings_trace_function_changed_with_threads(self):
         # https://github.com/nedbat/coveragepy/issues/164
-        if env.METACOV:
-            self.skipTest("Can't test tracers changing during metacoverage")
 
         self.make_file("bug164.py", """\
             import threading
@@ -653,6 +652,9 @@ class ProcessTest(CoverageTest):
 
         assert "Trace function changed" in out
 
+    # When meta-coverage testing, this test doesn't work, because it finds
+    # coverage.py's own trace function.
+    @pytest.mark.skipif(env.METACOV, reason="Can't test timid during coverage measurement.")
     def test_timid(self):
         # Test that the --timid command line argument properly swaps the tracer
         # function for a simpler one.
@@ -662,11 +664,6 @@ class ProcessTest(CoverageTest):
         # it, to also test the Python trace function.  So this test has to examine
         # an environment variable set in igor.py to know whether to expect to see
         # the C trace function or not.
-
-        # When meta-coverage testing, this test doesn't work, because it finds
-        # coverage.py's own trace function.
-        if os.environ.get('COVERAGE_COVERAGE', ''):
-            self.skipTest("Can't test timid during coverage measurement.")
 
         self.make_file("showtrace.py", """\
             # Show the current frame's trace function, so that we can test what the
@@ -737,11 +734,12 @@ class ProcessTest(CoverageTest):
         assert msg in out
 
     @pytest.mark.expensive
-    def test_fullcoverage(self):                        # pragma: no metacov
+    @pytest.mark.skipif(env.METACOV, reason="Can't test fullcoverage when measuring ourselves")
+    def test_fullcoverage(self):
         if env.PY2:             # This doesn't work on Python 2.
             self.skipTest("fullcoverage doesn't work on Python 2.")
-        # It only works with the C tracer, and if we aren't measuring ourselves.
-        if not env.C_TRACER or env.METACOV:
+        # It only works with the C tracer.
+        if not env.C_TRACER:
             self.skipTest("fullcoverage only works with the C tracer.")
 
         # fullcoverage is a trick to get stdlib modules measured from
@@ -1482,6 +1480,7 @@ class ProcessCoverageMixin(object):
         self.addCleanup(persistent_remove, self.pth_path)
 
 
+@pytest.mark.skipif(env.METACOV, reason="Can't test sub-process pth file during metacoverage")
 class ProcessStartupTest(ProcessCoverageMixin, CoverageTest):
     """Test that we can measure coverage in sub-processes."""
 
@@ -1501,10 +1500,7 @@ class ProcessStartupTest(ProcessCoverageMixin, CoverageTest):
             f.close()
             """)
 
-    def test_subprocess_with_pth_files(self):           # pragma: no metacov
-        if env.METACOV:
-            self.skipTest("Can't test sub-process pth file suppport during metacoverage")
-
+    def test_subprocess_with_pth_files(self):
         # An existing data file should not be read when a subprocess gets
         # measured automatically.  Create the data file here with bogus data in
         # it.
@@ -1528,11 +1524,8 @@ class ProcessStartupTest(ProcessCoverageMixin, CoverageTest):
         data.read()
         assert line_counts(data)['sub.py'] == 3
 
-    def test_subprocess_with_pth_files_and_parallel(self):  # pragma: no metacov
+    def test_subprocess_with_pth_files_and_parallel(self):
         # https://github.com/nedbat/coveragepy/issues/492
-        if env.METACOV:
-            self.skipTest("Can't test sub-process pth file suppport during metacoverage")
-
         self.make_file("coverage.ini", """\
             [run]
             parallel = true
@@ -1575,9 +1568,10 @@ class ProcessStartupWithSourceTest(ProcessCoverageMixin, CoverageTest):
 
     """
 
+    @pytest.mark.skipif(env.METACOV, reason="Can't test sub-process pth file during metacoverage")
     def assert_pth_and_source_work_together(
         self, dashm, package, source
-    ):                                                  # pragma: no metacov
+    ):
         """Run the test for a particular combination of factors.
 
         The arguments are all strings:
@@ -1592,9 +1586,6 @@ class ProcessStartupWithSourceTest(ProcessCoverageMixin, CoverageTest):
           ``--source`` argument.
 
         """
-        if env.METACOV:
-            self.skipTest("Can't test sub-process pth file support during metacoverage")
-
         def fullname(modname):
             """What is the full module name for `modname` for this test?"""
             if package and dashm:
