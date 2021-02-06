@@ -9,10 +9,10 @@ Some of these are transitional while working toward pure-pytest style.
 
 import functools
 import types
+import unittest
 
 import pytest
 
-from coverage.backunittest import unittest
 from coverage.misc import StopEverything
 
 

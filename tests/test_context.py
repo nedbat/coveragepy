@@ -12,6 +12,7 @@ from coverage.context import qualname_from_frame
 from coverage.data import CoverageData
 
 from tests.coveragetest import CoverageTest
+from tests.helpers import assert_count_equal
 
 
 class StaticContextTest(CoverageTest):
@@ -22,14 +23,14 @@ class StaticContextTest(CoverageTest):
         cov = coverage.Coverage()
         self.start_import_stop(cov, "main")
         data = cov.get_data()
-        self.assertCountEqual(data.measured_contexts(), [""])
+        assert_count_equal(data.measured_contexts(), [""])
 
     def test_static_context(self):
         self.make_file("main.py", "a = 1")
         cov = coverage.Coverage(context="gooey")
         self.start_import_stop(cov, "main")
         data = cov.get_data()
-        self.assertCountEqual(data.measured_contexts(), ["gooey"])
+        assert_count_equal(data.measured_contexts(), ["gooey"])
 
     SOURCE = """\
         a = 1
@@ -67,7 +68,7 @@ class StaticContextTest(CoverageTest):
             assert combined.measured_contexts() == {'red', 'blue'}
 
             full_names = {os.path.basename(f): f for f in combined.measured_files()}
-            self.assertCountEqual(full_names, ['red.py', 'blue.py'])
+            assert_count_equal(full_names, ['red.py', 'blue.py'])
 
             fred = full_names['red.py']
             fblue = full_names['blue.py']
@@ -92,7 +93,7 @@ class StaticContextTest(CoverageTest):
             assert combined.measured_contexts() == {'red', 'blue'}
 
             full_names = {os.path.basename(f): f for f in combined.measured_files()}
-            self.assertCountEqual(full_names, ['red.py', 'blue.py'])
+            assert_count_equal(full_names, ['red.py', 'blue.py'])
 
             fred = full_names['red.py']
             fblue = full_names['blue.py']
@@ -157,13 +158,14 @@ class DynamicContextTest(CoverageTest):
 
         full_names = {os.path.basename(f): f for f in data.measured_files()}
         fname = full_names["two_tests.py"]
-        self.assertCountEqual(
+        assert_count_equal(
             data.measured_contexts(),
-            ["", "two_tests.test_one", "two_tests.test_two"])
+            ["", "two_tests.test_one", "two_tests.test_two"]
+        )
 
         def assert_context_lines(context, lines):
             data.set_query_context(context)
-            self.assertCountEqual(lines, data.lines(fname))
+            assert_count_equal(lines, data.lines(fname))
 
         assert_context_lines("", self.OUTER_LINES)
         assert_context_lines("two_tests.test_one", self.TEST_ONE_LINES)
@@ -178,13 +180,14 @@ class DynamicContextTest(CoverageTest):
 
         full_names = {os.path.basename(f): f for f in data.measured_files()}
         fname = full_names["two_tests.py"]
-        self.assertCountEqual(
+        assert_count_equal(
             data.measured_contexts(),
-            ["stat", "stat|two_tests.test_one", "stat|two_tests.test_two"])
+            ["stat", "stat|two_tests.test_one", "stat|two_tests.test_two"]
+        )
 
         def assert_context_lines(context, lines):
             data.set_query_context(context)
-            self.assertCountEqual(lines, data.lines(fname))
+            assert_count_equal(lines, data.lines(fname))
 
         assert_context_lines("stat", self.OUTER_LINES)
         assert_context_lines("stat|two_tests.test_one", self.TEST_ONE_LINES)
