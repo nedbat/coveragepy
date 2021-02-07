@@ -816,10 +816,9 @@ class CmdLineStdoutTest(BaseCmdLineTest):
             assert "without C extension" in out
         assert out.count("\n") < 4
 
+    @pytest.mark.skipif(env.JYTHON, reason="Jython gets mad if you patch sys.argv")
     def test_help_contains_command_name(self):
         # Command name should be present in help output.
-        if env.JYTHON:
-            self.skipTest("Jython gets mad if you patch sys.argv")
         fake_command_path = "lorem/ipsum/dolor".replace("/", os.sep)
         expected_command_name = "dolor"
         fake_argv = [fake_command_path, "sit", "amet"]
@@ -828,6 +827,7 @@ class CmdLineStdoutTest(BaseCmdLineTest):
         out = self.stdout()
         assert expected_command_name in out
 
+    @pytest.mark.skipif(env.JYTHON, reason="Jython gets mad if you patch sys.argv")
     def test_help_contains_command_name_from_package(self):
         # Command package name should be present in help output.
         #
@@ -835,8 +835,6 @@ class CmdLineStdoutTest(BaseCmdLineTest):
         # has the `__main__.py` file's patch as the command name. Instead, the command name should
         # be derived from the package name.
 
-        if env.JYTHON:
-            self.skipTest("Jython gets mad if you patch sys.argv")
         fake_command_path = "lorem/ipsum/dolor/__main__.py".replace("/", os.sep)
         expected_command_name = "dolor"
         fake_argv = [fake_command_path, "sit", "amet"]

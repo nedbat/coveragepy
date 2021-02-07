@@ -564,10 +564,8 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         errmsg = re.sub(r": '.*' at", ": 'error' at", errmsg)
         assert errmsg == "Couldn't parse 'mycode.py' as Python source: 'error' at line 1"
 
+    @pytest.mark.skipif(env.JYTHON, reason="Jython doesn't like accented file names")
     def test_accenteddotpy_not_python(self):
-        if env.JYTHON:
-            self.skipTest("Jython doesn't like accented file names")
-
         # We run a .py file with a non-ascii name, and when reporting, we can't
         # parse it as Python.  We should get an error message in the report.
 
@@ -709,10 +707,8 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         assert "TheCode" in report
         assert "thecode" not in report
 
+    @pytest.mark.skipif(not env.WINDOWS, reason=".pyw files are only on Windows.")
     def test_pyw_files(self):
-        if not env.WINDOWS:
-            self.skipTest(".pyw files are only on Windows.")
-
         # https://github.com/nedbat/coveragepy/issues/261
         self.make_file("start.pyw", """\
             import mod
@@ -749,11 +745,8 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         report = self.get_report(cov).splitlines()
         assert "mod.py 1 0 100%" in report
 
+    @pytest.mark.skipif(env.PYPY2, reason="PyPy2 doesn't run bare .pyc files")
     def test_missing_py_file_during_run(self):
-        # PyPy2 doesn't run bare .pyc files.
-        if env.PYPY2:
-            self.skipTest("PyPy2 doesn't run bare .pyc files")
-
         # Create two Python files.
         self.make_file("mod.py", "a = 1\n")
         self.make_file("main.py", "import mod\n")

@@ -1085,9 +1085,10 @@ class YieldTest(CoverageTest):
         )
         assert self.stdout() == "20\n12\n"
 
+    @pytest.mark.skipif(not env.PYBEHAVIOR.yield_from,
+        reason="Python before 3.3 doesn't have 'yield from'"
+    )
     def test_yield_from(self):
-        if not env.PYBEHAVIOR.yield_from:
-            self.skipTest("Python before 3.3 doesn't have 'yield from'")
         self.check_coverage("""\
             def gen(inp):
                 i = 2
@@ -1332,9 +1333,10 @@ class MiscArcTest(CoverageTest):
             arcz=".1 19 9.",
         )
 
+    @pytest.mark.skipif(not env.PYBEHAVIOR.unpackings_pep448,
+        reason="Don't have unpacked literals until 3.5"
+    )
     def test_unpacked_literals(self):
-        if not env.PYBEHAVIOR.unpackings_pep448:
-            self.skipTest("Don't have unpacked literals until 3.5")
         self.check_coverage("""\
             d = {
                 'a': 2,
@@ -1581,13 +1583,9 @@ class LambdaArcTest(CoverageTest):
         )
 
 
+@pytest.mark.skipif(not env.PYBEHAVIOR.async_syntax, reason="Async features are new in Python 3.5")
 class AsyncTest(CoverageTest):
     """Tests of the new async and await keywords in Python 3.5"""
-
-    def setUp(self):
-        if not env.PYBEHAVIOR.async_syntax:
-            self.skipTest("Async features are new in Python 3.5")
-        super(AsyncTest, self).setUp()
 
     def test_async(self):
         self.check_coverage("""\

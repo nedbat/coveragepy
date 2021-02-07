@@ -132,11 +132,9 @@ class SourceEncodingTest(CoverageTest):
         for _, source, expected in ENCODING_DECLARATION_SOURCES:
             assert source_encoding(source) == expected, "Wrong encoding in %r" % source
 
+    # PyPy3 gets this case wrong. Not sure what I can do about it, so skip the test.
+    @pytest.mark.skipif(env.PYPY3, reason="PyPy3 is wrong about non-comment encoding. Skip it.")
     def test_detect_source_encoding_not_in_comment(self):
-        if env.PYPY3:           # pragma: no metacov
-            # PyPy3 gets this case wrong. Not sure what I can do about it,
-            # so skip the test.
-            self.skipTest("PyPy3 is wrong about non-comment encoding. Skip it.")
         # Should not detect anything here
         source = b'def parse(src, encoding=None):\n    pass'
         assert source_encoding(source) == DEF_ENCODING

@@ -145,10 +145,8 @@ class MemoryLeakTest(CoverageTest):
 
     """
     @flaky
+    @pytest.mark.skipif(env.JYTHON, reason="Don't bother on Jython")
     def test_for_leaks(self):
-        if env.JYTHON:
-            self.skipTest("Don't bother on Jython")
-
         # Our original bad memory leak only happened on line numbers > 255, so
         # make a code object with more lines than that.  Ugly string mumbo
         # jumbo to get 300 blank lines at the beginning..
@@ -194,11 +192,10 @@ class MemoryLeakTest(CoverageTest):
 class MemoryFumblingTest(CoverageTest):
     """Test that we properly manage the None refcount."""
 
+    @pytest.mark.skipif(not env.C_TRACER, reason="Only the C tracer has refcounting issues")
     def test_dropping_none(self):                           # pragma: not covered
-        if not env.C_TRACER:
-            self.skipTest("Only the C tracer has refcounting issues")
         # TODO: Mark this so it will only be run sometimes.
-        self.skipTest("This is too expensive for now (30s)")
+        pytest.skip("This is too expensive for now (30s)")
         # Start and stop coverage thousands of times to flush out bad
         # reference counting, maybe.
         self.make_file("the_code.py", """\
@@ -227,13 +224,11 @@ class MemoryFumblingTest(CoverageTest):
         assert "Fatal" not in out
 
 
+@pytest.mark.skipif(env.JYTHON, reason="Pyexpat isn't a problem on Jython")
 class PyexpatTest(CoverageTest):
     """Pyexpat screws up tracing. Make sure we've counter-defended properly."""
 
     def test_pyexpat(self):
-        if env.JYTHON:
-            self.skipTest("Pyexpat isn't a problem on Jython")
-
         # pyexpat calls the trace function explicitly (inexplicably), and does
         # it wrong for exceptions.  Parsing a DOCTYPE for some reason throws
         # an exception internally, and triggers its wrong behavior.  This test
@@ -555,10 +550,9 @@ class ExecTest(CoverageTest):
         assert statements == [31]
         assert missing == []
 
+    @pytest.mark.skipif(env.PY2, reason="Python 2 can't seem to compile the file.")
     def test_unencodable_filename(self):
         # https://github.com/nedbat/coveragepy/issues/891
-        if env.PYVERSION < (3, 0):
-            self.skipTest("Python 2 can't seem to compile the file.")
         self.make_file("bug891.py", r"""exec(compile("pass", "\udcff.py", "exec"))""")
         cov = coverage.Coverage()
         self.start_import_stop(cov, "bug891")

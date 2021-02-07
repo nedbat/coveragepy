@@ -396,15 +396,11 @@ class FindPythonFilesTest(CoverageTest):
             ])
 
 
+@pytest.mark.skipif(not env.WINDOWS, reason="Only need to run Windows tests on Windows.")
 class WindowsFileTest(CoverageTest):
     """Windows-specific tests of file name handling."""
 
     run_in_temp_dir = False
-
-    def setUp(self):
-        if not env.WINDOWS:
-            self.skipTest("Only need to run Windows tests on Windows.")
-        super(WindowsFileTest, self).setUp()
 
     def test_actual_path(self):
         assert actual_path(r'c:\Windows') == actual_path(r'C:\wINDOWS')
