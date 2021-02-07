@@ -217,9 +217,6 @@ except ImportError:
             items = ("{}={!r}".format(k, self.__dict__[k]) for k in keys)
             return "{}({})".format(type(self).__name__, ", ".join(items))
 
-        def __eq__(self, other):
-            return self.__dict__ == other.__dict__
-
 
 def format_local_datetime(dt):
     """Return a string with local timezone representing the date.
