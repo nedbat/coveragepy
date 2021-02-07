@@ -76,15 +76,11 @@ class RemoveFileTest(CoverageTest):
             file_be_gone(".")
 
 
+@pytest.mark.skipif(not USE_CONTRACTS, reason="Contracts are disabled, can't test them")
 class ContractTest(CoverageTest):
     """Tests of our contract decorators."""
 
     run_in_temp_dir = False
-
-    def setUp(self):
-        super(ContractTest, self).setUp()
-        if not USE_CONTRACTS:
-            self.skipTest("Contracts are disabled")
 
     def test_bytes(self):
         @contract(text='bytes|None')
