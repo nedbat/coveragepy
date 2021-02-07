@@ -533,10 +533,8 @@ class ProcessTest(CoverageTest):
         assert status == status2
         assert status == 0
 
+    @pytest.mark.skipif(not hasattr(os, "fork"), reason="Can't test os.fork, it doesn't exist.")
     def test_fork(self):
-        if not hasattr(os, 'fork'):
-            self.skipTest("Can't test os.fork since it doesn't exist.")
-
         self.make_file("fork.py", """\
             import os
 
@@ -735,13 +733,9 @@ class ProcessTest(CoverageTest):
 
     @pytest.mark.expensive
     @pytest.mark.skipif(env.METACOV, reason="Can't test fullcoverage when measuring ourselves")
+    @pytest.mark.skipif(env.PY2, reason="fullcoverage doesn't work on Python 2.")
+    @pytest.mark.skipif(not env.C_TRACER, reason="fullcoverage only works with the C tracer.")
     def test_fullcoverage(self):
-        if env.PY2:             # This doesn't work on Python 2.
-            self.skipTest("fullcoverage doesn't work on Python 2.")
-        # It only works with the C tracer.
-        if not env.C_TRACER:
-            self.skipTest("fullcoverage only works with the C tracer.")
-
         # fullcoverage is a trick to get stdlib modules measured from
         # the very beginning of the process. Here we import os and
         # then check how many lines are measured.
@@ -768,10 +762,9 @@ class ProcessTest(CoverageTest):
         env.PYPY3 and (env.PYPYVERSION >= (7, 1, 1)),
         "https://bitbucket.org/pypy/pypy/issues/3074"
     )
+    # Jython as of 2.7.1rc3 won't compile a filename that isn't utf8.
+    @pytest.mark.skipif(env.JYTHON, reason="Jython can't handle this test")
     def test_lang_c(self):
-        if env.JYTHON:
-            # Jython as of 2.7.1rc3 won't compile a filename that isn't utf8.
-            self.skipTest("Jython can't handle this test")
         # LANG=C forces getfilesystemencoding on Linux to 'ascii', which causes
         # failures with non-ascii file names. We don't want to make a real file
         # with strange characters, though, because that gets the test runners
@@ -881,9 +874,10 @@ class EnvironmentTest(CoverageTest):
         actual = self.run_command("coverage run -m process_test.try_execfile")
         self.assert_tryexecfile_output(expected, actual)
 
+    @pytest.mark.skipif(env.PYVERSION == (3, 5, 4, 'final', 0, 0),
+        reason="3.5.4 broke this: https://bugs.python.org/issue32551"
+    )
     def test_coverage_run_dir_is_like_python_dir(self):
-        if env.PYVERSION == (3, 5, 4, 'final', 0, 0):   # pragma: obscure
-            self.skipTest("3.5.4 broke this: https://bugs.python.org/issue32551")
         with open(TRY_EXECFILE) as f:
             self.make_file("with_main/__main__.py", f.read())
 
@@ -911,9 +905,10 @@ class EnvironmentTest(CoverageTest):
         else:
             self.assert_tryexecfile_output(expected, actual)
 
+    @pytest.mark.skipif(env.PY2,
+        reason="Python 2 runs __main__ twice, I can't be bothered to make it work."
+    )
     def test_coverage_run_dashm_dir_with_init_is_like_python(self):
-        if env.PY2:
-            self.skipTest("Python 2 runs __main__ twice, I can't be bothered to make it work.")
         with open(TRY_EXECFILE) as f:
             self.make_file("with_main/__main__.py", f.read())
         self.make_file("with_main/__init__.py", "")
@@ -1040,9 +1035,8 @@ class EnvironmentTest(CoverageTest):
         out = self.run_command("python -m run_coverage run how_is_it.py")
         assert "hello-xyzzy" in out
 
+    @pytest.mark.skipif(env.WINDOWS, reason="Windows can't make symlinks")
     def test_bug_862(self):
-        if env.WINDOWS:
-            self.skipTest("Windows can't make symlinks")
         # This simulates how pyenv and pyenv-virtualenv end up creating the
         # coverage executable.
         self.make_file("elsewhere/bin/fake-coverage", """\
@@ -1118,9 +1112,10 @@ class ExcepthookTest(CoverageTest):
         data.read()
         assert line_counts(data)['excepthook.py'] == 7
 
+    @pytest.mark.skipif(not env.CPYTHON,
+        reason="non-CPython handles excepthook exits differently, punt for now."
+    )
     def test_excepthook_exit(self):
-        if not env.CPYTHON:
-            self.skipTest("non-CPython handles excepthook exits differently, punt for now.")
         self.make_file("excepthook_exit.py", """\
             import sys
 
@@ -1140,9 +1135,8 @@ class ExcepthookTest(CoverageTest):
         assert "in excepthook" in py_out
         assert cov_out == py_out
 
+    @pytest.mark.skipif(env.PYPY, reason="PyPy handles excepthook throws differently.")
     def test_excepthook_throw(self):
-        if env.PYPY:
-            self.skipTest("PyPy handles excepthook throws differently, punt for now.")
         self.make_file("excepthook_throw.py", """\
             import sys
 
@@ -1167,15 +1161,11 @@ class ExcepthookTest(CoverageTest):
         assert cov_out == py_out
 
 
+@pytest.mark.skipif(env.JYTHON, reason="Coverage command names don't work on Jython")
 class AliasedCommandTest(CoverageTest):
     """Tests of the version-specific command aliases."""
 
     run_in_temp_dir = False
-
-    def setUp(self):
-        if env.JYTHON:
-            self.skipTest("Coverage command names don't work on Jython")
-        super(AliasedCommandTest, self).setUp()
 
     def test_major_version_works(self):
         # "coverage2" works on py2
@@ -1289,13 +1279,9 @@ class FailUnderEmptyFilesTest(CoverageTest):
         assert st == 2
 
 
+@pytest.mark.skipif(env.JYTHON, reason="Jython doesn't like accented file names")
 class UnicodeFilePathsTest(CoverageTest):
     """Tests of using non-ascii characters in the names of files."""
-
-    def setUp(self):
-        if env.JYTHON:
-            self.skipTest("Jython doesn't like accented file names")
-        super(UnicodeFilePathsTest, self).setUp()
 
     def test_accented_dot_py(self):
         # Make a file with a non-ascii character in the filename.
@@ -1380,13 +1366,9 @@ class UnicodeFilePathsTest(CoverageTest):
         assert out == report_expected
 
 
+@pytest.mark.skipif(env.WINDOWS, reason="Windows can't delete the directory in use.")
 class YankedDirectoryTest(CoverageTest):
     """Tests of what happens when the current directory is deleted."""
-
-    def setUp(self):
-        if env.WINDOWS:
-            self.skipTest("Windows can't delete the directory in use.")
-        super(YankedDirectoryTest, self).setUp()
 
     BUG_806 = """\
         import os

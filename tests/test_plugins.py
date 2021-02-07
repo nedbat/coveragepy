@@ -256,12 +256,10 @@ class PluginTest(CoverageTest):
         assert out == ""
 
 
+@pytest.mark.skipif(env.C_TRACER, reason="This test is only about PyTracer.")
 class PluginWarningOnPyTracer(CoverageTest):
     """Test that we get a controlled exception with plugins on PyTracer."""
     def test_exception_if_plugins_on_pytracer(self):
-        if env.C_TRACER:
-            self.skipTest("This test is only about PyTracer.")
-
         self.make_file("simple.py", "a = 1")
 
         cov = coverage.Coverage()
@@ -274,13 +272,9 @@ class PluginWarningOnPyTracer(CoverageTest):
             self.start_import_stop(cov, "simple")
 
 
+@pytest.mark.skipif(not env.C_TRACER, reason="Plugins are only supported with the C tracer.")
 class FileTracerTest(CoverageTest):
     """Tests of plugins that implement file_tracer."""
-
-    def setUp(self):
-        if not env.C_TRACER:
-            self.skipTest("Plugins are only supported with the C tracer.")
-        super(FileTracerTest, self).setUp()
 
 
 class GoodFileTracerTest(FileTracerTest):

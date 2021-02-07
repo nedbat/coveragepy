@@ -389,7 +389,7 @@ class CoverageTest(
             if env.JYTHON:                  # pragma: only jython
                 # Jython can't do reporting, so let's skip the test now.
                 if command_args and command_args[0] in ('report', 'html', 'xml', 'annotate'):
-                    self.skipTest("Can't run reporting commands in Jython")
+                    pytest.skip("Can't run reporting commands in Jython")
                 # Jython can't run "coverage" as a command because the shebang
                 # refers to another shebang'd Python script. So run them as
                 # modules.

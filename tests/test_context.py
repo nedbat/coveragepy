@@ -6,6 +6,8 @@
 import inspect
 import os.path
 
+import pytest
+
 import coverage
 from coverage import env
 from coverage.context import qualname_from_frame
@@ -279,9 +281,8 @@ class QualnameTest(CoverageTest):
         c.meth = patch_meth
         assert c.meth(c) == "tests.test_context.patch_meth"
 
+    @pytest.mark.skipif(not env.PY2, reason="Old-style classes are only in Python 2")
     def test_oldstyle(self):
-        if not env.PY2:
-            self.skipTest("Old-style classes are only in Python 2")
         assert OldStyle().meth() == "tests.test_context.OldStyle.meth"
         assert OldChild().meth() == "tests.test_context.OldStyle.meth"
 

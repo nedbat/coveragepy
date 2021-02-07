@@ -12,6 +12,7 @@ import threading
 import time
 
 from flaky import flaky
+import pytest
 
 import coverage
 from coverage import env
@@ -363,14 +364,10 @@ MULTI_CODE = """
     """
 
 
+@pytest.mark.skipif(not multiprocessing, reason="No multiprocessing in this Python")
 @flaky(max_runs=30)         # Sometimes a test fails due to inherent randomness. Try more times.
 class MultiprocessingTest(CoverageTest):
     """Test support of the multiprocessing module."""
-
-    def setUp(self):
-        if not multiprocessing:
-            self.skipTest("No multiprocessing in this Python")      # pragma: only jython
-        super(MultiprocessingTest, self).setUp()
 
     def try_multiprocessing_code(
         self, code, expected_out, the_module, nprocs, concurrency="multiprocessing", args=""
