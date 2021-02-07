@@ -9,10 +9,10 @@ import re
 import pytest
 
 import coverage
+from coverage import env
 from coverage.backward import StringIO
 from coverage.debug import filter_text, info_formatter, info_header, short_id, short_stack
 from coverage.debug import clipped_repr
-from coverage.env import C_TRACER
 
 from tests.coveragetest import CoverageTest
 from tests.helpers import re_line, re_lines
@@ -195,7 +195,7 @@ class DebugTraceTest(CoverageTest):
     def test_debug_sys_ctracer(self):
         out_lines = self.f1_debug_output(["sys"])
         tracer_line = re_line(out_lines, r"CTracer:").strip()
-        if C_TRACER:
+        if env.C_TRACER:
             expected = "CTracer: available"
         else:
             expected = "CTracer: unavailable"
