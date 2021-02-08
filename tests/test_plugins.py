@@ -607,6 +607,44 @@ class GoodFileTracerTest(FileTracerTest):
             cov.analysis("fictional.py")
 
 
+    def test_omitted_traced_plugin_deps_dont_warn(self):
+        self.make_file("traces_own_deps_plugin.py", """\
+            from coverage.plugin import CoveragePlugin, FileTracer
+            import local_module
+
+            class MyPlugin(CoveragePlugin,FileTracer):
+                def file_tracer(self, filename):
+                    if 'local_module' in filename:
+                        return self
+                    return None
+
+                def has_dynamic_source_filename(self):
+                    return True
+
+                def dynamic_source_filename(self, filename, frame):
+                    return filename
+
+            def coverage_init(reg, options):
+                reg.add_file_tracer(MyPlugin())
+            """)
+        self.make_file("local_module.py", "CONST = 1")
+        self.make_file(".coveragerc", """\
+            [run]
+            plugins = traces_own_deps_plugin
+            omit=local_module.py,traces_own_deps_plugin.py
+            source=.
+            """)
+        self.make_file("main_file.py", """\
+            import local_module
+            print('MAIN')
+        """)
+
+        out = self.run_command("coverage run main_file.py")
+        self.assertEqual(out, "MAIN\n")
+        out = self.run_command("coverage html")
+        self.assertEqual(out, "")
+
+
 class BadFileTracerTest(FileTracerTest):
     """Test error handling around file tracer plugins."""
 
