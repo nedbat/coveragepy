@@ -385,8 +385,8 @@ class InOrOut(object):
                     continue
 
                 file_path = canonical_filename(filename)
-                # if self.omit_match and self.omit_match.match(file_path):
-                #     continue
+                if self.omit_match and self.omit_match.match(file_path):
+                    continue
 
                 disp = self.should_trace(filename)
                 if disp.trace:
