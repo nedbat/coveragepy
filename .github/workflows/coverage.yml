@@ -120,6 +120,11 @@ jobs:
           name: html_report
           path: htmlcov
 
+      - name: Get information for URL
+        id: info
+        run: |
+          echo "::set-output name=slug::$(date +'%Y%m%d')_$(echo ${{github.sha}} | cut -c 1-12)"
+
       - name: Pushes to another repository
         uses: sebastian-palma/github-action-push-to-another-repository@allow-creating-destination-directory
         env:
@@ -128,7 +133,7 @@ jobs:
           source-directory: 'htmlcov'
           destination-github-username: 'nedbat'
           destination-repository-name: 'coverage-reports'
-          destination-repository-directory: 'reports/${{ github.sha }}'
+          destination-repository-directory: 'reports/${{ steps.info.outputs.slug }}'
           empty-repository: false
           create-destination-directory: true
           target-branch: main
@@ -137,4 +142,4 @@ jobs:
 
       - name: Show link to report
         run: |
-          echo "https://nedbat.github.io/coverage-reports/reports/${{ github.sha }}/htmlcov"
+          echo "https://nedbat.github.io/coverage-reports/reports/${{ steps.info.outputs.slug }}/htmlcov"
