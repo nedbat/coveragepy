@@ -14,6 +14,11 @@ YIELD_VALUE = dis.opmap['YIELD_VALUE']
 if env.PY2:
     YIELD_VALUE = chr(YIELD_VALUE)
 
+# When running meta-coverage, this file can try to trace itself, which confuses
+# everything.  Don't trace ourselves.
+
+THIS_FILE = __file__.rstrip("co")
+
 
 class PyTracer(object):
     """Python implementation of the raw data tracer."""
@@ -72,25 +77,47 @@ class PyTracer(object):
     def log(self, marker, *args):
         """For hard-core logging of what this tracer is doing."""
         with open("/tmp/debug_trace.txt", "a") as f:
-            f.write("{} {:x}.{:x}[{}] {:x} {}\n".format(
+            f.write("{} {}[{}]".format(
                 marker,
                 id(self),
-                self.thread.ident,
                 len(self.data_stack),
-                self.threading.currentThread().ident,
-                " ".join(map(str, args))
             ))
+            if 0:
+                f.write(".{:x}.{:x}".format(
+                    self.thread.ident,
+                    self.threading.currentThread().ident,
+                ))
+            f.write(" {}".format(" ".join(map(str, args))))
+            if 0:
+                f.write(" | ")
+                stack = " / ".join(
+                    (fname or "???").rpartition("/")[-1]
+                    for _, fname, _, _ in self.data_stack
+                )
+                f.write(stack)
+            f.write("\n")
 
     def _trace(self, frame, event, arg_unused):
         """The trace function passed to sys.settrace."""
 
-        #self.log(":", frame.f_code.co_filename, frame.f_lineno, event)
+        if THIS_FILE in frame.f_code.co_filename:
+            return None
+
+        #self.log(":", frame.f_code.co_filename, frame.f_lineno, frame.f_code.co_name + "()", event)
 
         if (self.stopped and sys.gettrace() == self._trace):    # pylint: disable=comparison-with-callable
             # The PyTrace.stop() method has been called, possibly by another
             # thread, let's deactivate ourselves now.
-            #self.log("X", frame.f_code.co_filename, frame.f_lineno)
+            if 0:
+                self.log("---\nX", frame.f_code.co_filename, frame.f_lineno)
+                f = frame
+                while f:
+                    self.log(">", f.f_code.co_filename, f.f_lineno, f.f_code.co_name, f.f_trace)
+                    f = f.f_back
             sys.settrace(None)
+            self.cur_file_dict, self.cur_file_name, self.last_line, self.started_context = (
+                self.data_stack.pop()
+            )
             return None
 
         if self.last_exc_back:
@@ -103,6 +130,9 @@ class PyTracer(object):
                     self.data_stack.pop()
                 )
             self.last_exc_back = None
+
+        # if event != 'call' and frame.f_code.co_filename != self.cur_file_name:
+        #     self.log("---\n*", frame.f_code.co_filename, self.cur_file_name, frame.f_lineno)
 
         if event == 'call':
             # Should we start a new context?
@@ -153,8 +183,7 @@ class PyTracer(object):
             # Record an executed line.
             if self.cur_file_dict is not None:
                 lineno = frame.f_lineno
-                #if frame.f_code.co_filename != self.cur_file_name:
-                #    self.log("*", frame.f_code.co_filename, self.cur_file_name, lineno)
+
                 if self.trace_arcs:
                     self.cur_file_dict[(self.last_line, lineno)] = None
                 else:
