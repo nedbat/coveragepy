@@ -119,3 +119,22 @@ jobs:
         with:
           name: html_report
           path: htmlcov
+
+      - name: Pushes to another repository
+        uses: sebastian-palma/github-action-push-to-another-repository@allow-creating-destination-directory
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.COVERAGE_REPORTS_TOKEN }}
+        with:
+          source-directory: 'htmlcov'
+          destination-github-username: 'nedbat'
+          destination-repository-name: 'coverage-reports'
+          destination-repository-directory: 'reports/${{ github.sha }}'
+          empty-repository: false
+          create-destination-directory: true
+          target-branch: main
+          commit-message: "Coverage report for ${{ github.sha }}"
+          user-email: ned@nedbatchelder.com
+
+      - name: Show link to report
+        run: |
+          echo "https://nedbat.github.io/coverage-reports/reports/${{ github.sha }}/htmlcov"
