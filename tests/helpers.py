@@ -198,7 +198,7 @@ def arcs_to_arcz_repr(arcs):
 
     """
     repr_list = []
-    for a, b in arcs:
+    for a, b in (arcs or ()):
         line = repr((a, b))
         line += " # "
         line += _arcs_to_arcz_repr_one(a)
