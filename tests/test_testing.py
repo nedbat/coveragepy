@@ -245,6 +245,57 @@ class CheckUniqueFilenamesTest(CoverageTest):
             stub.method("file1")
 
 
+class CheckCoverageTest(CoverageTest):
+    """Tests of the failure assertions in check_coverage."""
+
+    CODE = """\
+        a, b = 1, 1
+        def oops(x):
+            if x % 2:
+                raise Exception("odd")
+        try:
+            a = 6
+            oops(1)
+            a = 8
+        except:
+            b = 10
+        assert a == 6 and b == 10
+        """
+    ARCZ = ".1 12 -23 34 3-2 4-2 25 56 67 78 8B 9A AB B."
+    ARCZ_MISSING = "3-2 78 8B"
+    ARCZ_UNPREDICTED = "79"
+
+    def test_check_coverage_possible(self):
+        msg = r"(?s)Possible arcs differ: .*- \(6, 3\).*\+ \(6, 7\)"
+        with pytest.raises(AssertionError, match=msg):
+            self.check_coverage(
+                self.CODE,
+                arcz=self.ARCZ.replace("7", "3"),
+                arcz_missing=self.ARCZ_MISSING,
+                arcz_unpredicted=self.ARCZ_UNPREDICTED,
+            )
+
+    def test_check_coverage_missing(self):
+        msg = r"(?s)Missing arcs differ: .*- \(3, 8\).*\+ \(7, 8\)"
+        with pytest.raises(AssertionError, match=msg):
+            self.check_coverage(
+                self.CODE,
+                arcz=self.ARCZ,
+                arcz_missing=self.ARCZ_MISSING.replace("7", "3"),
+                arcz_unpredicted=self.ARCZ_UNPREDICTED,
+            )
+
+    def test_check_coverage_unpredicted(self):
+        msg = r"(?s)Unpredicted arcs differ: .*- \(3, 9\).*\+ \(7, 9\)"
+        with pytest.raises(AssertionError, match=msg):
+            self.check_coverage(
+                self.CODE,
+                arcz=self.ARCZ,
+                arcz_missing=self.ARCZ_MISSING,
+                arcz_unpredicted=self.ARCZ_UNPREDICTED.replace("7", "3")
+            )
+
+
 @pytest.mark.parametrize("text, pat, result", [
     ("line1\nline2\nline3\n", "line", "line1\nline2\nline3\n"),
     ("line1\nline2\nline3\n", "[13]", "line1\nline3\n"),

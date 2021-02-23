@@ -55,7 +55,7 @@ class CoverageTest(
 
     # Temp dirs go to $TMPDIR/coverage_test/*
     temp_dir_prefix = "coverage_test/"
-    if os.getenv('COVERAGE_ENV_ID'):
+    if os.getenv('COVERAGE_ENV_ID'):                        # pragma: debugging
         temp_dir_prefix += "{}/".format(os.getenv('COVERAGE_ENV_ID'))
 
     # Keep the temp directories if the env says to.
@@ -115,8 +115,8 @@ class CoverageTest(
         s1 = arcs_to_arcz_repr(a1)
         s2 = arcs_to_arcz_repr(a2)
         if s1 != s2:
-            lines1 = s1.splitlines(keepends=True)
-            lines2 = s2.splitlines(keepends=True)
+            lines1 = s1.splitlines(True)
+            lines2 = s2.splitlines(True)
             diff = "".join(difflib.ndiff(lines1, lines2))
             return "\n" + arc_type + " arcs differ: minus is expected, plus is actual\n" + diff
         else:
