@@ -5,7 +5,8 @@ name: "Coverage"
 
 on:
   push:
-    branches: ["master"]
+    branches:
+      - master
   # as currently structured, this adds too many jobs (checks?), so don't run it
   # on pull requests yet.
   #pull_request:
@@ -40,6 +41,8 @@ jobs:
     steps:
       - name: "Check out the repo"
         uses: "actions/checkout@v2"
+        with:
+          fetch-depth: "0"
 
       - name: "Set up Python"
         uses: "actions/setup-python@v2"
@@ -65,7 +68,15 @@ jobs:
         run: |
           set -xe
           python -m tox
-          python -m igor combine_html
+
+      - name: "Combine"
+        env:
+          COVERAGE_COVERAGE: "yes"
+          COVERAGE_RCFILE: "metacov.ini"
+          COVERAGE_METAFILE: ".metacov"
+        run: |
+          set -xe
+          COVERAGE_DEBUG=dataio python -m igor combine_html
           mv .metacov .metacov.${{ matrix.python-version }}.${{ matrix.os }}
 
       - name: "Upload coverage data"
@@ -95,7 +106,6 @@ jobs:
           set -xe
           python -VV
           python -m site
-          python -m pip install -r requirements/ci.pip
           python setup.py --quiet clean develop
           python igor.py zip_mods install_egg
 
@@ -105,9 +115,15 @@ jobs:
           name: metacov
 
       - name: "Combine and report"
+        id: combine
+        env:
+          COVERAGE_RCFILE: "metacov.ini"
+          COVERAGE_METAFILE: ".metacov"
         run: |
           set -xe
           python -m igor combine_html
+          python -m coverage json
+          echo "::set-output name=total::$(python -c "import json;print(format(json.load(open('coverage.json'))['totals']['percent_covered'],'.2f'))")"
 
       - name: "Upload to codecov"
         uses: codecov/codecov-action@v1
@@ -120,17 +136,24 @@ jobs:
           name: html_report
           path: htmlcov
 
-      - name: Create slug
-        id: slug
-        run: |
-          echo "::set-output name=slug::$(date +'%Y%m%d')_$(echo ${{github.sha}} | cut -c 1-12)"
+      - name: "Upload JSON report"
+        uses: actions/upload-artifact@v2
+        with:
+          name: json_report
+          path: coverage.json
 
-      - name: Create URL
-        id: url
+      - name: "Create info for pushing to report repo"
+        id: info
         run: |
-          echo "::set-output name=url::https://nedbat.github.io/coverage-reports/reports/${{ steps.slug.outputs.slug }}/htmlcov"
+          export SHA10=$(echo ${{ github.sha }} | cut -c 1-10)
+          export SLUG=$(date +'%Y%m%d')_$SHA10
+          export REF="${{ github.ref }}"
+          echo "::set-output name=sha10::$SHA10"
+          echo "::set-output name=slug::$SLUG"
+          echo "::set-output name=url::https://nedbat.github.io/coverage-reports/reports/$SLUG/htmlcov"
+          echo "::set-output name=branch::${REF#refs/heads/}"
 
-      - name: Pushes to another repository
+      - name: "Push to report repository"
         uses: sebastian-palma/github-action-push-to-another-repository@allow-creating-destination-directory
         env:
           API_TOKEN_GITHUB: ${{ secrets.COVERAGE_REPORTS_TOKEN }}
@@ -138,17 +161,23 @@ jobs:
           source-directory: 'htmlcov'
           destination-github-username: 'nedbat'
           destination-repository-name: 'coverage-reports'
-          destination-repository-directory: 'reports/${{ steps.slug.outputs.slug }}'
+          destination-repository-directory: 'reports/${{ steps.info.outputs.slug }}'
           empty-repository: false
           create-destination-directory: true
           target-branch: main
-          commit-message: "Coverage report for ${{ github.sha }}"
+          commit-message: >-
+            ${{ steps.combine.outputs.total }}% - ${{ github.event.head_commit.message }}
+
+
+            ${{ steps.info.outputs.url }}
+
+            ${{ steps.info.outputs.sha10 }}: ${{ steps.info.outputs.branch }}
           user-email: ned@nedbatchelder.com
 
-      - name: Create redirection HTML file
+      - name: "Create redirection HTML file"
         run: |
           echo "<html><head>" > coverage-report-redirect.html
-          echo "<meta http-equiv='refresh' content='0;url=${{ steps.url.outputs.url }}' />" >> coverage-report-redirect.html
+          echo "<meta http-equiv='refresh' content='0;url=${{ steps.info.outputs.url }}' />" >> coverage-report-redirect.html
           echo "<body>Coverage report redirect..." >> coverage-report-redirect.html
 
       - name: "Upload HTML redirect"
@@ -157,6 +186,6 @@ jobs:
           name: coverage-report-redirect.html
           path: coverage-report-redirect.html
 
-      - name: Show link to report
+      - name: "Show link to report"
         run: |
-          echo "Coverage report: ${{ steps.url.outputs.url }}"
+          echo "Coverage report: ${{ steps.info.outputs.url }}"

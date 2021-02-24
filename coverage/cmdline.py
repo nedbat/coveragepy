@@ -771,7 +771,7 @@ class CoverageScript(object):
                 self.coverage.load()
                 data = self.coverage.get_data()
                 print(info_header("data"))
-                print("path: %s" % self.coverage.get_data().data_filename())
+                print("path: %s" % data.data_filename())
                 if data:
                     print("has_arcs: %r" % data.has_arcs())
                     summary = line_counts(data, fullpath=True)
