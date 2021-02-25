@@ -4,12 +4,11 @@
 name: "Coverage"
 
 on:
+  # As currently structured, this adds too many jobs (checks?), so don't run it
+  # on pull requests yet.
   push:
     branches:
       - master
-  # as currently structured, this adds too many jobs (checks?), so don't run it
-  # on pull requests yet.
-  #pull_request:
   workflow_dispatch:
 
 defaults:

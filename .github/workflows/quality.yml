@@ -1,11 +1,12 @@
 # Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
 # For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
 
-name: "Quality checks"
+name: "Quality"
 
 on:
   push:
-    branches: ["master"]
+    branches:
+      - master
   pull_request:
   workflow_dispatch:
 
@@ -15,7 +16,7 @@ defaults:
 
 jobs:
   lint:
-    name: Pylint etc
+    name: "Pylint etc"
     # Because pylint can report different things on different OS's (!)
     # (https://github.com/PyCQA/pylint/issues/3489), run this on Mac where local
     # pylint gets run.
@@ -42,7 +43,7 @@ jobs:
           python -m tox -e lint
 
   doc:
-    name: Build docs
+    name: "Build docs"
     runs-on: ubuntu-latest
 
     steps:

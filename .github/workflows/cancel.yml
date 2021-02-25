@@ -4,7 +4,7 @@
 # This action finds in-progress Action jobs for the same branch, and cancels
 # them. There's little point in continuing to run superceded jobs.
 
-name: Cancel
+name: "Cancel"
 
 on:
   push:
@@ -13,7 +13,7 @@ jobs:
   cancel:
     runs-on: ubuntu-latest
     steps:
-      - name: Cancel Previous Runs
+      - name: "Cancel Previous Runs"
         uses: styfle/cancel-workflow-action@0.6.0
         with:
           access_token: ${{ github.token }}
