@@ -1,8 +1,9 @@
 # Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
 # For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
 
+-c pins.pip
+
 # Things needed to make wheels for coverage.py
 
-# setuptools 45.x is py3-only
-setuptools==44.1.1
-wheel==0.35.1
+setuptools
+wheel

@@ -23,3 +23,6 @@ readme_renderer==26.0
 requests==2.25.1
 twine==3.3.0
 libsass==0.20.1
+
+# Just so I have a debugger if I want it
+pudb==2019.2
