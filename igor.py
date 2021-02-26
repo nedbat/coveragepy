@@ -387,7 +387,7 @@ def analyze_args(function):
         getargspec = inspect.getargspec
     with ignore_warnings():
         # DeprecationWarning: Use inspect.signature() instead of inspect.getfullargspec()
-        argspec = getargspec(function)
+        argspec = getargspec(function)                      # pylint: disable=deprecated-method
     return bool(argspec[1]), len(argspec[0])
 
 

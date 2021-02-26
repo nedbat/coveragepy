@@ -677,7 +677,7 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
             """)
         cov = coverage.Coverage(branch=True, source=["."])
         cov.start()
-        import main     # pragma: nested # pylint: disable=unused-import
+        import main     # pragma: nested # pylint: disable=unused-import, import-error
         cov.stop()      # pragma: nested
         report = self.get_report(cov).splitlines()
         assert "mybranch.py 5 5 2 0 0%" in report
@@ -739,7 +739,7 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         # Run the program.
         cov = coverage.Coverage()
         cov.start()
-        import main     # pragma: nested # pylint: disable=unused-import
+        import main     # pragma: nested # pylint: disable=unused-import, import-error
         cov.stop()      # pragma: nested
 
         report = self.get_report(cov).splitlines()
@@ -766,7 +766,7 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         # Run the program.
         cov = coverage.Coverage()
         cov.start()
-        import main     # pragma: nested # pylint: disable=unused-import
+        import main     # pragma: nested # pylint: disable=unused-import, import-error
         cov.stop()      # pragma: nested
 
         # Put back the missing Python file.

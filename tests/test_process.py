@@ -1495,7 +1495,7 @@ class ProcessStartupTest(ProcessCoverageMixin, CoverageTest):
             data_file = .mycovdata
             """)
         self.set_environ("COVERAGE_PROCESS_START", "coverage.ini")
-        import main             # pylint: disable=unused-import
+        import main             # pylint: disable=unused-import, import-error
 
         with open("out.txt") as f:
             assert f.read() == "Hello, world!\n"

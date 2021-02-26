@@ -63,7 +63,7 @@ if USE_CONTRACTS:
     def new_contract(*args, **kwargs):
         """A proxy for contracts.new_contract that doesn't mind happening twice."""
         try:
-            return raw_new_contract(*args, **kwargs)
+            raw_new_contract(*args, **kwargs)
         except ValueError:
             # During meta-coverage, this module is imported twice, and
             # PyContracts doesn't like redefining contracts. It's OK.
