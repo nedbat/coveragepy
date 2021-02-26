@@ -146,10 +146,7 @@ class Analysis(object):
         stats = {}
         for lnum in self._branch_lines():
             exits = self.exit_counts[lnum]
-            try:
-                missing = len(missing_arcs[lnum])
-            except KeyError:
-                missing = 0
+            missing = len(missing_arcs[lnum])
             stats[lnum] = (exits, exits - missing)
         return stats
 
@@ -265,7 +262,7 @@ class Numbers(SimpleReprMixin):
         # Implementing 0+Numbers allows us to sum() a list of Numbers.
         if other == 0:
             return self
-        return NotImplemented
+        return NotImplemented       # pragma: not covered (we never call it this way)
 
 
 def _line_ranges(statements, lines):
