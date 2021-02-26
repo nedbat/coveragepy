@@ -933,6 +933,16 @@ class TestSummaryReporterConfiguration(CoverageTest):
         report = self.get_summary_text(('report:sort', 'Cover'))
         self.assert_ordering(report, "file3.py", "file1.py", "file2.py")
 
+    def test_sort_report_by_cover_plus(self):
+        # Sort the text report by the Cover column, including the explicit + sign.
+        report = self.get_summary_text(('report:sort', '+Cover'))
+        self.assert_ordering(report, "file3.py", "file1.py", "file2.py")
+
+    def test_sort_report_by_cover_reversed(self):
+        # Sort the text report by the Cover column reversed.
+        report = self.get_summary_text(('report:sort', '-Cover'))
+        self.assert_ordering(report, "file2.py", "file1.py", "file3.py")
+
     def test_sort_report_by_invalid_option(self):
         # Sort the text report by a nonsense column.
         msg = "Invalid sorting option: 'Xyzzy'"
