@@ -10,6 +10,7 @@ import mock
 import pytest
 
 import coverage
+from coverage.config import HandyConfigParser
 from coverage.misc import CoverageException
 
 from tests.coveragetest import CoverageTest, UsingModulesMixin
@@ -424,6 +425,17 @@ class ConfigTest(CoverageTest):
         msg = (r"Unrecognized option '\[coverage:run\] huh=' in config file setup.cfg")
         with pytest.raises(CoverageException, match=msg):
             _ = coverage.Coverage()
+
+    def test_exceptions_from_missing_things(self):
+        self.make_file("config.ini", """\
+            [run]
+            branch = True
+            """)
+        config = HandyConfigParser("config.ini")
+        with pytest.raises(Exception, match="No section: 'xyzzy'"):
+            config.options("xyzzy")
+        with pytest.raises(Exception, match="No option 'foo' in section: 'xyzzy'"):
+            config.get("xyzzy", "foo")
 
 
 class ConfigFileTest(UsingModulesMixin, CoverageTest):

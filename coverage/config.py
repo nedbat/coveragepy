@@ -63,7 +63,7 @@ class HandyConfigParser(configparser.RawConfigParser):
             real_section = section_prefix + section
             if configparser.RawConfigParser.has_section(self, real_section):
                 return configparser.RawConfigParser.options(self, real_section)
-        raise configparser.NoSectionError
+        raise configparser.NoSectionError(section)
 
     def get_section(self, section):
         """Get the contents of a section, as a dictionary."""
@@ -87,7 +87,7 @@ class HandyConfigParser(configparser.RawConfigParser):
             if configparser.RawConfigParser.has_option(self, real_section, option):
                 break
         else:
-            raise configparser.NoOptionError
+            raise configparser.NoOptionError(option, section)
 
         v = configparser.RawConfigParser.get(self, real_section, option, *args, **kwargs)
         v = substitute_variables(v, os.environ)
