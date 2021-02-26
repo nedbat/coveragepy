@@ -1078,10 +1078,9 @@ class HtmlWithContextsTest(HtmlTestHelpers, CoverageTest):
         """Get HTML report data from a `Coverage` object for a morf."""
         with self.assert_warnings(cov, []):
             datagen = coverage.html.HtmlDataGeneration(cov)
-            for fr, analysis in get_analysis_to_report(cov, [morf]):
-                # This will only loop once, so it's fine to return inside the loop.
-                file_data = datagen.data_for_file(fr, analysis)
-                return file_data
+            fr, analysis = next(get_analysis_to_report(cov, [morf]))
+            file_data = datagen.data_for_file(fr, analysis)
+            return file_data
 
     SOURCE = """\
         def helper(lineno):
