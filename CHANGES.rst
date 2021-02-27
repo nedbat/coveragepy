@@ -29,12 +29,19 @@ Unreleased
   they have been combined.  This was requested in `issue 1108`_ and implemented
   in `pull request 1110`_.  Thanks, Éric Larivière.
 
-- The HTML report has a little more room for line numbers so that 4-digit
-  numbers work well, fixing `issue 1124`_.
+- Minor improvements to the HTML report:
+
+  - The state of the line visibility selector buttons is saved in local storage
+    so you don't have to fiddle with them so often, fixing `issue 1123`_.
+
+  - It has a little more room for line numbers so that 4-digit numbers work
+    well, fixing `issue 1124`_.
 
 .. _issue 1108: https://github.com/nedbat/coveragepy/issues/1108
 .. _pull request 1110: https://github.com/nedbat/coveragepy/pull/1110
+.. _issue 1123: https://github.com/nedbat/coveragepy/issues/1123
 .. _issue 1124: https://github.com/nedbat/coveragepy/issues/1124
+
 
 .. _changes_54:
 
