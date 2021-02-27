@@ -16,7 +16,7 @@
 /* Don't edit this .css file. Edit the .scss file instead! */
 
 // Dimensions
-$left-gutter: 3rem;
+$left-gutter: 3.5rem;
 
 
 //
@@ -166,7 +166,7 @@ a.nav {
 }
 
 .indexfile #footer {
-    margin: 1rem 3rem;
+    margin: 1rem $left-gutter;
 }
 
 .pyfile #footer {
@@ -181,7 +181,7 @@ a.nav {
 }
 
 #index {
-    margin: 1rem 0 0 3rem;
+    margin: 1rem 0 0 $left-gutter;
 }
 
 // Header styles
