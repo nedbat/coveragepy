@@ -29,6 +29,12 @@ Unreleased
   they have been combined.  This was requested in `issue 1108`_ and implemented
   in `pull request 1110`_.  Thanks, Éric Larivière.
 
+- When reporting missing branches in ``coverage report``, branches aren't
+  reported that jump to missing lines.  This adds to the long-standing behavior
+  of not reporting branches from missing lines.  Now branches are only reported
+  if both the source and destination lines are executed.  Closes both `issue
+  1065`_ and `issue 955`_.
+
 - Minor improvements to the HTML report:
 
   - The state of the line visibility selector buttons is saved in local storage
@@ -41,6 +47,8 @@ Unreleased
   will be more likely to understand what's happening, closing `issue 803`_.
 
 .. _issue 803: https://github.com/nedbat/coveragepy/issues/803
+.. _issue 955: https://github.com/nedbat/coveragepy/issues/955
+.. _issue 1065: https://github.com/nedbat/coveragepy/issues/1065
 .. _issue 1108: https://github.com/nedbat/coveragepy/issues/1108
 .. _pull request 1110: https://github.com/nedbat/coveragepy/pull/1110
 .. _issue 1123: https://github.com/nedbat/coveragepy/issues/1123
