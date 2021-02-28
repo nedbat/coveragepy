@@ -21,8 +21,10 @@ want to know what's different in 5.0 since 4.5.x, see :ref:`whatsnew5x`.
     ..  Version 9.8.1 --- 2027-07-27
     ..  ----------------------------
 
-Unreleased
-----------
+.. _changes_55:
+
+Version 5.5 --- 2021-02-28
+--------------------------
 
 - ``coverage combine`` has a new option, ``--keep`` to keep the original data
   files after combining them.  The default is still to delete the files after

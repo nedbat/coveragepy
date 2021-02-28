@@ -66,11 +66,11 @@ copyright = u'2009\N{EN DASH}2021, Ned Batchelder.'     # CHANGEME  # pylint: di
 # built documents.
 #
 # The short X.Y version.
-version = "5.4"                                 # CHANGEME
+version = "5.5"                                 # CHANGEME
 # The full version, including alpha/beta/rc tags.
-release = "5.4"                                 # CHANGEME
+release = "5.5"                                 # CHANGEME
 # The date of release, in "monthname day, year" format.
-release_date = "January 24, 2021"               # CHANGEME
+release_date = "February 28, 2021"              # CHANGEME
 
 rst_epilog = """
 .. |release_date| replace:: {release_date}
