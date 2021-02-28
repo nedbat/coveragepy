@@ -78,7 +78,7 @@ except ImportError:
 
 try:
     import reprlib
-except ImportError:             # pragma: part covered
+except ImportError:             # pragma: not covered
     # We need this on Python 2, but in testing environments, a backport is
     # installed, so this import isn't used.
     import repr as reprlib
