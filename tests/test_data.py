@@ -159,13 +159,15 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
     def test_cant_add_arcs_with_lines(self):
         covdata = CoverageData()
         covdata.add_lines(LINES_1)
-        with pytest.raises(CoverageException, match="Can't add arcs to existing line data"):
+        msg = "Can't add branch measurements to existing line data"
+        with pytest.raises(CoverageException, match=msg):
             covdata.add_arcs(ARCS_3)
 
     def test_cant_add_lines_with_arcs(self):
         covdata = CoverageData()
         covdata.add_arcs(ARCS_3)
-        with pytest.raises(CoverageException, match="Can't add lines to existing arc data"):
+        msg = "Can't add line measurements to existing branch data"
+        with pytest.raises(CoverageException, match=msg):
             covdata.add_lines(LINES_1)
 
     def test_touch_file_with_lines(self):

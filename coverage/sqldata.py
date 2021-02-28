@@ -486,9 +486,9 @@ class CoverageData(SimpleReprMixin):
         assert lines or arcs
         assert not (lines and arcs)
         if lines and self._has_arcs:
-            raise CoverageException("Can't add lines to existing arc data")
+            raise CoverageException("Can't add line measurements to existing branch data")
         if arcs and self._has_lines:
-            raise CoverageException("Can't add arcs to existing line data")
+            raise CoverageException("Can't add branch measurements to existing line data")
         if not self._has_arcs and not self._has_lines:
             self._has_lines = lines
             self._has_arcs = arcs

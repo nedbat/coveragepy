@@ -37,6 +37,10 @@ Unreleased
   - It has a little more room for line numbers so that 4-digit numbers work
     well, fixing `issue 1124`_.
 
+- Improved the error message when combining line and branch data, so that users
+  will be more likely to understand what's happening, closing `issue 803`_.
+
+.. _issue 803: https://github.com/nedbat/coveragepy/issues/803
 .. _issue 1108: https://github.com/nedbat/coveragepy/issues/1108
 .. _pull request 1110: https://github.com/nedbat/coveragepy/pull/1110
 .. _issue 1123: https://github.com/nedbat/coveragepy/issues/1123
