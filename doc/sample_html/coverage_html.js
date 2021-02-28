@@ -233,6 +233,8 @@ coverage.index_ready = function ($) {
 
 // -- pyfile stuff --
 
+coverage.LINE_FILTERS_STORAGE = "COVERAGE_LINE_FILTERS";
+
 coverage.pyfile_ready = function ($) {
     // If we're directed to a particular line number, highlight the line.
     var frag = location.hash;
@@ -256,6 +258,22 @@ coverage.pyfile_ready = function ($) {
     $(".button_toggle_mis").click(function (evt) {coverage.toggle_lines(evt.target, "mis");});
     $(".button_toggle_par").click(function (evt) {coverage.toggle_lines(evt.target, "par");});
 
+    coverage.filters = undefined;
+    try {
+        coverage.filters = localStorage.getItem(coverage.LINE_FILTERS_STORAGE);
+    } catch(err) {}
+
+    if (coverage.filters) {
+        coverage.filters = JSON.parse(coverage.filters);
+    }
+    else {
+        coverage.filters = {run: false, exc: true, mis: true, par: true};
+    }
+
+    for (cls in coverage.filters) {
+        coverage.set_line_visibilty(cls, coverage.filters[cls]);
+    }
+
     coverage.assign_shortkeys();
     coverage.wire_up_help_panel();
 
@@ -266,17 +284,26 @@ coverage.pyfile_ready = function ($) {
 };
 
 coverage.toggle_lines = function (btn, cls) {
-    btn = $(btn);
-    var show = "show_"+cls;
-    if (btn.hasClass(show)) {
-        $("#source ." + cls).removeClass(show);
-        btn.removeClass(show);
-    }
-    else {
+    var onoff = !$(btn).hasClass("show_" + cls);
+    coverage.set_line_visibilty(cls, onoff);
+    coverage.build_scroll_markers();
+    coverage.filters[cls] = onoff;
+    try {
+        localStorage.setItem(coverage.LINE_FILTERS_STORAGE, JSON.stringify(coverage.filters));
+    } catch(err) {}
+};
+
+coverage.set_line_visibilty = function (cls, onoff) {
+    var show = "show_" + cls;
+    var btn = $(".button_toggle_" + cls);
+    if (onoff) {
         $("#source ." + cls).addClass(show);
         btn.addClass(show);
     }
-    coverage.build_scroll_markers();
+    else {
+        $("#source ." + cls).removeClass(show);
+        btn.removeClass(show);
+    }
 };
 
 // Return the nth line div.

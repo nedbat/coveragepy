@@ -34,7 +34,7 @@ a.nav:hover { text-decoration: underline; color: inherit; }
 
 @media (prefers-color-scheme: dark) { #header { border-color: #333; } }
 
-.indexfile #footer { margin: 1rem 3rem; }
+.indexfile #footer { margin: 1rem 3.5rem; }
 
 .pyfile #footer { margin: 1rem 1rem; }
 
@@ -42,9 +42,9 @@ a.nav:hover { text-decoration: underline; color: inherit; }
 
 @media (prefers-color-scheme: dark) { #footer .content { color: #aaa; } }
 
-#index { margin: 1rem 0 0 3rem; }
+#index { margin: 1rem 0 0 3.5rem; }
 
-#header .content { padding: 1rem 3rem; }
+#header .content { padding: 1rem 3.5rem; }
 
 h1 { font-size: 1.25em; display: inline-block; }
 
@@ -122,13 +122,13 @@ h2.stats { margin-top: .5em; font-size: 1em; }
 
 .keyhelp .key { border: 1px solid black; border-color: #888 #333 #333 #888; padding: .1em .35em; font-family: SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-weight: bold; background: #eee; }
 
-#source { padding: 1em 0 1em 3rem; font-family: SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+#source { padding: 1em 0 1em 3.5rem; font-family: SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
 
 #source p { position: relative; white-space: pre; }
 
 #source p * { box-sizing: border-box; }
 
-#source p .n { float: left; text-align: right; width: 3rem; box-sizing: border-box; margin-left: -3rem; padding-right: 1em; color: #999; }
+#source p .n { float: left; text-align: right; width: 3.5rem; box-sizing: border-box; margin-left: -3.5rem; padding-right: 1em; color: #999; }
 
 @media (prefers-color-scheme: dark) { #source p .n { color: #777; } }
 
