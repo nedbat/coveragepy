@@ -38,7 +38,8 @@ jobs:
           # Windows PyPy doesn't seem to work?
           - os: windows-latest
             python-version: "pypy3"
-      fail-fast: false
+      # If one job fails, stop the whole thing.
+      fail-fast: true
 
     steps:
       - name: "Check out the repo"
