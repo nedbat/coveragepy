@@ -8,7 +8,7 @@ import sys
 from coverage import env
 from coverage.report import get_analysis_to_report
 from coverage.results import Numbers
-from coverage.misc import NotPython, CoverageException, output_encoding
+from coverage.misc import CoverageException, output_encoding
 
 
 class SummaryReporter(object):
@@ -78,29 +78,18 @@ class SummaryReporter(object):
         lines = []
 
         for (fr, analysis) in self.fr_analysis:
-            try:
-                nums = analysis.numbers
+            nums = analysis.numbers
 
-                args = (fr.relative_filename(), nums.n_statements, nums.n_missing)
-                if self.branches:
-                    args += (nums.n_branches, nums.n_partial_branches)
-                args += (nums.pc_covered_str,)
-                if self.config.show_missing:
-                    args += (analysis.missing_formatted(branches=True),)
-                text = fmt_coverage % args
-                # Add numeric percent coverage so that sorting makes sense.
-                args += (nums.pc_covered,)
-                lines.append((text, args))
-            except Exception:
-                report_it = not self.config.ignore_errors
-                if report_it:
-                    typ, msg = sys.exc_info()[:2]
-                    # NotPython is only raised by PythonFileReporter, which has a
-                    # should_be_python() method.
-                    if typ is NotPython and not fr.should_be_python():
-                        report_it = False
-                if report_it:
-                    self.writeout(self.fmt_err % (fr.relative_filename(), typ.__name__, msg))
+            args = (fr.relative_filename(), nums.n_statements, nums.n_missing)
+            if self.branches:
+                args += (nums.n_branches, nums.n_partial_branches)
+            args += (nums.pc_covered_str,)
+            if self.config.show_missing:
+                args += (analysis.missing_formatted(branches=True),)
+            text = fmt_coverage % args
+            # Add numeric percent coverage so that sorting makes sense.
+            args += (nums.pc_covered,)
+            lines.append((text, args))
 
         # Sort the lines and write them out.
         if getattr(self.config, 'sort', None):
