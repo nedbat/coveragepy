@@ -10,27 +10,29 @@ from coverage.misc import CoverageException, NoSource, NotPython, ensure_dir_for
 
 
 def render_report(output_path, reporter, morfs):
-    """Run the provided reporter ensuring any required setup and cleanup is done
+    """Run a report generator, managing the output file.
 
-    At a high level this method ensures the output file is ready to be written to. Then writes the
-    report to it. Then closes the file and deletes any garbage created if necessary.
+    This function ensures the output file is ready to be written to. Then writes
+    the report to it. Then closes the file and cleans up.
+
     """
     file_to_close = None
     delete_file = False
-    if output_path:
-        if output_path == '-':
-            outfile = sys.stdout
-        else:
-            # Ensure that the output directory is created; done here
-            # because this report pre-opens the output file.
-            # HTMLReport does this using the Report plumbing because
-            # its task is more complex, being multiple files.
-            ensure_dir_for_file(output_path)
-            open_kwargs = {}
-            if env.PY3:
-                open_kwargs['encoding'] = 'utf8'
-            outfile = open(output_path, "w", **open_kwargs)
-            file_to_close = outfile
+
+    if output_path == "-":
+        outfile = sys.stdout
+    else:
+        # Ensure that the output directory is created; done here
+        # because this report pre-opens the output file.
+        # HTMLReport does this using the Report plumbing because
+        # its task is more complex, being multiple files.
+        ensure_dir_for_file(output_path)
+        open_kwargs = {}
+        if env.PY3:
+            open_kwargs["encoding"] = "utf8"
+        outfile = open(output_path, "w", **open_kwargs)
+        file_to_close = outfile
+
     try:
         return reporter.report(morfs, outfile=outfile)
     except CoverageException:
@@ -40,7 +42,7 @@ def render_report(output_path, reporter, morfs):
         if file_to_close:
             file_to_close.close()
             if delete_file:
-                file_be_gone(output_path)
+                file_be_gone(output_path)           # pragma: part covered (doesn't return)
 
 
 def get_analysis_to_report(coverage, morfs):
