@@ -312,7 +312,7 @@ def format_lines(statements, lines, arcs=None):
         line_exits = sorted(arcs)
         for line, exits in line_exits:
             for ex in sorted(exits):
-                if line not in lines:
+                if line not in lines and ex not in lines:
                     dest = (ex if ex > 0 else "exit")
                     line_items.append((line, "%d->%s" % (line, dest)))
 

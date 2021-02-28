@@ -280,7 +280,7 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
             'Name          Stmts   Miss Branch BrPart  Cover   Missing',
             '---------------------------------------------------------',
             'main.py           1      0      0      0   100%',
-            'mybranch.py      10      2      8      3    61%   2->4, 4->6, 6->7, 7-8',
+            'mybranch.py      10      2      8      3    61%   2->4, 4->6, 7-8',
             '---------------------------------------------------------',
             'TOTAL            11      2      8      3    63%',
         ]
