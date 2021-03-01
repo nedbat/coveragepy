@@ -4,12 +4,13 @@
 # Requirements for doing local development work on coverage.py.
 # https://requires.io/github/nedbat/coveragepy/requirements/
 
+-c pins.pip
 -r pip.pip
 
 pluggy==0.13.1
 
 # PyPI requirements for running tests.
--r tox.pip
+tox
 -r pytest.pip
 
 # for linting.
