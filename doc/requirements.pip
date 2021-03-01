@@ -1,5 +1,7 @@
 # PyPI requirements for building documentation for coverage.py
 
+-c ../requirements/pins.pip
+
 # https://requires.io/github/nedbat/coveragepy/requirements/
 
 doc8==0.8.1

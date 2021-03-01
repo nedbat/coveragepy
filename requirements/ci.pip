@@ -4,6 +4,5 @@
 -c pins.pip
 
 # Things CI servers need for running tests.
--r tox.pip
+tox
 -r pytest.pip
--r wheel.pip
