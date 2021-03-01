@@ -7,6 +7,10 @@
 name: "Kits"
 
 on:
+  push:
+    branches:
+      # Don't build kits all the time, but do if the branch is about kits.
+      - "**/*kit*"
   workflow_dispatch:
 
 defaults:
@@ -14,7 +18,7 @@ defaults:
     shell: bash
 
 jobs:
-  build_wheels:
+  wheels:
     name: "Build wheels on ${{ matrix.os }}"
     runs-on: ${{ matrix.os }}
     strategy:
@@ -49,14 +53,15 @@ jobs:
           CIBW_SKIP: pp*
         run: |
           python -m cibuildwheel --output-dir wheelhouse
+          ls -al wheelhouse/
 
       - name: "Upload wheels"
         uses: actions/upload-artifact@v2
         with:
           name: dist
-          path: ./wheelhouse/*.whl
+          path: wheelhouse/*.whl
 
-  build_sdist:
+  sdist:
     name: "Build source distribution"
     runs-on: ubuntu-latest
     steps:
@@ -71,6 +76,7 @@ jobs:
       - name: "Build sdist"
         run: |
           python setup.py sdist
+          ls -al dist/
 
       - name: "Upload sdist"
         uses: actions/upload-artifact@v2
@@ -78,7 +84,7 @@ jobs:
           name: dist
           path: dist/*.tar.gz
 
-  build_pypy:
+  pypy:
     name: "Build PyPy wheels"
     runs-on: ubuntu-latest
     steps:
@@ -98,6 +104,55 @@ jobs:
         run: |
           pypy3 setup.py bdist_wheel --python-tag pp36
           pypy3 setup.py bdist_wheel --python-tag pp37
+          ls -al dist/
+
+      - name: "Upload wheels"
+        uses: actions/upload-artifact@v2
+        with:
+          name: dist
+          path: dist/*.whl
+
+  prerel:
+    name: "Build ${{ matrix.python-version }} wheels on ${{ matrix.os }}"
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest
+          - macos-latest
+        python-version:
+          - "3.10.0-alpha.5"
+      fail-fast: false
+
+    steps:
+      - name: "Check out the repo"
+        uses: actions/checkout@v2
+
+      - name: "Install Python ${{ matrix.pyton-version }}"
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: "Install wheel tools"
+        run: |
+          python -m pip install -c requirements/pins.pip -r requirements/wheel.pip
+
+      - name: "Build wheel"
+        run: |
+          python setup.py bdist_wheel
+
+      - name: "Convert to manylinux wheel"
+        if: runner.os == 'Linux'
+        run: |
+          ls -la dist/
+          auditwheel show dist/*.whl
+          auditwheel repair dist/*.whl
+          ls -la wheelhouse/
+          auditwheel show wheelhouse/*.whl
+          rm dist/*.whl
+          mv wheelhouse/*.whl dist/
+          ls -al dist/
 
       - name: "Upload wheels"
         uses: actions/upload-artifact@v2
