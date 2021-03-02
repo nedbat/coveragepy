@@ -52,6 +52,7 @@ class JsonReporter(object):
             'covered_lines': self.total.n_executed,
             'num_statements': self.total.n_statements,
             'percent_covered': self.total.pc_covered,
+            'percent_covered_display': self.total.pc_covered_str,
             'missing_lines': self.total.n_missing,
             'excluded_lines': self.total.n_excluded,
         }
@@ -80,6 +81,7 @@ class JsonReporter(object):
             'covered_lines': nums.n_executed,
             'num_statements': nums.n_statements,
             'percent_covered': nums.pc_covered,
+            'percent_covered_display': nums.pc_covered_str,
             'missing_lines': nums.n_missing,
             'excluded_lines': nums.n_excluded,
         }

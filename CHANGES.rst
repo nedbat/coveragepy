@@ -24,7 +24,9 @@ want to know what's different in 5.0 since 4.5.x, see :ref:`whatsnew5x`.
 Unreleased
 ----------
 
-Nothing yet.
+- The JSON report now includes ``percent_covered_display``, a string with the
+  total percentage, rounded to the same number of decimal places as the other
+  reports' totals.
 
 
 .. _changes_55:

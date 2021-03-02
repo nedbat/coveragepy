@@ -129,7 +129,7 @@ jobs:
           set -xe
           python -m igor combine_html
           python -m coverage json
-          echo "::set-output name=total::$(python -c "import json;print(format(json.load(open('coverage.json'))['totals']['percent_covered'],'.2f'))")"
+          echo "::set-output name=total::$(python -c "import json;print(json.load(open('coverage.json'))['totals']['percent_covered_display'])")"
 
       - name: "Upload to codecov"
         uses: codecov/codecov-action@v1
