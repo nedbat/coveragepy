@@ -9,6 +9,7 @@ on:
   push:
     branches:
       - master
+      - "**/*metacov*"
   workflow_dispatch:
 
 defaults:
