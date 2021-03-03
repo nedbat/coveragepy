@@ -2,13 +2,11 @@
 [default]
 ignore =
     .treerc
-    .hgtags
     build
     htmlcov
     html0
     .tox*
     .coverage* .metacov
-    mock.py
     *.min.js style.css
     gold
     sample_html sample_html_beta

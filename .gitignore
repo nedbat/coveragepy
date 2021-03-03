@@ -47,3 +47,5 @@ tmp
 
 # OS junk
 .DS_Store
+
+!.github
