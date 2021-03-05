@@ -16,6 +16,24 @@ import pytest
 from coverage.misc import StopEverything
 
 
+class EnvironmentAwareMixin:
+    """
+    Adapter from pytst monkeypatch fixture to our environment variable methods.
+    """
+    @pytest.fixture(autouse=True)
+    def _monkeypatch(self, monkeypatch):
+        """Get the monkeypatch fixture for our methods to use."""
+        self._envpatcher = monkeypatch
+
+    def set_environ(self, name, value):
+        """Set an environment variable `name` to be `value`."""
+        self._envpatcher.setenv(name, value)
+
+    def del_environ(self, name):
+        """Delete an environment variable, unless we set it."""
+        self._envpatcher.delenv(name)
+
+
 def convert_skip_exceptions(method):
     """A decorator for test methods to convert StopEverything to SkipTest."""
     @functools.wraps(method)

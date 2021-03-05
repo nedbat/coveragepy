@@ -16,7 +16,7 @@ import sys
 import unittest
 
 import pytest
-from unittest_mixins import EnvironmentAwareMixin, TempDirMixin
+from unittest_mixins import TempDirMixin
 
 import coverage
 from coverage import env
@@ -25,7 +25,7 @@ from coverage.cmdline import CoverageScript
 
 from tests.helpers import arcs_to_arcz_repr, arcz_to_arcs, assert_count_equal
 from tests.helpers import run_command, SuperModuleCleaner
-from tests.mixins import StdStreamCapturingMixin, StopEverythingMixin
+from tests.mixins import EnvironmentAwareMixin, StdStreamCapturingMixin, StopEverythingMixin
 
 
 # Status returns for the command line.
