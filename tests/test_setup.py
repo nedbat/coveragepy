@@ -39,7 +39,7 @@ class SetupPyTest(CoverageTest):
 
         classifiers = setup_args['classifiers']
         assert len(classifiers) > 7
-        self.assert_starts_with(classifiers[-1], "Development Status ::")
+        assert classifiers[-1].startswith("Development Status ::")
         assert "Programming Language :: Python :: %d" % sys.version_info[:1] in classifiers
         assert "Programming Language :: Python :: %d.%d" % sys.version_info[:2] in classifiers
 

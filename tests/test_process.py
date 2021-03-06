@@ -1208,7 +1208,7 @@ class PydocTest(CoverageTest):
         # Run pydoc.
         out = self.run_command("python -m pydoc " + name)
         # It should say "Help on..", and not have a traceback
-        self.assert_starts_with(out, "Help on ")
+        assert out.startswith("Help on ")
         assert "Traceback" not in out
 
         # All of the lines in the docstring should be there somewhere.

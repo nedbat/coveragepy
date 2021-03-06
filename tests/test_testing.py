@@ -86,17 +86,6 @@ class CoverageTestTest(CoverageTest):
         with pytest.raises(AssertionError, match=msg):
             self.assert_file_count("*.q", 10)
 
-    def test_assert_startwith(self):
-        self.assert_starts_with("xyzzy", "xy")
-        self.assert_starts_with("xyz\nabc", "xy")
-        self.assert_starts_with("xyzzy", ("x", "z"))
-        msg = re.escape("'xyz' doesn't start with 'a'")
-        with pytest.raises(AssertionError, match=msg):
-            self.assert_starts_with("xyz", "a")
-        msg = re.escape("'xyz\\nabc' doesn't start with 'a'")
-        with pytest.raises(AssertionError, match=msg):
-            self.assert_starts_with("xyz\nabc", "a")
-
     def test_assert_recent_datetime(self):
         def now_delta(seconds):
             """Make a datetime `seconds` seconds from now."""

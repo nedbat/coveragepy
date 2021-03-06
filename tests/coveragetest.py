@@ -302,11 +302,6 @@ class CoverageTest(
         msg = msg.format(count, pattern, files)
         assert len(files) == count, msg
 
-    def assert_starts_with(self, s, prefix, msg=None):
-        """Assert that `s` starts with `prefix`."""
-        if not s.startswith(prefix):
-            self.fail(msg or ("%r doesn't start with %r" % (s, prefix)))
-
     def assert_recent_datetime(self, dt, seconds=10, msg=None):
         """Assert that `dt` marks a time at most `seconds` seconds ago."""
         age = datetime.datetime.now() - dt
