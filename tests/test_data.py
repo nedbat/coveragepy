@@ -502,7 +502,7 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
         self.assert_lines1_data(covdata)
 
 
-class CoverageDataTestInTempDir(DataTestHelpers, CoverageTest):
+class CoverageDataInTempDirTest(DataTestHelpers, CoverageTest):
     """Tests of CoverageData that need a temporary directory to make files."""
 
     def test_read_write_lines(self):

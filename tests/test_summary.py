@@ -774,15 +774,6 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         report = self.get_report(cov).splitlines()
         assert "mod.py 1 0 100%" in report
 
-
-class SummaryTest2(UsingModulesMixin, CoverageTest):
-    """Another bunch of summary tests."""
-    # This class exists because tests naturally clump into classes based on the
-    # needs of their setUp, rather than the product features they are testing.
-    # There's probably a better way to organize these.
-
-    run_in_temp_dir = False
-
     def test_empty_files(self):
         # Shows that empty files like __init__.py are listed as having zero
         # statements, not one statement.
@@ -835,7 +826,7 @@ class ReportingReturnValueTest(CoverageTest):
         assert round(abs(val-85.7), 1) == 0
 
 
-class TestSummaryReporterConfiguration(CoverageTest):
+class SummaryReporterConfigurationTest(CoverageTest):
     """Tests of SummaryReporter."""
 
     def make_rigged_file(self, filename, stmts, miss):

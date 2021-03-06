@@ -3,13 +3,13 @@
 
 """Tests that our version shims in backward.py are working."""
 
-import unittest
-
 from coverage.backward import iitems, binary_bytes, bytes_to_ints
 
+from tests.coveragetest import CoverageTest
 from tests.helpers import assert_count_equal
 
-class BackwardTest(unittest.TestCase):
+
+class BackwardTest(CoverageTest):
     """Tests of things from backward.py."""
 
     def test_iitems(self):

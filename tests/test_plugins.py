@@ -257,7 +257,7 @@ class PluginTest(CoverageTest):
 
 
 @pytest.mark.skipif(env.C_TRACER, reason="This test is only about PyTracer.")
-class PluginWarningOnPyTracer(CoverageTest):
+class PluginWarningOnPyTracerTest(CoverageTest):
     """Test that we get a controlled exception with plugins on PyTracer."""
     def test_exception_if_plugins_on_pytracer(self):
         self.make_file("simple.py", "a = 1")

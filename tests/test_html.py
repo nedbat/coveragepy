@@ -644,7 +644,7 @@ def compare_html(expected, actual):
     compare(expected, actual, file_pattern="*.html", scrubs=scrubs)
 
 
-class HtmlGoldTests(CoverageTest):
+class HtmlGoldTest(CoverageTest):
     """Tests of HTML reporting that use gold files."""
 
     def test_a(self):

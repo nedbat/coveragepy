@@ -10,7 +10,7 @@ from tests.coveragetest import CoverageTest
 from tests.goldtest import compare, gold_path
 
 
-class AnnotationGoldTest1(CoverageTest):
+class AnnotationGoldTest(CoverageTest):
     """Test the annotate feature with gold files."""
 
     def make_multi(self):
