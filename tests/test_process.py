@@ -1225,8 +1225,8 @@ class PydocTest(CoverageTest):
 class FailUnderTest(CoverageTest):
     """Tests of the --fail-under switch."""
 
-    def setUp(self):
-        super(FailUnderTest, self).setUp()
+    def setup_test(self):
+        super(FailUnderTest, self).setup_test()
         self.make_file("forty_two_plus.py", """\
             # I have 42.857% (3/7) coverage!
             a = 1
@@ -1448,8 +1448,8 @@ def persistent_remove(path):
 class ProcessCoverageMixin(object):
     """Set up a .pth file to coverage-measure all sub-processes."""
 
-    def setUp(self):
-        super(ProcessCoverageMixin, self).setUp()
+    def setup_test(self):
+        super(ProcessCoverageMixin, self).setup_test()
 
         # Create the .pth file.
         assert PTH_DIR
@@ -1457,17 +1457,16 @@ class ProcessCoverageMixin(object):
         pth_path = os.path.join(PTH_DIR, "subcover_{}.pth".format(WORKER))
         with open(pth_path, "w") as pth:
             pth.write(pth_contents)
-            self.pth_path = pth_path
 
-        self.addCleanup(persistent_remove, self.pth_path)
+        self.addCleanup(persistent_remove, pth_path)
 
 
 @pytest.mark.skipif(env.METACOV, reason="Can't test sub-process pth file during metacoverage")
 class ProcessStartupTest(ProcessCoverageMixin, CoverageTest):
     """Test that we can measure coverage in sub-processes."""
 
-    def setUp(self):
-        super(ProcessStartupTest, self).setUp()
+    def setup_test(self):
+        super(ProcessStartupTest, self).setup_test()
 
         # Main will run sub.py
         self.make_file("main.py", """\

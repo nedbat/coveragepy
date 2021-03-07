@@ -900,8 +900,8 @@ class CmdMainTest(CoverageTest):
                 raise AssertionError("Bad CoverageScriptStub: %r" % (argv,))
             return 0
 
-    def setUp(self):
-        super(CmdMainTest, self).setUp()
+    def setup_test(self):
+        super(CmdMainTest, self).setup_test()
         old_CoverageScript = coverage.cmdline.CoverageScript
         coverage.cmdline.CoverageScript = self.CoverageScriptStub
         self.addCleanup(setattr, coverage.cmdline, 'CoverageScript', old_CoverageScript)

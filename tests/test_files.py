@@ -41,7 +41,7 @@ class FilesTest(CoverageTest):
         a1 = self.abs_path("sub/proj1/file1.py")
         a2 = self.abs_path("sub/proj2/file2.py")
         d = os.path.normpath("sub/proj1")
-        self.chdir(d)
+        os.chdir(d)
         files.set_relative_directory()
         assert files.relative_filename(a1) == "file1.py"
         assert files.relative_filename(a2) == a2
@@ -60,7 +60,7 @@ class FilesTest(CoverageTest):
     def test_canonical_filename_ensure_cache_hit(self):
         self.make_file("sub/proj1/file1.py")
         d = actual_path(self.abs_path("sub/proj1"))
-        self.chdir(d)
+        os.chdir(d)
         files.set_relative_directory()
         canonical_path = files.canonical_filename('sub/proj1/file1.py')
         assert canonical_path == self.abs_path('file1.py')
@@ -140,8 +140,8 @@ def test_fnmatches_to_regex(patterns, case_insensitive, partial, matches, nomatc
 class MatcherTest(CoverageTest):
     """Tests of file matchers."""
 
-    def setUp(self):
-        super(MatcherTest, self).setUp()
+    def setup_test(self):
+        super(MatcherTest, self).setup_test()
         files.set_relative_directory()
 
     def assertMatches(self, matcher, filepath, matches):

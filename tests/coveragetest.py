@@ -13,10 +13,8 @@ import random
 import re
 import shlex
 import sys
-import unittest
 
 import pytest
-from unittest_mixins import TempDirMixin
 
 import coverage
 from coverage import env
@@ -25,7 +23,10 @@ from coverage.cmdline import CoverageScript
 
 from tests.helpers import arcs_to_arcz_repr, arcz_to_arcs, assert_count_equal
 from tests.helpers import run_command, SuperModuleCleaner
-from tests.mixins import EnvironmentAwareMixin, StdStreamCapturingMixin, StopEverythingMixin
+from tests.mixins import (
+    StdStreamCapturingMixin, StopEverythingMixin,
+    TempDirMixin, PytestBase,
+)
 
 
 # Status returns for the command line.
@@ -36,11 +37,10 @@ TESTS_DIR = os.path.dirname(__file__)
 
 
 class CoverageTest(
-    EnvironmentAwareMixin,
     StdStreamCapturingMixin,
     TempDirMixin,
     StopEverythingMixin,
-    unittest.TestCase,
+    PytestBase,
 ):
     """A base class for coverage.py test cases."""
 
@@ -62,8 +62,8 @@ class CoverageTest(
     # $set_env.py: COVERAGE_KEEP_TMP - Keep the temp directories made by tests.
     keep_temp_dir = bool(int(os.getenv("COVERAGE_KEEP_TMP", "0")))
 
-    def setUp(self):
-        super(CoverageTest, self).setUp()
+    def setup_test(self):
+        super(CoverageTest, self).setup_test()
 
         self.module_cleaner = SuperModuleCleaner()
 
@@ -187,7 +187,7 @@ class CoverageTest(
                     if statements == line_list:
                         break
                 else:
-                    self.fail("None of the lines choices matched %r" % statements)
+                    assert False, "None of the lines choices matched %r" % (statements,)
 
             missing_formatted = analysis.missing_formatted()
             if isinstance(missing, string_class):
@@ -198,7 +198,7 @@ class CoverageTest(
                     if missing_formatted == missing_list:
                         break
                 else:
-                    self.fail("None of the missing choices matched %r" % missing_formatted)
+                    assert False, "None of the missing choices matched %r" % (missing_formatted,)
 
         if arcs is not None:
             # print("Possible arcs:")
@@ -262,15 +262,17 @@ class CoverageTest(
                         if re.search(warning_regex, saved):
                             break
                     else:
-                        self.fail("Didn't find warning %r in %r" % (warning_regex, saved_warnings))
+                        msg = "Didn't find warning %r in %r" % (warning_regex, saved_warnings)
+                        assert False, msg
                 for warning_regex in not_warnings:
                     for saved in saved_warnings:
                         if re.search(warning_regex, saved):
-                            self.fail("Found warning %r in %r" % (warning_regex, saved_warnings))
+                            msg = "Found warning %r in %r" % (warning_regex, saved_warnings)
+                            assert False, msg
             else:
                 # No warnings expected. Raise if any warnings happened.
                 if saved_warnings:
-                    self.fail("Unexpected warnings: %r" % (saved_warnings,))
+                    assert False, "Unexpected warnings: %r" % (saved_warnings,)
         finally:
             cov._warn = original_warn
 
@@ -459,8 +461,8 @@ class CoverageTest(
 class UsingModulesMixin(object):
     """A mixin for importing modules from tests/modules and tests/moremodules."""
 
-    def setUp(self):
-        super(UsingModulesMixin, self).setUp()
+    def setup_test(self):
+        super(UsingModulesMixin, self).setup_test()
 
         # Parent class saves and restores sys.path, we can just modify it.
         sys.path.append(self.nice_file(TESTS_DIR, 'modules'))

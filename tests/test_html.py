@@ -113,8 +113,8 @@ class FileWriteTracker(object):
 class HtmlDeltaTest(HtmlTestHelpers, CoverageTest):
     """Tests of the HTML delta speed-ups."""
 
-    def setUp(self):
-        super(HtmlDeltaTest, self).setUp()
+    def setup_test(self):
+        super(HtmlDeltaTest, self).setup_test()
 
         # At least one of our tests monkey-patches the version of coverage.py,
         # so grab it here to restore it later.
@@ -555,8 +555,8 @@ class HtmlTest(HtmlTestHelpers, CoverageTest):
 class HtmlStaticFileTest(CoverageTest):
     """Tests of the static file copying for the HTML report."""
 
-    def setUp(self):
-        super(HtmlStaticFileTest, self).setUp()
+    def setup_test(self):
+        super(HtmlStaticFileTest, self).setup_test()
         original_path = list(coverage.html.STATIC_PATH)
         self.addCleanup(setattr, coverage.html, 'STATIC_PATH', original_path)
 

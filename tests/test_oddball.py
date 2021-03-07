@@ -186,7 +186,7 @@ class MemoryLeakTest(CoverageTest):
                 fails += 1                                  # pragma: only failure
 
         if fails > 8:
-            self.fail("RAM grew by %d" % (ram_growth))      # pragma: only failure
+            pytest.fail("RAM grew by %d" % (ram_growth))      # pragma: only failure
 
 
 class MemoryFumblingTest(CoverageTest):
