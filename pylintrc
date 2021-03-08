@@ -92,7 +92,7 @@ disable=
     duplicate-code,
     cyclic-import
 
-msg-template={path}:{line}: {msg} ({symbol})
+msg-template={path}:{line} {C}: {msg} ({symbol})
 
 [REPORTS]
 
