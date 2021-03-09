@@ -13,7 +13,6 @@ import os.path
 import sys
 import types
 import textwrap
-import unittest
 
 import pytest
 
@@ -148,19 +147,19 @@ class TempDirMixin(object):
 
 
 def convert_skip_exceptions(method):
-    """A decorator for test methods to convert StopEverything to SkipTest."""
+    """A decorator for test methods to convert StopEverything to skips."""
     @functools.wraps(method)
     def _wrapper(*args, **kwargs):
         try:
             result = method(*args, **kwargs)
         except StopEverything:
-            raise unittest.SkipTest("StopEverything!")
+            pytest.skip("StopEverything!")
         return result
     return _wrapper
 
 
 class SkipConvertingMetaclass(type):
-    """Decorate all test methods to convert StopEverything to SkipTest."""
+    """Decorate all test methods to convert StopEverything to skips."""
     def __new__(cls, name, bases, attrs):
         for attr_name, attr_value in attrs.items():
             if attr_name.startswith('test_') and isinstance(attr_value, types.FunctionType):

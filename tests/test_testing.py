@@ -8,7 +8,6 @@ import datetime
 import os
 import re
 import sys
-import unittest
 
 import pytest
 
@@ -317,6 +316,13 @@ def test_re_line_bad(text, pat):
 
 
 def test_convert_skip_exceptions():
+    # pytest doesn't expose the exception raised by pytest.skip, so let's
+    # make one to get the class.
+    try:
+        pytest.skip("Just to get the exception")
+    except BaseException as exc:
+        pytest_Skipped = type(exc)
+
     @convert_skip_exceptions
     def some_method(ret=None, exc=None):
         """Be like a test case."""
@@ -331,8 +337,8 @@ def test_convert_skip_exceptions():
     with pytest.raises(ValueError):
         some_method(exc=ValueError)
 
-    # But a StopEverything becomes a SkipTest.
-    with pytest.raises(unittest.SkipTest):
+    # But a StopEverything becomes a skip.
+    with pytest.raises(pytest_Skipped):
         some_method(exc=StopEverything)
 
 
