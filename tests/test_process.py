@@ -760,7 +760,7 @@ class ProcessTest(CoverageTest):
 
     @xfail(
         env.PYPY3 and (env.PYPYVERSION >= (7, 1, 1)),
-        "https://bitbucket.org/pypy/pypy/issues/3074"
+        "https://foss.heptapod.net/pypy/pypy/-/issues/3074"
     )
     # Jython as of 2.7.1rc3 won't compile a filename that isn't utf8.
     @pytest.mark.skipif(env.JYTHON, reason="Jython can't handle this test")
