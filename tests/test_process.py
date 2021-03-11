@@ -23,7 +23,7 @@ from coverage.data import line_counts
 from coverage.files import abs_file, python_reported_file
 from coverage.misc import output_encoding
 
-from tests.coveragetest import CoverageTest, TESTS_DIR, xfail
+from tests.coveragetest import CoverageTest, TESTS_DIR
 from tests.helpers import re_lines
 
 
@@ -758,10 +758,9 @@ class ProcessTest(CoverageTest):
         # about 5.
         assert line_counts(data)['os.py'] > 50
 
-    @xfail(
-        env.PYPY3 and (env.PYPYVERSION >= (7, 1, 1)),
-        "https://foss.heptapod.net/pypy/pypy/-/issues/3074"
-    )
+    # Pypy passes locally, but fails in CI? Perhaps the version of macOS is
+    # significant?  https://foss.heptapod.net/pypy/pypy/-/issues/3074
+    @pytest.mark.skipif(env.PYPY3, reason="Pypy is unreliable with this test")
     # Jython as of 2.7.1rc3 won't compile a filename that isn't utf8.
     @pytest.mark.skipif(env.JYTHON, reason="Jython can't handle this test")
     def test_lang_c(self):
