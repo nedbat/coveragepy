@@ -14,6 +14,7 @@ import warnings
 import pytest
 
 from coverage import env
+from coverage.misc import StopEverything
 
 
 # Pytest will rewrite assertions in test modules, but not elsewhere.
@@ -92,3 +93,11 @@ def fix_xdist_sys_path():
             del os.environ['PYTHONPATH']
         except KeyError:
             pass
+
+
+@pytest.hookimpl(hookwrapper=True)
+def pytest_runtest_call(item):
+    """Convert StopEverything into skipped tests."""
+    outcome = yield
+    if outcome.excinfo and issubclass(outcome.excinfo[0], StopEverything):
+        pytest.skip("Skipping {} for StopEverything: {}".format(item.nodeid, outcome.excinfo[1]))

@@ -14,14 +14,12 @@ import pytest
 import coverage
 from coverage import tomlconfig
 from coverage.files import actual_path
-from coverage.misc import StopEverything
 
 from tests.coveragetest import CoverageTest
 from tests.helpers import (
     arcs_to_arcz_repr, arcz_to_arcs, assert_count_equal,
     CheckUniqueFilenames, re_lines, re_line, without_module,
 )
-from tests.mixins import convert_skip_exceptions
 
 
 def test_xdist_sys_path_nuttiness_is_fixed():
@@ -318,33 +316,6 @@ class ReLinesTest(CoverageTest):
     def test_re_line_bad(self, text, pat):
         with pytest.raises(AssertionError):
             re_line(text, pat)
-
-
-def test_convert_skip_exceptions():
-    # pytest doesn't expose the exception raised by pytest.skip, so let's
-    # make one to get the class.
-    try:
-        pytest.skip("Just to get the exception")
-    except BaseException as exc:
-        pytest_Skipped = type(exc)
-
-    @convert_skip_exceptions
-    def some_method(ret=None, exc=None):
-        """Be like a test case."""
-        if exc:
-            raise exc("yikes!")
-        return ret
-
-    # Normal flow is normal.
-    assert some_method(ret=[17, 23]) == [17, 23]
-
-    # Exceptions are raised normally.
-    with pytest.raises(ValueError):
-        some_method(exc=ValueError)
-
-    # But a StopEverything becomes a skip.
-    with pytest.raises(pytest_Skipped):
-        some_method(exc=StopEverything)
 
 
 def _same_python_executable(e1, e2):

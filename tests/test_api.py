@@ -22,7 +22,7 @@ from coverage.data import line_counts
 from coverage.files import abs_file, relative_filename
 from coverage.misc import CoverageException
 
-from tests.coveragetest import CoverageTest, StopEverythingMixin, TESTS_DIR, UsingModulesMixin
+from tests.coveragetest import CoverageTest, TESTS_DIR, UsingModulesMixin
 from tests.helpers import assert_count_equal
 
 
@@ -789,7 +789,7 @@ class NamespaceModuleTest(UsingModulesMixin, CoverageTest):
             cov.report()
 
 
-class IncludeOmitTestsMixin(UsingModulesMixin, StopEverythingMixin):
+class IncludeOmitTestsMixin(UsingModulesMixin, CoverageTest):
     """Test methods for coverage methods taking include and omit."""
 
     # We don't write any source files, but the data file will collide with

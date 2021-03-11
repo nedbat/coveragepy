@@ -23,10 +23,7 @@ from coverage.cmdline import CoverageScript
 
 from tests.helpers import arcs_to_arcz_repr, arcz_to_arcs, assert_count_equal
 from tests.helpers import run_command, SuperModuleCleaner
-from tests.mixins import (
-    StdStreamCapturingMixin, StopEverythingMixin,
-    TempDirMixin, PytestBase,
-)
+from tests.mixins import StdStreamCapturingMixin, TempDirMixin, PytestBase
 
 
 # Status returns for the command line.
@@ -39,7 +36,6 @@ TESTS_DIR = os.path.dirname(__file__)
 class CoverageTest(
     StdStreamCapturingMixin,
     TempDirMixin,
-    StopEverythingMixin,
     PytestBase,
 ):
     """A base class for coverage.py test cases."""

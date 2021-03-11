@@ -7,17 +7,14 @@ Test class mixins
 Some of these are transitional while working toward pure-pytest style.
 """
 
-import functools
 import os
 import os.path
 import sys
-import types
 import textwrap
 
 import pytest
 
 from coverage import env
-from coverage.misc import StopEverything
 
 
 class PytestBase(object):
@@ -144,31 +141,6 @@ class TempDirMixin(object):
             f.write(data)
 
         return filename
-
-
-def convert_skip_exceptions(method):
-    """A decorator for test methods to convert StopEverything to skips."""
-    @functools.wraps(method)
-    def _wrapper(*args, **kwargs):
-        try:
-            result = method(*args, **kwargs)
-        except StopEverything:
-            pytest.skip("StopEverything!")
-        return result
-    return _wrapper
-
-
-class SkipConvertingMetaclass(type):
-    """Decorate all test methods to convert StopEverything to skips."""
-    def __new__(cls, name, bases, attrs):
-        for attr_name, attr_value in attrs.items():
-            if attr_name.startswith('test_') and isinstance(attr_value, types.FunctionType):
-                attrs[attr_name] = convert_skip_exceptions(attr_value)
-
-        return super(SkipConvertingMetaclass, cls).__new__(cls, name, bases, attrs)
-
-
-StopEverythingMixin = SkipConvertingMetaclass('StopEverythingMixin', (), {})
 
 
 class StdStreamCapturingMixin:
