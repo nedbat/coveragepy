@@ -478,8 +478,3 @@ def command_line(args):
     script = CoverageScript()
     ret = script.command_line(shlex.split(args))
     return ret
-
-
-def xfail(condition, reason):
-    """A decorator to mark a test as expected to fail."""
-    return pytest.mark.xfail(condition, reason=reason, strict=True)
