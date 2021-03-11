@@ -284,35 +284,40 @@ class CheckCoverageTest(CoverageTest):
             )
 
 
-@pytest.mark.parametrize("text, pat, result", [
-    ("line1\nline2\nline3\n", "line", "line1\nline2\nline3\n"),
-    ("line1\nline2\nline3\n", "[13]", "line1\nline3\n"),
-    ("line1\nline2\nline3\n", "X", ""),
-])
-def test_re_lines(text, pat, result):
-    assert re_lines(text, pat) == result
+class ReLinesTest(CoverageTest):
+    """Tests of `re_lines`."""
 
-@pytest.mark.parametrize("text, pat, result", [
-    ("line1\nline2\nline3\n", "line", ""),
-    ("line1\nline2\nline3\n", "[13]", "line2\n"),
-    ("line1\nline2\nline3\n", "X", "line1\nline2\nline3\n"),
-])
-def test_re_lines_inverted(text, pat, result):
-    assert re_lines(text, pat, match=False) == result
+    run_in_temp_dir = False
 
-@pytest.mark.parametrize("text, pat, result", [
-    ("line1\nline2\nline3\n", "2", "line2"),
-])
-def test_re_line(text, pat, result):
-    assert re_line(text, pat) == result
+    @pytest.mark.parametrize("text, pat, result", [
+        ("line1\nline2\nline3\n", "line", "line1\nline2\nline3\n"),
+        ("line1\nline2\nline3\n", "[13]", "line1\nline3\n"),
+        ("line1\nline2\nline3\n", "X", ""),
+    ])
+    def test_re_lines(self, text, pat, result):
+        assert re_lines(text, pat) == result
 
-@pytest.mark.parametrize("text, pat", [
-    ("line1\nline2\nline3\n", "line"),      # too many matches
-    ("line1\nline2\nline3\n", "X"),         # no matches
-])
-def test_re_line_bad(text, pat):
-    with pytest.raises(AssertionError):
-        re_line(text, pat)
+    @pytest.mark.parametrize("text, pat, result", [
+        ("line1\nline2\nline3\n", "line", ""),
+        ("line1\nline2\nline3\n", "[13]", "line2\n"),
+        ("line1\nline2\nline3\n", "X", "line1\nline2\nline3\n"),
+    ])
+    def test_re_lines_inverted(self, text, pat, result):
+        assert re_lines(text, pat, match=False) == result
+
+    @pytest.mark.parametrize("text, pat, result", [
+        ("line1\nline2\nline3\n", "2", "line2"),
+    ])
+    def test_re_line(self, text, pat, result):
+        assert re_line(text, pat) == result
+
+    @pytest.mark.parametrize("text, pat", [
+        ("line1\nline2\nline3\n", "line"),      # too many matches
+        ("line1\nline2\nline3\n", "X"),         # no matches
+    ])
+    def test_re_line_bad(self, text, pat):
+        with pytest.raises(AssertionError):
+            re_line(text, pat)
 
 
 def test_convert_skip_exceptions():
@@ -379,28 +384,32 @@ def test_without_module():
     assert toml2 is None
 
 
-@pytest.mark.parametrize("arcz, arcs", [
-    (".1 12 2.", [(-1, 1), (1, 2), (2, -1)]),
-    ("-11 12 2-5", [(-1, 1), (1, 2), (2, -5)]),
-    ("-QA CB IT Z-A", [(-26, 10), (12, 11), (18, 29), (35, -10)]),
-])
-def test_arcz_to_arcs(arcz, arcs):
-    assert arcz_to_arcs(arcz) == arcs
+class ArczTest(CoverageTest):
+    """Tests of arcz/arcs helpers."""
 
+    run_in_temp_dir = False
 
-@pytest.mark.parametrize("arcs, arcz_repr", [
-    ([(-1, 1), (1, 2), (2, -1)], "(-1, 1) # .1\n(1, 2) # 12\n(2, -1) # 2.\n"),
-    ([(-1, 1), (1, 2), (2, -5)], "(-1, 1) # .1\n(1, 2) # 12\n(2, -5) # 2-5\n"),
-    ([(-26, 10), (12, 11), (18, 29), (35, -10), (1, 33), (100, 7)],
-        (
-        "(-26, 10) # -QA\n"
-        "(12, 11) # CB\n"
-        "(18, 29) # IT\n"
-        "(35, -10) # Z-A\n"
-        "(1, 33) # 1X\n"
-        "(100, 7) # ?7\n"
-        )
-    ),
-])
-def test_arcs_to_arcz_repr(arcs, arcz_repr):
-    assert arcs_to_arcz_repr(arcs) == arcz_repr
+    @pytest.mark.parametrize("arcz, arcs", [
+        (".1 12 2.", [(-1, 1), (1, 2), (2, -1)]),
+        ("-11 12 2-5", [(-1, 1), (1, 2), (2, -5)]),
+        ("-QA CB IT Z-A", [(-26, 10), (12, 11), (18, 29), (35, -10)]),
+    ])
+    def test_arcz_to_arcs(self, arcz, arcs):
+        assert arcz_to_arcs(arcz) == arcs
+
+    @pytest.mark.parametrize("arcs, arcz_repr", [
+        ([(-1, 1), (1, 2), (2, -1)], "(-1, 1) # .1\n(1, 2) # 12\n(2, -1) # 2.\n"),
+        ([(-1, 1), (1, 2), (2, -5)], "(-1, 1) # .1\n(1, 2) # 12\n(2, -5) # 2-5\n"),
+        ([(-26, 10), (12, 11), (18, 29), (35, -10), (1, 33), (100, 7)],
+            (
+            "(-26, 10) # -QA\n"
+            "(12, 11) # CB\n"
+            "(18, 29) # IT\n"
+            "(35, -10) # Z-A\n"
+            "(1, 33) # 1X\n"
+            "(100, 7) # ?7\n"
+            )
+        ),
+    ])
+    def test_arcs_to_arcz_repr(self, arcs, arcz_repr):
+        assert arcs_to_arcz_repr(arcs) == arcz_repr
