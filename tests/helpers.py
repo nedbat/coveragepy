@@ -4,6 +4,7 @@
 """Helpers for coverage.py tests."""
 
 import collections
+import contextlib
 import glob
 import os
 import re
@@ -205,6 +206,22 @@ def arcs_to_arcz_repr(arcs):
         line += _arcs_to_arcz_repr_one(b)
         repr_list.append(line)
     return "\n".join(repr_list) + "\n"
+
+
+@contextlib.contextmanager
+def change_dir(new_dir):
+    """Change directory, and then change back.
+
+    Use as a context manager, it will return to the original
+    directory at the end of the block.
+
+    """
+    old_dir = os.getcwd()
+    os.chdir(new_dir)
+    try:
+        yield
+    finally:
+        os.chdir(old_dir)
 
 
 def without_module(using_module, missing_module_name):

@@ -10,7 +10,6 @@ import re
 from xml.etree import ElementTree
 
 import pytest
-from unittest_mixins import change_dir
 
 import coverage
 from coverage.backward import import_local_file
@@ -18,6 +17,7 @@ from coverage.files import abs_file
 
 from tests.coveragetest import CoverageTest
 from tests.goldtest import compare, gold_path
+from tests.helpers import change_dir
 
 
 class XmlTestHelpers(CoverageTest):
