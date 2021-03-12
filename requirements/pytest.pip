@@ -17,7 +17,3 @@ mock==3.0.5
 git+https://github.com/slorg1/contracts@collections_and_validator
 # hypothesis 5.x is py3-only
 hypothesis==4.57.1
-
-# Our testing mixins
-unittest-mixins==1.6
-#-e/Users/ned/unittest_mixins
