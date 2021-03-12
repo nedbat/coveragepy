@@ -4,7 +4,11 @@
 
 """Tests of code in tests/mixins.py"""
 
-from tests.mixins import TempDirMixin
+import pytest
+
+from coverage.backward import import_local_file
+
+from tests.mixins import TempDirMixin, SysPathModulesMixin
 
 
 class TempDirMixinTest(TempDirMixin):
@@ -54,3 +58,24 @@ class TempDirMixinTest(TempDirMixin):
         with open("binary.dat", "rb") as f:
             data = f.read()
         assert data == b"\x99\x33\x66hello\0"
+
+
+class SysPathModulessMixinTest(TempDirMixin, SysPathModulesMixin):
+    """Tests of SysPathModulesMixin."""
+
+    @pytest.mark.parametrize("val", [17, 42])
+    def test_module_independence(self, val):
+        self.make_file("xyzzy.py", "A = {}".format(val))
+        import xyzzy            # pylint: disable=import-error
+        assert xyzzy.A == val
+
+    def test_cleanup_and_reimport(self):
+        self.make_file("xyzzy.py", "A = 17")
+        xyzzy = import_local_file("xyzzy")
+        assert xyzzy.A == 17
+
+        self.clean_local_file_imports()
+
+        self.make_file("xyzzy.py", "A = 42")
+        xyzzy = import_local_file("xyzzy")
+        assert xyzzy.A == 42

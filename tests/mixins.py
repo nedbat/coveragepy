@@ -9,12 +9,16 @@ Some of these are transitional while working toward pure-pytest style.
 
 import os
 import os.path
+import shutil
 import sys
 import textwrap
 
 import pytest
 
 from coverage import env
+from coverage.backward import importlib
+
+from tests.helpers import remove_files
 
 
 class PytestBase(object):
@@ -78,26 +82,6 @@ class TempDirMixin(object):
             if old_dir is not None:
                 os.chdir(old_dir)
 
-    @pytest.fixture(autouse=True)
-    def _save_sys_path(self):
-        """Restore sys.path at the end of each test."""
-        old_syspath = sys.path[:]
-        try:
-            yield
-        finally:
-            sys.path = old_syspath
-
-    @pytest.fixture(autouse=True)
-    def _module_saving(self):
-        """Remove modules we imported during the test."""
-        old_modules = list(sys.modules)
-        try:
-            yield
-        finally:
-            added_modules = [m for m in sys.modules if m not in old_modules]
-            for m in added_modules:
-                del sys.modules[m]
-
     def make_file(self, filename, text="", bytes=b"", newline=None):
         """Create a file for testing.
 
@@ -136,6 +120,58 @@ class TempDirMixin(object):
             f.write(data)
 
         return filename
+
+
+class SysPathModulesMixin:
+    """Auto-restore sys.path and the imported modules at the end of each test."""
+
+    @pytest.fixture(autouse=True)
+    def _save_sys_path(self):
+        """Restore sys.path at the end of each test."""
+        old_syspath = sys.path[:]
+        try:
+            yield
+        finally:
+            sys.path = old_syspath
+
+    @pytest.fixture(autouse=True)
+    def _module_saving(self):
+        """Remove modules we imported during the test."""
+        self._old_modules = list(sys.modules)
+        try:
+            yield
+        finally:
+            self._cleanup_modules()
+
+    def _cleanup_modules(self):
+        """Remove any new modules imported since our construction.
+
+        This lets us import the same source files for more than one test, or
+        if called explicitly, within one test.
+
+        """
+        for m in [m for m in sys.modules if m not in self._old_modules]:
+            del sys.modules[m]
+
+    def clean_local_file_imports(self):
+        """Clean up the results of calls to `import_local_file`.
+
+        Use this if you need to `import_local_file` the same file twice in
+        one test.
+
+        """
+        # So that we can re-import files, clean them out first.
+        self._cleanup_modules()
+
+        # Also have to clean out the .pyc file, since the timestamp
+        # resolution is only one second, a changed file might not be
+        # picked up.
+        remove_files("*.pyc", "*$py.class")
+        if os.path.exists("__pycache__"):
+            shutil.rmtree("__pycache__")
+
+        if importlib and hasattr(importlib, "invalidate_caches"):
+            importlib.invalidate_caches()
 
 
 class StdStreamCapturingMixin:

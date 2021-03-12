@@ -229,12 +229,6 @@ def format_local_datetime(dt):
         return dt.strftime('%Y-%m-%d %H:%M')
 
 
-def invalidate_import_caches():
-    """Invalidate any import caches that may or may not exist."""
-    if importlib and hasattr(importlib, "invalidate_caches"):
-        importlib.invalidate_caches()
-
-
 def import_local_file(modname, modfile=None):
     """Import a local file as a module.
 

@@ -22,8 +22,8 @@ from coverage.backward import StringIO, import_local_file, string_class, shlex_q
 from coverage.cmdline import CoverageScript
 
 from tests.helpers import arcs_to_arcz_repr, arcz_to_arcs, assert_count_equal
-from tests.helpers import run_command, SuperModuleCleaner
-from tests.mixins import StdStreamCapturingMixin, TempDirMixin, PytestBase
+from tests.helpers import run_command
+from tests.mixins import PytestBase, StdStreamCapturingMixin, SysPathModulesMixin, TempDirMixin
 
 
 # Status returns for the command line.
@@ -35,6 +35,7 @@ TESTS_DIR = os.path.dirname(__file__)
 
 class CoverageTest(
     StdStreamCapturingMixin,
+    SysPathModulesMixin,
     TempDirMixin,
     PytestBase,
 ):
@@ -61,21 +62,10 @@ class CoverageTest(
     def setup_test(self):
         super(CoverageTest, self).setup_test()
 
-        self.module_cleaner = SuperModuleCleaner()
-
         # Attributes for getting info about what happened.
         self.last_command_status = None
         self.last_command_output = None
         self.last_module_name = None
-
-    def clean_local_file_imports(self):
-        """Clean up the results of calls to `import_local_file`.
-
-        Use this if you need to `import_local_file` the same file twice in
-        one test.
-
-        """
-        self.module_cleaner.clean_local_file_imports()
 
     def start_import_stop(self, cov, modname, modfile=None):
         """Start coverage, import a file, then stop coverage.
