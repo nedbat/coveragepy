@@ -765,7 +765,6 @@ class CmdLineWithFilesTest(BaseCmdLineTest):
     """Test the command line in ways that need temp files."""
 
     run_in_temp_dir = True
-    no_files_in_temp_dir = True
 
     def test_debug_data(self):
         data = CoverageData()

@@ -1849,10 +1849,6 @@ class ModuleTest(CoverageTest):
 class ReportingTest(CoverageTest):
     """Tests of some reporting behavior."""
 
-    # We don't make any temporary files, but we need an empty directory to run
-    # the tests in.
-    no_files_in_temp_dir = True
-
     def test_no_data_to_report_on_annotate(self):
         # Reporting with no data produces a nice message and no output
         # directory.

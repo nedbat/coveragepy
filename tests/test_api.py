@@ -791,10 +791,6 @@ class NamespaceModuleTest(UsingModulesMixin, CoverageTest):
 class IncludeOmitTestsMixin(UsingModulesMixin, CoverageTest):
     """Test methods for coverage methods taking include and omit."""
 
-    # We don't write any source files, but the data file will collide with
-    # other tests if we don't have a temp dir.
-    no_files_in_temp_dir = True
-
     def filenames_in(self, summary, filenames):
         """Assert the `filenames` are in the keys of `summary`."""
         for filename in filenames.split():

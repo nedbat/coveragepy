@@ -56,11 +56,6 @@ class TempDirMixin(object):
     # created.
     run_in_temp_dir = True
 
-    # Set this if you aren't creating any files with make_file, but still want
-    # the temp directory.  This will stop the test behavior checker from
-    # complaining.
-    no_files_in_temp_dir = False
-
     @pytest.fixture(autouse=True)
     def _temp_dir(self, tmpdir_factory):
         """Create a temp dir for the tests, if they want it."""

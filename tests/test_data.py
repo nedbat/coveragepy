@@ -106,8 +106,6 @@ class DataTestHelpers(CoverageTest):
 class CoverageDataTest(DataTestHelpers, CoverageTest):
     """Test cases for CoverageData."""
 
-    no_files_in_temp_dir = True
-
     def test_empty_data_is_false(self):
         covdata = CoverageData()
         assert not covdata
@@ -559,8 +557,6 @@ class CoverageDataInTempDirTest(DataTestHelpers, CoverageTest):
 
 class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
     """Tests of CoverageData file handling."""
-
-    no_files_in_temp_dir = True
 
     def test_reading_missing(self):
         self.assert_doesnt_exist(".coverage")
