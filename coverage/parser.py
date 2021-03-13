@@ -1225,7 +1225,12 @@ if AST_DUMP:            # pragma: debugging
 
         lineno = getattr(node, "lineno", None)
         if lineno is not None:
-            linemark = " @ {}".format(node.lineno)
+            linemark = " @ {},{}".format(node.lineno, node.col_offset)
+            if hasattr(node, "end_lineno"):
+                linemark += ":"
+                if node.end_lineno != node.lineno:
+                    linemark += "{},".format(node.end_lineno)
+                linemark += "{}".format(node.end_col_offset)
         else:
             linemark = ""
         head = "{}<{}{}".format(indent, node.__class__.__name__, linemark)
