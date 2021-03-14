@@ -685,6 +685,17 @@ class ConfigFileTest(UsingModulesMixin, CoverageTest):
         assert cov.config.exclude_list == ["first", "✘weirdo", "third"]
         assert cov.config.html_title == "tabblo & «ταБЬℓσ» # numbers"
 
+    def test_bug_913(self):
+        import sys
+        print("ENcoding: {}".format(sys.getdefaultencoding()))
+        self.make_file(".coveragerc", """\
+            [html]
+            # (string, default “htmlcov”): where to write the HTML report files.
+            directory = htmlcov
+            """)
+        cov = coverage.Coverage()
+        1/0
+
     def test_unreadable_config(self):
         # If a config file is explicitly specified, then it is an error for it
         # to not be readable.

@@ -29,13 +29,13 @@ jobs:
           # When changing this list, be sure to check the [gh-actions] list in
           # tox.ini so that tox will run properly.
           - "2.7"
-          - "3.5"
-          - "3.6"
-          - "3.7"
-          - "3.8"
+          #- "3.5"
+          #- "3.6"
+          #- "3.7"
+          #- "3.8"
           - "3.9"
-          - "3.10.0-alpha.6"
-          - "pypy3"
+          #- "3.10.0-alpha.6"
+          #- "pypy3"
         exclude:
           # Windows PyPy doesn't seem to work?
           - os: windows-latest
@@ -70,13 +70,13 @@ jobs:
         continue-on-error: true
         id: tox1
         run: |
-          python -m tox -- -rfeXs
+          python -m tox -- -rfeXs -k config
 
-      - name: "Retry tox for ${{ matrix.python-version }}"
-        id: tox2
-        if: steps.tox1.outcome == 'failure'
-        run: |
-          python -m tox -- -rfeXs
+      #- name: "Retry tox for ${{ matrix.python-version }}"
+      #  id: tox2
+      #  if: steps.tox1.outcome == 'failure'
+      #  run: |
+      #    python -m tox -- -rfeXs -k config
 
       - name: "Set status"
         if: always()
