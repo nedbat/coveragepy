@@ -35,11 +35,11 @@ class HandyConfigParser(configparser.RawConfigParser):
         if our_file:
             self.section_prefixes.append("")
 
-    def read(self, filenames, encoding=None):
+    def read(self, filenames):
         """Read a file name as UTF-8 configuration data."""
         kwargs = {}
         if env.PYVERSION >= (3, 2):
-            kwargs['encoding'] = encoding or "utf-8"
+            kwargs['encoding'] = "utf-8"
         return configparser.RawConfigParser.read(self, filenames, **kwargs)
 
     def has_option(self, section, option):
