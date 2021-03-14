@@ -33,6 +33,8 @@ PYPY3 = PYPY and PY3
 class PYBEHAVIOR(object):
     """Flags indicating this Python's behavior."""
 
+    # Does Python conform to PEP626, Precise line numbers for debugging and other tools.
+    # https://www.python.org/dev/peps/pep-0626
     pep626 = CPYTHON and (PYVERSION > (3, 10, 0, 'alpha', 4))
 
     # Is "if __debug__" optimized away?
