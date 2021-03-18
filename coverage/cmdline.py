@@ -176,7 +176,7 @@ class Opts(object):
     )
     source = optparse.make_option(
         '', '--source', action='store', metavar="SRC1,SRC2,...",
-        help="A list of packages or directories of code to be measured.",
+        help="A list of directories or importable names of code to measure.",
     )
     timid = optparse.make_option(
         '', '--timid', action='store_true',
