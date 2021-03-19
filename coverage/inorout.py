@@ -243,9 +243,6 @@ class InOrOut(object):
                         # the frame's file name, then just use the original.
                         filename = original_filename
 
-        if self.debug:
-            self.debug.write("Considering filename {!r}".format(filename))
-
         if not filename:
             # Empty string is pretty useless.
             return nope(disp, "empty string isn't a file name")
