@@ -18,7 +18,7 @@ import pytest
 from coverage import env
 from coverage.backward import importlib
 
-from tests.helpers import remove_files
+from tests.helpers import change_dir, remove_files
 
 
 class PytestBase(object):
@@ -63,24 +63,19 @@ class TempDirMixin(object):
     @pytest.fixture(autouse=True)
     def _temp_dir(self, tmpdir_factory):
         """Create a temp dir for the tests, if they want it."""
-        old_dir = None
         if self.run_in_temp_dir:
             tmpdir = tmpdir_factory.mktemp("")
             self.temp_dir = str(tmpdir)
-            old_dir = os.getcwd()
-            tmpdir.chdir()
+            with change_dir(self.temp_dir):
+                # Modules should be importable from this temp directory.  We don't
+                # use '' because we make lots of different temp directories and
+                # nose's caching importer can get confused.  The full path prevents
+                # problems.
+                sys.path.insert(0, os.getcwd())
 
-            # Modules should be importable from this temp directory.  We don't
-            # use '' because we make lots of different temp directories and
-            # nose's caching importer can get confused.  The full path prevents
-            # problems.
-            sys.path.insert(0, os.getcwd())
-
-        try:
+                yield None
+        else:
             yield None
-        finally:
-            if old_dir is not None:
-                os.chdir(old_dir)
 
     def make_file(self, filename, text="", bytes=b"", newline=None):
         """Create a file for testing.
