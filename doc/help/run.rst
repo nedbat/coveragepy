@@ -31,8 +31,8 @@
                             to the .coverage data file name to simplify collecting
                             data from many processes.
       --source=SRC1,SRC2,...
-                            A list of packages or directories of code to be
-                            measured.
+                            A list of directories or importable names of code to
+                            measure.
       --timid               Use a simpler but slower trace method. Try this if you
                             get seemingly impossible results!
       --debug=OPTS          Debug options, separated by commas. [env:
