@@ -22,7 +22,7 @@ from coverage.files import abs_file, relative_filename
 from coverage.misc import CoverageException
 
 from tests.coveragetest import CoverageTest, TESTS_DIR, UsingModulesMixin
-from tests.helpers import assert_count_equal, change_dir
+from tests.helpers import assert_count_equal, change_dir, nice_file
 
 
 class ApiTest(CoverageTest):
@@ -879,7 +879,7 @@ class SourceIncludeOmitTest(IncludeOmitTestsMixin, CoverageTest):
         assert lines['p1c'] == 0
 
     def test_source_package_as_dir(self):
-        os.chdir(self.nice_file(TESTS_DIR, 'modules'))
+        os.chdir(nice_file(TESTS_DIR, "modules"))
         assert os.path.isdir("pkg1")
         lines = self.coverage_usepkgs(source=["pkg1"])
         self.filenames_in(lines, "p1a p1b")
@@ -905,7 +905,7 @@ class SourceIncludeOmitTest(IncludeOmitTestsMixin, CoverageTest):
         # the search for unexecuted files, and given a score of 0%.
 
         # The omit arg is by path, so need to be in the modules directory.
-        os.chdir(self.nice_file(TESTS_DIR, 'modules'))
+        os.chdir(nice_file(TESTS_DIR, "modules"))
         lines = self.coverage_usepkgs(source=["pkg1"], omit=["pkg1/p1b.py"])
         self.filenames_in(lines, "p1a")
         self.filenames_not_in(lines, "p1b")
@@ -920,7 +920,7 @@ class SourceIncludeOmitTest(IncludeOmitTestsMixin, CoverageTest):
 
     def test_ambiguous_source_package_as_dir(self):
         # pkg1 is a directory and a pkg, since we cd into tests/modules/ambiguous
-        os.chdir(self.nice_file(TESTS_DIR, 'modules', "ambiguous"))
+        os.chdir(nice_file(TESTS_DIR, "modules", "ambiguous"))
         # pkg1 defaults to directory because tests/modules/ambiguous/pkg1 exists
         lines = self.coverage_usepkgs(source=["pkg1"])
         self.filenames_in(lines, "ambiguous")
@@ -928,7 +928,7 @@ class SourceIncludeOmitTest(IncludeOmitTestsMixin, CoverageTest):
 
     def test_ambiguous_source_package_as_package(self):
         # pkg1 is a directory and a pkg, since we cd into tests/modules/ambiguous
-        os.chdir(self.nice_file(TESTS_DIR, 'modules', "ambiguous"))
+        os.chdir(nice_file(TESTS_DIR, "modules", "ambiguous"))
         lines = self.coverage_usepkgs(source_pkgs=["pkg1"])
         self.filenames_in(lines, "p1a p1b")
         self.filenames_not_in(lines, "p2a p2b othera otherb osa osb ambiguous")

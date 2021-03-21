@@ -93,6 +93,12 @@ def make_file(filename, text="", bytes=b"", newline=None):
     return filename
 
 
+def nice_file(*fparts):
+    """Canonicalize the file name composed of the parts in `fparts`."""
+    fname = os.path.join(*fparts)
+    return os.path.normcase(os.path.abspath(os.path.realpath(fname)))
+
+
 class CheckUniqueFilenames(object):
     """Asserts the uniqueness of file names passed to a function."""
     def __init__(self, wrapped):

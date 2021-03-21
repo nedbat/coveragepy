@@ -22,7 +22,7 @@ from coverage.backward import StringIO, import_local_file, string_class, shlex_q
 from coverage.cmdline import CoverageScript
 
 from tests.helpers import arcs_to_arcz_repr, arcz_to_arcs, assert_count_equal
-from tests.helpers import run_command
+from tests.helpers import nice_file, run_command
 from tests.mixins import PytestBase, StdStreamCapturingMixin, SysPathModulesMixin, TempDirMixin
 
 
@@ -262,15 +262,10 @@ class CoverageTest(
         finally:
             cov._warn = original_warn
 
-    def nice_file(self, *fparts):
-        """Canonicalize the file name composed of the parts in `fparts`."""
-        fname = os.path.join(*fparts)
-        return os.path.normcase(os.path.abspath(os.path.realpath(fname)))
-
     def assert_same_files(self, flist1, flist2):
         """Assert that `flist1` and `flist2` are the same set of file names."""
-        flist1_nice = [self.nice_file(f) for f in flist1]
-        flist2_nice = [self.nice_file(f) for f in flist2]
+        flist1_nice = [nice_file(f) for f in flist1]
+        flist2_nice = [nice_file(f) for f in flist2]
         assert_count_equal(flist1_nice, flist2_nice)
 
     def assert_exists(self, fname):
@@ -393,8 +388,8 @@ class CoverageTest(
         if env.JYTHON:
             pythonpath_name = "JYTHONPATH"          # pragma: only jython
 
-        testmods = self.nice_file(self.working_root(), 'tests/modules')
-        zipfile = self.nice_file(self.working_root(), 'tests/zipmods.zip')
+        testmods = nice_file(self.working_root(), "tests/modules")
+        zipfile = nice_file(self.working_root(), "tests/zipmods.zip")
         pypath = os.getenv(pythonpath_name, '')
         if pypath:
             pypath += os.pathsep
@@ -407,7 +402,7 @@ class CoverageTest(
 
     def working_root(self):
         """Where is the root of the coverage.py working tree?"""
-        return os.path.dirname(self.nice_file(coverage.__file__, ".."))
+        return os.path.dirname(nice_file(coverage.__file__, ".."))
 
     def report_from_command(self, cmd):
         """Return the report from the `cmd`, with some convenience added."""
@@ -451,8 +446,8 @@ class UsingModulesMixin(object):
         super(UsingModulesMixin, self).setup_test()
 
         # Parent class saves and restores sys.path, we can just modify it.
-        sys.path.append(self.nice_file(TESTS_DIR, 'modules'))
-        sys.path.append(self.nice_file(TESTS_DIR, 'moremodules'))
+        sys.path.append(nice_file(TESTS_DIR, "modules"))
+        sys.path.append(nice_file(TESTS_DIR, "moremodules"))
 
 
 def command_line(args):
