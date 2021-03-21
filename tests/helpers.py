@@ -7,9 +7,11 @@ import collections
 import contextlib
 import glob
 import os
+import os.path
 import re
 import subprocess
 import sys
+import textwrap
 
 import mock
 
@@ -49,6 +51,46 @@ def run_command(cmd):
     output = output.replace('\r', '')
 
     return status, output
+
+
+def make_file(filename, text="", bytes=b"", newline=None):
+    """Create a file for testing.
+
+    `filename` is the relative path to the file, including directories if
+    desired, which will be created if need be.
+
+    `text` is the content to create in the file, a native string (bytes in
+    Python 2, unicode in Python 3), or `bytes` are the bytes to write.
+
+    If `newline` is provided, it is a string that will be used as the line
+    endings in the created file, otherwise the line endings are as provided
+    in `text`.
+
+    Returns `filename`.
+
+    """
+    # pylint: disable=redefined-builtin     # bytes
+    if bytes:
+        data = bytes
+    else:
+        text = textwrap.dedent(text)
+        if newline:
+            text = text.replace("\n", newline)
+        if env.PY3:
+            data = text.encode('utf8')
+        else:
+            data = text
+
+    # Make sure the directories are available.
+    dirs, _ = os.path.split(filename)
+    if dirs and not os.path.exists(dirs):
+        os.makedirs(dirs)
+
+    # Create the file.
+    with open(filename, 'wb') as f:
+        f.write(data)
+
+    return filename
 
 
 class CheckUniqueFilenames(object):

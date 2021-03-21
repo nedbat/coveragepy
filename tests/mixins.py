@@ -11,14 +11,12 @@ import os
 import os.path
 import shutil
 import sys
-import textwrap
 
 import pytest
 
-from coverage import env
 from coverage.backward import importlib
 
-from tests.helpers import change_dir, remove_files
+from tests.helpers import change_dir, make_file, remove_files
 
 
 class PytestBase(object):
@@ -78,43 +76,10 @@ class TempDirMixin(object):
             yield None
 
     def make_file(self, filename, text="", bytes=b"", newline=None):
-        """Create a file for testing.
-
-        `filename` is the relative path to the file, including directories if
-        desired, which will be created if need be.
-
-        `text` is the content to create in the file, a native string (bytes in
-        Python 2, unicode in Python 3), or `bytes` are the bytes to write.
-
-        If `newline` is provided, it is a string that will be used as the line
-        endings in the created file, otherwise the line endings are as provided
-        in `text`.
-
-        Returns `filename`.
-
-        """
+        """Make a file. See `tests.helpers.make_file`"""
         # pylint: disable=redefined-builtin     # bytes
-        if bytes:
-            data = bytes
-        else:
-            text = textwrap.dedent(text)
-            if newline:
-                text = text.replace("\n", newline)
-            if env.PY3:
-                data = text.encode('utf8')
-            else:
-                data = text
-
-        # Make sure the directories are available.
-        dirs, _ = os.path.split(filename)
-        if dirs and not os.path.exists(dirs):
-            os.makedirs(dirs)
-
-        # Create the file.
-        with open(filename, 'wb') as f:
-            f.write(data)
-
-        return filename
+        assert self.run_in_temp_dir, "Only use make_file when running in a temp dir"
+        return make_file(filename, text, bytes, newline)
 
 
 class SysPathModulesMixin:
