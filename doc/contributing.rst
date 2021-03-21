@@ -157,7 +157,7 @@ these as 1 to use them:
 Of course, run all the tests on every version of Python you have, before
 submitting a change.
 
-.. _pytest test selectors: http://doc.pytest.org/en/latest/usage.html#specifying-tests-selecting-tests
+.. _pytest test selectors: http://doc.pytest.org/en/stable/usage.html#specifying-tests-selecting-tests
 
 
 Lint, etc
