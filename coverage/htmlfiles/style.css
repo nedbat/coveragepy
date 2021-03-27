@@ -114,25 +114,29 @@ header button.par.show_par { background: #ffa; border: 2px solid #bbbb00; margin
 
 @media (prefers-color-scheme: dark) { header button.par.show_par { background: #650; } }
 
-.help_panel, #source p .annotate.long { display: none; position: absolute; z-index: 999; background: #ffffcc; border: 1px solid #888; border-radius: .2em; color: #333; padding: .25em .5em; }
+#help_panel, #source p .annotate.long { display: none; position: absolute; z-index: 999; background: #ffffcc; border: 1px solid #888; border-radius: .2em; color: #333; padding: .25em .5em; }
 
 #source p .annotate.long { white-space: normal; float: right; top: 1.75em; right: 1em; height: auto; }
 
-#keyboard_icon { float: right; margin: 5px; cursor: pointer; }
+#help_panel_wrapper { float: right; position: relative; }
 
-.help_panel { padding: .75em; border: 1px solid #883; }
+#keyboard_icon { margin: 5px; }
 
-.help_panel .legend { font-style: italic; margin-bottom: 1em; }
+#help_panel_state { display: none; }
 
-.indexfile .help_panel { width: 25em; }
+#help_panel { top: 25px; right: 0; padding: .75em; border: 1px solid #883; }
 
-.pyfile .help_panel { width: 18em; }
+#help_panel .legend { font-style: italic; margin-bottom: 1em; }
 
-#panel_icon { float: right; cursor: pointer; }
+.indexfile #help_panel { width: 25em; }
+
+.pyfile #help_panel { width: 18em; }
+
+#help_panel_state:checked ~ #help_panel { display: block; }
 
 .keyhelp { margin-top: .75em; }
 
-.keyhelp .key { border: 1px solid black; border-color: #888 #333 #333 #888; padding: .1em .35em; font-family: SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-weight: bold; background: #eee; }
+kbd { border: 1px solid black; border-color: #888 #333 #333 #888; padding: .1em .35em; font-family: SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-weight: bold; background: #eee; border-radius: 3px; }
 
 #source { padding: 1em 0 1em 3.5rem; font-family: SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
 
@@ -274,13 +278,13 @@ header button.par.show_par { background: #ffa; border: 2px solid #bbbb00; margin
 
 @media (prefers-color-scheme: dark) { #index th:hover { background: #333; } }
 
-#index th.headerSortDown, #index th.headerSortUp { white-space: nowrap; background: #eee; }
+#index th[aria-sort="ascending"], #index th[aria-sort="descending"] { white-space: nowrap; background: #eee; padding-left: .5em; }
 
-@media (prefers-color-scheme: dark) { #index th.headerSortDown, #index th.headerSortUp { background: #333; } }
+@media (prefers-color-scheme: dark) { #index th[aria-sort="ascending"], #index th[aria-sort="descending"] { background: #333; } }
 
-#index th.headerSortDown:after { content: " ↑"; }
+#index th[aria-sort="ascending"]::after { content: "↑"; }
 
-#index th.headerSortUp:after { content: " ↓"; }
+#index th[aria-sort="descending"]::after { content: "↓"; }
 
 #index td.name a { text-decoration: none; color: inherit; }
 

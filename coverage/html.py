@@ -159,11 +159,6 @@ class HtmlReporter:
     # directory.
     STATIC_FILES = [
         ("style.css", ""),
-        ("jquery.min.js", "jquery"),
-        ("jquery.ba-throttle-debounce.min.js", "jquery-throttle-debounce"),
-        ("jquery.hotkeys.js", "jquery-hotkeys"),
-        ("jquery.isonscreen.js", "jquery-isonscreen"),
-        ("jquery.tablesorter.min.js", "jquery-tablesorter"),
         ("coverage_html.js", ""),
         ("keybd_closed.png", ""),
         ("keybd_open.png", ""),

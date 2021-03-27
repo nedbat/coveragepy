@@ -331,14 +331,23 @@ header button {
 }
 
 // Help panel
-#keyboard_icon {
+#help_panel_wrapper {
     float: right;
-    margin: 5px;
-    cursor: pointer;
+    position: relative;
 }
 
-.help_panel {
+#keyboard_icon {
+    margin: 5px;
+}
+
+#help_panel_state {
+    display: none;
+}
+
+#help_panel {
     @extend %popup;
+    top: 25px;
+    right: 0;
     padding: .75em;
     border: 1px solid #883;
 
@@ -356,24 +365,24 @@ header button {
         width: 18em;
         //min-height: 8em;
     }
-}
 
-#panel_icon {
-    float: right;
-    cursor: pointer;
+    #help_panel_state:checked ~ & {
+        display: block;
+    }
 }
 
 .keyhelp {
     margin-top: .75em;
+}
 
-    .key {
-        border: 1px solid black;
-        border-color: #888 #333 #333 #888;
-        padding: .1em .35em;
-        font-family: $font-code;
-        font-weight: bold;
-        background: #eee;
-    }
+kbd {
+    border: 1px solid black;
+    border-color: #888 #333 #333 #888;
+    padding: .1em .35em;
+    font-family: $font-code;
+    font-weight: bold;
+    background: #eee;
+    border-radius: 3px;
 }
 
 // Source file styles
@@ -643,16 +652,17 @@ $border-indicator-width: .2em;
             background: $light-gray2;
             @include background-dark($dark-gray2);
         }
-        &.headerSortDown, &.headerSortUp {
+        &[aria-sort="ascending"], &[aria-sort="descending"] {
             white-space: nowrap;
             background: $light-gray2;
             @include background-dark($dark-gray2);
+            padding-left: .5em;
         }
-        &.headerSortDown:after {
-            content: " ↑";
+        &[aria-sort="ascending"]::after {
+            content: "↑";
         }
-        &.headerSortUp:after {
-            content: " ↓";
+        &[aria-sort="descending"]::after {
+            content: "↓";
         }
     }
     td.name a {
