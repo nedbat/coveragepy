@@ -41,15 +41,15 @@
     <p class="legend">Hot-keys on this page</p>
     <div>
     <p class="keyhelp">
-        <span class="key">n</span>
-        <span class="key">s</span>
-        <span class="key">m</span>
-        <span class="key">x</span>
+        <kbd>n</kbd>
+        <kbd>s</kbd>
+        <kbd>m</kbd>
+        <kbd>x</kbd>
         {% if has_arcs %}
-        <span class="key">b</span>
-        <span class="key">p</span>
+        <kbd>b</kbd>
+        <kbd>p</kbd>
         {% endif %}
-        <span class="key">c</span> &nbsp; change column sorting
+        <kbd>c</kbd> &nbsp; change column sorting
     </p>
     </div>
 </div>
@@ -59,15 +59,15 @@
         <thead>
             {# The title="" attr doesn"t work in Safari. #}
             <tr class="tablehead" title="Click to sort">
-                <th class="name left headerSortDown shortkey_n">Module</th>
-                <th class="shortkey_s">statements</th>
-                <th class="shortkey_m">missing</th>
-                <th class="shortkey_x">excluded</th>
+                <th class="name left headerSortDown" data-shortcut="n">Module</th>
+                <th data-shortcut="s">statements</th>
+                <th data-shortcut="m">missing</th>
+                <th data-shortcut="x">excluded</th>
                 {% if has_arcs %}
-                <th class="shortkey_b">branches</th>
-                <th class="shortkey_p">partial</th>
+                <th data-shortcut="b">branches</th>
+                <th data-shortcut="p">partial</th>
                 {% endif %}
-                <th class="right shortkey_c">coverage</th>
+                <th class="right" data-shortcut="c">coverage</th>
             </tr>
         </thead>
         {# HTML syntax requires thead, tfoot, tbody #}

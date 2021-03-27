@@ -7,14 +7,12 @@
 
 coverage = {};
 
-// Find all the elements with shortkey_* class, and use them to assign a shortcut key.
+// Find all the elements with data-shortcut attribute, and use them to assign a shortcut key.
 coverage.assign_shortkeys = function () {
-    $("*[class*='shortkey_']").each(function (i, e) {
-        $.each($(e).attr("class").split(" "), function (i, c) {
-            if (/^shortkey_/.test(c)) {
-                $(document).bind('keydown', c.substr(9), function () {
-                    $(e).click();
-                });
+    document.querySelectorAll("[data-shortcut]").forEach(element => {
+        document.addEventListener("keypress", event => {
+            if (event.key === element.dataset.shortcut) {
+                element.click();
             }
         });
     });

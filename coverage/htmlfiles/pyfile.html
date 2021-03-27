@@ -34,12 +34,12 @@
 
         <h2 class="stats">
             {{nums.n_statements}} statements &nbsp;
-            <button type="button" class="{{category.run}} shortkey_r button_toggle_run" title="Toggle lines run">{{nums.n_executed}} run</button>
-            <button type="button" class="{{category.mis}} shortkey_m button_toggle_mis" title="Toggle lines missing">{{nums.n_missing}} missing</button>
-            <button type="button" class="{{category.exc}} shortkey_x button_toggle_exc" title="Toggle lines excluded">{{nums.n_excluded}} excluded</button>
+            <button type="button" class="{{category.run}} button_toggle_run" data-shortcut="r" title="Toggle lines run">{{nums.n_executed}} run</button>
+            <button type="button" class="{{category.mis}} button_toggle_mis" data-shortcut="m" title="Toggle lines missing">{{nums.n_missing}} missing</button>
+            <button type="button" class="{{category.exc}} button_toggle_exc" data-shortcut="x" title="Toggle lines excluded">{{nums.n_excluded}} excluded</button>
 
             {% if has_arcs %}
-            <button type="button" class="{{category.par}} shortkey_p button_toggle_par" title="Toggle lines partially run">{{nums.n_partial_branches}} partial</button>
+            <button type="button" class="{{category.par}} button_toggle_par" data-shortcut="p" title="Toggle lines partially run">{{nums.n_partial_branches}} partial</button>
             {% endif %}
         </h2>
     </div>
@@ -50,20 +50,20 @@
     <p class="legend">Hot-keys on this page</p>
     <div>
     <p class="keyhelp">
-        <span class="key">r</span>
-        <span class="key">m</span>
-        <span class="key">x</span>
-        <span class="key">p</span> &nbsp; toggle line displays
+        <kbd>r</kbd>
+        <kbd>m</kbd>
+        <kbd>x</kbd>
+        <kbd>p</kbd> &nbsp; toggle line displays
     </p>
     <p class="keyhelp">
-        <span class="key">j</span>
-        <span class="key">k</span> &nbsp; next/prev highlighted chunk
+        <kbd>j</kbd>
+        <kbd>k</kbd> &nbsp; next/prev highlighted chunk
     </p>
     <p class="keyhelp">
-        <span class="key">0</span> &nbsp; (zero) top of page
+        <kbd>0</kbd> &nbsp; (zero) top of page
     </p>
     <p class="keyhelp">
-        <span class="key">1</span> &nbsp; (one) first highlighted chunk
+        <kbd>1</kbd> &nbsp; (one) first highlighted chunk
     </p>
     </div>
 </div>
