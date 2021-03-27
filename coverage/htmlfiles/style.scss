@@ -297,14 +297,23 @@ h2.stats {
 }
 
 // Help panel
-#keyboard_icon {
+#help_panel_wrapper {
     float: right;
-    margin: 5px;
-    cursor: pointer;
+    position: relative;
 }
 
-.help_panel {
+#keyboard_icon {
+    margin: 5px;
+}
+
+#help_panel_state {
+    display: none;
+}
+
+#help_panel {
     @extend %popup;
+    top: 25px;
+    right: 0;
     padding: .75em;
     border: 1px solid #883;
 
@@ -322,11 +331,10 @@ h2.stats {
         width: 18em;
         //min-height: 8em;
     }
-}
 
-#panel_icon {
-    float: right;
-    cursor: pointer;
+    #help_panel_state:checked ~ & {
+        display: block;
+    }
 }
 
 .keyhelp {

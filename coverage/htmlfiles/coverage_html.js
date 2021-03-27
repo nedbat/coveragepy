@@ -18,24 +18,6 @@ coverage.assign_shortkeys = function () {
     });
 };
 
-// Create the events for the help panel.
-coverage.wire_up_help_panel = function () {
-    $("#keyboard_icon").click(function () {
-        // Show the help panel, and position it so the keyboard icon in the
-        // panel is in the same place as the keyboard icon in the header.
-        $(".help_panel").show();
-        var koff = $("#keyboard_icon").offset();
-        var poff = $("#panel_icon").position();
-        $(".help_panel").offset({
-            top: koff.top-poff.top-1,
-            left: koff.left-poff.left-1
-        });
-    });
-    $("#panel_icon").click(function () {
-        $(".help_panel").hide();
-    });
-};
-
 // Create the events for the filter box.
 coverage.wire_up_filter = function () {
     // Cache elements.
@@ -218,7 +200,6 @@ coverage.index_ready = function ($) {
     });
 
     coverage.assign_shortkeys();
-    coverage.wire_up_help_panel();
     coverage.wire_up_filter();
 
     // Watch for page unload events so we can save the final sort settings:
@@ -273,8 +254,6 @@ coverage.pyfile_ready = function ($) {
     }
 
     coverage.assign_shortkeys();
-    coverage.wire_up_help_panel();
-
     coverage.init_scroll_markers();
 
     // Rebuild scroll markers when the window height changes.

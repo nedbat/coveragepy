@@ -30,7 +30,33 @@
             <span class="pc_cov">{{nums.pc_covered_str}}%</span>
         </h1>
 
-        <img id="keyboard_icon" src="keybd_closed.png" alt="Show keyboard shortcuts" />
+        <div id="help_panel_wrapper">
+            <input id="help_panel_state" type="checkbox">
+            <label for="help_panel_state">
+                <img id="keyboard_icon" src="keybd_closed.png" alt="Show/hide keyboard shortcuts" />
+            </label>
+            <div id="help_panel">
+                <p class="legend">Shortcuts on this page</p>
+                <div>
+                    <p class="keyhelp">
+                        <kbd>r</kbd>
+                        <kbd>m</kbd>
+                        <kbd>x</kbd>
+                        <kbd>p</kbd> &nbsp; toggle line displays
+                    </p>
+                    <p class="keyhelp">
+                        <kbd>j</kbd>
+                        <kbd>k</kbd> &nbsp; next/prev highlighted chunk
+                    </p>
+                    <p class="keyhelp">
+                        <kbd>0</kbd> &nbsp; (zero) top of page
+                    </p>
+                    <p class="keyhelp">
+                        <kbd>1</kbd> &nbsp; (one) first highlighted chunk
+                    </p>
+                </div>
+            </div>
+        </div>
 
         <h2 class="stats">
             {{nums.n_statements}} statements &nbsp;
@@ -42,29 +68,6 @@
             <button type="button" class="{{category.par}} button_toggle_par" data-shortcut="p" title="Toggle lines partially run">{{nums.n_partial_branches}} partial</button>
             {% endif %}
         </h2>
-    </div>
-</div>
-
-<div class="help_panel">
-    <img id="panel_icon" src="keybd_open.png" alt="Hide keyboard shortcuts" />
-    <p class="legend">Hot-keys on this page</p>
-    <div>
-    <p class="keyhelp">
-        <kbd>r</kbd>
-        <kbd>m</kbd>
-        <kbd>x</kbd>
-        <kbd>p</kbd> &nbsp; toggle line displays
-    </p>
-    <p class="keyhelp">
-        <kbd>j</kbd>
-        <kbd>k</kbd> &nbsp; next/prev highlighted chunk
-    </p>
-    <p class="keyhelp">
-        <kbd>0</kbd> &nbsp; (zero) top of page
-    </p>
-    <p class="keyhelp">
-        <kbd>1</kbd> &nbsp; (one) first highlighted chunk
-    </p>
     </div>
 </div>
 

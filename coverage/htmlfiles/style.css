@@ -102,21 +102,25 @@ h2.stats { margin-top: .5em; font-size: 1em; }
 
 @media (prefers-color-scheme: dark) { .stats button.par.show_par { background: #650; } }
 
-.help_panel, #source p .annotate.long { display: none; position: absolute; z-index: 999; background: #ffffcc; border: 1px solid #888; border-radius: .2em; color: #333; padding: .25em .5em; }
+#help_panel, #source p .annotate.long { display: none; position: absolute; z-index: 999; background: #ffffcc; border: 1px solid #888; border-radius: .2em; color: #333; padding: .25em .5em; }
 
 #source p .annotate.long { white-space: normal; float: right; top: 1.75em; right: 1em; height: auto; }
 
-#keyboard_icon { float: right; margin: 5px; cursor: pointer; }
+#help_panel_wrapper { float: right; position: relative; }
 
-.help_panel { padding: .75em; border: 1px solid #883; }
+#keyboard_icon { margin: 5px; }
 
-.help_panel .legend { font-style: italic; margin-bottom: 1em; }
+#help_panel_state { display: none; }
 
-.indexfile .help_panel { width: 25em; }
+#help_panel { top: 25px; right: 0; padding: .75em; border: 1px solid #883; }
 
-.pyfile .help_panel { width: 18em; }
+#help_panel .legend { font-style: italic; margin-bottom: 1em; }
 
-#panel_icon { float: right; cursor: pointer; }
+.indexfile #help_panel { width: 25em; }
+
+.pyfile #help_panel { width: 18em; }
+
+#help_panel_state:checked ~ #help_panel { display: block; }
 
 .keyhelp { margin-top: .75em; }
 
