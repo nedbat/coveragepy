@@ -7,10 +7,23 @@
 
 coverage = {};
 
+function debounce(callback, wait) {
+    let timeoutId = null;
+    return function(...args) {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => {
+            callback.apply(this, args);
+        }, wait);
+    };
+};
+
 // Find all the elements with data-shortcut attribute, and use them to assign a shortcut key.
 coverage.assign_shortkeys = function () {
     document.querySelectorAll("[data-shortcut]").forEach(element => {
         document.addEventListener("keypress", event => {
+            if (event.target.tagName.toLowerCase() === "input") {
+                return; // ignore keypress from search filter
+            }
             if (event.key === element.dataset.shortcut) {
                 element.click();
             }
@@ -21,130 +34,132 @@ coverage.assign_shortkeys = function () {
 // Create the events for the filter box.
 coverage.wire_up_filter = function () {
     // Cache elements.
-    var table = $("table.index");
-    var table_rows = table.find("tbody tr");
-    var table_row_names = table_rows.find("td.name a");
-    var no_rows = $("#no_rows");
+    const table = document.querySelector("table.index");
+    const table_rows = table.querySelectorAll("tbody tr");
+    const table_row_names = table.querySelectorAll("tbody tr td.name a");
+    const no_rows = document.getElementById("no_rows");
 
     // Create a duplicate table footer that we can modify with dynamic summed values.
-    var table_footer = $("table.index tfoot tr");
-    var table_dynamic_footer = table_footer.clone();
-    table_dynamic_footer.attr('class', 'total_dynamic hidden');
-    table_footer.after(table_dynamic_footer);
+    const table_footer = document.querySelector("table.index tfoot tr");
+    const table_dynamic_footer = table_footer.cloneNode(true);
+    table_dynamic_footer.className = "total_dynamic hidden";
+    table_footer.insertAdjacentElement('afterend', table_dynamic_footer);
 
     // Observe filter keyevents.
-    $("#filter").on("keyup change", $.debounce(150, function (event) {
-        var filter_value = $(this).val();
+    document.getElementById("filter").addEventListener("input", debounce(event => {
+        const filter_value = event.target.value;
 
         if (filter_value === "") {
             // Filter box is empty, remove all filtering.
-            table_rows.removeClass("hidden");
+            table_rows.forEach(element => element.classList.remove("hidden"));
 
             // Show standard footer, hide dynamic footer.
-            table_footer.removeClass("hidden");
-            table_dynamic_footer.addClass("hidden");
+            table_footer.classList.remove("hidden");
+            table_dynamic_footer.classList.add("hidden");
 
             // Hide placeholder, show table.
             if (no_rows.length > 0) {
-                no_rows.hide();
+                no_rows.style.display = "none";
             }
-            table.show();
-
+            table.style.display = null;
+            return;
         }
-        else {
-            // Filter table items by value.
-            var hidden = 0;
-            var shown = 0;
 
-            // Hide / show elements.
-            $.each(table_row_names, function () {
-                var element = $(this).parents("tr");
+        // Filter table items by value.
+        let hidden = 0;
+        let shown = 0;
 
-                if ($(this).text().indexOf(filter_value) === -1) {
-                    // hide
-                    element.addClass("hidden");
-                    hidden++;
-                }
-                else {
-                    // show
-                    element.removeClass("hidden");
-                    shown++;
-                }
-            });
+        // Hide / show elements.
+        table_row_names.forEach(element => {
+            const row = element.closest("tr");
 
-            // Show placeholder if no rows will be displayed.
-            if (no_rows.length > 0) {
-                if (shown === 0) {
-                    // Show placeholder, hide table.
-                    no_rows.show();
-                    table.hide();
-                }
-                else {
-                    // Hide placeholder, show table.
-                    no_rows.hide();
-                    table.show();
-                }
+            if (!element.textContent.includes(filter_value)) {
+                // hide
+                row.classList.add("hidden");
+                hidden++;
+            } else {
+                // show
+                row.classList.remove("hidden");
+                shown++;
             }
+        });
 
-            // Manage dynamic header:
-            if (hidden > 0) {
-                // Calculate new dynamic sum values based on visible rows.
-                for (var column = 2; column < 20; column++) {
-                    // Calculate summed value.
-                    var cells = table_rows.find('td:nth-child(' + column + ')');
-                    if (!cells.length) {
-                        // No more columns...!
-                        break;
-                    }
-
-                    var sum = 0, numer = 0, denom = 0;
-                    $.each(cells.filter(':visible'), function () {
-                        var ratio = $(this).data("ratio");
-                        if (ratio) {
-                            var splitted = ratio.split(" ");
-                            numer += parseInt(splitted[0], 10);
-                            denom += parseInt(splitted[1], 10);
-                        }
-                        else {
-                            sum += parseInt(this.innerHTML, 10);
-                        }
-                    });
-
-                    // Get footer cell element.
-                    var footer_cell = table_dynamic_footer.find('td:nth-child(' + column + ')');
-
-                    // Set value into dynamic footer cell element.
-                    if (cells[0].innerHTML.indexOf('%') > -1) {
-                        // Percentage columns use the numerator and denominator,
-                        // and adapt to the number of decimal places.
-                        var match = /\.([0-9]+)/.exec(cells[0].innerHTML);
-                        var places = 0;
-                        if (match) {
-                            places = match[1].length;
-                        }
-                        var pct = numer * 100 / denom;
-                        footer_cell.text(pct.toFixed(places) + '%');
-                    }
-                    else {
-                        footer_cell.text(sum);
-                    }
-                }
-
-                // Hide standard footer, show dynamic footer.
-                table_footer.addClass("hidden");
-                table_dynamic_footer.removeClass("hidden");
+        // Show placeholder if no rows will be displayed.
+        if (no_rows.length > 0) {
+            if (shown === 0) {
+                // Show placeholder, hide table.
+                no_rows.style.display = "block";
+                table.style.display = "none";
             }
             else {
-                // Show standard footer, hide dynamic footer.
-                table_footer.removeClass("hidden");
-                table_dynamic_footer.addClass("hidden");
+                // Hide placeholder, show table.
+                no_rows.style.display = "none";
+                table.style.display = null;
             }
+        }
+
+        // Manage dynamic header:
+        if (hidden > 0) {
+            // Calculate new dynamic sum values based on visible rows.
+            for (let column = 1; column < table.tHead.rows[0].cells.length; column++) {
+                // Calculate summed value.
+                const cells = table.querySelectorAll(`tbody td:nth-child(${column + 1})`);
+
+                let sum = 0, numer = 0, denom = 0;
+                cells.forEach(element => {
+                    if (!(
+                        element.offsetWidth
+                        || element.offsetHeight
+                        || element.getClientRects().length
+                    )) {
+                        // element is not visible i.e. filtered out
+                        return;
+                    }
+                    if ("ratio" in element.dataset) {
+                        let splitted = element.dataset.ratio.split(" ");
+                        numer += parseInt(splitted[0], 10);
+                        denom += parseInt(splitted[1], 10);
+                    } else {
+                        sum += parseInt(element.textContent, 10);
+                    }
+                });
+
+                
+                // Get footer cell element.
+                let footer_cell = table_dynamic_footer.querySelector(`td:nth-child(${column + 1})`);
+                console.log(sum, numer, denom, footer_cell)
+
+                // Set value into dynamic footer cell element.
+                if (cells[0].textContent.includes('%')) {
+                    // Percentage columns use the numerator and denominator,
+                    // and adapt to the number of decimal places.
+                    var match = /\.([0-9]+)/.exec(cells[0].textContent);
+                    var places = 0;
+                    if (match) {
+                        places = match[1].length;
+                    }
+                    var pct = numer * 100 / denom;
+                    footer_cell.textContent = `${pct.toFixed(places)}%`;
+                }
+                else {
+                    footer_cell.textContent = sum;
+                }
+            }
+
+            // Hide standard footer, show dynamic footer.
+            table_footer.classList.add("hidden");
+            table_dynamic_footer.classList.remove("hidden");
+        }
+        else {
+            // Show standard footer, hide dynamic footer.
+            table_footer.classList.remove("hidden");
+            table_dynamic_footer.classList.add("hidden");
         }
     }));
 
     // Trigger change event on setup, to force filter on page refresh
     // (filter value may still be present).
-    $("#filter").trigger("change");
+    document.getElementById("filter").dispatchEvent(new Event("change"));
 };
 
 // Loaded on index.html

@@ -73,20 +73,6 @@
                 <th class="right" data-shortcut="c">coverage</th>
             </tr>
         </thead>
-        {# HTML syntax requires thead, tfoot, tbody #}
-        <tfoot>
-            <tr class="total">
-                <td class="name left">Total</td>
-                <td>{{totals.n_statements}}</td>
-                <td>{{totals.n_missing}}</td>
-                <td>{{totals.n_excluded}}</td>
-                {% if has_arcs %}
-                <td>{{totals.n_branches}}</td>
-                <td>{{totals.n_partial_branches}}</td>
-                {% endif %}
-                <td class="right" data-ratio="{{totals.ratio_covered|pair}}">{{totals.pc_covered_str}}%</td>
-            </tr>
-        </tfoot>
         <tbody>
             {% for file in files %}
             <tr class="file">
@@ -102,6 +88,19 @@
             </tr>
             {% endfor %}
         </tbody>
+        <tfoot>
+            <tr class="total">
+                <td class="name left">Total</td>
+                <td>{{totals.n_statements}}</td>
+                <td>{{totals.n_missing}}</td>
+                <td>{{totals.n_excluded}}</td>
+                {% if has_arcs %}
+                <td>{{totals.n_branches}}</td>
+                <td>{{totals.n_partial_branches}}</td>
+                {% endif %}
+                <td class="right" data-ratio="{{totals.ratio_covered|pair}}">{{totals.pc_covered_str}}%</td>
+            </tr>
+        </tfoot>
     </table>
 
     <p id="no_rows">
