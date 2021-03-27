@@ -35,125 +35,76 @@ coverage.assign_shortkeys = function () {
 coverage.wire_up_filter = function () {
     // Cache elements.
     const table = document.querySelector("table.index");
-    const table_rows = table.querySelectorAll("tbody tr");
-    const table_row_names = table.querySelectorAll("tbody tr td.name a");
+    const table_body_rows = table.querySelectorAll("tbody tr");
     const no_rows = document.getElementById("no_rows");
-
-    // Create a duplicate table footer that we can modify with dynamic summed values.
-    const table_footer = document.querySelector("table.index tfoot tr");
-    const table_dynamic_footer = table_footer.cloneNode(true);
-    table_dynamic_footer.className = "total_dynamic hidden";
-    table_footer.insertAdjacentElement('afterend', table_dynamic_footer);
 
     // Observe filter keyevents.
     document.getElementById("filter").addEventListener("input", debounce(event => {
-        const filter_value = event.target.value;
-
-        if (filter_value === "") {
-            // Filter box is empty, remove all filtering.
-            table_rows.forEach(element => element.classList.remove("hidden"));
-
-            // Show standard footer, hide dynamic footer.
-            table_footer.classList.remove("hidden");
-            table_dynamic_footer.classList.add("hidden");
-
-            // Hide placeholder, show table.
-            if (no_rows.length > 0) {
-                no_rows.style.display = "none";
-            }
-            table.style.display = null;
-            return;
-        }
-
-        // Filter table items by value.
-        let hidden = 0;
-        let shown = 0;
+        // Keep running total of each metric, first index contains number of shown rows
+        const totals = new Array(table.rows[0].cells.length).fill(0);
+        // Accumulate the percentage as fraction
+        totals[totals.length - 1] = { "numer": 0, "denom": 0 };
 
         // Hide / show elements.
-        table_row_names.forEach(element => {
-            const row = element.closest("tr");
-
-            if (!element.textContent.includes(filter_value)) {
+        table_body_rows.forEach(row => {
+            if (!row.cells[0].textContent.includes(event.target.value)) {
                 // hide
                 row.classList.add("hidden");
-                hidden++;
-            } else {
-                // show
-                row.classList.remove("hidden");
-                shown++;
+                return;
+            }
+
+            // show
+            row.classList.remove("hidden");
+            totals[0]++;
+
+            for (let column = 1; column < totals.length; column++) {
+                // Accumulate dynamic totals
+                cell = row.cells[column]
+                if (column === totals.length - 1) {
+                    // Last column contains percentage
+                    const [numer, denom] = cell.dataset.ratio.split(" ");
+                    totals[column]["numer"] += parseInt(numer, 10);
+                    totals[column]["denom"] += parseInt(denom, 10);
+                } else {
+                    totals[column] += parseInt(cell.textContent, 10);
+                }
             }
         });
 
+        console.log(totals)
+
         // Show placeholder if no rows will be displayed.
-        if (no_rows.length > 0) {
-            if (shown === 0) {
-                // Show placeholder, hide table.
-                no_rows.style.display = "block";
-                table.style.display = "none";
-            }
-            else {
-                // Hide placeholder, show table.
-                no_rows.style.display = "none";
-                table.style.display = null;
-            }
+        if (!totals[0]) {
+            // Show placeholder, hide table.
+            no_rows.style.display = "block";
+            table.style.display = "none";
+            return;
         }
 
-        // Manage dynamic header:
-        if (hidden > 0) {
-            // Calculate new dynamic sum values based on visible rows.
-            for (let column = 1; column < table.tHead.rows[0].cells.length; column++) {
-                // Calculate summed value.
-                const cells = table.querySelectorAll(`tbody td:nth-child(${column + 1})`);
+        // Hide placeholder, show table.
+        no_rows.style.display = null;
+        table.style.display = null;
 
-                let sum = 0, numer = 0, denom = 0;
-                cells.forEach(element => {
-                    if (!(
-                        element.offsetWidth
-                        || element.offsetHeight
-                        || element.getClientRects().length
-                    )) {
-                        // element is not visible i.e. filtered out
-                        return;
-                    }
-                    if ("ratio" in element.dataset) {
-                        let splitted = element.dataset.ratio.split(" ");
-                        numer += parseInt(splitted[0], 10);
-                        denom += parseInt(splitted[1], 10);
-                    } else {
-                        sum += parseInt(element.textContent, 10);
-                    }
-                });
+        // Calculate new dynamic sum values based on visible rows.
+        for (let column = 1; column < totals.length; column++) {
+            // Get footer cell element.
+            const cell = table.tFoot.rows[0].cells[column];
 
-                
-                // Get footer cell element.
-                let footer_cell = table_dynamic_footer.querySelector(`td:nth-child(${column + 1})`);
-                console.log(sum, numer, denom, footer_cell)
-
-                // Set value into dynamic footer cell element.
-                if (cells[0].textContent.includes('%')) {
-                    // Percentage columns use the numerator and denominator,
-                    // and adapt to the number of decimal places.
-                    var match = /\.([0-9]+)/.exec(cells[0].textContent);
-                    var places = 0;
-                    if (match) {
-                        places = match[1].length;
-                    }
-                    var pct = numer * 100 / denom;
-                    footer_cell.textContent = `${pct.toFixed(places)}%`;
-                }
-                else {
-                    footer_cell.textContent = sum;
-                }
+            // Set value into dynamic footer cell element.
+            if (column === totals.length - 1) {
+                // Percentage column uses the numerator and denominator,
+                // and adapts to the number of decimal places.
+                const match = /\.([0-9]+)/.exec(cell.textContent);
+                const places = match ? match[1].length : 0;
+                const { numer, denom } = totals[column];
+                cell.dataset.ratio = `${numer} ${denom}`;
+                // Check denom to prevent NaN if filtered files contain no statements
+                cell.textContent = denom
+                    ? `${(numer * 100 / denom).toFixed(places)}%`
+                    : `${(100).toFixed(places)}%`;
+            } else {
+                cell.textContent = totals[column];
             }
-
-            // Hide standard footer, show dynamic footer.
-            table_footer.classList.add("hidden");
-            table_dynamic_footer.classList.remove("hidden");
-        }
-        else {
-            // Show standard footer, hide dynamic footer.
-            table_footer.classList.remove("hidden");
-            table_dynamic_footer.classList.add("hidden");
         }
     }));
 
