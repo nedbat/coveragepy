@@ -17,6 +17,10 @@ function debounce(callback, wait) {
     };
 };
 
+function clamp(n, min, max) {
+    return Math.min(Math.max(min, n), max);
+}
+
 // Find all the elements with data-shortcut attribute, and use them to assign a shortcut key.
 coverage.assign_shortkeys = function () {
     document.querySelectorAll("[data-shortcut]").forEach(element => {
@@ -482,73 +486,50 @@ coverage.finish_scrolling = function () {
 coverage.init_scroll_markers = function () {
     var c = coverage;
     // Init some variables
-    c.lines_len = $('#source p').length;
-    c.body_h = $('body').height();
-    c.header_h = $('div#header').height();
+    c.lines_len = document.querySelectorAll('#source p').length;
 
     // Build html
     c.build_scroll_markers();
 };
 
 coverage.build_scroll_markers = function () {
-    var c = coverage,
-        min_line_height = 3,
-        max_line_height = 10,
-        visible_window_h = $(window).height();
-
-    c.lines_to_mark = $('#source').find('p.show_run, p.show_mis, p.show_exc, p.show_exc, p.show_par');
-    $('#scroll_marker').remove();
+    const temp_scroll_marker = document.getElementById('scroll_marker')
+    if (temp_scroll_marker) temp_scroll_marker.remove();
     // Don't build markers if the window has no scroll bar.
-    if (c.body_h <= visible_window_h) {
+    if (document.body.scrollHeight <= window.innerHeight) {
         return;
     }
 
-    $("body").append("<div id='scroll_marker'>&nbsp;</div>");
-    var scroll_marker = $('#scroll_marker'),
-        marker_scale = scroll_marker.height() / c.body_h,
-        line_height = scroll_marker.height() / c.lines_len;
-
-    // Line height must be between the extremes.
-    if (line_height > min_line_height) {
-        if (line_height > max_line_height) {
-            line_height = max_line_height;
-        }
-    }
-    else {
-        line_height = min_line_height;
-    }
-
-    var previous_line = -99,
-        last_mark,
-        last_top,
-        offsets = {};
-
-    // Calculate line offsets outside loop to prevent relayouts
-    c.lines_to_mark.each(function() {
-        offsets[this.id] = $(this).offset().top;
-    });
-    c.lines_to_mark.each(function () {
-        var id_name = $(this).attr('id'),
-            line_top = Math.round(offsets[id_name] * marker_scale),
-            line_number = parseInt(id_name.substring(1, id_name.length));
+    const marker_scale = window.innerHeight / document.body.scrollHeight;
+    const line_height = clamp(window.innerHeight / coverage.lines_len, 3, 10);
+    
+    let previous_line = -99, last_mark, last_top;
+    
+    const scroll_marker = document.createElement("div");
+    scroll_marker.id = "scroll_marker";
+    document.getElementById('source').querySelectorAll(
+        'p.show_run, p.show_mis, p.show_exc, p.show_exc, p.show_par'
+    ).forEach(element => {
+        const line_top = Math.floor(element.offsetTop * marker_scale);
+        const line_number = parseInt(element.id.substr(1));
 
         if (line_number === previous_line + 1) {
             // If this solid missed block just make previous mark higher.
-            last_mark.css({
-                'height': line_top + line_height - last_top
-            });
-        }
-        else {
+            last_mark.style.height = `${line_top + line_height - last_top}px`;
+        } else {
             // Add colored line in scroll_marker block.
-            scroll_marker.append('<div id="m' + line_number + '" class="marker"></div>');
-            last_mark = $('#m' + line_number);
-            last_mark.css({
-                'height': line_height,
-                'top': line_top
-            });
+            last_mark = document.createElement("div");
+            last_mark.id = `m${line_number}`;
+            last_mark.classList.add("marker");
+            last_mark.style.height = `${line_height}px`;
+            last_mark.style.top = `${line_top}px`;
+            scroll_marker.append(last_mark);
             last_top = line_top;
         }
 
         previous_line = line_number;
     });
+
+    // Append last to prevent layout calculation
+    document.body.append(scroll_marker);
 };
