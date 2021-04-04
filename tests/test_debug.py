@@ -183,8 +183,9 @@ class DebugTraceTest(CoverageTest):
         out_lines = self.f1_debug_output(["sys"])
 
         labels = """
-            version coverage cover_paths pylib_paths tracer configs_attempted config_file
-            configs_read data_file python platform implementation executable
+            version coverage coverage_paths stdlib_paths third_party_paths
+            tracer configs_attempted config_file configs_read data_file
+            python platform implementation executable
             pid cwd path environment command_line cover_match pylib_match
             """.split()
         for label in labels:

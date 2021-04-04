@@ -3,18 +3,17 @@
 
 """Determining whether files are being measured/reported or not."""
 
-# For finding the stdlib
-import atexit
 import inspect
 import itertools
 import os
 import platform
 import re
 import sys
+import sysconfig
 import traceback
 
 from coverage import env
-from coverage.backward import code_object
+from coverage.backward import code_object, importlib_util_find_spec
 from coverage.disposition import FileDisposition, disposition_init
 from coverage.files import TreeMatcher, FnmatchMatcher, ModuleMatcher
 from coverage.files import prep_patterns, find_python_files, canonical_filename
@@ -108,6 +107,41 @@ def module_has_file(mod):
     return os.path.exists(mod__file__)
 
 
+def file_for_module(modulename):
+    """Find the file for `modulename`, or return None."""
+    if importlib_util_find_spec:
+        filename = None
+        try:
+            spec = importlib_util_find_spec(modulename)
+        except ImportError:
+            pass
+        else:
+            if spec is not None:
+                filename = spec.origin
+        return filename
+    else:
+        import imp
+        openfile = None
+        glo, loc = globals(), locals()
+        try:
+            # Search for the module - inside its parent package, if any - using
+            # standard import mechanics.
+            if '.' in modulename:
+                packagename, name = modulename.rsplit('.', 1)
+                package = __import__(packagename, glo, loc, ['__path__'])
+                searchpath = package.__path__
+            else:
+                packagename, name = None, modulename
+                searchpath = None  # "top-level search" in imp.find_module()
+            openfile, pathname, _ = imp.find_module(name, searchpath)
+            return pathname
+        except ImportError:
+            return None
+        finally:
+            if openfile:
+                openfile.close()
+
+
 def add_stdlib_paths(paths):
     """Add paths where the stdlib can be found to the set `paths`."""
     # Look at where some standard modules are located. That's the
@@ -115,7 +149,11 @@ def add_stdlib_paths(paths):
     # environments (virtualenv, for example), these modules may be
     # spread across a few locations. Look at all the candidate modules
     # we've imported, and take all the different ones.
-    for m in (atexit, inspect, os, platform, _pypy_irc_topic, re, _structseq, traceback):
+    modules_we_happen_to_have = [
+        inspect, itertools, os, platform, re, sysconfig, traceback,
+        _pypy_irc_topic, _structseq,
+    ]
+    for m in modules_we_happen_to_have:
         if m is not None and hasattr(m, "__file__"):
             paths.add(canonical_path(m, directory=True))
 
@@ -127,6 +165,20 @@ def add_stdlib_paths(paths):
         structseq_file = code_object(_structseq.structseq_new).co_filename
         if not structseq_file.startswith("<"):
             paths.add(canonical_path(structseq_file))
+
+
+def add_third_party_paths(paths):
+    """Add locations for third-party packages to the set `paths`."""
+    # Get the paths that sysconfig knows about.
+    scheme_names = set(sysconfig.get_scheme_names())
+
+    for scheme in scheme_names:
+        # https://foss.heptapod.net/pypy/pypy/-/issues/3433
+        better_scheme = "pypy_posix" if scheme == "pypy" else scheme
+        if os.name in better_scheme.split("_"):
+            config_paths = sysconfig.get_paths(scheme)
+            for path_name in ["platlib", "purelib"]:
+                paths.add(config_paths[path_name])
 
 
 def add_coverage_paths(paths):
@@ -156,8 +208,8 @@ class InOrOut(object):
         # The matchers for should_trace.
         self.source_match = None
         self.source_pkgs_match = None
-        self.pylib_paths = self.cover_paths = None
-        self.pylib_match = self.cover_match = None
+        self.pylib_paths = self.cover_paths = self.third_paths = None
+        self.pylib_match = self.cover_match = self.third_match = None
         self.include_match = self.omit_match = None
         self.plugins = []
         self.disp_class = FileDisposition
@@ -167,6 +219,9 @@ class InOrOut(object):
         self.source_pkgs = []
         self.source_pkgs_unmatched = []
         self.omit = self.include = None
+
+        # Is the source inside a third-party area?
+        self.source_in_third = False
 
     def configure(self, config):
         """Apply the configuration to get ready for decision-time."""
@@ -190,6 +245,10 @@ class InOrOut(object):
         # located where we are.
         self.cover_paths = set()
         add_coverage_paths(self.cover_paths)
+
+        # Find where third-party packages are installed.
+        self.third_paths = set()
+        add_third_party_paths(self.third_paths)
 
         def debug(msg):
             if self.debug:
@@ -218,6 +277,24 @@ class InOrOut(object):
         if self.omit:
             self.omit_match = FnmatchMatcher(self.omit)
             debug("Omit matching: {!r}".format(self.omit_match))
+        if self.third_paths:
+            self.third_match = TreeMatcher(self.third_paths)
+            debug("Third-party lib matching: {!r}".format(self.third_match))
+
+        # Check if the source we want to measure has been installed as a
+        # third-party package.
+        for pkg in self.source_pkgs:
+            try:
+                modfile = file_for_module(pkg)
+                debug("Imported {} as {}".format(pkg, modfile))
+            except CoverageException as exc:
+                debug("Couldn't import {}: {}".format(pkg, exc))
+                continue
+            if modfile and self.third_match.match(modfile):
+                self.source_in_third = True
+        for src in self.source:
+            if self.third_match.match(src):
+                self.source_in_third = True
 
     def should_trace(self, filename, frame=None):
         """Decide whether to trace execution in `filename`, with a reason.
@@ -352,6 +429,9 @@ class InOrOut(object):
                     ok = True
             if not ok:
                 return extra + "falls outside the --source spec"
+            if not self.source_in_third:
+                if self.third_match.match(filename):
+                    return "inside --source, but in third-party"
         elif self.include_match:
             if not self.include_match.match(filename):
                 return "falls outside the --include trees"
@@ -360,6 +440,10 @@ class InOrOut(object):
             # is near the Python standard library and skip it if so.
             if self.pylib_match and self.pylib_match.match(filename):
                 return "is in the stdlib"
+
+            # Exclude anything in the third-party installation areas.
+            if self.third_match and self.third_match.match(filename):
+                return "is a third-party module"
 
             # We exclude the coverage.py code itself, since a little of it
             # will be measured otherwise.
@@ -485,14 +569,15 @@ class InOrOut(object):
         Returns a list of (key, value) pairs.
         """
         info = [
-            ('cover_paths', self.cover_paths),
-            ('pylib_paths', self.pylib_paths),
+            ("coverage_paths", self.cover_paths),
+            ("stdlib_paths", self.pylib_paths),
+            ("third_party_paths", self.third_paths),
         ]
 
         matcher_names = [
             'source_match', 'source_pkgs_match',
             'include_match', 'omit_match',
-            'cover_match', 'pylib_match',
+            'cover_match', 'pylib_match', 'third_match',
             ]
 
         for matcher_name in matcher_names:

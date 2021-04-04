@@ -24,9 +24,20 @@ want to know what's different in 5.0 since 4.5.x, see :ref:`whatsnew5x`.
 Unreleased
 ----------
 
+- Third-party packages are now ignored in coverage reporting.  This solves two
+  problems:
+
+  - Coverage will no longer report about other people's code (`issue 876`_).
+
+  - Coverage will no longer generate "Already imported a file that will be
+    measured" warnings about coverage itself (`issue 905`_).
+
 - The JSON report now includes ``percent_covered_display``, a string with the
   total percentage, rounded to the same number of decimal places as the other
   reports' totals.
+
+.. _issue 876: https://github.com/nedbat/coveragepy/issues/876
+.. _issue 905: https://github.com/nedbat/coveragepy/issues/905
 
 
 .. _changes_55:

@@ -8,6 +8,7 @@ import glob
 import os
 import os.path
 import re
+import shutil
 import stat
 import sys
 import sysconfig
@@ -24,7 +25,7 @@ from coverage.files import abs_file, python_reported_file
 from coverage.misc import output_encoding
 
 from tests.coveragetest import CoverageTest, TESTS_DIR
-from tests.helpers import re_lines
+from tests.helpers import change_dir, make_file, nice_file, re_lines, run_command
 
 
 class ProcessTest(CoverageTest):
@@ -1640,3 +1641,100 @@ class ProcessStartupWithSourceTest(ProcessCoverageMixin, CoverageTest):
 
     def test_script_pkg_sub(self):
         self.assert_pth_and_source_work_together('', 'pkg', 'sub')
+
+
+def run_in_venv(args):
+    """Run python with `args` in the "venv" virtualenv.
+
+    Returns the text output of the command.
+    """
+    if env.WINDOWS:
+        cmd = r".\venv\Scripts\python.exe "
+    else:
+        cmd = "./venv/bin/python "
+    cmd += args
+    status, output = run_command(cmd)
+    print(output)
+    assert status == 0
+    return output
+
+
+@pytest.fixture(scope="session", name="venv_factory")
+def venv_factory_fixture(tmp_path_factory):
+    """Produce a function which can copy a venv template to a new directory.
+
+    The function accepts one argument, the directory to use for the venv.
+    """
+    tmpdir = tmp_path_factory.mktemp("venv_template")
+    with change_dir(str(tmpdir)):
+        # Create a virtualenv.
+        run_command("python -m virtualenv venv")
+
+        # A third-party package that installs two different packages.
+        make_file("third_pkg/third/__init__.py", """\
+            import fourth
+            def third(x):
+                return 3 * x
+            """)
+        make_file("third_pkg/fourth/__init__.py", """\
+            def fourth(x):
+                return 4 * x
+            """)
+        make_file("third_pkg/setup.py", """\
+            import setuptools
+            setuptools.setup(name="third", packages=["third", "fourth"])
+            """)
+
+        # Install the third-party packages.
+        run_in_venv("-m pip install --no-index ./third_pkg")
+
+        # Install coverage.
+        coverage_src = nice_file(TESTS_DIR, "..")
+        run_in_venv("-m pip install --no-index {}".format(coverage_src))
+
+    def factory(dst):
+        """The venv factory function.
+
+        Copies the venv template to `dst`.
+        """
+        shutil.copytree(str(tmpdir / "venv"), dst, symlinks=(not env.WINDOWS))
+
+    return factory
+
+
+class VirtualenvTest(CoverageTest):
+    """Tests of virtualenv considerations."""
+
+    def setup_test(self):
+        self.make_file("myproduct.py", """\
+            import third
+            print(third.third(11))
+            """)
+        self.del_environ("COVERAGE_TESTING")    # To avoid needing contracts installed.
+        super(VirtualenvTest, self).setup_test()
+
+    def test_third_party_venv_isnt_measured(self, venv_factory):
+        venv_factory("venv")
+        out = run_in_venv("-m coverage run --source=. myproduct.py")
+        # In particular, this warning doesn't appear:
+        # Already imported a file that will be measured: .../coverage/__main__.py
+        assert out == "33\n"
+        out = run_in_venv("-m coverage report")
+        assert "myproduct.py" in out
+        assert "third" not in out
+
+    def test_us_in_venv_is_measured(self, venv_factory):
+        venv_factory("venv")
+        out = run_in_venv("-m coverage run --source=third myproduct.py")
+        assert out == "33\n"
+        out = run_in_venv("-m coverage report")
+        assert "myproduct.py" not in out
+        assert "third" in out
+
+    def test_venv_isnt_measured(self, venv_factory):
+        venv_factory("venv")
+        out = run_in_venv("-m coverage run myproduct.py")
+        assert out == "33\n"
+        out = run_in_venv("-m coverage report")
+        assert "myproduct.py" in out
+        assert "third" not in out
