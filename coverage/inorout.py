@@ -108,6 +108,44 @@ def module_has_file(mod):
     return os.path.exists(mod__file__)
 
 
+def add_stdlib_paths(paths):
+    """Add paths where the stdlib can be found to the set `paths`."""
+    # Look at where some standard modules are located. That's the
+    # indication for "installed with the interpreter". In some
+    # environments (virtualenv, for example), these modules may be
+    # spread across a few locations. Look at all the candidate modules
+    # we've imported, and take all the different ones.
+    for m in (atexit, inspect, os, platform, _pypy_irc_topic, re, _structseq, traceback):
+        if m is not None and hasattr(m, "__file__"):
+            paths.add(canonical_path(m, directory=True))
+
+    if _structseq and not hasattr(_structseq, '__file__'):
+        # PyPy 2.4 has no __file__ in the builtin modules, but the code
+        # objects still have the file names.  So dig into one to find
+        # the path to exclude.  The "filename" might be synthetic,
+        # don't be fooled by those.
+        structseq_file = code_object(_structseq.structseq_new).co_filename
+        if not structseq_file.startswith("<"):
+            paths.add(canonical_path(structseq_file))
+
+
+def add_coverage_paths(paths):
+    """Add paths where coverage.py code can be found to the set `paths`."""
+    cover_path = canonical_path(__file__, directory=True)
+    paths.add(cover_path)
+    if env.TESTING:
+        # Don't include our own test code.
+        paths.add(os.path.join(cover_path, "tests"))
+
+        # When testing, we use PyContracts, which should be considered
+        # part of coverage.py, and it uses six. Exclude those directories
+        # just as we exclude ourselves.
+        import contracts
+        import six
+        for mod in [contracts, six]:
+            paths.add(canonical_path(mod))
+
+
 class InOrOut(object):
     """Machinery for determining what files to measure."""
 
@@ -146,38 +184,12 @@ class InOrOut(object):
         # The directories for files considered "installed with the interpreter".
         self.pylib_paths = set()
         if not config.cover_pylib:
-            # Look at where some standard modules are located. That's the
-            # indication for "installed with the interpreter". In some
-            # environments (virtualenv, for example), these modules may be
-            # spread across a few locations. Look at all the candidate modules
-            # we've imported, and take all the different ones.
-            for m in (atexit, inspect, os, platform, _pypy_irc_topic, re, _structseq, traceback):
-                if m is not None and hasattr(m, "__file__"):
-                    self.pylib_paths.add(canonical_path(m, directory=True))
-
-            if _structseq and not hasattr(_structseq, '__file__'):
-                # PyPy 2.4 has no __file__ in the builtin modules, but the code
-                # objects still have the file names.  So dig into one to find
-                # the path to exclude.  The "filename" might be synthetic,
-                # don't be fooled by those.
-                structseq_file = code_object(_structseq.structseq_new).co_filename
-                if not structseq_file.startswith("<"):
-                    self.pylib_paths.add(canonical_path(structseq_file))
+            add_stdlib_paths(self.pylib_paths)
 
         # To avoid tracing the coverage.py code itself, we skip anything
         # located where we are.
-        self.cover_paths = [canonical_path(__file__, directory=True)]
-        if env.TESTING:
-            # Don't include our own test code.
-            self.cover_paths.append(os.path.join(self.cover_paths[0], "tests"))
-
-            # When testing, we use PyContracts, which should be considered
-            # part of coverage.py, and it uses six. Exclude those directories
-            # just as we exclude ourselves.
-            import contracts
-            import six
-            for mod in [contracts, six]:
-                self.cover_paths.append(canonical_path(mod))
+        self.cover_paths = set()
+        add_coverage_paths(self.cover_paths)
 
         def debug(msg):
             if self.debug:
