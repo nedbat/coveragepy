@@ -24,7 +24,8 @@ want to know what's different in 5.0 since 4.5.x, see :ref:`whatsnew5x`.
 Unreleased
 ----------
 
-Nothing yet.
+- Fix another rarer instance of "Error binding parameter 0 - probably
+  unsupported type." (`issue 1010`_).
 
 
 .. _changes_60b1:

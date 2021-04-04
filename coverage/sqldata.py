@@ -1119,7 +1119,13 @@ class SqliteDb(SimpleReprMixin):
         if self.debug:
             data = list(data)
             self.debug.write(f"Executing many {sql!r} with {len(data)} rows")
-        return self.con.executemany(sql, data)
+        try:
+            return self.con.executemany(sql, data)
+        except Exception:
+            # In some cases, an error might happen that isn't really an
+            # error.  Try again immediately.
+            # https://github.com/nedbat/coveragepy/issues/1010
+            return self.con.executemany(sql, data)
 
     def executescript(self, script):
         """Same as :meth:`python:sqlite3.Connection.executescript`."""
