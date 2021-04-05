@@ -48,7 +48,7 @@ $(CSS): $(SCSS)
 LINTABLE = coverage tests igor.py setup.py __main__.py
 
 lint:					## Run linters and checkers.
-	tox -e lint
+	tox -q -e lint
 
 todo:
 	-grep -R --include=*.py TODO $(LINTABLE)
@@ -57,7 +57,7 @@ pep8:
 	pycodestyle --filename=*.py --repeat $(LINTABLE)
 
 test:
-	tox -e py27,py35 $(ARGS)
+	tox -q -e py27,py35 $(ARGS)
 
 PYTEST_SMOKE_ARGS = -n 6 -m "not expensive" --maxfail=3 $(ARGS)
 
@@ -71,7 +71,7 @@ pysmoke: 				## Run tests quickly with the Python tracer in the lowest supported
 # for details.
 
 metacov:				## Run meta-coverage, measuring ourself.
-	COVERAGE_COVERAGE=yes tox $(ARGS)
+	COVERAGE_COVERAGE=yes tox -q $(ARGS)
 
 metahtml:				## Produce meta-coverage HTML reports.
 	python igor.py combine_html
