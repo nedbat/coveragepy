@@ -216,17 +216,19 @@ class TreeMatcher(object):
 
     """
     def __init__(self, paths):
-        self.paths = list(paths)
+        self.original_paths = list(paths)
+        self.paths = list(map(os.path.normcase, paths))
 
     def __repr__(self):
         return "<TreeMatcher %r>" % self.paths
 
     def info(self):
         """A list of strings for displaying when dumping state."""
-        return self.paths
+        return self.original_paths
 
     def match(self, fpath):
         """Does `fpath` indicate a file in one of our trees?"""
+        fpath = os.path.normcase(fpath)
         for p in self.paths:
             if fpath.startswith(p):
                 if fpath == p:

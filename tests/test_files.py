@@ -151,16 +151,21 @@ class MatcherTest(CoverageTest):
         assert matches == matcher.match(canonical), msg
 
     def test_tree_matcher(self):
+        case_folding = env.WINDOWS
         matches_to_try = [
             (self.make_file("sub/file1.py"), True),
             (self.make_file("sub/file2.c"), True),
             (self.make_file("sub2/file3.h"), False),
             (self.make_file("sub3/file4.py"), True),
             (self.make_file("sub3/file5.c"), False),
+            (self.make_file("sub4/File5.py"), case_folding),
+            (self.make_file("sub5/file6.py"), case_folding),
         ]
         trees = [
             files.canonical_filename("sub"),
             files.canonical_filename("sub3/file4.py"),
+            files.canonical_filename("sub4/file5.py"),
+            files.canonical_filename("SUB5/file6.py"),
             ]
         tm = TreeMatcher(trees)
         assert tm.info() == trees
