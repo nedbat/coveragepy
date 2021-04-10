@@ -165,8 +165,5 @@ relnotes_json: $(RELNOTES_JSON)		## Convert changelog to JSON for further parsin
 $(RELNOTES_JSON): $(CHANGES_MD)
 	$(DOCBIN)/python ci/parse_relnotes.py tmp/rst_rst/changes.md $(RELNOTES_JSON)
 
-tidelift_relnotes: $(RELNOTES_JSON)	## Upload parsed release notes to Tidelift.
-	$(DOCBIN)/python ci/tidelift_relnotes.py $(RELNOTES_JSON) pypi/coverage
-
 github_releases: $(RELNOTES_JSON)	## Update GitHub releases.
 	$(DOCBIN)/python ci/github_releases.py $(RELNOTES_JSON) nedbat/coveragepy

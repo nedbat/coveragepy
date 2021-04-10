@@ -65,8 +65,6 @@
     - CHANGES.rst
         - add an "Unreleased" section to the top.
     $ git push
-- Update Tidelift:
-    $ make tidelift_relnotes
 - Update GitHub releases:
     $ make github_releases
 - Update readthedocs
