@@ -240,7 +240,7 @@ def change_dir(new_dir):
 
     """
     old_dir = os.getcwd()
-    os.chdir(new_dir)
+    os.chdir(str(new_dir))
     try:
         yield
     finally:

@@ -1643,30 +1643,33 @@ class ProcessStartupWithSourceTest(ProcessCoverageMixin, CoverageTest):
         self.assert_pth_and_source_work_together('', 'pkg', 'sub')
 
 
-def run_in_venv(args):
-    """Run python with `args` in the "venv" virtualenv.
+def run_in_venv(cmd):
+    r"""Run `cmd` in the virtualenv at `venv`.
+
+    The first word of the command will be adjusted to run it from the
+    venv/bin or venv\Scripts directory.
 
     Returns the text output of the command.
     """
+    words = cmd.split()
     if env.WINDOWS:
-        cmd = r".\venv\Scripts\python.exe "
+        words[0] = r"{}\Scripts\{}.exe".format("venv", words[0])
     else:
-        cmd = "./venv/bin/python "
-    cmd += args
-    status, output = run_command(cmd)
-    print(output)
+        words[0] = "{}/bin/{}".format("venv", words[0])
+    status, output = run_command(" ".join(words))
     assert status == 0
     return output
 
 
-@pytest.fixture(scope="session", name="venv_factory")
-def venv_factory_fixture(tmp_path_factory):
-    """Produce a function which can copy a venv template to a new directory.
+@pytest.fixture(scope="session", name="venv_world")
+def venv_world_fixture(tmp_path_factory):
+    """Create a virtualenv with a few test packages for VirtualenvTest to use.
 
-    The function accepts one argument, the directory to use for the venv.
+    Returns the directory containing the "venv" virtualenv.
     """
-    tmpdir = tmp_path_factory.mktemp("venv_template")
-    with change_dir(str(tmpdir)):
+
+    venv_world = tmp_path_factory.mktemp("venv_world")
+    with change_dir(venv_world):
         # Create a virtualenv.
         run_command("python -m virtualenv venv")
 
@@ -1686,55 +1689,119 @@ def venv_factory_fixture(tmp_path_factory):
             """)
 
         # Install the third-party packages.
-        run_in_venv("-m pip install --no-index ./third_pkg")
+        run_in_venv("python -m pip install --no-index ./third_pkg")
+        shutil.rmtree("third_pkg")
 
         # Install coverage.
         coverage_src = nice_file(TESTS_DIR, "..")
-        run_in_venv("-m pip install --no-index {}".format(coverage_src))
+        run_in_venv("python -m pip install --no-index {}".format(coverage_src))
 
-    def factory(dst):
-        """The venv factory function.
+    return venv_world
 
-        Copies the venv template to `dst`.
-        """
-        shutil.copytree(str(tmpdir / "venv"), dst, symlinks=(not env.WINDOWS))
 
-    return factory
+@pytest.fixture(params=[
+    "coverage",
+    "python -m coverage",
+], name="coverage_command")
+def coverage_command_fixture(request):
+    """Parametrized fixture to use multiple forms of "coverage" command."""
+    return request.param
 
 
 class VirtualenvTest(CoverageTest):
     """Tests of virtualenv considerations."""
 
-    def setup_test(self):
-        self.make_file("myproduct.py", """\
-            import third
-            print(third.third(11))
-            """)
-        self.del_environ("COVERAGE_TESTING")    # To avoid needing contracts installed.
-        super(VirtualenvTest, self).setup_test()
+    @pytest.fixture(autouse=True)
+    def in_venv_world_fixture(self, venv_world):
+        """For running tests inside venv_world, and cleaning up made files."""
+        with change_dir(venv_world):
+            self.make_file("myproduct.py", """\
+                import colorsys
+                import third
+                print(third.third(11))
+                print(sum(colorsys.rgb_to_hls(1, 0, 0)))
+                """)
+            self.expected_stdout = "33\n1.5\n"      # pylint: disable=attribute-defined-outside-init
 
-    def test_third_party_venv_isnt_measured(self, venv_factory):
-        venv_factory("venv")
-        out = run_in_venv("-m coverage run --source=. myproduct.py")
+            self.del_environ("COVERAGE_TESTING")    # To avoid needing contracts installed.
+            self.set_environ("COVERAGE_DEBUG_FILE", "debug_out.txt")
+            self.set_environ("COVERAGE_DEBUG", "trace")
+
+            yield
+
+            for fname in os.listdir("."):
+                if fname != "venv":
+                    os.remove(fname)
+
+    def get_trace_output(self):
+        """Get the debug output of coverage.py"""
+        with open("debug_out.txt") as f:
+            return f.read()
+
+    def test_third_party_venv_isnt_measured(self, coverage_command):
+        out = run_in_venv(coverage_command + " run --source=. myproduct.py")
         # In particular, this warning doesn't appear:
         # Already imported a file that will be measured: .../coverage/__main__.py
-        assert out == "33\n"
-        out = run_in_venv("-m coverage report")
+        assert out == self.expected_stdout
+
+        # Check that our tracing was accurate. Files are mentioned because
+        # --source refers to a file.
+        debug_out = self.get_trace_output()
+        assert re_lines(
+            debug_out,
+            r"^Not tracing .*\bexecfile.py': inside --source, but is part of coverage.py"
+            )
+        assert re_lines(debug_out, r"^Tracing .*\bmyproduct.py")
+        assert re_lines(
+            debug_out,
+            r"^Not tracing .*\bcolorsys.py': falls outside the --source spec"
+            )
+
+        out = run_in_venv("python -m coverage report")
         assert "myproduct.py" in out
         assert "third" not in out
+        assert "coverage" not in out
+        assert "colorsys" not in out
 
-    def test_us_in_venv_is_measured(self, venv_factory):
-        venv_factory("venv")
-        out = run_in_venv("-m coverage run --source=third myproduct.py")
-        assert out == "33\n"
-        out = run_in_venv("-m coverage report")
+    def test_us_in_venv_isnt_measured(self, coverage_command):
+        out = run_in_venv(coverage_command + " run --source=third myproduct.py")
+        assert out == self.expected_stdout
+
+        # Check that our tracing was accurate. Modules are mentioned because
+        # --source refers to a module.
+        debug_out = self.get_trace_output()
+        assert re_lines(
+            debug_out,
+            r"^Not tracing .*\bexecfile.py': " +
+            "module 'coverage.execfile' falls outside the --source spec"
+            )
+        print(re_lines(debug_out, "myproduct"))
+        assert re_lines(
+            debug_out,
+            r"^Not tracing .*\bmyproduct.py': module u?'myproduct' falls outside the --source spec"
+            )
+        assert re_lines(
+            debug_out,
+            r"^Not tracing .*\bcolorsys.py': module u?'colorsys' falls outside the --source spec"
+            )
+
+        out = run_in_venv("python -m coverage report")
         assert "myproduct.py" not in out
         assert "third" in out
+        assert "coverage" not in out
+        assert "colorsys" not in out
 
-    def test_venv_isnt_measured(self, venv_factory):
-        venv_factory("venv")
-        out = run_in_venv("-m coverage run myproduct.py")
-        assert out == "33\n"
-        out = run_in_venv("-m coverage report")
+    def test_venv_isnt_measured(self, coverage_command):
+        out = run_in_venv(coverage_command + " run myproduct.py")
+        assert out == self.expected_stdout
+
+        debug_out = self.get_trace_output()
+        assert re_lines(debug_out, r"^Not tracing .*\bexecfile.py': is part of coverage.py")
+        assert re_lines(debug_out, r"^Tracing .*\bmyproduct.py")
+        assert re_lines(debug_out, r"^Not tracing .*\bcolorsys.py': is in the stdlib")
+
+        out = run_in_venv("python -m coverage report")
         assert "myproduct.py" in out
         assert "third" not in out
+        assert "coverage" not in out
+        assert "colorsys" not in out

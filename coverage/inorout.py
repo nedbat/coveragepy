@@ -177,7 +177,7 @@ def add_third_party_paths(paths):
         better_scheme = "pypy_posix" if scheme == "pypy" else scheme
         if os.name in better_scheme.split("_"):
             config_paths = sysconfig.get_paths(scheme)
-            for path_name in ["platlib", "purelib"]:
+            for path_name in ["platlib", "purelib", "scripts"]:
                 paths.add(config_paths[path_name])
 
 
@@ -265,9 +265,6 @@ class InOrOut(object):
                 against.append("modules {!r}".format(self.source_pkgs_match))
             debug("Source matching against " + " and ".join(against))
         else:
-            if self.cover_paths:
-                self.cover_match = TreeMatcher(self.cover_paths, "coverage")
-                debug("Coverage code matching: {!r}".format(self.cover_match))
             if self.pylib_paths:
                 self.pylib_match = TreeMatcher(self.pylib_paths, "pylib")
                 debug("Python stdlib matching: {!r}".format(self.pylib_match))
@@ -277,9 +274,12 @@ class InOrOut(object):
         if self.omit:
             self.omit_match = FnmatchMatcher(self.omit, "omit")
             debug("Omit matching: {!r}".format(self.omit_match))
-        if self.third_paths:
-            self.third_match = TreeMatcher(self.third_paths, "third")
-            debug("Third-party lib matching: {!r}".format(self.third_match))
+
+        self.cover_match = TreeMatcher(self.cover_paths, "coverage")
+        debug("Coverage code matching: {!r}".format(self.cover_match))
+
+        self.third_match = TreeMatcher(self.third_paths, "third")
+        debug("Third-party lib matching: {!r}".format(self.third_match))
 
         # Check if the source we want to measure has been installed as a
         # third-party package.
@@ -429,26 +429,28 @@ class InOrOut(object):
                     ok = True
             if not ok:
                 return extra + "falls outside the --source spec"
+            if self.cover_match.match(filename):
+                return "inside --source, but is part of coverage.py"
             if not self.source_in_third:
                 if self.third_match.match(filename):
-                    return "inside --source, but in third-party"
+                    return "inside --source, but is third-party"
         elif self.include_match:
             if not self.include_match.match(filename):
                 return "falls outside the --include trees"
         else:
+            # We exclude the coverage.py code itself, since a little of it
+            # will be measured otherwise.
+            if self.cover_match.match(filename):
+                return "is part of coverage.py"
+
             # If we aren't supposed to trace installed code, then check if this
             # is near the Python standard library and skip it if so.
             if self.pylib_match and self.pylib_match.match(filename):
                 return "is in the stdlib"
 
             # Exclude anything in the third-party installation areas.
-            if self.third_match and self.third_match.match(filename):
+            if self.third_match.match(filename):
                 return "is a third-party module"
-
-            # We exclude the coverage.py code itself, since a little of it
-            # will be measured otherwise.
-            if self.cover_match and self.cover_match.match(filename):
-                return "is part of coverage.py"
 
         # Check the file against the omit pattern.
         if self.omit_match and self.omit_match.match(filename):
@@ -485,6 +487,12 @@ class InOrOut(object):
                     msg = "Already imported a file that will be measured: {}".format(filename)
                     self.warn(msg, slug="already-imported")
                     warned.add(filename)
+                elif self.debug and self.debug.should('trace'):
+                    self.debug.write(
+                        "Didn't trace already imported file {!r}: {}".format(
+                            disp.original_filename, disp.reason
+                        )
+                    )
 
     def warn_unimported_source(self):
         """Warn about source packages that were of interest, but never traced."""
