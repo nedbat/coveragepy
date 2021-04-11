@@ -258,27 +258,27 @@ class InOrOut(object):
         if self.source or self.source_pkgs:
             against = []
             if self.source:
-                self.source_match = TreeMatcher(self.source)
+                self.source_match = TreeMatcher(self.source, "source")
                 against.append("trees {!r}".format(self.source_match))
             if self.source_pkgs:
-                self.source_pkgs_match = ModuleMatcher(self.source_pkgs)
+                self.source_pkgs_match = ModuleMatcher(self.source_pkgs, "source_pkgs")
                 against.append("modules {!r}".format(self.source_pkgs_match))
             debug("Source matching against " + " and ".join(against))
         else:
             if self.cover_paths:
-                self.cover_match = TreeMatcher(self.cover_paths)
+                self.cover_match = TreeMatcher(self.cover_paths, "coverage")
                 debug("Coverage code matching: {!r}".format(self.cover_match))
             if self.pylib_paths:
-                self.pylib_match = TreeMatcher(self.pylib_paths)
+                self.pylib_match = TreeMatcher(self.pylib_paths, "pylib")
                 debug("Python stdlib matching: {!r}".format(self.pylib_match))
         if self.include:
-            self.include_match = FnmatchMatcher(self.include)
+            self.include_match = FnmatchMatcher(self.include, "include")
             debug("Include matching: {!r}".format(self.include_match))
         if self.omit:
-            self.omit_match = FnmatchMatcher(self.omit)
+            self.omit_match = FnmatchMatcher(self.omit, "omit")
             debug("Omit matching: {!r}".format(self.omit_match))
         if self.third_paths:
-            self.third_match = TreeMatcher(self.third_paths)
+            self.third_match = TreeMatcher(self.third_paths, "third")
             debug("Third-party lib matching: {!r}".format(self.third_match))
 
         # Check if the source we want to measure has been installed as a

@@ -215,12 +215,13 @@ class TreeMatcher(object):
     somewhere in a subtree rooted at one of the directories.
 
     """
-    def __init__(self, paths):
+    def __init__(self, paths, name):
         self.original_paths = list(paths)
         self.paths = list(map(os.path.normcase, paths))
+        self.name = name
 
     def __repr__(self):
-        return "<TreeMatcher %r>" % self.paths
+        return "<TreeMatcher {!r} {!r}>".format(self.name, self.original_paths)
 
     def info(self):
         """A list of strings for displaying when dumping state."""
@@ -242,11 +243,12 @@ class TreeMatcher(object):
 
 class ModuleMatcher(object):
     """A matcher for modules in a tree."""
-    def __init__(self, module_names):
+    def __init__(self, module_names, name):
         self.modules = list(module_names)
+        self.name = name
 
     def __repr__(self):
-        return "<ModuleMatcher %r>" % (self.modules)
+        return "<ModuleMatcher {!r} {!r}>".format(self.name, self.modules)
 
     def info(self):
         """A list of strings for displaying when dumping state."""
@@ -270,12 +272,13 @@ class ModuleMatcher(object):
 
 class FnmatchMatcher(object):
     """A matcher for files by file name pattern."""
-    def __init__(self, pats):
+    def __init__(self, pats, name):
         self.pats = list(pats)
         self.re = fnmatches_to_regex(self.pats, case_insensitive=env.WINDOWS)
+        self.name = name
 
     def __repr__(self):
-        return "<FnmatchMatcher %r>" % self.pats
+        return "<FnmatchMatcher {!r} {!r}>".format(self.name, self.pats)
 
     def info(self):
         """A list of strings for displaying when dumping state."""
