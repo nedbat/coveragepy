@@ -34,6 +34,10 @@ Unreleased
   - Coverage will no longer generate "Already imported a file that will be
     measured" warnings about coverage itself (`issue 905`_).
 
+- The HTML report uses j/k to move up and down among the highlighted chunks of
+  code.  They used to highlight the current chunk, but 5.0 broke that behavior.
+  Now the highlighting is working again.
+
 - The JSON report now includes ``percent_covered_display``, a string with the
   total percentage, rounded to the same number of decimal places as the other
   reports' totals.
