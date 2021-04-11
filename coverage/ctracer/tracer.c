@@ -715,7 +715,7 @@ CTracer_handle_return(CTracer *self, PyFrameObject *frame)
              */
             int bytecode = RETURN_VALUE;
             PyObject * pCode = frame->f_code->co_code;
-            int lasti = frame->f_lasti;
+            int lasti = MyFrame_lasti(frame);
 
             if (lasti < MyBytes_GET_SIZE(pCode)) {
                 bytecode = MyBytes_AS_STRING(pCode)[lasti];

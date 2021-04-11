@@ -44,6 +44,14 @@
 
 #endif /* Py3k */
 
+// The f_lasti field changed meaning in 3.10.0a7. It had been bytes, but
+// now is instructions, so we need to adjust it to use it as a byte index.
+#if PY_VERSION_HEX >= 0x030A00A7
+#define MyFrame_lasti(f)    (f->f_lasti * 2)
+#else
+#define MyFrame_lasti(f)    f->f_lasti
+#endif // 3.10.0a7
+
 // Undocumented, and not in all 2.7.x, so our own copy of it.
 #define My_XSETREF(op, op2)                     \
     do {                                        \
