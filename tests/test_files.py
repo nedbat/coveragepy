@@ -188,8 +188,12 @@ class MatcherTest(CoverageTest):
             ('__main__', False),
             ('mymain', True),
             ('yourmain', False),
+            ('pkg', True),
+            ('pkg.main', True),
+            ('pkg2', True),
+            ('apkg', False),
         ]
-        modules = ['test', 'py.test', 'mymain']
+        modules = ['test', 'py.test', 'mymain', 'pkg*']
         mm = ModuleMatcher(modules)
         assert mm.info() == modules
         for modulename, matches in matches_to_try:

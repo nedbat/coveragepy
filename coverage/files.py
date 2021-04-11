@@ -244,6 +244,7 @@ class ModuleMatcher(object):
     """A matcher for modules in a tree."""
     def __init__(self, module_names):
         self.modules = list(module_names)
+        self.pattern = fnmatches_to_regex(module_names)
 
     def __repr__(self):
         return "<ModuleMatcher %r>" % (self.modules)
@@ -265,7 +266,7 @@ class ModuleMatcher(object):
                     # This is a module in the package
                     return True
 
-        return False
+        return bool(self.pattern.match(module_name))
 
 
 class FnmatchMatcher(object):
