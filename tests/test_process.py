@@ -1749,7 +1749,7 @@ class VirtualenvTest(CoverageTest):
         debug_out = self.get_trace_output()
         assert re_lines(
             debug_out,
-            r"^Not tracing .*\bexecfile.py': inside --source, but is part of coverage.py"
+            r"^Not tracing .*\bexecfile.py': inside --source, but is third-party"
             )
         assert re_lines(debug_out, r"^Tracing .*\bmyproduct.py")
         assert re_lines(

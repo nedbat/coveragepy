@@ -429,8 +429,6 @@ class InOrOut(object):
                     ok = True
             if not ok:
                 return extra + "falls outside the --source spec"
-            if self.cover_match.match(filename):
-                return "inside --source, but is part of coverage.py"
             if not self.source_in_third:
                 if self.third_match.match(filename):
                     return "inside --source, but is third-party"
