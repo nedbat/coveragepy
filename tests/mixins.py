@@ -47,7 +47,7 @@ class PytestBase(object):
 
     def del_environ(self, name):
         """Delete an environment variable, unless we set it."""
-        self._monkeypatch.delenv(name)
+        self._monkeypatch.delenv(name, raising=False)
 
 
 class TempDirMixin(object):
