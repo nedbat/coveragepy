@@ -18,6 +18,8 @@ def download_url(url, filename):
         with open(filename, "wb") as f:
             for chunk in response.iter_content(16*1024):
                 f.write(chunk)
+    else:
+        raise Exception(f"Fetching {url} produced: {response.status_code=}")
 
 def unpack_zipfile(filename):
     """Unpack a zipfile, using the names in the zip."""
