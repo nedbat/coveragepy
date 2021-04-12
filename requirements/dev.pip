@@ -14,16 +14,16 @@ tox
 -r pytest.pip
 
 # for linting.
-greenlet==0.4.16
+greenlet==1.0.0
 astroid==2.5.3
 pylint==2.7.4
 check-manifest==0.46
-readme_renderer==26.0
+readme_renderer==29.0
 
 # for kitting.
 requests==2.25.1
-twine==3.3.0
+twine==3.4.1
 libsass==0.20.1
 
-# Just so I have a debugger if I want it
-pudb==2019.2
+# Just so I have a debugger if I want it.
+pudb==2020.1

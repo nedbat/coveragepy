@@ -4,9 +4,9 @@
 # Version pins, for use as a constraints file.
 
 auditwheel==3.3.1
-cibuildwheel==1.7.0
-tox==3.20.1
-tox-gh-actions==2.2.0
+cibuildwheel==1.10.0
+tox==3.23.0
+tox-gh-actions==2.5.0
 
 # setuptools 45.x is py3-only
 setuptools==44.1.1
