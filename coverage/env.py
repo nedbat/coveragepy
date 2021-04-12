@@ -82,7 +82,10 @@ class PYBEHAVIOR(object):
     # used to be an empty string (meaning the current directory). It changed
     # to be the actual path to the current directory, so that os.chdir wouldn't
     # affect the outcome.
-    actual_syspath0_dash_m = CPYTHON and (PYVERSION >= (3, 7, 0, 'beta', 3))
+    actual_syspath0_dash_m = (
+        (CPYTHON and (PYVERSION >= (3, 7, 0, 'beta', 3))) or
+        (PYPY3 and (PYPYVERSION >= (7, 3, 4)))
+        )
 
     # 3.7 changed how functions with only docstrings are numbered.
     docstring_only_function = (not PYPY) and ((3, 7, 0, 'beta', 5) <= PYVERSION <= (3, 10))
