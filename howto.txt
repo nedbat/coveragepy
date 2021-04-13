@@ -33,7 +33,7 @@
     - IF NOT PRE-RELEASE:
         $ rm -f ~/coverage/trunk/doc/sample_html/*.*
         $ cp -r htmlcov/ ~/coverage/trunk/doc/sample_html/
-    cd ~/coverage/trunk
+    $ cd ~/coverage/trunk
     - IF NOT PRE-RELEASE:
         check in the new sample html
 - Done with changes to source files, check them in.

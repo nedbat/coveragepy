@@ -21,8 +21,10 @@ want to know what's different in 5.0 since 4.5.x, see :ref:`whatsnew5x`.
     ..  Version 9.8.1 --- 2027-07-27
     ..  ----------------------------
 
-Unreleased
-----------
+.. _changes_56b1:
+
+Version 5.6b1 --- 2021-04-13
+----------------------------
 
 - Third-party packages are now ignored in coverage reporting.  This solves a
   few problems:
