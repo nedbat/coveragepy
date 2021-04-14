@@ -19,18 +19,22 @@ class GetZipBytesTest(CoverageTest):
 
     run_in_temp_dir = False
 
-    def test_get_encoded_zip_files(self):
+    @pytest.mark.parametrize(
+        "encoding",
+        ["utf8", "gb2312", "hebrew", "shift_jis", "cp1252"],
+    )
+    def test_get_encoded_zip_files(self, encoding):
         # See igor.py, do_zipmods, for the text of these files.
         zip_file = "tests/zipmods.zip"
         sys.path.append(zip_file)       # So we can import the files.
-        for encoding in ["utf8", "gb2312", "hebrew", "shift_jis", "cp1252"]:
-            filename = zip_file + "/encoded_" + encoding + ".py"
-            filename = filename.replace("/", os.sep)
-            zip_data = get_zip_bytes(filename)
-            zip_text = zip_data.decode(encoding)
-            assert 'All OK' in zip_text
-            # Run the code to see that we really got it encoded properly.
-            __import__("encoded_"+encoding)
+        filename = zip_file + "/encoded_" + encoding + ".py"
+        filename = filename.replace("/", os.sep)
+        zip_data = get_zip_bytes(filename)
+        zip_text = zip_data.decode(encoding)
+        assert 'All OK' in zip_text
+        # Run the code to see that we really got it encoded properly.
+        mod = __import__("encoded_"+encoding)
+        assert mod.encoding == encoding
 
 
 def test_source_for_file(tmpdir):

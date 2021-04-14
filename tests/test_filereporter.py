@@ -89,7 +89,7 @@ class FileReporterTest(UsingModulesMixin, CoverageTest):
         assert bcu > acu and bcu >= acu and bcu != acu
 
     def test_zipfile(self):
-        sys.path.append("tests/zipmods.zip")
+        sys.path.append("tests/zip1.zip")
 
         # Test that we can get files out of zipfiles, and read their source files.
         # The zip1 module is installed by an action in igor.py.

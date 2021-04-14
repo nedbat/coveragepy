@@ -217,41 +217,41 @@ def do_test_with_tracer(tracer, *runner_args):
 
 
 def do_zip_mods():
-    """Build the zipmods.zip file."""
-    zf = zipfile.ZipFile("tests/zipmods.zip", "w")
+    """Build the zip files needed for tests."""
+    with zipfile.ZipFile("tests/zipmods.zip", "w") as zf:
 
-    # Take some files from disk.
-    zf.write("tests/covmodzip1.py", "covmodzip1.py")
-    zf.write("tests/zipsrc/zip1/__init__.py", "zip1/__init__.py")
-    zf.write("tests/zipsrc/zip1/zip1.py", "zip1/zip1.py")
+        # Take some files from disk.
+        zf.write("tests/covmodzip1.py", "covmodzip1.py")
 
-    # The others will be various encodings.
-    source = textwrap.dedent(u"""\
-        # coding: {encoding}
-        text = u"{text}"
-        ords = {ords}
-        assert [ord(c) for c in text] == ords
-        print(u"All OK with {encoding}")
-        """)
-    # These encodings should match the list in tests/test_python.py
-    details = [
-        (u'utf8', u'ⓗⓔⓛⓛⓞ, ⓦⓞⓡⓛⓓ'),
-        (u'gb2312', u'你好，世界'),
-        (u'hebrew', u'שלום, עולם'),
-        (u'shift_jis', u'こんにちは世界'),
-        (u'cp1252', u'“hi”'),
-    ]
-    for encoding, text in details:
-        filename = 'encoded_{}.py'.format(encoding)
-        ords = [ord(c) for c in text]
-        source_text = source.format(encoding=encoding, text=text, ords=ords)
-        zf.writestr(filename, source_text.encode(encoding))
+        # The others will be various encodings.
+        source = textwrap.dedent(u"""\
+            # coding: {encoding}
+            text = u"{text}"
+            ords = {ords}
+            assert [ord(c) for c in text] == ords
+            print(u"All OK with {encoding}")
+            encoding = "{encoding}"
+            """)
+        # These encodings should match the list in tests/test_python.py
+        details = [
+            (u'utf8', u'ⓗⓔⓛⓛⓞ, ⓦⓞⓡⓛⓓ'),
+            (u'gb2312', u'你好，世界'),
+            (u'hebrew', u'שלום, עולם'),
+            (u'shift_jis', u'こんにちは世界'),
+            (u'cp1252', u'“hi”'),
+        ]
+        for encoding, text in details:
+            filename = 'encoded_{}.py'.format(encoding)
+            ords = [ord(c) for c in text]
+            source_text = source.format(encoding=encoding, text=text, ords=ords)
+            zf.writestr(filename, source_text.encode(encoding))
 
-    zf.close()
+    with zipfile.ZipFile("tests/zip1.zip", "w") as zf:
+        zf.write("tests/zipsrc/zip1/__init__.py", "zip1/__init__.py")
+        zf.write("tests/zipsrc/zip1/zip1.py", "zip1/zip1.py")
 
-    zf = zipfile.ZipFile("tests/covmain.zip", "w")
-    zf.write("coverage/__main__.py", "__main__.py")
-    zf.close()
+    with zipfile.ZipFile("tests/covmain.zip", "w") as zf:
+        zf.write("coverage/__main__.py", "__main__.py")
 
 
 def do_check_eol():
