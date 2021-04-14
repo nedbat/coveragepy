@@ -305,7 +305,7 @@ h2.stats {
 
 .help_panel {
     @extend %popup;
-    padding: .5em;
+    padding: .75em;
     border: 1px solid #883;
 
     .legend {
@@ -314,13 +314,13 @@ h2.stats {
     }
 
     .indexfile & {
-        width: 20em;
-        min-height: 4em;
+        width: 25em;
+        //min-height: 4em;
     }
 
     .pyfile & {
-        width: 16em;
-        min-height: 8em;
+        width: 18em;
+        //min-height: 8em;
     }
 }
 
@@ -330,7 +330,7 @@ h2.stats {
 }
 
 .keyhelp {
-    margin: .75em;
+    margin-top: .75em;
 
     .key {
         border: 1px solid black;

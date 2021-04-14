@@ -29,8 +29,8 @@ coverage.wire_up_help_panel = function () {
         var koff = $("#keyboard_icon").offset();
         var poff = $("#panel_icon").position();
         $(".help_panel").offset({
-            top: koff.top-poff.top,
-            left: koff.left-poff.left
+            top: koff.top-poff.top-1,
+            left: koff.left-poff.left-1
         });
     });
     $("#panel_icon").click(function () {
