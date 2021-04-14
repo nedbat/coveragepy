@@ -113,7 +113,7 @@ jobs:
           python -VV
           python -m site
           python setup.py --quiet clean develop
-          python igor.py zip_mods install_egg
+          python igor.py zip_mods
 
       - name: "Download coverage data"
         uses: actions/download-artifact@v2
