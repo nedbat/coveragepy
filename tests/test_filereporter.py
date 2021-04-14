@@ -4,6 +4,7 @@
 """Tests for FileReporters"""
 
 import os
+import sys
 
 from coverage.plugin import FileReporter
 from coverage.python import PythonFileReporter
@@ -87,18 +88,20 @@ class FileReporterTest(UsingModulesMixin, CoverageTest):
         assert acu < bcu and acu <= bcu and acu != bcu
         assert bcu > acu and bcu >= acu and bcu != acu
 
-    def test_egg(self):
-        # Test that we can get files out of eggs, and read their source files.
-        # The egg1 module is installed by an action in igor.py.
-        import egg1
-        import egg1.egg1
+    def test_zipfile(self):
+        sys.path.append("tests/zipmods.zip")
 
-        # Verify that we really imported from an egg.  If we did, then the
+        # Test that we can get files out of zipfiles, and read their source files.
+        # The zip1 module is installed by an action in igor.py.
+        import zip1
+        import zip1.zip1
+
+        # Verify that we really imported from an zipfile.  If we did, then the
         # __file__ won't be an actual file, because one of the "directories"
-        # in the path is actually the .egg zip file.
-        self.assert_doesnt_exist(egg1.__file__)
+        # in the path is actually the zip file.
+        self.assert_doesnt_exist(zip1.__file__)
 
-        ecu = PythonFileReporter(egg1)
-        eecu = PythonFileReporter(egg1.egg1)
-        assert ecu.source() == u""
-        assert u"# My egg file!" in eecu.source().splitlines()
+        z1 = PythonFileReporter(zip1)
+        z1z1 = PythonFileReporter(zip1.zip1)
+        assert z1.source() == u""
+        assert u"# My zip file!" in z1z1.source().splitlines()

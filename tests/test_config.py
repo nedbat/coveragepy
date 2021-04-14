@@ -533,8 +533,8 @@ class ConfigFileTest(UsingModulesMixin, CoverageTest):
 
         [testenv]
         commands =
-            # Create tests/zipmods.zip, install the egg1 egg
-            python igor.py zip_mods install_egg
+            # Create tests/zipmods.zip
+            python igor.py zip_mods
         """
 
     def assert_config_settings_are_correct(self, cov):

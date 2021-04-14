@@ -220,8 +220,10 @@ def do_zip_mods():
     """Build the zipmods.zip file."""
     zf = zipfile.ZipFile("tests/zipmods.zip", "w")
 
-    # Take one file from disk.
+    # Take some files from disk.
     zf.write("tests/covmodzip1.py", "covmodzip1.py")
+    zf.write("tests/zipsrc/zip1/__init__.py", "zip1/__init__.py")
+    zf.write("tests/zipsrc/zip1/zip1.py", "zip1/zip1.py")
 
     # The others will be various encodings.
     source = textwrap.dedent(u"""\
@@ -250,21 +252,6 @@ def do_zip_mods():
     zf = zipfile.ZipFile("tests/covmain.zip", "w")
     zf.write("coverage/__main__.py", "__main__.py")
     zf.close()
-
-
-def do_install_egg():
-    """Install the egg1 egg for tests."""
-    # I am pretty certain there are easier ways to install eggs...
-    cur_dir = os.getcwd()
-    os.chdir("tests/eggsrc")
-    with ignore_warnings():
-        import distutils.core
-        distutils.core.run_setup("setup.py", ["--quiet", "bdist_egg"])
-        egg = glob.glob("dist/*.egg")[0]
-        distutils.core.run_setup(
-            "setup.py", ["--quiet", "easy_install", "--no-deps", "--zip-ok", egg]
-        )
-    os.chdir(cur_dir)
 
 
 def do_check_eol():
