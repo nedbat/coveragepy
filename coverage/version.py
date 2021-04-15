@@ -25,7 +25,7 @@ def _make_url(major, minor, micro, releaselevel, serial):
     url = "https://coverage.readthedocs.io"
     if releaselevel != 'final':
         # For pre-releases, use a version-specific URL.
-        url += "/en/coverage-" + _make_version(major, minor, micro, releaselevel, serial)
+        url += "/en/" + _make_version(major, minor, micro, releaselevel, serial)
     return url
 
 

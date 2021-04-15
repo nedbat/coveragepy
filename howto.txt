@@ -55,7 +55,7 @@
     - upload kits:
         $ make kit_upload
 - Tag the tree
-    $ git tag coverage-3.0.1
+    $ git tag 3.0.1
     $ git push --tags
 - Bump version:
     - coverage/version.py

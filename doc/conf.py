@@ -75,7 +75,7 @@ release_date = "April 13, 2021"                 # CHANGEME
 rst_epilog = """
 .. |release_date| replace:: {release_date}
 .. |coverage-equals-release| replace:: coverage=={release}
-.. |doc-url| replace:: https://coverage.readthedocs.io/en/coverage-{release}
+.. |doc-url| replace:: https://coverage.readthedocs.io/en/{release}
 .. |br| raw:: html
 
   <br/>
@@ -229,7 +229,7 @@ linkcheck_ignore = [
     r"https://github.com/nedbat/coveragepy/(issues|pull)/\d+",
     # When publishing a new version, the docs will refer to the version before
     # the docs have been published.  So don't check those links.
-    r"https://coverage.readthedocs.io/en/coverage-{}$".format(release),
+    r"https://coverage.readthedocs.io/en/{}$".format(release),
 ]
 
 # https://github.com/executablebooks/sphinx-tabs/pull/54

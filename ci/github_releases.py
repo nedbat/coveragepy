@@ -78,7 +78,7 @@ def release_for_relnote(relnote):
     """
     Turn a release note dict into the data needed by GitHub for a release.
     """
-    tag = f"coverage-{relnote['version']}"
+    tag = relnote['version']
     return {
         "tag_name": tag,
         "name": tag,
@@ -122,7 +122,7 @@ def update_github_releases(json_filename, repo):
         relnotes = json.load(jf)
     relnotes.sort(key=lambda rel: pkg_resources.parse_version(rel["version"]))
     for relnote in relnotes:
-        tag = "coverage-" + relnote["version"]
+        tag = relnote["version"]
         if not does_tag_exist(tag):
             continue
         exists = tag in releases
