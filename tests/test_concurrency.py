@@ -518,7 +518,7 @@ def test_coverage_stop_in_threads():
     def run_thread():           # pragma: nested
         """Check that coverage is stopping properly in threads."""
         deadline = time.time() + 5
-        ident = threading.currentThread().ident
+        ident = threading.current_thread().ident
         if sys.gettrace() is not None:
             has_started_coverage.append(ident)
         while sys.gettrace() is not None:
