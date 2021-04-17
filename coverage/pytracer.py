@@ -85,7 +85,7 @@ class PyTracer(object):
             if 0:
                 f.write(".{:x}.{:x}".format(
                     self.thread.ident,
-                    self.threading.currentThread().ident,
+                    self.threading.current_thread().ident,
                 ))
             f.write(" {}".format(" ".join(map(str, args))))
             if 0:
@@ -220,9 +220,9 @@ class PyTracer(object):
         self.stopped = False
         if self.threading:
             if self.thread is None:
-                self.thread = self.threading.currentThread()
+                self.thread = self.threading.current_thread()
             else:
-                if self.thread.ident != self.threading.currentThread().ident:
+                if self.thread.ident != self.threading.current_thread().ident:
                     # Re-starting from a different thread!? Don't set the trace
                     # function, but we are marked as running again, so maybe it
                     # will be ok?
@@ -243,7 +243,7 @@ class PyTracer(object):
         # right thread.
         self.stopped = True
 
-        if self.threading and self.thread.ident != self.threading.currentThread().ident:
+        if self.threading and self.thread.ident != self.threading.current_thread().ident:
             # Called on a different thread than started us: we can't unhook
             # ourselves, but we've set the flag that we should stop, so we
             # won't do any more tracing.
