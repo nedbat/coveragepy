@@ -320,6 +320,10 @@ class CoverageData(SimpleReprMixin):
         suitable for use with :meth:`loads` in the same version of
         coverage.py.
 
+        Note that this serialization is not what gets stored in coverage data
+        files.  This method is meant to produce bytes that can be transmitted
+        elsewhere and then deserialized with :meth:`loads`.
+
         Returns:
             A byte string of serialized data.
 
@@ -333,10 +337,13 @@ class CoverageData(SimpleReprMixin):
 
     @contract(data='bytes')
     def loads(self, data):
-        """Deserialize data from :meth:`dumps`
+        """Deserialize data from :meth:`dumps`.
 
         Use with a newly-created empty :class:`CoverageData` object.  It's
         undefined what happens if the object already has data in it.
+
+        Note that this is not for reading data from a coverage data file.  It
+        is only for use on data you produced with :meth:`dumps`.
 
         Arguments:
             data: A byte string of serialized data produced by :meth:`dumps`.
