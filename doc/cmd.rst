@@ -477,7 +477,8 @@ compatible with `Cobertura`_.
 
 You can specify the name of the output file with the ``-o`` switch.
 
-To include complete file paths in the output file, rather than just the file name, use [include] vs [source] in your ".coveragerc" file.
+To include complete file paths in the output file, rather than just the file name,
+use [include] vs [source] in your ".coveragerc" file.
 
 For example, use this:
 
@@ -489,7 +490,7 @@ For example, use this:
         bar/*
 
 
-which will result in 
+which will result in
 
 .. code:: xml
 
