@@ -17,10 +17,10 @@ and flags lines that haven't visited all of their possible destinations.
 
 For example::
 
-    def my_partial_fn(x):       # line 1
-        if x:                   #      2
-            y = 10              #      3
-        return y                #      4
+    def my_partial_fn(x):
+        if x:
+            y = 10
+        return y
 
     my_partial_fn(1)
 
