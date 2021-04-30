@@ -1673,12 +1673,21 @@ def venv_world_fixture(tmp_path_factory):
         # Create a virtualenv.
         run_command("python -m virtualenv venv")
 
-        # A third-party package that installs two different packages.
+        # A third-party package that installs a few different packages.
         make_file("third_pkg/third/__init__.py", """\
             import fourth
             def third(x):
                 return 3 * x
             """)
+        # Use plugin2.py as third.plugin
+        with open(os.path.join(os.path.dirname(__file__), "plugin2.py")) as f:
+            make_file("third_pkg/third/plugin.py", f.read())
+        # A render function for plugin2 to use for dynamic file names.
+        make_file("third_pkg/third/render.py", """\
+            def render(filename, linenum):
+                return "HTML: {}@{}".format(filename, linenum)
+            """)
+        # Another package that third can use.
         make_file("third_pkg/fourth/__init__.py", """\
             def fourth(x):
                 return 4 * x
@@ -1805,3 +1814,20 @@ class VirtualenvTest(CoverageTest):
         assert "third" not in out
         assert "coverage" not in out
         assert "colorsys" not in out
+
+    @pytest.mark.skipif(not env.C_TRACER, reason="Plugins are only supported with the C tracer.")
+    def test_venv_with_dynamic_plugin(self, coverage_command):
+        # https://github.com/nedbat/coveragepy/issues/1150
+        # Django coverage plugin was incorrectly getting warnings:
+        # "Already imported: ... django/template/blah.py"
+        # It happened because coverage imported the plugin, which imported
+        # Django, and then the Django files were reported as traceable.
+        self.make_file(".coveragerc", "[run]\nplugins=third.plugin\n")
+        self.make_file("myrender.py", """\
+            import third.render
+            print(third.render.render("hello.html", 1723))
+            """)
+        out = run_in_venv(coverage_command + " run --source=. myrender.py")
+        # The output should not have this warning:
+        # Already imported a file that will be measured: ...third/render.py (already-imported)
+        assert out == "HTML: hello.html@1723\n"

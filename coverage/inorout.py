@@ -481,6 +481,11 @@ class InOrOut(object):
                     continue
 
                 disp = self.should_trace(filename)
+                if disp.has_dynamic_filename:
+                    # A plugin with dynamic filenames: the Python file
+                    # shouldn't cause a warning, since it won't be the subject
+                    # of tracing anyway.
+                    continue
                 if disp.trace:
                     msg = "Already imported a file that will be measured: {}".format(filename)
                     self.warn(msg, slug="already-imported")

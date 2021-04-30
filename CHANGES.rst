@@ -24,7 +24,12 @@ want to know what's different in 5.0 since 4.5.x, see :ref:`whatsnew5x`.
 Unreleased
 ----------
 
-- Nothing yet.
+- Plugins (like the `Django coverage plugin`_) were generating "Already
+  imported a file that will be measured" warnings about Django itself.  These
+  have been fixed, closing `issue 1150`_.
+
+.. _Django coverage plugin: https://pypi.org/project/django-coverage-plugin/
+.. _issue 1150: https://github.com/nedbat/coveragepy/issues/1150
 
 
 .. _changes_56b1:
