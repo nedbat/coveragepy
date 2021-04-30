@@ -7,6 +7,14 @@ import os.path
 
 import coverage
 
+try:
+    import third.render                 # pylint: disable=unused-import
+except ImportError:
+    # This plugin is used in a few tests. One of them has the third.render
+    # module, but most don't. We need to import it but not use it, so just
+    # try importing it and it's OK if the module doesn't exist.
+    pass
+
 
 class Plugin(coverage.CoveragePlugin):
     """A file tracer plugin for testing."""
