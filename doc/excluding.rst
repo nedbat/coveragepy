@@ -50,7 +50,7 @@ counted as a branch if one of its choices is excluded::
         if x:
             blah1()
             blah2()
-        else:       # pragma: no cover
+        else:  # pragma: no cover
             # x is always true.
             blah3()
 
