@@ -17,10 +17,10 @@ and flags lines that haven't visited all of their possible destinations.
 
 For example::
 
-    def my_partial_fn(x):       # line 1
-        if x:                   #      2
-            y = 10              #      3
-        return y                #      4
+    def my_partial_fn(x):
+        if x:
+            y = 10
+        return y
 
     my_partial_fn(1)
 
@@ -78,7 +78,7 @@ as a branch if one of its choices is excluded::
         if x:
             blah1()
             blah2()
-        else:       # pragma: no cover
+        else:  # pragma: no cover
             # x is always true.
             blah3()
 
@@ -108,7 +108,7 @@ tell coverage.py that you don't want them flagged by marking them with a
 pragma::
 
     i = 0
-    while i < 999999999:    # pragma: no branch
+    while i < 999999999:  # pragma: no branch
         if eventually():
             break
 

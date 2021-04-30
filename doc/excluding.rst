@@ -17,7 +17,7 @@ Coverage.py will look for comments marking clauses for exclusion.  In this
 code, the "if debug" clause is excluded from reporting::
 
     a = my_function1()
-    if debug:   # pragma: no cover
+    if debug:  # pragma: no cover
         msg = "blah blah"
         log_message(msg, a)
     b = my_function2()
@@ -32,7 +32,7 @@ function is not reported as missing::
             blah1()
             blah2()
 
-        def __repr__(self): # pragma: no cover
+        def __repr__(self):  # pragma: no cover
             return "<MyObject>"
 
 Excluded code is executed as usual, and its execution is recorded in the
@@ -50,7 +50,7 @@ counted as a branch if one of its choices is excluded::
         if x:
             blah1()
             blah2()
-        else:       # pragma: no cover
+        else:  # pragma: no cover
             # x is always true.
             blah3()
 
