@@ -108,7 +108,7 @@ tell coverage.py that you don't want them flagged by marking them with a
 pragma::
 
     i = 0
-    while i < 999999999:    # pragma: no branch
+    while i < 999999999:  # pragma: no branch
         if eventually():
             break
 

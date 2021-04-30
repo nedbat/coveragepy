@@ -517,7 +517,7 @@ For example::
 
     > def h(x):
           """Silly function."""
-    -     if 0:   #pragma: no cover
+    -     if 0:  # pragma: no cover
     -         pass
     >     if x == 1:
     !         a = 1
