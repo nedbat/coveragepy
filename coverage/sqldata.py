@@ -14,9 +14,10 @@ import os
 import re
 import sqlite3
 import sys
+import threading
 import zlib
 
-from coverage.backward import get_thread_id, iitems, to_bytes, to_string
+from coverage.backward import iitems, to_bytes, to_string
 from coverage.debug import NoDebugging, SimpleReprMixin, clipped_repr
 from coverage.files import PathAliases
 from coverage.misc import CoverageException, contract, file_be_gone, filename_suffix, isolate_module
@@ -244,7 +245,7 @@ class CoverageData(SimpleReprMixin):
         """
         if self._debug.should('dataio'):
             self._debug.write("Creating data file {!r}".format(self._filename))
-        self._dbs[get_thread_id()] = db = SqliteDb(self._filename, self._debug)
+        self._dbs[threading.get_ident()] = db = SqliteDb(self._filename, self._debug)
         with db:
             db.executescript(SCHEMA)
             db.execute("insert into coverage_schema (version) values (?)", (SCHEMA_VERSION,))
@@ -261,12 +262,12 @@ class CoverageData(SimpleReprMixin):
         """Open an existing db file, and read its metadata."""
         if self._debug.should('dataio'):
             self._debug.write("Opening data file {!r}".format(self._filename))
-        self._dbs[get_thread_id()] = SqliteDb(self._filename, self._debug)
+        self._dbs[threading.get_ident()] = SqliteDb(self._filename, self._debug)
         self._read_db()
 
     def _read_db(self):
         """Read the metadata from a database so that we are ready to use it."""
-        with self._dbs[get_thread_id()] as db:
+        with self._dbs[threading.get_ident()] as db:
             try:
                 schema_version, = db.execute_one("select version from coverage_schema")
             except Exception as exc:
@@ -292,15 +293,15 @@ class CoverageData(SimpleReprMixin):
 
     def _connect(self):
         """Get the SqliteDb object to use."""
-        if get_thread_id() not in self._dbs:
+        if threading.get_ident() not in self._dbs:
             if os.path.exists(self._filename):
                 self._open_db()
             else:
                 self._create_db()
-        return self._dbs[get_thread_id()]
+        return self._dbs[threading.get_ident()]
 
     def __nonzero__(self):
-        if (get_thread_id() not in self._dbs and not os.path.exists(self._filename)):
+        if (threading.get_ident() not in self._dbs and not os.path.exists(self._filename)):
             return False
         try:
             with self._connect() as con:
@@ -357,7 +358,7 @@ class CoverageData(SimpleReprMixin):
                 "Unrecognized serialization: {!r} (head of {} bytes)".format(data[:40], len(data))
                 )
         script = to_string(zlib.decompress(data[1:]))
-        self._dbs[get_thread_id()] = db = SqliteDb(self._filename, self._debug)
+        self._dbs[threading.get_ident()] = db = SqliteDb(self._filename, self._debug)
         with db:
             db.executescript(script)
         self._read_db()

@@ -3,12 +3,12 @@
 
 """TOML configuration support for coverage.py"""
 
+import configparser
 import io
 import os
 import re
 
 from coverage import env
-from coverage.backward import configparser, path_types
 from coverage.misc import CoverageException, substitute_variables
 
 # TOML support is an install-time extra option.
@@ -37,7 +37,7 @@ class TomlConfigParser:
     def read(self, filenames):
         # RawConfigParser takes a filename or list of filenames, but we only
         # ever call this with a single filename.
-        assert isinstance(filenames, path_types)
+        assert isinstance(filenames, (bytes, str, os.PathLike))
         filename = filenames
         if env.PYVERSION >= (3, 6):
             filename = os.fspath(filename)

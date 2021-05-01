@@ -11,8 +11,7 @@ import token
 import tokenize
 
 from coverage import env
-from coverage.backward import range    # pylint: disable=redefined-builtin
-from coverage.backward import bytes_to_ints, string_class
+from coverage.backward import bytes_to_ints
 from coverage.bytecode import code_objects
 from coverage.debug import short_stack
 from coverage.misc import contract, join_regex, new_contract, nice_pair, one_of
@@ -1206,7 +1205,7 @@ if AST_DUMP:            # pragma: debugging
         """Is `value` simple enough to be displayed on a single line?"""
         return (
             value in [None, [], (), {}, set()] or
-            isinstance(value, (string_class, int, float))
+            isinstance(value, (str, int, float))
         )
 
     def ast_dump(node, depth=0):

@@ -6,16 +6,17 @@
 import contextlib
 import functools
 import inspect
+import io
 import itertools
 import os
 import pprint
+import reprlib
 import sys
 try:
     import _thread
 except ImportError:
     import thread as _thread
 
-from coverage.backward import reprlib, StringIO
 from coverage.misc import isolate_module
 
 os = isolate_module(os)
@@ -86,7 +87,7 @@ class DebugControl(object):
 class DebugControlString(DebugControl):
     """A `DebugControl` that writes to a StringIO, for testing."""
     def __init__(self, options):
-        super(DebugControlString, self).__init__(options, StringIO())
+        super(DebugControlString, self).__init__(options, io.StringIO())
 
     def get_output(self):
         """Get the output text from the `DebugControl`."""

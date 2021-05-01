@@ -4,13 +4,14 @@
 """Config file for coverage.py"""
 
 import collections
+import configparser
 import copy
 import os
 import os.path
 import re
 
 from coverage import env
-from coverage.backward import configparser, iitems, string_class
+from coverage.backward import iitems
 from coverage.misc import contract, CoverageException, isolate_module
 from coverage.misc import substitute_variables
 
@@ -247,7 +248,7 @@ class CoverageConfig(object):
         """Read config values from `kwargs`."""
         for k, v in iitems(kwargs):
             if v is not None:
-                if k in self.MUST_BE_LIST and isinstance(v, string_class):
+                if k in self.MUST_BE_LIST and isinstance(v, str):
                     v = [v]
                 setattr(self, k, v)
 

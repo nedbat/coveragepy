@@ -7,6 +7,7 @@ import contextlib
 import datetime
 import difflib
 import glob
+import io
 import os
 import os.path
 import random
@@ -18,7 +19,7 @@ import pytest
 
 import coverage
 from coverage import env
-from coverage.backward import StringIO, import_local_file, string_class, shlex_quote
+from coverage.backward import import_local_file
 from coverage.cmdline import CoverageScript
 
 from tests.helpers import arcs_to_arcz_repr, arcz_to_arcs, assert_count_equal
@@ -176,7 +177,7 @@ class CoverageTest(
                     assert False, "None of the lines choices matched %r" % (statements,)
 
             missing_formatted = analysis.missing_formatted()
-            if isinstance(missing, string_class):
+            if isinstance(missing, str):
                 msg = "{!r} != {!r}".format(missing_formatted, missing)
                 assert missing_formatted == missing, msg
             else:
@@ -202,7 +203,7 @@ class CoverageTest(
                 assert False, msg
 
         if report:
-            frep = StringIO()
+            frep = io.StringIO()
             cov.report(mod, file=frep, show_missing=True)
             rep = " ".join(frep.getvalue().split("\n")[2].split()[1:])
             assert report == rep, "{!r} != {!r}".format(report, rep)
@@ -380,7 +381,7 @@ class CoverageTest(
         else:
             command_words = [command_name]
 
-        cmd = " ".join([shlex_quote(w) for w in command_words] + command_args)
+        cmd = " ".join([shlex.quote(w) for w in command_words] + command_args)
 
         # Add our test modules directory to PYTHONPATH.  I'm sure there's too
         # much path munging here, but...

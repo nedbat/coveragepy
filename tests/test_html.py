@@ -16,7 +16,6 @@ import mock
 import pytest
 
 import coverage
-from coverage.backward import unicode_class
 from coverage import env
 from coverage.files import abs_file, flat_rootname
 import coverage.html
@@ -629,12 +628,12 @@ def compare_html(expected, actual):
         (r'<span class="(nam|key)">(print|True|False)</span>', r'<span class="nam">\2</span>'),
         # Occasionally an absolute path is in the HTML report.
         (filepath_to_regex(TESTS_DIR), 'TESTS_DIR'),
-        (filepath_to_regex(flat_rootname(unicode_class(TESTS_DIR))), '_TESTS_DIR'),
+        (filepath_to_regex(flat_rootname(str(TESTS_DIR))), '_TESTS_DIR'),
         # The temp dir the tests make.
         (filepath_to_regex(os.getcwd()), 'TEST_TMPDIR'),
-        (filepath_to_regex(flat_rootname(unicode_class(os.getcwd()))), '_TEST_TMPDIR'),
+        (filepath_to_regex(flat_rootname(str(os.getcwd()))), '_TEST_TMPDIR'),
         (filepath_to_regex(abs_file(os.getcwd())), 'TEST_TMPDIR'),
-        (filepath_to_regex(flat_rootname(unicode_class(abs_file(os.getcwd())))), '_TEST_TMPDIR'),
+        (filepath_to_regex(flat_rootname(str(abs_file(os.getcwd())))), '_TEST_TMPDIR'),
         (r'/private/var/folders/[\w/]{35}/coverage_test/tests_test_html_\w+_\d{8}', 'TEST_TMPDIR'),
         (r'_private_var_folders_\w{35}_coverage_test_tests_test_html_\w+_\d{8}', '_TEST_TMPDIR'),
     ]

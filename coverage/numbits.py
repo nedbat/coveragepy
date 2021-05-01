@@ -15,7 +15,9 @@ the future.  Use these functions to work with those binary blobs of data.
 """
 import json
 
-from coverage.backward import byte_to_int, bytes_to_ints, binary_bytes, zip_longest
+from itertools import zip_longest
+
+from coverage.backward import byte_to_int, bytes_to_ints, binary_bytes
 from coverage.misc import contract, new_contract
 
 def _to_blob(b):

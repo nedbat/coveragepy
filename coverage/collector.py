@@ -7,7 +7,7 @@ import os
 import sys
 
 from coverage import env
-from coverage.backward import litems, range     # pylint: disable=redefined-builtin
+from coverage.backward import litems
 from coverage.debug import short_stack
 from coverage.disposition import FileDisposition
 from coverage.misc import CoverageException, isolate_module

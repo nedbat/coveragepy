@@ -5,6 +5,7 @@
 """Test text-based summary reporting for coverage.py"""
 
 import glob
+import io
 import os
 import os.path
 import py_compile
@@ -13,7 +14,6 @@ import re
 import pytest
 
 import coverage
-from coverage.backward import StringIO
 from coverage import env
 from coverage.control import Coverage
 from coverage.data import CoverageData
@@ -655,7 +655,7 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
 
     def get_report(self, cov):
         """Get the report from `cov`, and canonicalize it."""
-        repout = StringIO()
+        repout = io.StringIO()
         cov.report(file=repout, show_missing=False)
         report = repout.getvalue().replace('\\', '/')
         report = re.sub(r" +", " ", report)
@@ -779,7 +779,7 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         import usepkgs  # pragma: nested # pylint: disable=import-error, unused-import
         cov.stop()      # pragma: nested
 
-        repout = StringIO()
+        repout = io.StringIO()
         cov.report(file=repout, show_missing=False)
 
         report = repout.getvalue().replace('\\', '/')
@@ -857,7 +857,7 @@ class SummaryReporterConfigurationTest(CoverageTest):
         for name, value in options:
             cov.set_option(name, value)
         printer = SummaryReporter(cov)
-        destination = StringIO()
+        destination = io.StringIO()
         printer.report([], destination)
         return destination.getvalue()
 

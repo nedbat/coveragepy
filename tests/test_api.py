@@ -5,6 +5,7 @@
 
 import fnmatch
 import glob
+import io
 import os
 import os.path
 import re
@@ -16,7 +17,7 @@ import pytest
 
 import coverage
 from coverage import env
-from coverage.backward import code_object, import_local_file, StringIO
+from coverage.backward import code_object, import_local_file
 from coverage.data import line_counts
 from coverage.files import abs_file, relative_filename
 from coverage.misc import CoverageException
@@ -945,7 +946,7 @@ class ReportIncludeOmitTest(IncludeOmitTestsMixin, CoverageTest):
         cov.start()
         import usepkgs  # pragma: nested   # pylint: disable=import-error, unused-import
         cov.stop()      # pragma: nested
-        report = StringIO()
+        report = io.StringIO()
         cov.report(file=report, **kwargs)
         return report.getvalue()
 
@@ -1070,7 +1071,7 @@ class TestRunnerPluginTest(CoverageTest):
         self.start_import_stop(cov, "prog")
         cov.combine()
         cov.save()
-        report = StringIO()
+        report = io.StringIO()
         cov.report(show_missing=None, ignore_errors=True, file=report, skip_covered=None,
                    skip_empty=None)
         assert report.getvalue() == textwrap.dedent("""\
