@@ -103,5 +103,5 @@ class FileReporterTest(UsingModulesMixin, CoverageTest):
 
         z1 = PythonFileReporter(zip1)
         z1z1 = PythonFileReporter(zip1.zip1)
-        assert z1.source() == u""
-        assert u"# My zip file!" in z1z1.source().splitlines()
+        assert z1.source() == ""
+        assert "# My zip file!" in z1z1.source().splitlines()

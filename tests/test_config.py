@@ -1,4 +1,3 @@
-# coding: utf-8
 # Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
 # For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
 
@@ -6,7 +5,7 @@
 
 from collections import OrderedDict
 
-import mock
+from unittest import mock
 import pytest
 
 import coverage
@@ -83,13 +82,13 @@ class ConfigTest(CoverageTest):
         cov = coverage.Coverage(config_file="pyproject.toml")
         assert cov.config.timid
         assert not cov.config.branch
-        assert cov.config.concurrency == [u"a", u"b"]
-        assert cov.config.data_file == u".hello_kitty.data"
-        assert cov.config.plugins == [u"plugins.a_plugin"]
+        assert cov.config.concurrency == ["a", "b"]
+        assert cov.config.data_file == ".hello_kitty.data"
+        assert cov.config.plugins == ["plugins.a_plugin"]
         assert cov.config.precision == 3
-        assert cov.config.html_title == u"tabblo & «ταБЬℓσ»"
+        assert cov.config.html_title == "tabblo & «ταБЬℓσ»"
         assert round(abs(cov.config.fail_under-90.5), 7) == 0
-        assert cov.config.get_plugin_options("plugins.a_plugin") == {u"hello": u"world"}
+        assert cov.config.get_plugin_options("plugins.a_plugin") == {"hello": "world"}
 
         # Test that our class doesn't reject integers when loading floats
         self.make_file("pyproject.toml", """\

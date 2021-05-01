@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
 # For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
 
@@ -65,7 +64,7 @@ class SysPathModulessMixinTest(TempDirMixin, SysPathModulesMixin):
 
     @pytest.mark.parametrize("val", [17, 42])
     def test_module_independence(self, val):
-        self.make_file("xyzzy.py", "A = {}".format(val))
+        self.make_file("xyzzy.py", f"A = {val}")
         import xyzzy            # pylint: disable=import-error
         assert xyzzy.A == val
 

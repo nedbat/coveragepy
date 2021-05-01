@@ -1,4 +1,3 @@
-# coding: utf-8
 # Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
 # For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
 
@@ -30,7 +29,7 @@ class FilesTest(CoverageTest):
     def test_simple(self):
         self.make_file("hello.py")
         files.set_relative_directory()
-        assert files.relative_filename(u"hello.py") == u"hello.py"
+        assert files.relative_filename("hello.py") == "hello.py"
         a = self.abs_path("hello.py")
         assert a != "hello.py"
         assert files.relative_filename(a) == "hello.py"
@@ -70,18 +69,18 @@ class FilesTest(CoverageTest):
 
 
 @pytest.mark.parametrize("original, flat", [
-    (u"a/b/c.py", u"a_b_c_py"),
-    (u"c:\\foo\\bar.html", u"_foo_bar_html"),
-    (u"Montréal/☺/conf.py", u"Montréal_☺_conf_py"),
+    ("a/b/c.py", "a_b_c_py"),
+    (r"c:\foo\bar.html", "_foo_bar_html"),
+    ("Montréal/☺/conf.py", "Montréal_☺_conf_py"),
     ( # original:
-        u"c:\\lorem\\ipsum\\quia\\dolor\\sit\\amet\\consectetur\\adipisci\\velit\\sed\\quia\\non"
-        u"\\numquam\\eius\\modi\\tempora\\incidunt\\ut\\labore\\et\\dolore\\magnam\\aliquam"
-        u"\\quaerat\\voluptatem\\ut\\enim\\ad\\minima\\veniam\\quis\\nostrum\\exercitationem"
-        u"\\ullam\\corporis\\suscipit\\laboriosam\\Montréal\\☺\\my_program.py",
+        r"c:\lorem\ipsum\quia\dolor\sit\amet\consectetur\adipisci\velit\sed\quia\non"
+        r"\numquam\eius\modi\tempora\incidunt\ut\labore\et\dolore\magnam\aliquam"
+        r"\quaerat\voluptatem\ut\enim\ad\minima\veniam\quis\nostrum\exercitationem"
+        r"\ullam\corporis\suscipit\laboriosam\Montréal\☺\my_program.py",
         # flat:
-        u"re_et_dolore_magnam_aliquam_quaerat_voluptatem_ut_enim_ad_minima_veniam_quis_"
-        u"nostrum_exercitationem_ullam_corporis_suscipit_laboriosam_Montréal_☺_my_program_py_"
-        u"97eaca41b860faaa1a21349b1f3009bb061cf0a8"
+        "re_et_dolore_magnam_aliquam_quaerat_voluptatem_ut_enim_ad_minima_veniam_quis_"
+        "nostrum_exercitationem_ullam_corporis_suscipit_laboriosam_Montréal_☺_my_program_py_"
+        "97eaca41b860faaa1a21349b1f3009bb061cf0a8"
      ),
 ])
 def test_flat_rootname(original, flat):
@@ -141,13 +140,13 @@ class MatcherTest(CoverageTest):
     """Tests of file matchers."""
 
     def setup_test(self):
-        super(MatcherTest, self).setup_test()
+        super().setup_test()
         files.set_relative_directory()
 
     def assertMatches(self, matcher, filepath, matches):
         """The `matcher` should agree with `matches` about `filepath`."""
         canonical = files.canonical_filename(filepath)
-        msg = "File %s should have matched as %s" % (filepath, matches)
+        msg = f"File {filepath} should have matched as {matches}"
         assert matches == matcher.match(canonical), msg
 
     def test_tree_matcher(self):

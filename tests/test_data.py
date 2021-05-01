@@ -10,7 +10,7 @@ import re
 import sqlite3
 import threading
 
-import mock
+from unittest import mock
 import pytest
 
 from coverage.data import CoverageData, combine_parallel_data

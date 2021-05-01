@@ -1,2 +1,2 @@
 # A simple package for testing with.
-print("pkg1.__init__: %s" % (__name__,))
+print(f"pkg1.__init__: {__name__}")

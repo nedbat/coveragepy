@@ -1,4 +1,3 @@
-# coding: utf-8
 # Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
 # For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
 
@@ -14,7 +13,7 @@ from tests.coveragetest import CoverageTest
 
 # pylint: disable=possibly-unused-variable
 
-class AnyOldObject(object):
+class AnyOldObject:
     """Simple testing object.
 
     Use keyword arguments in the constructor to set attributes on the object.
@@ -289,9 +288,9 @@ class TempliteTest(CoverageTest):
 
     def test_non_ascii(self):
         self.try_render(
-            u"{{where}} ollǝɥ",
-            { 'where': u'ǝɹǝɥʇ' },
-            u"ǝɹǝɥʇ ollǝɥ"
+            "{{where}} ollǝɥ",
+            { 'where': 'ǝɹǝɥʇ' },
+            "ǝɹǝɥʇ ollǝɥ"
         )
 
     def test_exception_during_evaluation(self):

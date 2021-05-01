@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
 # For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
 
@@ -12,7 +11,7 @@ import os.path
 import re
 import sys
 
-import mock
+from unittest import mock
 import pytest
 
 import coverage
@@ -93,11 +92,11 @@ class HtmlTestHelpers(CoverageTest):
         self.assert_recent_datetime(
             timestamp,
             seconds=120,
-            msg="Timestamp is wrong: {}".format(timestamp),
+            msg=f"Timestamp is wrong: {timestamp}",
         )
 
 
-class FileWriteTracker(object):
+class FileWriteTracker:
     """A fake object to track how `open` is used to write files."""
     def __init__(self, written):
         self.written = written
@@ -113,7 +112,7 @@ class HtmlDeltaTest(HtmlTestHelpers, CoverageTest):
     """Tests of the HTML delta speed-ups."""
 
     def setup_test(self):
-        super(HtmlDeltaTest, self).setup_test()
+        super().setup_test()
 
         # At least one of our tests monkey-patches the version of coverage.py,
         # so grab it here to restore it later.
@@ -135,7 +134,7 @@ class HtmlDeltaTest(HtmlTestHelpers, CoverageTest):
         self.files_written = set()
         mock_open = FileWriteTracker(self.files_written).open
         with mock.patch("coverage.html.open", mock_open):
-            return super(HtmlDeltaTest, self).run_coverage(covargs=covargs, htmlargs=htmlargs)
+            return super().run_coverage(covargs=covargs, htmlargs=htmlargs)
 
     def assert_htmlcov_files_exist(self):
         """Assert that all the expected htmlcov files exist."""
@@ -555,7 +554,7 @@ class HtmlStaticFileTest(CoverageTest):
     """Tests of the static file copying for the HTML report."""
 
     def setup_test(self):
-        super(HtmlStaticFileTest, self).setup_test()
+        super().setup_test()
         original_path = list(coverage.html.STATIC_PATH)
         self.addCleanup(setattr, coverage.html, 'STATIC_PATH', original_path)
 
@@ -1039,7 +1038,7 @@ assert len(math) == 18
         doesnt_contain("out/tabbed_py.html", "\t")
 
     def test_unicode(self):
-        surrogate = u"\U000e0100"
+        surrogate = "\U000e0100"
 
         self.make_file("unicode.py", """\
             # -*- coding: utf-8 -*-

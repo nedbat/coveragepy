@@ -8,7 +8,7 @@ import pprint
 import sys
 import textwrap
 
-import mock
+from unittest import mock
 import pytest
 
 import coverage
@@ -58,7 +58,7 @@ class BaseCmdLineTest(CoverageTest):
         concurrency=None, check_preimported=True, context=None,
     )
 
-    DEFAULT_KWARGS = dict((name, kw) for name, _, kw in _defaults.mock_calls)
+    DEFAULT_KWARGS = {name: kw for name, _, kw in _defaults.mock_calls}
 
     def model_object(self):
         """Return a Mock suitable for use in CoverageScript."""
@@ -113,7 +113,7 @@ class BaseCmdLineTest(CoverageTest):
     def cmd_executes(self, args, code, ret=OK, options=None):
         """Assert that the `args` end up executing the sequence in `code`."""
         called, status = self.mock_command_line(args, options=options)
-        assert status == ret, "Wrong status: got %r, wanted %r" % (status, ret)
+        assert status == ret, f"Wrong status: got {status!r}, wanted {ret!r}"
 
         # Remove all indentation, and execute with mock globals
         code = textwrap.dedent(code)
@@ -157,7 +157,7 @@ class BaseCmdLineTest(CoverageTest):
 
         """
         mk, status = self.mock_command_line(args)
-        assert status == ret, "Wrong status: got %s, wanted %s" % (status, ret)
+        assert status == ret, f"Wrong status: got {status}, wanted {ret}"
         if help_msg:
             assert mk.mock_calls[-1] == ('show_help', (help_msg,), {})
         else:
@@ -846,7 +846,7 @@ class CmdLineStdoutTest(BaseCmdLineTest):
         self.command_line("help")
         lines = self.stdout().splitlines()
         assert len(lines) > 10
-        assert lines[-1] == "Full documentation is at {}".format(__url__)
+        assert lines[-1] == f"Full documentation is at {__url__}"
 
     def test_cmd_help(self):
         self.command_line("help run")
@@ -855,14 +855,14 @@ class CmdLineStdoutTest(BaseCmdLineTest):
         assert "<pyfile>" in lines[0]
         assert "--timid" in out
         assert len(lines) > 20
-        assert lines[-1] == "Full documentation is at {}".format(__url__)
+        assert lines[-1] == f"Full documentation is at {__url__}"
 
     def test_unknown_topic(self):
         # Should probably be an ERR return, but meh.
         self.command_line("help foobar")
         lines = self.stdout().splitlines()
         assert lines[0] == "Don't know topic 'foobar'"
-        assert lines[-1] == "Full documentation is at {}".format(__url__)
+        assert lines[-1] == f"Full documentation is at {__url__}"
 
     def test_error(self):
         self.command_line("fooey kablooey", ret=ERR)
@@ -879,7 +879,7 @@ class CmdMainTest(CoverageTest):
 
     run_in_temp_dir = False
 
-    class CoverageScriptStub(object):
+    class CoverageScriptStub:
         """A stub for coverage.cmdline.CoverageScript, used by CmdMainTest."""
 
         def command_line(self, argv):
@@ -896,11 +896,11 @@ class CmdMainTest(CoverageTest):
             elif argv[0] == 'exit':
                 sys.exit(23)
             else:
-                raise AssertionError("Bad CoverageScriptStub: %r" % (argv,))
+                raise AssertionError(f"Bad CoverageScriptStub: {argv!r}")
             return 0
 
     def setup_test(self):
-        super(CmdMainTest, self).setup_test()
+        super().setup_test()
         old_CoverageScript = coverage.cmdline.CoverageScript
         coverage.cmdline.CoverageScript = self.CoverageScriptStub
         self.addCleanup(setattr, coverage.cmdline, 'CoverageScript', old_CoverageScript)
@@ -929,7 +929,7 @@ class CmdMainTest(CoverageTest):
         assert ret == 23
 
 
-class CoverageReportingFake(object):
+class CoverageReportingFake:
     """A fake Coverage.coverage test double."""
     # pylint: disable=missing-function-docstring
     def __init__(self, report_result, html_result, xml_result, json_report):

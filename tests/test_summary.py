@@ -1,4 +1,3 @@
-# coding: utf-8
 # Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
 # For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
 
@@ -105,8 +104,8 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         # Try reporting while omitting some modules
         self.make_mycode()
         self.run_command("coverage run mycode.py")
-        omit = '{}/*,*/site-packages/*'.format(TESTS_DIR)
-        report = self.report_from_command("coverage report --omit '{}'".format(omit))
+        omit = f'{TESTS_DIR}/*,*/site-packages/*'
+        report = self.report_from_command(f"coverage report --omit '{omit}'")
 
         # Name        Stmts   Miss  Cover
         # -------------------------------
@@ -569,10 +568,10 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         # We run a .py file with a non-ascii name, and when reporting, we can't
         # parse it as Python.  We should get an error message in the report.
 
-        self.make_file(u"accented\xe2.py", "print('accented')")
-        self.run_command(u"coverage run accented\xe2.py")
-        self.make_file(u"accented\xe2.py", "This isn't python at all!")
-        report = self.report_from_command(u"coverage report accented\xe2.py")
+        self.make_file("accented\xe2.py", "print('accented')")
+        self.run_command("coverage run accented\xe2.py")
+        self.make_file("accented\xe2.py", "This isn't python at all!")
+        report = self.report_from_command("coverage report accented\xe2.py")
 
         # Couldn't parse '...' as Python source: 'invalid syntax' at line 1
         # Name     Stmts   Miss  Cover
@@ -584,7 +583,7 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         errmsg = re.sub(r"parse '.*(accented.*?\.py)", r"parse '\1", errmsg)
         # The actual error message varies version to version
         errmsg = re.sub(r": '.*' at", ": 'error' at", errmsg)
-        expected = u"Couldn't parse 'accented\xe2.py' as Python source: 'error' at line 1"
+        expected = "Couldn't parse 'accented\xe2.py' as Python source: 'error' at line 1"
         assert expected == errmsg
 
     def test_dotpy_not_python_ignored(self):
@@ -903,7 +902,7 @@ class SummaryReporterConfigurationTest(CoverageTest):
         """Assert that the `words` appear in order in `text`."""
         indexes = list(map(text.find, words))
         assert -1 not in indexes
-        msg = "The words %r don't appear in order in %r" % (words, text)
+        msg = f"The words {words!r} don't appear in order in {text!r}"
         assert indexes == sorted(indexes), msg
 
     def test_sort_report_by_stmts(self):

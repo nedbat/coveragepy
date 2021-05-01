@@ -1,4 +1,3 @@
-# coding: utf-8
 # Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
 # For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
 
@@ -162,9 +161,9 @@ class ProcessTest(CoverageTest):
         assert status == 1
 
         for n in "12":
-            self.assert_exists(".coverage.bad{}".format(n))
+            self.assert_exists(f".coverage.bad{n}")
             warning_regex = (
-                r"Coverage.py warning: Couldn't use data file '.*\.coverage.bad{0}': "
+                r"Coverage.py warning: Couldn't use data file '.*\.coverage.bad{}': "
                 r"file (is encrypted or )?is not a database"
                 .format(n)
             )
@@ -490,7 +489,7 @@ class ProcessTest(CoverageTest):
 
         # But also make sure that the output is what we expect.
         path = python_reported_file('throw.py')
-        msg = 'File "{}", line 5,? in f2'.format(re.escape(path))
+        msg = f'File "{re.escape(path)}", line 5,? in f2'
         assert re.search(msg, out)
         assert 'raise Exception("hey!")' in out
         assert status == 1
@@ -563,8 +562,8 @@ class ProcessTest(CoverageTest):
         # The two data files should have different random numbers at the end of
         # the file name.
         data_files = glob.glob(".coverage.*")
-        nums = set(name.rpartition(".")[-1] for name in data_files)
-        assert len(nums) == 2, "Same random: %s" % (data_files,)
+        nums = {name.rpartition(".")[-1] for name in data_files}
+        assert len(nums) == 2, f"Same random: {data_files}"
 
         # Combine the parallel coverage data files into .coverage .
         self.run_command("coverage combine")
@@ -604,7 +603,7 @@ class ProcessTest(CoverageTest):
         # will fail.
         out = self.run_command("coverage run i_dont_exist.py")
         path = python_reported_file('i_dont_exist.py')
-        assert "No file to run: '{}'".format(path) in out
+        assert f"No file to run: '{path}'" in out
         assert "warning" not in out
         assert "Exception" not in out
 
@@ -727,7 +726,7 @@ class ProcessTest(CoverageTest):
 
         msg = (
             "Coverage.py warning: "
-            "Already imported a file that will be measured: {0} "
+            "Already imported a file that will be measured: {} "
             "(already-imported)").format(goodbye_path)
         assert msg in out
 
@@ -990,7 +989,7 @@ class EnvironmentTest(CoverageTest):
             self.make_file("run_me.py", f.read())
         expected = self.run_command("python run_me.py")
         cov_main = os.path.join(TESTS_DIR, "covmain.zip")
-        actual = self.run_command("python {} run run_me.py".format(cov_main))
+        actual = self.run_command(f"python {cov_main} run run_me.py")
         self.assert_tryexecfile_output(expected, actual)
 
     def test_coverage_custom_script(self):
@@ -1217,7 +1216,7 @@ class FailUnderTest(CoverageTest):
     """Tests of the --fail-under switch."""
 
     def setup_test(self):
-        super(FailUnderTest, self).setup_test()
+        super().setup_test()
         self.make_file("forty_two_plus.py", """\
             # I have 42.857% (3/7) coverage!
             a = 1
@@ -1276,14 +1275,14 @@ class UnicodeFilePathsTest(CoverageTest):
 
     def test_accented_dot_py(self):
         # Make a file with a non-ascii character in the filename.
-        self.make_file(u"h\xe2t.py", "print('accented')")
-        out = self.run_command(u"coverage run --source=. h\xe2t.py")
+        self.make_file("h\xe2t.py", "print('accented')")
+        out = self.run_command("coverage run --source=. h\xe2t.py")
         assert out == "accented\n"
 
         # The HTML report uses ascii-encoded HTML entities.
         out = self.run_command("coverage html")
         assert out == ""
-        self.assert_exists(u"htmlcov/h\xe2t_py.html")
+        self.assert_exists("htmlcov/h\xe2t_py.html")
         with open("htmlcov/index.html") as indexf:
             index = indexf.read()
         assert '<a href="h&#226;t_py.html">h&#226;t.py</a>' in index
@@ -1293,15 +1292,15 @@ class UnicodeFilePathsTest(CoverageTest):
         assert out == ""
         with open("coverage.xml", "rb") as xmlf:
             xml = xmlf.read()
-        assert u' filename="h\xe2t.py"'.encode('utf8') in xml
-        assert u' name="h\xe2t.py"'.encode('utf8') in xml
+        assert ' filename="h\xe2t.py"'.encode() in xml
+        assert ' name="h\xe2t.py"'.encode() in xml
 
         report_expected = (
-            u"Name     Stmts   Miss  Cover\n"
-            u"----------------------------\n"
-            u"h\xe2t.py       1      0   100%\n"
-            u"----------------------------\n"
-            u"TOTAL        1      0   100%\n"
+            "Name     Stmts   Miss  Cover\n"
+            "----------------------------\n"
+            "h\xe2t.py       1      0   100%\n"
+            "----------------------------\n"
+            "TOTAL        1      0   100%\n"
         )
 
         out = self.run_command("coverage report")
@@ -1309,14 +1308,14 @@ class UnicodeFilePathsTest(CoverageTest):
 
     def test_accented_directory(self):
         # Make a file with a non-ascii character in the directory name.
-        self.make_file(u"\xe2/accented.py", "print('accented')")
-        out = self.run_command(u"coverage run --source=. \xe2/accented.py")
+        self.make_file("\xe2/accented.py", "print('accented')")
+        out = self.run_command("coverage run --source=. \xe2/accented.py")
         assert out == "accented\n"
 
         # The HTML report uses ascii-encoded HTML entities.
         out = self.run_command("coverage html")
         assert out == ""
-        self.assert_exists(u"htmlcov/\xe2_accented_py.html")
+        self.assert_exists("htmlcov/\xe2_accented_py.html")
         with open("htmlcov/index.html") as indexf:
             index = indexf.read()
         assert '<a href="&#226;_accented_py.html">&#226;%saccented.py</a>' % os.sep in index
@@ -1330,21 +1329,21 @@ class UnicodeFilePathsTest(CoverageTest):
         assert b' name="accented.py"' in xml
 
         dom = ElementTree.parse("coverage.xml")
-        elts = dom.findall(u".//package[@name='â']")
+        elts = dom.findall(".//package[@name='â']")
         assert len(elts) == 1
         assert elts[0].attrib == {
-            "branch-rate": u"0",
-            "complexity": u"0",
-            "line-rate": u"1",
-            "name": u"â",
+            "branch-rate": "0",
+            "complexity": "0",
+            "line-rate": "1",
+            "name": "â",
         }
 
         report_expected = (
-            u"Name            Stmts   Miss  Cover\n"
-            u"-----------------------------------\n"
-            u"\xe2%saccented.py       1      0   100%%\n"
-            u"-----------------------------------\n"
-            u"TOTAL               1      0   100%%\n"
+            "Name            Stmts   Miss  Cover\n"
+            "-----------------------------------\n"
+            "\xe2%saccented.py       1      0   100%%\n"
+            "-----------------------------------\n"
+            "TOTAL               1      0   100%%\n"
         ) % os.sep
 
         out = self.run_command("coverage report")
@@ -1400,11 +1399,11 @@ def possible_pth_dirs():
 def find_writable_pth_directory():
     """Find a place to write a .pth file."""
     for pth_dir in possible_pth_dirs():             # pragma: part covered
-        try_it = os.path.join(pth_dir, "touch_{}.it".format(WORKER))
+        try_it = os.path.join(pth_dir, f"touch_{WORKER}.it")
         with open(try_it, "w") as f:
             try:
                 f.write("foo")
-            except (IOError, OSError):              # pragma: cant happen
+            except OSError:              # pragma: cant happen
                 continue
 
         os.remove(try_it)
@@ -1427,19 +1426,19 @@ def persistent_remove(path):
             time.sleep(.05)
         else:
             return
-    raise Exception("Sorry, couldn't remove {!r}".format(path))     # pragma: cant happen
+    raise Exception(f"Sorry, couldn't remove {path!r}")     # pragma: cant happen
 
 
-class ProcessCoverageMixin(object):
+class ProcessCoverageMixin:
     """Set up a .pth file to coverage-measure all sub-processes."""
 
     def setup_test(self):
-        super(ProcessCoverageMixin, self).setup_test()
+        super().setup_test()
 
         # Create the .pth file.
         assert PTH_DIR
         pth_contents = "import coverage; coverage.process_startup()\n"
-        pth_path = os.path.join(PTH_DIR, "subcover_{}.pth".format(WORKER))
+        pth_path = os.path.join(PTH_DIR, f"subcover_{WORKER}.pth")
         with open(pth_path, "w") as pth:
             pth.write(pth_contents)
 
@@ -1451,7 +1450,7 @@ class ProcessStartupTest(ProcessCoverageMixin, CoverageTest):
     """Test that we can measure coverage in sub-processes."""
 
     def setup_test(self):
-        super(ProcessStartupTest, self).setup_test()
+        super().setup_test()
 
         # Main will run sub.py
         self.make_file("main.py", """\
@@ -1688,7 +1687,7 @@ def venv_world_fixture(tmp_path_factory):
 
         # Install coverage.
         coverage_src = nice_file(TESTS_DIR, "..")
-        run_in_venv("python -m pip install --no-index {}".format(coverage_src))
+        run_in_venv(f"python -m pip install --no-index {coverage_src}")
 
     return venv_world
 

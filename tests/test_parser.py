@@ -236,7 +236,7 @@ class ParserMissingArcDescriptionTest(CoverageTest):
 
     def test_missing_arc_description(self):
         # This code is never run, so the actual values don't matter.
-        parser = self.parse_text(u"""\
+        parser = self.parse_text("""\
             if x:
                 print(2)
             print(3)
@@ -271,7 +271,7 @@ class ParserMissingArcDescriptionTest(CoverageTest):
         assert expected == parser.missing_arc_description(11, 13)
 
     def test_missing_arc_descriptions_for_small_callables(self):
-        parser = self.parse_text(u"""\
+        parser = self.parse_text("""\
             callables = [
                 lambda: 2,
                 (x for x in range(3)),
@@ -290,7 +290,7 @@ class ParserMissingArcDescriptionTest(CoverageTest):
         assert expected == parser.missing_arc_description(5, -5)
 
     def test_missing_arc_descriptions_for_exceptions(self):
-        parser = self.parse_text(u"""\
+        parser = self.parse_text("""\
             try:
                 pass
             except ZeroDivideError:
@@ -310,7 +310,7 @@ class ParserMissingArcDescriptionTest(CoverageTest):
         assert expected == parser.missing_arc_description(5, 6)
 
     def test_missing_arc_descriptions_for_finally(self):
-        parser = self.parse_text(u"""\
+        parser = self.parse_text("""\
             def function():
                 for i in range(2):
                     try:
@@ -384,7 +384,7 @@ class ParserMissingArcDescriptionTest(CoverageTest):
             assert expected == parser.missing_arc_description(18, -1)
 
     def test_missing_arc_descriptions_bug460(self):
-        parser = self.parse_text(u"""\
+        parser = self.parse_text("""\
             x = 1
             d = {
                 3: lambda: [],

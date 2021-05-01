@@ -12,7 +12,7 @@ import re
 import subprocess
 import textwrap
 
-import mock
+from unittest import mock
 
 from coverage.misc import output_encoding
 
@@ -90,7 +90,7 @@ def nice_file(*fparts):
     return os.path.normcase(os.path.abspath(os.path.realpath(fname)))
 
 
-class CheckUniqueFilenames(object):
+class CheckUniqueFilenames:
     """Asserts the uniqueness of file names passed to a function."""
     def __init__(self, wrapped):
         self.filenames = set()
@@ -115,7 +115,7 @@ class CheckUniqueFilenames(object):
     def wrapper(self, filename, *args, **kwargs):
         """The replacement method.  Check that we don't have dupes."""
         assert filename not in self.filenames, (
-            "File name %r passed to %r twice" % (filename, self.wrapped)
+            f"File name {filename!r} passed to {self.wrapped!r} twice"
             )
         self.filenames.add(filename)
         ret = self.wrapped(filename, *args, **kwargs)
@@ -154,10 +154,8 @@ def remove_files(*patterns):
 
 # Map chars to numbers for arcz_to_arcs
 _arcz_map = {'.': -1}
-_arcz_map.update(dict((c, ord(c) - ord('0')) for c in '123456789'))
-_arcz_map.update(dict(
-    (c, 10 + ord(c) - ord('A')) for c in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-))
+_arcz_map.update({c: ord(c) - ord('0') for c in '123456789'})
+_arcz_map.update({c: 10 + ord(c) - ord('A') for c in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'})
 
 def arcz_to_arcs(arcz):
     """Convert a compact textual representation of arcs to a list of pairs.

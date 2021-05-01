@@ -629,7 +629,7 @@ class ApiTest(CoverageTest):
 
         # Labeled data is collected
         data = cov.get_data()
-        assert [u'', u'multiply_six', u'multiply_zero'] == sorted(data.measured_contexts())
+        assert ['', 'multiply_six', 'multiply_zero'] == sorted(data.measured_contexts())
 
         filenames = self.get_measured_filenames(data)
         suite_filename = filenames['testsuite.py']
@@ -667,7 +667,7 @@ class ApiTest(CoverageTest):
 
         # Labeled data is collected
         data = cov.get_data()
-        expected = [u'mysuite', u'mysuite|multiply_six', u'mysuite|multiply_zero']
+        expected = ['mysuite', 'mysuite|multiply_six', 'mysuite|multiply_zero']
         assert expected == sorted(data.measured_contexts())
 
         filenames = self.get_measured_filenames(data)

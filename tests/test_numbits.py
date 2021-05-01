@@ -99,7 +99,7 @@ class NumbitsSqliteFunctionTest(CoverageTest):
     run_in_temp_dir = False
 
     def setup_test(self):
-        super(NumbitsSqliteFunctionTest, self).setup_test()
+        super().setup_test()
         conn = sqlite3.connect(":memory:")
         register_sqlite_functions(conn)
         self.cursor = conn.cursor()

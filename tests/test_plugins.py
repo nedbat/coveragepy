@@ -22,7 +22,7 @@ from tests.coveragetest import CoverageTest
 from tests.helpers import CheckUniqueFilenames
 
 
-class FakeConfig(object):
+class FakeConfig:
     """A fake config for use in tests."""
 
     def __init__(self, plugin, options):
@@ -644,7 +644,7 @@ class BadFileTracerTest(FileTracerTest):
         #   Disabling plug-in '...' due to previous exception
         # or:
         #   Disabling plug-in '...' due to an exception:
-        msg = "Disabling plug-in '%s.%s' due to " % (module_name, plugin_name)
+        msg = f"Disabling plug-in '{module_name}.{plugin_name}' due to "
         warnings = stderr.count(msg)
         assert warnings == 1
 

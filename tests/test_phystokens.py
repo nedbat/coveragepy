@@ -18,7 +18,7 @@ from tests.coveragetest import CoverageTest, TESTS_DIR
 
 
 # A simple program and its token stream.
-SIMPLE = u"""\
+SIMPLE = """\
 # yay!
 def foo():
   say('two = %d' % 2)
@@ -33,7 +33,7 @@ SIMPLE_TOKENS = [
 ]
 
 # Mixed-whitespace program, and its token stream.
-MIXED_WS = u"""\
+MIXED_WS = """\
 def hello():
         a="Hello world!"
 \tb="indented"
@@ -46,7 +46,7 @@ MIXED_WS_TOKENS = [
 ]
 
 # https://github.com/nedbat/coveragepy/issues/822
-BUG_822 = u"""\
+BUG_822 = """\
 print( "Message 1" )
 array = [ 1,2,3,4,       # 4 numbers \\
           5,6,7 ]        # 3 numbers
@@ -192,12 +192,12 @@ class NeuterEncodingDeclarationTest(CoverageTest):
             assert source_encoding(neutered) == DEF_ENCODING, "Wrong encoding in %r" % neutered
 
     def test_two_encoding_declarations(self):
-        input_src = textwrap.dedent(u"""\
+        input_src = textwrap.dedent("""\
             # -*- coding: ascii -*-
             # -*- coding: utf-8 -*-
             # -*- coding: utf-16 -*-
             """)
-        expected_src = textwrap.dedent(u"""\
+        expected_src = textwrap.dedent("""\
             # (deleted declaration) -*-
             # (deleted declaration) -*-
             # -*- coding: utf-16 -*-
@@ -206,12 +206,12 @@ class NeuterEncodingDeclarationTest(CoverageTest):
         assert expected_src == output_src
 
     def test_one_encoding_declaration(self):
-        input_src = textwrap.dedent(u"""\
+        input_src = textwrap.dedent("""\
             # -*- coding: utf-16 -*-
             # Just a comment.
             # -*- coding: ascii -*-
             """)
-        expected_src = textwrap.dedent(u"""\
+        expected_src = textwrap.dedent("""\
             # (deleted declaration) -*-
             # Just a comment.
             # -*- coding: ascii -*-
@@ -260,7 +260,7 @@ class CompileUnicodeTest(CoverageTest):
 
     def assert_compile_unicode(self, source):
         """Assert that `source` will compile properly with `compile_unicode`."""
-        source += u"a = 42\n"
+        source += "a = 42\n"
         # This doesn't raise an exception:
         code = compile_unicode(source, "<string>", "exec")
         globs = {}
@@ -268,11 +268,11 @@ class CompileUnicodeTest(CoverageTest):
         assert globs['a'] == 42
 
     def test_cp1252(self):
-        uni = u"""# coding: cp1252\n# \u201C curly \u201D\n"""
+        uni = """# coding: cp1252\n# \u201C curly \u201D\n"""
         self.assert_compile_unicode(uni)
 
     def test_double_coding_declaration(self):
         # Build this string in a weird way so that actual vim's won't try to
         # interpret it...
-        uni = u"# -*-  coding:utf-8 -*-\n# v" + "im: fileencoding=utf-8\n"
+        uni = "# -*-  coding:utf-8 -*-\n# v" + "im: fileencoding=utf-8\n"
         self.assert_compile_unicode(uni)

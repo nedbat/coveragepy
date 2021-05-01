@@ -86,7 +86,7 @@ class RunFileTest(CoverageTest):
 
     def test_no_such_file(self):
         path = python_reported_file('xyzzy.py')
-        msg = re.escape("No file to run: '{}'".format(path))
+        msg = re.escape(f"No file to run: '{path}'")
         with pytest.raises(NoSource, match=msg):
             run_python_file(["xyzzy.py"])
 
@@ -160,7 +160,7 @@ class RunPycFileTest(CoverageTest):
 
     def test_no_such_pyc_file(self):
         path = python_reported_file('xyzzy.pyc')
-        msg = re.escape("No file to run: '{}'".format(path))
+        msg = re.escape(f"No file to run: '{path}'")
         with pytest.raises(NoCode, match=msg):
             run_python_file(["xyzzy.pyc"])
 
@@ -173,7 +173,7 @@ class RunPycFileTest(CoverageTest):
 
         path = python_reported_file('binary')
         msg = (
-            re.escape("Couldn't run '{}' as Python code: ".format(path)) +
+            re.escape(f"Couldn't run '{path}' as Python code: ") +
             r"(TypeError|ValueError): "
             r"("
             r"compile\(\) expected string without null bytes"    # for py2

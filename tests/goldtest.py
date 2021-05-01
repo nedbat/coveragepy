@@ -44,7 +44,7 @@ def versioned_directory(d):
         subdir = os.path.join(d, version)
         if os.path.exists(subdir):
             return subdir
-    raise Exception("Directory missing: {}".format(d))                  # pragma: only failure
+    raise Exception(f"Directory missing: {d}")                  # pragma: only failure
 
 
 def compare(
@@ -95,17 +95,17 @@ def compare(
             expected = scrub(expected, scrubs)
             actual = scrub(actual, scrubs)
         if expected != actual:                              # pragma: only failure
-            text_diff.append('%s != %s' % (expected_file, actual_file))
+            text_diff.append(f'{expected_file} != {actual_file}')
             expected = expected.splitlines()
             actual = actual.splitlines()
-            print(":::: diff {!r} and {!r}".format(expected_file, actual_file))
+            print(f":::: diff {expected_file!r} and {actual_file!r}")
             print("\n".join(difflib.Differ().compare(expected, actual)))
-            print(":::: end diff {!r} and {!r}".format(expected_file, actual_file))
+            print(f":::: end diff {expected_file!r} and {actual_file!r}")
     assert not text_diff, "Files differ: %s" % '\n'.join(text_diff)
 
-    assert not expected_only, "Files in %s only: %s" % (expected_dir, expected_only)
+    assert not expected_only, f"Files in {expected_dir} only: {expected_only}"
     if not actual_extra:
-        assert not actual_only, "Files in %s only: %s" % (actual_dir, actual_only)
+        assert not actual_only, f"Files in {actual_dir} only: {actual_only}"
 
 
 def canonicalize_xml(xtext):
@@ -124,10 +124,10 @@ def contains(filename, *strlist):
     missing in `filename`.
 
     """
-    with open(filename, "r") as fobj:
+    with open(filename) as fobj:
         text = fobj.read()
     for s in strlist:
-        assert s in text, "Missing content in %s: %r" % (filename, s)
+        assert s in text, f"Missing content in {filename}: {s!r}"
 
 
 def contains_any(filename, *strlist):
@@ -137,7 +137,7 @@ def contains_any(filename, *strlist):
     `filename`.
 
     """
-    with open(filename, "r") as fobj:
+    with open(filename) as fobj:
         text = fobj.read()
     for s in strlist:
         if s in text:
@@ -155,10 +155,10 @@ def doesnt_contain(filename, *strlist):
     `filename`.
 
     """
-    with open(filename, "r") as fobj:
+    with open(filename) as fobj:
         text = fobj.read()
     for s in strlist:
-        assert s not in text, "Forbidden content in %s: %r" % (filename, s)
+        assert s not in text, f"Forbidden content in {filename}: {s!r}"
 
 
 # Helpers

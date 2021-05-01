@@ -205,7 +205,7 @@ def get_qualname():
 
 # pylint: disable=missing-class-docstring, missing-function-docstring, unused-argument
 
-class Parent(object):
+class Parent:
     def meth(self):
         return get_qualname()
 
@@ -216,7 +216,7 @@ class Parent(object):
 class Child(Parent):
     pass
 
-class SomethingElse(object):
+class SomethingElse:
     pass
 
 class MultiChild(SomethingElse, Child):
@@ -273,5 +273,5 @@ class QualnameTest(CoverageTest):
 
     def test_bug_829(self):
         # A class with a name like a function shouldn't confuse qualname_from_frame.
-        class test_something(object):               # pylint: disable=unused-variable
+        class test_something:               # pylint: disable=unused-variable
             assert get_qualname() is None

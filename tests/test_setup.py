@@ -16,7 +16,7 @@ class SetupPyTest(CoverageTest):
     run_in_temp_dir = False
 
     def setup_test(self):
-        super(SetupPyTest, self).setup_test()
+        super().setup_test()
         # Force the most restrictive interpretation.
         self.set_environ('LC_ALL', 'C')
 

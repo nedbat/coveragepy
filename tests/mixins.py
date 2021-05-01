@@ -18,7 +18,7 @@ import pytest
 from tests.helpers import change_dir, make_file, remove_files
 
 
-class PytestBase(object):
+class PytestBase:
     """A base class to connect to pytest in a test class hierarchy."""
 
     @pytest.fixture(autouse=True)
@@ -49,7 +49,7 @@ class PytestBase(object):
         self._monkeypatch.delenv(name, raising=False)
 
 
-class TempDirMixin(object):
+class TempDirMixin:
     """Provides temp dir and data file helpers for tests."""
 
     # Our own setting: most of these tests run in their own temp directory.

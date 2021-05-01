@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
 # For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
 
@@ -209,7 +208,7 @@ class CheckUniqueFilenamesTest(CoverageTest):
 
     run_in_temp_dir = False
 
-    class Stub(object):
+    class Stub:
         """A stand-in for the class we're checking."""
         def __init__(self, x):
             self.x = x

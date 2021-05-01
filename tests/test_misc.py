@@ -36,9 +36,9 @@ class HasherTest(CoverageTest):
 
     def test_unicode_hashing(self):
         h1 = Hasher()
-        h1.update(u"Hello, world! \N{SNOWMAN}")
+        h1.update("Hello, world! \N{SNOWMAN}")
         h2 = Hasher()
-        h2.update(u"Goodbye!")
+        h2.update("Goodbye!")
         assert h1.hexdigest() != h2.hexdigest()
 
     def test_dict_hashing(self):
@@ -90,14 +90,14 @@ class ContractTest(CoverageTest):
         assert need_bytes(b"Hey") == b"Hey"
         assert need_bytes() is None
         with pytest.raises(Exception):
-            need_bytes(u"Oops")
+            need_bytes("Oops")
 
     def test_unicode(self):
         @contract(text='unicode|None')
         def need_unicode(text=None):
             return text
 
-        assert need_unicode(u"Hey") == u"Hey"
+        assert need_unicode("Hey") == "Hey"
         assert need_unicode() is None
         with pytest.raises(Exception):
             need_unicode(b"Oops")

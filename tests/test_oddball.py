@@ -271,7 +271,7 @@ class PyexpatTest(CoverageTest):
         # Make sure pyexpat isn't recorded as a source file.
         # https://github.com/nedbat/coveragepy/issues/419
         files = cov.get_data().measured_files()
-        msg = "Pyexpat.c is in the measured files!: %r:" % (files,)
+        msg = f"Pyexpat.c is in the measured files!: {files!r}:"
         assert not any(f.endswith("pyexpat.c") for f in files), msg
 
 
@@ -573,8 +573,7 @@ class MockingProtectionTest(CoverageTest):
         # StopIteration error.
         self.make_file("bug416.py", """\
             import os.path
-
-            import mock
+            from unittest import mock
 
             @mock.patch('os.path.exists')
             def test_path_exists(mock_exists):

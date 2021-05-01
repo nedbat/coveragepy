@@ -61,7 +61,7 @@ class CoverageTest(
     keep_temp_dir = bool(int(os.getenv("COVERAGE_KEEP_TMP", "0")))
 
     def setup_test(self):
-        super(CoverageTest, self).setup_test()
+        super().setup_test()
 
         # Attributes for getting info about what happened.
         self.last_command_status = None
@@ -166,7 +166,7 @@ class CoverageTest(
             if isinstance(lines[0], int):
                 # lines is just a list of numbers, it must match the statements
                 # found in the code.
-                assert statements == lines, "{!r} != {!r}".format(statements, lines)
+                assert statements == lines, f"{statements!r} != {lines!r}"
             else:
                 # lines is a list of possible line number lists, one of them
                 # must match.
@@ -174,18 +174,18 @@ class CoverageTest(
                     if statements == line_list:
                         break
                 else:
-                    assert False, "None of the lines choices matched %r" % (statements,)
+                    assert False, f"None of the lines choices matched {statements!r}"
 
             missing_formatted = analysis.missing_formatted()
             if isinstance(missing, str):
-                msg = "{!r} != {!r}".format(missing_formatted, missing)
+                msg = f"{missing_formatted!r} != {missing!r}"
                 assert missing_formatted == missing, msg
             else:
                 for missing_list in missing:
                     if missing_formatted == missing_list:
                         break
                 else:
-                    assert False, "None of the missing choices matched %r" % (missing_formatted,)
+                    assert False, f"None of the missing choices matched {missing_formatted!r}"
 
         if arcs is not None:
             # print("Possible arcs:")
@@ -206,7 +206,7 @@ class CoverageTest(
             frep = io.StringIO()
             cov.report(mod, file=frep, show_missing=True)
             rep = " ".join(frep.getvalue().split("\n")[2].split()[1:])
-            assert report == rep, "{!r} != {!r}".format(report, rep)
+            assert report == rep, f"{report!r} != {rep!r}"
 
         return cov
 
@@ -232,7 +232,7 @@ class CoverageTest(
             """A fake implementation of Coverage._warn, to capture warnings."""
             # NOTE: we don't implement `once`.
             if slug:
-                msg = "%s (%s)" % (msg, slug)
+                msg = f"{msg} ({slug})"
             saved_warnings.append(msg)
 
         original_warn = cov._warn
@@ -249,17 +249,17 @@ class CoverageTest(
                         if re.search(warning_regex, saved):
                             break
                     else:
-                        msg = "Didn't find warning %r in %r" % (warning_regex, saved_warnings)
+                        msg = f"Didn't find warning {warning_regex!r} in {saved_warnings!r}"
                         assert False, msg
                 for warning_regex in not_warnings:
                     for saved in saved_warnings:
                         if re.search(warning_regex, saved):
-                            msg = "Found warning %r in %r" % (warning_regex, saved_warnings)
+                            msg = f"Found warning {warning_regex!r} in {saved_warnings!r}"
                             assert False, msg
             else:
                 # No warnings expected. Raise if any warnings happened.
                 if saved_warnings:
-                    assert False, "Unexpected warnings: %r" % (saved_warnings,)
+                    assert False, f"Unexpected warnings: {saved_warnings!r}"
         finally:
             cov._warn = original_warn
 
@@ -305,7 +305,7 @@ class CoverageTest(
 
         """
         ret_actual = command_line(args)
-        assert ret_actual == ret, "{!r} != {!r}".format(ret_actual, ret)
+        assert ret_actual == ret, f"{ret_actual!r} != {ret!r}"
 
     # Some distros rename the coverage command, and need a way to indicate
     # their new command name to the tests. This is here for them to override,
@@ -440,11 +440,11 @@ class CoverageTest(
                 for filename in coverage_data.measured_files()}
 
 
-class UsingModulesMixin(object):
+class UsingModulesMixin:
     """A mixin for importing modules from tests/modules and tests/moremodules."""
 
     def setup_test(self):
-        super(UsingModulesMixin, self).setup_test()
+        super().setup_test()
 
         # Parent class saves and restores sys.path, we can just modify it.
         sys.path.append(nice_file(TESTS_DIR, "modules"))

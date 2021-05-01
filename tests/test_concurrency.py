@@ -240,7 +240,7 @@ class ConcurrencyTest(CoverageTest):
             # If the test fails, it's helpful to see this info:
             fname = abs_file("try_it.py")
             linenos = data.lines(fname)
-            print("{}: {}".format(len(linenos), linenos))
+            print(f"{len(linenos)}: {linenos}")
             print_simple_annotation(code, linenos)
 
             lines = line_count(code)
@@ -408,7 +408,7 @@ class MultiprocessingTest(CoverageTest):
         upto = 30
         code = (SQUARE_OR_CUBE_WORK + MULTI_CODE).format(NPROCS=nprocs, UPTO=upto)
         total = sum(x*x if x%2 else x*x*x for x in range(upto))
-        expected_out = "{nprocs} pids, total = {total}".format(nprocs=nprocs, total=total)
+        expected_out = f"{nprocs} pids, total = {total}"
         self.try_multiprocessing_code(code, expected_out, threading, nprocs)
 
     def test_multiprocessing_append(self):
@@ -416,7 +416,7 @@ class MultiprocessingTest(CoverageTest):
         upto = 30
         code = (SQUARE_OR_CUBE_WORK + MULTI_CODE).format(NPROCS=nprocs, UPTO=upto)
         total = sum(x*x if x%2 else x*x*x for x in range(upto))
-        expected_out = "{nprocs} pids, total = {total}".format(nprocs=nprocs, total=total)
+        expected_out = f"{nprocs} pids, total = {total}"
         self.try_multiprocessing_code(code, expected_out, threading, nprocs, args="--append")
 
     def test_multiprocessing_and_gevent(self):
@@ -426,7 +426,7 @@ class MultiprocessingTest(CoverageTest):
             SUM_RANGE_WORK + EVENTLET + SUM_RANGE_Q + MULTI_CODE
         ).format(NPROCS=nprocs, UPTO=upto)
         total = sum(sum(range((x + 1) * 100)) for x in range(upto))
-        expected_out = "{nprocs} pids, total = {total}".format(nprocs=nprocs, total=total)
+        expected_out = f"{nprocs} pids, total = {total}"
         self.try_multiprocessing_code(
             code, expected_out, eventlet, nprocs, concurrency="multiprocessing,eventlet"
         )
@@ -450,7 +450,7 @@ class MultiprocessingTest(CoverageTest):
             if start_method and start_method not in multiprocessing.get_all_start_methods():
                 continue
 
-            out = self.run_command("coverage run --rcfile=multi.rc multi.py %s" % (start_method,))
+            out = self.run_command(f"coverage run --rcfile=multi.rc multi.py {start_method}")
             assert out.rstrip() == expected_out
 
             out = self.run_command("coverage combine")
@@ -465,7 +465,7 @@ class MultiprocessingTest(CoverageTest):
         upto = 30
         code = (SQUARE_OR_CUBE_WORK + MULTI_CODE).format(NPROCS=nprocs, UPTO=upto)
         total = sum(x*x if x%2 else x*x*x for x in range(upto))
-        expected_out = "{nprocs} pids, total = {total}".format(nprocs=nprocs, total=total)
+        expected_out = f"{nprocs} pids, total = {total}"
         self.try_multiprocessing_code_with_branching(code, expected_out)
 
     def test_multiprocessing_bootstrap_error_handling(self):
@@ -541,7 +541,7 @@ def test_thread_safe_save_data(tmpdir):
 
     # Create some Python modules and put them in the path
     modules_dir = tmpdir.mkdir('test_modules')
-    module_names = ["m{:03d}".format(i) for i in range(1000)]
+    module_names = [f"m{i:03d}" for i in range(1000)]
     for module_name in module_names:
         modules_dir.join(module_name + ".py").write("def f(): pass\n")
 

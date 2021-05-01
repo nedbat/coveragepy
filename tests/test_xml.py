@@ -1,4 +1,3 @@
-# coding: utf-8
 # Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
 # For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
 
@@ -54,13 +53,13 @@ class XmlTestHelpers(CoverageTest):
             return os.path.join(curdir, p)
 
         for i in range(width):
-            next_dir = here("d{}".format(i))
+            next_dir = here(f"d{i}")
             self.make_tree(width, depth-1, next_dir)
         if curdir != ".":
             self.make_file(here("__init__.py"), "")
             for i in range(width):
-                filename = here("f{}.py".format(i))
-                self.make_file(filename, "# {}\n".format(filename))
+                filename = here(f"f{i}.py")
+                self.make_file(filename, f"# {filename}\n")
 
     def assert_source(self, xmldom, src):
         """Assert that the XML has a <source> element with `src`."""

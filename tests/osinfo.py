@@ -50,7 +50,7 @@ elif env.LINUX:
             # Get pseudo file /proc/<pid>/status
             with open('/proc/%d/status' % os.getpid()) as t:
                 v = t.read()
-        except IOError:             # pragma: cant happen
+        except OSError:             # pragma: cant happen
             return 0    # non-Linux?
         # Get VmKey line e.g. 'VmRSS:  9999  kB\n ...'
         i = v.index(key)
