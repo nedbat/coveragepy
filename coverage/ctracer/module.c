@@ -9,8 +9,6 @@
 
 #define MODULE_DOC PyDoc_STR("Fast coverage tracer.")
 
-#if PY_MAJOR_VERSION >= 3
-
 static PyModuleDef
 moduledef = {
     PyModuleDef_HEAD_INIT,
@@ -69,40 +67,3 @@ PyInit_tracer(void)
 
     return mod;
 }
-
-#else
-
-void
-inittracer(void)
-{
-    PyObject * mod;
-
-    mod = Py_InitModule3("coverage.tracer", NULL, MODULE_DOC);
-    if (mod == NULL) {
-        return;
-    }
-
-    if (CTracer_intern_strings() < 0) {
-        return;
-    }
-
-    /* Initialize CTracer */
-    CTracerType.tp_new = PyType_GenericNew;
-    if (PyType_Ready(&CTracerType) < 0) {
-        return;
-    }
-
-    Py_INCREF(&CTracerType);
-    PyModule_AddObject(mod, "CTracer", (PyObject *)&CTracerType);
-
-    /* Initialize CFileDisposition */
-    CFileDispositionType.tp_new = PyType_GenericNew;
-    if (PyType_Ready(&CFileDispositionType) < 0) {
-        return;
-    }
-
-    Py_INCREF(&CFileDispositionType);
-    PyModule_AddObject(mod, "CFileDisposition", (PyObject *)&CFileDispositionType);
-}
-
-#endif /* Py3k */
