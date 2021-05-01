@@ -105,8 +105,6 @@ class PythonParser(object):
 
         """
         combined = join_regex(regexes)
-        if env.PY2:
-            combined = combined.decode("utf8")
         regex_c = re.compile(combined)
         matches = set()
         for i, ltext in enumerate(self.lines, start=1):
@@ -1119,7 +1117,7 @@ class AstArcAnalyzer(object):
         start = to_top = self.line_for_node(node.test)
         constant_test = self.is_constant_expr(node.test)
         top_is_body0 = False
-        if constant_test and (env.PY3 or constant_test == "Num"):
+        if constant_test:
             top_is_body0 = True
         if env.PYBEHAVIOR.keep_constant_test:
             top_is_body0 = False
@@ -1196,8 +1194,7 @@ class AstArcAnalyzer(object):
     _code_object__GeneratorExp = _make_oneline_code_method("generator expression")
     _code_object__DictComp = _make_oneline_code_method("dictionary comprehension")
     _code_object__SetComp = _make_oneline_code_method("set comprehension")
-    if env.PY3:
-        _code_object__ListComp = _make_oneline_code_method("list comprehension")
+    _code_object__ListComp = _make_oneline_code_method("list comprehension")
 
 
 if AST_DUMP:            # pragma: debugging

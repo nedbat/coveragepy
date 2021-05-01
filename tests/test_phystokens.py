@@ -104,10 +104,7 @@ class PhysTokensTest(CoverageTest):
 
 
 # The default encoding is different in Python 2 and Python 3.
-if env.PY3:
-    DEF_ENCODING = "utf-8"
-else:
-    DEF_ENCODING = "ascii"
+DEF_ENCODING = "utf-8"
 
 
 ENCODING_DECLARATION_SOURCES = [

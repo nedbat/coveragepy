@@ -343,20 +343,6 @@ class SimpleStatementTest(CoverageTest):
             """,
             [1,2,3,6,9], "")
 
-    @pytest.mark.skipif(env.PY3, reason="No more print statement in Python 3.")
-    def test_print(self):
-        self.check_coverage("""\
-            print "hello, world!"
-            print ("hey: %d" %
-                17)
-            print "goodbye"
-            print "hello, world!",
-            print ("hey: %d" %
-                17),
-            print "goodbye",
-            """,
-            [1,2,4,5,6,8], "")
-
     def test_raise(self):
         self.check_coverage("""\
             try:
@@ -484,7 +470,6 @@ class SimpleStatementTest(CoverageTest):
             """,
             lines=lines, missing=missing)
 
-    @pytest.mark.skipif(env.PY2, reason="Expected failure: peephole optimization of jumps to jumps")
     def test_strange_unexecuted_continue(self):
         # Peephole optimization of jumps to jumps can mean that some statements
         # never hit the line tracer.  The behavior is different in different

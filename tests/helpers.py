@@ -10,13 +10,10 @@ import os
 import os.path
 import re
 import subprocess
-import sys
 import textwrap
 
 import mock
 
-from coverage import env
-from coverage.backward import unicode_class
 from coverage.misc import output_encoding
 
 
@@ -26,9 +23,6 @@ def run_command(cmd):
     Returns the exit status code and the combined stdout and stderr.
 
     """
-    if env.PY2 and isinstance(cmd, unicode_class):
-        cmd = cmd.encode(sys.getfilesystemencoding())
-
     # In some strange cases (PyPy3 in a virtualenv!?) the stdout encoding of
     # the subprocess is set incorrectly to ascii.  Use an environment variable
     # to force the encoding to be the same as ours.
@@ -76,10 +70,7 @@ def make_file(filename, text="", bytes=b"", newline=None):
         text = textwrap.dedent(text)
         if newline:
             text = text.replace("\n", newline)
-        if env.PY3:
-            data = text.encode('utf8')
-        else:
-            data = text
+        data = text.encode('utf8')
 
     # Make sure the directories are available.
     dirs, _ = os.path.split(filename)

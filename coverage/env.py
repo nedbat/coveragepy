@@ -20,13 +20,11 @@ IRONPYTHON = (platform.python_implementation() == "IronPython")
 # Python versions. We amend version_info with one more value, a zero if an
 # official version, or 1 if built from source beyond an official version.
 PYVERSION = sys.version_info + (int(platform.python_version()[-1] == "+"),)
-PY2 = PYVERSION < (3, 0)
 PY3 = PYVERSION >= (3, 0)
 
 if PYPY:
     PYPYVERSION = sys.pypy_version_info
 
-PYPY2 = PYPY and PY2
 PYPY3 = PYPY and PY3
 
 # Python behavior.
@@ -40,8 +38,6 @@ class PYBEHAVIOR(object):
     # Is "if __debug__" optimized away?
     if PYPY3:
         optimize_if_debug = True
-    elif PYPY2:
-        optimize_if_debug = False
     else:
         optimize_if_debug = not pep626
 

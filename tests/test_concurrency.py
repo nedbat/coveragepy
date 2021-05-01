@@ -146,13 +146,7 @@ PRINT_SUM_RANGE = """
     """
 
 # Import the things to use threads.
-if env.PY2:
-    THREAD = """
-    import threading
-    import Queue as queue
-    """
-else:
-    THREAD = """
+THREAD = """
     import threading
     import queue
     """

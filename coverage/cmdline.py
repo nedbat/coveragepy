@@ -20,7 +20,7 @@ from coverage.collector import CTracer
 from coverage.data import line_counts
 from coverage.debug import info_formatter, info_header, short_stack
 from coverage.execfile import PyRunner
-from coverage.misc import BaseCoverageException, ExceptionDuringRun, NoSource, output_encoding
+from coverage.misc import BaseCoverageException, ExceptionDuringRun, NoSource
 from coverage.results import should_fail_under
 
 
@@ -878,8 +878,6 @@ def main(argv=None):
     except BaseCoverageException as err:
         # A controlled error inside coverage.py: print the message to the user.
         msg = err.args[0]
-        if env.PY2:
-            msg = msg.encode(output_encoding())
         print(msg)
         status = ERR
     except SystemExit as err:

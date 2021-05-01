@@ -11,8 +11,6 @@ from coverage import env
 
 # We need the YIELD_VALUE opcode below, in a comparison-friendly form.
 YIELD_VALUE = dis.opmap['YIELD_VALUE']
-if env.PY2:
-    YIELD_VALUE = chr(YIELD_VALUE)
 
 # When running meta-coverage, this file can try to trace itself, which confuses
 # everything.  Don't trace ourselves.

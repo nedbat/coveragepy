@@ -6,10 +6,7 @@
 import inspect
 import os.path
 
-import pytest
-
 import coverage
-from coverage import env
 from coverage.context import qualname_from_frame
 from coverage.data import CoverageData
 
@@ -237,13 +234,6 @@ def fake_out(self):
 def patch_meth(self):
     return get_qualname()
 
-class OldStyle:
-    def meth(self):
-        return get_qualname()
-
-class OldChild(OldStyle):
-    pass
-
 # pylint: enable=missing-class-docstring, missing-function-docstring, unused-argument
 
 
@@ -280,11 +270,6 @@ class QualnameTest(CoverageTest):
         c = Child()
         c.meth = patch_meth
         assert c.meth(c) == "tests.test_context.patch_meth"
-
-    @pytest.mark.skipif(not env.PY2, reason="Old-style classes are only in Python 2")
-    def test_oldstyle(self):
-        assert OldStyle().meth() == "tests.test_context.OldStyle.meth"
-        assert OldChild().meth() == "tests.test_context.OldStyle.meth"
 
     def test_bug_829(self):
         # A class with a name like a function shouldn't confuse qualname_from_frame.

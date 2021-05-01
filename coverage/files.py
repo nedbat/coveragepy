@@ -13,7 +13,6 @@ import re
 import sys
 
 from coverage import env
-from coverage.backward import unicode_class
 from coverage.misc import contract, CoverageException, join_regex, isolate_module
 
 
@@ -105,8 +104,6 @@ if env.WINDOWS:
 
     def actual_path(path):
         """Get the actual path of `path`, including the correct case."""
-        if env.PY2 and isinstance(path, unicode_class):
-            path = path.encode(sys.getfilesystemencoding())
         if path in _ACTUAL_PATH_CACHE:
             return _ACTUAL_PATH_CACHE[path]
 
@@ -143,19 +140,10 @@ else:
         return filename
 
 
-if env.PY2:
-    @contract(returns='unicode')
-    def unicode_filename(filename):
-        """Return a Unicode version of `filename`."""
-        if isinstance(filename, str):
-            encoding = sys.getfilesystemencoding() or sys.getdefaultencoding()
-            filename = filename.decode(encoding, "replace")
-        return filename
-else:
-    @contract(filename='unicode', returns='unicode')
-    def unicode_filename(filename):
-        """Return a Unicode version of `filename`."""
-        return filename
+@contract(filename='unicode', returns='unicode')
+def unicode_filename(filename):
+    """Return a Unicode version of `filename`."""
+    return filename
 
 
 @contract(returns='unicode')

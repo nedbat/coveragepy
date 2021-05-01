@@ -3,15 +3,12 @@
 
 """Better tokenizing for coverage.py."""
 
-import codecs
 import keyword
 import re
-import sys
 import token
 import tokenize
 
-from coverage import env
-from coverage.backward import iternext, unicode_class
+from coverage.backward import iternext
 from coverage.misc import contract
 
 
@@ -154,102 +151,7 @@ generate_tokens = CachedTokenizer().generate_tokens
 COOKIE_RE = re.compile(r"^[ \t]*#.*coding[:=][ \t]*([-\w.]+)", flags=re.MULTILINE)
 
 @contract(source='bytes')
-def _source_encoding_py2(source):
-    """Determine the encoding for `source`, according to PEP 263.
-
-    `source` is a byte string, the text of the program.
-
-    Returns a string, the name of the encoding.
-
-    """
-    assert isinstance(source, bytes)
-
-    # Do this so the detect_encode code we copied will work.
-    readline = iternext(source.splitlines(True))
-
-    # This is mostly code adapted from Py3.2's tokenize module.
-
-    def _get_normal_name(orig_enc):
-        """Imitates get_normal_name in tokenizer.c."""
-        # Only care about the first 12 characters.
-        enc = orig_enc[:12].lower().replace("_", "-")
-        if re.match(r"^utf-8($|-)", enc):
-            return "utf-8"
-        if re.match(r"^(latin-1|iso-8859-1|iso-latin-1)($|-)", enc):
-            return "iso-8859-1"
-        return orig_enc
-
-    # From detect_encode():
-    # It detects the encoding from the presence of a UTF-8 BOM or an encoding
-    # cookie as specified in PEP-0263.  If both a BOM and a cookie are present,
-    # but disagree, a SyntaxError will be raised.  If the encoding cookie is an
-    # invalid charset, raise a SyntaxError.  Note that if a UTF-8 BOM is found,
-    # 'utf-8-sig' is returned.
-
-    # If no encoding is specified, then the default will be returned.
-    default = 'ascii'
-
-    bom_found = False
-    encoding = None
-
-    def read_or_stop():
-        """Get the next source line, or ''."""
-        try:
-            return readline()
-        except StopIteration:
-            return ''
-
-    def find_cookie(line):
-        """Find an encoding cookie in `line`."""
-        try:
-            line_string = line.decode('ascii')
-        except UnicodeDecodeError:
-            return None
-
-        matches = COOKIE_RE.findall(line_string)
-        if not matches:
-            return None
-        encoding = _get_normal_name(matches[0])
-        try:
-            codec = codecs.lookup(encoding)
-        except LookupError:
-            # This behavior mimics the Python interpreter
-            raise SyntaxError("unknown encoding: " + encoding)
-
-        if bom_found:
-            # codecs in 2.3 were raw tuples of functions, assume the best.
-            codec_name = getattr(codec, 'name', encoding)
-            if codec_name != 'utf-8':
-                # This behavior mimics the Python interpreter
-                raise SyntaxError('encoding problem: utf-8')
-            encoding += '-sig'
-        return encoding
-
-    first = read_or_stop()
-    if first.startswith(codecs.BOM_UTF8):
-        bom_found = True
-        first = first[3:]
-        default = 'utf-8-sig'
-    if not first:
-        return default
-
-    encoding = find_cookie(first)
-    if encoding:
-        return encoding
-
-    second = read_or_stop()
-    if not second:
-        return default
-
-    encoding = find_cookie(second)
-    if encoding:
-        return encoding
-
-    return default
-
-
-@contract(source='bytes')
-def _source_encoding_py3(source):
+def source_encoding(source):
     """Determine the encoding for `source`, according to PEP 263.
 
     `source` is a byte string: the text of the program.
@@ -259,12 +161,6 @@ def _source_encoding_py3(source):
     """
     readline = iternext(source.splitlines(True))
     return tokenize.detect_encoding(readline)[0]
-
-
-if env.PY3:
-    source_encoding = _source_encoding_py3
-else:
-    source_encoding = _source_encoding_py2
 
 
 @contract(source='unicode')
@@ -280,8 +176,6 @@ def compile_unicode(source, filename, mode):
 
     """
     source = neuter_encoding_declaration(source)
-    if env.PY2 and isinstance(filename, unicode_class):
-        filename = filename.encode(sys.getfilesystemencoding(), "replace")
     code = compile(source, filename, mode)
     return code
 

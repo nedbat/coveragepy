@@ -22,8 +22,6 @@ class PythonParserTest(CoverageTest):
 
     def parse_source(self, text):
         """Parse `text` as source, and return the `PythonParser` used."""
-        if env.PY2:
-            text = text.decode("ascii")
         text = textwrap.dedent(text)
         parser = PythonParser(text=text, exclude="nocover")
         parser.parse_source()

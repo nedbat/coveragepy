@@ -5,10 +5,9 @@
 
 import sys
 
-from coverage import env
 from coverage.report import get_analysis_to_report
 from coverage.results import Numbers
-from coverage.misc import CoverageException, output_encoding
+from coverage.misc import CoverageException
 
 
 class SummaryReporter(object):
@@ -27,8 +26,6 @@ class SummaryReporter(object):
 
     def writeout(self, line):
         """Write a line to the output, adding a newline."""
-        if env.PY2:
-            line = line.encode(output_encoding())
         self.outfile.write(line.rstrip())
         self.outfile.write("\n")
 

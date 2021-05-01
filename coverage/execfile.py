@@ -182,9 +182,6 @@ class PyRunner(object):
             else:
                 raise NoSource("Can't find '__main__' module in '%s'" % self.arg0)
 
-            if env.PY2:
-                self.arg0 = os.path.abspath(self.arg0)
-
             # Make a spec. I don't know if this is the right way to do it.
             try:
                 import importlib.machinery
@@ -197,8 +194,7 @@ class PyRunner(object):
             self.package = ""
             self.loader = DummyLoader("__main__")
         else:
-            if env.PY3:
-                self.loader = DummyLoader("__main__")
+            self.loader = DummyLoader("__main__")
 
         self.arg0 = python_reported_file(self.arg0)
 

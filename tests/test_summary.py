@@ -13,11 +13,11 @@ import re
 import pytest
 
 import coverage
-from coverage import env
 from coverage.backward import StringIO
+from coverage import env
 from coverage.control import Coverage
 from coverage.data import CoverageData
-from coverage.misc import CoverageException, output_encoding
+from coverage.misc import CoverageException
 from coverage.summary import SummaryReporter
 
 from tests.coveragetest import CoverageTest, TESTS_DIR, UsingModulesMixin
@@ -585,8 +585,6 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         # The actual error message varies version to version
         errmsg = re.sub(r": '.*' at", ": 'error' at", errmsg)
         expected = u"Couldn't parse 'accented\xe2.py' as Python source: 'error' at line 1"
-        if env.PY2:
-            expected = expected.encode(output_encoding())
         assert expected == errmsg
 
     def test_dotpy_not_python_ignored(self):
@@ -745,7 +743,6 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         report = self.get_report(cov).splitlines()
         assert "mod.py 1 0 100%" in report
 
-    @pytest.mark.skipif(env.PYPY2, reason="PyPy2 doesn't run bare .pyc files")
     def test_missing_py_file_during_run(self):
         # Create two Python files.
         self.make_file("mod.py", "a = 1\n")
@@ -758,7 +755,7 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         # Python 3 puts the .pyc files in a __pycache__ directory, and will
         # not import from there without source.  It will import a .pyc from
         # the source location though.
-        if env.PY3 and not env.JYTHON:
+        if not env.JYTHON:
             pycs = glob.glob("__pycache__/mod.*.pyc")
             assert len(pycs) == 1
             os.rename(pycs[0], "mod.pyc")

@@ -550,7 +550,6 @@ class ExecTest(CoverageTest):
         assert statements == [31]
         assert missing == []
 
-    @pytest.mark.skipif(env.PY2, reason="Python 2 can't seem to compile the file.")
     def test_unencodable_filename(self):
         # https://github.com/nedbat/coveragepy/issues/891
         self.make_file("bug891.py", r"""exec(compile("pass", "\udcff.py", "exec"))""")

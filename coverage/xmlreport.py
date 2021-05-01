@@ -10,7 +10,6 @@ import sys
 import time
 import xml.dom.minidom
 
-from coverage import env
 from coverage import __url__, __version__, files
 from coverage.backward import iitems
 from coverage.misc import isolate_module
@@ -228,7 +227,4 @@ class XmlReporter(object):
 
 def serialize_xml(dom):
     """Serialize a minidom node to XML."""
-    out = dom.toprettyxml()
-    if env.PY2:
-        out = out.encode("utf8")
-    return out
+    return dom.toprettyxml()

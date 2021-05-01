@@ -294,10 +294,8 @@ class LoopArcTest(CoverageTest):
             arcz = ".1 12 23 34 45 36 62 57 7."
         elif env.PYBEHAVIOR.nix_while_true:
             arcz = ".1 13 34 45 36 63 57 7."
-        elif env.PY3:
-            arcz = ".1 12 23 34 45 36 63 57 7."
         else:
-            arcz = ".1 12 23 34 45 36 62 57 7."
+            arcz = ".1 12 23 34 45 36 63 57 7."
         self.check_coverage("""\
             a, i = 1, 0
             while True:
@@ -338,10 +336,8 @@ class LoopArcTest(CoverageTest):
             arcz = ".1 12 23 34 45 52 46 67 7."
         elif env.PYBEHAVIOR.nix_while_true:
             arcz = ".1 13 34 45 53 46 67 7."
-        elif env.PY3:
-            arcz = ".1 12 23 34 45 53 46 67 7."
         else:
-            arcz = ".1 12 23 34 45 52 46 67 7."
+            arcz = ".1 12 23 34 45 53 46 67 7."
         self.check_coverage("""\
             up = iter('ta')
             while True:
@@ -413,11 +409,6 @@ class LoopArcTest(CoverageTest):
         )
 
     def test_confusing_for_loop_bug_175(self):
-        if env.PY3:
-            # Py3 counts the list comp as a separate code object.
-            arcz = ".1 -22 2-2 12 23 34 45 53 3."
-        else:
-            arcz = ".1 12 23 34 45 53 3."
         self.check_coverage("""\
             o = [(1,2), (3,4)]
             o = [a for a in o]
@@ -425,19 +416,15 @@ class LoopArcTest(CoverageTest):
                 x = tup[0]
                 y = tup[1]
             """,
-            arcz=arcz,
+            arcz=".1 -22 2-2 12 23 34 45 53 3.",
         )
-        if env.PY3:
-            arcz = ".1 12 -22 2-2 23 34 42 2."
-        else:
-            arcz = ".1 12 23 34 42 2."
         self.check_coverage("""\
             o = [(1,2), (3,4)]
             for tup in [a for a in o]:
                 x = tup[0]
                 y = tup[1]
             """,
-            arcz=arcz,
+            arcz=".1 12 -22 2-2 23 34 42 2.",
         )
 
     def test_generator_expression(self):

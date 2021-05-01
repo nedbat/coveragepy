@@ -22,7 +22,6 @@ import coverage
 from coverage import env
 from coverage.data import line_counts
 from coverage.files import abs_file, python_reported_file
-from coverage.misc import output_encoding
 
 from tests.coveragetest import CoverageTest, TESTS_DIR
 from tests.helpers import change_dir, make_file, nice_file, re_lines, run_command
@@ -734,7 +733,6 @@ class ProcessTest(CoverageTest):
 
     @pytest.mark.expensive
     @pytest.mark.skipif(env.METACOV, reason="Can't test fullcoverage when measuring ourselves")
-    @pytest.mark.skipif(env.PY2, reason="fullcoverage doesn't work on Python 2.")
     @pytest.mark.skipif(not env.C_TRACER, reason="fullcoverage only works with the C tracer.")
     def test_fullcoverage(self):
         # fullcoverage is a trick to get stdlib modules measured from
@@ -899,15 +897,8 @@ class EnvironmentTest(CoverageTest):
 
         expected = self.run_command("python -m with_main")
         actual = self.run_command("coverage run -m with_main")
-        if env.PY2:
-            assert expected.endswith("No module named with_main\n")
-            assert actual.endswith("No module named with_main\n")
-        else:
-            self.assert_tryexecfile_output(expected, actual)
+        self.assert_tryexecfile_output(expected, actual)
 
-    @pytest.mark.skipif(env.PY2,
-        reason="Python 2 runs __main__ twice, I can't be bothered to make it work."
-    )
     def test_coverage_run_dashm_dir_with_init_is_like_python(self):
         with open(TRY_EXECFILE) as f:
             self.make_file("with_main/__main__.py", f.read())
@@ -1313,9 +1304,6 @@ class UnicodeFilePathsTest(CoverageTest):
             u"TOTAL        1      0   100%\n"
         )
 
-        if env.PY2:
-            report_expected = report_expected.encode(output_encoding())
-
         out = self.run_command("coverage report")
         assert out == report_expected
 
@@ -1358,9 +1346,6 @@ class UnicodeFilePathsTest(CoverageTest):
             u"-----------------------------------\n"
             u"TOTAL               1      0   100%%\n"
         ) % os.sep
-
-        if env.PY2:
-            report_expected = report_expected.encode(output_encoding())
 
         out = self.run_command("coverage report")
         assert out == report_expected

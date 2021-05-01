@@ -4,7 +4,6 @@
 """Reporter foundation for coverage.py."""
 import sys
 
-from coverage import env
 from coverage.files import prep_patterns, FnmatchMatcher
 from coverage.misc import CoverageException, NoSource, NotPython, ensure_dir_for_file, file_be_gone
 
@@ -27,10 +26,7 @@ def render_report(output_path, reporter, morfs):
         # HTMLReport does this using the Report plumbing because
         # its task is more complex, being multiple files.
         ensure_dir_for_file(output_path)
-        open_kwargs = {}
-        if env.PY3:
-            open_kwargs["encoding"] = "utf8"
-        outfile = open(output_path, "w", **open_kwargs)
+        outfile = open(output_path, "w", encoding="utf-8")
         file_to_close = outfile
 
     try:

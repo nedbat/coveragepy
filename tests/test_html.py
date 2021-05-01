@@ -1041,8 +1041,6 @@ assert len(math) == 18
 
     def test_unicode(self):
         surrogate = u"\U000e0100"
-        if env.PY2:
-            surrogate = surrogate.encode('utf-8')
 
         self.make_file("unicode.py", """\
             # -*- coding: utf-8 -*-

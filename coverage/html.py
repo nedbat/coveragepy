@@ -10,7 +10,6 @@ import re
 import shutil
 
 import coverage
-from coverage import env
 from coverage.backward import iitems, SimpleNamespace, format_local_datetime
 from coverage.data import add_data_to_hash
 from coverage.files import flat_rootname
@@ -182,8 +181,6 @@ class HtmlReporter(object):
             self.skip_empty= self.config.skip_empty
 
         title = self.config.html_title
-        if env.PY2:
-            title = title.decode("utf8")
 
         if self.config.extra_css:
             self.extra_css = os.path.basename(self.config.extra_css)
