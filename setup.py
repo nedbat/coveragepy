@@ -113,7 +113,7 @@ setup_args = dict(
     # We need to get HTML assets from our htmlfiles directory.
     zip_safe=False,
 
-    author='Ned Batchelder and {} others'.format(num_others),
+    author=f'Ned Batchelder and {num_others} others',
     author_email='ned@nedbatchelder.com',
     description=doc,
     long_description=long_description,
@@ -218,8 +218,8 @@ def main():
         setup(**setup_args)
     except BuildFailed as exc:
         msg = "Couldn't install with extension module, trying without it..."
-        exc_msg = "%s: %s" % (exc.__class__.__name__, exc.cause)
-        print("**\n** %s\n** %s\n**" % (msg, exc_msg))
+        exc_msg = f"{exc.__class__.__name__}: {exc.cause}"
+        print(f"**\n** {msg}\n** {exc_msg}\n**")
 
         del setup_args['ext_modules']
         setup(**setup_args)

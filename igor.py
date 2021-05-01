@@ -1,4 +1,3 @@
-# coding: utf-8
 # Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
 # For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
 
@@ -49,7 +48,7 @@ def do_show_env():
     """Show the environment variables."""
     print("Environment:")
     for env in sorted(os.environ):
-        print("  %s = %r" % (env, os.environ[env]))
+        print(f"  {env} = {os.environ[env]!r}")
 
 
 def do_remove_extension():
@@ -93,7 +92,7 @@ def should_skip(tracer):
                 skipper = "Only one tracer: no Python tracer for CPython"
         else:
             if tracer == "c":
-                skipper = "No C tracer for {}".format(platform.python_implementation())
+                skipper = f"No C tracer for {platform.python_implementation()}"
     elif tracer == "py":
         # $set_env.py: COVERAGE_NO_PYTRACER - Don't run the tests under the Python tracer.
         skipper = os.environ.get("COVERAGE_NO_PYTRACER")
@@ -117,7 +116,7 @@ def make_env_id(tracer):
     version = "%s%s" % sys.version_info[:2]
     if PYPY:
         version += "_%s%s" % sys.pypy_version_info[:2]
-    env_id = "%s%s_%s" % (impl, version, tracer)
+    env_id = f"{impl}{version}_{tracer}"
     return env_id
 
 
@@ -149,7 +148,7 @@ def run_tests_with_coverage(tracer, *runner_args):
     with open(pth_path, "w") as pth_file:
         pth_file.write("import coverage; coverage.process_startup()\n")
 
-    suffix = "%s_%s" % (make_env_id(tracer), platform.platform())
+    suffix = f"{make_env_id(tracer)}_{platform.platform()}"
     os.environ['COVERAGE_METAFILE'] = os.path.abspath(".metacov."+suffix)
 
     import coverage
@@ -224,7 +223,7 @@ def do_zip_mods():
         zf.write("tests/covmodzip1.py", "covmodzip1.py")
 
         # The others will be various encodings.
-        source = textwrap.dedent(u"""\
+        source = textwrap.dedent("""\
             # coding: {encoding}
             text = u"{text}"
             ords = {ords}
@@ -234,14 +233,14 @@ def do_zip_mods():
             """)
         # These encodings should match the list in tests/test_python.py
         details = [
-            (u'utf8', u'ⓗⓔⓛⓛⓞ, ⓦⓞⓡⓛⓓ'),
-            (u'gb2312', u'你好，世界'),
-            (u'hebrew', u'שלום, עולם'),
-            (u'shift_jis', u'こんにちは世界'),
-            (u'cp1252', u'“hi”'),
+            ('utf8', 'ⓗⓔⓛⓛⓞ, ⓦⓞⓡⓛⓓ'),
+            ('gb2312', '你好，世界'),
+            ('hebrew', 'שלום, עולם'),
+            ('shift_jis', 'こんにちは世界'),
+            ('cp1252', '“hi”'),
         ]
         for encoding, text in details:
-            filename = 'encoded_{}.py'.format(encoding)
+            filename = f'encoded_{encoding}.py'
             ords = [ord(c) for c in text]
             source_text = source.format(encoding=encoding, text=text, ords=ords)
             zf.writestr(filename, source_text.encode(encoding))
@@ -291,7 +290,7 @@ def do_check_eol():
                         return
 
         if line is not None and not line.strip():
-            print("%s: final blank line" % (fname,))
+            print(f"{fname}: final blank line")
 
     def check_files(root, patterns, **kwargs):
         """Check a number of files for whitespace abuse."""
@@ -339,7 +338,7 @@ def print_banner(label):
 
     rev = platform.python_revision()
     if rev:
-        version += " (rev {})".format(rev)
+        version += f" (rev {rev})"
 
     try:
         which_python = os.path.relpath(sys.executable)
@@ -347,7 +346,7 @@ def print_banner(label):
         # On Windows having a python executable on a different drive
         # than the sources cannot be relative.
         which_python = sys.executable
-    print('=== %s %s %s (%s) ===' % (impl, version, label, which_python))
+    print(f'=== {impl} {version} {label} ({which_python}) ===')
     sys.stdout.flush()
 
 
@@ -357,7 +356,7 @@ def do_help():
     items.sort()
     for name, value in items:
         if name.startswith('do_'):
-            print("%-20s%s" % (name[3:], value.__doc__))
+            print(f"{name[3:]:<20}{value.__doc__}")
 
 
 def analyze_args(function):
