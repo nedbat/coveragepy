@@ -10,7 +10,6 @@ from hypothesis import example, given, settings
 from hypothesis.strategies import sets, integers
 
 from coverage import env
-from coverage.backward import byte_to_int
 from coverage.numbits import (
     nums_to_numbits, numbits_to_nums, numbits_union, numbits_intersection,
     numbits_any_intersection, num_in_numbits, register_sqlite_functions,
@@ -33,7 +32,7 @@ if env.METACOV:
 def good_numbits(numbits):
     """Assert that numbits is good."""
     # It shouldn't end with a zero byte, that should have been trimmed off.
-    assert (not numbits) or (byte_to_int(numbits[-1]) != 0)
+    assert (not numbits) or (numbits[-1] != 0)
 
 
 class NumbitsOpTest(CoverageTest):

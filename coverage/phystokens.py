@@ -8,7 +8,6 @@ import re
 import token
 import tokenize
 
-from coverage.backward import iternext
 from coverage.misc import contract
 
 
@@ -140,7 +139,7 @@ class CachedTokenizer(object):
         """A stand-in for `tokenize.generate_tokens`."""
         if text != self.last_text:
             self.last_text = text
-            readline = iternext(text.splitlines(True))
+            readline = iter(text.splitlines(True)).__next__
             self.last_tokens = list(tokenize.generate_tokens(readline))
         return self.last_tokens
 
@@ -159,7 +158,7 @@ def source_encoding(source):
     Returns a string, the name of the encoding.
 
     """
-    readline = iternext(source.splitlines(True))
+    readline = iter(source.splitlines(True)).__next__
     return tokenize.detect_encoding(readline)[0]
 
 

@@ -7,7 +7,6 @@ import os
 import sys
 
 from coverage import env
-from coverage.backward import litems
 from coverage.debug import short_stack
 from coverage.disposition import FileDisposition
 from coverage.misc import CoverageException, isolate_module
@@ -404,14 +403,14 @@ class Collector(object):
 
     def mapped_file_dict(self, d):
         """Return a dict like d, but with keys modified by file_mapper."""
-        # The call to litems() ensures that the GIL protects the dictionary
+        # The call to list(items()) ensures that the GIL protects the dictionary
         # iterator against concurrent modifications by tracers running
         # in other threads. We try three times in case of concurrent
         # access, hoping to get a clean copy.
         runtime_err = None
         for _ in range(3):
             try:
-                items = litems(d)
+                items = list(d.items())
             except RuntimeError as ex:
                 runtime_err = ex
             else:

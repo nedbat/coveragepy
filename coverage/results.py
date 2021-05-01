@@ -5,7 +5,6 @@
 
 import collections
 
-from coverage.backward import iitems
 from coverage.debug import SimpleReprMixin
 from coverage.misc import contract, CoverageException, nice_pair
 
@@ -32,8 +31,8 @@ class Analysis(object):
             self.no_branch = self.file_reporter.no_branch_lines()
             n_branches = self._total_branches()
             mba = self.missing_branch_arcs()
-            n_partial_branches = sum(len(v) for k,v in iitems(mba) if k not in self.missing)
-            n_missing_branches = sum(len(v) for k,v in iitems(mba))
+            n_partial_branches = sum(len(v) for k,v in mba.items() if k not in self.missing)
+            n_missing_branches = sum(len(v) for k,v in mba.items())
         else:
             self._arc_possibilities = []
             self.exit_counts = {}
@@ -59,7 +58,7 @@ class Analysis(object):
 
         """
         if branches and self.has_arcs():
-            arcs = iitems(self.missing_branch_arcs())
+            arcs = self.missing_branch_arcs().items()
         else:
             arcs = None
 
@@ -113,7 +112,7 @@ class Analysis(object):
 
     def _branch_lines(self):
         """Returns a list of line numbers that have more than one exit."""
-        return [l1 for l1,count in iitems(self.exit_counts) if count > 1]
+        return [l1 for l1,count in self.exit_counts.items() if count > 1]
 
     def _total_branches(self):
         """How many total branches are there?"""

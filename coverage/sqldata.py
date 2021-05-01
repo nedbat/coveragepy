@@ -17,7 +17,6 @@ import sys
 import threading
 import zlib
 
-from coverage.backward import iitems, to_bytes, to_string
 from coverage.debug import NoDebugging, SimpleReprMixin, clipped_repr
 from coverage.files import PathAliases
 from coverage.misc import CoverageException, contract, file_be_gone, filename_suffix, isolate_module
@@ -333,7 +332,7 @@ class CoverageData(SimpleReprMixin):
         if self._debug.should('dataio'):
             self._debug.write("Dumping data from data file {!r}".format(self._filename))
         with self._connect() as con:
-            return b'z' + zlib.compress(to_bytes(con.dump()))
+            return b'z' + zlib.compress(con.dump().encode("utf8"))
 
     @contract(data='bytes')
     def loads(self, data):
@@ -357,7 +356,7 @@ class CoverageData(SimpleReprMixin):
             raise CoverageException(
                 "Unrecognized serialization: {!r} (head of {} bytes)".format(data[:40], len(data))
                 )
-        script = to_string(zlib.decompress(data[1:]))
+        script = zlib.decompress(data[1:]).decode("utf8")
         self._dbs[threading.get_ident()] = db = SqliteDb(self._filename, self._debug)
         with db:
             db.executescript(script)
@@ -447,7 +446,7 @@ class CoverageData(SimpleReprMixin):
             return
         with self._connect() as con:
             self._set_context_id()
-            for filename, linenos in iitems(line_data):
+            for filename, linenos in line_data.items():
                 linemap = nums_to_numbits(linenos)
                 file_id = self._file_id(filename, add=True)
                 query = "select numbits from line_bits where file_id = ? and context_id = ?"
@@ -479,7 +478,7 @@ class CoverageData(SimpleReprMixin):
             return
         with self._connect() as con:
             self._set_context_id()
-            for filename, arcs in iitems(arc_data):
+            for filename, arcs in arc_data.items():
                 file_id = self._file_id(filename, add=True)
                 data = [(file_id, self._current_context_id, fromno, tono) for fromno, tono in arcs]
                 con.executemany(
@@ -517,7 +516,7 @@ class CoverageData(SimpleReprMixin):
             return
         self._start_using()
         with self._connect() as con:
-            for filename, plugin_name in iitems(file_tracers):
+            for filename, plugin_name in file_tracers.items():
                 file_id = self._file_id(filename)
                 if file_id is None:
                     raise CoverageException(

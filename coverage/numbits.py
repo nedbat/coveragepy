@@ -17,7 +17,6 @@ import json
 
 from itertools import zip_longest
 
-from coverage.backward import byte_to_int, bytes_to_ints, binary_bytes
 from coverage.misc import contract, new_contract
 
 def _to_blob(b):
@@ -63,7 +62,7 @@ def numbits_to_nums(numbits):
 
     """
     nums = []
-    for byte_i, byte in enumerate(bytes_to_ints(numbits)):
+    for byte_i, byte in enumerate(numbits):
         for bit_i in range(8):
             if (byte & (1 << bit_i)):
                 nums.append(byte_i * 8 + bit_i)
@@ -77,8 +76,8 @@ def numbits_union(numbits1, numbits2):
     Returns:
         A new numbits, the union of `numbits1` and `numbits2`.
     """
-    byte_pairs = zip_longest(bytes_to_ints(numbits1), bytes_to_ints(numbits2), fillvalue=0)
-    return _to_blob(binary_bytes(b1 | b2 for b1, b2 in byte_pairs))
+    byte_pairs = zip_longest(numbits1, numbits2, fillvalue=0)
+    return _to_blob(bytes(b1 | b2 for b1, b2 in byte_pairs))
 
 
 @contract(numbits1='blob', numbits2='blob', returns='blob')
@@ -88,8 +87,8 @@ def numbits_intersection(numbits1, numbits2):
     Returns:
         A new numbits, the intersection `numbits1` and `numbits2`.
     """
-    byte_pairs = zip_longest(bytes_to_ints(numbits1), bytes_to_ints(numbits2), fillvalue=0)
-    intersection_bytes = binary_bytes(b1 & b2 for b1, b2 in byte_pairs)
+    byte_pairs = zip_longest(numbits1, numbits2, fillvalue=0)
+    intersection_bytes = bytes(b1 & b2 for b1, b2 in byte_pairs)
     return _to_blob(intersection_bytes.rstrip(b'\0'))
 
 
@@ -103,7 +102,7 @@ def numbits_any_intersection(numbits1, numbits2):
     Returns:
         A bool, True if there is any number in both `numbits1` and `numbits2`.
     """
-    byte_pairs = zip_longest(bytes_to_ints(numbits1), bytes_to_ints(numbits2), fillvalue=0)
+    byte_pairs = zip_longest(numbits1, numbits2, fillvalue=0)
     return any(b1 & b2 for b1, b2 in byte_pairs)
 
 
@@ -117,7 +116,7 @@ def num_in_numbits(num, numbits):
     nbyte, nbit = divmod(num, 8)
     if nbyte >= len(numbits):
         return False
-    return bool(byte_to_int(numbits[nbyte]) & (1 << nbit))
+    return bool(numbits[nbyte] & (1 << nbit))
 
 
 def register_sqlite_functions(connection):

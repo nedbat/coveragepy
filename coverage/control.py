@@ -14,7 +14,6 @@ import time
 
 from coverage import env
 from coverage.annotate import AnnotateReporter
-from coverage.backward import iitems
 from coverage.collector import Collector, CTracer
 from coverage.config import read_coverage_config
 from coverage.context import should_start_context_test_function, combine_context_switchers
@@ -1063,7 +1062,7 @@ class Coverage(object):
             ('path', sys.path),
             ('environment', sorted(
                 ("%s = %s" % (k, v))
-                for k, v in iitems(os.environ)
+                for k, v in os.environ.items()
                 if any(slug in k for slug in ("COV", "PY"))
             )),
             ('command_line', " ".join(getattr(sys, 'argv', ['-none-']))),

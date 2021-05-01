@@ -10,7 +10,7 @@ import re
 import shutil
 
 import coverage
-from coverage.backward import iitems, SimpleNamespace, format_local_datetime
+from coverage.backward import SimpleNamespace, format_local_datetime
 from coverage.data import add_data_to_hash
 from coverage.files import flat_rootname
 from coverage.misc import CoverageException, ensure_dir, file_be_gone, Hasher, isolate_module
@@ -429,7 +429,7 @@ class IncrementalChecker(object):
 
         if usable:
             self.files = {}
-            for filename, fileinfo in iitems(status['files']):
+            for filename, fileinfo in status['files'].items():
                 fileinfo['index']['nums'] = Numbers(*fileinfo['index']['nums'])
                 self.files[filename] = fileinfo
             self.globals = status['globals']
@@ -440,7 +440,7 @@ class IncrementalChecker(object):
         """Write the current status."""
         status_file = os.path.join(self.directory, self.STATUS_FILE)
         files = {}
-        for filename, fileinfo in iitems(self.files):
+        for filename, fileinfo in self.files.items():
             fileinfo['index']['nums'] = fileinfo['index']['nums'].init_args()
             files[filename] = fileinfo
 

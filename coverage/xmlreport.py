@@ -11,7 +11,6 @@ import time
 import xml.dom.minidom
 
 from coverage import __url__, __version__, files
-from coverage.backward import iitems
 from coverage.misc import isolate_module
 from coverage.report import get_analysis_to_report
 
@@ -92,13 +91,13 @@ class XmlReporter(object):
         xcoverage.appendChild(xpackages)
 
         # Populate the XML DOM with the package info.
-        for pkg_name, pkg_data in sorted(iitems(self.packages)):
+        for pkg_name, pkg_data in sorted(self.packages.items()):
             class_elts, lhits, lnum, bhits, bnum = pkg_data
             xpackage = self.xml_out.createElement("package")
             xpackages.appendChild(xpackage)
             xclasses = self.xml_out.createElement("classes")
             xpackage.appendChild(xclasses)
-            for _, class_elt in sorted(iitems(class_elts)):
+            for _, class_elt in sorted(class_elts.items()):
                 xclasses.appendChild(class_elt)
             xpackage.setAttribute("name", pkg_name.replace(os.sep, '.'))
             xpackage.setAttribute("line-rate", rate(lhits, lnum))

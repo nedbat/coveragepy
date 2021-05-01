@@ -11,7 +11,6 @@ import sys
 import types
 
 from coverage import env
-from coverage.backward import BUILTINS
 from coverage.backward import PYC_MAGIC_NUMBER, imp, importlib_util_find_spec
 from coverage.files import canonical_filename, python_reported_file
 from coverage.misc import CoverageException, ExceptionDuringRun, NoCode, NoSource, isolate_module
@@ -216,7 +215,7 @@ class PyRunner(object):
         if self.spec is not None:
             main_mod.__spec__ = self.spec
 
-        main_mod.__builtins__ = BUILTINS
+        main_mod.__builtins__ = sys.modules['builtins']
 
         sys.modules['__main__'] = main_mod
 

@@ -11,7 +11,6 @@ import token
 import tokenize
 
 from coverage import env
-from coverage.backward import bytes_to_ints
 from coverage.bytecode import code_objects
 from coverage.debug import short_stack
 from coverage.misc import contract, join_regex, new_contract, nice_pair, one_of
@@ -402,8 +401,8 @@ class ByteParser(object):
                     yield line
         else:
             # Adapted from dis.py in the standard library.
-            byte_increments = bytes_to_ints(self.code.co_lnotab[0::2])
-            line_increments = bytes_to_ints(self.code.co_lnotab[1::2])
+            byte_increments = self.code.co_lnotab[0::2]
+            line_increments = self.code.co_lnotab[1::2]
 
             last_line_num = None
             line_num = self.code.co_firstlineno

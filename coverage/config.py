@@ -11,7 +11,6 @@ import os.path
 import re
 
 from coverage import env
-from coverage.backward import iitems
 from coverage.misc import contract, CoverageException, isolate_module
 from coverage.misc import substitute_variables
 
@@ -246,7 +245,7 @@ class CoverageConfig(object):
 
     def from_args(self, **kwargs):
         """Read config values from `kwargs`."""
-        for k, v in iitems(kwargs):
+        for k, v in kwargs.items():
             if v is not None:
                 if k in self.MUST_BE_LIST and isinstance(v, str):
                     v = [v]
@@ -298,7 +297,7 @@ class CoverageConfig(object):
             section, option = option_spec[1].split(":")
             all_options[section].add(option)
 
-        for section, options in iitems(all_options):
+        for section, options in all_options.items():
             real_section = cp.has_section(section)
             if real_section:
                 for unknown in set(cp.options(section)) - options:
