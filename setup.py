@@ -4,7 +4,7 @@
 """Code coverage measurement for Python"""
 
 # Distutils setup for coverage.py
-# This file is used unchanged under all versions of Python, 2.x and 3.x.
+# This file is used unchanged under all versions of Python.
 
 import os
 import sys
@@ -38,10 +38,7 @@ Intended Audience :: Developers
 License :: OSI Approved :: Apache Software License
 Operating System :: OS Independent
 Programming Language :: Python
-Programming Language :: Python :: 2
-Programming Language :: Python :: 2.7
 Programming Language :: Python :: 3
-Programming Language :: Python :: 3.5
 Programming Language :: Python :: 3.6
 Programming Language :: Python :: 3.7
 Programming Language :: Python :: 3.8
@@ -133,7 +130,7 @@ setup_args = dict(
         ),
         'Issues': 'https://github.com/nedbat/coveragepy/issues',
     },
-    python_requires=">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*",
+    python_requires=">=3.6",
 )
 
 # A replacement for the build_ext command which raises a single exception
