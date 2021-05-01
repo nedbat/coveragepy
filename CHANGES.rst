@@ -24,6 +24,8 @@ want to know what's different in 5.0 since 4.5.x, see :ref:`whatsnew5x`.
 Unreleased
 ----------
 
+- Dropped support for Python 2.7, PyPy 2, and Python 3.5.
+
 - Plugins (like the `Django coverage plugin`_) were generating "Already
   imported a file that will be measured" warnings about Django itself.  These
   have been fixed, closing `issue 1150`_.

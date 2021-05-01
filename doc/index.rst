@@ -16,9 +16,9 @@ not.
 The latest version is coverage.py |release|, released |release_date|.  It is
 supported on:
 
-* Python versions 2.7, 3.5, 3.6, 3.7, 3.8, 3.9, and 3.10 alpha.
+* Python versions 3.6, 3.7, 3.8, 3.9, and 3.10 alpha.
 
-* PyPy2 7.3.3 and PyPy3 7.3.3.
+* PyPy3 7.3.3.
 
 .. ifconfig:: prerelease
 
