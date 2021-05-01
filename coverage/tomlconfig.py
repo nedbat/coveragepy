@@ -37,9 +37,7 @@ class TomlConfigParser:
         # RawConfigParser takes a filename or list of filenames, but we only
         # ever call this with a single filename.
         assert isinstance(filenames, (bytes, str, os.PathLike))
-        filename = filenames
-        if env.PYVERSION >= (3, 6):
-            filename = os.fspath(filename)
+        filename = os.fspath(filenames)
 
         try:
             with open(filename, encoding='utf-8') as fp:

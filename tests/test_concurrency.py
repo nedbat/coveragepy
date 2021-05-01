@@ -374,12 +374,7 @@ class MultiprocessingTest(CoverageTest):
             source = .
             """ % concurrency)
 
-        if env.PYVERSION >= (3, 4):
-            start_methods = ['fork', 'spawn']
-        else:
-            start_methods = ['']
-
-        for start_method in start_methods:
+        for start_method in ["fork", "spawn"]:
             if start_method and start_method not in multiprocessing.get_all_start_methods():
                 continue
 
@@ -441,12 +436,7 @@ class MultiprocessingTest(CoverageTest):
             omit = */site-packages/*
             """)
 
-        if env.PYVERSION >= (3, 4):
-            start_methods = ['fork', 'spawn']
-        else:
-            start_methods = ['']
-
-        for start_method in start_methods:
+        for start_method in ["fork", "spawn"]:
             if start_method and start_method not in multiprocessing.get_all_start_methods():
                 continue
 

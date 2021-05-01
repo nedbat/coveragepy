@@ -18,11 +18,7 @@ from coverage.misc import contract
 PATCHED_MARKER = "_coverage$patched"
 
 
-if env.PYVERSION >= (3, 4):
-    OriginalProcess = multiprocessing.process.BaseProcess
-else:
-    OriginalProcess = multiprocessing.Process
-
+OriginalProcess = multiprocessing.process.BaseProcess
 original_bootstrap = OriginalProcess._bootstrap
 
 class ProcessWithCoverage(OriginalProcess):         # pylint: disable=abstract-method
@@ -79,10 +75,7 @@ def patch_multiprocessing(rcfile):
     if hasattr(multiprocessing, PATCHED_MARKER):
         return
 
-    if env.PYVERSION >= (3, 4):
-        OriginalProcess._bootstrap = ProcessWithCoverage._bootstrap
-    else:
-        multiprocessing.Process = ProcessWithCoverage
+    OriginalProcess._bootstrap = ProcessWithCoverage._bootstrap
 
     # Set the value in ProcessWithCoverage that will be pickled into the child
     # process.

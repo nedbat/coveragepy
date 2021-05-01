@@ -20,12 +20,9 @@ IRONPYTHON = (platform.python_implementation() == "IronPython")
 # Python versions. We amend version_info with one more value, a zero if an
 # official version, or 1 if built from source beyond an official version.
 PYVERSION = sys.version_info + (int(platform.python_version()[-1] == "+"),)
-PY3 = PYVERSION >= (3, 0)
 
 if PYPY:
     PYPYVERSION = sys.pypy_version_info
-
-PYPY3 = PYPY and PY3
 
 # Python behavior.
 class PYBEHAVIOR:
@@ -36,7 +33,7 @@ class PYBEHAVIOR:
     pep626 = CPYTHON and (PYVERSION > (3, 10, 0, 'alpha', 4))
 
     # Is "if __debug__" optimized away?
-    if PYPY3:
+    if PYPY:
         optimize_if_debug = True
     else:
         optimize_if_debug = not pep626
@@ -45,7 +42,7 @@ class PYBEHAVIOR:
     optimize_if_not_debug = (not PYPY) and (PYVERSION >= (3, 7, 0, 'alpha', 4))
     if pep626:
         optimize_if_not_debug = False
-    if PYPY3:
+    if PYPY:
         optimize_if_not_debug = True
 
     # Is "if not __debug__" optimized away even better?
@@ -54,7 +51,7 @@ class PYBEHAVIOR:
         optimize_if_not_debug2 = False
 
     # Can co_lnotab have negative deltas?
-    negative_lnotab = (PYVERSION >= (3, 6)) and not (PYPY and PYPYVERSION < (7, 2))
+    negative_lnotab = not (PYPY and PYPYVERSION < (7, 2))
 
     # Do .pyc files conform to PEP 552? Hash-based pyc's.
     hashed_pyc_pep552 = (PYVERSION >= (3, 7, 0, 'alpha', 4))
@@ -65,7 +62,7 @@ class PYBEHAVIOR:
     # affect the outcome.
     actual_syspath0_dash_m = (
         (CPYTHON and (PYVERSION >= (3, 7, 0, 'beta', 3))) or
-        (PYPY3 and (PYPYVERSION >= (7, 3, 4)))
+        (PYPY and (PYPYVERSION >= (7, 3, 4)))
         )
 
     # 3.7 changed how functions with only docstrings are numbered.

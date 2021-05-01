@@ -598,8 +598,7 @@ class AstArcAnalyzer:
     _line__ClassDef = _line_decorated
 
     def _line__Dict(self, node):
-        # Python 3.5 changed how dict literals are made.
-        if env.PYVERSION >= (3, 5) and node.keys:
+        if node.keys:
             if node.keys[0] is not None:
                 return node.keys[0].lineno
             else:

@@ -22,10 +22,6 @@ def gold_path(path):
     return os.path.join(TESTS_DIR, "gold", path)
 
 
-# "rU" was deprecated in 3.4
-READ_MODE = "rU" if env.PYVERSION < (3, 4) else "r"
-
-
 def versioned_directory(d):
     """Find a subdirectory of d specific to the Python version.
     For example, on Python 3.6.4 rc 1, it returns the first of these
@@ -80,13 +76,13 @@ def compare(
     for f in diff_files:
 
         expected_file = os.path.join(expected_dir, f)
-        with open(expected_file, READ_MODE) as fobj:
+        with open(expected_file) as fobj:
             expected = fobj.read()
         if expected_file.endswith(".xml"):
             expected = canonicalize_xml(expected)
 
         actual_file = os.path.join(actual_dir, f)
-        with open(actual_file, READ_MODE) as fobj:
+        with open(actual_file) as fobj:
             actual = fobj.read()
         if actual_file.endswith(".xml"):
             actual = canonicalize_xml(actual)

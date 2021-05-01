@@ -758,7 +758,7 @@ class ProcessTest(CoverageTest):
 
     # Pypy passes locally, but fails in CI? Perhaps the version of macOS is
     # significant?  https://foss.heptapod.net/pypy/pypy/-/issues/3074
-    @pytest.mark.skipif(env.PYPY3, reason="Pypy is unreliable with this test")
+    @pytest.mark.skipif(env.PYPY, reason="PyPy is unreliable with this test")
     # Jython as of 2.7.1rc3 won't compile a filename that isn't utf8.
     @pytest.mark.skipif(env.JYTHON, reason="Jython can't handle this test")
     def test_lang_c(self):
@@ -871,9 +871,6 @@ class EnvironmentTest(CoverageTest):
         actual = self.run_command("coverage run -m process_test.try_execfile")
         self.assert_tryexecfile_output(expected, actual)
 
-    @pytest.mark.skipif(env.PYVERSION == (3, 5, 4, 'final', 0, 0),
-        reason="3.5.4 broke this: https://bugs.python.org/issue32551"
-    )
     def test_coverage_run_dir_is_like_python_dir(self):
         with open(TRY_EXECFILE) as f:
             self.make_file("with_main/__main__.py", f.read())

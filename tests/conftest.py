@@ -68,7 +68,7 @@ def set_warnings():
         message=r".*find_spec\(\) not found; falling back to find_module\(\)",
         )
 
-    if env.PYPY3:
+    if env.PYPY:
         # pypy3 warns about unclosed files a lot.
         warnings.filterwarnings("ignore", r".*unclosed file", category=ResourceWarning)
 
