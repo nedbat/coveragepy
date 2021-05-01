@@ -12,10 +12,9 @@ import pytest
 
 import coverage
 from coverage import env
-from coverage.backward import import_local_file
 from coverage.data import line_counts
 from coverage.control import Plugins
-from coverage.misc import CoverageException
+from coverage.misc import CoverageException, import_local_file
 
 import coverage.plugin
 

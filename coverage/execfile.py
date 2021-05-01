@@ -13,7 +13,6 @@ import sys
 import types
 
 from coverage import env
-from coverage.backward import imp, importlib_util_find_spec
 from coverage.files import canonical_filename, python_reported_file
 from coverage.misc import CoverageException, ExceptionDuringRun, NoCode, NoSource, isolate_module
 from coverage.phystokens import compile_unicode
@@ -33,76 +32,33 @@ class DummyLoader(object):
         self.fullname = fullname
 
 
-if importlib_util_find_spec:
-    def find_module(modulename):
-        """Find the module named `modulename`.
+def find_module(modulename):
+    """Find the module named `modulename`.
 
-        Returns the file path of the module, the name of the enclosing
-        package, and the spec.
-        """
-        try:
-            spec = importlib_util_find_spec(modulename)
-        except ImportError as err:
-            raise NoSource(str(err))
+    Returns the file path of the module, the name of the enclosing
+    package, and the spec.
+    """
+    try:
+        spec = importlib.util.find_spec(modulename)
+    except ImportError as err:
+        raise NoSource(str(err))
+    if not spec:
+        raise NoSource("No module named %r" % (modulename,))
+    pathname = spec.origin
+    packagename = spec.name
+    if spec.submodule_search_locations:
+        mod_main = modulename + ".__main__"
+        spec = importlib.util.find_spec(mod_main)
         if not spec:
-            raise NoSource("No module named %r" % (modulename,))
+            raise NoSource(
+                "No module named %s; "
+                "%r is a package and cannot be directly executed"
+                % (mod_main, modulename)
+            )
         pathname = spec.origin
         packagename = spec.name
-        if spec.submodule_search_locations:
-            mod_main = modulename + ".__main__"
-            spec = importlib_util_find_spec(mod_main)
-            if not spec:
-                raise NoSource(
-                    "No module named %s; "
-                    "%r is a package and cannot be directly executed"
-                    % (mod_main, modulename)
-                )
-            pathname = spec.origin
-            packagename = spec.name
-        packagename = packagename.rpartition(".")[0]
-        return pathname, packagename, spec
-else:
-    def find_module(modulename):
-        """Find the module named `modulename`.
-
-        Returns the file path of the module, the name of the enclosing
-        package, and None (where a spec would have been).
-        """
-        openfile = None
-        glo, loc = globals(), locals()
-        try:
-            # Search for the module - inside its parent package, if any - using
-            # standard import mechanics.
-            if '.' in modulename:
-                packagename, name = modulename.rsplit('.', 1)
-                package = __import__(packagename, glo, loc, ['__path__'])
-                searchpath = package.__path__
-            else:
-                packagename, name = None, modulename
-                searchpath = None  # "top-level search" in imp.find_module()
-            openfile, pathname, _ = imp.find_module(name, searchpath)
-
-            # Complain if this is a magic non-file module.
-            if openfile is None and pathname is None:
-                raise NoSource(
-                    "module does not live in a file: %r" % modulename
-                    )
-
-            # If `modulename` is actually a package, not a mere module, then we
-            # pretend to be Python 2.7 and try running its __main__.py script.
-            if openfile is None:
-                packagename = modulename
-                name = '__main__'
-                package = __import__(packagename, glo, loc, ['__path__'])
-                searchpath = package.__path__
-                openfile, pathname, _ = imp.find_module(name, searchpath)
-        except ImportError as err:
-            raise NoSource(str(err))
-        finally:
-            if openfile:
-                openfile.close()
-
-        return pathname, packagename, None
+    packagename = packagename.rpartition(".")[0]
+    return pathname, packagename, spec
 
 
 class PyRunner(object):

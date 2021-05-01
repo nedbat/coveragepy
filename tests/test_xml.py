@@ -12,8 +12,8 @@ from xml.etree import ElementTree
 import pytest
 
 import coverage
-from coverage.backward import import_local_file
 from coverage.files import abs_file
+from coverage.misc import import_local_file
 
 from tests.coveragetest import CoverageTest
 from tests.goldtest import compare, gold_path

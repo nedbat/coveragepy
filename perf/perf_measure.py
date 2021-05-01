@@ -14,7 +14,7 @@ import time
 from unittest_mixins.mixins import make_file
 
 import coverage
-from coverage.backward import import_local_file
+from coverage.misc import import_local_file
 
 from tests.helpers import SuperModuleCleaner
 

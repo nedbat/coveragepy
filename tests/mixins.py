@@ -7,14 +7,13 @@ Test class mixins
 Some of these are transitional while working toward pure-pytest style.
 """
 
+import importlib
 import os
 import os.path
 import shutil
 import sys
 
 import pytest
-
-from coverage.backward import importlib
 
 from tests.helpers import change_dir, make_file, remove_files
 
@@ -130,8 +129,7 @@ class SysPathModulesMixin:
         if os.path.exists("__pycache__"):
             shutil.rmtree("__pycache__")
 
-        if importlib and hasattr(importlib, "invalidate_caches"):
-            importlib.invalidate_caches()
+        importlib.invalidate_caches()
 
 
 class StdStreamCapturingMixin:

@@ -3,6 +3,7 @@
 
 """Determining whether files are being measured/reported or not."""
 
+import importlib.util
 import inspect
 import itertools
 import os
@@ -13,7 +14,6 @@ import sysconfig
 import traceback
 
 from coverage import env
-from coverage.backward import importlib_util_find_spec
 from coverage.disposition import FileDisposition, disposition_init
 from coverage.files import TreeMatcher, FnmatchMatcher, ModuleMatcher
 from coverage.files import prep_patterns, find_python_files, canonical_filename
@@ -109,37 +109,15 @@ def module_has_file(mod):
 
 def file_for_module(modulename):
     """Find the file for `modulename`, or return None."""
-    if importlib_util_find_spec:
-        filename = None
-        try:
-            spec = importlib_util_find_spec(modulename)
-        except ImportError:
-            pass
-        else:
-            if spec is not None:
-                filename = spec.origin
-        return filename
+    filename = None
+    try:
+        spec = importlib.util.find_spec(modulename)
+    except ImportError:
+        pass
     else:
-        import imp
-        openfile = None
-        glo, loc = globals(), locals()
-        try:
-            # Search for the module - inside its parent package, if any - using
-            # standard import mechanics.
-            if '.' in modulename:
-                packagename, name = modulename.rsplit('.', 1)
-                package = __import__(packagename, glo, loc, ['__path__'])
-                searchpath = package.__path__
-            else:
-                packagename, name = None, modulename
-                searchpath = None  # "top-level search" in imp.find_module()
-            openfile, pathname, _ = imp.find_module(name, searchpath)
-            return pathname
-        except ImportError:
-            return None
-        finally:
-            if openfile:
-                openfile.close()
+        if spec is not None:
+            filename = spec.origin
+    return filename
 
 
 def add_stdlib_paths(paths):

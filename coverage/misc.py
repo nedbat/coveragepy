@@ -5,6 +5,7 @@
 
 import errno
 import hashlib
+import importlib.util
 import inspect
 import locale
 import os
@@ -313,6 +314,30 @@ def substitute_variables(text, variables):
 
     text = re.sub(dollar_pattern, dollar_replace, text)
     return text
+
+
+def format_local_datetime(dt):
+    """Return a string with local timezone representing the date.
+    """
+    return dt.astimezone().strftime('%Y-%m-%d %H:%M %z')
+
+
+def import_local_file(modname, modfile=None):
+    """Import a local file as a module.
+
+    Opens a file in the current directory named `modname`.py, imports it
+    as `modname`, and returns the module object.  `modfile` is the file to
+    import if it isn't in the current directory.
+
+    """
+    if modfile is None:
+        modfile = modname + '.py'
+    spec = importlib.util.spec_from_file_location(modname, modfile)
+    mod = importlib.util.module_from_spec(spec)
+    sys.modules[modname] = mod
+    spec.loader.exec_module(mod)
+
+    return mod
 
 
 class BaseCoverageException(Exception):

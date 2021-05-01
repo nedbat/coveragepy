@@ -11,8 +11,8 @@ import pytest
 
 import coverage
 from coverage import env
-from coverage.backward import import_local_file
 from coverage.files import abs_file
+from coverage.misc import import_local_file
 
 from tests.coveragetest import CoverageTest
 from tests import osinfo

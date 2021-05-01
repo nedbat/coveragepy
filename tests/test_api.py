@@ -17,10 +17,9 @@ import pytest
 
 import coverage
 from coverage import env
-from coverage.backward import import_local_file
 from coverage.data import line_counts
 from coverage.files import abs_file, relative_filename
-from coverage.misc import CoverageException
+from coverage.misc import CoverageException, import_local_file
 
 from tests.coveragetest import CoverageTest, TESTS_DIR, UsingModulesMixin
 from tests.helpers import assert_count_equal, change_dir, nice_file

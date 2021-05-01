@@ -6,7 +6,7 @@
 
 import pytest
 
-from coverage.backward import import_local_file
+from coverage.misc import import_local_file
 
 from tests.mixins import TempDirMixin, SysPathModulesMixin
 

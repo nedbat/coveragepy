@@ -19,8 +19,8 @@ import pytest
 
 import coverage
 from coverage import env
-from coverage.backward import import_local_file
 from coverage.cmdline import CoverageScript
+from coverage.misc import import_local_file
 
 from tests.helpers import arcs_to_arcz_repr, arcz_to_arcs, assert_count_equal
 from tests.helpers import nice_file, run_command
