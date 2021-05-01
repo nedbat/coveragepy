@@ -763,9 +763,6 @@ class CurrentInstanceTest(CoverageTest):
         assert cur0 is cur3
 
 
-@pytest.mark.skipif(not env.PYBEHAVIOR.namespaces_pep420,
-    reason="Python before 3.3 doesn't have namespace packages"
-)
 class NamespaceModuleTest(UsingModulesMixin, CoverageTest):
     """Test PEP-420 namespace modules."""
 

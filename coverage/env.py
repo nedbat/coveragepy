@@ -53,21 +53,6 @@ class PYBEHAVIOR(object):
     if pep626:
         optimize_if_not_debug2 = False
 
-    # Do we have yield-from?
-    yield_from = (PYVERSION >= (3, 3))
-
-    # Do we have PEP 420 namespace packages?
-    namespaces_pep420 = (PYVERSION >= (3, 3))
-
-    # Do .pyc files have the source file size recorded in them?
-    size_in_pyc = (PYVERSION >= (3, 3))
-
-    # Do we have async and await syntax?
-    async_syntax = (PYVERSION >= (3, 5))
-
-    # PEP 448 defined additional unpacking generalizations
-    unpackings_pep448 = (PYVERSION >= (3, 5))
-
     # Can co_lnotab have negative deltas?
     negative_lnotab = (PYVERSION >= (3, 6)) and not (PYPY and PYPYVERSION < (7, 2))
 

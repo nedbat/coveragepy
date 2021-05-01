@@ -346,9 +346,8 @@ def make_code_from_pyc(filename):
         if date_based:
             # Skip the junk in the header that we don't need.
             fpyc.read(4)            # Skip the moddate.
-            if env.PYBEHAVIOR.size_in_pyc:
-                # 3.3 added another long to the header (size), skip it.
-                fpyc.read(4)
+            # 3.3 added another long to the header (size), skip it.
+            fpyc.read(4)
 
         # The rest of the file is the code object we want.
         code = marshal.load(fpyc)
