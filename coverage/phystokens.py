@@ -104,7 +104,7 @@ def source_token_lines(source):
                 mark_end = False
             else:
                 if mark_start and scol > col:
-                    line.append(("ws", u" " * (scol - col)))
+                    line.append(("ws", " " * (scol - col)))
                     mark_start = False
                 tok_class = tokenize.tok_name.get(ttype, 'xx').lower()[:3]
                 if ttype == token.NAME and keyword.iskeyword(ttext):
@@ -119,7 +119,7 @@ def source_token_lines(source):
         yield line
 
 
-class CachedTokenizer(object):
+class CachedTokenizer:
     """A one-element cache around tokenize.generate_tokens.
 
     When reporting, coverage.py tokenizes files twice, once to find the

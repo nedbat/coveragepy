@@ -243,7 +243,7 @@ class CoverageData(SimpleReprMixin):
         Initializes the schema and certain metadata.
         """
         if self._debug.should('dataio'):
-            self._debug.write("Creating data file {!r}".format(self._filename))
+            self._debug.write(f"Creating data file {self._filename!r}")
         self._dbs[threading.get_ident()] = db = SqliteDb(self._filename, self._debug)
         with db:
             db.executescript(SCHEMA)
@@ -260,7 +260,7 @@ class CoverageData(SimpleReprMixin):
     def _open_db(self):
         """Open an existing db file, and read its metadata."""
         if self._debug.should('dataio'):
-            self._debug.write("Opening data file {!r}".format(self._filename))
+            self._debug.write(f"Opening data file {self._filename!r}")
         self._dbs[threading.get_ident()] = SqliteDb(self._filename, self._debug)
         self._read_db()
 
@@ -330,7 +330,7 @@ class CoverageData(SimpleReprMixin):
 
         """
         if self._debug.should('dataio'):
-            self._debug.write("Dumping data from data file {!r}".format(self._filename))
+            self._debug.write(f"Dumping data from data file {self._filename!r}")
         with self._connect() as con:
             return b'z' + zlib.compress(con.dump().encode("utf8"))
 
@@ -351,10 +351,10 @@ class CoverageData(SimpleReprMixin):
 
         """
         if self._debug.should('dataio'):
-            self._debug.write("Loading data into data file {!r}".format(self._filename))
+            self._debug.write(f"Loading data into data file {self._filename!r}")
         if data[:1] != b'z':
             raise CoverageException(
-                "Unrecognized serialization: {!r} (head of {} bytes)".format(data[:40], len(data))
+                f"Unrecognized serialization: {data[:40]!r} (head of {len(data)} bytes)"
                 )
         script = zlib.decompress(data[1:]).decode("utf8")
         self._dbs[threading.get_ident()] = db = SqliteDb(self._filename, self._debug)
@@ -397,7 +397,7 @@ class CoverageData(SimpleReprMixin):
 
         """
         if self._debug.should('dataop'):
-            self._debug.write("Setting context: %r" % (context,))
+            self._debug.write(f"Setting context: {context!r}")
         self._current_context = context
         self._current_context_id = None
 
@@ -520,14 +520,14 @@ class CoverageData(SimpleReprMixin):
                 file_id = self._file_id(filename)
                 if file_id is None:
                     raise CoverageException(
-                        "Can't add file tracer data for unmeasured file '%s'" % (filename,)
+                        f"Can't add file tracer data for unmeasured file '{filename}'"
                     )
 
                 existing_plugin = self.file_tracer(filename)
                 if existing_plugin:
                     if existing_plugin != plugin_name:
                         raise CoverageException(
-                            "Conflicting file tracer name for '%s': %r vs %r" % (
+                            "Conflicting file tracer name for '{}': {!r} vs {!r}".format(
                                 filename, existing_plugin, plugin_name,
                             )
                         )
@@ -552,7 +552,7 @@ class CoverageData(SimpleReprMixin):
         to associate the right filereporter, etc.
         """
         if self._debug.should('dataop'):
-            self._debug.write("Touching %r" % (filenames,))
+            self._debug.write(f"Touching {filenames!r}")
         self._start_using()
         with self._connect(): # Use this to get one transaction.
             if not self._has_arcs and not self._has_lines:
@@ -571,7 +571,7 @@ class CoverageData(SimpleReprMixin):
         re-map paths to match the local machine's.
         """
         if self._debug.should('dataop'):
-            self._debug.write("Updating with data from %r" % (
+            self._debug.write("Updating with data from {!r}".format(
                 getattr(other_data, '_filename', '???'),
             ))
         if self._has_lines and other_data._has_arcs:
@@ -674,7 +674,7 @@ class CoverageData(SimpleReprMixin):
                 # If there is no tracer, there is always the None tracer.
                 if this_tracer is not None and this_tracer != other_tracer:
                     raise CoverageException(
-                        "Conflicting file tracer name for '%s': %r vs %r" % (
+                        "Conflicting file tracer name for '{}': {!r} vs {!r}".format(
                             path, this_tracer, other_tracer
                         )
                     )
@@ -743,7 +743,7 @@ class CoverageData(SimpleReprMixin):
         if self._no_disk:
             return
         if self._debug.should('dataio'):
-            self._debug.write("Erasing data file {!r}".format(self._filename))
+            self._debug.write(f"Erasing data file {self._filename!r}")
         file_be_gone(self._filename)
         if parallel:
             data_dir, local = os.path.split(self._filename)
@@ -751,7 +751,7 @@ class CoverageData(SimpleReprMixin):
             pattern = os.path.join(os.path.abspath(data_dir), localdot)
             for filename in glob.glob(pattern):
                 if self._debug.should('dataio'):
-                    self._debug.write("Erasing parallel data file {!r}".format(filename))
+                    self._debug.write(f"Erasing parallel data file {filename!r}")
                 file_be_gone(filename)
 
     def read(self):
@@ -1007,7 +1007,7 @@ class SqliteDb(SimpleReprMixin):
         # nature of the tracer operations, sharing a connection among threads
         # is not a problem.
         if self.debug:
-            self.debug.write("Connecting to {!r}".format(self.filename))
+            self.debug.write(f"Connecting to {self.filename!r}")
         self.con = sqlite3.connect(self.filename, check_same_thread=False)
         self.con.create_function('REGEXP', 2, _regexp)
 
@@ -1039,14 +1039,14 @@ class SqliteDb(SimpleReprMixin):
                 self.close()
             except Exception as exc:
                 if self.debug:
-                    self.debug.write("EXCEPTION from __exit__: {}".format(exc))
+                    self.debug.write(f"EXCEPTION from __exit__: {exc}")
                 raise
 
     def execute(self, sql, parameters=()):
         """Same as :meth:`python:sqlite3.Connection.execute`."""
         if self.debug:
-            tail = " with {!r}".format(parameters) if parameters else ""
-            self.debug.write("Executing {!r}{}".format(sql, tail))
+            tail = f" with {parameters!r}" if parameters else ""
+            self.debug.write(f"Executing {sql!r}{tail}")
         try:
             try:
                 return self.con.execute(sql, parameters)
@@ -1070,8 +1070,8 @@ class SqliteDb(SimpleReprMixin):
             except Exception:
                 pass
             if self.debug:
-                self.debug.write("EXCEPTION from execute: {}".format(msg))
-            raise CoverageException("Couldn't use data file {!r}: {}".format(self.filename, msg))
+                self.debug.write(f"EXCEPTION from execute: {msg}")
+            raise CoverageException(f"Couldn't use data file {self.filename!r}: {msg}")
 
     def execute_one(self, sql, parameters=()):
         """Execute a statement and return the one row that results.
@@ -1088,13 +1088,13 @@ class SqliteDb(SimpleReprMixin):
         elif len(rows) == 1:
             return rows[0]
         else:
-            raise CoverageException("Sql {!r} shouldn't return {} rows".format(sql, len(rows)))
+            raise CoverageException(f"Sql {sql!r} shouldn't return {len(rows)} rows")
 
     def executemany(self, sql, data):
         """Same as :meth:`python:sqlite3.Connection.executemany`."""
         if self.debug:
             data = list(data)
-            self.debug.write("Executing many {!r} with {} rows".format(sql, len(data)))
+            self.debug.write(f"Executing many {sql!r} with {len(data)} rows")
         return self.con.executemany(sql, data)
 
     def executescript(self, script):

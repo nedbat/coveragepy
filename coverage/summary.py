@@ -10,7 +10,7 @@ from coverage.results import Numbers
 from coverage.misc import CoverageException
 
 
-class SummaryReporter(object):
+class SummaryReporter:
     """A reporter for writing the summary report."""
 
     def __init__(self, coverage):
@@ -22,7 +22,7 @@ class SummaryReporter(object):
         self.skipped_count = 0
         self.empty_count = 0
         self.total = Numbers()
-        self.fmt_err = u"%s   %s: %s"
+        self.fmt_err = "%s   %s: %s"
 
     def writeout(self, line):
         """Write a line to the output, adding a newline."""
@@ -44,22 +44,22 @@ class SummaryReporter(object):
 
         # Prepare the formatting strings, header, and column sorting.
         max_name = max([len(fr.relative_filename()) for (fr, analysis) in self.fr_analysis] + [5])
-        fmt_name = u"%%- %ds  " % max_name
-        fmt_skip_covered = u"\n%s file%s skipped due to complete coverage."
-        fmt_skip_empty = u"\n%s empty file%s skipped."
+        fmt_name = "%%- %ds  " % max_name
+        fmt_skip_covered = "\n%s file%s skipped due to complete coverage."
+        fmt_skip_empty = "\n%s empty file%s skipped."
 
-        header = (fmt_name % "Name") + u" Stmts   Miss"
-        fmt_coverage = fmt_name + u"%6d %6d"
+        header = (fmt_name % "Name") + " Stmts   Miss"
+        fmt_coverage = fmt_name + "%6d %6d"
         if self.branches:
-            header += u" Branch BrPart"
-            fmt_coverage += u" %6d %6d"
+            header += " Branch BrPart"
+            fmt_coverage += " %6d %6d"
         width100 = Numbers.pc_str_width()
-        header += u"%*s" % (width100+4, "Cover")
-        fmt_coverage += u"%%%ds%%%%" % (width100+3,)
+        header += "%*s" % (width100+4, "Cover")
+        fmt_coverage += "%%%ds%%%%" % (width100+3,)
         if self.config.show_missing:
-            header += u"   Missing"
-            fmt_coverage += u"   %s"
-        rule = u"-" * len(header)
+            header += "   Missing"
+            fmt_coverage += "   %s"
+        rule = "-" * len(header)
 
         column_order = dict(name=0, stmts=1, miss=2, cover=-1)
         if self.branches:
@@ -100,7 +100,7 @@ class SummaryReporter(object):
 
             position = column_order.get(sort_option)
             if position is None:
-                raise CoverageException("Invalid sorting option: {!r}".format(self.config.sort))
+                raise CoverageException(f"Invalid sorting option: {self.config.sort!r}")
             lines.sort(key=lambda l: (l[1][position], l[0]), reverse=reverse)
 
         for line in lines:

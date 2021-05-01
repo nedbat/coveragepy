@@ -3,7 +3,6 @@
 
 """Source file annotation for coverage.py."""
 
-import io
 import os
 import re
 
@@ -14,7 +13,7 @@ from coverage.report import get_analysis_to_report
 os = isolate_module(os)
 
 
-class AnnotateReporter(object):
+class AnnotateReporter:
     """Generate annotated source files showing line coverage.
 
     This reporter creates annotated copies of the measured source files. Each
@@ -74,7 +73,7 @@ class AnnotateReporter(object):
         else:
             dest_file = fr.filename + ",cover"
 
-        with io.open(dest_file, 'w', encoding='utf8') as dest:
+        with open(dest_file, 'w', encoding='utf8') as dest:
             i = 0
             j = 0
             covered = True
@@ -87,22 +86,22 @@ class AnnotateReporter(object):
                 if i < len(statements) and statements[i] == lineno:
                     covered = j >= len(missing) or missing[j] > lineno
                 if self.blank_re.match(line):
-                    dest.write(u'  ')
+                    dest.write('  ')
                 elif self.else_re.match(line):
                     # Special logic for lines containing only 'else:'.
                     if i >= len(statements) and j >= len(missing):
-                        dest.write(u'! ')
+                        dest.write('! ')
                     elif i >= len(statements) or j >= len(missing):
-                        dest.write(u'> ')
+                        dest.write('> ')
                     elif statements[i] == missing[j]:
-                        dest.write(u'! ')
+                        dest.write('! ')
                     else:
-                        dest.write(u'> ')
+                        dest.write('> ')
                 elif lineno in excluded:
-                    dest.write(u'- ')
+                    dest.write('- ')
                 elif covered:
-                    dest.write(u'> ')
+                    dest.write('> ')
                 else:
-                    dest.write(u'! ')
+                    dest.write('! ')
 
                 dest.write(line)

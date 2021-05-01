@@ -9,7 +9,7 @@ from coverage.debug import SimpleReprMixin
 from coverage.misc import contract, CoverageException, nice_pair
 
 
-class Analysis(object):
+class Analysis:
     """The results of analyzing a FileReporter."""
 
     def __init__(self, data, file_reporter, file_mapper):
@@ -332,7 +332,7 @@ def should_fail_under(total, fail_under, precision):
     """
     # We can never achieve higher than 100% coverage, or less than zero.
     if not (0 <= fail_under <= 100.0):
-        msg = "fail_under={} is invalid. Must be between 0 and 100.".format(fail_under)
+        msg = f"fail_under={fail_under} is invalid. Must be between 0 and 100."
         raise CoverageException(msg)
 
     # Special case for fail_under=100, it must really be 100.

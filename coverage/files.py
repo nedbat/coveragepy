@@ -195,7 +195,7 @@ def prep_patterns(patterns):
     return prepped
 
 
-class TreeMatcher(object):
+class TreeMatcher:
     """A matcher for files in a tree.
 
     Construct with a list of paths, either files or directories. Paths match
@@ -209,7 +209,7 @@ class TreeMatcher(object):
         self.name = name
 
     def __repr__(self):
-        return "<TreeMatcher {!r} {!r}>".format(self.name, self.original_paths)
+        return f"<TreeMatcher {self.name!r} {self.original_paths!r}>"
 
     def info(self):
         """A list of strings for displaying when dumping state."""
@@ -229,14 +229,14 @@ class TreeMatcher(object):
         return False
 
 
-class ModuleMatcher(object):
+class ModuleMatcher:
     """A matcher for modules in a tree."""
     def __init__(self, module_names, name):
         self.modules = list(module_names)
         self.name = name
 
     def __repr__(self):
-        return "<ModuleMatcher {!r} {!r}>".format(self.name, self.modules)
+        return f"<ModuleMatcher {self.name!r} {self.modules!r}>"
 
     def info(self):
         """A list of strings for displaying when dumping state."""
@@ -258,7 +258,7 @@ class ModuleMatcher(object):
         return False
 
 
-class FnmatchMatcher(object):
+class FnmatchMatcher:
     """A matcher for files by file name pattern."""
     def __init__(self, pats, name):
         self.pats = list(pats)
@@ -266,7 +266,7 @@ class FnmatchMatcher(object):
         self.name = name
 
     def __repr__(self):
-        return "<FnmatchMatcher {!r} {!r}>".format(self.name, self.pats)
+        return f"<FnmatchMatcher {self.name!r} {self.pats!r}>"
 
     def info(self):
         """A list of strings for displaying when dumping state."""
@@ -320,7 +320,7 @@ def fnmatches_to_regex(patterns, case_insensitive=False, partial=False):
     return compiled
 
 
-class PathAliases(object):
+class PathAliases:
     """A collection of aliases for paths.
 
     When combining data files from remote machines, often the paths to source
@@ -337,7 +337,7 @@ class PathAliases(object):
     def pprint(self):       # pragma: debugging
         """Dump the important parts of the PathAliases, for debugging."""
         for regex, result in self.aliases:
-            print("{!r} --> {!r}".format(regex.pattern, result))
+            print(f"{regex.pattern!r} --> {result!r}")
 
     def add(self, pattern, result):
         """Add the `pattern`/`result` pair to the list of aliases.

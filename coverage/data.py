@@ -90,7 +90,7 @@ def combine_parallel_data(data, aliases=None, data_paths=None, strict=False, kee
             pattern = os.path.join(os.path.abspath(p), localdot)
             files_to_combine.extend(glob.glob(pattern))
         else:
-            raise CoverageException("Couldn't combine from non-existent path '%s'" % (p,))
+            raise CoverageException(f"Couldn't combine from non-existent path '{p}'")
 
     if strict and not files_to_combine:
         raise CoverageException("No data to combine")
@@ -101,10 +101,10 @@ def combine_parallel_data(data, aliases=None, data_paths=None, strict=False, kee
             # Sometimes we are combining into a file which is one of the
             # parallel files.  Skip that file.
             if data._debug.should('dataio'):
-                data._debug.write("Skipping combining ourself: %r" % (f,))
+                data._debug.write(f"Skipping combining ourself: {f!r}")
             continue
         if data._debug.should('dataio'):
-            data._debug.write("Combining data file %r" % (f,))
+            data._debug.write(f"Combining data file {f!r}")
         try:
             new_data = CoverageData(f, debug=data._debug)
             new_data.read()
@@ -118,7 +118,7 @@ def combine_parallel_data(data, aliases=None, data_paths=None, strict=False, kee
             files_combined += 1
             if not keep:
                 if data._debug.should('dataio'):
-                    data._debug.write("Deleting combined data file %r" % (f,))
+                    data._debug.write(f"Deleting combined data file {f!r}")
                 file_be_gone(f)
 
     if strict and not files_combined:

@@ -53,7 +53,7 @@ class ProcessWithCoverage(OriginalProcess):         # pylint: disable=abstract-m
             if debug.should("multiproc"):
                 debug.write("Saved multiprocessing data")
 
-class Stowaway(object):
+class Stowaway:
     """An object to pickle, so when it is unpickled, it can apply the monkey-patch."""
     def __init__(self, rcfile):
         self.rcfile = rcfile

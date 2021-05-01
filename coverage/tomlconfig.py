@@ -4,7 +4,6 @@
 """TOML configuration support for coverage.py"""
 
 import configparser
-import io
 import os
 import re
 
@@ -43,9 +42,9 @@ class TomlConfigParser:
             filename = os.fspath(filename)
 
         try:
-            with io.open(filename, encoding='utf-8') as fp:
+            with open(filename, encoding='utf-8') as fp:
                 toml_text = fp.read()
-        except IOError:
+        except OSError:
             return []
         if toml:
             toml_text = substitute_variables(toml_text, os.environ)
@@ -151,7 +150,7 @@ class TomlConfigParser:
                 re.compile(value)
             except re.error as e:
                 raise CoverageException(
-                    "Invalid [%s].%s value %r: %s" % (name, option, value, e)
+                    f"Invalid [{name}].{option} value {value!r}: {e}"
                 )
         return values
 

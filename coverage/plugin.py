@@ -116,7 +116,7 @@ from coverage import files
 from coverage.misc import contract, _needs_to_implement
 
 
-class CoveragePlugin(object):
+class CoveragePlugin:
     """Base class for coverage.py plug-ins."""
 
     def file_tracer(self, filename):        # pylint: disable=unused-argument
@@ -232,7 +232,7 @@ class CoveragePlugin(object):
         return []
 
 
-class FileTracer(object):
+class FileTracer:
     """Support needed for files during the execution phase.
 
     File tracer plug-ins implement subclasses of FileTracer to return from
@@ -315,7 +315,7 @@ class FileTracer(object):
         return lineno, lineno
 
 
-class FileReporter(object):
+class FileReporter:
     """Support needed for files during the analysis and reporting phases.
 
     File tracer plug-ins implement a subclass of `FileReporter`, and return
@@ -476,7 +476,7 @@ class FileReporter(object):
         to {end}".
 
         """
-        return "Line {start} didn't jump to line {end}".format(start=start, end=end)
+        return f"Line {start} didn't jump to line {end}"
 
     def source_token_lines(self):
         """Generate a series of tokenized lines, one for each line in `source`.

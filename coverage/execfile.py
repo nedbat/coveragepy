@@ -23,7 +23,7 @@ os = isolate_module(os)
 
 PYC_MAGIC_NUMBER = importlib.util.MAGIC_NUMBER
 
-class DummyLoader(object):
+class DummyLoader:
     """A shim for the pep302 __loader__, emulating pkgutil.ImpLoader.
 
     Currently only implements the .fullname attribute
@@ -43,7 +43,7 @@ def find_module(modulename):
     except ImportError as err:
         raise NoSource(str(err))
     if not spec:
-        raise NoSource("No module named %r" % (modulename,))
+        raise NoSource(f"No module named {modulename!r}")
     pathname = spec.origin
     packagename = spec.name
     if spec.submodule_search_locations:
@@ -61,7 +61,7 @@ def find_module(modulename):
     return pathname, packagename, spec
 
 
-class PyRunner(object):
+class PyRunner:
     """Multi-stage execution of Python code.
 
     This is meant to emulate real Python execution as closely as possible.
@@ -271,7 +271,7 @@ def make_code_from_py(filename):
     # Open the source file.
     try:
         source = get_python_source(filename)
-    except (IOError, NoSource):
+    except (OSError, NoSource):
         raise NoSource("No file to run: '%s'" % filename)
 
     code = compile_unicode(source, filename, "exec")
@@ -282,7 +282,7 @@ def make_code_from_pyc(filename):
     """Get a code object from a .pyc file."""
     try:
         fpyc = open(filename, "rb")
-    except IOError:
+    except OSError:
         raise NoCode("No file to run: '%s'" % filename)
 
     with fpyc:
@@ -290,7 +290,7 @@ def make_code_from_pyc(filename):
         # match or we won't run the file.
         magic = fpyc.read(4)
         if magic != PYC_MAGIC_NUMBER:
-            raise NoCode("Bad magic number in .pyc file: {} != {}".format(magic, PYC_MAGIC_NUMBER))
+            raise NoCode(f"Bad magic number in .pyc file: {magic} != {PYC_MAGIC_NUMBER}")
 
         date_based = True
         if env.PYBEHAVIOR.hashed_pyc_pep552:

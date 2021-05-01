@@ -28,7 +28,7 @@ if PYPY:
 PYPY3 = PYPY and PY3
 
 # Python behavior.
-class PYBEHAVIOR(object):
+class PYBEHAVIOR:
     """Flags indicating this Python's behavior."""
 
     # Does Python conform to PEP626, Precise line numbers for debugging and other tools.

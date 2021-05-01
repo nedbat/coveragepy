@@ -18,7 +18,7 @@ from coverage.misc import NoSource, NotPython, StopEverything
 from coverage.phystokens import compile_unicode, generate_tokens, neuter_encoding_declaration
 
 
-class PythonParser(object):
+class PythonParser:
     """Parse code to find executable lines, excluded lines, etc.
 
     This information is all based on static analysis: no code execution is
@@ -40,9 +40,9 @@ class PythonParser(object):
             from coverage.python import get_python_source
             try:
                 self.text = get_python_source(self.filename)
-            except IOError as err:
+            except OSError as err:
                 raise NoSource(
-                    "No source for code: '%s': %s" % (self.filename, err)
+                    f"No source for code: '{self.filename}': {err}"
                 )
 
         self.exclude = exclude
@@ -247,7 +247,7 @@ class PythonParser(object):
             else:
                 lineno = err.args[1][0]     # TokenError
             raise NotPython(
-                u"Couldn't parse '%s' as Python source: '%s' at line %d" % (
+                "Couldn't parse '%s' as Python source: '%s' at line %d" % (
                     self.filename, err.args[0], lineno
                 )
             )
@@ -345,16 +345,16 @@ class PythonParser(object):
                     emsg = "didn't jump to line {lineno}"
             emsg = emsg.format(lineno=end)
 
-            msg = "line {start} {emsg}".format(start=actual_start, emsg=emsg)
+            msg = f"line {actual_start} {emsg}"
             if smsg is not None:
-                msg += ", because {smsg}".format(smsg=smsg.format(lineno=actual_start))
+                msg += f", because {smsg.format(lineno=actual_start)}"
 
             msgs.append(msg)
 
         return " or ".join(msgs)
 
 
-class ByteParser(object):
+class ByteParser:
     """Parse bytecode to understand the structure of code."""
 
     @contract(text='unicode')
@@ -367,7 +367,7 @@ class ByteParser(object):
                 self.code = compile_unicode(text, filename, "exec")
             except SyntaxError as synerr:
                 raise NotPython(
-                    u"Couldn't parse '%s' as Python source: '%s' at line %d" % (
+                    "Couldn't parse '%s' as Python source: '%s' at line %d" % (
                         filename, synerr.msg, synerr.lineno
                     )
                 )
@@ -428,15 +428,14 @@ class ByteParser(object):
         """
         for bp in self.child_parsers():
             # Get all of the lineno information from this code.
-            for l in bp._line_numbers():
-                yield l
+            yield from bp._line_numbers()
 
 
 #
 # AST analysis
 #
 
-class LoopBlock(object):
+class LoopBlock:
     """A block on the block stack representing a `for` or `while` loop."""
     @contract(start=int)
     def __init__(self, start):
@@ -446,7 +445,7 @@ class LoopBlock(object):
         self.break_exits = set()
 
 
-class FunctionBlock(object):
+class FunctionBlock:
     """A block on the block stack representing a function definition."""
     @contract(start=int, name=str)
     def __init__(self, start, name):
@@ -456,7 +455,7 @@ class FunctionBlock(object):
         self.name = name
 
 
-class TryBlock(object):
+class TryBlock:
     """A block on the block stack representing a `try` block."""
     @contract(handler_start='int|None', final_start='int|None')
     def __init__(self, handler_start, final_start):
@@ -486,7 +485,7 @@ class ArcStart(collections.namedtuple("Arc", "lineno, cause")):
 
     """
     def __new__(cls, lineno, cause=None):
-        return super(ArcStart, cls).__new__(cls, lineno, cause)
+        return super().__new__(cls, lineno, cause)
 
 
 # Define contract words that PyContract doesn't have.
@@ -498,7 +497,7 @@ new_contract('ArcStarts', lambda seq: all(isinstance(x, ArcStart) for x in seq))
 # $set_env.py: COVERAGE_AST_DUMP - Dump the AST nodes when parsing code.
 AST_DUMP = bool(int(os.environ.get("COVERAGE_AST_DUMP", 0)))
 
-class NodeList(object):
+class NodeList:
     """A synthetic fictitious node, containing a sequence of nodes.
 
     This is used when collapsing optimized if-statements, to represent the
@@ -514,7 +513,7 @@ class NodeList(object):
 # TODO: the cause messages have too many commas.
 # TODO: Shouldn't the cause messages join with "and" instead of "or"?
 
-class AstArcAnalyzer(object):
+class AstArcAnalyzer:
     """Analyze source text with an AST to find executable code paths."""
 
     @contract(text='unicode', statements=set)
@@ -526,8 +525,8 @@ class AstArcAnalyzer(object):
 
         if AST_DUMP:                                # pragma: debugging
             # Dump the AST so that failing tests have helpful output.
-            print("Statements: {}".format(self.statements))
-            print("Multiline map: {}".format(self.multiline))
+            print(f"Statements: {self.statements}")
+            print(f"Multiline map: {self.multiline}")
             ast_dump(self.root_node)
 
         self.arcs = set()
@@ -560,7 +559,7 @@ class AstArcAnalyzer(object):
     def add_arc(self, start, end, smsg=None, emsg=None):
         """Add an arc, including message fragments to use if it is missing."""
         if self.debug:                      # pragma: debugging
-            print("\nAdding arc: ({}, {}): {!r}, {!r}".format(start, end, smsg, emsg))
+            print(f"\nAdding arc: ({start}, {end}): {smsg!r}, {emsg!r}")
             print(short_stack(limit=6))
         self.arcs.add((start, end))
 
@@ -661,7 +660,7 @@ class AstArcAnalyzer(object):
             # to see if it's overlooked.
             if 0:
                 if node_name not in self.OK_TO_DEFAULT:
-                    print("*** Unhandled: {}".format(node))
+                    print(f"*** Unhandled: {node}")
 
             # Default for simple statements: one exit from this node.
             return {ArcStart(self.line_for_node(node))}
@@ -831,7 +830,7 @@ class AstArcAnalyzer(object):
                 for xit in exits:
                     self.add_arc(
                         xit.lineno, -block.start, xit.cause,
-                        "didn't except from function {!r}".format(block.name),
+                        f"didn't except from function {block.name!r}",
                     )
                 break
 
@@ -846,7 +845,7 @@ class AstArcAnalyzer(object):
                 for xit in exits:
                     self.add_arc(
                         xit.lineno, -block.start, xit.cause,
-                        "didn't return from function {!r}".format(block.name),
+                        f"didn't return from function {block.name!r}",
                     )
                 break
 
@@ -1174,17 +1173,17 @@ class AstArcAnalyzer(object):
         for xit in exits:
             self.add_arc(
                 xit.lineno, -start, xit.cause,
-                "didn't exit the body of class {!r}".format(node.name),
+                f"didn't exit the body of class {node.name!r}",
             )
 
     def _make_oneline_code_method(noun):     # pylint: disable=no-self-argument
         """A function to make methods for online callable _code_object__ methods."""
         def _code_object__oneline_callable(self, node):
             start = self.line_for_node(node)
-            self.add_arc(-start, start, None, "didn't run the {} on line {}".format(noun, start))
+            self.add_arc(-start, start, None, f"didn't run the {noun} on line {start}")
             self.add_arc(
                 start, -start, None,
-                "didn't finish the {} on line {}".format(noun, start),
+                f"didn't finish the {noun} on line {start}",
             )
         return _code_object__oneline_callable
 
@@ -1215,20 +1214,20 @@ if AST_DUMP:            # pragma: debugging
         """
         indent = " " * depth
         if not isinstance(node, ast.AST):
-            print("{}<{} {!r}>".format(indent, node.__class__.__name__, node))
+            print(f"{indent}<{node.__class__.__name__} {node!r}>")
             return
 
         lineno = getattr(node, "lineno", None)
         if lineno is not None:
-            linemark = " @ {},{}".format(node.lineno, node.col_offset)
+            linemark = f" @ {node.lineno},{node.col_offset}"
             if hasattr(node, "end_lineno"):
                 linemark += ":"
                 if node.end_lineno != node.lineno:
-                    linemark += "{},".format(node.end_lineno)
-                linemark += "{}".format(node.end_col_offset)
+                    linemark += f"{node.end_lineno},"
+                linemark += f"{node.end_col_offset}"
         else:
             linemark = ""
-        head = "{}<{}{}".format(indent, node.__class__.__name__, linemark)
+        head = f"{indent}<{node.__class__.__name__}{linemark}"
 
         named_fields = [
             (name, value)
@@ -1236,10 +1235,10 @@ if AST_DUMP:            # pragma: debugging
             if name not in SKIP_DUMP_FIELDS
         ]
         if not named_fields:
-            print("{}>".format(head))
+            print(f"{head}>")
         elif len(named_fields) == 1 and _is_simple_value(named_fields[0][1]):
             field_name, value = named_fields[0]
-            print("{} {}: {!r}>".format(head, field_name, value))
+            print(f"{head} {field_name}: {value!r}>")
         else:
             print(head)
             if 0:
@@ -1248,16 +1247,16 @@ if AST_DUMP:            # pragma: debugging
                 ))
             next_indent = indent + "    "
             for field_name, value in named_fields:
-                prefix = "{}{}:".format(next_indent, field_name)
+                prefix = f"{next_indent}{field_name}:"
                 if _is_simple_value(value):
-                    print("{} {!r}".format(prefix, value))
+                    print(f"{prefix} {value!r}")
                 elif isinstance(value, list):
-                    print("{} [".format(prefix))
+                    print(f"{prefix} [")
                     for n in value:
                         ast_dump(n, depth + 8)
-                    print("{}]".format(next_indent))
+                    print(f"{next_indent}]")
                 else:
                     print(prefix)
                     ast_dump(value, depth + 8)
 
-            print("{}>".format(indent))
+            print(f"{indent}>")

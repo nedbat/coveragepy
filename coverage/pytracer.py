@@ -18,7 +18,7 @@ YIELD_VALUE = dis.opmap['YIELD_VALUE']
 THIS_FILE = __file__.rstrip("co")
 
 
-class PyTracer(object):
+class PyTracer:
     """Python implementation of the raw data tracer."""
 
     # Because of poor implementations of trace-function-manipulating tools,
@@ -255,7 +255,7 @@ class PyTracer(object):
             dont_warn = (env.PYPY and env.PYPYVERSION >= (5, 4) and self.in_atexit and tf is None)
             if (not dont_warn) and tf != self._trace:   # pylint: disable=comparison-with-callable
                 self.warn(
-                    "Trace function changed, measurement is likely wrong: %r" % (tf,),
+                    f"Trace function changed, measurement is likely wrong: {tf!r}",
                     slug="trace-changed",
                 )
 

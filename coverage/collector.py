@@ -32,7 +32,7 @@ except ImportError:
     CTracer = None
 
 
-class Collector(object):
+class Collector:
     """Collects trace data.
 
     Creates a Tracer object for each thread, since they track stack
@@ -138,7 +138,7 @@ class Collector(object):
                 raise CoverageException("Don't understand concurrency=%s" % concurrency)
         except ImportError:
             raise CoverageException(
-                "Couldn't trace with concurrency=%s, the module isn't installed." % (
+                "Couldn't trace with concurrency={}, the module isn't installed.".format(
                     self.concurrency,
                 )
             )
@@ -161,7 +161,7 @@ class Collector(object):
             self.supports_plugins = False
 
     def __repr__(self):
-        return "<Collector at 0x%x: %s>" % (id(self), self.tracer_name())
+        return f"<Collector at 0x{id(self):x}: {self.tracer_name()}>"
 
     def use_data(self, covdata, context):
         """Use `covdata` for recording data."""
@@ -243,7 +243,7 @@ class Collector(object):
             tracer.concur_id_func = self.concur_id_func
         elif self.concur_id_func:
             raise CoverageException(
-                "Can't support concurrency=%s with %s, only threads are supported" % (
+                "Can't support concurrency={} with {}, only threads are supported".format(
                     self.concurrency, self.tracer_name(),
                 )
             )
@@ -331,9 +331,9 @@ class Collector(object):
         if self._collectors[-1] is not self:
             print("self._collectors:")
             for c in self._collectors:
-                print("  {!r}\n{}".format(c, c.origin))
+                print(f"  {c!r}\n{c.origin}")
         assert self._collectors[-1] is self, (
-            "Expected current collector to be %r, but it's %r" % (self, self._collectors[-1])
+            f"Expected current collector to be {self!r}, but it's {self._collectors[-1]!r}"
         )
 
         self.pause()
@@ -352,7 +352,7 @@ class Collector(object):
             if stats:
                 print("\nCoverage.py tracer stats:")
                 for k in sorted(stats.keys()):
-                    print("%20s: %s" % (k, stats[k]))
+                    print(f"{k:>20}: {stats[k]}")
         if self.threading:
             self.threading.settrace(None)
 
@@ -389,7 +389,7 @@ class Collector(object):
         file_tracer = disposition.file_tracer
         plugin = file_tracer._coverage_plugin
         plugin_name = plugin._coverage_plugin_name
-        self.warn("Disabling plug-in {!r} due to previous exception".format(plugin_name))
+        self.warn(f"Disabling plug-in {plugin_name!r} due to previous exception")
         plugin._coverage_enabled = False
         disposition.trace = False
 
@@ -418,7 +418,7 @@ class Collector(object):
         else:
             raise runtime_err
 
-        return dict((self.cached_mapped_file(k), v) for k, v in items if v)
+        return {self.cached_mapped_file(k): v for k, v in items if v}
 
     def plugin_was_disabled(self, plugin):
         """Record that `plugin` was disabled during the run."""

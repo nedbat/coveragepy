@@ -128,7 +128,7 @@ class HandyConfigParser(configparser.RawConfigParser):
                 re.compile(value)
             except re.error as e:
                 raise CoverageException(
-                    "Invalid [%s].%s value %r: %s" % (section, option, value, e)
+                    f"Invalid [{section}].{option} value {value!r}: {e}"
                 )
             if value:
                 value_list.append(value)
@@ -154,7 +154,7 @@ DEFAULT_PARTIAL_ALWAYS = [
 ]
 
 
-class CoverageConfig(object):
+class CoverageConfig:
     """Coverage.py configuration.
 
     The attributes of this class are the various settings that control the
@@ -276,7 +276,7 @@ class CoverageConfig(object):
         try:
             files_read = cp.read(filename)
         except (configparser.Error, TomlDecodeError) as err:
-            raise CoverageException("Couldn't read config file %s: %s" % (filename, err))
+            raise CoverageException(f"Couldn't read config file {filename}: {err}")
         if not files_read:
             return False
 
@@ -289,7 +289,7 @@ class CoverageConfig(object):
                 if was_set:
                     any_set = True
         except ValueError as err:
-            raise CoverageException("Couldn't read config file %s: %s" % (filename, err))
+            raise CoverageException(f"Couldn't read config file {filename}: {err}")
 
         # Check that there are no unrecognized options.
         all_options = collections.defaultdict(set)
@@ -302,7 +302,7 @@ class CoverageConfig(object):
             if real_section:
                 for unknown in set(cp.options(section)) - options:
                     raise CoverageException(
-                        "Unrecognized option '[%s] %s=' in config file %s" % (
+                        "Unrecognized option '[{}] {}=' in config file {}".format(
                             real_section, unknown, filename
                         )
                     )

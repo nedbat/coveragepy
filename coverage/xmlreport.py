@@ -1,4 +1,3 @@
-# coding: utf-8
 # Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
 # For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
 
@@ -28,7 +27,7 @@ def rate(hit, num):
         return "%.4g" % (float(hit) / num)
 
 
-class XmlReporter(object):
+class XmlReporter:
     """A reporter for writing Cobertura-style XML coverage results."""
 
     def __init__(self, coverage):
@@ -156,7 +155,7 @@ class XmlReporter(object):
             rel_name = fr.relative_filename()
             self.source_paths.add(fr.filename[:-len(rel_name)].rstrip(r"\/"))
 
-        dirname = os.path.dirname(rel_name) or u"."
+        dirname = os.path.dirname(rel_name) or "."
         dirname = "/".join(dirname.split("/")[:self.config.xml_package_depth])
         package_name = dirname.replace("/", ".")
 

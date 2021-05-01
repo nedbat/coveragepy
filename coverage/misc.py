@@ -196,7 +196,7 @@ def filename_suffix(suffix):
     return suffix
 
 
-class Hasher(object):
+class Hasher:
     """Hashes Python data into md5."""
     def __init__(self):
         self.md5 = hashlib.md5()
@@ -253,7 +253,7 @@ def _needs_to_implement(that, func_name):
         )
 
 
-class DefaultValue(object):
+class DefaultValue:
     """A sentinel object to use for unusual default-value needs.
 
     Construct with a string that will be used as the repr, for display in help
@@ -307,7 +307,7 @@ def substitute_variables(text, variables):
         elif word in variables:
             return variables[word]
         elif match.group('strict'):
-            msg = "Variable {} is undefined: {!r}".format(word, text)
+            msg = f"Variable {word} is undefined: {text!r}"
             raise CoverageException(msg)
         else:
             return match.group('defval')

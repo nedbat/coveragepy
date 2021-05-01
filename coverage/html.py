@@ -56,7 +56,7 @@ def data_filename(fname, pkgdir=""):
             else:
                 tried.append(static_filename)
     raise CoverageException(
-        "Couldn't find static file %r from %r, tried: %r" % (fname, os.getcwd(), tried)
+        f"Couldn't find static file {fname!r} from {os.getcwd()!r}, tried: {tried!r}"
     )
 
 
@@ -73,7 +73,7 @@ def write_html(fname, html):
         fout.write(html.encode('ascii', 'xmlcharrefreplace'))
 
 
-class HtmlDataGeneration(object):
+class HtmlDataGeneration:
     """Generate structured data to be turned into HTML reports."""
 
     EMPTY = "(empty)"
@@ -127,7 +127,7 @@ class HtmlDataGeneration(object):
                 if contexts == [self.EMPTY]:
                     contexts_label = self.EMPTY
                 else:
-                    contexts_label = "{} ctx".format(len(contexts))
+                    contexts_label = f"{len(contexts)} ctx"
                     context_list = contexts
 
             lines.append(types.SimpleNamespace(
@@ -151,7 +151,7 @@ class HtmlDataGeneration(object):
         return file_data
 
 
-class HtmlReporter(object):
+class HtmlReporter:
     """HTML reporting."""
 
     # These files will be copied from the htmlfiles directory to the output
@@ -308,15 +308,15 @@ class HtmlReporter(object):
                 else:
                     tok_html = escape(tok_text) or '&nbsp;'
                     html.append(
-                        u'<span class="{}">{}</span>'.format(tok_type, tok_html)
+                        f'<span class="{tok_type}">{tok_html}</span>'
                     )
             ldata.html = ''.join(html)
 
             if ldata.short_annotations:
                 # 202F is NARROW NO-BREAK SPACE.
                 # 219B is RIGHTWARDS ARROW WITH STROKE.
-                ldata.annotate = u",&nbsp;&nbsp; ".join(
-                    u"{}&#x202F;&#x219B;&#x202F;{}".format(ldata.number, d)
+                ldata.annotate = ",&nbsp;&nbsp; ".join(
+                    f"{ldata.number}&#x202F;&#x219B;&#x202F;{d}"
                     for d in ldata.short_annotations
                     )
             else:
@@ -327,10 +327,10 @@ class HtmlReporter(object):
                 if len(longs) == 1:
                     ldata.annotate_long = longs[0]
                 else:
-                    ldata.annotate_long = u"{:d} missed branches: {}".format(
+                    ldata.annotate_long = "{:d} missed branches: {}".format(
                         len(longs),
-                        u", ".join(
-                            u"{:d}) {}".format(num, ann_long)
+                        ", ".join(
+                            f"{num:d}) {ann_long}"
                             for num, ann_long in enumerate(longs, start=1)
                             ),
                     )
@@ -369,7 +369,7 @@ class HtmlReporter(object):
         self.incr.write()
 
 
-class IncrementalChecker(object):
+class IncrementalChecker:
     """Logic and data to support incremental reporting."""
 
     STATUS_FILE = "status.json"
@@ -419,7 +419,7 @@ class IncrementalChecker(object):
             status_file = os.path.join(self.directory, self.STATUS_FILE)
             with open(status_file) as fstatus:
                 status = json.load(fstatus)
-        except (IOError, ValueError):
+        except (OSError, ValueError):
             usable = False
         else:
             usable = True

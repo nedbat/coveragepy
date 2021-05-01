@@ -60,7 +60,7 @@ def override_config(cov, **kwargs):
 
 _DEFAULT_DATAFILE = DefaultValue("MISSING")
 
-class Coverage(object):
+class Coverage:
     """Programmatic access to coverage.py.
 
     To use::
@@ -290,7 +290,7 @@ class Coverage(object):
         # '[run] _crash' will raise an exception if the value is close by in
         # the call stack, for testing error handling.
         if self.config._crash and self.config._crash in short_stack(limit=4):
-            raise Exception("Crashing because called by {}".format(self.config._crash))
+            raise Exception(f"Crashing because called by {self.config._crash}")
 
     def _write_startup_debug(self):
         """Write out debug info at startup if needed."""
@@ -333,9 +333,9 @@ class Coverage(object):
         reason = self._inorout.check_include_omit_etc(filename, frame)
         if self._debug.should('trace'):
             if not reason:
-                msg = "Including %r" % (filename,)
+                msg = f"Including {filename!r}"
             else:
-                msg = "Not including %r: %s" % (filename, reason)
+                msg = f"Not including {filename!r}: {reason}"
             self._debug.write(msg)
 
         return not reason
@@ -358,7 +358,7 @@ class Coverage(object):
 
         self._warnings.append(msg)
         if slug:
-            msg = "%s (%s)" % (msg, slug)
+            msg = f"{msg} ({slug})"
         if self._debug.should('pid'):
             msg = "[%d] %s" % (os.getpid(), msg)
         sys.stderr.write("Coverage.py warning: %s\n" % msg)
@@ -442,7 +442,7 @@ class Coverage(object):
             context_switchers = [should_start_context_test_function]
         else:
             raise CoverageException(
-                "Don't understand dynamic_context setting: {!r}".format(dycon)
+                f"Don't understand dynamic_context setting: {dycon!r}"
             )
 
         context_switchers.extend(
@@ -477,7 +477,7 @@ class Coverage(object):
         # Early warning if we aren't going to be able to support plugins.
         if self._plugins.file_tracers and not self._collector.supports_plugins:
             self._warn(
-                "Plugin file tracers (%s) aren't supported with %s" % (
+                "Plugin file tracers ({}) aren't supported with {}".format(
                     ", ".join(
                         plugin._coverage_plugin_name
                             for plugin in self._plugins.file_tracers
@@ -561,7 +561,7 @@ class Coverage(object):
     def _atexit(self):
         """Clean up on process shutdown."""
         if self._debug.should("process"):
-            self._debug.write("atexit: pid: {}, instance: {!r}".format(os.getpid(), self))
+            self._debug.write(f"atexit: pid: {os.getpid()}, instance: {self!r}")
         if self._started:
             self.stop()
         if self._auto_save:
@@ -821,7 +821,7 @@ class Coverage(object):
                     file_reporter = plugin.file_reporter(mapped_morf)
                     if file_reporter is None:
                         raise CoverageException(
-                            "Plugin %r did not provide a file reporter for %r." % (
+                            "Plugin {!r} did not provide a file reporter for {!r}.".format(
                                 plugin._coverage_plugin_name, morf
                             )
                         )
@@ -1061,7 +1061,7 @@ class Coverage(object):
             ('cwd', os.getcwd()),
             ('path', sys.path),
             ('environment', sorted(
-                ("%s = %s" % (k, v))
+                f"{k} = {v}"
                 for k, v in os.environ.items()
                 if any(slug in k for slug in ("COV", "PY"))
             )),

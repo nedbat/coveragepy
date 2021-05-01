@@ -3,7 +3,6 @@
 
 """Command-line support for coverage.py."""
 
-from __future__ import print_function
 
 import glob
 import optparse
@@ -24,7 +23,7 @@ from coverage.misc import BaseCoverageException, ExceptionDuringRun, NoSource
 from coverage.results import should_fail_under
 
 
-class Opts(object):
+class Opts:
     """A namespace class for individual options we'll build parsers from."""
 
     append = optparse.make_option(
@@ -195,7 +194,7 @@ class Opts(object):
     )
 
 
-class CoverageOptionParser(optparse.OptionParser, object):
+class CoverageOptionParser(optparse.OptionParser):
     """Base OptionParser for coverage.py.
 
     Problems don't exit the program.
@@ -204,7 +203,7 @@ class CoverageOptionParser(optparse.OptionParser, object):
     """
 
     def __init__(self, *args, **kwargs):
-        super(CoverageOptionParser, self).__init__(
+        super().__init__(
             add_help_option=False, *args, **kwargs
             )
         self.set_defaults(
@@ -251,7 +250,7 @@ class CoverageOptionParser(optparse.OptionParser, object):
 
         """
         try:
-            options, args = super(CoverageOptionParser, self).parse_args(args, options)
+            options, args = super().parse_args(args, options)
         except self.OptionParserError:
             return False, None, None
         return True, options, args
@@ -266,7 +265,7 @@ class GlobalOptionParser(CoverageOptionParser):
     """Command-line parser for coverage.py global option arguments."""
 
     def __init__(self):
-        super(GlobalOptionParser, self).__init__()
+        super().__init__()
 
         self.add_options([
             Opts.help,
@@ -289,7 +288,7 @@ class CmdOptionParser(CoverageOptionParser):
         """
         if usage:
             usage = "%prog " + usage
-        super(CmdOptionParser, self).__init__(
+        super().__init__(
             usage=usage,
             description=description,
         )
@@ -306,10 +305,10 @@ class CmdOptionParser(CoverageOptionParser):
 
     def get_prog_name(self):
         """Override of an undocumented function in optparse.OptionParser."""
-        program_name = super(CmdOptionParser, self).get_prog_name()
+        program_name = super().get_prog_name()
 
         # Include the sub-command for this parser as part of the command.
-        return "{command} {subcommand}".format(command=program_name, subcommand=self.cmd)
+        return f"{program_name} {self.cmd}"
 
 
 GLOBAL_ARGS = [
@@ -498,7 +497,7 @@ def show_help(error=None, topic=None, parser=None):
 
     if error:
         print(error, file=sys.stderr)
-        print("Use '%s help' for help." % (program_name,), file=sys.stderr)
+        print(f"Use '{program_name} help' for help.", file=sys.stderr)
     elif parser:
         print(parser.format_help().strip())
         print()
@@ -514,7 +513,7 @@ def show_help(error=None, topic=None, parser=None):
 OK, ERR, FAIL_UNDER = 0, 1, 2
 
 
-class CoverageScript(object):
+class CoverageScript:
     """The command-line interface to coverage.py."""
 
     def __init__(self):

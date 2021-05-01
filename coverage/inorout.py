@@ -176,7 +176,7 @@ def add_coverage_paths(paths):
             paths.add(canonical_path(mod))
 
 
-class InOrOut(object):
+class InOrOut:
     """Machinery for determining what files to measure."""
 
     def __init__(self, warn, debug):
@@ -237,36 +237,36 @@ class InOrOut(object):
             against = []
             if self.source:
                 self.source_match = TreeMatcher(self.source, "source")
-                against.append("trees {!r}".format(self.source_match))
+                against.append(f"trees {self.source_match!r}")
             if self.source_pkgs:
                 self.source_pkgs_match = ModuleMatcher(self.source_pkgs, "source_pkgs")
-                against.append("modules {!r}".format(self.source_pkgs_match))
+                against.append(f"modules {self.source_pkgs_match!r}")
             debug("Source matching against " + " and ".join(against))
         else:
             if self.pylib_paths:
                 self.pylib_match = TreeMatcher(self.pylib_paths, "pylib")
-                debug("Python stdlib matching: {!r}".format(self.pylib_match))
+                debug(f"Python stdlib matching: {self.pylib_match!r}")
         if self.include:
             self.include_match = FnmatchMatcher(self.include, "include")
-            debug("Include matching: {!r}".format(self.include_match))
+            debug(f"Include matching: {self.include_match!r}")
         if self.omit:
             self.omit_match = FnmatchMatcher(self.omit, "omit")
-            debug("Omit matching: {!r}".format(self.omit_match))
+            debug(f"Omit matching: {self.omit_match!r}")
 
         self.cover_match = TreeMatcher(self.cover_paths, "coverage")
-        debug("Coverage code matching: {!r}".format(self.cover_match))
+        debug(f"Coverage code matching: {self.cover_match!r}")
 
         self.third_match = TreeMatcher(self.third_paths, "third")
-        debug("Third-party lib matching: {!r}".format(self.third_match))
+        debug(f"Third-party lib matching: {self.third_match!r}")
 
         # Check if the source we want to measure has been installed as a
         # third-party package.
         for pkg in self.source_pkgs:
             try:
                 modfile = file_for_module(pkg)
-                debug("Imported {} as {}".format(pkg, modfile))
+                debug(f"Imported {pkg} as {modfile}")
             except CoverageException as exc:
-                debug("Couldn't import {}: {}".format(pkg, exc))
+                debug(f"Couldn't import {pkg}: {exc}")
                 continue
             if modfile and self.third_match.match(modfile):
                 self.source_in_third = True
@@ -401,7 +401,7 @@ class InOrOut(object):
                     if modulename in self.source_pkgs_unmatched:
                         self.source_pkgs_unmatched.remove(modulename)
                 else:
-                    extra = "module {!r} ".format(modulename)
+                    extra = f"module {modulename!r} "
             if not ok and self.source_match:
                 if self.source_match.match(filename):
                     ok = True
@@ -465,7 +465,7 @@ class InOrOut(object):
                     # of tracing anyway.
                     continue
                 if disp.trace:
-                    msg = "Already imported a file that will be measured: {}".format(filename)
+                    msg = f"Already imported a file that will be measured: {filename}"
                     self.warn(msg, slug="already-imported")
                     warned.add(filename)
                 elif self.debug and self.debug.should('trace'):
@@ -518,12 +518,10 @@ class InOrOut(object):
                 not module_has_file(sys.modules[pkg])):
                 continue
             pkg_file = source_for_file(sys.modules[pkg].__file__)
-            for ret in self._find_executable_files(canonical_path(pkg_file)):
-                yield ret
+            yield from self._find_executable_files(canonical_path(pkg_file))
 
         for src in self.source:
-            for ret in self._find_executable_files(src):
-                yield ret
+            yield from self._find_executable_files(src)
 
     def _find_plugin_files(self, src_dir):
         """Get executable files from the plugins."""

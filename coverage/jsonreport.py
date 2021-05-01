@@ -1,4 +1,3 @@
-# coding: utf-8
 # Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
 # For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
 
@@ -12,7 +11,7 @@ from coverage.report import get_analysis_to_report
 from coverage.results import Numbers
 
 
-class JsonReporter(object):
+class JsonReporter:
     """A reporter for writing JSON coverage results."""
 
     def __init__(self, coverage):

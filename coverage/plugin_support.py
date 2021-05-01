@@ -13,7 +13,7 @@ from coverage.plugin import CoveragePlugin, FileTracer, FileReporter
 os = isolate_module(os)
 
 
-class Plugins(object):
+class Plugins:
     """The currently loaded collection of coverage.py plugins."""
 
     def __init__(self):
@@ -95,10 +95,10 @@ class Plugins(object):
         is a list to append the plugin to.
 
         """
-        plugin_name = "%s.%s" % (self.current_module, plugin.__class__.__name__)
+        plugin_name = f"{self.current_module}.{plugin.__class__.__name__}"
         if self.debug and self.debug.should('plugin'):
-            self.debug.write("Loaded plugin %r: %r" % (self.current_module, plugin))
-            labelled = LabelledDebug("plugin %r" % (self.current_module,), self.debug)
+            self.debug.write(f"Loaded plugin {self.current_module!r}: {plugin!r}")
+            labelled = LabelledDebug(f"plugin {self.current_module!r}", self.debug)
             plugin = DebugPluginWrapper(plugin, labelled)
 
         # pylint: disable=attribute-defined-outside-init
@@ -122,7 +122,7 @@ class Plugins(object):
         return self.names[plugin_name]
 
 
-class LabelledDebug(object):
+class LabelledDebug:
     """A Debug writer, but with labels for prepending to the messages."""
 
     def __init__(self, label, debug, prev_labels=()):
@@ -140,45 +140,45 @@ class LabelledDebug(object):
 
     def write(self, message):
         """Write `message`, but with the labels prepended."""
-        self.debug.write("%s%s" % (self.message_prefix(), message))
+        self.debug.write(f"{self.message_prefix()}{message}")
 
 
 class DebugPluginWrapper(CoveragePlugin):
     """Wrap a plugin, and use debug to report on what it's doing."""
 
     def __init__(self, plugin, debug):
-        super(DebugPluginWrapper, self).__init__()
+        super().__init__()
         self.plugin = plugin
         self.debug = debug
 
     def file_tracer(self, filename):
         tracer = self.plugin.file_tracer(filename)
-        self.debug.write("file_tracer(%r) --> %r" % (filename, tracer))
+        self.debug.write(f"file_tracer({filename!r}) --> {tracer!r}")
         if tracer:
-            debug = self.debug.add_label("file %r" % (filename,))
+            debug = self.debug.add_label(f"file {filename!r}")
             tracer = DebugFileTracerWrapper(tracer, debug)
         return tracer
 
     def file_reporter(self, filename):
         reporter = self.plugin.file_reporter(filename)
-        self.debug.write("file_reporter(%r) --> %r" % (filename, reporter))
+        self.debug.write(f"file_reporter({filename!r}) --> {reporter!r}")
         if reporter:
-            debug = self.debug.add_label("file %r" % (filename,))
+            debug = self.debug.add_label(f"file {filename!r}")
             reporter = DebugFileReporterWrapper(filename, reporter, debug)
         return reporter
 
     def dynamic_context(self, frame):
         context = self.plugin.dynamic_context(frame)
-        self.debug.write("dynamic_context(%r) --> %r" % (frame, context))
+        self.debug.write(f"dynamic_context({frame!r}) --> {context!r}")
         return context
 
     def find_executable_files(self, src_dir):
         executable_files = self.plugin.find_executable_files(src_dir)
-        self.debug.write("find_executable_files(%r) --> %r" % (src_dir, executable_files))
+        self.debug.write(f"find_executable_files({src_dir!r}) --> {executable_files!r}")
         return executable_files
 
     def configure(self, config):
-        self.debug.write("configure(%r)" % (config,))
+        self.debug.write(f"configure({config!r})")
         self.plugin.configure(config)
 
     def sys_info(self):
@@ -201,24 +201,24 @@ class DebugFileTracerWrapper(FileTracer):
 
     def source_filename(self):
         sfilename = self.tracer.source_filename()
-        self.debug.write("source_filename() --> %r" % (sfilename,))
+        self.debug.write(f"source_filename() --> {sfilename!r}")
         return sfilename
 
     def has_dynamic_source_filename(self):
         has = self.tracer.has_dynamic_source_filename()
-        self.debug.write("has_dynamic_source_filename() --> %r" % (has,))
+        self.debug.write(f"has_dynamic_source_filename() --> {has!r}")
         return has
 
     def dynamic_source_filename(self, filename, frame):
         dyn = self.tracer.dynamic_source_filename(filename, frame)
-        self.debug.write("dynamic_source_filename(%r, %s) --> %r" % (
+        self.debug.write("dynamic_source_filename({!r}, {}) --> {!r}".format(
             filename, self._show_frame(frame), dyn,
         ))
         return dyn
 
     def line_number_range(self, frame):
         pair = self.tracer.line_number_range(frame)
-        self.debug.write("line_number_range(%s) --> %r" % (self._show_frame(frame), pair))
+        self.debug.write(f"line_number_range({self._show_frame(frame)}) --> {pair!r}")
         return pair
 
 
@@ -226,48 +226,48 @@ class DebugFileReporterWrapper(FileReporter):
     """A debugging `FileReporter`."""
 
     def __init__(self, filename, reporter, debug):
-        super(DebugFileReporterWrapper, self).__init__(filename)
+        super().__init__(filename)
         self.reporter = reporter
         self.debug = debug
 
     def relative_filename(self):
         ret = self.reporter.relative_filename()
-        self.debug.write("relative_filename() --> %r" % (ret,))
+        self.debug.write(f"relative_filename() --> {ret!r}")
         return ret
 
     def lines(self):
         ret = self.reporter.lines()
-        self.debug.write("lines() --> %r" % (ret,))
+        self.debug.write(f"lines() --> {ret!r}")
         return ret
 
     def excluded_lines(self):
         ret = self.reporter.excluded_lines()
-        self.debug.write("excluded_lines() --> %r" % (ret,))
+        self.debug.write(f"excluded_lines() --> {ret!r}")
         return ret
 
     def translate_lines(self, lines):
         ret = self.reporter.translate_lines(lines)
-        self.debug.write("translate_lines(%r) --> %r" % (lines, ret))
+        self.debug.write(f"translate_lines({lines!r}) --> {ret!r}")
         return ret
 
     def translate_arcs(self, arcs):
         ret = self.reporter.translate_arcs(arcs)
-        self.debug.write("translate_arcs(%r) --> %r" % (arcs, ret))
+        self.debug.write(f"translate_arcs({arcs!r}) --> {ret!r}")
         return ret
 
     def no_branch_lines(self):
         ret = self.reporter.no_branch_lines()
-        self.debug.write("no_branch_lines() --> %r" % (ret,))
+        self.debug.write(f"no_branch_lines() --> {ret!r}")
         return ret
 
     def exit_counts(self):
         ret = self.reporter.exit_counts()
-        self.debug.write("exit_counts() --> %r" % (ret,))
+        self.debug.write(f"exit_counts() --> {ret!r}")
         return ret
 
     def arcs(self):
         ret = self.reporter.arcs()
-        self.debug.write("arcs() --> %r" % (ret,))
+        self.debug.write(f"arcs() --> {ret!r}")
         return ret
 
     def source(self):
