@@ -20,35 +20,6 @@ except Exception:
     import imp
     importlib_util_find_spec = None
 
-# What is the .pyc magic number for this version of Python?
-try:
-    PYC_MAGIC_NUMBER = importlib.util.MAGIC_NUMBER
-except AttributeError:
-    PYC_MAGIC_NUMBER = imp.get_magic()
-
-
-def code_object(fn):
-    """Get the code object from a function."""
-    try:
-        return fn.func_code
-    except AttributeError:
-        return fn.__code__
-
-
-try:
-    from types import SimpleNamespace
-except ImportError:
-    # The code from https://docs.python.org/3/library/types.html#types.SimpleNamespace
-    class SimpleNamespace:
-        """Python implementation of SimpleNamespace, for Python 2."""
-        def __init__(self, **kwargs):
-            self.__dict__.update(kwargs)
-
-        def __repr__(self):
-            keys = sorted(self.__dict__)
-            items = ("{}={!r}".format(k, self.__dict__[k]) for k in keys)
-            return "{}({})".format(type(self).__name__, ", ".join(items))
-
 
 def format_local_datetime(dt):
     """Return a string with local timezone representing the date.

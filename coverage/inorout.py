@@ -13,7 +13,7 @@ import sysconfig
 import traceback
 
 from coverage import env
-from coverage.backward import code_object, importlib_util_find_spec
+from coverage.backward import importlib_util_find_spec
 from coverage.disposition import FileDisposition, disposition_init
 from coverage.files import TreeMatcher, FnmatchMatcher, ModuleMatcher
 from coverage.files import prep_patterns, find_python_files, canonical_filename
@@ -162,7 +162,7 @@ def add_stdlib_paths(paths):
         # objects still have the file names.  So dig into one to find
         # the path to exclude.  The "filename" might be synthetic,
         # don't be fooled by those.
-        structseq_file = code_object(_structseq.structseq_new).co_filename
+        structseq_file = _structseq.structseq_new.__code__.co_filename
         if not structseq_file.startswith("<"):
             paths.add(canonical_path(structseq_file))
 

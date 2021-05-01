@@ -3,6 +3,8 @@
 
 """Execute files of Python code."""
 
+import importlib.machinery
+import importlib.util
 import inspect
 import marshal
 import os
@@ -11,7 +13,7 @@ import sys
 import types
 
 from coverage import env
-from coverage.backward import PYC_MAGIC_NUMBER, imp, importlib_util_find_spec
+from coverage.backward import imp, importlib_util_find_spec
 from coverage.files import canonical_filename, python_reported_file
 from coverage.misc import CoverageException, ExceptionDuringRun, NoCode, NoSource, isolate_module
 from coverage.phystokens import compile_unicode
@@ -19,6 +21,8 @@ from coverage.python import get_python_source
 
 os = isolate_module(os)
 
+
+PYC_MAGIC_NUMBER = importlib.util.MAGIC_NUMBER
 
 class DummyLoader(object):
     """A shim for the pep302 __loader__, emulating pkgutil.ImpLoader.
@@ -182,14 +186,9 @@ class PyRunner(object):
                 raise NoSource("Can't find '__main__' module in '%s'" % self.arg0)
 
             # Make a spec. I don't know if this is the right way to do it.
-            try:
-                import importlib.machinery
-            except ImportError:
-                pass
-            else:
-                try_filename = python_reported_file(try_filename)
-                self.spec = importlib.machinery.ModuleSpec("__main__", None, origin=try_filename)
-                self.spec.has_location = True
+            try_filename = python_reported_file(try_filename)
+            self.spec = importlib.machinery.ModuleSpec("__main__", None, origin=try_filename)
+            self.spec.has_location = True
             self.package = ""
             self.loader = DummyLoader("__main__")
         else:

@@ -17,7 +17,7 @@ import pytest
 
 import coverage
 from coverage import env
-from coverage.backward import code_object, import_local_file
+from coverage.backward import import_local_file
 from coverage.data import line_counts
 from coverage.files import abs_file, relative_filename
 from coverage.misc import CoverageException
@@ -269,7 +269,7 @@ class ApiTest(CoverageTest):
         def f1():
             a = 1       # pylint: disable=unused-variable
 
-        one_line_number = code_object(f1).co_firstlineno + 1
+        one_line_number = f1.__code__.co_firstlineno + 1
         lines = []
 
         def run_one_function(f):

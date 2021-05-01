@@ -8,9 +8,10 @@ import json
 import os
 import re
 import shutil
+import types
 
 import coverage
-from coverage.backward import SimpleNamespace, format_local_datetime
+from coverage.backward import format_local_datetime
 from coverage.data import add_data_to_hash
 from coverage.files import flat_rootname
 from coverage.misc import CoverageException, ensure_dir, file_be_gone, Hasher, isolate_module
@@ -129,7 +130,7 @@ class HtmlDataGeneration(object):
                     contexts_label = "{} ctx".format(len(contexts))
                     context_list = contexts
 
-            lines.append(SimpleNamespace(
+            lines.append(types.SimpleNamespace(
                 tokens=tokens,
                 number=lineno,
                 category=category,
@@ -141,7 +142,7 @@ class HtmlDataGeneration(object):
                 long_annotations=long_annotations,
             ))
 
-        file_data = SimpleNamespace(
+        file_data = types.SimpleNamespace(
             relative_filename=fr.relative_filename(),
             nums=analysis.numbers,
             lines=lines,
