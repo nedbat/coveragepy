@@ -26,8 +26,6 @@ jobs:
         python-version:
           # When changing this list, be sure to check the [gh-actions] list in
           # tox.ini so that tox will run properly.
-          - "2.7"
-          - "3.5"
           - "3.6"
           - "3.7"
           - "3.8"
@@ -38,9 +36,6 @@ jobs:
           # Windows PyPy doesn't seem to work?
           - os: windows-latest
             python-version: "pypy3"
-          # Microsoft removed vcpython27, so we can't do Windows 2.7
-          - os: windows-latest
-            python-version: "2.7"
       fail-fast: false
 
     steps:
@@ -51,11 +46,6 @@ jobs:
         uses: "actions/setup-python@v2"
         with:
           python-version: "${{ matrix.python-version }}"
-
-      - name: "Install Visual C++ if needed"
-        if: runner.os == 'Windows' && matrix.python-version == '2.7'
-        run: |
-          choco install vcpython27 -f -y
 
       - name: "Install dependencies"
         run: |
