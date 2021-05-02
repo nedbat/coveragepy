@@ -66,7 +66,9 @@ jobs:
           COVERAGE_COVERAGE: "yes"
         run: |
           set -xe
-          python -m tox
+          # Something about pytest 6.x with xdist keeps data from collecting.
+          # Use -n0 for now.
+          python -m tox -- -n 0
 
       - name: "Combine"
         env:
