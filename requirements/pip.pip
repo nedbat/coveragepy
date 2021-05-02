@@ -3,5 +3,5 @@
 
 -c pins.pip
 
-pip==20.2.4
-virtualenv==20.2.1
+pip==21.1.1
+virtualenv==20.4.4
