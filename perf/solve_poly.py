@@ -10,7 +10,6 @@ import attr
 import itertools
 import numpy
 import scipy.optimize
-import sys
 
 
 def f(*args, simplify=False):

@@ -4,9 +4,7 @@ import collections
 from itertools import cycle, product
 import random
 import re
-import sys
 
-import coverage
 from coverage.parser import PythonParser
 
 

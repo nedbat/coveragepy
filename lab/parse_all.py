@@ -3,7 +3,6 @@
 import os
 import sys
 
-from coverage.exceptions import CoverageException
 from coverage.parser import PythonParser
 
 for root, dirnames, filenames in os.walk(sys.argv[1]):

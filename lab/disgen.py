@@ -4,7 +4,6 @@
 # instead of printing to stdout.
 
 import sys
-import types
 import collections
 
 from opcode import *
