@@ -29,7 +29,7 @@ class PythonSpinner:
         return "\n".join(spinner.lines)
 
     def add_line(self, line):
-        g = "g{}".format(self.lineno)
+        g = f"g{self.lineno}"
         self.lines.append(' ' * self.indent + line.format(g=g, lineno=self.lineno))
 
     def add_block(self, node):
@@ -65,7 +65,7 @@ class PythonSpinner:
                     # number.
                     if len(node) > 2 and node[2] is not None:
                         for except_node in node[2]:
-                            self.add_line("except Exception{}:".format(self.lineno))
+                            self.add_line(f"except Exception{self.lineno}:")
                             self.add_block(except_node)
                     self.maybe_block(node, 3, "else")
                     self.maybe_block(node, 4, "finally")
@@ -73,7 +73,7 @@ class PythonSpinner:
                     self.add_line("with {g} as x:")
                     self.add_block(node[1])
                 else:
-                    raise Exception("Bad list node: {!r}".format(node))
+                    raise Exception(f"Bad list node: {node!r}")
             else:
                 op = node
                 if op == "assign":
@@ -85,7 +85,7 @@ class PythonSpinner:
                 elif op == "yield":
                     self.add_line("yield {lineno}")
                 else:
-                    raise Exception("Bad atom node: {!r}".format(node))
+                    raise Exception(f"Bad atom node: {node!r}")
 
 
 def weighted_choice(rand, choices):
@@ -235,7 +235,7 @@ def show_a_bunch():
             print("-"*80, "\n", source, sep="")
             compile(source, "<string>", "exec")
         except Exception as ex:
-            print("Oops: {}\n{}".format(ex, source))
+            print(f"Oops: {ex}\n{source}")
         if len(source) > len(longest):
             longest = source
 
@@ -248,7 +248,7 @@ def show_alternatives():
         if nlines < 15:
             nalt = compare_alternatives(source)
             if nalt > 1:
-                print("--- {:3} lines, {:2} alternatives ---------".format(nlines, nalt))
+                print(f"--- {nlines:3} lines, {nalt:2} alternatives ---------")
                 print(source)
 
 

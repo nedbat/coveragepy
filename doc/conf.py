@@ -228,7 +228,7 @@ linkcheck_ignore = [
     r"https://github.com/nedbat/coveragepy/(issues|pull)/\d+",
     # When publishing a new version, the docs will refer to the version before
     # the docs have been published.  So don't check those links.
-    r"https://coverage.readthedocs.io/en/{}$".format(release),
+    fr"https://coverage.readthedocs.io/en/{release}$",
 ]
 
 # https://github.com/executablebooks/sphinx-tabs/pull/54

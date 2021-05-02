@@ -64,9 +64,9 @@ class ParserMain:
 
         if options.histogram:
             total = sum(opcode_counts.values())
-            print("{} total opcodes".format(total))
+            print(f"{total} total opcodes")
             for opcode, number in opcode_counts.most_common():
-                print("{:20s} {:6d}  {:.1%}".format(opcode, number, number/total))
+                print(f"{opcode:20s} {number:6d}  {number/total:.1%}")
 
     def one_file(self, options, filename):
         """Process just one file."""
@@ -88,7 +88,7 @@ class ParserMain:
             pyparser = PythonParser(text, filename=filename, exclude=r"no\s*cover")
             pyparser.parse_source()
         except Exception as err:
-            print("{}".format(err))
+            print(f"{err}")
             return
 
         if options.dis:
@@ -155,7 +155,7 @@ class ParserMain:
                     elif disline.offset > 0:
                         print("")
                 line = disgen.format_dis_line(disline)
-                print("{:<70}".format(line))
+                print(f"{line:<70}")
 
         print("")
 

@@ -31,7 +31,7 @@ def trace(frame, event, args):
             if f is func:
                 qname = cls.__name__ + "." + fname
                 break
-    print("{}: {}.{} {}".format(event, self, fname, qname))
+    print(f"{event}: {self}.{fname} {qname}")
     return trace
 
 import sys

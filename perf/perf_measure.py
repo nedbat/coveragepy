@@ -38,10 +38,10 @@ def child(line_count):
 def mk_main(file_count, call_count, line_count):
     lines = []
     lines.extend(
-        "import test{}".format(idx) for idx in range(file_count)
+        f"import test{idx}" for idx in range(file_count)
     )
     lines.extend(
-        "test{}.parent({}, {})".format(idx, call_count, line_count) for idx in range(file_count)
+        f"test{idx}.parent({call_count}, {line_count})" for idx in range(file_count)
     )
     return "\n".join(lines)
 
@@ -55,7 +55,7 @@ class StressTest:
         self.module_cleaner.clean_local_file_imports()
 
         for idx in range(file_count):
-            make_file('test{}.py'.format(idx), TEST_FILE)
+            make_file(f'test{idx}.py', TEST_FILE)
         make_file('testmain.py', mk_main(file_count, call_count, line_count))
 
         # Run it once just to get the disk caches loaded up.
@@ -137,7 +137,7 @@ class StressTest:
                     yield kwargs['file_count'] * kwargs['call_count'] * kwargs['line_count']
 
         ops = sum(sum(operations(thing)) for thing in ["file", "call", "line"])
-        print("{:.1f}M operations".format(ops/1e6))
+        print(f"{ops/1e6:.1f}M operations")
 
     def check_coefficients(self):
         # For checking the calculation of actual stats:
@@ -161,14 +161,14 @@ class StressTest:
                     }
                     kwargs[thing+"_count"] = n
                     res = self._compute_overhead(**kwargs)
-                    per_thing.append(res.overhead / getattr(res, "{}s".format(thing)))
+                    per_thing.append(res.overhead / getattr(res, f"{thing}s"))
                     pct_thing.append(res.covered / res.baseline * 100)
 
-            out = "Per {}: ".format(thing)
+            out = f"Per {thing}: "
             out += "mean = {:9.3f}us, stddev = {:8.3f}us, ".format(
                 statistics.mean(per_thing)*1e6, statistics.stdev(per_thing)*1e6
             )
-            out += "min = {:9.3f}us, ".format(min(per_thing)*1e6)
+            out += f"min = {min(per_thing)*1e6:9.3f}us, "
             out += "pct = {:6.1f}%, stddev = {:6.1f}%".format(
                 statistics.mean(pct_thing), statistics.stdev(pct_thing)
             )
@@ -181,7 +181,7 @@ class StressTest:
 
 if __name__ == '__main__':
     with tempfile.TemporaryDirectory(prefix="coverage_stress_") as tempdir:
-        print("Working in {}".format(tempdir))
+        print(f"Working in {tempdir}")
         os.chdir(tempdir)
         sys.path.insert(0, ".")
 

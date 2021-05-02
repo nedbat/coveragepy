@@ -241,7 +241,7 @@ with open('results', 'w') as f:
 
         coefficients = [int(round(x)) for x in c.x]
         terms = [''.join(t) for t in poly.terms]
-        message = "{}' = ".format(name)
+        message = f"{name}' = "
         message += ' + '.join("{}{}".format(coeff if coeff != 1 else '', term) for coeff, term in reversed(list(zip(coefficients, terms))) if coeff != 0)
         print(message)
         f.write(message)
