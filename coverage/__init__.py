@@ -14,7 +14,7 @@ from coverage.version import __version__, __url__, version_info
 
 from coverage.control import Coverage, process_startup
 from coverage.data import CoverageData
-from coverage.misc import CoverageException
+from coverage.exceptions import CoverageException
 from coverage.plugin import CoveragePlugin, FileTracer, FileReporter
 from coverage.pytracer import PyTracer
 

@@ -8,13 +8,13 @@ import os.path
 
 import pytest
 
+from coverage import env
 from coverage import files
+from coverage.exceptions import CoverageException
 from coverage.files import (
     TreeMatcher, FnmatchMatcher, ModuleMatcher, PathAliases,
     find_python_files, abs_file, actual_path, flat_rootname, fnmatches_to_regex,
 )
-from coverage.misc import CoverageException
-from coverage import env
 
 from tests.coveragetest import CoverageTest
 

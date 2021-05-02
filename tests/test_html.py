@@ -16,9 +16,9 @@ import pytest
 
 import coverage
 from coverage import env
+from coverage.exceptions import CoverageException, NotPython, NoSource
 from coverage.files import abs_file, flat_rootname
 import coverage.html
-from coverage.misc import CoverageException, NotPython, NoSource
 from coverage.report import get_analysis_to_report
 
 from tests.coveragetest import CoverageTest, TESTS_DIR

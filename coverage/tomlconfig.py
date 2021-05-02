@@ -7,7 +7,8 @@ import configparser
 import os
 import re
 
-from coverage.misc import CoverageException, substitute_variables
+from coverage.exceptions import CoverageException
+from coverage.misc import substitute_variables
 
 # TOML support is an install-time extra option.
 try:

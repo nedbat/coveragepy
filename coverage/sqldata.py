@@ -18,8 +18,9 @@ import threading
 import zlib
 
 from coverage.debug import NoDebugging, SimpleReprMixin, clipped_repr
+from coverage.exceptions import CoverageException
 from coverage.files import PathAliases
-from coverage.misc import CoverageException, contract, file_be_gone, filename_suffix, isolate_module
+from coverage.misc import contract, file_be_gone, filename_suffix, isolate_module
 from coverage.numbits import numbits_to_nums, numbits_union, nums_to_numbits
 from coverage.version import __version__
 

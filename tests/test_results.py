@@ -5,7 +5,7 @@
 
 import pytest
 
-from coverage.misc import CoverageException
+from coverage.exceptions import CoverageException
 from coverage.results import format_lines, Numbers, should_fail_under
 
 from tests.coveragetest import CoverageTest

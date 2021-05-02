@@ -8,8 +8,8 @@ import types
 import zipimport
 
 from coverage import env, files
+from coverage.exceptions import CoverageException, NoSource
 from coverage.misc import contract, expensive, isolate_module, join_regex
-from coverage.misc import CoverageException, NoSource
 from coverage.parser import PythonParser
 from coverage.phystokens import source_token_lines, source_encoding
 from coverage.plugin import FileReporter

@@ -16,7 +16,7 @@ import coverage.cmdline
 from coverage import env
 from coverage.config import CoverageConfig
 from coverage.data import CoverageData
-from coverage.misc import ExceptionDuringRun
+from coverage.exceptions import ExceptionDuringRun
 from coverage.version import __url__
 
 from tests.coveragetest import CoverageTest, OK, ERR, command_line

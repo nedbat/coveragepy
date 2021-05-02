@@ -13,7 +13,8 @@ import re
 import sys
 
 from coverage import env
-from coverage.misc import contract, CoverageException, join_regex, isolate_module
+from coverage.exceptions import CoverageException
+from coverage.misc import contract, join_regex, isolate_module
 
 
 os = isolate_module(os)

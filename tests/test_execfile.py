@@ -14,9 +14,9 @@ import sys
 import pytest
 
 from coverage import env
+from coverage.exceptions import NoCode, NoSource
 from coverage.execfile import run_python_file, run_python_module
 from coverage.files import python_reported_file
-from coverage.misc import NoCode, NoSource
 
 from tests.coveragetest import CoverageTest, TESTS_DIR, UsingModulesMixin
 

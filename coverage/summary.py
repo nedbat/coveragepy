@@ -5,9 +5,9 @@
 
 import sys
 
+from coverage.exceptions import CoverageException
 from coverage.report import get_analysis_to_report
 from coverage.results import Numbers
-from coverage.misc import CoverageException
 
 
 class SummaryReporter:

@@ -5,9 +5,10 @@
 
 import pytest
 
+from coverage.exceptions import CoverageException
 from coverage.misc import contract, dummy_decorator_with_args, file_be_gone
 from coverage.misc import Hasher, one_of, substitute_variables
-from coverage.misc import CoverageException, USE_CONTRACTS
+from coverage.misc import USE_CONTRACTS
 
 from tests.coveragetest import CoverageTest
 

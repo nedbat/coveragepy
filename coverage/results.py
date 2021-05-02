@@ -6,7 +6,8 @@
 import collections
 
 from coverage.debug import SimpleReprMixin
-from coverage.misc import contract, CoverageException, nice_pair
+from coverage.exceptions import CoverageException
+from coverage.misc import contract, nice_pair
 
 
 class Analysis:

@@ -7,7 +7,7 @@ import pytest
 
 import coverage
 from coverage import env
-from coverage.misc import CoverageException
+from coverage.exceptions import CoverageException
 
 from tests.coveragetest import CoverageTest
 

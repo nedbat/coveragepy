@@ -4,8 +4,9 @@
 """Reporter foundation for coverage.py."""
 import sys
 
+from coverage.exceptions import CoverageException, NoSource, NotPython
 from coverage.files import prep_patterns, FnmatchMatcher
-from coverage.misc import CoverageException, NoSource, NotPython, ensure_dir_for_file, file_be_gone
+from coverage.misc import ensure_dir_for_file, file_be_gone
 
 
 def render_report(output_path, reporter, morfs):

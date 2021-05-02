@@ -18,8 +18,8 @@ from coverage import env
 from coverage.collector import CTracer
 from coverage.data import line_counts
 from coverage.debug import info_formatter, info_header, short_stack
+from coverage.exceptions import BaseCoverageException, ExceptionDuringRun, NoSource
 from coverage.execfile import PyRunner
-from coverage.misc import BaseCoverageException, ExceptionDuringRun, NoSource
 from coverage.results import should_fail_under
 
 

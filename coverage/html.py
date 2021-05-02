@@ -12,9 +12,9 @@ import types
 
 import coverage
 from coverage.data import add_data_to_hash
+from coverage.exceptions import CoverageException
 from coverage.files import flat_rootname
-from coverage.misc import CoverageException, ensure_dir, file_be_gone, Hasher, isolate_module
-from coverage.misc import format_local_datetime
+from coverage.misc import ensure_dir, file_be_gone, Hasher, isolate_module, format_local_datetime
 from coverage.report import get_analysis_to_report
 from coverage.results import Numbers
 from coverage.templite import Templite

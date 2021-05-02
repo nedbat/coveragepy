@@ -10,7 +10,7 @@ import pytest
 
 import coverage
 from coverage.config import HandyConfigParser
-from coverage.misc import CoverageException
+from coverage.exceptions import CoverageException
 
 from tests.coveragetest import CoverageTest, UsingModulesMixin
 from tests.helpers import without_module

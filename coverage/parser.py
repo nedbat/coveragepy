@@ -13,8 +13,8 @@ import tokenize
 from coverage import env
 from coverage.bytecode import code_objects
 from coverage.debug import short_stack
+from coverage.exceptions import NoSource, NotPython, StopEverything
 from coverage.misc import contract, join_regex, new_contract, nice_pair, one_of
-from coverage.misc import NoSource, NotPython, StopEverything
 from coverage.phystokens import compile_unicode, generate_tokens, neuter_encoding_declaration
 
 

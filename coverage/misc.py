@@ -17,6 +17,7 @@ import sys
 import types
 
 from coverage import env
+from coverage.exceptions import CoverageException
 
 ISOLATED_MODULES = {}
 
@@ -338,47 +339,3 @@ def import_local_file(modname, modfile=None):
     spec.loader.exec_module(mod)
 
     return mod
-
-
-class BaseCoverageException(Exception):
-    """The base of all Coverage exceptions."""
-    pass
-
-
-class CoverageException(BaseCoverageException):
-    """An exception raised by a coverage.py function."""
-    pass
-
-
-class NoSource(CoverageException):
-    """We couldn't find the source for a module."""
-    pass
-
-
-class NoCode(NoSource):
-    """We couldn't find any code at all."""
-    pass
-
-
-class NotPython(CoverageException):
-    """A source file turned out not to be parsable Python."""
-    pass
-
-
-class ExceptionDuringRun(CoverageException):
-    """An exception happened while running customer code.
-
-    Construct it with three arguments, the values from `sys.exc_info`.
-
-    """
-    pass
-
-
-class StopEverything(BaseCoverageException):
-    """An exception that means everything should stop.
-
-    The CoverageTest class converts these to SkipTest, so that when running
-    tests, raising this exception will automatically skip the test.
-
-    """
-    pass

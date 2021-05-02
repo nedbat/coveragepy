@@ -8,7 +8,7 @@ import textwrap
 import pytest
 
 from coverage import env
-from coverage.misc import NotPython
+from coverage.exceptions import NotPython
 from coverage.parser import PythonParser
 
 from tests.coveragetest import CoverageTest

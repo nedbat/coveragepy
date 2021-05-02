@@ -20,11 +20,12 @@ from coverage.context import should_start_context_test_function, combine_context
 from coverage.data import CoverageData, combine_parallel_data
 from coverage.debug import DebugControl, short_stack, write_formatted_info
 from coverage.disposition import disposition_debug_msg
+from coverage.exceptions import CoverageException
 from coverage.files import PathAliases, abs_file, relative_filename, set_relative_directory
 from coverage.html import HtmlReporter
 from coverage.inorout import InOrOut
 from coverage.jsonreport import JsonReporter
-from coverage.misc import CoverageException, bool_or_none, join_regex
+from coverage.misc import bool_or_none, join_regex
 from coverage.misc import DefaultValue, ensure_dir_for_file, isolate_module
 from coverage.plugin import FileReporter
 from coverage.plugin_support import Plugins

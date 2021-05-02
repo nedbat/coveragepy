@@ -15,9 +15,9 @@ import traceback
 
 from coverage import env
 from coverage.disposition import FileDisposition, disposition_init
+from coverage.exceptions import CoverageException
 from coverage.files import TreeMatcher, FnmatchMatcher, ModuleMatcher
 from coverage.files import prep_patterns, find_python_files, canonical_filename
-from coverage.misc import CoverageException
 from coverage.python import source_for_file, source_for_morf
 
 

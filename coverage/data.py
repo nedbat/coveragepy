@@ -13,7 +13,8 @@ imports working.
 import glob
 import os.path
 
-from coverage.misc import CoverageException, file_be_gone
+from coverage.exceptions import CoverageException
+from coverage.misc import file_be_gone
 from coverage.sqldata import CoverageData
 
 

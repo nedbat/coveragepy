@@ -9,7 +9,8 @@ import sys
 from coverage import env
 from coverage.debug import short_stack
 from coverage.disposition import FileDisposition
-from coverage.misc import CoverageException, isolate_module
+from coverage.exceptions import CoverageException
+from coverage.misc import isolate_module
 from coverage.pytracer import PyTracer
 
 os = isolate_module(os)

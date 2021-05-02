@@ -16,7 +16,7 @@ import coverage
 from coverage import env
 from coverage.control import Coverage
 from coverage.data import CoverageData
-from coverage.misc import CoverageException
+from coverage.exceptions import CoverageException
 from coverage.summary import SummaryReporter
 
 from tests.coveragetest import CoverageTest, TESTS_DIR, UsingModulesMixin

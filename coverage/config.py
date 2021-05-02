@@ -10,8 +10,8 @@ import os
 import os.path
 import re
 
-from coverage.misc import contract, CoverageException, isolate_module
-from coverage.misc import substitute_variables
+from coverage.exceptions import CoverageException
+from coverage.misc import contract, isolate_module, substitute_variables
 
 from coverage.tomlconfig import TomlConfigParser, TomlDecodeError
 

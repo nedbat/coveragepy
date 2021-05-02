@@ -14,7 +14,7 @@ import warnings
 import pytest
 
 from coverage import env
-from coverage.misc import StopEverything
+from coverage.exceptions import StopEverything
 
 
 # Pytest will rewrite assertions in test modules, but not elsewhere.

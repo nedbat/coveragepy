@@ -13,8 +13,9 @@ import sys
 import types
 
 from coverage import env
+from coverage.exceptions import CoverageException, ExceptionDuringRun, NoCode, NoSource
 from coverage.files import canonical_filename, python_reported_file
-from coverage.misc import CoverageException, ExceptionDuringRun, NoCode, NoSource, isolate_module
+from coverage.misc import isolate_module
 from coverage.phystokens import compile_unicode
 from coverage.python import get_python_source
 

@@ -16,8 +16,8 @@ import pytest
 from coverage.data import CoverageData, combine_parallel_data
 from coverage.data import add_data_to_hash, line_counts
 from coverage.debug import DebugControlString
+from coverage.exceptions import CoverageException
 from coverage.files import PathAliases, canonical_filename
-from coverage.misc import CoverageException
 
 from tests.coveragetest import CoverageTest
 from tests.helpers import assert_count_equal
