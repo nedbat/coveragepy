@@ -26,7 +26,6 @@ include .editorconfig
 include .readthedocs.yml
 
 recursive-include ci *
-exclude ci/*.token
 
 recursive-include .github *
 
@@ -44,5 +43,3 @@ recursive-include tests *.py *.tok
 recursive-include tests/gold *
 recursive-include tests js/* qunit/*
 prune tests/eggsrc/build
-
-global-exclude *.py[co]

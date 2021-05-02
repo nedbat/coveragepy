@@ -43,9 +43,6 @@ doc/sample_html_beta
 # Build intermediaries.
 tmp
 
-# Stuff in the ci directory.
-*.token
-
 # OS junk
 .DS_Store
 
