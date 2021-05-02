@@ -36,10 +36,8 @@ def show_pyc_file(fname):
         moddate = f.read(4)
         modtime = time.asctime(time.localtime(struct.unpack('<L', moddate)[0]))
         print("moddate %s (%s)" % (binascii.hexlify(moddate), modtime))
-        if sys.version_info >= (3, 3):
-            # 3.3 added another long to the header (size).
-            size = f.read(4)
-            print("pysize %s (%d)" % (binascii.hexlify(size), struct.unpack('<L', size)[0]))
+        size = f.read(4)
+        print("pysize %s (%d)" % (binascii.hexlify(size), struct.unpack('<L', size)[0]))
     code = marshal.load(f)
     show_code(code)
 
@@ -132,18 +130,11 @@ def show_hex(label, h, indent):
         for i in range(0, len(h), 60):
             print("%s   %s" % (indent, h[i:i+60].decode('ascii')))
 
-if sys.version_info >= (3,):
-    def bytes_to_ints(bytes_value):
-        return bytes_value
-else:
-    def bytes_to_ints(bytes_value):
-        for byte in bytes_value:
-            yield ord(byte)
 
 def lnotab_interpreted(code):
     # Adapted from dis.py in the standard library.
-    byte_increments = bytes_to_ints(code.co_lnotab[0::2])
-    line_increments = bytes_to_ints(code.co_lnotab[1::2])
+    byte_increments = code.co_lnotab[0::2]
+    line_increments = code.co_lnotab[1::2]
 
     last_line_num = None
     line_num = code.co_firstlineno
