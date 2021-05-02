@@ -361,8 +361,8 @@ class Coverage:
         if slug:
             msg = f"{msg} ({slug})"
         if self._debug.should('pid'):
-            msg = "[%d] %s" % (os.getpid(), msg)
-        sys.stderr.write("Coverage.py warning: %s\n" % msg)
+            msg = f"[{os.getpid()}] {msg}"
+        sys.stderr.write(f"Coverage.py warning: {msg}\n")
 
         if once:
             self._no_warn_slugs.append(slug)

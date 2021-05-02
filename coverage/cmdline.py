@@ -46,8 +46,8 @@ class Opts:
         choices=CONCURRENCY_CHOICES,
         help=(
             "Properly measure code using a concurrency library. "
-            "Valid values are: %s."
-        ) % ", ".join(CONCURRENCY_CHOICES),
+            "Valid values are: {}."
+        ).format(", ".join(CONCURRENCY_CHOICES)),
     )
     context = optparse.make_option(
         '', '--context', action='store', metavar="LABEL",
@@ -299,7 +299,7 @@ class CmdOptionParser(CoverageOptionParser):
     def __eq__(self, other):
         # A convenience equality, so that I can put strings in unit test
         # results, and they will compare equal to objects.
-        return (other == "<CmdOptionParser:%s>" % self.cmd)
+        return (other == f"<CmdOptionParser:{self.cmd}>")
 
     __hash__ = None     # This object doesn't need to be hashed.
 
@@ -506,7 +506,7 @@ def show_help(error=None, topic=None, parser=None):
         if help_msg:
             print(help_msg.format(**help_params))
         else:
-            print("Don't know topic %r" % topic)
+            print(f"Don't know topic {topic!r}")
     print("Full documentation is at {__url__}".format(**help_params))
 
 
@@ -541,7 +541,7 @@ class CoverageScript:
         else:
             parser = CMDS.get(argv[0])
             if not parser:
-                show_help("Unknown command: '%s'" % argv[0])
+                show_help(f"Unknown command: {argv[0]!r}")
                 return ERR
             argv = argv[1:]
 
@@ -765,22 +765,22 @@ class CoverageScript:
                 sys_info = self.coverage.sys_info()
                 print(info_header("sys"))
                 for line in info_formatter(sys_info):
-                    print(" %s" % line)
+                    print(f" {line}")
             elif info == 'data':
                 self.coverage.load()
                 data = self.coverage.get_data()
                 print(info_header("data"))
-                print("path: %s" % data.data_filename())
+                print(f"path: {data.data_filename()}")
                 if data:
-                    print("has_arcs: %r" % data.has_arcs())
+                    print(f"has_arcs: {data.has_arcs()!r}")
                     summary = line_counts(data, fullpath=True)
                     filenames = sorted(summary.keys())
-                    print("\n%d files:" % len(filenames))
+                    print(f"\n{len(filenames)} files:")
                     for f in filenames:
-                        line = "%s: %d lines" % (f, summary[f])
+                        line = f"{f}: {summary[f]} lines"
                         plugin = data.file_tracer(f)
                         if plugin:
-                            line += " [%s]" % plugin
+                            line += f" [{plugin}]"
                         print(line)
                 else:
                     print("No data collected")
@@ -788,12 +788,12 @@ class CoverageScript:
                 print(info_header("config"))
                 config_info = self.coverage.config.__dict__.items()
                 for line in info_formatter(config_info):
-                    print(" %s" % line)
+                    print(f" {line}")
             elif info == "premain":
                 print(info_header("premain"))
                 print(short_stack())
             else:
-                show_help("Don't know what you mean by %r" % info)
+                show_help(f"Don't know what you mean by {info!r}")
                 return ERR
 
         return OK

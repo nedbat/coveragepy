@@ -116,7 +116,7 @@ class Collector:
         # We can handle a few concurrency options here, but only one at a time.
         these_concurrencies = self.SUPPORTED_CONCURRENCIES.intersection(concurrency)
         if len(these_concurrencies) > 1:
-            raise CoverageException("Conflicting concurrency settings: %s" % concurrency)
+            raise CoverageException(f"Conflicting concurrency settings: {concurrency}")
         self.concurrency = these_concurrencies.pop() if these_concurrencies else ''
 
         try:
@@ -136,7 +136,7 @@ class Collector:
                 import threading
                 self.threading = threading
             else:
-                raise CoverageException("Don't understand concurrency=%s" % concurrency)
+                raise CoverageException(f"Don't understand concurrency={concurrency}")
         except ImportError:
             raise CoverageException(
                 "Couldn't trace with concurrency={}, the module isn't installed.".format(

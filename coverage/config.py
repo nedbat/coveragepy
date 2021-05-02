@@ -443,7 +443,7 @@ class CoverageConfig:
             return
 
         # If we get here, we didn't find the option.
-        raise CoverageException("No such option: %r" % option_name)
+        raise CoverageException(f"No such option: {option_name!r}")
 
     def get_option(self, option_name):
         """Get an option from the configuration.
@@ -471,7 +471,7 @@ class CoverageConfig:
             return self.plugin_options.get(plugin_name, {}).get(key)
 
         # If we get here, we didn't find the option.
-        raise CoverageException("No such option: %r" % option_name)
+        raise CoverageException(f"No such option: {option_name!r}")
 
     def post_process_file(self, path):
         """Make final adjustments to a file path to make it usable."""
@@ -545,7 +545,7 @@ def read_coverage_config(config_file, **kwargs):
             if config_read:
                 break
             if specified_file:
-                raise CoverageException("Couldn't read '%s' as a config file" % fname)
+                raise CoverageException(f"Couldn't read {fname!r} as a config file")
 
     # $set_env.py: COVERAGE_DEBUG - Options for --debug.
     # 3) from environment variables:
