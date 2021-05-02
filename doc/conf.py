@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
 # For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
 
@@ -58,8 +57,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'Coverage.py'
-copyright = u'2009\N{EN DASH}2021, Ned Batchelder.'     # CHANGEME  # pylint: disable=redefined-builtin
+project = 'Coverage.py'
+copyright = '2009\N{EN DASH}2021, Ned Batchelder.'     # CHANGEME  # pylint: disable=redefined-builtin
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the

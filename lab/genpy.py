@@ -10,7 +10,7 @@ import coverage
 from coverage.parser import PythonParser
 
 
-class PythonSpinner(object):
+class PythonSpinner:
     """Spin Python source from a simple AST."""
 
     def __init__(self):
@@ -100,7 +100,7 @@ def weighted_choice(rand, choices):
     assert False, "Shouldn't get here"
 
 
-class RandomAstMaker(object):
+class RandomAstMaker:
     def __init__(self, seed=None):
         self.r = random.Random()
         if seed is not None:

@@ -1,4 +1,4 @@
-class Parent(object):
+class Parent:
     def meth(self):
         print("METH")
 

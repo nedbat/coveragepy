@@ -10,7 +10,6 @@ Run this file two ways under coverage and see that the times are the same:
 Written by David MacIver as part of https://github.com/nedbat/coveragepy/issues/397
 
 """
-from __future__ import print_function
 
 import sys
 import random

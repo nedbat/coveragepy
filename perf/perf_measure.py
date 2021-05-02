@@ -46,7 +46,7 @@ def mk_main(file_count, call_count, line_count):
     return "\n".join(lines)
 
 
-class StressTest(object):
+class StressTest:
 
     def __init__(self):
         self.module_cleaner = SuperModuleCleaner()

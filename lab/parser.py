@@ -3,7 +3,6 @@
 
 """Parser.py: a main for invoking code in coverage/parser.py"""
 
-from __future__ import division
 
 import collections
 import glob
@@ -21,7 +20,7 @@ from coverage.python import get_python_source
 opcode_counts = collections.Counter()
 
 
-class ParserMain(object):
+class ParserMain:
     """A main for code parsing experiments."""
 
     def main(self, args):
