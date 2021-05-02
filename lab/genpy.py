@@ -4,13 +4,11 @@ import collections
 from itertools import cycle, product
 import random
 import re
-import sys
 
-import coverage
 from coverage.parser import PythonParser
 
 
-class PythonSpinner(object):
+class PythonSpinner:
     """Spin Python source from a simple AST."""
 
     def __init__(self):
@@ -29,7 +27,7 @@ class PythonSpinner(object):
         return "\n".join(spinner.lines)
 
     def add_line(self, line):
-        g = "g{}".format(self.lineno)
+        g = f"g{self.lineno}"
         self.lines.append(' ' * self.indent + line.format(g=g, lineno=self.lineno))
 
     def add_block(self, node):
@@ -65,7 +63,7 @@ class PythonSpinner(object):
                     # number.
                     if len(node) > 2 and node[2] is not None:
                         for except_node in node[2]:
-                            self.add_line("except Exception{}:".format(self.lineno))
+                            self.add_line(f"except Exception{self.lineno}:")
                             self.add_block(except_node)
                     self.maybe_block(node, 3, "else")
                     self.maybe_block(node, 4, "finally")
@@ -73,7 +71,7 @@ class PythonSpinner(object):
                     self.add_line("with {g} as x:")
                     self.add_block(node[1])
                 else:
-                    raise Exception("Bad list node: {!r}".format(node))
+                    raise Exception(f"Bad list node: {node!r}")
             else:
                 op = node
                 if op == "assign":
@@ -85,7 +83,7 @@ class PythonSpinner(object):
                 elif op == "yield":
                     self.add_line("yield {lineno}")
                 else:
-                    raise Exception("Bad atom node: {!r}".format(node))
+                    raise Exception(f"Bad atom node: {node!r}")
 
 
 def weighted_choice(rand, choices):
@@ -100,7 +98,7 @@ def weighted_choice(rand, choices):
     assert False, "Shouldn't get here"
 
 
-class RandomAstMaker(object):
+class RandomAstMaker:
     def __init__(self, seed=None):
         self.r = random.Random()
         if seed is not None:
@@ -139,14 +137,14 @@ class RandomAstMaker(object):
                     body[-1].append(self.make_body("ifelse"))
             elif stmt == "for":
                 old_allowed = self.bc_allowed
-                self.bc_allowed = self.bc_allowed | set(["break", "continue"])
+                self.bc_allowed = self.bc_allowed | {"break", "continue"}
                 body.append(["for", self.make_body("for")])
                 self.bc_allowed = old_allowed
                 if self.roll():
                     body[-1].append(self.make_body("forelse"))
             elif stmt == "while":
                 old_allowed = self.bc_allowed
-                self.bc_allowed = self.bc_allowed | set(["break", "continue"])
+                self.bc_allowed = self.bc_allowed | {"break", "continue"}
                 body.append(["while", self.make_body("while")])
                 self.bc_allowed = old_allowed
                 if self.roll():
@@ -154,7 +152,7 @@ class RandomAstMaker(object):
             elif stmt == "try":
                 else_clause = self.make_body("try") if self.roll() else None
                 old_allowed = self.bc_allowed
-                self.bc_allowed = self.bc_allowed - set(["continue"])
+                self.bc_allowed = self.bc_allowed - {"continue"}
                 finally_clause = self.make_body("finally") if self.roll() else None
                 self.bc_allowed = old_allowed
                 if else_clause:
@@ -235,7 +233,7 @@ def show_a_bunch():
             print("-"*80, "\n", source, sep="")
             compile(source, "<string>", "exec")
         except Exception as ex:
-            print("Oops: {}\n{}".format(ex, source))
+            print(f"Oops: {ex}\n{source}")
         if len(source) > len(longest):
             longest = source
 
@@ -248,7 +246,7 @@ def show_alternatives():
         if nlines < 15:
             nalt = compare_alternatives(source)
             if nalt > 1:
-                print("--- {:3} lines, {:2} alternatives ---------".format(nlines, nalt))
+                print(f"--- {nlines:3} lines, {nalt:2} alternatives ---------")
                 print(source)
 
 

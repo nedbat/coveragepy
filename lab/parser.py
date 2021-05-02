@@ -3,7 +3,6 @@
 
 """Parser.py: a main for invoking code in coverage/parser.py"""
 
-from __future__ import division
 
 import collections
 import glob
@@ -21,7 +20,7 @@ from coverage.python import get_python_source
 opcode_counts = collections.Counter()
 
 
-class ParserMain(object):
+class ParserMain:
     """A main for code parsing experiments."""
 
     def main(self, args):
@@ -65,9 +64,9 @@ class ParserMain(object):
 
         if options.histogram:
             total = sum(opcode_counts.values())
-            print("{} total opcodes".format(total))
+            print(f"{total} total opcodes")
             for opcode, number in opcode_counts.most_common():
-                print("{:20s} {:6d}  {:.1%}".format(opcode, number, number/total))
+                print(f"{opcode:20s} {number:6d}  {number/total:.1%}")
 
     def one_file(self, options, filename):
         """Process just one file."""
@@ -89,7 +88,7 @@ class ParserMain(object):
             pyparser = PythonParser(text, filename=filename, exclude=r"no\s*cover")
             pyparser.parse_source()
         except Exception as err:
-            print("%s" % (err,))
+            print(f"{err}")
             return
 
         if options.dis:
@@ -151,12 +150,12 @@ class ParserMain(object):
                     if srclines:
                         upto = upto or disline.lineno-1
                         while upto <= disline.lineno-1:
-                            print("%100s%s" % ("", srclines[upto]))
+                            print("{:>100}{}".format("", srclines[upto]))
                             upto += 1
                     elif disline.offset > 0:
                         print("")
                 line = disgen.format_dis_line(disline)
-                print("%-70s" % (line,))
+                print(f"{line:<70}")
 
         print("")
 
@@ -211,7 +210,7 @@ def set_char(s, n, c):
 
 def blanks(s):
     """Return the set of positions where s is blank."""
-    return set(i for i, c in enumerate(s) if c == " ")
+    return {i for i, c in enumerate(s) if c == " "}
 
 
 def first_all_blanks(ss):

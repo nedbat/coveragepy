@@ -18,7 +18,7 @@ many of the most fundamental modules in the Standard Library.
 
 import sys
 
-class FullCoverageTracer(object):
+class FullCoverageTracer:
     def __init__(self):
         # `traces` is a list of trace events.  Frames are tricky: the same
         # frame object is used for a whole scope, with new line numbers

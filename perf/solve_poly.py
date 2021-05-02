@@ -10,7 +10,6 @@ import attr
 import itertools
 import numpy
 import scipy.optimize
-import sys
 
 
 def f(*args, simplify=False):
@@ -207,7 +206,7 @@ for row in INPUT.splitlines():
 #print('\n'.join(str(t) for t in inputs_outputs.items()))
 
 def calc_poly_coeff(poly, coefficients):
-    c_tuples = list(((c,) for c in coefficients))
+    c_tuples = list((c,) for c in coefficients)
     poly = list(f(*poly))
     poly = list(a + b for a, b in zip(c_tuples, poly))
     multiplied = list(m(*t) for t in poly)
@@ -241,7 +240,7 @@ with open('results', 'w') as f:
 
         coefficients = [int(round(x)) for x in c.x]
         terms = [''.join(t) for t in poly.terms]
-        message = "{}' = ".format(name)
+        message = f"{name}' = "
         message += ' + '.join("{}{}".format(coeff if coeff != 1 else '', term) for coeff, term in reversed(list(zip(coefficients, terms))) if coeff != 0)
         print(message)
         f.write(message)

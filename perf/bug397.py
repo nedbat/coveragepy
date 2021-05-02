@@ -10,7 +10,6 @@ Run this file two ways under coverage and see that the times are the same:
 Written by David MacIver as part of https://github.com/nedbat/coveragepy/issues/397
 
 """
-from __future__ import print_function
 
 import sys
 import random
@@ -52,4 +51,4 @@ if __name__ == '__main__':
         for d in data:
             hash_str(d)
         timing.append(1000000 * (time.time() - start) / len(data))
-    print("Runtime per example:", "%.2f +/- %.2f us" % (mean(timing), sd(timing)))
+    print("Runtime per example:", f"{mean(timing):.2f} +/- {sd(timing):.2f} us")
