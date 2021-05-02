@@ -61,7 +61,7 @@ class TempDirMixin:
     def _temp_dir(self, tmpdir_factory):
         """Create a temp dir for the tests, if they want it."""
         if self.run_in_temp_dir:
-            tmpdir = tmpdir_factory.mktemp("")
+            tmpdir = tmpdir_factory.mktemp("t")
             self.temp_dir = str(tmpdir)
             with change_dir(self.temp_dir):
                 # Modules should be importable from this temp directory.  We don't

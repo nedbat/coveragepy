@@ -5,15 +5,10 @@
 
 # The pytest specifics used by coverage.py
 
-# 4.x is last to support py2
-pytest==4.6.11
-# 1.34 is last to support py2
-pytest-xdist==1.34.0
+pytest==6.2.3
+pytest-xdist==2.2.1
 flaky==3.7.0
-# 4.x is py3-only
-mock==3.0.5
 # Use a fork of PyContracts that supports Python 3.9
 #PyContracts==1.8.12
 git+https://github.com/slorg1/contracts@collections_and_validator
-# hypothesis 5.x is py3-only
-hypothesis==4.57.1
+hypothesis==6.10.1
