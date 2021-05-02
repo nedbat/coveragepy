@@ -48,7 +48,7 @@ def relative_filename(filename):
     fnorm = os.path.normcase(filename)
     if fnorm.startswith(RELATIVE_DIR):
         filename = filename[len(RELATIVE_DIR):]
-    return unicode_filename(filename)
+    return filename
 
 
 @contract(returns='unicode')
@@ -141,12 +141,6 @@ else:
         return filename
 
 
-@contract(filename='unicode', returns='unicode')
-def unicode_filename(filename):
-    """Return a Unicode version of `filename`."""
-    return filename
-
-
 @contract(returns='unicode')
 def abs_file(path):
     """Return the absolute normalized form of `path`."""
@@ -156,7 +150,6 @@ def abs_file(path):
         pass
     path = os.path.abspath(path)
     path = actual_path(path)
-    path = unicode_filename(path)
     return path
 
 

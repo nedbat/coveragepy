@@ -7,8 +7,9 @@ import os.path
 import types
 import zipimport
 
-from coverage import env, files
+from coverage import env
 from coverage.exceptions import CoverageException, NoSource
+from coverage.files import canonical_filename, relative_filename
 from coverage.misc import contract, expensive, isolate_module, join_regex
 from coverage.parser import PythonParser
 from coverage.phystokens import source_token_lines, source_encoding
@@ -140,7 +141,7 @@ def source_for_morf(morf):
     else:
         filename = morf
 
-    filename = source_for_file(files.unicode_filename(filename))
+    filename = source_for_file(filename)
     return filename
 
 
@@ -152,16 +153,15 @@ class PythonFileReporter(FileReporter):
 
         filename = source_for_morf(morf)
 
-        super().__init__(files.canonical_filename(filename))
+        super().__init__(canonical_filename(filename))
 
         if hasattr(morf, '__name__'):
             name = morf.__name__.replace(".", os.sep)
             if os.path.basename(filename).startswith('__init__.'):
                 name += os.sep + "__init__"
             name += ".py"
-            name = files.unicode_filename(name)
         else:
-            name = files.relative_filename(filename)
+            name = relative_filename(filename)
         self.relname = name
 
         self._source = None
