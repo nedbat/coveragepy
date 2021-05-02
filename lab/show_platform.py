@@ -13,4 +13,4 @@ for n in dir(platform):
             n += "()"
         except:
             continue
-    print("%30s: %r" % (n, v))
+    print("{:>30}: {!r}".format(n, v))

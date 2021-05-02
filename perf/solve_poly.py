@@ -207,7 +207,7 @@ for row in INPUT.splitlines():
 #print('\n'.join(str(t) for t in inputs_outputs.items()))
 
 def calc_poly_coeff(poly, coefficients):
-    c_tuples = list(((c,) for c in coefficients))
+    c_tuples = list((c,) for c in coefficients)
     poly = list(f(*poly))
     poly = list(a + b for a, b in zip(c_tuples, poly))
     multiplied = list(m(*t) for t in poly)

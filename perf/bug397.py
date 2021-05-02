@@ -52,4 +52,4 @@ if __name__ == '__main__':
         for d in data:
             hash_str(d)
         timing.append(1000000 * (time.time() - start) / len(data))
-    print("Runtime per example:", "%.2f +/- %.2f us" % (mean(timing), sd(timing)))
+    print("Runtime per example:", "{:.2f} +/- {:.2f} us".format(mean(timing), sd(timing)))

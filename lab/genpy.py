@@ -139,14 +139,14 @@ class RandomAstMaker(object):
                     body[-1].append(self.make_body("ifelse"))
             elif stmt == "for":
                 old_allowed = self.bc_allowed
-                self.bc_allowed = self.bc_allowed | set(["break", "continue"])
+                self.bc_allowed = self.bc_allowed | {"break", "continue"}
                 body.append(["for", self.make_body("for")])
                 self.bc_allowed = old_allowed
                 if self.roll():
                     body[-1].append(self.make_body("forelse"))
             elif stmt == "while":
                 old_allowed = self.bc_allowed
-                self.bc_allowed = self.bc_allowed | set(["break", "continue"])
+                self.bc_allowed = self.bc_allowed | {"break", "continue"}
                 body.append(["while", self.make_body("while")])
                 self.bc_allowed = old_allowed
                 if self.roll():
@@ -154,7 +154,7 @@ class RandomAstMaker(object):
             elif stmt == "try":
                 else_clause = self.make_body("try") if self.roll() else None
                 old_allowed = self.bc_allowed
-                self.bc_allowed = self.bc_allowed - set(["continue"])
+                self.bc_allowed = self.bc_allowed - {"continue"}
                 finally_clause = self.make_body("finally") if self.roll() else None
                 self.bc_allowed = old_allowed
                 if else_clause:

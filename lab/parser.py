@@ -89,7 +89,7 @@ class ParserMain(object):
             pyparser = PythonParser(text, filename=filename, exclude=r"no\s*cover")
             pyparser.parse_source()
         except Exception as err:
-            print("%s" % (err,))
+            print("{}".format(err))
             return
 
         if options.dis:
@@ -151,12 +151,12 @@ class ParserMain(object):
                     if srclines:
                         upto = upto or disline.lineno-1
                         while upto <= disline.lineno-1:
-                            print("%100s%s" % ("", srclines[upto]))
+                            print("{:>100}{}".format("", srclines[upto]))
                             upto += 1
                     elif disline.offset > 0:
                         print("")
                 line = disgen.format_dis_line(disline)
-                print("%-70s" % (line,))
+                print("{:<70}".format(line))
 
         print("")
 
@@ -211,7 +211,7 @@ def set_char(s, n, c):
 
 def blanks(s):
     """Return the set of positions where s is blank."""
-    return set(i for i, c in enumerate(s) if c == " ")
+    return {i for i, c in enumerate(s) if c == " "}
 
 
 def first_all_blanks(ss):

@@ -28,14 +28,14 @@ def show_pyc_file(fname):
         flags = struct.unpack('<L', f.read(4))[0]
         hash_based = flags & 0x01
         check_source = flags & 0x02
-        print("flags 0x%08x" % (flags,))
+        print("flags 0x{:08x}".format(flags))
         if hash_based:
             source_hash = f.read(8)
             read_date_and_size = False
     if read_date_and_size:
         moddate = f.read(4)
         modtime = time.asctime(time.localtime(struct.unpack('<L', moddate)[0]))
-        print("moddate %s (%s)" % (binascii.hexlify(moddate), modtime))
+        print("moddate {} ({})".format(binascii.hexlify(moddate), modtime))
         size = f.read(4)
         print("pysize %s (%d)" % (binascii.hexlify(size), struct.unpack('<L', size)[0]))
     code = marshal.load(f)
@@ -90,13 +90,13 @@ def show_code(code, indent='', number=None):
     label = ""
     if number is not None:
         label = "%d: " % number
-    print("%s%scode" % (indent, label))
+    print("{}{}code".format(indent, label))
     indent += "    "
-    print("%sname %r" % (indent, code.co_name))
+    print("{}name {!r}".format(indent, code.co_name))
     print("%sargcount %d" % (indent, code.co_argcount))
     print("%snlocals %d" % (indent, code.co_nlocals))
     print("%sstacksize %d" % (indent, code.co_stacksize))
-    print("%sflags %04x: %s" % (indent, code.co_flags, flag_words(code.co_flags, CO_FLAGS)))
+    print("{}flags {:04x}: {}".format(indent, code.co_flags, flag_words(code.co_flags, CO_FLAGS)))
     show_hex("code", code.co_code, indent=indent)
     dis.disassemble(code)
     print("%sconsts" % indent)
@@ -105,30 +105,30 @@ def show_code(code, indent='', number=None):
             show_code(const, indent+"    ", number=i)
         else:
             print("    %s%d: %r" % (indent, i, const))
-    print("%snames %r" % (indent, code.co_names))
-    print("%svarnames %r" % (indent, code.co_varnames))
-    print("%sfreevars %r" % (indent, code.co_freevars))
-    print("%scellvars %r" % (indent, code.co_cellvars))
-    print("%sfilename %r" % (indent, code.co_filename))
+    print("{}names {!r}".format(indent, code.co_names))
+    print("{}varnames {!r}".format(indent, code.co_varnames))
+    print("{}freevars {!r}".format(indent, code.co_freevars))
+    print("{}cellvars {!r}".format(indent, code.co_cellvars))
+    print("{}filename {!r}".format(indent, code.co_filename))
     print("%sfirstlineno %d" % (indent, code.co_firstlineno))
     show_hex("lnotab", code.co_lnotab, indent=indent)
-    print("    %s%s" % (indent, ", ".join("%r:%r" % (line, byte) for byte, line in lnotab_interpreted(code))))
+    print("    {}{}".format(indent, ", ".join("{!r}:{!r}".format(line, byte) for byte, line in lnotab_interpreted(code))))
     if hasattr(code, "co_linetable"):
         show_hex("linetable", code.co_linetable, indent=indent)
     if hasattr(code, "co_lines"):
-        print("    %sco_lines %s" % (
+        print("    {}co_lines {}".format(
             indent,
-            ", ".join("%r:%r-%r" % (line, start, end) for start, end, line in code.co_lines())
+            ", ".join("{!r}:{!r}-{!r}".format(line, start, end) for start, end, line in code.co_lines())
         ))
 
 def show_hex(label, h, indent):
     h = binascii.hexlify(h)
     if len(h) < 60:
-        print("%s%s %s" % (indent, label, h.decode('ascii')))
+        print("{}{} {}".format(indent, label, h.decode('ascii')))
     else:
-        print("%s%s" % (indent, label))
+        print("{}{}".format(indent, label))
         for i in range(0, len(h), 60):
-            print("%s   %s" % (indent, h[i:i+60].decode('ascii')))
+            print("{}   {}".format(indent, h[i:i+60].decode('ascii')))
 
 
 def lnotab_interpreted(code):
