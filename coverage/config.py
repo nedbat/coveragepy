@@ -10,7 +10,6 @@ import os
 import os.path
 import re
 
-from coverage import env
 from coverage.misc import contract, CoverageException, isolate_module
 from coverage.misc import substitute_variables
 

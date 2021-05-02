@@ -10,7 +10,6 @@ import os.path
 import sys
 import traceback
 
-from coverage import env
 from coverage.misc import contract
 
 # An attribute that will be set on the module to indicate that it has been

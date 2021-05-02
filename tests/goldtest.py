@@ -12,8 +12,6 @@ import re
 import sys
 import xml.etree.ElementTree
 
-from coverage import env
-
 from tests.coveragetest import TESTS_DIR
 
 

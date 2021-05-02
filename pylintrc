@@ -79,6 +79,7 @@ disable=
 # Questionable things, but it's ok, I don't need to be told:
     import-outside-toplevel,
     self-assigning-variable,
+    consider-using-with,
 # Formatting stuff
     superfluous-parens,
     bad-continuation,

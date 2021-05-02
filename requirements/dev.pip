@@ -15,8 +15,8 @@ tox
 
 # for linting.
 greenlet==1.0.0
-astroid==2.5.3
-pylint==2.7.4
+astroid==2.5.6
+pylint==2.8.2
 check-manifest==0.46
 readme_renderer==29.0
 
