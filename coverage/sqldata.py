@@ -8,6 +8,7 @@
 
 import collections
 import datetime
+import functools
 import glob
 import itertools
 import os
@@ -179,6 +180,10 @@ class CoverageData(SimpleReprMixin):
     Data in a :class:`CoverageData` can be serialized and deserialized with
     :meth:`dumps` and :meth:`loads`.
 
+    The methods used during the coverage.py collection phase
+    (:meth:`add_lines`, :meth:`add_arcs`, :meth:`set_context`, and
+    :meth:`add_file_tracers`) are thread-safe.  Other methods may not be.
+
     """
 
     def __init__(self, basename=None, suffix=None, no_disk=False, warn=None, debug=None):
@@ -207,6 +212,8 @@ class CoverageData(SimpleReprMixin):
         # Maps thread ids to SqliteDb objects.
         self._dbs = {}
         self._pid = os.getpid()
+        # Synchronize the operations used during collection.
+        self._lock = threading.Lock()
 
         # Are we in sync with the data file?
         self._have_used = False
@@ -217,6 +224,15 @@ class CoverageData(SimpleReprMixin):
         self._current_context = None
         self._current_context_id = None
         self._query_context_ids = None
+
+    def _locked(method):            # pylint: disable=no-self-argument
+        """A decorator for methods that should hold self._lock."""
+        @functools.wraps(method)
+        def _wrapped(self, *args, **kwargs):
+            with self._lock:
+                # pylint: disable=not-callable
+                return method(self, *args, **kwargs)
+        return _wrapped
 
     def _choose_filename(self):
         """Set self._filename based on inited attributes."""
@@ -388,6 +404,7 @@ class CoverageData(SimpleReprMixin):
             else:
                 return None
 
+    @_locked
     def set_context(self, context):
         """Set the current context for future :meth:`add_lines` etc.
 
@@ -429,6 +446,7 @@ class CoverageData(SimpleReprMixin):
         """
         return self._filename
 
+    @_locked
     def add_lines(self, line_data):
         """Add measured line data.
 
@@ -461,6 +479,7 @@ class CoverageData(SimpleReprMixin):
                     (file_id, self._current_context_id, linemap),
                 )
 
+    @_locked
     def add_arcs(self, arc_data):
         """Add measured arc data.
 
@@ -505,6 +524,7 @@ class CoverageData(SimpleReprMixin):
                     ('has_arcs', str(int(arcs)))
                 )
 
+    @_locked
     def add_file_tracers(self, file_tracers):
         """Add per-file plugin information.
 

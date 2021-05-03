@@ -486,10 +486,14 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
 
     def test_thread_stress(self):
         covdata = CoverageData()
+        exceptions = []
 
         def thread_main():
             """Every thread will try to add the same data."""
-            covdata.add_lines(LINES_1)
+            try:
+                covdata.add_lines(LINES_1)
+            except Exception as ex:
+                exceptions.append(ex)
 
         threads = [threading.Thread(target=thread_main) for _ in range(10)]
         for t in threads:
@@ -498,6 +502,7 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
             t.join()
 
         self.assert_lines1_data(covdata)
+        assert exceptions == []
 
 
 class CoverageDataInTempDirTest(DataTestHelpers, CoverageTest):
