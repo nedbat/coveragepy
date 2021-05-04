@@ -12,18 +12,6 @@
 #undef COLLECT_STATS    /* Collect counters: stats are printed when tracer is stopped. */
 #undef DO_NOTHING       /* Define this to make the tracer do nothing. */
 
-#define MyText_Type                     PyUnicode_Type
-#define MyText_AS_BYTES(o)              PyUnicode_AsASCIIString(o)
-#define MyBytes_GET_SIZE(o)             PyBytes_GET_SIZE(o)
-#define MyBytes_AS_STRING(o)            PyBytes_AS_STRING(o)
-#define MyText_AsString(o)              PyUnicode_AsUTF8(o)
-#define MyText_FromFormat               PyUnicode_FromFormat
-#define MyInt_FromInt(i)                PyLong_FromLong((long)i)
-#define MyInt_AsInt(o)                  (int)PyLong_AsLong(o)
-#define MyText_InternFromString(s)      PyUnicode_InternFromString(s)
-
-#define MyType_HEAD_INIT                PyVarObject_HEAD_INIT(NULL, 0)
-
 // The f_lasti field changed meaning in 3.10.0a7. It had been bytes, but
 // now is instructions, so we need to adjust it to use it as a byte index.
 #if PY_VERSION_HEX >= 0x030A00A7
@@ -31,14 +19,6 @@
 #else
 #define MyFrame_lasti(f)    f->f_lasti
 #endif // 3.10.0a7
-
-// Undocumented, and not in all 2.7.x, so our own copy of it.
-#define My_XSETREF(op, op2)                     \
-    do {                                        \
-        PyObject *_py_tmp = (PyObject *)(op);   \
-        (op) = (op2);                           \
-        Py_XDECREF(_py_tmp);                    \
-    } while (0)
 
 /* The values returned to indicate ok or error. */
 #define RET_OK      0

@@ -13,7 +13,7 @@
 static int
 pyint_as_int(PyObject * pyint, int *pint)
 {
-    int the_int = MyInt_AsInt(pyint);
+    int the_int = (int)PyLong_AsLong(pyint);
     if (the_int == -1 && PyErr_Occurred()) {
         return RET_ERROR;
     }
@@ -39,7 +39,7 @@ CTracer_intern_strings(void)
     int ret = RET_ERROR;
 
 #define INTERN_STRING(v, s)                     \
-    v = MyText_InternFromString(s);             \
+    v = PyUnicode_InternFromString(s);          \
     if (v == NULL) {                            \
         goto error;                             \
     }
@@ -149,7 +149,7 @@ showlog(int depth, int lineno, PyObject * filename, const char * msg)
         }
         if (filename) {
             PyObject *ascii = MyText_AS_BYTES(filename);
-            printf(" %s", MyBytes_AS_STRING(ascii));
+            printf(" %s", PyBytes_AS_STRING(ascii));
             Py_DECREF(ascii);
         }
         if (msg) {
@@ -232,7 +232,7 @@ CTracer_set_pdata_stack(CTracer *self)
 
             /* A new concurrency object.  Make a new data stack. */
             the_index = self->data_stacks_used;
-            stack_index = MyInt_FromInt(the_index);
+            stack_index = PyLong_FromLong((long)the_index);
             if (stack_index == NULL) {
                 goto error;
             }
@@ -542,7 +542,7 @@ CTracer_handle_call(CTracer *self, PyFrameObject *frame)
 
     /* Make the frame right in case settrace(gettrace()) happens. */
     Py_INCREF(self);
-    My_XSETREF(frame->f_trace, (PyObject*)self);
+    Py_XSETREF(frame->f_trace, (PyObject*)self);
 
     /* A call event is really a "start frame" event, and can happen for
      * re-entering a generator also.  f_lasti is -1 for a true call, and a
@@ -668,7 +668,7 @@ CTracer_handle_line(CTracer *self, PyFrameObject *frame)
                     }
                     else {
                         /* Tracing lines: key is simply this_line. */
-                        PyObject * this_line = MyInt_FromInt(lineno_from);
+                        PyObject * this_line = PyLong_FromLong((long)lineno_from);
                         if (this_line == NULL) {
                             goto error;
                         }
@@ -717,8 +717,8 @@ CTracer_handle_return(CTracer *self, PyFrameObject *frame)
             PyObject * pCode = frame->f_code->co_code;
             int lasti = MyFrame_lasti(frame);
 
-            if (lasti < MyBytes_GET_SIZE(pCode)) {
-                bytecode = MyBytes_AS_STRING(pCode)[lasti];
+            if (lasti < PyBytes_GET_SIZE(pCode)) {
+                bytecode = PyBytes_AS_STRING(pCode)[lasti];
             }
             if (bytecode != YIELD_VALUE) {
                 int first = frame->f_code->co_firstlineno;
@@ -806,15 +806,15 @@ CTracer_trace(CTracer *self, PyFrameObject *frame, int what, PyObject *arg_unuse
 
     #if WHAT_LOG
     if (what <= (int)(sizeof(what_sym)/sizeof(const char *))) {
-        ascii = MyText_AS_BYTES(frame->f_code->co_filename);
-        printf("trace: %s @ %s %d\n", what_sym[what], MyBytes_AS_STRING(ascii), PyFrame_GetLineNumber(frame));
+        ascii = PyUnicode_AsASCIIString(frame->f_code->co_filename);
+        printf("trace: %s @ %s %d\n", what_sym[what], PyBytes_AS_STRING(ascii), PyFrame_GetLineNumber(frame));
         Py_DECREF(ascii);
     }
     #endif
 
     #if TRACE_LOG
-    ascii = MyText_AS_BYTES(frame->f_code->co_filename);
-    if (strstr(MyBytes_AS_STRING(ascii), start_file) && PyFrame_GetLineNumber(frame) == start_line) {
+    ascii = PyUnicode_AsASCIIString(frame->f_code->co_filename);
+    if (strstr(PyBytes_AS_STRING(ascii), start_file) && PyFrame_GetLineNumber(frame) == start_line) {
         logging = TRUE;
     }
     Py_DECREF(ascii);
@@ -913,7 +913,7 @@ CTracer_call(CTracer *self, PyObject *args, PyObject *kwds)
     static char *kwlist[] = {"frame", "event", "arg", "lineno", NULL};
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!O!O|i:Tracer_call", kwlist,
-            &PyFrame_Type, &frame, &MyText_Type, &what_str, &arg, &lineno)) {
+            &PyFrame_Type, &frame, &PyUnicode_Type, &what_str, &arg, &lineno)) {
         goto done;
     }
 
@@ -921,8 +921,8 @@ CTracer_call(CTracer *self, PyObject *args, PyObject *kwds)
        for the C function. */
     for (what = 0; what_names[what]; what++) {
         int should_break;
-        ascii = MyText_AS_BYTES(what_str);
-        should_break = !strcmp(MyBytes_AS_STRING(ascii), what_names[what]);
+        ascii = PyUnicode_AsASCIIString(what_str);
+        should_break = !strcmp(PyBytes_AS_STRING(ascii), what_names[what]);
         Py_DECREF(ascii);
         if (should_break) {
             break;
@@ -930,8 +930,8 @@ CTracer_call(CTracer *self, PyObject *args, PyObject *kwds)
     }
 
     #if WHAT_LOG
-    ascii = MyText_AS_BYTES(frame->f_code->co_filename);
-    printf("pytrace: %s @ %s %d\n", what_sym[what], MyBytes_AS_STRING(ascii), PyFrame_GetLineNumber(frame));
+    ascii = PyUnicode_AsASCIIString(frame->f_code->co_filename);
+    printf("pytrace: %s @ %s %d\n", what_sym[what], PyBytes_AS_STRING(ascii), PyFrame_GetLineNumber(frame));
     Py_DECREF(ascii);
     #endif
 
@@ -1108,7 +1108,7 @@ CTracer_methods[] = {
 
 PyTypeObject
 CTracerType = {
-    MyType_HEAD_INIT
+    PyVarObject_HEAD_INIT(NULL, 0)
     "coverage.CTracer",        /*tp_name*/
     sizeof(CTracer),           /*tp_basicsize*/
     0,                         /*tp_itemsize*/
