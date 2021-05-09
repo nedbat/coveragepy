@@ -124,8 +124,10 @@ class DebugTraceTest(CoverageTest):
     def test_debug_trace(self):
         out_lines = self.f1_debug_output(["trace"])
 
-        # We should have a line like "Tracing 'f1.py'"
-        assert "Tracing 'f1.py'" in out_lines
+        # We should have a line like "Tracing 'f1.py'", perhaps with an
+        # absolute path.
+        f1 = re_lines(out_lines, r"Tracing '.*f1.py'")
+        assert f1
 
         # We should have lines like "Not tracing 'collector.py'..."
         coverage_lines = re_lines(

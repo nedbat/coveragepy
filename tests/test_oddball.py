@@ -451,10 +451,12 @@ class GettraceTest(CoverageTest):
     def test_setting_new_trace_function(self):
         # https://github.com/nedbat/coveragepy/issues/436
         self.check_coverage('''\
+            import os.path
             import sys
 
             def tracer(frame, event, arg):
-                print("%s: %s @ %d" % (event, frame.f_code.co_filename, frame.f_lineno))
+                filename = os.path.basename(frame.f_code.co_filename)
+                print("%s: %s @ %d" % (event, filename, frame.f_lineno))
                 return tracer
 
             def begin():
@@ -474,16 +476,16 @@ class GettraceTest(CoverageTest):
             a = 21
             b = 22
             ''',
-            lines=[1, 3, 4, 5, 7, 8, 10, 11, 12, 14, 15, 16, 18, 19, 20, 21, 22],
-            missing="4-5, 11-12",
+            lines=[1, 2, 4, 5, 6, 7, 9, 10, 12, 13, 14, 16, 17, 18, 20, 21, 22, 23, 24],
+            missing="5-7, 13-14",
         )
 
         out = self.stdout().replace(self.last_module_name, "coverage_test")
         expected = (
-            "call: coverage_test.py @ 10\n"
-            "line: coverage_test.py @ 11\n"
-            "line: coverage_test.py @ 12\n"
-            "return: coverage_test.py @ 12\n"
+            "call: coverage_test.py @ 12\n"
+            "line: coverage_test.py @ 13\n"
+            "line: coverage_test.py @ 14\n"
+            "return: coverage_test.py @ 14\n"
         )
         assert expected == out
 
