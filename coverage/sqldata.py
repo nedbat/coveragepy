@@ -870,7 +870,7 @@ class CoverageData(SimpleReprMixin):
             self._query_context_ids = None
 
     def lines(self, filename):
-        """Get the list of lines executed for a file.
+        """Get the list of lines executed for a source file.
 
         If the file was not measured, returns None.  A file might be measured,
         and have no lines executed, in which case an empty list is returned.
