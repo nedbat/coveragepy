@@ -849,7 +849,7 @@ class EnvironmentTest(CoverageTest):
             expected = re_lines(expected, r'\s+"argv0":', match=False)
             actual = re_lines(actual, r'\s+"argv0":', match=False)
 
-        assert expected == actual
+        assert actual == expected
 
     def test_coverage_run_is_like_python(self):
         with open(TRY_EXECFILE) as f:
