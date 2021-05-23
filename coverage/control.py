@@ -1064,7 +1064,10 @@ class Coverage:
             ('environment', sorted(
                 f"{k} = {v}"
                 for k, v in os.environ.items()
-                if any(slug in k for slug in ("COV", "PY"))
+                if (
+                    any(slug in k for slug in ("COV", "PY")) or
+                    (k in ("HOME", "TEMP", "TMP"))
+                )
             )),
             ('command_line', " ".join(getattr(sys, 'argv', ['-none-']))),
             ]
