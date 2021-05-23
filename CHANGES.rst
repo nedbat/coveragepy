@@ -33,6 +33,9 @@ Unreleased
   imported a file that will be measured" warnings about Django itself.  These
   have been fixed, closing `issue 1150`_.
 
+- The ``COVERAGE_DEBUG_FILE`` environment variable now accepts ``stdout`` and
+  ``stderr`` to write to those destinations.
+
 .. _Django coverage plugin: https://pypi.org/project/django-coverage-plugin/
 .. _issue 1150: https://github.com/nedbat/coveragepy/issues/1150
 

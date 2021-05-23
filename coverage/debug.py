@@ -307,7 +307,9 @@ class DebugOutputFile:                              # pragma: debugging
         if the_one is None or is_interim:
             if fileobj is None:
                 debug_file_name = os.environ.get("COVERAGE_DEBUG_FILE", FORCED_DEBUG_FILE)
-                if debug_file_name:
+                if debug_file_name in ("stdout", "stderr"):
+                    fileobj = getattr(sys, debug_file_name)
+                elif debug_file_name:
                     fileobj = open(debug_file_name, "a")
                 else:
                     fileobj = sys.stderr

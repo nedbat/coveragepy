@@ -594,3 +594,5 @@ a comma-separated list of these options.
 
 The debug output goes to stderr, unless the ``COVERAGE_DEBUG_FILE`` environment
 variable names a different file, which will be appended to.
+``COVERAGE_DEBUG_FILE`` accepts the special names ``stdout`` and ``stderr`` to
+write to those destinations.
