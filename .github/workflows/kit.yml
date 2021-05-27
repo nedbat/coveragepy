@@ -23,13 +23,22 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os:
-          - ubuntu-latest
-          - windows-latest
-          - macos-latest
+        include:
+          - os: ubuntu-latest
+            cibw_arch: x86_64 i686 aarch64
+          - os: windows-latest
+            cibw_arch: x86 AMD64
+          - os: macos-latest
+            cibw_arch: x86_64
       fail-fast: false
 
     steps:
+      - name: Setup QEMU
+        if: matrix.os == 'ubuntu-latest'
+        uses: docker/setup-qemu-action@v1
+        with:
+          platforms: arm64
+
       - name: "Check out the repo"
         uses: actions/checkout@v2
 
@@ -46,6 +55,7 @@ jobs:
         env:
           # Don't build wheels for PyPy.
           CIBW_SKIP: pp*
+          CIBW_ARCHS: ${{ matrix.cibw_arch }}
         run: |
           python -m cibuildwheel --output-dir wheelhouse
           ls -al wheelhouse/
