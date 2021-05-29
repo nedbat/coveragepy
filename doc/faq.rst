@@ -50,6 +50,18 @@ reported.  If you collect execution data on Python 3.7, and then run coverage
 reports on Python 3.8, there will be a discrepancy.
 
 
+Q: Can I find out which tests ran which lines?
+..............................................
+
+Yes! Coverage.py has a feature called :ref:`dynamic_contexts` which can collect
+this information.  Add this to your .coveragerc file::
+
+    [run]
+    dynamic_context = test_function
+
+and then use the ``--contexts`` option when generating an HTML report.
+
+
 Q: How is the total percentage calculated?
 ..........................................
 

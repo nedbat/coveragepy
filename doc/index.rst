@@ -137,6 +137,24 @@ Getting started is easy:
 .. _report like this one: https://nedbatchelder.com/files/sample_coverage_html_beta/index.html
 
 
+Capabilities
+------------
+
+Coverage.py can do a number of things:
+
+- By default it will measure line (statement) coverage.
+
+- It can also measure :ref:`branch coverage <branch>`.
+
+- It can tell you :ref:`what tests ran which lines <dynamic_contexts>`.
+
+- It can produce reports in a number of formats: :ref:`text <cmd_report>`,
+  :ref:`HTML <cmd_html>`, :ref:`XML <cmd_xml>`, and :ref:`JSON <cmd_json>`.
+
+- For advanced uses, there's an :ref:`API <api>`, and the result data is
+  available in a :ref:`SQLite database <dbschema>`.
+
+
 Using coverage.py
 -----------------
 
