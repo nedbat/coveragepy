@@ -356,10 +356,9 @@ class InOrOut:
                         )
                     break
             except Exception:
-                self.warn(
-                    "Disabling plug-in %r due to an exception:" % (plugin._coverage_plugin_name)
-                )
-                traceback.print_exc()
+                plugin_name = plugin._coverage_plugin_name
+                tb = traceback.format_exc()
+                self.warn(f"Disabling plug-in {plugin_name!r} due to an exception:\n{tb}")
                 plugin._coverage_enabled = False
                 continue
         else:
@@ -503,10 +502,8 @@ class InOrOut:
         # The module was in sys.modules, and seems like a module with code, but
         # we never measured it. I guess that means it was imported before
         # coverage even started.
-        self.warn(
-            "Module %s was previously imported, but not measured" % pkg,
-            slug="module-not-measured",
-        )
+        msg = f"Module {pkg} was previously imported, but not measured"
+        self.warn(msg, slug="module-not-measured")
 
     def find_possibly_unexecuted_files(self):
         """Find files in the areas of interest that might be untraced.

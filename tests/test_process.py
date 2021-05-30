@@ -130,7 +130,7 @@ class ProcessTest(CoverageTest):
         self.assert_exists(".coverage")
         self.assert_exists(".coverage.bad")
         warning_regex = (
-            r"Coverage.py warning: Couldn't use data file '.*\.coverage\.bad': "
+            r"CoverageWarning: Couldn't use data file '.*\.coverage\.bad': "
             r"file (is encrypted or )?is not a database"
         )
         assert re.search(warning_regex, out)
@@ -163,7 +163,7 @@ class ProcessTest(CoverageTest):
         for n in "12":
             self.assert_exists(f".coverage.bad{n}")
             warning_regex = (
-                r"Coverage.py warning: Couldn't use data file '.*\.coverage.bad{}': "
+                r"CoverageWarning: Couldn't use data file '.*\.coverage.bad{}': "
                 r"file (is encrypted or )?is not a database"
                 .format(n)
             )
@@ -725,7 +725,7 @@ class ProcessTest(CoverageTest):
         assert "Goodbye!" in out
 
         msg = (
-            "Coverage.py warning: "
+            "CoverageWarning: "
             "Already imported a file that will be measured: {} "
             "(already-imported)").format(goodbye_path)
         assert msg in out
@@ -815,10 +815,14 @@ class ProcessTest(CoverageTest):
                 inst.save()
             """)
         out = self.run_command("python run_twice.py")
+        # Remove the file location and source line from the warning.
+        out = re.sub(r"(?m)^[\\/\w.:~_-]+:\d+: CoverageWarning: ", "f:d: CoverageWarning: ", out)
+        out = re.sub(r"(?m)^\s+self.warn.*$\n", "", out)
+        print("out:", repr(out))
         expected = (
             "Run 1\n" +
             "Run 2\n" +
-            "Coverage.py warning: Module foo was previously imported, but not measured " +
+            "f:d: CoverageWarning: Module foo was previously imported, but not measured " +
             "(module-not-measured)\n"
         )
         assert expected == out
@@ -920,7 +924,7 @@ class EnvironmentTest(CoverageTest):
     def test_coverage_run_dashm_superset_of_doubledashsource(self):
         """Edge case: --source foo -m foo.bar"""
         # Ugh: without this config file, we'll get a warning about
-        #   Coverage.py warning: Module process_test was previously imported,
+        #   CoverageWarning: Module process_test was previously imported,
         #   but not measured (module-not-measured)
         #
         # This is because process_test/__init__.py is imported while looking

@@ -254,10 +254,8 @@ class PyTracer:
             # has changed to None.
             dont_warn = (env.PYPY and env.PYPYVERSION >= (5, 4) and self.in_atexit and tf is None)
             if (not dont_warn) and tf != self._trace:   # pylint: disable=comparison-with-callable
-                self.warn(
-                    f"Trace function changed, measurement is likely wrong: {tf!r}",
-                    slug="trace-changed",
-                )
+                msg = f"Trace function changed, measurement is likely wrong: {tf!r}"
+                self.warn(msg, slug="trace-changed")
 
     def activity(self):
         """Has there been any activity?"""

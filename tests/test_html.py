@@ -24,7 +24,7 @@ from coverage.report import get_analysis_to_report
 from tests.coveragetest import CoverageTest, TESTS_DIR
 from tests.goldtest import gold_path
 from tests.goldtest import compare, contains, doesnt_contain, contains_any
-from tests.helpers import change_dir
+from tests.helpers import assert_coverage_warnings, change_dir
 
 
 class HtmlTestHelpers(CoverageTest):
@@ -341,13 +341,14 @@ class HtmlWithUnparsableFilesTest(HtmlTestHelpers, CoverageTest):
         self.make_file("innocuous.py", "a = 2")
         cov = coverage.Coverage()
         self.start_import_stop(cov, "main")
+
         self.make_file("innocuous.py", "<h1>This isn't python!</h1>")
-        cov.html_report(ignore_errors=True)
-        msg = "Expected a warning to be thrown when an invalid python file is parsed"
-        assert 1 == len(cov._warnings), msg
-        msg = "Warning message should be in 'invalid file' warning"
-        assert "Couldn't parse Python file" in cov._warnings[0], msg
-        assert "innocuous.py" in cov._warnings[0], "Filename should be in 'invalid file' warning"
+        with pytest.warns(Warning) as warns:
+            cov.html_report(ignore_errors=True)
+        assert_coverage_warnings(
+            warns,
+            re.compile(r"Couldn't parse Python file '.*innocuous.py' \(couldnt-parse\)"),
+            )
         self.assert_exists("htmlcov/index.html")
         # This would be better as a glob, if the HTML layout changes:
         self.assert_doesnt_exist("htmlcov/innocuous.html")

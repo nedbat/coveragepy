@@ -14,7 +14,7 @@ import coverage
 from coverage import env
 from coverage.control import Plugins
 from coverage.data import line_counts
-from coverage.exceptions import CoverageException
+from coverage.exceptions import CoverageException, CoverageWarning
 from coverage.misc import import_local_file
 
 import coverage.plugin
@@ -193,7 +193,9 @@ class PluginTest(CoverageTest):
         cov = coverage.Coverage(debug=["sys"])
         cov._debug_file = debug_out
         cov.set_option("run:plugins", ["plugin_sys_info"])
-        cov.start()
+        with pytest.warns(None):
+            # Catch warnings so we don't see "plugins aren't supported on PyTracer"
+            cov.start()
         cov.stop()      # pragma: nested
 
         out_lines = [line.strip() for line in debug_out.getvalue().splitlines()]
@@ -631,28 +633,29 @@ class BadFileTracerTest(FileTracerTest):
         explaining why.
 
         """
-        self.run_plugin(module_name)
+        with pytest.warns(Warning) as warns:
+            self.run_plugin(module_name)
 
         stderr = self.stderr()
-
+        stderr += "".join(w.message.args[0] for w in warns)
         if our_error:
-            errors = stderr.count("# Oh noes!")
             # The exception we're causing should only appear once.
-            assert errors == 1
+            assert stderr.count("# Oh noes!") == 1
 
         # There should be a warning explaining what's happening, but only one.
         # The message can be in two forms:
         #   Disabling plug-in '...' due to previous exception
         # or:
         #   Disabling plug-in '...' due to an exception:
-        msg = f"Disabling plug-in '{module_name}.{plugin_name}' due to "
-        warnings = stderr.count(msg)
-        assert warnings == 1
+        assert len(warns) == 1
+        assert issubclass(warns[0].category, CoverageWarning)
+        warnmsg = warns[0].message.args[0]
+        assert f"Disabling plug-in '{module_name}.{plugin_name}' due to " in warnmsg
 
         if excmsg:
             assert excmsg in stderr
         if excmsgs:
-            assert any(em in stderr for em in excmsgs), "expected one of %r" % excmsgs
+            assert any(em in stderr for em in excmsgs), f"expected one of {excmsgs} in stderr"
 
     def test_file_tracer_has_no_file_tracer_method(self):
         self.make_file("bad_plugin.py", """\

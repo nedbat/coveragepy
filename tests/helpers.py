@@ -14,6 +14,7 @@ import textwrap
 
 from unittest import mock
 
+from coverage.exceptions import CoverageWarning
 from coverage.misc import output_encoding
 
 
@@ -262,3 +263,17 @@ def assert_count_equal(a, b):
     This only works for hashable elements.
     """
     assert collections.Counter(list(a)) == collections.Counter(list(b))
+
+
+def assert_coverage_warnings(warns, *msgs):
+    """
+    Assert that `warns` are all CoverageWarning's, and have `msgs` as messages.
+    """
+    assert msgs     # don't call this without some messages.
+    assert len(warns) == len(msgs)
+    assert all(w.category == CoverageWarning for w in warns)
+    for actual, expected in zip((w.message.args[0] for w in warns), msgs):
+        if hasattr(expected, "search"):
+            assert expected.search(actual), f"{actual!r} didn't match {expected!r}"
+        else:
+            assert expected == actual

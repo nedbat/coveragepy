@@ -23,7 +23,7 @@ from coverage.files import abs_file, relative_filename
 from coverage.misc import import_local_file
 
 from tests.coveragetest import CoverageTest, TESTS_DIR, UsingModulesMixin
-from tests.helpers import assert_count_equal, change_dir, nice_file
+from tests.helpers import assert_count_equal, assert_coverage_warnings, change_dir, nice_file
 
 
 class ApiTest(CoverageTest):
@@ -300,9 +300,11 @@ class ApiTest(CoverageTest):
         # If nothing was measured, the file-touching didn't happen properly.
         self.make_file("foo/bar.py", "print('Never run')")
         self.make_file("test.py", "assert True")
-        cov = coverage.Coverage(source=["foo"])
-        self.start_import_stop(cov, "test")
-        cov.report()
+        with pytest.warns(Warning) as warns:
+            cov = coverage.Coverage(source=["foo"])
+            self.start_import_stop(cov, "test")
+            cov.report()
+        assert_coverage_warnings(warns, "No data was collected. (no-data-collected)")
         # Name         Stmts   Miss  Cover
         # --------------------------------
         # foo/bar.py       1      1     0%
@@ -517,18 +519,19 @@ class ApiTest(CoverageTest):
             import sys, os
             print("Hello")
             """)
-        cov = coverage.Coverage(source=["sys", "xyzzy", "quux"])
-        self.start_import_stop(cov, "hello")
-        cov.get_data()
+        with pytest.warns(Warning) as warns:
+            cov = coverage.Coverage(source=["sys", "xyzzy", "quux"])
+            self.start_import_stop(cov, "hello")
+            cov.get_data()
 
-        out, err = self.stdouterr()
-        assert "Hello\n" in out
-        assert textwrap.dedent("""\
-            Coverage.py warning: Module sys has no Python source. (module-not-python)
-            Coverage.py warning: Module xyzzy was never imported. (module-not-imported)
-            Coverage.py warning: Module quux was never imported. (module-not-imported)
-            Coverage.py warning: No data was collected. (no-data-collected)
-            """) in err
+        assert "Hello\n" == self.stdout()
+        assert_coverage_warnings(
+            warns,
+            "Module sys has no Python source. (module-not-python)",
+            "Module xyzzy was never imported. (module-not-imported)",
+            "Module quux was never imported. (module-not-imported)",
+            "No data was collected. (no-data-collected)",
+            )
 
     def test_warnings_suppressed(self):
         self.make_file("hello.py", """\
@@ -539,24 +542,25 @@ class ApiTest(CoverageTest):
             [run]
             disable_warnings = no-data-collected, module-not-imported
             """)
-        cov = coverage.Coverage(source=["sys", "xyzzy", "quux"])
-        self.start_import_stop(cov, "hello")
-        cov.get_data()
+        with pytest.warns(Warning) as warns:
+            cov = coverage.Coverage(source=["sys", "xyzzy", "quux"])
+            self.start_import_stop(cov, "hello")
+            cov.get_data()
 
-        out, err = self.stdouterr()
-        assert "Hello\n" in out
-        assert "Coverage.py warning: Module sys has no Python source. (module-not-python)" in err
-        assert "module-not-imported" not in err
-        assert "no-data-collected" not in err
+        assert "Hello\n" == self.stdout()
+        assert_coverage_warnings(warns, "Module sys has no Python source. (module-not-python)")
+        # No "module-not-imported" in warns
+        # No "no-data-collected" in warns
 
     def test_warn_once(self):
-        cov = coverage.Coverage()
-        cov.load()
-        cov._warn("Warning, warning 1!", slug="bot", once=True)
-        cov._warn("Warning, warning 2!", slug="bot", once=True)
-        err = self.stderr()
-        assert "Warning, warning 1!" in err
-        assert "Warning, warning 2!" not in err
+        with pytest.warns(Warning) as warns:
+            cov = coverage.Coverage()
+            cov.load()
+            cov._warn("Warning, warning 1!", slug="bot", once=True)
+            cov._warn("Warning, warning 2!", slug="bot", once=True)
+
+        assert_coverage_warnings(warns, "Warning, warning 1! (bot)")
+        # No "Warning, warning 2!" in warns
 
     def test_source_and_include_dont_conflict(self):
         # A bad fix made this case fail: https://github.com/nedbat/coveragepy/issues/541
@@ -683,12 +687,12 @@ class ApiTest(CoverageTest):
         cov = coverage.Coverage(source=["."])
         cov.set_option("run:dynamic_context", "test_function")
         cov.start()
-        # Switch twice, but only get one warning.
-        cov.switch_context("test1")                                     # pragma: nested
-        cov.switch_context("test2")                                     # pragma: nested
-        expected = "Coverage.py warning: Conflicting dynamic contexts (dynamic-conflict)\n"
-        assert expected == self.stderr()
+        with pytest.warns(Warning) as warns:
+            # Switch twice, but only get one warning.
+            cov.switch_context("test1")                                 # pragma: nested
+            cov.switch_context("test2")                                 # pragma: nested
         cov.stop()                                                      # pragma: nested
+        assert_coverage_warnings(warns, "Conflicting dynamic contexts (dynamic-conflict)")
 
     def test_switch_context_unstarted(self):
         # Coverage must be started to switch context

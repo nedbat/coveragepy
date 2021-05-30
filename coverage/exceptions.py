@@ -46,3 +46,8 @@ class StopEverything(BaseCoverageException):
 
     """
     pass
+
+
+class CoverageWarning(Warning):
+    """A warning from Coverage.py."""
+    pass

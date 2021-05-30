@@ -11,6 +11,7 @@ import os.path
 import platform
 import sys
 import time
+import warnings
 
 from coverage import env
 from coverage.annotate import AnnotateReporter
@@ -20,7 +21,7 @@ from coverage.context import should_start_context_test_function, combine_context
 from coverage.data import CoverageData, combine_parallel_data
 from coverage.debug import DebugControl, short_stack, write_formatted_info
 from coverage.disposition import disposition_debug_msg
-from coverage.exceptions import CoverageException
+from coverage.exceptions import CoverageException, CoverageWarning
 from coverage.files import PathAliases, abs_file, relative_filename, set_relative_directory
 from coverage.html import HtmlReporter
 from coverage.inorout import InOrOut
@@ -362,7 +363,7 @@ class Coverage:
             msg = f"{msg} ({slug})"
         if self._debug.should('pid'):
             msg = f"[{os.getpid()}] {msg}"
-        sys.stderr.write(f"Coverage.py warning: {msg}\n")
+        warnings.warn(msg, category=CoverageWarning, stacklevel=2)
 
         if once:
             self._no_warn_slugs.append(slug)

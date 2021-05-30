@@ -81,17 +81,18 @@ class RecursionTest(CoverageTest):
     def test_long_recursion(self):
         # We can't finish a very deep recursion, but we don't crash.
         with pytest.raises(RuntimeError):
-            self.check_coverage("""\
-                def recur(n):
-                    if n == 0:
-                        return 0
-                    else:
-                        return recur(n-1)+1
+            with pytest.warns(None):
+                self.check_coverage("""\
+                    def recur(n):
+                        if n == 0:
+                            return 0
+                        else:
+                            return recur(n-1)+1
 
-                recur(100000)  # This is definitely too many frames.
-                """,
-                [1, 2, 3, 5, 7], ""
-                )
+                    recur(100000)  # This is definitely too many frames.
+                    """,
+                    [1, 2, 3, 5, 7], ""
+                    )
 
     def test_long_recursion_recovery(self):
         # Test the core of bug 93: https://github.com/nedbat/coveragepy/issues/93
@@ -117,7 +118,8 @@ class RecursionTest(CoverageTest):
             """)
 
         cov = coverage.Coverage()
-        self.start_import_stop(cov, "recur")
+        with pytest.warns(None):
+            self.start_import_stop(cov, "recur")
 
         pytrace = (cov._collector.tracer_name() == "PyTracer")
         expected_missing = [3]

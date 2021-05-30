@@ -16,7 +16,7 @@ from coverage.misc import import_local_file
 
 from tests.coveragetest import CoverageTest
 from tests.goldtest import compare, gold_path
-from tests.helpers import change_dir
+from tests.helpers import assert_coverage_warnings, change_dir
 
 
 class XmlTestHelpers(CoverageTest):
@@ -213,7 +213,12 @@ class XmlReportTest(XmlTestHelpers, CoverageTest):
         mod_foo = import_local_file("foo", "src/main/foo.py")                   # pragma: nested
         mod_bar = import_local_file("bar", "also/over/there/bar.py")            # pragma: nested
         cov.stop()                                                              # pragma: nested
-        cov.xml_report([mod_foo, mod_bar])
+        with pytest.warns(Warning) as warns:
+            cov.xml_report([mod_foo, mod_bar])
+        assert_coverage_warnings(
+            warns,
+            "Module not/really was never imported. (module-not-imported)",
+            )
         dom = ElementTree.parse("coverage.xml")
 
         self.assert_source(dom, "src/main")

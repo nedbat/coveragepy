@@ -7,16 +7,18 @@ import datetime
 import os
 import re
 import sys
+import warnings
 
 import pytest
 
 import coverage
 from coverage import tomlconfig
+from coverage.exceptions import CoverageWarning
 from coverage.files import actual_path
 
 from tests.coveragetest import CoverageTest
 from tests.helpers import (
-    arcs_to_arcz_repr, arcz_to_arcs, assert_count_equal,
+    arcs_to_arcz_repr, arcz_to_arcs, assert_count_equal, assert_coverage_warnings,
     CheckUniqueFilenames, re_lines, re_line, without_module,
 )
 
@@ -383,3 +385,57 @@ class ArczTest(CoverageTest):
     ])
     def test_arcs_to_arcz_repr(self, arcs, arcz_repr):
         assert arcs_to_arcz_repr(arcs) == arcz_repr
+
+
+class AssertCoverageWarningsTest(CoverageTest):
+    """Tests of assert_coverage_warnings"""
+
+    def test_one_warning(self):
+        with pytest.warns(Warning) as warns:
+            warnings.warn("Hello there", category=CoverageWarning)
+        assert_coverage_warnings(warns, "Hello there")
+
+    def test_many_warnings(self):
+        with pytest.warns(Warning) as warns:
+            warnings.warn("The first", category=CoverageWarning)
+            warnings.warn("The second", category=CoverageWarning)
+            warnings.warn("The third", category=CoverageWarning)
+        assert_coverage_warnings(warns, "The first", "The second", "The third")
+
+    def test_wrong_type(self):
+        with pytest.warns(Warning) as warns:
+            warnings.warn("Not ours", category=Warning)
+        with pytest.raises(AssertionError):
+            assert_coverage_warnings(warns, "Not ours")
+
+    def test_wrong_message(self):
+        with pytest.warns(Warning) as warns:
+            warnings.warn("Goodbye", category=CoverageWarning)
+        with pytest.raises(AssertionError):
+            assert_coverage_warnings(warns, "Hello there")
+
+    def test_wrong_number_too_many(self):
+        with pytest.warns(Warning) as warns:
+            warnings.warn("The first", category=CoverageWarning)
+            warnings.warn("The second", category=CoverageWarning)
+        with pytest.raises(AssertionError):
+            assert_coverage_warnings(warns, "The first", "The second", "The third")
+
+    def test_wrong_number_too_few(self):
+        with pytest.warns(Warning) as warns:
+            warnings.warn("The first", category=CoverageWarning)
+            warnings.warn("The second", category=CoverageWarning)
+            warnings.warn("The third", category=CoverageWarning)
+        with pytest.raises(AssertionError):
+            assert_coverage_warnings(warns, "The first", "The second")
+
+    def test_regex_matches(self):
+        with pytest.warns(Warning) as warns:
+            warnings.warn("The first", category=CoverageWarning)
+        assert_coverage_warnings(warns, re.compile("f?rst"))
+
+    def test_regex_doesnt_match(self):
+        with pytest.warns(Warning) as warns:
+            warnings.warn("The first", category=CoverageWarning)
+        with pytest.raises(AssertionError):
+            assert_coverage_warnings(warns, re.compile("second"))
