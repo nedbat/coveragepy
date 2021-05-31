@@ -492,7 +492,7 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
             """Every thread will try to add the same data."""
             try:
                 covdata.add_lines(LINES_1)
-            except Exception as ex:
+            except Exception as ex:         # pragma: only failure
                 exceptions.append(ex)
 
         threads = [threading.Thread(target=thread_main) for _ in range(10)]
