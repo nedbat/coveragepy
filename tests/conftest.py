@@ -27,7 +27,7 @@ pytest.register_assert_rewrite("tests.helpers")
 
 @pytest.fixture(autouse=True)
 def set_warnings():
-    """Enable DeprecationWarnings during all tests."""
+    """Configure warnings to show while running tests."""
     warnings.simplefilter("default")
     warnings.simplefilter("once", DeprecationWarning)
 

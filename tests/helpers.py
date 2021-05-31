@@ -265,11 +265,11 @@ def assert_count_equal(a, b):
 
 def assert_coverage_warnings(warns, *msgs):
     """
-    Assert that `warns` are all CoverageWarning's, and have `msgs` as messages.
+    Assert that the CoverageWarning's in `warns` have `msgs` as messages.
     """
     assert msgs     # don't call this without some messages.
+    warns = [w for w in warns if issubclass(w.category, CoverageWarning)]
     assert len(warns) == len(msgs)
-    assert all(w.category == CoverageWarning for w in warns)
     for actual, expected in zip((w.message.args[0] for w in warns), msgs):
         if hasattr(expected, "search"):
             assert expected.search(actual), f"{actual!r} didn't match {expected!r}"
