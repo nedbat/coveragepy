@@ -30,6 +30,9 @@ jobs:
         python-version:
           # When changing this list, be sure to check the [gh-actions] list in
           # tox.ini so that tox will run properly.
+          - "3.6"
+          - "3.7"
+          - "3.8"
           - "3.9"
           - "3.10.0-alpha.7"
           - "pypy3"
