@@ -166,19 +166,43 @@ class WithTest(CoverageTest):
     """Arc-measuring tests involving context managers."""
 
     def test_with(self):
+        if env.PYBEHAVIOR.exit_through_with:
+            arcz = ".1 .2 23 34 42 2. 16 6."
+        else:
+            arcz = ".1 .2 23 34 4. 16 6."
         self.check_coverage("""\
             def example():
-                with open("test", "w") as f: # exit
-                    f.write("")
-                    return 1
+                with open("test", "w") as f:
+                    f.write("3")
+                    a = 4
 
             example()
             """,
-            arcz=".1 .2 23 34 4. 16 6."
+            arcz=arcz,
+            )
+
+    def test_with_return(self):
+        if env.PYBEHAVIOR.exit_through_with:
+            arcz = ".1 .2 23 34 42 2. 16 6."
+        else:
+            arcz = ".1 .2 23 34 4. 16 6."
+        self.check_coverage("""\
+            def example():
+                with open("test", "w") as f:
+                    f.write("3")
+                    return 4
+
+            example()
+            """,
+            arcz=arcz,
             )
 
     def test_bug_146(self):
         # https://github.com/nedbat/coveragepy/issues/146
+        if env.PYBEHAVIOR.exit_through_with:
+            arcz = ".1 12 23 32 24 41 15 5."
+        else:
+            arcz = ".1 12 23 34 41 15 5."
         self.check_coverage("""\
             for i in range(2):
                 with open("test", "w") as f:
@@ -186,7 +210,56 @@ class WithTest(CoverageTest):
                 print(4)
             print(5)
             """,
-            arcz=".1 12 23 34 41 15 5."
+            arcz=arcz,
+            )
+
+    def test_nested_with_return(self):
+        if env.PYBEHAVIOR.exit_through_with:
+            arcz = ".1 .2 23 34 45 56 64 42 2. 18 8."
+        else:
+            arcz = ".1 .2 23 34 45 56 6. 18 8."
+        self.check_coverage("""\
+            def example(x):
+                with open("test", "w") as f2:
+                    a = 3
+                    with open("test2", "w") as f4:
+                        f2.write("5")
+                        return 6
+
+            example(8)
+            """,
+            arcz=arcz,
+            )
+
+    def test_break_through_with(self):
+        if env.PYBEHAVIOR.exit_through_with:
+            arcz = ".1 12 23 34 42 25 15 5."
+        else:
+            arcz = ".1 12 23 34 45 15 5."
+        self.check_coverage("""\
+            for i in range(1+1):
+                with open("test", "w") as f:
+                    print(3)
+                    break
+            print(5)
+            """,
+            arcz=arcz,
+            arcz_missing="15",
+            )
+
+    def test_continue_through_with(self):
+        if env.PYBEHAVIOR.exit_through_with:
+            arcz = ".1 12 23 34 42 21 15 5."
+        else:
+            arcz = ".1 12 23 34 41 15 5."
+        self.check_coverage("""\
+            for i in range(1+1):
+                with open("test", "w") as f:
+                    print(3)
+                    continue
+            print(5)
+            """,
+            arcz=arcz,
             )
 
 
@@ -676,6 +749,26 @@ class ExceptionArcTest(CoverageTest):
             """,
             arcz=arcz,
             arcz_missing="3D BC CD",
+        )
+
+    def test_break_continue_without_finally(self):
+        self.check_coverage("""\
+            a, c, d, i = 1, 1, 1, 99
+            try:
+                for i in range(3):
+                    try:
+                        a = 5
+                        if i > 0:
+                            break
+                        continue
+                    except:
+                        c = 10
+            except:
+                d = 12                              # C
+            assert a == 5 and c == 1 and d == 1     # D
+            """,
+            arcz=".1 12 23 34 3D 45 56 67 68 7D 83 9A A3 BC CD D.",
+            arcz_missing="3D 9A A3 BC CD",
         )
 
     def test_continue_through_finally(self):
@@ -1632,13 +1725,19 @@ class AsyncTest(CoverageTest):
         assert self.stdout() == "a\nb\nc\n.\n"
 
     def test_async_with(self):
+        if env.PYBEHAVIOR.exit_through_with:
+            arcz = ".1 1. .2 23 32 2."
+            arcz_missing = ".2 23 32 2."
+        else:
+            arcz = ".1 1. .2 23 3."
+            arcz_missing = ".2 23 3."
         self.check_coverage("""\
             async def go():
                 async with x:
                     pass
             """,
-            arcz=".1 1. .2 23 3.",
-            arcz_missing=".2 23 3.",
+            arcz=arcz,
+            arcz_missing=arcz_missing,
         )
 
     def test_async_decorator(self):

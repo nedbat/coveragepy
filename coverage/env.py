@@ -99,6 +99,9 @@ class PYBEHAVIOR:
     # Are "if 0:" lines (and similar) kept in the compiled code?
     keep_constant_test = pep626
 
+    # When leaving a with-block, do we visit the with-line again for the exit?
+    exit_through_with = (PYVERSION >= (3, 10, 0, 'beta'))
+
 # Coverage.py specifics.
 
 # Are we using the C-implemented trace function?

@@ -513,8 +513,8 @@ class TryBlock(BlockBase):
         # that need to route through the "finally:" clause.
         self.break_from = set()
         self.continue_from = set()
-        self.return_from = set()
         self.raise_from = set()
+        self.return_from = set()
 
     def process_break_exits(self, exits, add_arc):
         if self.final_start is not None:
@@ -532,17 +532,54 @@ class TryBlock(BlockBase):
         if self.handler_start is not None:
             for xit in exits:
                 add_arc(xit.lineno, self.handler_start, xit.cause)
-            return True
-        elif self.final_start is not None:
+        else:
+            assert self.final_start is not None
             self.raise_from.update(exits)
-            return True
-        return False
+        return True
 
     def process_return_exits(self, exits, add_arc):
         if self.final_start is not None:
             self.return_from.update(exits)
             return True
         return False
+
+
+class WithBlock(BlockBase):
+    """A block on the block stack representing a `with` block."""
+    @contract(start=int)
+    def __init__(self, start):
+        # We only ever use this block if it is needed, so that we don't have to
+        # check this setting in all the methods.
+        assert env.PYBEHAVIOR.exit_through_with
+
+        # The line number of the with statement.
+        self.start = start
+
+        # The ArcStarts for breaks/continues/returns/raises inside the "with:"
+        # that need to go through the with-statement while exiting.
+        self.break_from = set()
+        self.continue_from = set()
+        self.raise_from = set()
+        self.return_from = set()
+
+    def _process_exits(self, exits, add_arc, from_set):
+        """Helper to process the four kinds of exits."""
+        for xit in exits:
+            add_arc(xit.lineno, self.start, xit.cause)
+        from_set.update(exits)
+        return True
+
+    def process_break_exits(self, exits, add_arc):
+        return self._process_exits(exits, add_arc, self.break_from)
+
+    def process_continue_exits(self, exits, add_arc):
+        return self._process_exits(exits, add_arc, self.continue_from)
+
+    def process_raise_exits(self, exits, add_arc):
+        return self._process_exits(exits, add_arc, self.raise_from)
+
+    def process_return_exits(self, exits, add_arc):
+        return self._process_exits(exits, add_arc, self.return_from)
 
 
 class ArcStart(collections.namedtuple("Arc", "lineno, cause")):
@@ -731,7 +768,7 @@ class AstArcAnalyzer:
             # statement), or it's something we overlooked.
             if env.TESTING:
                 if node_name not in self.OK_TO_DEFAULT:
-                    raise Exception(f"*** Unhandled: {node}")
+                    raise Exception(f"*** Unhandled: {node}")       # pragma: only failure
 
             # Default for simple statements: one exit from this node.
             return {ArcStart(self.line_for_node(node))}
@@ -865,14 +902,14 @@ class AstArcAnalyzer:
     @contract(exits='ArcStarts')
     def process_break_exits(self, exits):
         """Add arcs due to jumps from `exits` being breaks."""
-        for block in self.nearest_blocks():
+        for block in self.nearest_blocks():                         # pragma: always breaks
             if block.process_break_exits(exits, self.add_arc):
                 break
 
     @contract(exits='ArcStarts')
     def process_continue_exits(self, exits):
         """Add arcs due to jumps from `exits` being continues."""
-        for block in self.nearest_blocks():
+        for block in self.nearest_blocks():                         # pragma: always breaks
             if block.process_continue_exits(exits, self.add_arc):
                 break
 
@@ -886,7 +923,7 @@ class AstArcAnalyzer:
     @contract(exits='ArcStarts')
     def process_return_exits(self, exits):
         """Add arcs due to jumps from `exits` being returns."""
-        for block in self.nearest_blocks():
+        for block in self.nearest_blocks():                         # pragma: always breaks
             if block.process_return_exits(exits, self.add_arc):
                 break
 
@@ -1014,6 +1051,9 @@ class AstArcAnalyzer:
         else:
             final_start = None
 
+        # This is true by virtue of Python syntax: have to have either except
+        # or finally, or both.
+        assert handler_start is not None or final_start is not None
         try_block = TryBlock(handler_start, final_start)
         self.block_stack.append(try_block)
 
@@ -1159,7 +1199,32 @@ class AstArcAnalyzer:
     @contract(returns='ArcStarts')
     def _handle__With(self, node):
         start = self.line_for_node(node)
+        if env.PYBEHAVIOR.exit_through_with:
+            self.block_stack.append(WithBlock(start=start))
         exits = self.add_body_arcs(node.body, from_start=ArcStart(start))
+        if env.PYBEHAVIOR.exit_through_with:
+            with_block = self.block_stack.pop()
+            with_exit = {ArcStart(start)}
+            if exits:
+                for xit in exits:
+                    self.add_arc(xit.lineno, start)
+                exits = with_exit
+            if with_block.break_from:
+                self.process_break_exits(
+                    self._combine_finally_starts(with_block.break_from, with_exit)
+                    )
+            if with_block.continue_from:
+                self.process_continue_exits(
+                    self._combine_finally_starts(with_block.continue_from, with_exit)
+                    )
+            if with_block.raise_from:
+                self.process_raise_exits(
+                    self._combine_finally_starts(with_block.raise_from, with_exit)
+                    )
+            if with_block.return_from:
+                self.process_return_exits(
+                    self._combine_finally_starts(with_block.return_from, with_exit)
+                    )
         return exits
 
     _handle__AsyncWith = _handle__With
