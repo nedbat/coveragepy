@@ -1249,6 +1249,22 @@ class FailUnderTest(CoverageTest):
         expected = "Coverage failure: total of 42.86 is less than fail-under=42.88"
         assert expected == self.last_line_squeezed(out)
 
+    def test_report_99p9_is_not_ok(self):
+        # A file with 99.99% coverage:
+        self.make_file("ninety_nine_plus.py", """\
+            a = 1
+            """ + """
+            b = 2
+            """ * 20000 + """
+            if a > 3:
+                c = 4
+            """)
+        self.run_command("coverage run --source=. ninety_nine_plus.py")
+        st, out = self.run_command_status("coverage report --fail-under=100")
+        assert st == 2
+        expected = "Coverage failure: total of 99 is less than fail-under=100"
+        assert expected == self.last_line_squeezed(out)
+
 
 class FailUnderNoFilesTest(CoverageTest):
     """Test that nothing to report results in an error exit status."""

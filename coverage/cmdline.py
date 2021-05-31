@@ -20,7 +20,7 @@ from coverage.data import line_counts
 from coverage.debug import info_formatter, info_header, short_stack
 from coverage.exceptions import BaseCoverageException, ExceptionDuringRun, NoSource
 from coverage.execfile import PyRunner
-from coverage.results import should_fail_under
+from coverage.results import Numbers, should_fail_under
 
 
 class Opts:
@@ -655,8 +655,8 @@ class CoverageScript:
             fail_under = self.coverage.get_option("report:fail_under")
             precision = self.coverage.get_option("report:precision")
             if should_fail_under(total, fail_under, precision):
-                msg = "total of {total:.{p}f} is less than fail-under={fail_under:.{p}f}".format(
-                    total=total, fail_under=fail_under, p=precision,
+                msg = "total of {total} is less than fail-under={fail_under:.{p}f}".format(
+                    total=Numbers.display_covered(total), fail_under=fail_under, p=precision,
                 )
                 print("Coverage failure:", msg)
                 return FAIL_UNDER

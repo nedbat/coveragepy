@@ -68,6 +68,18 @@ class NumbersTest(CoverageTest):
         assert n10000.pc_covered_str == "0.0"
         Numbers.set_precision(0)
 
+    @pytest.mark.parametrize("prec, pc, res", [
+        (0, 47.87, "48"),
+        (1, 47.87, "47.9"),
+        (0, 99.995, "99"),
+        (2, 99.99995, "99.99"),
+    ])
+    def test_display_covered(self, prec, pc, res):
+        # Numbers._precision is a global, which is bad.
+        Numbers.set_precision(prec)
+        assert Numbers.display_covered(pc) == res
+        Numbers.set_precision(0)
+
     def test_covered_ratio(self):
         n = Numbers(n_files=1, n_statements=200, n_missing=47)
         assert n.ratio_covered == (153, 200)
