@@ -34,17 +34,15 @@ def run_command(cmd):
         cmd,
         shell=True,
         env=sub_env,
-        stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT
         )
     output, _ = proc.communicate()
     status = proc.returncode
 
     # Get the output, and canonicalize it to strings with newlines.
-    if not isinstance(output, str):
-        output = output.decode(output_encoding())
-    output = output.replace('\r', '')
-
+    output = output.decode(output_encoding()).replace("\r", "")
     return status, output
 
 
