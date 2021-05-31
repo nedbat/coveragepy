@@ -1404,7 +1404,7 @@ def find_writable_pth_directory():
         with open(try_it, "w") as f:
             try:
                 f.write("foo")
-            except OSError:              # pragma: cant happen
+            except OSError:                         # pragma: cant happen
                 continue
 
         os.remove(try_it)
@@ -1422,7 +1422,7 @@ def persistent_remove(path):
     while tries:                                    # pragma: part covered
         try:
             os.remove(path)
-        except OSError:
+        except OSError:                             # pragma: not covered
             tries -= 1
             time.sleep(.05)
         else:
