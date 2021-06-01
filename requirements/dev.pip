@@ -14,16 +14,17 @@ tox
 -r pytest.pip
 
 # for linting.
-greenlet==1.0.0
-astroid==2.5.6
-pylint==2.8.2
+greenlet==1.1.0
+# pylint is now tightly pinning astroid: https://github.com/PyCQA/pylint/issues/4527
+#astroid==2.5.6
+pylint==2.8.3
 check-manifest==0.46
 readme_renderer==29.0
 
 # for kitting.
 requests==2.25.1
 twine==3.4.1
-libsass==0.20.1
+libsass==0.21.0
 
 # Just so I have a debugger if I want it.
-pudb==2020.1
+pudb==2021.1
