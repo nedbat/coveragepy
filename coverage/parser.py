@@ -629,7 +629,7 @@ class AstArcAnalyzer:
     # The node types that just flow to the next node with no complications.
     OK_TO_DEFAULT = {
         "Assign", "Assert", "AugAssign", "Delete", "Exec", "Expr", "Global",
-        "Import", "ImportFrom", "Nonlocal", "Pass", "Print",
+        "Import", "ImportFrom", "Nonlocal", "Pass",
     }
 
     @contract(returns='ArcStarts')
@@ -1082,31 +1082,6 @@ class AstArcAnalyzer:
         cause = " or ".join(causes)
         exits = {ArcStart(xit.lineno, cause) for xit in exits}
         return exits
-
-    @contract(returns='ArcStarts')
-    def _handle__TryExcept(self, node):
-        # Python 2.7 uses separate TryExcept and TryFinally nodes. If we get
-        # TryExcept, it means there was no finally, so fake it, and treat as
-        # a general Try node.
-        node.finalbody = []
-        return self._handle__Try(node)
-
-    @contract(returns='ArcStarts')
-    def _handle__TryFinally(self, node):
-        # Python 2.7 uses separate TryExcept and TryFinally nodes. If we get
-        # TryFinally, see if there's a TryExcept nested inside. If so, merge
-        # them. Otherwise, fake fields to complete a Try node.
-        node.handlers = []
-        node.orelse = []
-
-        first = node.body[0]
-        if first.__class__.__name__ == "TryExcept" and node.lineno == first.lineno:
-            assert len(node.body) == 1
-            node.body = first.body
-            node.handlers = first.handlers
-            node.orelse = first.orelse
-
-        return self._handle__Try(node)
 
     @contract(returns='ArcStarts')
     def _handle__While(self, node):
