@@ -435,7 +435,34 @@ class ByteParser:
 # AST analysis
 #
 
-class LoopBlock:
+class BlockBase:
+    """
+    Blocks need to handle various exiting statements in their own ways.
+
+    All of these methods take a list of exits, and a callable `add_arc`
+    function that they can use to add arcs if needed.  They return True if the
+    exits are handled, or False if the search should continue up the block
+    stack.
+    """
+    # pylint: disable=unused-argument
+    def process_break_exits(self, exits, add_arc):
+        """Process break exits."""
+        return False
+
+    def process_continue_exits(self, exits, add_arc):
+        """Process continue exits."""
+        return False
+
+    def process_raise_exits(self, exits, add_arc):
+        """Process raise exits."""
+        return False
+
+    def process_return_exits(self, exits, add_arc):
+        """Process return exits."""
+        return False
+
+
+class LoopBlock(BlockBase):
     """A block on the block stack representing a `for` or `while` loop."""
     @contract(start=int)
     def __init__(self, start):
@@ -444,8 +471,17 @@ class LoopBlock:
         # A set of ArcStarts, the arcs from break statements exiting this loop.
         self.break_exits = set()
 
+    def process_break_exits(self, exits, add_arc):
+        self.break_exits.update(exits)
+        return True
 
-class FunctionBlock:
+    def process_continue_exits(self, exits, add_arc):
+        for xit in exits:
+            add_arc(xit.lineno, self.start, xit.cause)
+        return True
+
+
+class FunctionBlock(BlockBase):
     """A block on the block stack representing a function definition."""
     @contract(start=int, name=str)
     def __init__(self, start, name):
@@ -454,8 +490,24 @@ class FunctionBlock:
         # The name of the function.
         self.name = name
 
+    def process_raise_exits(self, exits, add_arc):
+        for xit in exits:
+            add_arc(
+                xit.lineno, -self.start, xit.cause,
+                f"didn't except from function {self.name!r}",
+            )
+        return True
 
-class TryBlock:
+    def process_return_exits(self, exits, add_arc):
+        for xit in exits:
+            add_arc(
+                xit.lineno, -self.start, xit.cause,
+                f"didn't return from function {self.name!r}",
+            )
+        return True
+
+
+class TryBlock(BlockBase):
     """A block on the block stack representing a `try` block."""
     @contract(handler_start='int|None', final_start='int|None')
     def __init__(self, handler_start, final_start):
@@ -470,6 +522,34 @@ class TryBlock:
         self.continue_from = set()
         self.return_from = set()
         self.raise_from = set()
+
+    def process_break_exits(self, exits, add_arc):
+        if self.final_start is not None:
+            self.break_from.update(exits)
+            return True
+        return False
+
+    def process_continue_exits(self, exits, add_arc):
+        if self.final_start is not None:
+            self.continue_from.update(exits)
+            return True
+        return False
+
+    def process_raise_exits(self, exits, add_arc):
+        if self.handler_start is not None:
+            for xit in exits:
+                add_arc(xit.lineno, self.handler_start, xit.cause)
+            return True
+        elif self.final_start is not None:
+            self.raise_from.update(exits)
+            return True
+        return False
+
+    def process_return_exits(self, exits, add_arc):
+        if self.final_start is not None:
+            self.return_from.update(exits)
+            return True
+        return False
 
 
 class ArcStart(collections.namedtuple("Arc", "lineno, cause")):
@@ -794,60 +874,29 @@ class AstArcAnalyzer:
     def process_break_exits(self, exits):
         """Add arcs due to jumps from `exits` being breaks."""
         for block in self.nearest_blocks():
-            if isinstance(block, LoopBlock):
-                block.break_exits.update(exits)
-                break
-            elif isinstance(block, TryBlock) and block.final_start is not None:
-                block.break_from.update(exits)
+            if block.process_break_exits(exits, self.add_arc):
                 break
 
     @contract(exits='ArcStarts')
     def process_continue_exits(self, exits):
         """Add arcs due to jumps from `exits` being continues."""
         for block in self.nearest_blocks():
-            if isinstance(block, LoopBlock):
-                for xit in exits:
-                    self.add_arc(xit.lineno, block.start, xit.cause)
-                break
-            elif isinstance(block, TryBlock) and block.final_start is not None:
-                block.continue_from.update(exits)
+            if block.process_continue_exits(exits, self.add_arc):
                 break
 
     @contract(exits='ArcStarts')
     def process_raise_exits(self, exits):
         """Add arcs due to jumps from `exits` being raises."""
         for block in self.nearest_blocks():
-            if isinstance(block, TryBlock):
-                if block.handler_start is not None:
-                    for xit in exits:
-                        self.add_arc(xit.lineno, block.handler_start, xit.cause)
-                    break
-                elif block.final_start is not None:
-                    block.raise_from.update(exits)
-                    break
-            elif isinstance(block, FunctionBlock):
-                for xit in exits:
-                    self.add_arc(
-                        xit.lineno, -block.start, xit.cause,
-                        f"didn't except from function {block.name!r}",
-                    )
+            if block.process_raise_exits(exits, self.add_arc):
                 break
 
     @contract(exits='ArcStarts')
     def process_return_exits(self, exits):
         """Add arcs due to jumps from `exits` being returns."""
         for block in self.nearest_blocks():
-            if isinstance(block, TryBlock) and block.final_start is not None:
-                block.return_from.update(exits)
+            if block.process_return_exits(exits, self.add_arc):
                 break
-            elif isinstance(block, FunctionBlock):
-                for xit in exits:
-                    self.add_arc(
-                        xit.lineno, -block.start, xit.cause,
-                        f"didn't return from function {block.name!r}",
-                    )
-                break
-
 
     # Handlers: _handle__*
     #
