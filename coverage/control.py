@@ -32,7 +32,7 @@ from coverage.plugin import FileReporter
 from coverage.plugin_support import Plugins
 from coverage.python import PythonFileReporter
 from coverage.report import render_report
-from coverage.results import Analysis, Numbers
+from coverage.results import Analysis
 from coverage.summary import SummaryReporter
 from coverage.xmlreport import XmlReporter
 
@@ -799,14 +799,13 @@ class Coverage:
         """
         # All reporting comes through here, so do reporting initialization.
         self._init()
-        Numbers.set_precision(self.config.precision)
         self._post_init()
 
         data = self.get_data()
         if not isinstance(it, FileReporter):
             it = self._get_file_reporter(it)
 
-        return Analysis(data, it, self._file_mapper)
+        return Analysis(data, self.config.precision, it, self._file_mapper)
 
     def _get_file_reporter(self, morf):
         """Get a FileReporter for a module or file name."""

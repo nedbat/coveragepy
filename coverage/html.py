@@ -195,7 +195,7 @@ class HtmlReporter:
         self.all_files_nums = []
         self.incr = IncrementalChecker(self.directory)
         self.datagen = HtmlDataGeneration(self.coverage)
-        self.totals = Numbers()
+        self.totals = Numbers(precision=self.config.precision)
 
         self.template_globals = {
             # Functions available in the templates.

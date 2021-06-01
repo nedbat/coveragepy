@@ -21,7 +21,7 @@ class SummaryReporter:
         self.fr_analysis = []
         self.skipped_count = 0
         self.empty_count = 0
-        self.total = Numbers()
+        self.total = Numbers(precision=self.config.precision)
         self.fmt_err = "%s   %s: %s"
 
     def writeout(self, line):
@@ -53,7 +53,7 @@ class SummaryReporter:
         if self.branches:
             header += " Branch BrPart"
             fmt_coverage += " %6d %6d"
-        width100 = Numbers.pc_str_width()
+        width100 = Numbers(precision=self.config.precision).pc_str_width()
         header += "%*s" % (width100+4, "Cover")
         fmt_coverage += "%%%ds%%%%" % (width100+3,)
         if self.config.show_missing:

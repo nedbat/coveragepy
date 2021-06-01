@@ -43,30 +43,18 @@ class NumbersTest(CoverageTest):
         assert n3.n_missing == 28
         assert round(abs(n3.pc_covered-86.666666666), 7) == 0
 
-    def test_pc_covered_str(self):
-        # Numbers._precision is a global, which is bad.
-        Numbers.set_precision(0)
-        n0 = Numbers(n_files=1, n_statements=1000, n_missing=0)
-        n1 = Numbers(n_files=1, n_statements=1000, n_missing=1)
-        n999 = Numbers(n_files=1, n_statements=1000, n_missing=999)
-        n1000 = Numbers(n_files=1, n_statements=1000, n_missing=1000)
-        assert n0.pc_covered_str == "100"
-        assert n1.pc_covered_str == "99"
-        assert n999.pc_covered_str == "1"
-        assert n1000.pc_covered_str == "0"
-
-    def test_pc_covered_str_precision(self):
-        # Numbers._precision is a global, which is bad.
-        Numbers.set_precision(1)
-        n0 = Numbers(n_files=1, n_statements=10000, n_missing=0)
-        n1 = Numbers(n_files=1, n_statements=10000, n_missing=1)
-        n9999 = Numbers(n_files=1, n_statements=10000, n_missing=9999)
-        n10000 = Numbers(n_files=1, n_statements=10000, n_missing=10000)
-        assert n0.pc_covered_str == "100.0"
-        assert n1.pc_covered_str == "99.9"
-        assert n9999.pc_covered_str == "0.1"
-        assert n10000.pc_covered_str == "0.0"
-        Numbers.set_precision(0)
+    @pytest.mark.parametrize("kwargs, res", [
+        (dict(n_files=1, n_statements=1000, n_missing=0), "100"),
+        (dict(n_files=1, n_statements=1000, n_missing=1), "99"),
+        (dict(n_files=1, n_statements=1000, n_missing=999), "1"),
+        (dict(n_files=1, n_statements=1000, n_missing=1000), "0"),
+        (dict(precision=1, n_files=1, n_statements=10000, n_missing=0), "100.0"),
+        (dict(precision=1, n_files=1, n_statements=10000, n_missing=1), "99.9"),
+        (dict(precision=1, n_files=1, n_statements=10000, n_missing=9999), "0.1"),
+        (dict(precision=1, n_files=1, n_statements=10000, n_missing=10000), "0.0"),
+    ])
+    def test_pc_covered_str(self, kwargs, res):
+        assert Numbers(**kwargs).pc_covered_str == res
 
     @pytest.mark.parametrize("prec, pc, res", [
         (0, 47.87, "48"),
@@ -75,10 +63,7 @@ class NumbersTest(CoverageTest):
         (2, 99.99995, "99.99"),
     ])
     def test_display_covered(self, prec, pc, res):
-        # Numbers._precision is a global, which is bad.
-        Numbers.set_precision(prec)
-        assert Numbers.display_covered(pc) == res
-        Numbers.set_precision(0)
+        assert Numbers(precision=prec).display_covered(pc) == res
 
     def test_covered_ratio(self):
         n = Numbers(n_files=1, n_statements=200, n_missing=47)

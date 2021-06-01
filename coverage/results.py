@@ -13,7 +13,7 @@ from coverage.misc import contract, nice_pair
 class Analysis:
     """The results of analyzing a FileReporter."""
 
-    def __init__(self, data, file_reporter, file_mapper):
+    def __init__(self, data, precision, file_reporter, file_mapper):
         self.data = data
         self.file_reporter = file_reporter
         self.filename = file_mapper(self.file_reporter.filename)
@@ -41,6 +41,7 @@ class Analysis:
             n_branches = n_partial_branches = n_missing_branches = 0
 
         self.numbers = Numbers(
+            precision=precision,
             n_files=1,
             n_statements=len(self.statements),
             n_excluded=len(self.excluded),
@@ -158,15 +159,16 @@ class Numbers(SimpleReprMixin):
     up statistics across files.
 
     """
-    # A global to determine the precision on coverage percentages, the number
-    # of decimal places.
-    _precision = 0
-    _near0 = 1.0              # These will change when _precision is changed.
-    _near100 = 99.0
 
-    def __init__(self, n_files=0, n_statements=0, n_excluded=0, n_missing=0,
-                    n_branches=0, n_partial_branches=0, n_missing_branches=0
-                    ):
+    def __init__(self,
+            precision=0,
+            n_files=0, n_statements=0, n_excluded=0, n_missing=0,
+            n_branches=0, n_partial_branches=0, n_missing_branches=0
+            ):
+        assert 0 <= precision < 10
+        self._precision = precision
+        self._near0 = 1.0 / 10**precision
+        self._near100 = 100.0 - self._near0
         self.n_files = n_files
         self.n_statements = n_statements
         self.n_excluded = n_excluded
@@ -178,17 +180,10 @@ class Numbers(SimpleReprMixin):
     def init_args(self):
         """Return a list for __init__(*args) to recreate this object."""
         return [
+            self._precision,
             self.n_files, self.n_statements, self.n_excluded, self.n_missing,
             self.n_branches, self.n_partial_branches, self.n_missing_branches,
         ]
-
-    @classmethod
-    def set_precision(cls, precision):
-        """Set the number of decimal places used to report percentages."""
-        assert 0 <= precision < 10
-        cls._precision = precision
-        cls._near0 = 1.0 / 10**precision
-        cls._near100 = 100.0 - cls._near0
 
     @property
     def n_executed(self):
@@ -221,8 +216,7 @@ class Numbers(SimpleReprMixin):
         """
         return self.display_covered(self.pc_covered)
 
-    @classmethod
-    def display_covered(cls, pc):
+    def display_covered(self, pc):
         """Return a displayable total percentage, as a string.
 
         Note that "0" is only returned when the value is truly zero, and "100"
@@ -230,20 +224,19 @@ class Numbers(SimpleReprMixin):
         result in either "0" or "100".
 
         """
-        if 0 < pc < cls._near0:
-            pc = cls._near0
-        elif cls._near100 < pc < 100:
-            pc = cls._near100
+        if 0 < pc < self._near0:
+            pc = self._near0
+        elif self._near100 < pc < 100:
+            pc = self._near100
         else:
-            pc = round(pc, cls._precision)
-        return "%.*f" % (cls._precision, pc)
+            pc = round(pc, self._precision)
+        return "%.*f" % (self._precision, pc)
 
-    @classmethod
-    def pc_str_width(cls):
+    def pc_str_width(self):
         """How many characters wide can pc_covered_str be?"""
         width = 3   # "100"
-        if cls._precision > 0:
-            width += 1 + cls._precision
+        if self._precision > 0:
+            width += 1 + self._precision
         return width
 
     @property
@@ -254,7 +247,7 @@ class Numbers(SimpleReprMixin):
         return numerator, denominator
 
     def __add__(self, other):
-        nums = Numbers()
+        nums = Numbers(precision=self._precision)
         nums.n_files = self.n_files + other.n_files
         nums.n_statements = self.n_statements + other.n_statements
         nums.n_excluded = self.n_excluded + other.n_excluded

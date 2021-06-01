@@ -17,7 +17,7 @@ class JsonReporter:
     def __init__(self, coverage):
         self.coverage = coverage
         self.config = self.coverage.config
-        self.total = Numbers()
+        self.total = Numbers(self.config.precision)
         self.report_data = {}
 
     def report(self, morfs, outfile=None):
