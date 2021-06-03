@@ -1036,8 +1036,8 @@ class Coverage:
             return entries
 
         info = [
-            ('version', covmod.__version__),
-            ('coverage', covmod.__file__),
+            ('coverage_version', covmod.__version__),
+            ('coverage_module', covmod.__file__),
             ('tracer', self._collector.tracer_name() if self._collector else "-none-"),
             ('CTracer', 'available' if CTracer else "unavailable"),
             ('plugins.file_tracers', plugin_info(self._plugins.file_tracers)),
