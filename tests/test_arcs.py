@@ -1659,6 +1659,21 @@ class AsyncTest(CoverageTest):
         )
 
 
+class AnnotationTest(CoverageTest):
+    """Tests using type annotations."""
+
+    def test_annotations(self):
+        self.check_coverage("""\
+            def f(x:str, y:int) -> str:
+                a:int = 2
+                return f"{x}, {y}, {a}, 3"
+            print(f("x", 4))
+            """,
+            arcz=".1 .2 23 3.  14 4.",
+        )
+        assert self.stdout() == "x, 4, 2, 3\n"
+
+
 class ExcludeTest(CoverageTest):
     """Tests of exclusions to indicate known partial branches."""
 

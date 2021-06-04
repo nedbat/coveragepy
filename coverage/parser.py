@@ -708,7 +708,7 @@ class AstArcAnalyzer:
 
     # The node types that just flow to the next node with no complications.
     OK_TO_DEFAULT = {
-        "Assign", "Assert", "AugAssign", "Delete", "Exec", "Expr", "Global",
+        "AnnAssign", "Assign", "Assert", "AugAssign", "Delete", "Expr", "Global",
         "Import", "ImportFrom", "Nonlocal", "Pass",
     }
 
@@ -904,6 +904,9 @@ class AstArcAnalyzer:
     # also call self.add_arc to record arcs they find.  These functions mirror
     # the Python semantics of each syntactic construct.  See the docstring
     # for add_arcs to understand the concept of exits from a node.
+    #
+    # Every node type that represents a statement should have a handler, or it
+    # should be listed in OK_TO_DEFAULT.
 
     @contract(returns='ArcStarts')
     def _handle__Break(self, node):
