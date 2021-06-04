@@ -1169,6 +1169,11 @@ class AstArcAnalyzer:
 
     _handle__AsyncWith = _handle__With
 
+    # Code object dispatchers: _code_object__*
+    #
+    # These methods are used by analyze() as the start of the analysis.
+    # There is one for each construct with a code object.
+
     def _code_object__Module(self, node):
         start = self.line_for_node(node)
         if node.body:
@@ -1199,22 +1204,19 @@ class AstArcAnalyzer:
                 f"didn't exit the body of class {node.name!r}",
             )
 
-    def _make_oneline_code_method(noun):     # pylint: disable=no-self-argument
-        """A function to make methods for online callable _code_object__ methods."""
-        def _code_object__oneline_callable(self, node):
+    def _make_expression_code_method(noun):                     # pylint: disable=no-self-argument
+        """A function to make methods for expression-based callable _code_object__ methods."""
+        def _code_object__expression_callable(self, node):
             start = self.line_for_node(node)
             self.add_arc(-start, start, None, f"didn't run the {noun} on line {start}")
-            self.add_arc(
-                start, -start, None,
-                f"didn't finish the {noun} on line {start}",
-            )
-        return _code_object__oneline_callable
+            self.add_arc(start, -start, None, f"didn't finish the {noun} on line {start}")
+        return _code_object__expression_callable
 
-    _code_object__Lambda = _make_oneline_code_method("lambda")
-    _code_object__GeneratorExp = _make_oneline_code_method("generator expression")
-    _code_object__DictComp = _make_oneline_code_method("dictionary comprehension")
-    _code_object__SetComp = _make_oneline_code_method("set comprehension")
-    _code_object__ListComp = _make_oneline_code_method("list comprehension")
+    _code_object__Lambda = _make_expression_code_method("lambda")
+    _code_object__GeneratorExp = _make_expression_code_method("generator expression")
+    _code_object__DictComp = _make_expression_code_method("dictionary comprehension")
+    _code_object__SetComp = _make_expression_code_method("set comprehension")
+    _code_object__ListComp = _make_expression_code_method("list comprehension")
 
 
 if AST_DUMP:            # pragma: debugging
