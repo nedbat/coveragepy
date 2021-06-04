@@ -29,6 +29,7 @@ def trace(frame, event, arg):
 
     return trace
 
+print(sys.version)
 the_program = sys.argv[1]
 
 code = open(the_program).read()
