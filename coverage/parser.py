@@ -735,11 +735,10 @@ class AstArcAnalyzer:
             return handler(node)
         else:
             # No handler: either it's something that's ok to default (a simple
-            # statement), or it's something we overlooked. Change this 0 to 1
-            # to see if it's overlooked.
-            if 0:
+            # statement), or it's something we overlooked.
+            if env.TESTING:
                 if node_name not in self.OK_TO_DEFAULT:
-                    print(f"*** Unhandled: {node}")
+                    raise Exception(f"*** Unhandled: {node}")
 
             # Default for simple statements: one exit from this node.
             return {ArcStart(self.line_for_node(node))}
