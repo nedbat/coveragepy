@@ -82,17 +82,9 @@ class PythonParser:
         # multi-line statements.
         self._multiline = {}
 
-        # Lazily-created ByteParser, arc data, and missing arc descriptions.
-        self._byte_parser = None
+        # Lazily-created arc data, and missing arc descriptions.
         self._all_arcs = None
         self._missing_arc_fragments = None
-
-    @property
-    def byte_parser(self):
-        """Create a ByteParser on demand."""
-        if not self._byte_parser:
-            self._byte_parser = ByteParser(self.text, filename=self.filename)
-        return self._byte_parser
 
     def lines_matching(self, *regexes):
         """Find the lines matching one of a list of regexes.
@@ -199,7 +191,8 @@ class PythonParser:
 
         # Find the starts of the executable statements.
         if not empty:
-            self.raw_statements.update(self.byte_parser._find_statements())
+            byte_parser = ByteParser(self.text, filename=self.filename)
+            self.raw_statements.update(byte_parser._find_statements())
 
         # The first line of modules can lie and say 1 always, even if the first
         # line of code is later. If so, map 1 to the actual first line of the
