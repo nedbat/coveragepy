@@ -3,11 +3,13 @@
 
 """Better tokenizing for coverage.py."""
 
+import ast
 import keyword
 import re
 import token
 import tokenize
 
+from coverage import env
 from coverage.misc import contract
 
 
@@ -66,6 +68,21 @@ def phys_tokens(toks):
         last_lineno = elineno
 
 
+class MatchCaseFinder(ast.NodeVisitor):
+    """Helper for finding match/case lines."""
+    def __init__(self, source):
+        # This will be the set of line numbers that start match or case statements.
+        self.match_case_lines = set()
+        self.visit(ast.parse(source))
+
+    def visit_Match(self, node):
+        """Invoked by ast.NodeVisitor.visit"""
+        self.match_case_lines.add(node.lineno)
+        for case in node.cases:
+            self.match_case_lines.add(case.pattern.lineno)
+        self.generic_visit(node)
+
+
 @contract(source='unicode')
 def source_token_lines(source):
     """Generate a series of lines, one for each line in `source`.
@@ -90,7 +107,10 @@ def source_token_lines(source):
     source = source.expandtabs(8).replace('\r\n', '\n')
     tokgen = generate_tokens(source)
 
-    for ttype, ttext, (_, scol), (_, ecol), _ in phys_tokens(tokgen):
+    if env.PYBEHAVIOR.soft_keywords:
+        match_case_lines = MatchCaseFinder(source).match_case_lines
+
+    for ttype, ttext, (sline, scol), (_, ecol), _ in phys_tokens(tokgen):
         mark_start = True
         for part in re.split('(\n)', ttext):
             if part == '\n':
@@ -107,8 +127,21 @@ def source_token_lines(source):
                     line.append(("ws", " " * (scol - col)))
                     mark_start = False
                 tok_class = tokenize.tok_name.get(ttype, 'xx').lower()[:3]
-                if ttype == token.NAME and keyword.iskeyword(ttext):
-                    tok_class = "key"
+                if ttype == token.NAME:
+                    if keyword.iskeyword(ttext):
+                        # Hard keywords are always keywords.
+                        tok_class = "key"
+                    elif env.PYBEHAVIOR.soft_keywords and keyword.issoftkeyword(ttext):
+                        # Soft keywords appear at the start of the line, on lines that start
+                        # match or case statements.
+                        if len(line) == 0:
+                            is_start_of_line = True
+                        elif (len(line) == 1) and line[0][0] == "ws":
+                            is_start_of_line = True
+                        else:
+                            is_start_of_line = False
+                        if is_start_of_line and sline in match_case_lines:
+                            tok_class = "key"
                 line.append((tok_class, part))
                 mark_end = True
             scol = 0

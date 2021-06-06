@@ -105,6 +105,10 @@ class PYBEHAVIOR:
     # Match-case construct.
     match_case = (PYVERSION >= (3, 10))
 
+    # Some words are keywords in some places, identifiers in other places.
+    soft_keywords = (PYVERSION >= (3, 10))
+
+
 # Coverage.py specifics.
 
 # Are we using the C-implemented trace function?
