@@ -1198,6 +1198,57 @@ class YieldTest(CoverageTest):
         )
 
 
+@pytest.mark.skipif(not env.PYBEHAVIOR.match_case, reason="Match-case is new in 3.10")
+class MatchCaseTest(CoverageTest):
+    """Tests of match-case."""
+    def test_match_case_with_default(self):
+        self.check_coverage("""\
+            for command in ["huh", "go home", "go n"]:
+                match command.split():
+                    case ["go", direction] if direction in "nesw":
+                        match = f"go: {direction}"
+                    case ["go", _]:
+                        match = "no go"
+                    case _:
+                        match = "default"
+                print(match)
+            """,
+            arcz=".1 12 23 34 49 35 56 69 58 89 91 1.",
+        )
+        assert self.stdout() == "default\nno go\ngo: n\n"
+
+    def test_match_case_with_wildcard(self):
+        self.check_coverage("""\
+            for command in ["huh", "go home", "go n"]:
+                match command.split():
+                    case ["go", direction] if direction in "nesw":
+                        match = f"go: {direction}"
+                    case ["go", _]:
+                        match = "no go"
+                    case x:
+                        match = f"default: {x}"
+                print(match)
+            """,
+            arcz=".1 12 23 34 49 35 56 69 57 78 89 91 1.",
+        )
+        assert self.stdout() == "default: ['huh']\nno go\ngo: n\n"
+
+    def test_match_case_without_wildcard(self):
+        self.check_coverage("""\
+            match = None
+            for command in ["huh", "go home", "go n"]:
+                match command.split():
+                    case ["go", direction] if direction in "nesw":
+                        match = f"go: {direction}"
+                    case ["go", _]:
+                        match = "no go"
+                print(match)
+            """,
+            arcz=".1 12 23 34 45 58 46 78 67 68 82 2.",
+        )
+        assert self.stdout() == "None\nno go\ngo: n\n"
+
+
 class OptimizedIfTest(CoverageTest):
     """Tests of if statements being optimized away."""
 

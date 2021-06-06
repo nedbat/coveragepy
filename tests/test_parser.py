@@ -394,6 +394,24 @@ class ParserMissingArcDescriptionTest(CoverageTest):
             """)
         assert parser.missing_arc_description(2, -3) == "line 3 didn't finish the lambda on line 3"
 
+    @pytest.mark.skipif(not env.PYBEHAVIOR.match_case, reason="Match-case is new in 3.10")
+    def test_match_case_with_default(self):
+        parser = self.parse_text("""\
+            for command in ["huh", "go home", "go n"]:
+                match command.split():
+                    case ["go", direction] if direction in "nesw":
+                        match = f"go: {direction}"
+                    case ["go", _]:
+                        match = "no go"
+                print(match)
+            """)
+        assert parser.missing_arc_description(3, 4) == (
+            "line 3 didn't jump to line 4, because the pattern on line 3 never matched"
+            )
+        assert parser.missing_arc_description(3, 5) == (
+            "line 3 didn't jump to line 5, because the pattern on line 3 always matched"
+            )
+
 
 class ParserFileTest(CoverageTest):
     """Tests for coverage.py's code parsing from files."""

@@ -102,6 +102,9 @@ class PYBEHAVIOR:
     # When leaving a with-block, do we visit the with-line again for the exit?
     exit_through_with = (PYVERSION >= (3, 10, 0, 'beta'))
 
+    # Match-case construct.
+    match_case = (PYVERSION >= (3, 10))
+
 # Coverage.py specifics.
 
 # Are we using the C-implemented trace function?
