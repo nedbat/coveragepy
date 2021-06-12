@@ -55,8 +55,8 @@
     - upload kits:
         $ make kit_upload
 - Tag the tree
-    $ git tag 3.0.1
-    $ git push --tags
+    $ git tag -a 3.0.1
+    $ git push --all --follow-tags
 - Bump version:
     - coverage/version.py
         - increment version number
@@ -75,7 +75,7 @@
     - IF NOT PRE-RELEASE:
         - update git "stable" branch to point to latest release
             $ git branch -f stable <latest-tag>
-            $ git push --all
+            $ git push --all --follow-tags
         - @ https://readthedocs.org/projects/coverage/builds/
             - wait for the new tag build to finish successfully.
         - @ https://readthedocs.org/dashboard/coverage/advanced/
