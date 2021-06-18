@@ -234,7 +234,9 @@ class Args:
     DEBUG_TOPIC_CHOICES = [
         "data", "sys", "config", "premain",
     ]
-    topic = Argument("topic", choices=DEBUG_TOPIC_CHOICES, metavar="TOPIC")
+    topic = Argument(
+        "topic", choices=DEBUG_TOPIC_CHOICES, nargs="+", metavar="TOPIC"
+    )
     morfs = Argument(
         "modules", nargs="*", metavar="MODULES")
 
@@ -436,7 +438,8 @@ class CoverageScript:
             )
 
         if options.action == "debug":
-            return self.do_debug(options.topic)
+            self.do_debug(options.topic)
+            return OK
 
         elif options.action == "erase":
             self.coverage.erase()
@@ -588,14 +591,10 @@ class CoverageScript:
 
         return OK
 
-    def do_debug(self, args):
+    def do_debug(self, topics):
         """Implementation of 'coverage debug'."""
 
-        if not args:
-            show_help("What information would you like: config, data, sys, premain?")
-            return ERR
-
-        for info in args:
+        for info in topics:
             if info == 'sys':
                 sys_info = self.coverage.sys_info()
                 print(info_header("sys"))
@@ -627,9 +626,6 @@ class CoverageScript:
             elif info == "premain":
                 print(info_header("premain"))
                 print(short_stack())
-            else:
-                show_help(f"Don't know what you mean by {info!r}")
-                return ERR
 
         return OK
 
