@@ -219,6 +219,24 @@ class Args:
         help="A text string to use as the title on the HTML.",
     )
 
+    # positional arguments
+    pyfile = Argument(
+        "pyfile", metavar="PYFILE",
+        help="Command to launch"
+    )
+    options = Argument(
+        "options", nargs=argparse.REMAINDER, metavar="...",
+        help="All remaining parameters are passed to the command to launch"
+    )
+    files = Argument(
+        "files", nargs="*", metavar="FILES",
+        help="Files to combine")
+    DEBUG_TOPIC_CHOICES = [
+        "data", "sys", "config", "premain",
+    ]
+    topic = Argument("topic", choices=DEBUG_TOPIC_CHOICES, metavar="TOPIC")
+    morfs = Argument(
+        "modules", nargs="*", metavar="MODULES")
 
 
 def make_parser():
@@ -246,7 +264,7 @@ def make_parser():
             "with > and statements that are missed with !."
         ),
     )
-    Args.add_to(annotate, "directory", "ignore_errors", "include", "omit")
+    Args.add_to(annotate, "directory", "ignore_errors", "include", "omit", "morfs")
 
     combine = subparsers.add_parser(
         "combine",
@@ -260,9 +278,9 @@ def make_parser():
             "directory are combined."
         ),
     )
-    Args.add_to(combine, "append", "keep")
+    Args.add_to(combine, "append", "keep", "files")
 
-    subparsers.add_parser(
+    debug = subparsers.add_parser(
         "debug",
         help="Display information about the internals of coverage.py",
         description=(
@@ -275,15 +293,14 @@ def make_parser():
                 "'premain' to show what is calling coverage."
         ),
     )
+    Args.add_to(debug, "topic")
 
     subparsers.add_parser(
         "erase",
         help="Erase previously collected coverage data.",
+        description="Erase previously collected coverage data.",
     )
-    subparsers.add_parser(
-        "help",
-        help="Get help on using coverage.py.",
-    )
+
     html = subparsers.add_parser(
         "html",
         help="Create an HTML report.",
@@ -297,49 +314,66 @@ def make_parser():
         html,
         "contexts", "directory", "fail_under", "ignore_errors",
         "include", "omit", "precision", "show_contexts", "skip_covered",
-        "no_skip_covered", "skip_empty", "title"
+        "no_skip_covered", "skip_empty", "title", "morfs",
     )
 
     json = subparsers.add_parser(
         "json",
         help="Create a JSON report of coverage results.",
+        description="Create a JSON report of coverage results.",
     )
     Args.add_to(
         json,
         "contexts", "fail_under", "ignore_errors", "include", "omit",
-        "output_json", "json_pretty_print", "show_contexts"
+        "output_json", "json_pretty_print", "show_contexts", "morfs",
     )
 
     report = subparsers.add_parser(
         "report",
         help="Report coverage stats on modules.",
+        description="Report coverage stats on modules.",
     )
     Args.add_to(
         report,
         "contexts", "fail_under", "ignore_errors", "include", "omit",
         "precision", "sort", "show_missing", "skip_covered",
-        "no_skip_covered", "skip_empty"
+        "no_skip_covered", "skip_empty", "morfs",
     )
 
     run = subparsers.add_parser(
         "run",
         help="Run a Python program and measure code execution.",
+        description="Run a Python program and measure code execution.",
     )
     Args.add_to(
         run,
         "append", "branch", "concurrency", "context", "include", "module",
-        "omit", "pylib", "parallel_mode", "source", "timid"
+        "omit", "pylib", "parallel_mode", "source", "timid",
+        "pyfile", "options"
     )
 
     xml = subparsers.add_parser(
         "xml",
         help="Create an XML report of coverage results.",
+        description="Create an XML report of coverage results.",
     )
     Args.add_to(
         xml,
         "fail_under", "ignore_errors", "include", "omit", "output_xml",
-        "skip_empty"
+        "skip_empty", "morfs",
     )
+    help = subparsers.add_parser(
+        "help",
+        help="Get help on using coverage.py.",
+        description="Get help on using coverage.py.",
+    )
+    subcommands = subparsers.choices
+    help.add_argument(
+        "topic", nargs='?', choices=list(subcommands),
+        help="Get help on a specific subcommand"
+    )
+    # Storing the subparsers on the parser for easy access
+    parser.subcommands = subcommands
 
     return parser
 
