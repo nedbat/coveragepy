@@ -4,8 +4,8 @@
 """Command-line support for coverage.py."""
 
 
+import argparse
 import glob
-import optparse
 import os.path
 import shlex
 import sys
@@ -23,7 +23,17 @@ from coverage.execfile import PyRunner
 from coverage.results import Numbers, should_fail_under
 
 
-class Opts:
+class Argument:
+    """Store the definition of an argparse argument"""
+    def __init__(self, *args, **kwargs):
+        self.args = args
+        self.kwargs = kwargs
+
+    def add_to(self, parser: argparse.ArgumentParser):
+        parser.add_argument(*self.args, **self.kwargs)
+
+
+class Args:
     """A namespace class for individual options we'll build parsers from."""
 
     append = optparse.make_option(
