@@ -356,17 +356,13 @@ class CoverageScript:
         Returns 0 if all is well, 1 if something went wrong.
 
         """
-        # Collect the command-line options.
-        if not argv:
-            show_help(topic='minimum_help')
-            return OK
         parser = make_parser()
 
         options = parser.parse_args()
 
-        # Handle help and version.
-        if self.do_help(options, args, parser):
-            return OK
+        if options.action in [None, "help"]:
+            parser.print_help()
+            parser.exit()
 
         # Listify the list options.
         source = unshell_list(options.source)
