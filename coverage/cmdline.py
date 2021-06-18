@@ -63,10 +63,6 @@ class Args:
         '', '--context', action='store', metavar="LABEL",
         help="The context label to record for this coverage run.",
     )
-    debug = Argument(
-        '', '--debug', action='store', metavar="OPTS",
-        help="Debug options, separated by commas. [env: COVERAGE_DEBUG]",
-    )
     directory = Argument(
         '-d', '--directory', action='store', metavar="DIR",
         help="Write the output files to DIR.",
@@ -175,14 +171,6 @@ class Args:
             "reported coverage percentages."
         ),
     )
-    rcfile = Argument(
-        '', '--rcfile', action='store',
-        help=(
-            "Specify configuration file. "
-            "By default '.coveragerc', 'setup.cfg', 'tox.ini', and "
-            "'pyproject.toml' are tried. [env: COVERAGE_RCFILE]"
-        ),
-    )
     source = Argument(
         '', '--source', action='store', metavar="SRC1,SRC2,...",
         help="A list of directories or importable names of code to measure.",
@@ -197,10 +185,6 @@ class Args:
     title = Argument(
         '', '--title', action='store', metavar="TITLE",
         help="A text string to use as the title on the HTML.",
-    )
-    version = Argument(
-        '', '--version', action='store_true',
-        help="Display version information and exit.",
     )
 
 
@@ -495,6 +479,19 @@ def make_parser():
         description=f"{version}\n{description}",
         epilog="""Use "%(prog)s help <command>" for detailed help on any command."""
     )
+    parser.add_argument(
+        '--debug', action='store', metavar="OPTS",
+        help="Debug options, separated by commas. [env: COVERAGE_DEBUG]"
+    )
+    parser.add_argument(
+        '--rcfile', action='store',
+        help=(
+            "Specify configuration file. "
+            "By default '.coveragerc', 'setup.cfg', 'tox.ini', and "
+            "'pyproject.toml' are tried. [env: COVERAGE_RCFILE]"
+        ),
+    )
+    parser.add_argument('--version', action='version', version=version)
     return parser
 
 
