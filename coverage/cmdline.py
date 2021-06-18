@@ -446,7 +446,13 @@ class CoverageScript:
             return OK
 
         elif options.action == "run":
-            return self.do_run(options, [options.pyfile] + options.options)
+            message = self.do_run(options, [options.pyfile] + options.options)
+            if message:
+                parser.print_usage(file=sys.stderr)
+                print(message, file=sys.stderr)
+                return ERR
+            else:
+                return OK
 
         elif options.action == "combine":
             if options.append:
@@ -536,10 +542,6 @@ class CoverageScript:
         """Implementation of 'coverage run'."""
 
         if not args:
-            if options.module:
-                # Specified -m with nothing else.
-                show_help("No module specified for -m")
-                return ERR
             command_line = self.coverage.get_option("run:command_line")
             if command_line is not None:
                 args = shlex.split(command_line)
@@ -547,12 +549,10 @@ class CoverageScript:
                     options.module = True
                     args = args[1:]
         if not args:
-            show_help("Nothing to do.")
-            return ERR
+            return "Nothing to do."
 
         if options.append and self.coverage.get_option("run:parallel"):
-            show_help("Can't append to data files in parallel mode.")
-            return ERR
+            return "Can't append to data files in parallel mode."
 
         if options.concurrency == "multiprocessing":
             # Can't set other run-affecting command line options with
@@ -561,12 +561,11 @@ class CoverageScript:
                 # As it happens, all of these options have no default, meaning
                 # they will be None if they have not been specified.
                 if getattr(options, opt_name) is not None:
-                    show_help(
+                    return (
                         "Options affecting multiprocessing must only be specified "
                         "in a configuration file.\n"
                         "Remove --{} from the command line.".format(opt_name)
                     )
-                    return ERR
 
         runner = PyRunner(args, as_module=bool(options.module))
         runner.prepare()
@@ -587,7 +586,7 @@ class CoverageScript:
             if code_ran:
                 self.coverage.save()
 
-        return OK
+        return None
 
     def do_debug(self, topics):
         """Implementation of 'coverage debug'."""
