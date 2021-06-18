@@ -33,6 +33,15 @@ class Argument:
         parser.add_argument(*self.args, **self.kwargs)
 
 
+def version_string():
+    if CTracer is not None:
+        extension_modifier = 'with C extension'
+    else:
+        extension_modifier = 'without C extension'
+
+    return f"Coverage.py, version {coverage.__version__} {extension_modifier}"
+
+
 class Args:
     """A namespace class for individual options we'll build parsers from."""
 
@@ -41,6 +50,23 @@ class Args:
         for arg_name in args:
             arg = getattr(cls, arg_name)
             arg.add_to(parser)
+
+    # Global options
+    debug = Argument(
+        '--debug', action='store', metavar="OPTS",
+        help="Debug options, separated by commas. [env: COVERAGE_DEBUG]"
+    )
+    rcfile = Argument(
+        '--rcfile', action='store',
+        help=(
+            "Specify configuration file. "
+            "By default '.coveragerc', 'setup.cfg', 'tox.ini', and "
+            "'pyproject.toml' are tried. [env: COVERAGE_RCFILE]"
+        ),
+    )
+    version = Argument('--version', action='version', version=version_string())
+
+    # Subcommand options
 
     append = Argument(
         '-a', '--append', action='store_true',
@@ -194,14 +220,6 @@ class Args:
     )
 
 
-def version_string():
-    if CTracer is not None:
-        extension_modifier = 'with C extension'
-    else:
-        extension_modifier = 'without C extension'
-
-    return f"Coverage.py, version {coverage.__version__} {extension_modifier}"
-
 
 def make_parser():
     version = version_string()
@@ -213,21 +231,9 @@ def make_parser():
     parser = argparse.ArgumentParser(
         formatter_class=argparse.RawDescriptionHelpFormatter,
         description=f"{version}\n{description}",
-        epilog=f"{help}\n{doc}"
+        epilog=f"{help}\n{doc}",
     )
-    parser.add_argument(
-        '--debug', action='store', metavar="OPTS",
-        help="Debug options, separated by commas. [env: COVERAGE_DEBUG]"
-    )
-    parser.add_argument(
-        '--rcfile', action='store',
-        help=(
-            "Specify configuration file. "
-            "By default '.coveragerc', 'setup.cfg', 'tox.ini', and "
-            "'pyproject.toml' are tried. [env: COVERAGE_RCFILE]"
-        ),
-    )
-    parser.add_argument('--version', action='version', version=version)
+    Args.add_to(parser, "debug", "rcfile", "version")
 
     # TODO: required not supported in py3.6
     subparsers = parser.add_subparsers(title="Commands", dest="action")
