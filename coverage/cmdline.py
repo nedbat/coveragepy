@@ -57,7 +57,7 @@ class Args:
         help="Debug options, separated by commas. [env: COVERAGE_DEBUG]"
     )
     rcfile = Argument(
-        '--rcfile', action='store',
+        '--rcfile', action='store', default=True,
         help=(
             "Specify configuration file. "
             "By default '.coveragerc', 'setup.cfg', 'tox.ini', and "
