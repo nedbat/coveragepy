@@ -398,11 +398,19 @@ class CoverageScript:
         """
         parser = make_parser()
 
-        options = parser.parse_args()
+        try:
+            options = parser.parse_args(argv)
+        except SystemExit:
+            return ERR
 
-        if options.action in [None, "help"]:
-            parser.print_help()
-            parser.exit()
+        if not options.action:
+            print(f"Code coverage for Python, {version_string()}.")
+            print(f"Use '{parser.prog} help' for help.")
+            return OK
+
+        if options.action == "help":
+            self.do_help(topic=getattr(options, "topic", None), parser=parser)
+            return OK
 
         # Listify the list options.
         source = unshell_list(options.source)
@@ -516,38 +524,12 @@ class CoverageScript:
 
         return OK
 
-    def do_help(self, options, args, parser):
-        """Deal with help requests.
+    def do_help(self, topic, parser):
+        """Deal with help requests."""
+        if topic:
+            parser = parser.subcommands[topic]
 
-        Return True if it handled the request, False if not.
-
-        """
-        # Handle help.
-        if options.help:
-            if self.global_option:
-                show_help(topic='help')
-            else:
-                show_help(parser=parser)
-            return True
-
-        if options.action == "help":
-            if args:
-                for a in args:
-                    parser = CMDS.get(a)
-                    if parser:
-                        show_help(parser=parser)
-                    else:
-                        show_help(topic=a)
-            else:
-                show_help(topic='help')
-            return True
-
-        # Handle version.
-        if options.version:
-            show_help(topic='version')
-            return True
-
-        return False
+        parser.print_help()
 
     def do_run(self, options, args):
         """Implementation of 'coverage run'."""
