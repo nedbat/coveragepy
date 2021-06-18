@@ -238,7 +238,7 @@ class Args:
         "topic", choices=DEBUG_TOPIC_CHOICES, nargs="+", metavar="TOPIC"
     )
     morfs = Argument(
-        "modules", nargs="*", metavar="MODULES")
+        "morfs", nargs="*", metavar="MODULES")
 
 
 def make_parser():
@@ -415,26 +415,26 @@ class CoverageScript:
             return OK
 
         # Listify the list options.
-        source = unshell_list(options.source)
-        omit = unshell_list(options.omit)
-        include = unshell_list(options.include)
-        debug = unshell_list(options.debug)
-        contexts = unshell_list(options.contexts)
+        source = unshell_list(options, "source")
+        omit = unshell_list(options, "omit")
+        include = unshell_list(options, "include")
+        debug = unshell_list(options, "debug")
+        contexts = unshell_list(options, "contexts")
 
         # Do something.
         self.coverage = Coverage(
-            data_suffix=options.parallel_mode,
-            cover_pylib=options.pylib,
-            timid=options.timid,
-            branch=options.branch,
             config_file=options.rcfile,
+            debug=debug,
+            data_suffix=getattr(options, "parallel_mode", None),
+            cover_pylib=getattr(options, "pylib", None),
+            timid=getattr(options, "timid", None),
+            branch=getattr(options, "branch", None),
             source=source,
             omit=omit,
             include=include,
-            debug=debug,
-            concurrency=options.concurrency,
+            concurrency=getattr(options, "concurrency", None),
             check_preimported=True,
-            context=options.context,
+            context=getattr(options, "context", None),
             )
 
         if options.action == "debug":
@@ -494,15 +494,13 @@ class CoverageScript:
                 **report_args
                 )
         elif options.action == "xml":
-            outfile = options.outfile
             total = self.coverage.xml_report(
-                outfile=outfile, skip_empty=options.skip_empty,
+                outfile=options.outfile, skip_empty=options.skip_empty,
                 **report_args
                 )
         elif options.action == "json":
-            outfile = options.outfile
             total = self.coverage.json_report(
-                outfile=outfile,
+                outfile=options.outfile,
                 pretty_print=options.pretty_print,
                 show_contexts=options.show_contexts,
                 **report_args
@@ -630,8 +628,9 @@ class CoverageScript:
         return OK
 
 
-def unshell_list(s):
+def unshell_list(options, name):
     """Turn a command-line argument into a list."""
+    s = getattr(options, name, "")
     if not s:
         return None
     if env.WINDOWS:
