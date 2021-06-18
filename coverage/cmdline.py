@@ -479,6 +479,25 @@ CMDS = {
 }
 
 
+def version_string():
+    if CTracer is not None:
+        extension_modifier = 'with C extension'
+    else:
+        extension_modifier = 'without C extension'
+
+    return f"Coverage.py, version {coverage.__version__} {extension_modifier}"
+
+
+def make_parser():
+    version = version_string()
+    description = "Measure, collect, and report on code coverage in Python programs."
+    parser = argparse.ArgumentParser(
+        description=f"{version}\n{description}",
+        epilog="""Use "%(prog)s help <command>" for detailed help on any command."""
+    )
+    return parser
+
+
 def show_help(error=None, topic=None, parser=None):
     """Display an error message, or the named topic."""
     assert error or topic or parser
