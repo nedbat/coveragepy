@@ -656,38 +656,6 @@ def unglob_args(args):
     return args
 
 
-HELP_TOPICS = {
-    'help': """\
-        Coverage.py, version {__version__} {extension_modifier}
-        Measure, collect, and report on code coverage in Python programs.
-
-        usage: {program_name} <command> [options] [args]
-
-        Commands:
-            annotate    Annotate source files with execution information.
-            combine     Combine a number of data files.
-            debug       Display information about the internals of coverage.py
-            erase       Erase previously collected coverage data.
-            help        Get help on using coverage.py.
-            html        Create an HTML report.
-            json        Create a JSON report of coverage results.
-            report      Report coverage stats on modules.
-            run         Run a Python program and measure code execution.
-            xml         Create an XML report of coverage results.
-
-        Use "{program_name} help <command>" for detailed help on any command.
-    """,
-
-    'minimum_help': """\
-        Code coverage for Python, version {__version__} {extension_modifier}.  Use '{program_name} help' for help.
-    """,
-
-    'version': """\
-        Coverage.py, version {__version__} {extension_modifier}
-    """,
-}
-
-
 def main(argv=None):
     """The main entry point to coverage.py.
 
