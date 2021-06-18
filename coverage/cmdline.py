@@ -211,6 +211,7 @@ def make_parser():
     help = """Use "%(prog)s help <command>" for detailed help on any command."""
     doc = f"""Full documentation is at {coverage.__url__}"""
     parser = argparse.ArgumentParser(
+        formatter_class=argparse.RawDescriptionHelpFormatter,
         description=f"{version}\n{description}",
         epilog=f"{help}\n{doc}"
     )
