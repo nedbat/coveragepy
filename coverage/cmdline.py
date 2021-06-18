@@ -436,26 +436,26 @@ class CoverageScript:
             )
 
         if options.action == "debug":
-            return self.do_debug(args)
+            return self.do_debug(options.topic)
 
         elif options.action == "erase":
             self.coverage.erase()
             return OK
 
         elif options.action == "run":
-            return self.do_run(options, args)
+            return self.do_run(options, [options.pyfile] + options.options)
 
         elif options.action == "combine":
             if options.append:
                 self.coverage.load()
-            data_dirs = args or None
+            data_dirs = options.files or None
             self.coverage.combine(data_dirs, strict=True, keep=bool(options.keep))
             self.coverage.save()
             return OK
 
         # Remaining actions are reporting, with some common options.
         report_args = dict(
-            morfs=unglob_args(args),
+            morfs=unglob_args(options.morfs),
             ignore_errors=options.ignore_errors,
             omit=omit,
             include=include,
