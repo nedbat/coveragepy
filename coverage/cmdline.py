@@ -360,22 +360,9 @@ class CoverageScript:
         if not argv:
             show_help(topic='minimum_help')
             return OK
+        parser = make_parser()
 
-        # The command syntax we parse depends on the first argument.  Global
-        # switch syntax always starts with an option.
-        self.global_option = argv[0].startswith('-')
-        if self.global_option:
-            parser = GlobalOptionParser()
-        else:
-            parser = CMDS.get(argv[0])
-            if not parser:
-                show_help(f"Unknown command: {argv[0]!r}")
-                return ERR
-            argv = argv[1:]
-
-        ok, options, args = parser.parse_args_ok(argv)
-        if not ok:
-            return ERR
+        options = parser.parse_args()
 
         # Handle help and version.
         if self.do_help(options, args, parser):
