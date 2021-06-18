@@ -36,6 +36,12 @@ class Argument:
 class Args:
     """A namespace class for individual options we'll build parsers from."""
 
+    @classmethod
+    def add_to(cls, parser: argparse.ArgumentParser, *args: str):
+        for arg_name in args:
+            arg = getattr(cls, arg_name)
+            arg.add_to(parser)
+
     append = Argument(
         '-a', '--append', action='store_true',
         help="Append coverage data to .coverage, otherwise it starts clean each time.",
@@ -305,164 +311,6 @@ class CmdOptionParser(CoverageOptionParser):
         return f"{program_name} {self.cmd}"
 
 
-GLOBAL_ARGS = [
-    Opts.debug,
-    Opts.help,
-    Opts.rcfile,
-    ]
-
-CMDS = {
-    'annotate': CmdOptionParser(
-        "annotate",
-        [
-            Opts.directory,
-            Opts.ignore_errors,
-            Opts.include,
-            Opts.omit,
-            ] + GLOBAL_ARGS,
-        usage="[options] [modules]",
-        description=(
-            "Make annotated copies of the given files, marking statements that are executed "
-            "with > and statements that are missed with !."
-        ),
-    ),
-
-    'combine': CmdOptionParser(
-        "combine",
-        [
-            Opts.append,
-            Opts.keep,
-            ] + GLOBAL_ARGS,
-        usage="[options] <path1> <path2> ... <pathN>",
-        description=(
-            "Combine data from multiple coverage files collected "
-            "with 'run -p'.  The combined results are written to a single "
-            "file representing the union of the data. The positional "
-            "arguments are data files or directories containing data files. "
-            "If no paths are provided, data files in the default data file's "
-            "directory are combined."
-        ),
-    ),
-
-    'debug': CmdOptionParser(
-        "debug", GLOBAL_ARGS,
-        usage="<topic>",
-        description=(
-            "Display information about the internals of coverage.py, "
-            "for diagnosing problems. "
-            "Topics are: "
-                "'data' to show a summary of the collected data; "
-                "'sys' to show installation information; "
-                "'config' to show the configuration; "
-                "'premain' to show what is calling coverage."
-        ),
-    ),
-
-    'erase': CmdOptionParser(
-        "erase", GLOBAL_ARGS,
-        description="Erase previously collected coverage data.",
-    ),
-
-    'help': CmdOptionParser(
-        "help", GLOBAL_ARGS,
-        usage="[command]",
-        description="Describe how to use coverage.py",
-    ),
-
-    'html': CmdOptionParser(
-        "html",
-        [
-            Opts.contexts,
-            Opts.directory,
-            Opts.fail_under,
-            Opts.ignore_errors,
-            Opts.include,
-            Opts.omit,
-            Opts.precision,
-            Opts.show_contexts,
-            Opts.skip_covered,
-            Opts.no_skip_covered,
-            Opts.skip_empty,
-            Opts.title,
-            ] + GLOBAL_ARGS,
-        usage="[options] [modules]",
-        description=(
-            "Create an HTML report of the coverage of the files.  "
-            "Each file gets its own page, with the source decorated to show "
-            "executed, excluded, and missed lines."
-        ),
-    ),
-
-    'json': CmdOptionParser(
-        "json",
-        [
-            Opts.contexts,
-            Opts.fail_under,
-            Opts.ignore_errors,
-            Opts.include,
-            Opts.omit,
-            Opts.output_json,
-            Opts.json_pretty_print,
-            Opts.show_contexts,
-            ] + GLOBAL_ARGS,
-        usage="[options] [modules]",
-        description="Generate a JSON report of coverage results."
-    ),
-
-    'report': CmdOptionParser(
-        "report",
-        [
-            Opts.contexts,
-            Opts.fail_under,
-            Opts.ignore_errors,
-            Opts.include,
-            Opts.omit,
-            Opts.precision,
-            Opts.sort,
-            Opts.show_missing,
-            Opts.skip_covered,
-            Opts.no_skip_covered,
-            Opts.skip_empty,
-            ] + GLOBAL_ARGS,
-        usage="[options] [modules]",
-        description="Report coverage statistics on modules."
-    ),
-
-    'run': CmdOptionParser(
-        "run",
-        [
-            Opts.append,
-            Opts.branch,
-            Opts.concurrency,
-            Opts.context,
-            Opts.include,
-            Opts.module,
-            Opts.omit,
-            Opts.pylib,
-            Opts.parallel_mode,
-            Opts.source,
-            Opts.timid,
-            ] + GLOBAL_ARGS,
-        usage="[options] <pyfile> [program options]",
-        description="Run a Python program, measuring code execution."
-    ),
-
-    'xml': CmdOptionParser(
-        "xml",
-        [
-            Opts.fail_under,
-            Opts.ignore_errors,
-            Opts.include,
-            Opts.omit,
-            Opts.output_xml,
-            Opts.skip_empty,
-            ] + GLOBAL_ARGS,
-        usage="[options] [modules]",
-        description="Generate an XML report of coverage results."
-    ),
-}
-
-
 def version_string():
     if CTracer is not None:
         extension_modifier = 'with C extension'
@@ -494,48 +342,111 @@ def make_parser():
     parser.add_argument('--version', action='version', version=version)
 
     # TODO: required not supported in py3.6
-    subparsers = parser.add_subparsers(title="Commands", required=True)
+    subparsers = parser.add_subparsers(title="Commands", dest="action")
+
+    annotate = subparsers.add_parser(
+        "annotate",
+        help="Annotate source files with execution information.",
+        description=(
+            "Make annotated copies of the given files, marking statements that are executed "
+            "with > and statements that are missed with !."
+        ),
+    )
+    Args.add_to(annotate, "directory", "ignore_errors", "include", "omit")
+
+    combine = subparsers.add_parser(
+        "combine",
+        help="Combine a number of data files.",
+        description=(
+            "Combine data from multiple coverage files collected "
+            "with 'run -p'.  The combined results are written to a single "
+            "file representing the union of the data. The positional "
+            "arguments are data files or directories containing data files. "
+            "If no paths are provided, data files in the default data file's "
+            "directory are combined."
+        ),
+    )
+    Args.add_to(combine, "append", "keep")
 
     subparsers.add_parser(
-        title="annotate",
-        description="Annotate source files with execution information."
+        "debug",
+        help="Display information about the internals of coverage.py",
+        description=(
+            "Display information about the internals of coverage.py, "
+            "for diagnosing problems. "
+            "Topics are: "
+                "'data' to show a summary of the collected data; "
+                "'sys' to show installation information; "
+                "'config' to show the configuration; "
+                "'premain' to show what is calling coverage."
+        ),
+    )
+
+    subparsers.add_parser(
+        "erase",
+        help="Erase previously collected coverage data.",
     )
     subparsers.add_parser(
-        title="combine",
-        description="Combine a number of data files."
+        "help",
+        help="Get help on using coverage.py.",
     )
-    subparsers.add_parser(
-        title="debug",
-        description="Display information about the internals of coverage.py"
+    html = subparsers.add_parser(
+        "html",
+        help="Create an HTML report.",
+        description=(
+            "Create an HTML report of the coverage of the files.  "
+            "Each file gets its own page, with the source decorated to show "
+            "executed, excluded, and missed lines."
+        )
     )
-    subparsers.add_parser(
-        title="erase",
-        description="Erase previously collected coverage data."
+    Args.add_to(
+        html,
+        "contexts", "directory", "fail_under", "ignore_errors",
+        "include", "omit", "precision", "show_contexts", "skip_covered",
+        "no_skip_covered", "skip_empty", "title"
     )
-    subparsers.add_parser(
-        title="help",
-        description="Get help on using coverage.py."
+
+    json = subparsers.add_parser(
+        "json",
+        help="Create a JSON report of coverage results.",
     )
-    subparsers.add_parser(
-        title="html",
-        description="Create an HTML report."
+    Args.add_to(
+        json,
+        "contexts", "fail_under", "ignore_errors", "include", "omit",
+        "output_json", "json_pretty_print", "show_contexts"
     )
-    subparsers.add_parser(
-        title="json",
-        description="Create a JSON report of coverage results."
+
+    report = subparsers.add_parser(
+        "report",
+        help="Report coverage stats on modules.",
     )
-    subparsers.add_parser(
-        title="report",
-        description="Report coverage stats on modules."
+    Args.add_to(
+        report,
+        "contexts", "fail_under", "ignore_errors", "include", "omit",
+        "precision", "sort", "show_missing", "skip_covered",
+        "no_skip_covered", "skip_empty"
     )
-    subparsers.add_parser(
-        title="run",
-        description="Run a Python program and measure code execution."
+
+    run = subparsers.add_parser(
+        "run",
+        help="Run a Python program and measure code execution.",
     )
-    subparsers.add_parser(
-        title="xml",
-        description="Create an XML report of coverage results."
+    Args.add_to(
+        run,
+        "append", "branch", "concurrency", "context", "include", "module",
+        "omit", "pylib", "parallel_mode", "source", "timid"
     )
+
+    xml = subparsers.add_parser(
+        "xml",
+        help="Create an XML report of coverage results.",
+    )
+    Args.add_to(
+        xml,
+        "fail_under", "ignore_errors", "include", "omit", "output_xml",
+        "skip_empty"
+    )
+
     return parser
 
 
