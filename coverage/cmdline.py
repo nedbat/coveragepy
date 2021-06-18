@@ -47,18 +47,18 @@ class Args:
         help="Append coverage data to .coverage, otherwise it starts clean each time.",
     )
     keep = Argument(
-        '', '--keep', action='store_true',
+        '--keep', action='store_true',
         help="Keep original coverage files, otherwise they are deleted.",
     )
     branch = Argument(
-        '', '--branch', action='store_true',
+        '--branch', action='store_true',
         help="Measure branch coverage in addition to statement coverage.",
     )
     CONCURRENCY_CHOICES = [
         "thread", "gevent", "greenlet", "eventlet", "multiprocessing",
     ]
     concurrency = Argument(
-        '', '--concurrency', action='store', metavar="LIB",
+        '--concurrency', action='store', metavar="LIB",
         choices=CONCURRENCY_CHOICES,
         help=(
             "Properly measure code using a concurrency library. "
@@ -66,7 +66,7 @@ class Args:
         ).format(", ".join(CONCURRENCY_CHOICES)),
     )
     context = Argument(
-        '', '--context', action='store', metavar="LABEL",
+        '--context', action='store', metavar="LABEL",
         help="The context label to record for this coverage run.",
     )
     directory = Argument(
@@ -74,7 +74,7 @@ class Args:
         help="Write the output files to DIR.",
     )
     fail_under = Argument(
-        '', '--fail-under', action='store', metavar="MIN", type="float",
+        '--fail-under', action='store', metavar="MIN", type=float,
         help="Exit with a status of 2 if the total coverage is less than MIN.",
     )
     help = Argument(
@@ -86,7 +86,7 @@ class Args:
         help="Ignore errors while reading source files.",
     )
     include = Argument(
-        '', '--include', action='store',
+        '--include', action='store',
         metavar="PAT1,PAT2,...",
         help=(
             "Include only files whose paths match one of these patterns. "
@@ -126,7 +126,7 @@ class Args:
         help="Show contexts for covered lines.",
     )
     omit = Argument(
-        '', '--omit', action='store',
+        '--omit', action='store',
         metavar="PAT1,PAT2,...",
         help=(
             "Omit files whose paths match one of these patterns. "
@@ -134,7 +134,7 @@ class Args:
         ),
     )
     contexts = Argument(
-        '', '--contexts', action='store',
+        '--contexts', action='store',
         metavar="REGEX1,REGEX2,...",
         help=(
             "Only display data from lines covered in the given contexts. "
@@ -142,17 +142,17 @@ class Args:
         ),
     )
     output_xml = Argument(
-        '-o', '', action='store', dest="outfile",
+        '-o', action='store', dest="outfile",
         metavar="OUTFILE",
         help="Write the XML report to this file. Defaults to 'coverage.xml'",
     )
     output_json = Argument(
-        '-o', '', action='store', dest="outfile",
+        '-o', action='store', dest="outfile",
         metavar="OUTFILE",
         help="Write the JSON report to this file. Defaults to 'coverage.json'",
     )
     json_pretty_print = Argument(
-        '', '--pretty-print', action='store_true',
+        '--pretty-print', action='store_true',
         help="Format the JSON for human readers.",
     )
     parallel_mode = Argument(
@@ -171,25 +171,25 @@ class Args:
         ),
     )
     precision = Argument(
-        '', '--precision', action='store', metavar='N', type=int,
+        '--precision', action='store', metavar='N', type=int,
         help=(
             "Number of digits after the decimal point to display for "
             "reported coverage percentages."
         ),
     )
     source = Argument(
-        '', '--source', action='store', metavar="SRC1,SRC2,...",
+        '--source', action='store', metavar="SRC1,SRC2,...",
         help="A list of directories or importable names of code to measure.",
     )
     timid = Argument(
-        '', '--timid', action='store_true',
+        '--timid', action='store_true',
         help=(
             "Use a simpler but slower trace method. Try this if you get "
             "seemingly impossible results!"
         ),
     )
     title = Argument(
-        '', '--title', action='store', metavar="TITLE",
+        '--title', action='store', metavar="TITLE",
         help="A text string to use as the title on the HTML.",
     )
 
