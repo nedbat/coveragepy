@@ -36,22 +36,22 @@ class Argument:
 class Args:
     """A namespace class for individual options we'll build parsers from."""
 
-    append = optparse.make_option(
+    append = Argument(
         '-a', '--append', action='store_true',
         help="Append coverage data to .coverage, otherwise it starts clean each time.",
     )
-    keep = optparse.make_option(
+    keep = Argument(
         '', '--keep', action='store_true',
         help="Keep original coverage files, otherwise they are deleted.",
     )
-    branch = optparse.make_option(
+    branch = Argument(
         '', '--branch', action='store_true',
         help="Measure branch coverage in addition to statement coverage.",
     )
     CONCURRENCY_CHOICES = [
         "thread", "gevent", "greenlet", "eventlet", "multiprocessing",
     ]
-    concurrency = optparse.make_option(
+    concurrency = Argument(
         '', '--concurrency', action='store', metavar="LIB",
         choices=CONCURRENCY_CHOICES,
         help=(
@@ -59,31 +59,31 @@ class Args:
             "Valid values are: {}."
         ).format(", ".join(CONCURRENCY_CHOICES)),
     )
-    context = optparse.make_option(
+    context = Argument(
         '', '--context', action='store', metavar="LABEL",
         help="The context label to record for this coverage run.",
     )
-    debug = optparse.make_option(
+    debug = Argument(
         '', '--debug', action='store', metavar="OPTS",
         help="Debug options, separated by commas. [env: COVERAGE_DEBUG]",
     )
-    directory = optparse.make_option(
+    directory = Argument(
         '-d', '--directory', action='store', metavar="DIR",
         help="Write the output files to DIR.",
     )
-    fail_under = optparse.make_option(
+    fail_under = Argument(
         '', '--fail-under', action='store', metavar="MIN", type="float",
         help="Exit with a status of 2 if the total coverage is less than MIN.",
     )
-    help = optparse.make_option(
+    help = Argument(
         '-h', '--help', action='store_true',
         help="Get help on this command.",
     )
-    ignore_errors = optparse.make_option(
+    ignore_errors = Argument(
         '-i', '--ignore-errors', action='store_true',
         help="Ignore errors while reading source files.",
     )
-    include = optparse.make_option(
+    include = Argument(
         '', '--include', action='store',
         metavar="PAT1,PAT2,...",
         help=(
@@ -91,39 +91,39 @@ class Args:
             "Accepts shell-style wildcards, which must be quoted."
         ),
     )
-    pylib = optparse.make_option(
+    pylib = Argument(
         '-L', '--pylib', action='store_true',
         help=(
             "Measure coverage even inside the Python installed library, "
             "which isn't done by default."
         ),
     )
-    sort = optparse.make_option(
+    sort = Argument(
         '--sort', action='store', metavar='COLUMN',
         help="Sort the report by the named column: name, stmts, miss, branch, brpart, or cover. "
              "Default is name."
     )
-    show_missing = optparse.make_option(
+    show_missing = Argument(
         '-m', '--show-missing', action='store_true',
         help="Show line numbers of statements in each module that weren't executed.",
     )
-    skip_covered = optparse.make_option(
+    skip_covered = Argument(
         '--skip-covered', action='store_true',
         help="Skip files with 100% coverage.",
     )
-    no_skip_covered = optparse.make_option(
+    no_skip_covered = Argument(
         '--no-skip-covered', action='store_false', dest='skip_covered',
         help="Disable --skip-covered.",
     )
-    skip_empty = optparse.make_option(
+    skip_empty = Argument(
         '--skip-empty', action='store_true',
         help="Skip files with no code.",
     )
-    show_contexts = optparse.make_option(
+    show_contexts = Argument(
         '--show-contexts', action='store_true',
         help="Show contexts for covered lines.",
     )
-    omit = optparse.make_option(
+    omit = Argument(
         '', '--omit', action='store',
         metavar="PAT1,PAT2,...",
         help=(
@@ -131,7 +131,7 @@ class Args:
             "Accepts shell-style wildcards, which must be quoted."
         ),
     )
-    contexts = optparse.make_option(
+    contexts = Argument(
         '', '--contexts', action='store',
         metavar="REGEX1,REGEX2,...",
         help=(
@@ -139,21 +139,21 @@ class Args:
             "Accepts Python regexes, which must be quoted."
         ),
     )
-    output_xml = optparse.make_option(
+    output_xml = Argument(
         '-o', '', action='store', dest="outfile",
         metavar="OUTFILE",
         help="Write the XML report to this file. Defaults to 'coverage.xml'",
     )
-    output_json = optparse.make_option(
+    output_json = Argument(
         '-o', '', action='store', dest="outfile",
         metavar="OUTFILE",
         help="Write the JSON report to this file. Defaults to 'coverage.json'",
     )
-    json_pretty_print = optparse.make_option(
+    json_pretty_print = Argument(
         '', '--pretty-print', action='store_true',
         help="Format the JSON for human readers.",
     )
-    parallel_mode = optparse.make_option(
+    parallel_mode = Argument(
         '-p', '--parallel-mode', action='store_true',
         help=(
             "Append the machine name, process id and random number to the "
@@ -161,21 +161,21 @@ class Args:
             "many processes."
         ),
     )
-    module = optparse.make_option(
+    module = Argument(
         '-m', '--module', action='store_true',
         help=(
             "<pyfile> is an importable Python module, not a script path, "
             "to be run as 'python -m' would run it."
         ),
     )
-    precision = optparse.make_option(
+    precision = Argument(
         '', '--precision', action='store', metavar='N', type=int,
         help=(
             "Number of digits after the decimal point to display for "
             "reported coverage percentages."
         ),
     )
-    rcfile = optparse.make_option(
+    rcfile = Argument(
         '', '--rcfile', action='store',
         help=(
             "Specify configuration file. "
@@ -183,22 +183,22 @@ class Args:
             "'pyproject.toml' are tried. [env: COVERAGE_RCFILE]"
         ),
     )
-    source = optparse.make_option(
+    source = Argument(
         '', '--source', action='store', metavar="SRC1,SRC2,...",
         help="A list of directories or importable names of code to measure.",
     )
-    timid = optparse.make_option(
+    timid = Argument(
         '', '--timid', action='store_true',
         help=(
             "Use a simpler but slower trace method. Try this if you get "
             "seemingly impossible results!"
         ),
     )
-    title = optparse.make_option(
+    title = Argument(
         '', '--title', action='store', metavar="TITLE",
         help="A text string to use as the title on the HTML.",
     )
-    version = optparse.make_option(
+    version = Argument(
         '', '--version', action='store_true',
         help="Display version information and exit.",
     )
