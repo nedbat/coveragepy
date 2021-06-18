@@ -492,6 +492,50 @@ def make_parser():
         ),
     )
     parser.add_argument('--version', action='version', version=version)
+
+    # TODO: required not supported in py3.6
+    subparsers = parser.add_subparsers(title="Commands", required=True)
+
+    subparsers.add_parser(
+        title="annotate",
+        description="Annotate source files with execution information."
+    )
+    subparsers.add_parser(
+        title="combine",
+        description="Combine a number of data files."
+    )
+    subparsers.add_parser(
+        title="debug",
+        description="Display information about the internals of coverage.py"
+    )
+    subparsers.add_parser(
+        title="erase",
+        description="Erase previously collected coverage data."
+    )
+    subparsers.add_parser(
+        title="help",
+        description="Get help on using coverage.py."
+    )
+    subparsers.add_parser(
+        title="html",
+        description="Create an HTML report."
+    )
+    subparsers.add_parser(
+        title="json",
+        description="Create a JSON report of coverage results."
+    )
+    subparsers.add_parser(
+        title="report",
+        description="Report coverage stats on modules."
+    )
+    subparsers.add_parser(
+        title="run",
+        description="Run a Python program and measure code execution."
+    )
+    subparsers.add_parser(
+        title="xml",
+        description="Create an XML report of coverage results."
+    )
     return parser
 
 
