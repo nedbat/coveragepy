@@ -322,10 +322,14 @@ def version_string():
 
 def make_parser():
     version = version_string()
-    description = "Measure, collect, and report on code coverage in Python programs."
+    description = (
+        "Measure, collect, and report on code coverage in Python programs."
+    )
+    help = """Use "%(prog)s help <command>" for detailed help on any command."""
+    doc = f"""Full documentation is at {coverage.__url__}"""
     parser = argparse.ArgumentParser(
         description=f"{version}\n{description}",
-        epilog="""Use "%(prog)s help <command>" for detailed help on any command."""
+        epilog=f"{help}\n{doc}"
     )
     parser.add_argument(
         '--debug', action='store', metavar="OPTS",
@@ -448,47 +452,6 @@ def make_parser():
     )
 
     return parser
-
-
-def show_help(error=None, topic=None, parser=None):
-    """Display an error message, or the named topic."""
-    assert error or topic or parser
-
-    program_path = sys.argv[0]
-    if program_path.endswith(os.path.sep + '__main__.py'):
-        # The path is the main module of a package; get that path instead.
-        program_path = os.path.dirname(program_path)
-    program_name = os.path.basename(program_path)
-    if env.WINDOWS:
-        # entry_points={'console_scripts':...} on Windows makes files
-        # called coverage.exe, coverage3.exe, and coverage-3.5.exe. These
-        # invoke coverage-script.py, coverage3-script.py, and
-        # coverage-3.5-script.py.  argv[0] is the .py file, but we want to
-        # get back to the original form.
-        auto_suffix = "-script.py"
-        if program_name.endswith(auto_suffix):
-            program_name = program_name[:-len(auto_suffix)]
-
-    help_params = dict(coverage.__dict__)
-    help_params['program_name'] = program_name
-    if CTracer is not None:
-        help_params['extension_modifier'] = 'with C extension'
-    else:
-        help_params['extension_modifier'] = 'without C extension'
-
-    if error:
-        print(error, file=sys.stderr)
-        print(f"Use '{program_name} help' for help.", file=sys.stderr)
-    elif parser:
-        print(parser.format_help().strip())
-        print()
-    else:
-        help_msg = textwrap.dedent(HELP_TOPICS.get(topic, '')).strip()
-        if help_msg:
-            print(help_msg.format(**help_params))
-        else:
-            print(f"Don't know topic {topic!r}")
-    print("Full documentation is at {__url__}".format(**help_params))
 
 
 OK, ERR, FAIL_UNDER = 0, 1, 2
