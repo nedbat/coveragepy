@@ -236,7 +236,7 @@ class CmdLineTest(BaseCmdLineTest):
 
     def test_combine_doesnt_confuse_options_with_args(self):
         # https://github.com/nedbat/coveragepy/issues/385
-        self.cmd_executes("combine --rcfile cov.ini file_result", """\
+        self.cmd_executes("combine --rcfile cov.ini", """\
             cov = Coverage(config_file='cov.ini')
             cov.combine(None, strict=True, keep=False)
             cov.save()
