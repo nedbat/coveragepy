@@ -381,7 +381,7 @@ def make_parser():
     subcommands = subparsers.choices
     help.add_argument(
         "topic", nargs='?', choices=list(subcommands),
-        help="Get help on a specific subcommand"
+        help="Get help on a specific subcommand",
     )
     # Storing the subparsers on the parser for easy access
     parser.subcommands = subcommands
