@@ -149,7 +149,7 @@ class BaseCmdLineTest(CoverageTest):
             pp2 = pprint.pformat(m2.mock_calls)
             assert pp1+'\n' == pp2+'\n'
 
-    def cmd_help(self, args, help_msg, ret=ERR):
+    def cmd_outputs(self, args, output, ret=ERR):
         """Run a command line, and check that it prints the right help.
 
         Only the last function call in the mock is checked, which should be the
@@ -158,8 +158,9 @@ class BaseCmdLineTest(CoverageTest):
         """
         mk, status = self.mock_command_line(args)
         assert status == ret, f"Wrong status: got {status}, wanted {ret}"
-        assert help_msg in self.stdout(), (
-            f"output doesn't contain {help_msg}:\n{mk.stdout}"
+        cmd_out, cmd_err = self.stdouterr()
+        assert output in cmd_out + cmd_err, (
+            f"output doesn't contain {output}:\nOut:\n{cmd_out}\nErr:\n{cmd_err}"
         )
 
 class BaseCmdLineTestTest(BaseCmdLineTest):
@@ -247,8 +248,8 @@ class CmdLineTest(BaseCmdLineTest):
             """)
 
     def test_debug(self):
-        self.cmd_help("debug", "What information would you like: config, data, sys, premain?")
-        self.cmd_help("debug foo", "Don't know what you mean by 'foo'")
+        self.cmd_outputs("debug", "the following arguments are required: topic")
+        self.cmd_outputs("debug foo", "argument topic: invalid choice: 'foo' (choose from 'data', 'sys', 'config', 'premain')")
 
     def test_debug_sys(self):
         self.command_line("debug sys")
@@ -272,19 +273,19 @@ class CmdLineTest(BaseCmdLineTest):
 
     def test_version(self):
         # coverage --version
-        self.cmd_help("--version", topic="version", ret=OK)
+        self.cmd_outputs("--version", output="Coverage.py, version", ret=OK)
 
     def test_help_option(self):
         # coverage -h
-        self.cmd_help("-h", topic="help", ret=OK)
-        self.cmd_help("--help", topic="help", ret=OK)
+        self.cmd_outputs("-h", output="Measure, collect, and report", ret=OK)
+        self.cmd_outputs("--help", output="Measure, collect, and report", ret=OK)
 
     def test_help_command(self):
-        self.cmd_executes("help", "show_help(topic='help')")
+        self.cmd_outputs("help", output="Measure, collect, and report", ret=OK)
 
     def test_cmd_help(self):
-        self.cmd_executes("run --help", "show_help(parser='<CmdOptionParser:run>')")
-        self.cmd_executes_same("help run", "run --help")
+        self.cmd_outputs("run --help", "Run a Python program", ret=OK)
+        self.cmd_outputs("help run", "Run a Python program", ret=OK)
 
     def test_html(self):
         # coverage html -d DIR [-i] [--omit DIR,...] [FILE1 FILE2 ...]
@@ -753,10 +754,10 @@ class CmdLineTest(BaseCmdLineTest):
             """)
 
     def test_no_arguments_at_all(self):
-        self.cmd_help("", help_msg="Code coverage for Python", ret=OK)
+        self.cmd_outputs("", output="Code coverage for Python", ret=OK)
 
     def test_bad_command(self):
-        self.cmd_help("xyzzy", "Unknown command: 'xyzzy'")
+        self.cmd_outputs("xyzzy", "invalid choice: 'xyzzy'")
 
 
 class CmdLineWithFilesTest(BaseCmdLineTest):
