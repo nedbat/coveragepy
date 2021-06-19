@@ -598,10 +598,6 @@ class CmdLineTest(BaseCmdLineTest):
             """)
         self.cmd_executes_same("run -m mymodule", "run --module mymodule")
 
-    def test_run_nothing(self):
-        self.command_line("run", ret=ERR)
-        assert "Nothing to do" in self.stderr()
-
     def test_run_from_config(self):
         options = {"run:command_line": "myprog.py a 123 'a quoted thing' xyz"}
         self.cmd_executes("run", """\
@@ -636,21 +632,6 @@ class CmdLineTest(BaseCmdLineTest):
             """,
             ret=ERR,
             options={"run:command_line": ""},
-            )
-
-    def test_run_dashm_only(self):
-        self.cmd_executes("run -m", """\
-            cov = Coverage()
-            show_help('No module specified for -m')
-            """,
-            ret=ERR,
-            )
-        self.cmd_executes("run -m", """\
-            cov = Coverage()
-            show_help('No module specified for -m')
-            """,
-            ret=ERR,
-            options={"run:command_line": "myprog.py"}
             )
 
     def test_cant_append_parallel(self):
