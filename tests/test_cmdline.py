@@ -832,7 +832,7 @@ class CmdLineStdoutTest(BaseCmdLineTest):
         self.command_line("help run")
         out = self.stdout()
         lines = out.splitlines()
-        assert "<pyfile>" in lines[0]
+        assert "PYFILE" in out
         assert "--timid" in out, f"Full output:\n{out}"
         assert len(lines) > 20
         assert lines[-1] == f"Full documentation is at {__url__}"
