@@ -411,8 +411,8 @@ class CoverageScript:
 
         try:
             options = parser.parse_args(argv)
-        except SystemExit:
-            return ERR
+        except SystemExit as exc:
+            return ERR if exc.code else OK
 
         if not options.action:
             print(f"Code coverage for Python, {version_string()}.")
