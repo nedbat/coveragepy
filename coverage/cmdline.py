@@ -244,15 +244,20 @@ def make_parser():
     )
     help = """Use "%(prog)s help <command>" for detailed help on any command."""
     doc = f"""Full documentation is at {coverage.__url__}"""
+    epilog = f"{help}\n{doc}"
 
     parent_parser = argparse.ArgumentParser(add_help=False)
     Args.add_to(parent_parser, "debug", "rcfile", "version")
 
+    parser_kwargs = {
+        "formatter_class": argparse.RawDescriptionHelpFormatter,
+        "epilog": epilog,
+        "parents": [parent_parser],
+    }
+
     parser = argparse.ArgumentParser(
-        formatter_class=argparse.RawDescriptionHelpFormatter,
         description=f"{version}\n{description}",
-        epilog=f"{help}\n{doc}",
-        parents=[parent_parser],
+        **parser_kwargs,
     )
 
     subparsers = parser.add_subparsers(title="Commands", dest="action")
@@ -264,7 +269,7 @@ def make_parser():
             "Make annotated copies of the given files, marking statements that are executed "
             "with > and statements that are missed with !."
         ),
-        parents=[parent_parser],
+        **parser_kwargs,
     )
     Args.add_to(annotate, "directory", "ignore_errors", "include", "omit", "morfs")
 
@@ -279,7 +284,7 @@ def make_parser():
             "If no paths are provided, data files in the default data file's "
             "directory are combined."
         ),
-        parents=[parent_parser],
+        **parser_kwargs,
     )
     Args.add_to(combine, "append", "keep", "files")
 
@@ -295,7 +300,7 @@ def make_parser():
                 "'config' to show the configuration; "
                 "'premain' to show what is calling coverage."
         ),
-        parents=[parent_parser],
+        **parser_kwargs,
     )
     Args.add_to(debug, "topic")
 
@@ -303,7 +308,7 @@ def make_parser():
         "erase",
         help="Erase previously collected coverage data.",
         description="Erase previously collected coverage data.",
-        parents=[parent_parser],
+        **parser_kwargs,
     )
 
     html = subparsers.add_parser(
@@ -314,7 +319,7 @@ def make_parser():
             "Each file gets its own page, with the source decorated to show "
             "executed, excluded, and missed lines."
         ),
-        parents=[parent_parser],
+        **parser_kwargs,
     )
     Args.add_to(
         html,
@@ -327,7 +332,7 @@ def make_parser():
         "json",
         help="Create a JSON report of coverage results.",
         description="Create a JSON report of coverage results.",
-        parents=[parent_parser],
+        **parser_kwargs,
     )
     Args.add_to(
         json,
@@ -339,7 +344,7 @@ def make_parser():
         "report",
         help="Report coverage stats on modules.",
         description="Report coverage stats on modules.",
-        parents=[parent_parser],
+        **parser_kwargs,
     )
     Args.add_to(
         report,
@@ -352,7 +357,7 @@ def make_parser():
         "run",
         help="Run a Python program and measure code execution.",
         description="Run a Python program and measure code execution.",
-        parents=[parent_parser],
+        **parser_kwargs,
     )
     Args.add_to(
         run,
@@ -365,7 +370,7 @@ def make_parser():
         "xml",
         help="Create an XML report of coverage results.",
         description="Create an XML report of coverage results.",
-        parents=[parent_parser],
+        **parser_kwargs,
     )
     Args.add_to(
         xml,
@@ -376,7 +381,7 @@ def make_parser():
         "help",
         help="Get help on using coverage.py.",
         description="Get help on using coverage.py.",
-        parents=[parent_parser],
+        **parser_kwargs,
     )
     subcommands = subparsers.choices
     help.add_argument(
