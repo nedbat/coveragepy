@@ -231,7 +231,7 @@ class Args:
         "data", "sys", "config", "premain",
     ]
     topic = Argument(
-        "topic", choices=DEBUG_TOPIC_CHOICES, nargs="+", metavar="TOPIC"
+        "topic", choices=DEBUG_TOPIC_CHOICES, nargs="+"
     )
     morfs = Argument(
         "morfs", nargs="*", metavar="MODULES")
