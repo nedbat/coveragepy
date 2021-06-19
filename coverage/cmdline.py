@@ -103,10 +103,6 @@ class Args:
         '--fail-under', action='store', metavar="MIN", type=float,
         help="Exit with a status of 2 if the total coverage is less than MIN.",
     )
-    help = Argument(
-        '-h', '--help', action='store_true',
-        help="Get help on this command.",
-    )
     ignore_errors = Argument(
         '-i', '--ignore-errors', action='store_true',
         help="Ignore errors while reading source files.",
