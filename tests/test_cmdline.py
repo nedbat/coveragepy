@@ -80,7 +80,7 @@ class BaseCmdLineTest(CoverageTest):
         return mk
 
     # Global names in cmdline.py that will be mocked during the tests.
-    MOCK_GLOBALS = ['Coverage', 'PyRunner', 'show_help']
+    MOCK_GLOBALS = ['Coverage', 'PyRunner']
 
     def mock_command_line(self, args, options=None):
         """Run `args` through the command line, with a Mock.
@@ -149,7 +149,7 @@ class BaseCmdLineTest(CoverageTest):
             pp2 = pprint.pformat(m2.mock_calls)
             assert pp1+'\n' == pp2+'\n'
 
-    def cmd_help(self, args, help_msg=None, topic=None, ret=ERR):
+    def cmd_help(self, args, help_msg, ret=ERR):
         """Run a command line, and check that it prints the right help.
 
         Only the last function call in the mock is checked, which should be the
@@ -158,11 +158,9 @@ class BaseCmdLineTest(CoverageTest):
         """
         mk, status = self.mock_command_line(args)
         assert status == ret, f"Wrong status: got {status}, wanted {ret}"
-        if help_msg:
-            assert mk.mock_calls[-1] == ('show_help', (help_msg,), {})
-        else:
-            assert mk.mock_calls[-1] == ('show_help', (), {'topic': topic})
-
+        assert help_msg in self.stdout(), (
+            f"output doesn't contain {help_msg}:\n{mk.stdout}"
+        )
 
 class BaseCmdLineTestTest(BaseCmdLineTest):
     """Tests that our BaseCmdLineTest helpers work."""
@@ -755,7 +753,7 @@ class CmdLineTest(BaseCmdLineTest):
             """)
 
     def test_no_arguments_at_all(self):
-        self.cmd_help("", topic="minimum_help", ret=OK)
+        self.cmd_help("", help_msg="Code coverage for Python", ret=OK)
 
     def test_bad_command(self):
         self.cmd_help("xyzzy", "Unknown command: 'xyzzy'")
