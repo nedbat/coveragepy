@@ -838,10 +838,9 @@ class CmdLineStdoutTest(BaseCmdLineTest):
         assert lines[-1] == f"Full documentation is at {__url__}"
 
     def test_unknown_topic(self):
-        # Should probably be an ERR return, but meh.
-        self.command_line("help foobar")
-        lines = self.stdout().splitlines()
-        assert lines[0] == "Don't know topic 'foobar'"
+        self.command_line("help foobar", ret=ERR)
+        lines = self.stderr().splitlines()
+        assert "argument topic: invalid choice: 'foobar'" in lines[2]
 
     def test_error(self):
         self.command_line("fooey kablooey", ret=ERR)
