@@ -255,7 +255,6 @@ def make_parser():
         parents=[parent_parser],
     )
 
-    # TODO: required not supported in py3.6
     subparsers = parser.add_subparsers(title="Commands", dest="action")
 
     annotate = subparsers.add_parser(
