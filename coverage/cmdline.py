@@ -425,10 +425,10 @@ class CoverageScript:
         self.coverage = Coverage(
             config_file=options.rcfile,
             debug=debug,
-            data_suffix=getattr(options, "parallel_mode", None),
-            cover_pylib=getattr(options, "pylib", None),
-            timid=getattr(options, "timid", None),
-            branch=getattr(options, "branch", None),
+            data_suffix=getattr(options, "parallel_mode", False),
+            cover_pylib=getattr(options, "pylib", False),
+            timid=getattr(options, "timid", False),
+            branch=getattr(options, "branch", False),
             source=source,
             omit=omit,
             include=include,
@@ -560,7 +560,7 @@ class CoverageScript:
             for opt_name in ['branch', 'include', 'omit', 'pylib', 'source', 'timid']:
                 # As it happens, all of these options have no default, meaning
                 # they will be None if they have not been specified.
-                if getattr(options, opt_name) is not None:
+                if getattr(options, opt_name) not in [None, False]:
                     return (
                         "Options affecting multiprocessing must only be specified "
                         "in a configuration file.\n"

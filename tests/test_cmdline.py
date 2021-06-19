@@ -31,29 +31,29 @@ class BaseCmdLineTest(CoverageTest):
     # uses when calling the function.
     _defaults = mock.Mock()
     _defaults.Coverage().annotate(
-        directory=None, ignore_errors=None, include=None, omit=None, morfs=[],
+        directory=None, ignore_errors=False, include=None, omit=None, morfs=[],
         contexts=None,
     )
     _defaults.Coverage().html_report(
-        directory=None, ignore_errors=None, include=None, omit=None, morfs=[],
-        skip_covered=None, show_contexts=None, title=None, contexts=None,
-        skip_empty=None, precision=None,
+        directory=None, ignore_errors=False, include=None, omit=None, morfs=[],
+        skip_covered=False, show_contexts=False, title=None, contexts=None,
+        skip_empty=False, precision=None,
     )
     _defaults.Coverage().report(
-        ignore_errors=None, include=None, omit=None, morfs=[],
-        show_missing=None, skip_covered=None, contexts=None, skip_empty=None, precision=None,
+        ignore_errors=False, include=None, omit=None, morfs=[],
+        show_missing=False, skip_covered=False, contexts=None, skip_empty=False, precision=None,
         sort=None,
     )
     _defaults.Coverage().xml_report(
-        ignore_errors=None, include=None, omit=None, morfs=[], outfile=None,
-        contexts=None, skip_empty=None,
+        ignore_errors=False, include=None, omit=None, morfs=[], outfile=None,
+        contexts=None, skip_empty=False,
     )
     _defaults.Coverage().json_report(
-        ignore_errors=None, include=None, omit=None, morfs=[], outfile=None,
-        contexts=None, pretty_print=None, show_contexts=None,
+        ignore_errors=False, include=None, omit=None, morfs=[], outfile=None,
+        contexts=None, pretty_print=False, show_contexts=False,
     )
     _defaults.Coverage(
-        cover_pylib=None, data_suffix=None, timid=None, branch=None,
+        cover_pylib=False, data_suffix=False, timid=False, branch=False,
         config_file=True, source=None, include=None, omit=None, debug=None,
         concurrency=None, check_preimported=True, context=None,
     )
@@ -341,7 +341,7 @@ class CmdLineTest(BaseCmdLineTest):
         self.cmd_executes("report", """\
             cov = Coverage()
             cov.load()
-            cov.report(show_missing=None)
+            cov.report(show_missing=False)
             """)
         self.cmd_executes("report -i", """\
             cov = Coverage()
