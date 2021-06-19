@@ -842,7 +842,6 @@ class CmdLineStdoutTest(BaseCmdLineTest):
         self.command_line("help foobar")
         lines = self.stdout().splitlines()
         assert lines[0] == "Don't know topic 'foobar'"
-        assert lines[-1] == f"Full documentation is at {__url__}"
 
     def test_error(self):
         self.command_line("fooey kablooey", ret=ERR)
