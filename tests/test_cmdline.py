@@ -255,15 +255,15 @@ class CmdLineTest(BaseCmdLineTest):
     def test_debug_sys(self):
         self.command_line("debug sys")
         out = self.stdout()
-        assert "version:" in out
-        assert "data_file:" in out
+        assert "version:" in out, f"Full output:\n{out}"
+        assert "data_file:" in out, f"Full output:\n{out}"
 
     def test_debug_config(self):
         self.command_line("debug config")
         out = self.stdout()
-        assert "cover_pylib:" in out
-        assert "skip_covered:" in out
-        assert "skip_empty:" in out
+        assert "cover_pylib:" in out, f"Full output:\n{out}"
+        assert "skip_covered:" in out, f"Full output:\n{out}"
+        assert "skip_empty:" in out, f"Full output:\n{out}"
 
     def test_erase(self):
         # coverage erase
@@ -529,7 +529,7 @@ class CmdLineTest(BaseCmdLineTest):
     def test_bad_concurrency(self):
         self.command_line("run --concurrency=nothing", ret=ERR)
         err = self.stderr()
-        assert "option --concurrency: invalid choice: 'nothing'" in err
+        assert "argument --concurrency: invalid choice: 'nothing'" in err, f"Full output:\n{err}"
 
     def test_no_multiple_concurrency(self):
         # You can't use multiple concurrency values on the command line.
@@ -537,7 +537,7 @@ class CmdLineTest(BaseCmdLineTest):
         # values for this option, but optparse is not that flexible.
         self.command_line("run --concurrency=multiprocessing,gevent foo.py", ret=ERR)
         err = self.stderr()
-        assert "option --concurrency: invalid choice: 'multiprocessing,gevent'" in err
+        assert "argument --concurrency: invalid choice: 'multiprocessing,gevent'" in err, f"Full output:\n{err}"
 
     def test_multiprocessing_needs_config_file(self):
         # You can't use command-line args to add options to multiprocessing
@@ -545,9 +545,9 @@ class CmdLineTest(BaseCmdLineTest):
         # config file.
         self.command_line("run --concurrency=multiprocessing --branch foo.py", ret=ERR)
         msg = "Options affecting multiprocessing must only be specified in a configuration file."
-        _, err = self.stdouterr()
-        assert msg in err
-        assert "Remove --branch from the command line." in err
+        err = self.stderr()
+        assert msg in err, f"Full output:\n{err}"
+        assert "Remove --branch from the command line." in err, f"Full output:\n{err}"
 
     def test_run_debug(self):
         self.cmd_executes("run --debug=opt1 foo.py", """\
@@ -802,17 +802,17 @@ class CmdLineStdoutTest(BaseCmdLineTest):
     def test_minimum_help(self):
         self.command_line("")
         out = self.stdout()
-        assert "Code coverage for Python" in out
+        assert "Code coverage for Python" in out, f"Full output:\n{out}"
         assert out.count("\n") < 4
 
     def test_version(self):
         self.command_line("--version")
         out = self.stdout()
-        assert "ersion " in out
+        assert "ersion " in out, f"Full output:\n{out}"
         if env.C_TRACER:
-            assert "with C extension" in out
+            assert "with C extension" in out, f"Full output:\n{out}"
         else:
-            assert "without C extension" in out
+            assert "without C extension" in out, f"Full output:\n{out}"
         assert out.count("\n") < 4
 
     @pytest.mark.skipif(env.JYTHON, reason="Jython gets mad if you patch sys.argv")
@@ -824,7 +824,7 @@ class CmdLineStdoutTest(BaseCmdLineTest):
         with mock.patch.object(sys, 'argv', new=fake_argv):
             self.command_line("help")
         out = self.stdout()
-        assert expected_command_name in out
+        assert expected_command_name in out, f"Full output:\n{out}"
 
     @pytest.mark.skipif(env.JYTHON, reason="Jython gets mad if you patch sys.argv")
     def test_help_contains_command_name_from_package(self):
@@ -840,7 +840,7 @@ class CmdLineStdoutTest(BaseCmdLineTest):
         with mock.patch.object(sys, 'argv', new=fake_argv):
             self.command_line("help")
         out = self.stdout()
-        assert expected_command_name in out
+        assert expected_command_name in out, f"Full output:\n{out}"
 
     def test_help(self):
         self.command_line("help")
@@ -853,7 +853,7 @@ class CmdLineStdoutTest(BaseCmdLineTest):
         out = self.stdout()
         lines = out.splitlines()
         assert "<pyfile>" in lines[0]
-        assert "--timid" in out
+        assert "--timid" in out, f"Full output:\n{out}"
         assert len(lines) > 20
         assert lines[-1] == f"Full documentation is at {__url__}"
 
@@ -867,8 +867,8 @@ class CmdLineStdoutTest(BaseCmdLineTest):
     def test_error(self):
         self.command_line("fooey kablooey", ret=ERR)
         err = self.stderr()
-        assert "fooey" in err
-        assert "help" in err
+        assert "fooey" in err, f"Full output:\n{err}"
+        assert "help" in err, f"Full output:\n{err}"
 
     def test_doc_url(self):
         assert __url__.startswith("https://coverage.readthedocs.io")
