@@ -168,7 +168,7 @@ class BaseCmdLineTestTest(BaseCmdLineTest):
         # All the other tests here use self.cmd_executes_same in successful
         # ways, so here we just check that it fails.
         with pytest.raises(AssertionError):
-            self.cmd_executes_same("run", "debug")
+            self.cmd_executes_same("run", "debug premain")
 
 
 class CmdLineTest(BaseCmdLineTest):
@@ -235,7 +235,7 @@ class CmdLineTest(BaseCmdLineTest):
 
     def test_combine_doesnt_confuse_options_with_args(self):
         # https://github.com/nedbat/coveragepy/issues/385
-        self.cmd_executes("combine --rcfile cov.ini", """\
+        self.cmd_executes("combine --rcfile cov.ini file_result", """\
             cov = Coverage(config_file='cov.ini')
             cov.combine(None, strict=True, keep=False)
             cov.save()
