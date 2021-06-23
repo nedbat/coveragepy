@@ -1829,6 +1829,31 @@ class AsyncTest(CoverageTest):
             arcz_missing='-46 6-4',
         )
 
+    # https://github.com/nedbat/coveragepy/issues/1158
+    # https://bugs.python.org/issue44621
+    @pytest.mark.skipif(env.PYVERSION[:2] == (3, 9), reason="avoid a 3.9 bug: 44621")
+    def test_bug1158(self):
+        self.check_coverage("""\
+            import asyncio
+
+            async def async_gen():
+                yield 4
+
+            async def async_test():
+                global a
+                a = 8
+                async for i in async_gen():
+                    print(i + 10)
+                else:
+                    a = 12
+
+            asyncio.run(async_test())
+            assert a == 12
+            """,
+            arcz=".1 13 36 6E EF F.  -34 4-3  -68 89 9A 9C A9 C-6",
+        )
+        assert self.stdout() == "14\n"
+
 
 class AnnotationTest(CoverageTest):
     """Tests using type annotations."""
