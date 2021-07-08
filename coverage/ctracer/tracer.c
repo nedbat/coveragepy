@@ -305,7 +305,7 @@ CTracer_check_missing_return(CTracer *self, PyFrameObject *frame)
                         goto error;
                     }
                 }
-                SHOWLOG(self->pdata_stack->depth, PyFrame_GetLineNumber(frame), frame->f_code->co_filename, "missedreturn");
+                SHOWLOG(self->pdata_stack->depth, PyFrame_GetLineNumber(frame), MyFrame_GetCode(frame)->co_filename, "missedreturn");
                 self->pdata_stack->depth--;
                 self->pcur_entry = &self->pdata_stack->stack[self->pdata_stack->depth];
             }
@@ -384,7 +384,7 @@ CTracer_handle_call(CTracer *self, PyFrameObject *frame)
     }
 
     /* Check if we should trace this line. */
-    filename = frame->f_code->co_filename;
+    filename = MyFrame_GetCode(frame)->co_filename;
     disposition = PyDict_GetItem(self->should_trace_cache, filename);
     if (disposition == NULL) {
         if (PyErr_Occurred()) {
@@ -549,7 +549,7 @@ CTracer_handle_call(CTracer *self, PyFrameObject *frame)
      * real byte offset for a generator re-entry.
      */
     if (frame->f_lasti < 0) {
-        self->pcur_entry->last_line = -frame->f_code->co_firstlineno;
+        self->pcur_entry->last_line = -MyFrame_GetCode(frame)->co_firstlineno;
     }
     else {
         self->pcur_entry->last_line = PyFrame_GetLineNumber(frame);
@@ -633,7 +633,7 @@ CTracer_handle_line(CTracer *self, PyFrameObject *frame)
 
     STATS( self->stats.lines++; )
     if (self->pdata_stack->depth >= 0) {
-        SHOWLOG(self->pdata_stack->depth, PyFrame_GetLineNumber(frame), frame->f_code->co_filename, "line");
+        SHOWLOG(self->pdata_stack->depth, PyFrame_GetLineNumber(frame), MyFrame_GetCode(frame)->co_filename, "line");
         if (self->pcur_entry->file_data) {
             int lineno_from = -1;
             int lineno_to = -1;
@@ -714,14 +714,14 @@ CTracer_handle_return(CTracer *self, PyFrameObject *frame)
              * f_lasti before reading the byte.
              */
             int bytecode = RETURN_VALUE;
-            PyObject * pCode = frame->f_code->co_code;
+            PyObject * pCode = MyFrame_GetCode(frame)->co_code;
             int lasti = MyFrame_lasti(frame);
 
             if (lasti < PyBytes_GET_SIZE(pCode)) {
                 bytecode = PyBytes_AS_STRING(pCode)[lasti];
             }
             if (bytecode != YIELD_VALUE) {
-                int first = frame->f_code->co_firstlineno;
+                int first = MyFrame_GetCode(frame)->co_firstlineno;
                 if (CTracer_record_pair(self, self->pcur_entry->last_line, -first) < 0) {
                     goto error;
                 }
@@ -744,7 +744,7 @@ CTracer_handle_return(CTracer *self, PyFrameObject *frame)
         }
 
         /* Pop the stack. */
-        SHOWLOG(self->pdata_stack->depth, PyFrame_GetLineNumber(frame), frame->f_code->co_filename, "return");
+        SHOWLOG(self->pdata_stack->depth, PyFrame_GetLineNumber(frame), MyFrame_GetCode(frame)->co_filename, "return");
         self->pdata_stack->depth--;
         self->pcur_entry = &self->pdata_stack->stack[self->pdata_stack->depth];
     }
@@ -775,7 +775,7 @@ CTracer_handle_exception(CTracer *self, PyFrameObject *frame)
     */
     STATS( self->stats.exceptions++; )
     self->last_exc_back = frame->f_back;
-    self->last_exc_firstlineno = frame->f_code->co_firstlineno;
+    self->last_exc_firstlineno = MyFrame_GetCode(frame)->co_firstlineno;
 
     return RET_OK;
 }
@@ -806,14 +806,14 @@ CTracer_trace(CTracer *self, PyFrameObject *frame, int what, PyObject *arg_unuse
 
     #if WHAT_LOG
     if (what <= (int)(sizeof(what_sym)/sizeof(const char *))) {
-        ascii = PyUnicode_AsASCIIString(frame->f_code->co_filename);
+        ascii = PyUnicode_AsASCIIString(MyFrame_GetCode(frame)->co_filename);
         printf("trace: %s @ %s %d\n", what_sym[what], PyBytes_AS_STRING(ascii), PyFrame_GetLineNumber(frame));
         Py_DECREF(ascii);
     }
     #endif
 
     #if TRACE_LOG
-    ascii = PyUnicode_AsASCIIString(frame->f_code->co_filename);
+    ascii = PyUnicode_AsASCIIString(MyFrame_GetCode(frame)->co_filename);
     if (strstr(PyBytes_AS_STRING(ascii), start_file) && PyFrame_GetLineNumber(frame) == start_line) {
         logging = TRUE;
     }
@@ -930,7 +930,7 @@ CTracer_call(CTracer *self, PyObject *args, PyObject *kwds)
     }
 
     #if WHAT_LOG
-    ascii = PyUnicode_AsASCIIString(frame->f_code->co_filename);
+    ascii = PyUnicode_AsASCIIString(MyFrame_GetCode(frame)->co_filename);
     printf("pytrace: %s @ %s %d\n", what_sym[what], PyBytes_AS_STRING(ascii), PyFrame_GetLineNumber(frame));
     Py_DECREF(ascii);
     #endif

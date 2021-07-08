@@ -20,6 +20,13 @@
 #define MyFrame_lasti(f)    f->f_lasti
 #endif // 3.10.0a7
 
+// Access f_code should be done through a helper starting in 3.9.
+#if PY_VERSION_HEX >= 0x03090000
+#define MyFrame_GetCode(f)      (PyFrame_GetCode(f))
+#else
+#define MyFrame_GetCode(f)      ((f)->f_code)
+#endif // 3.11
+
 /* The values returned to indicate ok or error. */
 #define RET_OK      0
 #define RET_ERROR   -1
