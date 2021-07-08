@@ -161,6 +161,23 @@ class SimpleArcTest(CoverageTest):
             arcz_missing=arcz_missing,
         )
 
+    def test_bug_1184(self):
+        self.check_coverage("""\
+            def foo(x):
+                if x:
+                    try:
+                        1/(x - 1)
+                    except ZeroDivisionError:
+                        pass
+                return x        # 7
+
+            for i in range(3):  # 9
+                foo(i)
+            """,
+            arcz=".1 19 9-1  .2 23 27 34 47 56 67 7-1  9A A9",
+            arcz_unpredicted="45",
+            )
+
 
 class WithTest(CoverageTest):
     """Arc-measuring tests involving context managers."""
