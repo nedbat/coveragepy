@@ -348,7 +348,7 @@ def _same_python_executable(e1, e2):
 
 def test_without_module():
     toml1 = tomlconfig.toml
-    with without_module(tomlconfig, 'toml'):
+    with without_module(tomlconfig, 'tomli'):
         toml2 = tomlconfig.toml
     toml3 = tomlconfig.toml
 
