@@ -188,7 +188,7 @@ class ConfigTest(CoverageTest):
 
     @pytest.mark.parametrize("bad_config,msg", [
         ("[tool.coverage.run]\ntimid = \"maybe?\"\n", r"maybe[?]"),
-        ("[tool.coverage.run\n", r"Key group"),
+        ("[tool.coverage.run\n", None),
         ('[tool.coverage.report]\nexclude_lines = ["foo("]\n',
          r"Invalid \[tool.coverage.report\].exclude_lines value u?'foo\(': "
          r"(unbalanced parenthesis|missing \))"),
