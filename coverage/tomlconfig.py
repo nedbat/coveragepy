@@ -12,9 +12,9 @@ from coverage.misc import substitute_variables
 
 # TOML support is an install-time extra option.
 try:
-    import toml
+    import tomli
 except ImportError:         # pragma: not covered
-    toml = None
+    tomli = None
 
 
 class TomlDecodeError(Exception):
@@ -44,12 +44,12 @@ class TomlConfigParser:
                 toml_text = fp.read()
         except OSError:
             return []
-        if toml:
+        if tomli is not None:
             toml_text = substitute_variables(toml_text, os.environ)
             try:
-                self.data = toml.loads(toml_text)
-            except toml.TomlDecodeError as err:
-                raise TomlDecodeError(*err.args)
+                self.data = tomli.loads(toml_text)
+            except tomli.TOMLDecodeError as err:
+                raise TomlDecodeError(str(err))
             return [filename]
         else:
             has_toml = re.search(r"^\[tool\.coverage\.", toml_text, flags=re.MULTILINE)

@@ -186,31 +186,28 @@ class ConfigTest(CoverageTest):
             with pytest.raises(CoverageException, match=msg):
                 coverage.Coverage()
 
-    def test_toml_parse_errors(self):
+    @pytest.mark.parametrize("bad_config,msg", [
+        ("[tool.coverage.run]\ntimid = \"maybe?\"\n", r"maybe[?]"),
+        ("[tool.coverage.run\n", None),
+        ('[tool.coverage.report]\nexclude_lines = ["foo("]\n',
+         r"Invalid \[tool.coverage.report\].exclude_lines value u?'foo\(': "
+         r"(unbalanced parenthesis|missing \))"),
+        ('[tool.coverage.report]\npartial_branches = ["foo["]\n',
+         r"Invalid \[tool.coverage.report\].partial_branches value u?'foo\[': "
+         r"(unexpected end of regular expression|unterminated character set)"),
+        ('[tool.coverage.report]\npartial_branches_always = ["foo***"]\n',
+         r"Invalid \[tool.coverage.report\].partial_branches_always value "
+         r"u?'foo\*\*\*': "
+         r"multiple repeat"),
+        ('[tool.coverage.run]\nconcurrency="foo"', "not a list"),
+        ("[tool.coverage.report]\nprecision=1.23", "not an integer"),
+        ('[tool.coverage.report]\nfail_under="s"', "not a float"),
+    ])
+    def test_toml_parse_errors(self, bad_config, msg):
         # Im-parsable values raise CoverageException, with details.
-        bad_configs_and_msgs = [
-            ("[tool.coverage.run]\ntimid = \"maybe?\"\n", r"maybe[?]"),
-            ("[tool.coverage.run\n", r"Key group"),
-            ('[tool.coverage.report]\nexclude_lines = ["foo("]\n',
-             r"Invalid \[tool.coverage.report\].exclude_lines value u?'foo\(': "
-             r"(unbalanced parenthesis|missing \))"),
-            ('[tool.coverage.report]\npartial_branches = ["foo["]\n',
-             r"Invalid \[tool.coverage.report\].partial_branches value u?'foo\[': "
-             r"(unexpected end of regular expression|unterminated character set)"),
-            ('[tool.coverage.report]\npartial_branches_always = ["foo***"]\n',
-             r"Invalid \[tool.coverage.report\].partial_branches_always value "
-             r"u?'foo\*\*\*': "
-             r"multiple repeat"),
-            ('[tool.coverage.run]\nconcurrency="foo"', "not a list"),
-            ("[tool.coverage.report]\nprecision=1.23", "not an integer"),
-            ('[tool.coverage.report]\nfail_under="s"', "not a float"),
-        ]
-
-        for bad_config, msg in bad_configs_and_msgs:
-            print("Trying %r" % bad_config)
-            self.make_file("pyproject.toml", bad_config)
-            with pytest.raises(CoverageException, match=msg):
-                coverage.Coverage()
+        self.make_file("pyproject.toml", bad_config)
+        with pytest.raises(CoverageException, match=msg):
+            coverage.Coverage()
 
     def test_environment_vars_in_config(self):
         # Config files can have $envvars in them.
@@ -715,7 +712,7 @@ class ConfigFileTest(UsingModulesMixin, CoverageTest):
 
     def test_no_toml_installed_no_toml(self):
         # Can't read a toml file that doesn't exist.
-        with without_module(coverage.tomlconfig, 'toml'):
+        with without_module(coverage.tomlconfig, 'tomli'):
             msg = "Couldn't read 'cov.toml' as a config file"
             with pytest.raises(CoverageException, match=msg):
                 coverage.Coverage(config_file="cov.toml")
@@ -723,7 +720,7 @@ class ConfigFileTest(UsingModulesMixin, CoverageTest):
     def test_no_toml_installed_explicit_toml(self):
         # Can't specify a toml config file if toml isn't installed.
         self.make_file("cov.toml", "# A toml file!")
-        with without_module(coverage.tomlconfig, 'toml'):
+        with without_module(coverage.tomlconfig, 'tomli'):
             msg = "Can't read 'cov.toml' without TOML support"
             with pytest.raises(CoverageException, match=msg):
                 coverage.Coverage(config_file="cov.toml")
@@ -735,7 +732,7 @@ class ConfigFileTest(UsingModulesMixin, CoverageTest):
             [tool.coverage.run]
             xyzzy = 17
             """)
-        with without_module(coverage.tomlconfig, 'toml'):
+        with without_module(coverage.tomlconfig, 'tomli'):
             msg = "Can't read 'pyproject.toml' without TOML support"
             with pytest.raises(CoverageException, match=msg):
                 coverage.Coverage()
@@ -747,7 +744,7 @@ class ConfigFileTest(UsingModulesMixin, CoverageTest):
             [tool.something]
             xyzzy = 17
             """)
-        with without_module(coverage.tomlconfig, 'toml'):
+        with without_module(coverage.tomlconfig, 'tomli'):
             cov = coverage.Coverage()
             # We get default settings:
             assert not cov.config.timid

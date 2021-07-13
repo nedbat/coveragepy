@@ -242,7 +242,7 @@ def without_module(using_module, missing_module_name):
     Use this in a test function to make an optional module unavailable during
     the test::
 
-        with without_module(product.something, 'toml'):
+        with without_module(product.something, 'tomli'):
             use_toml_somehow()
 
     Arguments:

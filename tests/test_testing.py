@@ -347,10 +347,10 @@ def _same_python_executable(e1, e2):
 
 
 def test_without_module():
-    toml1 = tomlconfig.toml
-    with without_module(tomlconfig, 'toml'):
-        toml2 = tomlconfig.toml
-    toml3 = tomlconfig.toml
+    toml1 = tomlconfig.tomli
+    with without_module(tomlconfig, 'tomli'):
+        toml2 = tomlconfig.tomli
+    toml3 = tomlconfig.tomli
 
     assert toml1 is toml3 is not None
     assert toml2 is None
