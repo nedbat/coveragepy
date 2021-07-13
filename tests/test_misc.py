@@ -14,7 +14,7 @@ from tests.coveragetest import CoverageTest
 
 
 class HasherTest(CoverageTest):
-    """Test our wrapper of md5 hashing."""
+    """Test our wrapper of fingerprint hashing."""
 
     run_in_temp_dir = False
 

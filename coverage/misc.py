@@ -198,21 +198,21 @@ def filename_suffix(suffix):
 
 
 class Hasher:
-    """Hashes Python data into md5."""
+    """Hashes Python data for fingerprinting."""
     def __init__(self):
-        self.md5 = hashlib.md5()
+        self.hash = hashlib.new("sha3_256")
 
     def update(self, v):
         """Add `v` to the hash, recursively if needed."""
-        self.md5.update(str(type(v)).encode("utf8"))
+        self.hash.update(str(type(v)).encode("utf8"))
         if isinstance(v, str):
-            self.md5.update(v.encode('utf8'))
+            self.hash.update(v.encode('utf8'))
         elif isinstance(v, bytes):
-            self.md5.update(v)
+            self.hash.update(v)
         elif v is None:
             pass
         elif isinstance(v, (int, float)):
-            self.md5.update(str(v).encode("utf8"))
+            self.hash.update(str(v).encode("utf8"))
         elif isinstance(v, (tuple, list)):
             for e in v:
                 self.update(e)
@@ -230,11 +230,11 @@ class Hasher:
                     continue
                 self.update(k)
                 self.update(a)
-        self.md5.update(b'.')
+        self.hash.update(b'.')
 
     def hexdigest(self):
         """Retrieve the hex digest of the hash."""
-        return self.md5.hexdigest()
+        return self.hash.hexdigest()
 
 
 def _needs_to_implement(that, func_name):
