@@ -1832,6 +1832,7 @@ class AsyncTest(CoverageTest):
     # https://github.com/nedbat/coveragepy/issues/1158
     # https://bugs.python.org/issue44621
     @pytest.mark.skipif(env.PYVERSION[:2] == (3, 9), reason="avoid a 3.9 bug: 44621")
+    @pytest.mark.skipif(env.PYVERSION < (3, 7), reason="need asyncio.run")
     def test_bug1158(self):
         self.check_coverage("""\
             import asyncio
