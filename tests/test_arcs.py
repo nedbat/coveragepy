@@ -1215,11 +1215,8 @@ class YieldTest(CoverageTest):
         )
 
 
-three_ten_not_ready = (env.PYVERSION <= (3, 10, 0, 'beta', 4, 0))
-@pytest.mark.skipif(
-    three_ten_not_ready or not env.PYBEHAVIOR.match_case,
-    reason="Match-case is new in 3.10",
-)
+@pytest.mark.skipif(not env.PYBEHAVIOR.match_case, reason="Match-case is new in 3.10")
+@pytest.mark.skipif(env.PYVERSION <= (3, 10, 0, 'beta', 4, 0), reason="3.10.0b4 had bugs")
 class MatchCaseTest(CoverageTest):
     """Tests of match-case."""
     def test_match_case_with_default(self):
