@@ -26,6 +26,8 @@ Unreleased
 
 - Dropped support for Python 2.7, PyPy 2, and Python 3.5.
 
+- Added support for the Python 3.10 ``match/case`` syntax.
+
 - Data collection is now thread-safe.  There may have been rare instances of
   exceptions raised in multi-threaded programs.
 
@@ -42,15 +44,20 @@ Unreleased
 - The ``COVERAGE_DEBUG_FILE`` environment variable now accepts ``stdout`` and
   ``stderr`` to write to those destinations.
 
+- TOML parsing now uses the `tomli`_ library.
+
 .. _Django coverage plugin: https://pypi.org/project/django-coverage-plugin/
 .. _issue 1150: https://github.com/nedbat/coveragepy/issues/1150
 .. _issue 1168: https://github.com/nedbat/coveragepy/issues/1168
+.. _tomli: https://pypi.org/project/tomli/
 
 
 .. _changes_56b1:
 
 Version 5.6b1 --- 2021-04-13
 ----------------------------
+
+Note: 5.6 final was never released. These changes are part of 6.0.
 
 - Third-party packages are now ignored in coverage reporting.  This solves a
   few problems:
