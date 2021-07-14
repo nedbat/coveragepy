@@ -234,7 +234,7 @@ class Hasher:
 
     def hexdigest(self):
         """Retrieve the hex digest of the hash."""
-        return self.hash.hexdigest()
+        return self.hash.hexdigest()[:32]
 
 
 def _needs_to_implement(that, func_name):
