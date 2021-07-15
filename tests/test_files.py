@@ -69,18 +69,23 @@ class FilesTest(CoverageTest):
 
 
 @pytest.mark.parametrize("original, flat", [
-    ("a/b/c.py", "a_b_c_py"),
-    (r"c:\foo\bar.html", "_foo_bar_html"),
-    ("Montréal/☺/conf.py", "Montréal_☺_conf_py"),
+    ("abc.py", "abc_py"),
+    ("hellothere", "hellothere"),
+    ("a/b/c.py", "d_86bbcbe134d28fd2_c_py"),
+    ("a/b/defghi.py", "d_86bbcbe134d28fd2_defghi_py"),
+    ("/a/b/c.py", "d_bb25e0ada04227c6_c_py"),
+    ("/a/b/defghi.py", "d_bb25e0ada04227c6_defghi_py"),
+    (r"c:\foo\bar.html", "d_e7c107482373f299_bar_html"),
+    (r"d:\foo\bar.html", "d_584a05dcebc67b46_bar_html"),
+    ("Montréal/☺/conf.py", "d_c840497a2c647ce0_conf_py"),
     ( # original:
-        r"c:\lorem\ipsum\quia\dolor\sit\amet\consectetur\adipisci\velit\sed\quia\non"
-        r"\numquam\eius\modi\tempora\incidunt\ut\labore\et\dolore\magnam\aliquam"
-        r"\quaerat\voluptatem\ut\enim\ad\minima\veniam\quis\nostrum\exercitationem"
-        r"\ullam\corporis\suscipit\laboriosam\Montréal\☺\my_program.py",
+        r"c:\lorem\ipsum\quia\dolor\sit\amet\consectetur\adipisci\velit\sed" +
+        r"\quia\non\numquam\eius\modi\tempora\incidunt\ut\labore\et\dolore" +
+        r"\magnam\aliquam\quaerat\voluptatem\ut\enim\ad\minima\veniam\quis" +
+        r"\nostrum\exercitationem\ullam\corporis\suscipit\laboriosam" +
+        r"\Montréal\☺\my_program.py",
         # flat:
-        "re_et_dolore_magnam_aliquam_quaerat_voluptatem_ut_enim_ad_minima_veniam_quis_"
-        "nostrum_exercitationem_ullam_corporis_suscipit_laboriosam_Montréal_☺_my_program_py_"
-        "97eaca41b860faaa1a21349b1f3009bb061cf0a8"
+        "d_e597dfacb73a23d5_my_program_py"
      ),
 ])
 def test_flat_rootname(original, flat):

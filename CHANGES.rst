@@ -46,11 +46,20 @@ Unreleased
 
 - TOML parsing now uses the `tomli`_ library.
 
-- Use a modern hash algorithm when fingerprinting to speed HTML reports
-  (`issue 1189`_).
+- Some minor changes to usually invisible details of the HTML report:
+
+  - Use a modern hash algorithm when fingerprinting, for high-security
+    environments (`issue 1189`_).
+
+  - Change how report file names are generated, to avoid leading underscores
+    (`issue 1167`_), to avoid rare file name collisions (`issue 584`_), and to
+    avoid file names becoming too long (`issue 580`_).
 
 .. _Django coverage plugin: https://pypi.org/project/django-coverage-plugin/
+.. _issue 580: https://github.com/nedbat/coveragepy/issues/580
+.. _issue 584: https://github.com/nedbat/coveragepy/issues/584
 .. _issue 1150: https://github.com/nedbat/coveragepy/issues/1150
+.. _issue 1167: https://github.com/nedbat/coveragepy/issues/1167
 .. _issue 1168: https://github.com/nedbat/coveragepy/issues/1168
 .. _issue 1189: https://github.com/nedbat/coveragepy/issues/1189
 .. _tomli: https://pypi.org/project/tomli/

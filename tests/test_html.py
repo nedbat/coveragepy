@@ -56,7 +56,7 @@ class HtmlTestHelpers(CoverageTest):
 
     def get_html_report_content(self, module):
         """Return the content of the HTML report for `module`."""
-        filename = module.replace(".", "_").replace("/", "_") + ".html"
+        filename = flat_rootname(module) + ".html"
         filename = os.path.join("htmlcov", filename)
         with open(filename) as f:
             return f.read()
@@ -617,7 +617,7 @@ def filepath_to_regex(path):
     return regex
 
 
-def compare_html(expected, actual):
+def compare_html(expected, actual, extra_scrubs=None):
     """Specialized compare function for our HTML files."""
     scrubs = [
         (r'/coverage.readthedocs.io/?[-.\w/]*', '/coverage.readthedocs.io/VER'),
@@ -640,6 +640,8 @@ def compare_html(expected, actual):
     if env.WINDOWS:
         # For file paths...
         scrubs += [(r"\\", "/")]
+    if extra_scrubs:
+        scrubs += extra_scrubs
     compare(expected, actual, file_pattern="*.html", scrubs=scrubs)
 
 
@@ -897,7 +899,12 @@ assert len(math) == 18
         for p in glob.glob("out/other/*_other_py.html"):
             os.rename(p, "out/other/blah_blah_other_py.html")
 
-        compare_html(gold_path("html/other"), "out/other")
+        compare_html(
+            gold_path("html/other"), "out/other",
+            extra_scrubs=[
+                (r'href="d_[0-9a-z]{16}_', 'href="_TEST_TMPDIR_othersrc_'),
+                ],
+            )
         contains(
             "out/other/index.html",
             '<a href="here_py.html">here.py</a>',

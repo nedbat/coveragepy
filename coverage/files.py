@@ -77,7 +77,7 @@ def canonical_filename(filename):
     return CANONICAL_FILENAME_CACHE[filename]
 
 
-MAX_FLAT = 200
+MAX_FLAT = 100
 
 @contract(filename='unicode', returns='unicode')
 def flat_rootname(filename):
@@ -87,15 +87,16 @@ def flat_rootname(filename):
     the same directory, but need to differentiate same-named files from
     different directories.
 
-    For example, the file a/b/c.py will return 'a_b_c_py'
+    For example, the file a/b/c.py will return 'd_86bbcbe134d28fd2_c_py'
 
     """
-    name = ntpath.splitdrive(filename)[1]
-    name = re.sub(r"[\\/.:]", "_", name)
-    if len(name) > MAX_FLAT:
-        h = hashlib.sha1(name.encode('UTF-8')).hexdigest()
-        name = name[-(MAX_FLAT-len(h)-1):] + '_' + h
-    return name
+    dirname, basename = ntpath.split(filename)
+    if dirname:
+        fp = hashlib.new("sha3_256", dirname.encode("UTF-8")).hexdigest()[:16]
+        prefix = f"d_{fp}_"
+    else:
+        prefix = ""
+    return prefix + basename.replace(".", "_")
 
 
 if env.WINDOWS:

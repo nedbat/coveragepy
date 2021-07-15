@@ -1332,10 +1332,11 @@ class UnicodeFilePathsTest(CoverageTest):
         # The HTML report uses ascii-encoded HTML entities.
         out = self.run_command("coverage html")
         assert out == ""
-        self.assert_exists("htmlcov/\xe2_accented_py.html")
+        self.assert_exists("htmlcov/d_5786906b6f0ffeb4_accented_py.html")
         with open("htmlcov/index.html") as indexf:
             index = indexf.read()
-        assert '<a href="&#226;_accented_py.html">&#226;%saccented.py</a>' % os.sep in index
+        expected = '<a href="d_5786906b6f0ffeb4_accented_py.html">&#226;%saccented.py</a>'
+        assert expected % os.sep in index
 
         # The XML report is always UTF8-encoded.
         out = self.run_command("coverage xml")
