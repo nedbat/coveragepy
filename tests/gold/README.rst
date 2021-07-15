@@ -7,16 +7,13 @@ Gold files
 These are files used in comparisons for some of the tests.  Code to support
 these comparisons is in tests/goldtest.py.
 
-If gold tests are failing, it can useful to set the COVERAGE_KEEP_TMP
-environment variable.  If set, the test working directories at
-$TMPDIR/coverage_test are kept after the tests are run, so that you can
-manually inspect the differences.
+If gold tests are failing, you may need to update the gold files by copying the
+current output of the tests into the gold files. When a test fails, the actual
+output is in the tests/actual directory. Do not commit those files to git.
 
-Do this to clean the output directories and run only the failed tests while
-keeping the output::
+You can run just the failed tests again with::
 
-    rm -rf $TMPDIR/coverage_test
-    COVERAGE_KEEP_TMP=1 tox -e py37 -- --lf
+    tox -e py39 -- -n 0 --lf
 
 The saved HTML files in the html directories can't be viewed properly without
 the supporting CSS and Javascript files. But we don't want to save copies of

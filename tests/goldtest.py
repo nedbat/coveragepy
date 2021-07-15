@@ -67,6 +67,14 @@ def compare(
     expected_only = fnmatch_list(dc.left_only, file_pattern)
     actual_only = fnmatch_list(dc.right_only, file_pattern)
 
+    def save_mismatch(f):
+        """Save a mismatched result to tests/actual."""
+        save_path = expected_dir.replace("/gold/", "/actual/")
+        os.makedirs(save_path, exist_ok=True)
+        with open(os.path.join(save_path, f), "w") as savef:
+            with open(os.path.join(actual_dir, f)) as readf:
+                savef.write(readf.read())
+
     # filecmp only compares in binary mode, but we want text mode.  So
     # look through the list of different files, and compare them
     # ourselves.
@@ -95,6 +103,12 @@ def compare(
             print(f":::: diff {expected_file!r} and {actual_file!r}")
             print("\n".join(difflib.Differ().compare(expected, actual)))
             print(f":::: end diff {expected_file!r} and {actual_file!r}")
+            save_mismatch(f)
+
+    if not actual_extra:
+        for f in actual_only:
+            save_mismatch(f)
+
     assert not text_diff, "Files differ: %s" % '\n'.join(text_diff)
 
     assert not expected_only, f"Files in {expected_dir} only: {expected_only}"

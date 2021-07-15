@@ -128,10 +128,6 @@ these as 1 to use them:
 - COVERAGE_AST_DUMP: will dump the AST tree as it is being used during code
   parsing.
 
-- COVERAGE_KEEP_TMP: keeps the temporary directories in which tests are run.
-  This makes debugging tests easier. The temporary directories are at
-  ``$TMPDIR/coverage_test/*``, and are named for the test that made them.
-
 
 Of course, run all the tests on every version of Python you have, before
 submitting a change.

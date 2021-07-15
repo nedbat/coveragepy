@@ -51,15 +51,6 @@ class CoverageTest(
     # Let stderr go to stderr, pytest will capture it for us.
     show_stderr = True
 
-    # Temp dirs go to $TMPDIR/coverage_test/*
-    temp_dir_prefix = "coverage_test/"
-    if os.getenv('COVERAGE_ENV_ID'):                        # pragma: debugging
-        temp_dir_prefix += "{}/".format(os.getenv('COVERAGE_ENV_ID'))
-
-    # Keep the temp directories if the env says to.
-    # $set_env.py: COVERAGE_KEEP_TMP - Keep the temp directories made by tests.
-    keep_temp_dir = bool(int(os.getenv("COVERAGE_KEEP_TMP", "0")))
-
     def setup_test(self):
         super().setup_test()
 

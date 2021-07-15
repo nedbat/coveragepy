@@ -124,9 +124,6 @@ def run_tests(tracer, *runner_args):
     """The actual running of tests."""
     if 'COVERAGE_TESTING' not in os.environ:
         os.environ['COVERAGE_TESTING'] = "True"
-    # $set_env.py: COVERAGE_ENV_ID - Use environment-specific test directories.
-    if 'COVERAGE_ENV_ID' in os.environ:
-        os.environ['COVERAGE_ENV_ID'] = make_env_id(tracer)
     print_banner(label_for_tracer(tracer))
 
     return pytest.main(list(runner_args))

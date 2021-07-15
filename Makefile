@@ -28,7 +28,7 @@ clean: clean_platform                   ## Remove artifacts of test execution, i
 	rm -rf doc/_build doc/_spell doc/sample_html_beta
 	rm -rf tmp
 	rm -rf .cache .pytest_cache .hypothesis
-	rm -rf $$TMPDIR/coverage_test
+	rm -rf tests/actual
 	-make -C tests/gold/html clean
 
 sterile: clean                          ## Remove all non-controlled content, even if expensive.

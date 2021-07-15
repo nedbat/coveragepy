@@ -634,6 +634,7 @@ def compare_html(expected, actual, extra_scrubs=None):
         (filepath_to_regex(flat_rootname(str(os.getcwd()))), '_TEST_TMPDIR'),
         (filepath_to_regex(abs_file(os.getcwd())), 'TEST_TMPDIR'),
         (filepath_to_regex(flat_rootname(str(abs_file(os.getcwd())))), '_TEST_TMPDIR'),
+        # Old format of test directories that could be in the gold files.
         (r'/private/var/folders/[\w/]{35}/coverage_test/tests_test_html_\w+_\d{8}', 'TEST_TMPDIR'),
         (r'_private_var_folders_\w{35}_coverage_test_tests_test_html_\w+_\d{8}', '_TEST_TMPDIR'),
     ]

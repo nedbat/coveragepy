@@ -18,6 +18,7 @@ clean:		## Remove the effects of this Makefile.
 	git clean -fq .
 
 update-gold:	## Copy output files from latest tests to gold files.
+	echo Note: this doesn't work now, it has to be updated for tests/actual
 	@for sub in $$TMPDIR/coverage_test/*HtmlGoldTests*/out; do \
 		rsync --verbose --existing --recursive $$sub/ . ; \
 	done ; \
