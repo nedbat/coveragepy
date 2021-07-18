@@ -20,7 +20,7 @@ check-manifest==0.46
 readme_renderer==29.0
 
 # for kitting.
-requests==2.25.1
+requests==2.26.0
 twine==3.4.1
 libsass==0.21.0
 
