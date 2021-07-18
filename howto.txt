@@ -56,7 +56,7 @@
         $ make kit_upload
 - Tag the tree
     $ git tag -a 3.0.1
-    $ git push --all --follow-tags
+    $ git push --follow-tags
 - Bump version:
     - coverage/version.py
         - increment version number
