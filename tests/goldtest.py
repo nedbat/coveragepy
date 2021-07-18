@@ -67,7 +67,7 @@ def compare(
     expected_only = fnmatch_list(dc.left_only, file_pattern)
     actual_only = fnmatch_list(dc.right_only, file_pattern)
 
-    def save_mismatch(f):
+    def save_mismatch(f):                                   # pragma: only failure
         """Save a mismatched result to tests/actual."""
         save_path = expected_dir.replace("/gold/", "/actual/")
         os.makedirs(save_path, exist_ok=True)
@@ -105,7 +105,7 @@ def compare(
             print(f":::: end diff {expected_file!r} and {actual_file!r}")
             save_mismatch(f)
 
-    if not actual_extra:
+    if not actual_extra:                                    # pragma: only failure
         for f in actual_only:
             save_mismatch(f)
 
