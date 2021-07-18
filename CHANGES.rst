@@ -485,7 +485,7 @@ Version 5.0b1 --- 2019-11-11
   ``coverage html --show-contexts``) will issue a warning if there were no
   contexts measured (`issue 851`_).
 
-.. _TOML: https://github.com/toml-lang/toml#readme
+.. _TOML: https://toml.io/
 .. _issue 664: https://github.com/nedbat/coveragepy/issues/664
 .. _issue 851: https://github.com/nedbat/coveragepy/issues/851
 .. _issue 855: https://github.com/nedbat/coveragepy/issues/855

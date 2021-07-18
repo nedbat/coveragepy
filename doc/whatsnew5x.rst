@@ -110,7 +110,7 @@ New Features
   Coverage instance.
 
 
-.. _TOML: https://github.com/toml-lang/toml#readme
+.. _TOML: https://toml.io/
 .. _issue 650: https://github.com/nedbat/coveragepy/issues/650
 
 
