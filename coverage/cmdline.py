@@ -5,7 +5,7 @@
 
 
 import glob
-import optparse
+import optparse     # pylint: disable=deprecated-module
 import os.path
 import shlex
 import sys

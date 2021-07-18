@@ -34,21 +34,6 @@ def set_warnings():
     # Warnings to suppress:
     # How come these warnings are successfully suppressed here, but not in setup.cfg??
 
-    #   setuptools/py33compat.py:54: DeprecationWarning: The value of convert_charrefs will become
-    #   True in 3.5. You are encouraged to set the value explicitly.
-    #       unescape = getattr(html, 'unescape', html_parser.HTMLParser().unescape)
-    warnings.filterwarnings(
-        "ignore",
-        category=DeprecationWarning,
-        message=r"The value of convert_charrefs will become True in 3.5.",
-        )
-
-    warnings.filterwarnings(
-        "ignore",
-        category=DeprecationWarning,
-        message=r".* instead of inspect.getfullargspec",
-        )
-
     # <frozen importlib._bootstrap>:681:
     # ImportWarning: VendorImporter.exec_module() not found; falling back to load_module()
     warnings.filterwarnings(

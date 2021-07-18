@@ -364,14 +364,8 @@ def analyze_args(function):
             star(boolean): Does `function` accept *args?
             num_args(int): How many positional arguments does `function` have?
     """
-    try:
-        getargspec = inspect.getfullargspec
-    except AttributeError:
-        getargspec = inspect.getargspec
-    with ignore_warnings():
-        # DeprecationWarning: Use inspect.signature() instead of inspect.getfullargspec()
-        argspec = getargspec(function)
-    return bool(argspec[1]), len(argspec[0])
+    argspec = inspect.getfullargspec(function)
+    return bool(argspec.varargs), len(argspec.args)
 
 
 def main(args):

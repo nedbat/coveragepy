@@ -15,9 +15,7 @@ tox
 
 # for linting.
 greenlet==1.1.0
-# pylint is now tightly pinning astroid: https://github.com/PyCQA/pylint/issues/4527
-#astroid==2.5.6
-pylint==2.8.3
+pylint==2.9.3
 check-manifest==0.46
 readme_renderer==29.0
 
