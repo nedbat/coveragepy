@@ -21,8 +21,10 @@ want to know what's different in 5.0 since 4.5.x, see :ref:`whatsnew5x`.
     ..  Version 9.8.1 --- 2027-07-27
     ..  ----------------------------
 
-Unreleased
-----------
+.. _changes_60b1:
+
+Version 6.0b1 --- 2021-07-18
+----------------------------
 
 - Dropped support for Python 2.7, PyPy 2, and Python 3.5.
 
