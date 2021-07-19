@@ -1886,6 +1886,30 @@ class AsyncTest(CoverageTest):
         )
         assert self.stdout() == "14\n"
 
+    # https://github.com/nedbat/coveragepy/issues/1176
+    # https://bugs.python.org/issue44622
+    @pytest.mark.skipif(
+        (3, 10, 0, "alpha", 0, 0) <= env.PYVERSION[:6] <= (3, 10, 0, "beta", 4, 0),
+        reason="avoid a 3.10 bug fixed after beta 4: 44622"
+    )
+    @pytest.mark.skipif(env.PYVERSION < (3, 7), reason="need asyncio.run")
+    def test_bug1176_a(self):
+        self.check_coverage("""\
+            import asyncio
+
+            async def async_gen():
+                yield 4
+
+            async def async_test():
+                async for i in async_gen():
+                    print(i + 8)
+
+            asyncio.run(async_test())
+            """,
+            arcz=".1 13 36 6A A.  -34 4-3  -67 78 87 7-6",
+        )
+        assert self.stdout() == "12\n"
+
 
 class AnnotationTest(CoverageTest):
     """Tests using type annotations."""
