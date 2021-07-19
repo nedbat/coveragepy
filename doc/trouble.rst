@@ -42,8 +42,13 @@ coverage.py from working properly:
   sys.settrace, then it will conflict with coverage.py, and it won't be
   measured properly.
 
+* `sys.setprofile`_ calls your code, but while running your code, does not fire
+  trace events.  This means that coverage.py can't see what's happening in that
+  code.
+
 .. _execv: https://docs.python.org/3/library/os.html#os.execl
 .. _sys.settrace: https://docs.python.org/3/library/sys.html#sys.settrace
+.. _sys.setprofile: https://docs.python.org/3/library/sys.html#sys.setprofile
 .. _thread: https://docs.python.org/3/library/_thread.html
 .. _threading: https://docs.python.org/3/library/threading.html
 .. _issue 43: https://github.com/nedbat/coveragepy/issues/43
