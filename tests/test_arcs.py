@@ -517,6 +517,40 @@ class LoopArcTest(CoverageTest):
             arcz=".1 12 -22 2-2 23 34 42 2.",
         )
 
+    # https://bugs.python.org/issue44672
+    @pytest.mark.skipif(env.PYVERSION < (3, 10), reason="<3.10 traced final pass incorrectly")
+    def test_incorrect_loop_exit_bug_1175(self):
+        self.check_coverage("""\
+            def wrong_loop(x):
+                if x:
+                    for i in [3, 33]:
+                        print(i+4)
+                else:
+                    pass
+
+            wrong_loop(8)
+            """,
+            arcz=".1 .2 23 26 34 43 3. 6. 18 8.",
+            arcz_missing="26 6.",
+        )
+
+    # https://bugs.python.org/issue44672
+    @pytest.mark.skipif(env.PYVERSION < (3, 10), reason="<3.10 traced final pass incorrectly")
+    def test_incorrect_if_bug_1175(self):
+        self.check_coverage("""\
+            def wrong_loop(x):
+                if x:
+                    if x:
+                        print(4)
+                else:
+                    pass
+
+            wrong_loop(8)
+            """,
+            arcz=".1 .2 23 26 34 4. 3. 6. 18 8.",
+            arcz_missing="26 3. 6.",
+        )
+
     def test_generator_expression(self):
         # Generator expression:
         self.check_coverage("""\
