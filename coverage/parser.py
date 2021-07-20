@@ -41,9 +41,7 @@ class PythonParser:
             try:
                 self.text = get_python_source(self.filename)
             except OSError as err:
-                raise NoSource(
-                    f"No source for code: '{self.filename}': {err}"
-                )
+                raise NoSource(f"No source for code: '{self.filename}': {err}") from err
 
         self.exclude = exclude
 
@@ -243,7 +241,7 @@ class PythonParser:
                 "Couldn't parse '%s' as Python source: '%s' at line %d" % (
                     self.filename, err.args[0], lineno
                 )
-            )
+            ) from err
 
         self.excluded = self.first_lines(self.raw_excluded)
 
@@ -363,7 +361,7 @@ class ByteParser:
                     "Couldn't parse '%s' as Python source: '%s' at line %d" % (
                         filename, synerr.msg, synerr.lineno
                     )
-                )
+                ) from synerr
 
         # Alternative Python implementations don't always provide all the
         # attributes on code objects that we need to do the analysis.

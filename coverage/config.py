@@ -125,7 +125,7 @@ class HandyConfigParser(configparser.RawConfigParser):
             except re.error as e:
                 raise CoverageException(
                     f"Invalid [{section}].{option} value {value!r}: {e}"
-                )
+                ) from e
             if value:
                 value_list.append(value)
         return value_list
@@ -272,7 +272,7 @@ class CoverageConfig:
         try:
             files_read = cp.read(filename)
         except (configparser.Error, TomlDecodeError) as err:
-            raise CoverageException(f"Couldn't read config file {filename}: {err}")
+            raise CoverageException(f"Couldn't read config file {filename}: {err}") from err
         if not files_read:
             return False
 
@@ -285,7 +285,7 @@ class CoverageConfig:
                 if was_set:
                     any_set = True
         except ValueError as err:
-            raise CoverageException(f"Couldn't read config file {filename}: {err}")
+            raise CoverageException(f"Couldn't read config file {filename}: {err}") from err
 
         # Check that there are no unrecognized options.
         all_options = collections.defaultdict(set)

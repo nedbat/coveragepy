@@ -49,7 +49,7 @@ class TomlConfigParser:
             try:
                 self.data = tomli.loads(toml_text)
             except tomli.TOMLDecodeError as err:
-                raise TomlDecodeError(str(err))
+                raise TomlDecodeError(str(err)) from err
             return [filename]
         else:
             has_toml = re.search(r"^\[tool\.coverage\.", toml_text, flags=re.MULTILINE)
@@ -95,8 +95,8 @@ class TomlConfigParser:
             raise configparser.NoSectionError(section)
         try:
             return name, data[option]
-        except KeyError:
-            raise configparser.NoOptionError(option, name)
+        except KeyError as exc:
+            raise configparser.NoOptionError(option, name) from exc
 
     def has_option(self, section, option):
         _, data = self._get_section(section)
@@ -149,7 +149,7 @@ class TomlConfigParser:
             except re.error as e:
                 raise CoverageException(
                     f"Invalid [{name}].{option} value {value!r}: {e}"
-                )
+                ) from e
         return values
 
     def getint(self, section, option):

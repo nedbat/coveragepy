@@ -161,8 +161,8 @@ class ve_build_ext(build_ext):
         """Wrap `run` with `BuildFailed`."""
         try:
             build_ext.run(self)
-        except errors.DistutilsPlatformError:
-            raise BuildFailed()
+        except errors.DistutilsPlatformError as exc:
+            raise BuildFailed() from exc
 
     def build_extension(self, ext):
         """Wrap `build_extension` with `BuildFailed`."""
@@ -170,12 +170,12 @@ class ve_build_ext(build_ext):
             # Uncomment to test compile failure handling:
             #   raise errors.CCompilerError("OOPS")
             build_ext.build_extension(self, ext)
-        except ext_errors:
-            raise BuildFailed()
+        except ext_errors as exc:
+            raise BuildFailed() from exc
         except ValueError as err:
             # this can happen on Windows 64 bit, see Python issue 7511
             if "'path'" in str(err):    # works with both py 2/3
-                raise BuildFailed()
+                raise BuildFailed() from err
             raise
 
 # There are a few reasons we might not be able to compile the C extension.

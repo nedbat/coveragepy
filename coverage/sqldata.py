@@ -291,7 +291,7 @@ class CoverageData(SimpleReprMixin):
                     "Data file {!r} doesn't seem to be a coverage data file: {}".format(
                         self._filename, exc
                     )
-                )
+                ) from exc
             else:
                 if schema_version != SCHEMA_VERSION:
                     raise CoverageException(
@@ -1095,7 +1095,7 @@ class SqliteDb(SimpleReprMixin):
                 pass
             if self.debug:
                 self.debug.write(f"EXCEPTION from execute: {msg}")
-            raise CoverageException(f"Couldn't use data file {self.filename!r}: {msg}")
+            raise CoverageException(f"Couldn't use data file {self.filename!r}: {msg}") from exc
 
     def execute_one(self, sql, parameters=()):
         """Execute a statement and return the one row that results.
