@@ -647,8 +647,9 @@ class BadFileTracerTest(FileTracerTest):
         #   Disabling plug-in '...' due to previous exception
         # or:
         #   Disabling plug-in '...' due to an exception:
+        print([str(w) for w in warns.list])
+        warns = [w for w in warns.list if issubclass(w.category, CoverageWarning)]
         assert len(warns) == 1
-        assert issubclass(warns[0].category, CoverageWarning)
         warnmsg = warns[0].message.args[0]
         assert f"Disabling plug-in '{module_name}.{plugin_name}' due to " in warnmsg
 
