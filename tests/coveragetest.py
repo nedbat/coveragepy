@@ -220,6 +220,7 @@ class CoverageTest(
         warnings.
 
         """
+        __tracebackhide__ = True
         saved_warnings = []
         def capture_warning(msg, slug=None, once=False):        # pylint: disable=unused-argument
             """A fake implementation of Coverage._warn, to capture warnings."""
