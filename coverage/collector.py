@@ -137,12 +137,12 @@ class Collector:
                 self.threading = threading
             else:
                 raise CoverageException(f"Don't understand concurrency={concurrency}")
-        except ImportError:
+        except ImportError as ex:
             raise CoverageException(
                 "Couldn't trace with concurrency={}, the module isn't installed.".format(
                     self.concurrency,
                 )
-            )
+            ) from ex
 
         self.reset()
 
@@ -318,8 +318,8 @@ class Collector:
             (frame, event, arg), lineno = args
             try:
                 fn(frame, event, arg, lineno=lineno)
-            except TypeError:
-                raise Exception("fullcoverage must be run with the C trace function.")
+            except TypeError as ex:
+                raise Exception("fullcoverage must be run with the C trace function.") from ex
 
         # Install our installation tracer in threading, to jump-start other
         # threads.

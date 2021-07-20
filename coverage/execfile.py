@@ -42,7 +42,7 @@ def find_module(modulename):
     try:
         spec = importlib.util.find_spec(modulename)
     except ImportError as err:
-        raise NoSource(str(err))
+        raise NoSource(str(err)) from err
     if not spec:
         raise NoSource(f"No module named {modulename!r}")
     pathname = spec.origin
@@ -193,7 +193,7 @@ class PyRunner:
             raise
         except Exception as exc:
             msg = "Couldn't run '{filename}' as Python code: {exc.__class__.__name__}: {exc}"
-            raise CoverageException(msg.format(filename=self.arg0, exc=exc))
+            raise CoverageException(msg.format(filename=self.arg0, exc=exc)) from exc
 
         # Execute the code object.
         # Return to the original directory in case the test code exits in
@@ -226,7 +226,7 @@ class PyRunner:
                 sys.excepthook(typ, err, tb.tb_next)
             except SystemExit:                      # pylint: disable=try-except-raise
                 raise
-            except Exception:
+            except Exception as exc:
                 # Getting the output right in the case of excepthook
                 # shenanigans is kind of involved.
                 sys.stderr.write("Error in sys.excepthook:\n")
@@ -236,7 +236,7 @@ class PyRunner:
                     err2.__traceback__ = err2.__traceback__.tb_next
                 sys.__excepthook__(typ2, err2, tb2.tb_next)
                 sys.stderr.write("\nOriginal exception was:\n")
-                raise ExceptionDuringRun(typ, err, tb.tb_next)
+                raise ExceptionDuringRun(typ, err, tb.tb_next) from exc
             else:
                 sys.exit(1)
         finally:
@@ -277,8 +277,8 @@ def make_code_from_py(filename):
     # Open the source file.
     try:
         source = get_python_source(filename)
-    except (OSError, NoSource):
-        raise NoSource("No file to run: '%s'" % filename)
+    except (OSError, NoSource) as exc:
+        raise NoSource("No file to run: '%s'" % filename) from exc
 
     code = compile_unicode(source, filename, "exec")
     return code
@@ -288,8 +288,8 @@ def make_code_from_pyc(filename):
     """Get a code object from a .pyc file."""
     try:
         fpyc = open(filename, "rb")
-    except OSError:
-        raise NoCode("No file to run: '%s'" % filename)
+    except OSError as exc:
+        raise NoCode("No file to run: '%s'" % filename) from exc
 
     with fpyc:
         # First four bytes are a version-specific magic number.  It has to

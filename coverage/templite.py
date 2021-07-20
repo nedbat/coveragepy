@@ -288,10 +288,10 @@ class Templite:
             except AttributeError:
                 try:
                     value = value[dot]
-                except (TypeError, KeyError):
+                except (TypeError, KeyError) as exc:
                     raise TempliteValueError(
                         f"Couldn't evaluate {value!r}.{dot}"
-                    )
+                    ) from exc
             if callable(value):
                 value = value()
         return value
