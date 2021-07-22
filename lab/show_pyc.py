@@ -26,12 +26,14 @@ def show_pyc_file(fname):
     if sys.version_info >= (3, 7):
         # 3.7 added a flags word
         flags = struct.unpack('<L', f.read(4))[0]
-        hash_based = flags & 0x01
-        check_source = flags & 0x02
+        hash_based = bool(flags & 0x01)
+        check_source = bool(flags & 0x02)
         print(f"flags 0x{flags:08x}")
         if hash_based:
             source_hash = f.read(8)
             read_date_and_size = False
+            print(f"hash {binascii.hexlify(source_hash)}")
+            print(f"check_source {check_source}")
     if read_date_and_size:
         moddate = f.read(4)
         modtime = time.asctime(time.localtime(struct.unpack('<L', moddate)[0]))
