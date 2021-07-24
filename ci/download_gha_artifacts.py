@@ -6,6 +6,7 @@
 import datetime
 import os
 import os.path
+import sys
 import time
 import zipfile
 
@@ -43,7 +44,7 @@ def utc2local(timestring):
     return local.strftime("%Y-%m-%d %H:%M:%S")
 
 dest = "dist"
-repo_owner = "nedbat/coveragepy"
+repo_owner = sys.argv[1]
 temp_zip = "artifacts.zip"
 
 if not os.path.exists(dest):

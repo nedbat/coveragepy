@@ -95,7 +95,7 @@ kit_local:
 	find ~/Library/Caches/pip/wheels -name 'coverage-*' -delete
 
 download_kits:				## Download the built kits from GitHub.
-	python ci/download_gha_artifacts.py
+	python ci/download_gha_artifacts.py nedbat/coveragepy
 
 check_kits:				## Check that dist/* are well-formed.
 	python -m twine check dist/*
