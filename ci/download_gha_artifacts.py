@@ -4,6 +4,7 @@
 """Use the GitHub API to download built artifacts."""
 
 import datetime
+import json
 import os
 import os.path
 import sys
@@ -47,17 +48,21 @@ dest = "dist"
 repo_owner = sys.argv[1]
 temp_zip = "artifacts.zip"
 
-if not os.path.exists(dest):
-    os.makedirs(dest)
+os.makedirs(dest, exist_ok=True)
 os.chdir(dest)
 
 r = requests.get(f"https://api.github.com/repos/{repo_owner}/actions/artifacts")
-dists = [a for a in r.json()["artifacts"] if a["name"] == "dist"]
-if not dists:
-    print("No recent dists!")
+if r.status_code == 200:
+    dists = [a for a in r.json()["artifacts"] if a["name"] == "dist"]
+    if not dists:
+        print("No recent dists!")
+    else:
+        latest = max(dists, key=lambda a: a["created_at"])
+        print(f"Artifacts created at {utc2local(latest['created_at'])}")
+        download_url(latest["archive_download_url"], temp_zip)
+        unpack_zipfile(temp_zip)
+        os.remove(temp_zip)
 else:
-    latest = max(dists, key=lambda a: a["created_at"])
-    print(f"Artifacts created at {utc2local(latest['created_at'])}")
-    download_url(latest["archive_download_url"], temp_zip)
-    unpack_zipfile(temp_zip)
-    os.remove(temp_zip)
+    print(f"Fetching artifacts returned status {r.status_code}:")
+    print(json.dumps(r.json(), indent=4))
+    sys.exit(1)
