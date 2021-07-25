@@ -89,6 +89,9 @@ Here's a sample configuration file::
         if 0:
         if __name__ == .__main__.:
 
+        # Don't complain about abstract methods, they aren't run:
+        @(abc\.)?abstractmethod
+
     ignore_errors = True
 
     [html]
@@ -267,10 +270,19 @@ Values common to many kinds of reporting.
 .. _config_report_exclude_lines:
 
 ``exclude_lines`` (multi-string): a list of regular expressions.  Any line of
-your source code that matches one of these regexes is excluded from being
+your source code containing a match for  one of these regexes is excluded from
+being
 reported as missing.  More details are in :ref:`excluding`.  If you use this
 option, you are replacing all the exclude regexes, so you'll need to also
 supply the "pragma: no cover" regex if you still want to use it.
+
+You can exclude lines introducing blocks, and the entire block is excluded. If
+you exclude a ``def`` line or decorator line, the entire function is excluded.
+
+Be careful when writing this setting: the values are regular expressions that
+only have to match a portion of the line. For example, if you write ``...``,
+you'll exclude any line with three or more of any character. If you write
+``pass``, you'll also exclude the line ``my_pass="foo"``, and so on.
 
 .. _config_report_fail_under:
 

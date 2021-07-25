@@ -67,12 +67,17 @@ expressions. Using :ref:`configuration files <config>` or the coverage
 often-used constructs to exclude that can be matched with a regex. You can
 exclude them all at once without littering your code with exclusion pragmas.
 
+If the matched line introduces a block, the entire block is excluded from
+reporting.  Matching a ``def`` line or decorator line will exclude an entire
+function.
+
 For example, you might decide that __repr__ functions are usually only used in
 debugging code, and are uninteresting to test themselves.  You could exclude
 all of them by adding a regex to the exclusion list::
 
     [report]
-    exclude_lines = def __repr__
+    exclude_lines =
+        def __repr__
 
 For example, here's a list of exclusions I've used::
 
@@ -87,10 +92,14 @@ For example, here's a list of exclusions I've used::
         if 0:
         if __name__ == .__main__.:
         class .*\bProtocol\):
+        @(abc\.)?abstractmethod
 
 Note that when using the ``exclude_lines`` option in a configuration file, you
 are taking control of the entire list of regexes, so you need to re-specify the
 default "pragma: no cover" match if you still want it to apply.
+
+The regexes only have to match part of a line. Be careful not to over-match.  A
+value of ``...`` will match any line with more than three characters in it.
 
 A similar pragma, "no branch", can be used to tailor branch coverage
 measurement.  See :ref:`branch` for details.
