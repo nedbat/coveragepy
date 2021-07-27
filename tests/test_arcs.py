@@ -1265,7 +1265,7 @@ class MatchCaseTest(CoverageTest):
                         match = "default"
                 print(match)
             """,
-            arcz=".1 12 23 34 49 35 56 69 58 89 91 1.",
+            arcz=".1 12 23 34 49 35 56 69 57 78 89 91 1.",
         )
         assert self.stdout() == "default\nno go\ngo: n\n"
 

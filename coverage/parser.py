@@ -1022,12 +1022,9 @@ class AstArcAnalyzer:
         exits = set()
         had_wildcard = False
         for case in node.cases:
-            # The wildcard case doesn't execute the pattern.
             case_start = self.line_for_node(case.pattern)
             if isinstance(case.pattern, ast.MatchAs):
                 had_wildcard = True
-                if case.pattern.name is None:
-                    case_start = self.line_for_node(case.body[0])
             self.add_arc(last_start, case_start, "the pattern on line {lineno} always matched")
             from_start = ArcStart(case_start, cause="the pattern on line {lineno} never matched")
             exits |= self.add_body_arcs(case.body, from_start=from_start)
