@@ -369,7 +369,7 @@ class InOrOut:
         if not disp.has_dynamic_filename:
             if not disp.source_filename:
                 raise CoverageException(
-                    f"Plugin {plugin!r} didn't set source_filename for {disp.original_filename!r}"
+                    f"Plugin {plugin!r} didn't set source_filename for '{disp.original_filename}'"
                 )
             reason = self.check_include_omit_etc(disp.source_filename, frame)
             if reason:

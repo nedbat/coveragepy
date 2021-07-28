@@ -192,8 +192,8 @@ class PyRunner:
         except CoverageException:
             raise
         except Exception as exc:
-            msg = "Couldn't run '{filename}' as Python code: {exc.__class__.__name__}: {exc}"
-            raise CoverageException(msg.format(filename=self.arg0, exc=exc)) from exc
+            msg = f"Couldn't run '{self.arg0}' as Python code: {exc.__class__.__name__}: {exc}"
+            raise CoverageException(msg) from exc
 
         # Execute the code object.
         # Return to the original directory in case the test code exits in
@@ -278,7 +278,7 @@ def make_code_from_py(filename):
     try:
         source = get_python_source(filename)
     except (OSError, NoSource) as exc:
-        raise NoSource(f"No file to run: {filename!r}") from exc
+        raise NoSource(f"No file to run: '{filename}'") from exc
 
     code = compile_unicode(source, filename, "exec")
     return code
@@ -289,7 +289,7 @@ def make_code_from_pyc(filename):
     try:
         fpyc = open(filename, "rb")
     except OSError as exc:
-        raise NoCode(f"No file to run: {filename!r}") from exc
+        raise NoCode(f"No file to run: '{filename}'") from exc
 
     with fpyc:
         # First four bytes are a version-specific magic number.  It has to

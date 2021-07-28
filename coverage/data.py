@@ -91,7 +91,7 @@ def combine_parallel_data(data, aliases=None, data_paths=None, strict=False, kee
             pattern = os.path.join(os.path.abspath(p), localdot)
             files_to_combine.extend(glob.glob(pattern))
         else:
-            raise CoverageException(f"Couldn't combine from non-existent path {p!r}")
+            raise CoverageException(f"Couldn't combine from non-existent path '{p}'")
 
     if strict and not files_to_combine:
         raise CoverageException("No data to combine")
