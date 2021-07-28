@@ -278,7 +278,7 @@ def make_code_from_py(filename):
     try:
         source = get_python_source(filename)
     except (OSError, NoSource) as exc:
-        raise NoSource("No file to run: '%s'" % filename) from exc
+        raise NoSource(f"No file to run: {filename!r}") from exc
 
     code = compile_unicode(source, filename, "exec")
     return code
@@ -289,7 +289,7 @@ def make_code_from_pyc(filename):
     try:
         fpyc = open(filename, "rb")
     except OSError as exc:
-        raise NoCode("No file to run: '%s'" % filename) from exc
+        raise NoCode(f"No file to run: {filename!r}") from exc
 
     with fpyc:
         # First four bytes are a version-specific magic number.  It has to

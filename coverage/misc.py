@@ -121,7 +121,7 @@ def expensive(fn):
 
         def _wrapper(self):
             if hasattr(self, attr):
-                raise AssertionError("Shouldn't have called %s more than once" % fn.__name__)
+                raise AssertionError(f"Shouldn't have called {fn.__name__} more than once")
             setattr(self, attr, True)
             return fn(self)
         return _wrapper
@@ -245,12 +245,10 @@ def _needs_to_implement(that, func_name):
     else:
         thing = "Class"
         klass = that.__class__
-        name = "{klass.__module__}.{klass.__name__}".format(klass=klass)
+        name = f"{klass.__module__}.{klass.__name__}"
 
     raise NotImplementedError(
-        "{thing} {name!r} needs to implement {func_name}()".format(
-            thing=thing, name=name, func_name=func_name
-            )
+        f"{thing} {name!r} needs to implement {func_name}()"
         )
 
 

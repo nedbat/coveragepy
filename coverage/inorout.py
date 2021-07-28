@@ -369,8 +369,7 @@ class InOrOut:
         if not disp.has_dynamic_filename:
             if not disp.source_filename:
                 raise CoverageException(
-                    "Plugin %r didn't set source_filename for %r" %
-                    (plugin, disp.original_filename)
+                    f"Plugin {plugin!r} didn't set source_filename for {disp.original_filename!r}"
                 )
             reason = self.check_include_omit_etc(disp.source_filename, frame)
             if reason:
@@ -487,7 +486,7 @@ class InOrOut:
         """
         mod = sys.modules.get(pkg)
         if mod is None:
-            self.warn("Module %s was never imported." % pkg, slug="module-not-imported")
+            self.warn(f"Module {pkg} was never imported.", slug="module-not-imported")
             return
 
         if module_is_namespace(mod):
@@ -496,7 +495,7 @@ class InOrOut:
             return
 
         if not module_has_file(mod):
-            self.warn("Module %s has no Python source." % pkg, slug="module-not-python")
+            self.warn(f"Module {pkg} has no Python source.", slug="module-not-python")
             return
 
         # The module was in sys.modules, and seems like a module with code, but

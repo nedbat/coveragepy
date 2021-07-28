@@ -45,7 +45,7 @@ class Plugins:
             coverage_init = getattr(mod, "coverage_init", None)
             if not coverage_init:
                 raise CoverageException(
-                    "Plugin module %r didn't define a coverage_init function" % module
+                    f"Plugin module {module!r} didn't define a coverage_init function"
                 )
 
             options = config.get_plugin_options(module)

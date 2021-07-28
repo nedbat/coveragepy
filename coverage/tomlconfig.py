@@ -147,9 +147,7 @@ class TomlConfigParser:
             try:
                 re.compile(value)
             except re.error as e:
-                raise CoverageException(
-                    f"Invalid [{name}].{option} value {value!r}: {e}"
-                ) from e
+                raise CoverageException(f"Invalid [{name}].{option} value {value!r}: {e}") from e
         return values
 
     def getint(self, section, option):

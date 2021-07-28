@@ -41,7 +41,7 @@ class PythonParser:
             try:
                 self.text = get_python_source(self.filename)
             except OSError as err:
-                raise NoSource(f"No source for code: '{self.filename}': {err}") from err
+                raise NoSource(f"No source for code: {self.filename!r}: {err}") from err
 
         self.exclude = exclude
 
@@ -238,9 +238,8 @@ class PythonParser:
             else:
                 lineno = err.args[1][0]     # TokenError
             raise NotPython(
-                "Couldn't parse '%s' as Python source: '%s' at line %d" % (
-                    self.filename, err.args[0], lineno
-                )
+                f"Couldn't parse {self.filename!r} as Python source: " +
+                f"{err.args[0]!r} at line {lineno}"
             ) from err
 
         self.excluded = self.first_lines(self.raw_excluded)

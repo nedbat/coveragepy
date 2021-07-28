@@ -109,7 +109,7 @@ def compare(
         for f in actual_only:
             save_mismatch(f)
 
-    assert not text_diff, "Files differ: %s" % '\n'.join(text_diff)
+    assert not text_diff, "Files differ: " + "\n".join(text_diff)
 
     assert not expected_only, f"Files in {expected_dir} only: {expected_only}"
     if not actual_extra:
@@ -152,7 +152,7 @@ def contains_any(filename, *strlist):
             return
 
     assert False, (                         # pragma: only failure
-        "Missing content in %s: %r [1 of %d]" % (filename, strlist[0], len(strlist),)
+        f"Missing content in {filename}: {strlist[0]!r} [1 of {len(strlist)}]"
     )
 
 

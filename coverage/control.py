@@ -443,9 +443,7 @@ class Coverage:
         elif dycon == "test_function":
             context_switchers = [should_start_context_test_function]
         else:
-            raise CoverageException(
-                f"Don't understand dynamic_context setting: {dycon!r}"
-            )
+            raise CoverageException(f"Don't understand dynamic_context setting: {dycon!r}")
 
         context_switchers.extend(
             plugin.dynamic_context for plugin in self._plugins.context_switchers
@@ -599,9 +597,7 @@ class Coverage:
 
         """
         if not self._started:                           # pragma: part started
-            raise CoverageException(
-                "Cannot switch context, coverage is not started"
-                )
+            raise CoverageException("Cannot switch context, coverage is not started")
 
         if self._collector.should_start_context:
             self._warn("Conflicting dynamic contexts", slug="dynamic-conflict", once=True)

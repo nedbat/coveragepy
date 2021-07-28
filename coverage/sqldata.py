@@ -541,7 +541,7 @@ class CoverageData(SimpleReprMixin):
                 file_id = self._file_id(filename)
                 if file_id is None:
                     raise CoverageException(
-                        f"Can't add file tracer data for unmeasured file '{filename}'"
+                        f"Can't add file tracer data for unmeasured file {filename!r}"
                     )
 
                 existing_plugin = self.file_tracer(filename)
