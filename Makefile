@@ -82,7 +82,7 @@ kit:					## Make the source distribution.
 kit_upload:				## Upload the built distributions to PyPI.
 	twine upload --verbose dist/*
 
-test_upload:				## Upload the distrubutions to PyPI's testing server.
+test_upload:				## Upload the distributions to PyPI's testing server.
 	twine upload --verbose --repository testpypi dist/*
 
 kit_local:

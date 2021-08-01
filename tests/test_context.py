@@ -197,7 +197,7 @@ def get_qualname():
     """Helper to return qualname_from_frame for the caller."""
     stack = inspect.stack()[1:]
     if any(sinfo[0].f_code.co_name == "get_qualname" for sinfo in stack):
-        # We're calling outselves recursively, maybe because we're testing
+        # We're calling ourselves recursively, maybe because we're testing
         # properties. Return an int to try to get back on track.
         return 17
     caller_frame = stack[0][0]

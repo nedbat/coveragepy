@@ -8,7 +8,7 @@
 (function($) {
 	jQuery.extend({
 		isOnScreen: function(box, container) {
-			//ensure numbers come in as intgers (not strings) and remove 'px' is it's there
+			//ensure numbers come in as integers (not strings) and remove 'px' is it's there
 			for(var i in box){box[i] = parseFloat(box[i])};
 			for(var i in container){container[i] = parseFloat(container[i])};
 
