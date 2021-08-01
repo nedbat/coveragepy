@@ -448,7 +448,7 @@ class ConfigFileTest(UsingModulesMixin, CoverageTest):
         cover_pylib = TRUE
         parallel = on
         concurrency = thread
-        ; this omit is overriden by the omit from [report]
+        ; this omit is overridden by the omit from [report]
         omit = twenty
         source = myapp
         source_pkgs = ned

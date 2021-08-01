@@ -25,7 +25,7 @@ except ImportError:
     # We want to be able to run this for some tasks that don't need pytest.
     pytest = None
 
-# Contants derived the same as in coverage/env.py.  We can't import
+# Constants derived the same as in coverage/env.py.  We can't import
 # that file here, it would be evaluated too early and not get the
 # settings we make in this file.
 

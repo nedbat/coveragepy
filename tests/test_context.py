@@ -59,9 +59,9 @@ class StaticContextTest(CoverageTest):
 
     def test_combining_line_contexts(self):
         red_data, blue_data = self.run_red_blue()
-        for datas in [[red_data, blue_data], [blue_data, red_data]]:
+        for data in [[red_data, blue_data], [blue_data, red_data]]:
             combined = CoverageData(suffix="combined")
-            for data in datas:
+            for data in data:
                 combined.update(data)
 
             assert combined.measured_contexts() == {'red', 'blue'}
@@ -84,9 +84,9 @@ class StaticContextTest(CoverageTest):
 
     def test_combining_arc_contexts(self):
         red_data, blue_data = self.run_red_blue(branch=True)
-        for datas in [[red_data, blue_data], [blue_data, red_data]]:
+        for data in [[red_data, blue_data], [blue_data, red_data]]:
             combined = CoverageData(suffix="combined")
-            for data in datas:
+            for data in data:
                 combined.update(data)
 
             assert combined.measured_contexts() == {'red', 'blue'}
@@ -197,7 +197,7 @@ def get_qualname():
     """Helper to return qualname_from_frame for the caller."""
     stack = inspect.stack()[1:]
     if any(sinfo[0].f_code.co_name == "get_qualname" for sinfo in stack):
-        # We're calling outselves recursively, maybe because we're testing
+        # We're calling ourselves recursively, maybe because we're testing
         # properties. Return an int to try to get back on track.
         return 17
     caller_frame = stack[0][0]
