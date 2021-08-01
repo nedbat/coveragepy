@@ -59,9 +59,9 @@ class StaticContextTest(CoverageTest):
 
     def test_combining_line_contexts(self):
         red_data, blue_data = self.run_red_blue()
-        for data in [[red_data, blue_data], [blue_data, red_data]]:
+        for datas in [[red_data, blue_data], [blue_data, red_data]]:
             combined = CoverageData(suffix="combined")
-            for data in data:
+            for data in datas:
                 combined.update(data)
 
             assert combined.measured_contexts() == {'red', 'blue'}
@@ -84,9 +84,9 @@ class StaticContextTest(CoverageTest):
 
     def test_combining_arc_contexts(self):
         red_data, blue_data = self.run_red_blue(branch=True)
-        for data in [[red_data, blue_data], [blue_data, red_data]]:
+        for datas in [[red_data, blue_data], [blue_data, red_data]]:
             combined = CoverageData(suffix="combined")
-            for data in data:
+            for data in datas:
                 combined.update(data)
 
             assert combined.measured_contexts() == {'red', 'blue'}
