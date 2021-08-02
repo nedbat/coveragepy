@@ -58,7 +58,11 @@ Version 6.0b1 --- 2021-07-18
 - Some minor changes to usually invisible details of the HTML report:
 
   - Use a modern hash algorithm when fingerprinting, for high-security
-    environments (`issue 1189`_).
+    environments (`issue 1189`_).  When generating the HTML report, we save the
+    hash of the data, to avoid regenerating an unchanged HTML page. We used to
+    use MD5 to generate the hash, and now use SHA-3-256.  This was never a
+    security concern, but security scanners would notice the MD5 algorithm and
+    raise a false alarm.
 
   - Change how report file names are generated, to avoid leading underscores
     (`issue 1167`_), to avoid rare file name collisions (`issue 584`_), and to
