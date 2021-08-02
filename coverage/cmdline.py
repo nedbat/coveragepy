@@ -709,7 +709,7 @@ class CoverageScript:
             command_line = self.coverage.get_option("run:command_line")
             if command_line is not None:
                 args = shlex.split(command_line)
-                if args and args[0] == "-m":
+                if args and args[0] in {"-m", "--module"}:
                     options.module = True
                     args = args[1:]
         if not args:
