@@ -30,7 +30,7 @@ jobs:
           - "3.7"
           - "3.8"
           - "3.9"
-          - "3.10.0-beta.4"
+          - "3.10.0-rc.1"
           - "pypy3"
         exclude:
           # Windows PyPy doesn't seem to work?
