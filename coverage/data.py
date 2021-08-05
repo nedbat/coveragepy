@@ -53,7 +53,9 @@ def add_data_to_hash(data, filename, hasher):
     hasher.update(data.file_tracer(filename))
 
 
-def combine_parallel_data(data, aliases=None, data_paths=None, strict=False, keep=False):
+def combine_parallel_data(
+    data, aliases=None, data_paths=None, strict=False, keep=False, message=None,
+):
     """Combine a number of data files together.
 
     Treat `data.filename` as a file prefix, and combine the data from all
@@ -117,6 +119,8 @@ def combine_parallel_data(data, aliases=None, data_paths=None, strict=False, kee
         else:
             data.update(new_data, aliases=aliases)
             files_combined += 1
+            if message:
+                message(f"Combined data file {os.path.relpath(f)}")
             if not keep:
                 if data._debug.should('dataio'):
                     data._debug.write(f"Deleting combined data file {f!r}")

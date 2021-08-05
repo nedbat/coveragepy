@@ -437,6 +437,7 @@ class ApiTest(CoverageTest):
         self.make_good_data_files()
         cov1 = coverage.Coverage()
         cov1.combine()
+        assert self.stdout() == ""
         cov1.save()
         self.check_code1_code2(cov1)
         self.assert_file_count(".coverage.*", 0)
@@ -448,6 +449,7 @@ class ApiTest(CoverageTest):
 
         cov3 = coverage.Coverage()
         cov3.combine()
+        assert self.stdout() == ""
         # Now the data is empty!
         _, statements, missing, _ = cov3.analysis("code1.py")
         assert statements == [1]
@@ -469,6 +471,7 @@ class ApiTest(CoverageTest):
         cov.save()
 
         cov.combine()
+        assert self.stdout() == ""
         self.check_code1_code2(cov)
 
     def test_ordered_combine(self):
@@ -483,6 +486,7 @@ class ApiTest(CoverageTest):
         def get_combined_filenames():
             cov = coverage.Coverage()
             cov.combine()
+            assert self.stdout() == ""
             cov.save()
             data = cov.get_data()
             filenames = {relative_filename(f).replace("\\", "/") for f in data.measured_files()}

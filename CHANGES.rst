@@ -27,6 +27,9 @@ Unreleased
 - The ``coverage html`` command now prints a message indicating where the HTML
   report was written.  Fixes `issue 1195`_.
 
+- The ``coverage combine`` command now prints messages indicating each data
+  file being combined.  Fixes `issue 1105`_.
+
 - Unrecognized options in the configuration file are no longer errors. They are
   now warnings, to ease the use of coverage across versions.  Fixes `issue
   1035`_.
@@ -35,6 +38,7 @@ Unreleased
   unsupported type." (`issue 1010`_).
 
 .. _issue 1035: https://github.com/nedbat/coveragepy/issues/1035
+.. _issue 1105: https://github.com/nedbat/coveragepy/issues/1105
 .. _issue 1195: https://github.com/nedbat/coveragepy/issues/1195
 
 

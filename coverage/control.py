@@ -718,6 +718,7 @@ class Coverage:
             data_paths=data_paths,
             strict=strict,
             keep=keep,
+            message=self._message,
         )
 
     def get_data(self):
