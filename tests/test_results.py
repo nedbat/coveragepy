@@ -65,6 +65,14 @@ class NumbersTest(CoverageTest):
     def test_display_covered(self, prec, pc, res):
         assert Numbers(precision=prec).display_covered(pc) == res
 
+    @pytest.mark.parametrize("prec, width", [
+        (0, 3),     # 100
+        (1, 5),     # 100.0
+        (4, 8),     # 100.0000
+    ])
+    def test_pc_str_width(self, prec, width):
+        assert Numbers(precision=prec).pc_str_width() == width
+
     def test_covered_ratio(self):
         n = Numbers(n_files=1, n_statements=200, n_missing=47)
         assert n.ratio_covered == (153, 200)
