@@ -103,6 +103,7 @@ class Coverage:
         auto_data=False, timid=None, branch=None, config_file=True,
         source=None, source_pkgs=None, omit=None, include=None, debug=None,
         concurrency=None, check_preimported=False, context=None,
+        messages=False,
     ):  # pylint: disable=too-many-arguments
         """
         Many of these arguments duplicate and override values that can be
@@ -173,6 +174,9 @@ class Coverage:
         `context` is a string to use as the :ref:`static context
         <static_contexts>` label for collected data.
 
+        If `messages` is true, some messages will be printed to stdout
+        indicating what is happening.
+
         .. versionadded:: 4.0
             The `concurrency` parameter.
 
@@ -184,6 +188,9 @@ class Coverage:
 
         .. versionadded:: 5.3
             The `source_pkgs` parameter.
+
+        .. versionadded:: 6.0
+            The `messages` parameter.
 
         """
         # data_file=None means no disk file at all. data_file missing means
@@ -205,6 +212,7 @@ class Coverage:
         self._warn_unimported_source = True
         self._warn_preimported_source = check_preimported
         self._no_warn_slugs = None
+        self._messages = messages
 
         # A record of all the warnings that have been issued.
         self._warnings = []
@@ -371,6 +379,11 @@ class Coverage:
 
         if once:
             self._no_warn_slugs.append(slug)
+
+    def _message(self, msg):
+        """Write a message to the user, if configured to do so."""
+        if self._messages:
+            print(msg)
 
     def get_option(self, option_name):
         """Get an option from the configuration.
@@ -969,7 +982,8 @@ class Coverage:
             html_skip_empty=skip_empty, precision=precision,
         ):
             reporter = HtmlReporter(self)
-            return reporter.report(morfs)
+            ret = reporter.report(morfs)
+            return ret
 
     def xml_report(
         self, morfs=None, outfile=None, ignore_errors=None,

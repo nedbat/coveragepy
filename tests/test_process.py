@@ -1298,7 +1298,7 @@ class UnicodeFilePathsTest(CoverageTest):
 
         # The HTML report uses ascii-encoded HTML entities.
         out = self.run_command("coverage html")
-        assert out == ""
+        assert re.fullmatch(r"Wrote HTML report to htmlcov[/\\]index.html\n", out)
         self.assert_exists("htmlcov/h\xe2t_py.html")
         with open("htmlcov/index.html") as indexf:
             index = indexf.read()
@@ -1331,7 +1331,7 @@ class UnicodeFilePathsTest(CoverageTest):
 
         # The HTML report uses ascii-encoded HTML entities.
         out = self.run_command("coverage html")
-        assert out == ""
+        assert re.fullmatch(r"Wrote HTML report to htmlcov[/\\]index.html\n", out)
         self.assert_exists("htmlcov/d_5786906b6f0ffeb4_accented_py.html")
         with open("htmlcov/index.html") as indexf:
             index = indexf.read()
