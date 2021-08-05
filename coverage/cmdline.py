@@ -574,6 +574,7 @@ class CoverageScript:
             concurrency=options.concurrency,
             check_preimported=True,
             context=options.context,
+            messages=True,
             )
 
         if options.action == "debug":

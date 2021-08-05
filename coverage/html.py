@@ -363,7 +363,9 @@ class HtmlReporter:
             'totals': self.totals,
         })
 
-        write_html(os.path.join(self.directory, "index.html"), html)
+        index_file = os.path.join(self.directory, "index.html")
+        write_html(index_file, html)
+        self.coverage._message(f"Wrote HTML report to {index_file}")
 
         # Write the latest hashes for next time.
         self.incr.write()
