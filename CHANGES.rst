@@ -24,8 +24,14 @@ want to know what's different in 5.0 since 4.5.x, see :ref:`whatsnew5x`.
 Unreleased
 ----------
 
+- Unrecognized options in the configuration file are no longer errors. They are
+  now warnings, to ease the use of coverage across versions.  Fixes `issue
+  1035`_.
+
 - Fix another rarer instance of "Error binding parameter 0 - probably
   unsupported type." (`issue 1010`_).
+
+.. _issue 1035: https://github.com/nedbat/coveragepy/issues/1035
 
 
 .. _changes_60b1:
