@@ -192,15 +192,7 @@ class Coverage:
         if data_file is _DEFAULT_DATAFILE:
             data_file = None
 
-        # Build our configuration from a number of sources.
-        self.config = read_coverage_config(
-            config_file=config_file,
-            data_file=data_file, cover_pylib=cover_pylib, timid=timid,
-            branch=branch, parallel=bool_or_none(data_suffix),
-            source=source, source_pkgs=source_pkgs, run_omit=omit, run_include=include, debug=debug,
-            report_omit=omit, report_include=include,
-            concurrency=concurrency, context=context,
-            )
+        self.config = None
 
         # This is injectable by tests.
         self._debug_file = None
@@ -234,6 +226,16 @@ class Coverage:
         self._started = False
         # Should we write the debug output?
         self._should_write_debug = True
+
+        # Build our configuration from a number of sources.
+        self.config = read_coverage_config(
+            config_file=config_file, warn=self._warn,
+            data_file=data_file, cover_pylib=cover_pylib, timid=timid,
+            branch=branch, parallel=bool_or_none(data_suffix),
+            source=source, source_pkgs=source_pkgs, run_omit=omit, run_include=include, debug=debug,
+            report_omit=omit, report_include=include,
+            concurrency=concurrency, context=context,
+            )
 
         # If we have sub-process measurement happening automatically, then we
         # want any explicit creation of a Coverage object to mean, this process
@@ -352,16 +354,18 @@ class Coverage:
 
         """
         if self._no_warn_slugs is None:
-            self._no_warn_slugs = list(self.config.disable_warnings)
+            if self.config is not None:
+                self._no_warn_slugs = list(self.config.disable_warnings)
 
-        if slug in self._no_warn_slugs:
-            # Don't issue the warning
-            return
+        if self._no_warn_slugs is not None:
+            if slug in self._no_warn_slugs:
+                # Don't issue the warning
+                return
 
         self._warnings.append(msg)
         if slug:
             msg = f"{msg} ({slug})"
-        if self._debug.should('pid'):
+        if self._debug is not None and self._debug.should('pid'):
             msg = f"[{os.getpid()}] {msg}"
         warnings.warn(msg, category=CoverageWarning, stacklevel=2)
 

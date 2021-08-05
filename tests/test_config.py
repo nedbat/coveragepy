@@ -10,7 +10,7 @@ import pytest
 
 import coverage
 from coverage.config import HandyConfigParser
-from coverage.exceptions import CoverageException
+from coverage.exceptions import CoverageException, CoverageWarning
 
 from tests.coveragetest import CoverageTest, UsingModulesMixin
 from tests.helpers import without_module
@@ -392,7 +392,7 @@ class ConfigTest(CoverageTest):
             xyzzy = 17
             """)
         msg = r"Unrecognized option '\[run\] xyzzy=' in config file .coveragerc"
-        with pytest.raises(CoverageException, match=msg):
+        with pytest.warns(CoverageWarning, match=msg):
             _ = coverage.Coverage()
 
     def test_unknown_option_toml(self):
@@ -401,7 +401,7 @@ class ConfigTest(CoverageTest):
             xyzzy = 17
             """)
         msg = r"Unrecognized option '\[tool.coverage.run\] xyzzy=' in config file pyproject.toml"
-        with pytest.raises(CoverageException, match=msg):
+        with pytest.warns(CoverageWarning, match=msg):
             _ = coverage.Coverage()
 
     def test_misplaced_option(self):
@@ -410,7 +410,7 @@ class ConfigTest(CoverageTest):
             branch = True
             """)
         msg = r"Unrecognized option '\[report\] branch=' in config file .coveragerc"
-        with pytest.raises(CoverageException, match=msg):
+        with pytest.warns(CoverageWarning, match=msg):
             _ = coverage.Coverage()
 
     def test_unknown_option_in_other_ini_file(self):
@@ -418,8 +418,8 @@ class ConfigTest(CoverageTest):
             [coverage:run]
             huh = what?
             """)
-        msg = (r"Unrecognized option '\[coverage:run\] huh=' in config file setup.cfg")
-        with pytest.raises(CoverageException, match=msg):
+        msg = r"Unrecognized option '\[coverage:run\] huh=' in config file setup.cfg"
+        with pytest.warns(CoverageWarning, match=msg):
             _ = coverage.Coverage()
 
     def test_exceptions_from_missing_things(self):

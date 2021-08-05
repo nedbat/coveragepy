@@ -248,7 +248,7 @@ class CoverageConfig:
                 setattr(self, k, v)
 
     @contract(filename=str)
-    def from_file(self, filename, our_file):
+    def from_file(self, filename, warn, our_file):
         """Read configuration from a .rc file.
 
         `filename` is a file name to read.
@@ -297,7 +297,7 @@ class CoverageConfig:
             real_section = cp.has_section(section)
             if real_section:
                 for unknown in set(cp.options(section)) - options:
-                    raise CoverageException(
+                    warn(
                         "Unrecognized option '[{}] {}=' in config file {}".format(
                             real_section, unknown, filename
                         )
@@ -517,12 +517,13 @@ def config_files_to_try(config_file):
     return files_to_try
 
 
-def read_coverage_config(config_file, **kwargs):
+def read_coverage_config(config_file, warn, **kwargs):
     """Read the coverage.py configuration.
 
     Arguments:
         config_file: a boolean or string, see the `Coverage` class for the
             tricky details.
+        warn: a function to issue warnings.
         all others: keyword arguments from the `Coverage` class, used for
             setting values in the configuration.
 
@@ -541,7 +542,7 @@ def read_coverage_config(config_file, **kwargs):
         files_to_try = config_files_to_try(config_file)
 
         for fname, our_file, specified_file in files_to_try:
-            config_read = config.from_file(fname, our_file=our_file)
+            config_read = config.from_file(fname, warn, our_file=our_file)
             if config_read:
                 break
             if specified_file:
