@@ -48,7 +48,7 @@ def qualname_from_frame(frame):
     fname = co.co_name
     method = None
     if co.co_argcount and co.co_varnames[0] == "self":
-        self = frame.f_locals["self"]
+        self = frame.f_locals.get("self", None)
         method = getattr(self, fname, None)
 
     if method is None:

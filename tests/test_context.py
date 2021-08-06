@@ -5,6 +5,7 @@
 
 import inspect
 import os.path
+from unittest import mock
 
 import coverage
 from coverage.context import qualname_from_frame
@@ -275,3 +276,8 @@ class QualnameTest(CoverageTest):
         # A class with a name like a function shouldn't confuse qualname_from_frame.
         class test_something:               # pylint: disable=unused-variable
             assert get_qualname() is None
+
+    def test_bug_1210(self):
+        co = mock.Mock(co_name="a_co_name", co_argcount=1, co_varnames=["self"])
+        frame = mock.Mock(f_code = co, f_locals={})
+        assert qualname_from_frame(frame) == "unittest.mock.a_co_name"
