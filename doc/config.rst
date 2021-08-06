@@ -327,6 +327,16 @@ setting also affects the interpretation of the ``fail_under`` setting.
 ``show_missing`` (boolean, default False): when running a summary report, show
 missing lines.  See :ref:`cmd_report` for more information.
 
+.. _config_report_skip_covered:
+
+``skip_covered`` (boolean, default False): don't report files that are 100%
+covered.  This helps you focus on files that need attention.
+
+.. _config_report_skip_empty:
+
+``skip_empty`` (boolean, default False): don't report files that have no
+executable code (such as ``__init__.py`` files).
+
 .. _config_report_sort:
 
 ``sort`` (string, default "Name"): Sort the text report by the named column.
