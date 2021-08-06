@@ -179,7 +179,9 @@ class HtmlReporter:
             self.skip_covered = self.config.skip_covered
         self.skip_empty = self.config.html_skip_empty
         if self.skip_empty is None:
-            self.skip_empty= self.config.skip_empty
+            self.skip_empty = self.config.skip_empty
+        self.skipped_covered_count = 0
+        self.skipped_empty_count = 0
 
         title = self.config.html_title
 
@@ -284,12 +286,14 @@ class HtmlReporter:
             if no_missing_lines and no_missing_branches:
                 # If there's an existing file, remove it.
                 file_be_gone(html_path)
+                self.skipped_covered_count += 1
                 return
 
         if self.skip_empty:
             # Don't report on empty files.
             if nums.n_statements == 0:
                 file_be_gone(html_path)
+                self.skipped_empty_count += 1
                 return
 
         # Find out if the file on disk is already correct.
@@ -358,9 +362,25 @@ class HtmlReporter:
         """Write the index.html file for this report."""
         index_tmpl = Templite(read_data("index.html"), self.template_globals)
 
+        skipped_covered_msg = skipped_empty_msg = ""
+        if self.skipped_covered_count:
+            msg = "{} {} skipped due to complete coverage."
+            skipped_covered_msg = msg.format(
+                self.skipped_covered_count,
+                "file" if self.skipped_covered_count == 1 else "files",
+            )
+        if self.skipped_empty_count:
+            msg = "{} empty {} skipped."
+            skipped_empty_msg = msg.format(
+                self.skipped_empty_count,
+                "file" if self.skipped_empty_count == 1 else "files",
+            )
+
         html = index_tmpl.render({
             'files': self.file_summaries,
             'totals': self.totals,
+            'skipped_covered_msg': skipped_covered_msg,
+            'skipped_empty_msg': skipped_empty_msg,
         })
 
         index_file = os.path.join(self.directory, "index.html")

@@ -506,6 +506,8 @@ class HtmlTest(HtmlTestHelpers, CoverageTest):
         self.assert_exists("htmlcov/index.html")
         self.assert_doesnt_exist("htmlcov/main_file_py.html")
         self.assert_exists("htmlcov/not_covered_py.html")
+        index = self.get_html_index_content()
+        assert "1 file skipped due to complete coverage." in index
 
     def test_report_skip_covered_branches(self):
         self.make_main_and_not_covered()
@@ -541,6 +543,8 @@ class HtmlTest(HtmlTestHelpers, CoverageTest):
         self.assert_exists("htmlcov/index.html")
         self.assert_exists("htmlcov/main_file_py.html")
         self.assert_doesnt_exist("htmlcov/submodule___init___py.html")
+        index = self.get_html_index_content()
+        assert "1 empty file skipped." in index
 
     def test_html_skip_empty(self):
         self.make_init_and_main()

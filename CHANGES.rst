@@ -30,6 +30,9 @@ Unreleased
 - The ``coverage combine`` command now prints messages indicating each data
   file being combined.  Fixes `issue 1105`_.
 
+- The HTML report now includes a sentence about skipped files due to
+  ``skip_covered`` or ``skip_empty`` settings.  Fixes `issue 1163`_.
+
 - Unrecognized options in the configuration file are no longer errors. They are
   now warnings, to ease the use of coverage across versions.  Fixes `issue
   1035`_.
@@ -39,6 +42,7 @@ Unreleased
 
 .. _issue 1035: https://github.com/nedbat/coveragepy/issues/1035
 .. _issue 1105: https://github.com/nedbat/coveragepy/issues/1105
+.. _issue 1163: https://github.com/nedbat/coveragepy/issues/1163
 .. _issue 1195: https://github.com/nedbat/coveragepy/issues/1195
 
 

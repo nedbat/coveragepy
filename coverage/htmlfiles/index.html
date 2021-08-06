@@ -104,6 +104,13 @@
     <p id="no_rows">
         No items found using the specified filter.
     </p>
+
+    {% if skipped_covered_msg %}
+        <p>{{ skipped_covered_msg }}</p>
+    {% endif %}
+    {% if skipped_empty_msg %}
+        <p>{{ skipped_empty_msg }}</p>
+    {% endif %}
 </div>
 
 <div id="footer">
