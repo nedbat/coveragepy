@@ -135,6 +135,9 @@ def run_tests_with_coverage(tracer, *runner_args):
     os.environ['COVERAGE_TESTING'] = "True"
     os.environ['COVERAGE_PROCESS_START'] = os.path.abspath('metacov.ini')
     os.environ['COVERAGE_HOME'] = os.getcwd()
+    context = os.environ.get('COVERAGE_CONTEXT')
+    if context:
+        os.environ['COVERAGE_CONTEXT'] = context + "." + tracer
 
     # Create the .pth file that will let us measure coverage in sub-processes.
     # The .pth file seems to have to be alphabetically after easy-install.pth
@@ -192,7 +195,7 @@ def do_combine_html():
     cov.load()
     cov.combine()
     cov.save()
-    show_contexts = bool(os.environ.get('COVERAGE_CONTEXT'))
+    show_contexts = bool(os.environ.get('COVERAGE_DYNCTX') or os.environ.get('COVERAGE_CONTEXT'))
     cov.html_report(show_contexts=show_contexts)
     cov.xml_report()
 

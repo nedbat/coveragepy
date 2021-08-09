@@ -70,21 +70,12 @@ jobs:
       - name: "Run tox coverage for ${{ matrix.python-version }}"
         env:
           COVERAGE_COVERAGE: "yes"
+          COVERAGE_CONTEXT: "${{ matrix.python-version }}.${{ matrix.os }}"
         run: |
           set -xe
           # Something about pytest 6.x with xdist keeps data from collecting.
           # Use -n0 for now.
           python -m tox -- -n 0
-
-      - name: "Combine"
-        env:
-          COVERAGE_COVERAGE: "yes"
-          COVERAGE_RCFILE: "metacov.ini"
-          COVERAGE_METAFILE: ".metacov"
-        run: |
-          set -xe
-          COVERAGE_DEBUG=dataio python -m igor combine_html
-          mv .metacov .metacov.${{ matrix.python-version }}.${{ matrix.os }}
 
       - name: "Upload coverage data"
         uses: actions/upload-artifact@v2
@@ -126,6 +117,7 @@ jobs:
         env:
           COVERAGE_RCFILE: "metacov.ini"
           COVERAGE_METAFILE: ".metacov"
+          COVERAGE_CONTEXT: "yes"
         run: |
           set -xe
           python -m igor combine_html
