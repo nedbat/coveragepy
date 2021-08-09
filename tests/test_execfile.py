@@ -8,6 +8,7 @@ import fnmatch
 import json
 import os
 import os.path
+import pathlib
 import re
 import sys
 
@@ -121,15 +122,7 @@ class RunPycFileTest(CoverageTest):
         os.remove("compiled.py")
 
         # Find the .pyc file!
-        roots = ["."]
-        prefix = getattr(sys, "pycache_prefix", None)
-        if prefix:
-            roots.append(prefix)
-        for root in roots:                              # pragma: part covered
-            for there, _, files in os.walk(root):       # pragma: part covered
-                for fname in files:
-                    if fnmatch.fnmatch(fname, "compiled*.pyc"):
-                        return os.path.join(there, fname)
+        return str(next(pathlib.Path(".").rglob("compiled*.pyc")))
 
     def test_running_pyc(self):
         pycfile = self.make_pyc()
