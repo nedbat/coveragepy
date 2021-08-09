@@ -5,10 +5,10 @@
 
 # The pytest specifics used by coverage.py
 
+flaky==3.7.0
+hypothesis==6.14.6
 pytest==6.2.4
 pytest-xdist==2.3.0
-flaky==3.7.0
 # Use a fork of PyContracts that supports Python 3.9
 #PyContracts==1.8.12
 git+https://github.com/slorg1/contracts@collections_and_validator
-hypothesis==6.14.3

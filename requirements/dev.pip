@@ -14,14 +14,14 @@ tox
 -r pytest.pip
 
 # for linting.
-greenlet==1.1.0
-pylint==2.9.3
+greenlet==1.1.1
+pylint==2.9.6
 check-manifest==0.46
 readme_renderer==29.0
 
 # for kitting.
 requests==2.26.0
-twine==3.4.1
+twine==3.4.2
 libsass==0.21.0
 
 # Just so I have a debugger if I want it.
