@@ -266,7 +266,7 @@ class ApiTest(CoverageTest):
     def test_datafile_none(self):
         cov = coverage.Coverage(data_file=None)
 
-        def f1():
+        def f1():       # pragma: nested
             a = 1       # pylint: disable=unused-variable
 
         one_line_number = f1.__code__.co_firstlineno + 1
