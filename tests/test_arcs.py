@@ -1893,7 +1893,7 @@ class AsyncTest(CoverageTest):
         reason="avoid a 3.10 bug fixed after beta 4: 44622"
     )
     @pytest.mark.skipif(env.PYVERSION < (3, 7), reason="need asyncio.run")
-    def test_bug1176_a(self):
+    def test_bug1176(self):
         self.check_coverage("""\
             import asyncio
 
@@ -1909,6 +1909,32 @@ class AsyncTest(CoverageTest):
             arcz=".1 13 36 6A A.  -34 4-3  -67 78 87 7-6",
         )
         assert self.stdout() == "12\n"
+
+    # https://github.com/nedbat/coveragepy/issues/1205
+    # https://bugs.python.org/issue44840
+    @pytest.mark.skipif(
+        (3, 10, 0, "alpha", 0, 0) <= env.PYVERSION[:6] <= (3, 10, 0, "candidate", 1, 0),
+        reason="avoid a 3.10 bug fixed after rc1: 44840"
+    )
+    def test_bug1205(self):
+        self.check_coverage("""\
+            def func():
+                if T(2):
+                    if T(3):
+                        if F(4):
+                            if X(5):
+                                return 6
+                    else:
+                        return 8
+                elif X(9) and Y:
+                    return 10
+
+            T, F = (lambda _: True), (lambda _: False)
+            func()
+            """,
+            arcz=".1 1C CD D.  .2 23 29 34 38 45 4. 56 5. 6. 8. 9. 9A A.  -CC C-C",
+            arcz_missing="29 38 45 56 5. 6. 8. 9. 9A A.",
+        )
 
 
 class AnnotationTest(CoverageTest):
