@@ -657,7 +657,8 @@ class BadFileTracerTest(FileTracerTest):
         if excmsg:
             assert excmsg in stderr
         if excmsgs:
-            assert any(em in stderr for em in excmsgs), f"expected one of {excmsgs} in stderr"
+            found_exc = any(em in stderr for em in excmsgs)             #  pragma: part covered
+            assert found_exc, f"expected one of {excmsgs} in stderr"
 
     def test_file_tracer_has_no_file_tracer_method(self):
         self.make_file("bad_plugin.py", """\

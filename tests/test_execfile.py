@@ -4,13 +4,11 @@
 """Tests for coverage.execfile"""
 
 import compileall
-import fnmatch
 import json
 import os
 import os.path
 import pathlib
 import re
-import sys
 
 import pytest
 
@@ -107,7 +105,7 @@ class RunFileTest(CoverageTest):
 class RunPycFileTest(CoverageTest):
     """Test cases for `run_python_file`."""
 
-    def make_pyc(self):                     # pylint: disable=inconsistent-return-statements
+    def make_pyc(self):
         """Create a .pyc file, and return the path to it."""
         if env.JYTHON:
             pytest.skip("Can't make .pyc files on Jython")
