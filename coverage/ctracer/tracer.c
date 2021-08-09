@@ -133,14 +133,15 @@ indent(int n)
 
 static BOOL logging = FALSE;
 /* Set these constants to be a file substring and line number to start logging. */
-static const char * start_file = "tests/views";
-static int start_line = 27;
+static const char * start_file = "nested.py";
+static int start_line = 1;
 
 static void
-showlog(int depth, int lineno, PyObject * filename, const char * msg)
+CTracer_showlog(CTracer * self, int lineno, PyObject * filename, const char * msg)
 {
     if (logging) {
-        printf("%s%3d ", indent(depth), depth);
+        int depth = self->pdata_stack->depth;
+        printf("%x: %s%3d ", (int)self, indent(depth), depth);
         if (lineno) {
             printf("%4d", lineno);
         }
@@ -148,7 +149,7 @@ showlog(int depth, int lineno, PyObject * filename, const char * msg)
             printf("    ");
         }
         if (filename) {
-            PyObject *ascii = MyText_AS_BYTES(filename);
+            PyObject *ascii = PyUnicode_AsASCIIString(filename);
             printf(" %s", PyBytes_AS_STRING(ascii));
             Py_DECREF(ascii);
         }
@@ -159,9 +160,9 @@ showlog(int depth, int lineno, PyObject * filename, const char * msg)
     }
 }
 
-#define SHOWLOG(a,b,c,d)    showlog(a,b,c,d)
+#define SHOWLOG(l,f,m)    CTracer_showlog(self,l,f,m)
 #else
-#define SHOWLOG(a,b,c,d)
+#define SHOWLOG(l,f,m)
 #endif /* TRACE_LOG */
 
 #if WHAT_LOG
@@ -305,7 +306,7 @@ CTracer_check_missing_return(CTracer *self, PyFrameObject *frame)
                         goto error;
                     }
                 }
-                SHOWLOG(self->pdata_stack->depth, PyFrame_GetLineNumber(frame), MyFrame_GetCode(frame)->co_filename, "missedreturn");
+                SHOWLOG(PyFrame_GetLineNumber(frame), MyFrame_GetCode(frame)->co_filename, "missedreturn");
                 self->pdata_stack->depth--;
                 self->pcur_entry = &self->pdata_stack->stack[self->pdata_stack->depth];
             }
@@ -529,13 +530,13 @@ CTracer_handle_call(CTracer *self, PyFrameObject *frame)
         self->pcur_entry->file_data = file_data;
         self->pcur_entry->file_tracer = file_tracer;
 
-        SHOWLOG(self->pdata_stack->depth, PyFrame_GetLineNumber(frame), filename, "traced");
+        SHOWLOG(PyFrame_GetLineNumber(frame), filename, "traced");
     }
     else {
         Py_XDECREF(self->pcur_entry->file_data);
         self->pcur_entry->file_data = NULL;
         self->pcur_entry->file_tracer = Py_None;
-        SHOWLOG(self->pdata_stack->depth, PyFrame_GetLineNumber(frame), filename, "skipped");
+        SHOWLOG(PyFrame_GetLineNumber(frame), filename, "skipped");
     }
 
     self->pcur_entry->disposition = disposition;
@@ -633,7 +634,7 @@ CTracer_handle_line(CTracer *self, PyFrameObject *frame)
 
     STATS( self->stats.lines++; )
     if (self->pdata_stack->depth >= 0) {
-        SHOWLOG(self->pdata_stack->depth, PyFrame_GetLineNumber(frame), MyFrame_GetCode(frame)->co_filename, "line");
+        SHOWLOG(PyFrame_GetLineNumber(frame), MyFrame_GetCode(frame)->co_filename, "line");
         if (self->pcur_entry->file_data) {
             int lineno_from = -1;
             int lineno_to = -1;
@@ -744,7 +745,7 @@ CTracer_handle_return(CTracer *self, PyFrameObject *frame)
         }
 
         /* Pop the stack. */
-        SHOWLOG(self->pdata_stack->depth, PyFrame_GetLineNumber(frame), MyFrame_GetCode(frame)->co_filename, "return");
+        SHOWLOG(PyFrame_GetLineNumber(frame), MyFrame_GetCode(frame)->co_filename, "return");
         self->pdata_stack->depth--;
         self->pcur_entry = &self->pdata_stack->stack[self->pdata_stack->depth];
     }
@@ -807,7 +808,7 @@ CTracer_trace(CTracer *self, PyFrameObject *frame, int what, PyObject *arg_unuse
     #if WHAT_LOG
     if (what <= (int)(sizeof(what_sym)/sizeof(const char *))) {
         ascii = PyUnicode_AsASCIIString(MyFrame_GetCode(frame)->co_filename);
-        printf("trace: %s @ %s %d\n", what_sym[what], PyBytes_AS_STRING(ascii), PyFrame_GetLineNumber(frame));
+        printf("%x trace: f:%x %s @ %s %d\n", (int)self, (int)frame, what_sym[what], PyBytes_AS_STRING(ascii), PyFrame_GetLineNumber(frame));
         Py_DECREF(ascii);
     }
     #endif
