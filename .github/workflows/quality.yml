@@ -12,6 +12,9 @@ defaults:
   run:
     shell: bash
 
+env:
+  PIP_DISABLE_PIP_VERSION_CHECK: 1
+
 jobs:
   lint:
     name: "Pylint etc"
