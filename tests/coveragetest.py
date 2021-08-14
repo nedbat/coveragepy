@@ -433,6 +433,14 @@ class CoverageTest(
         return {os.path.basename(filename): filename
                 for filename in coverage_data.measured_files()}
 
+    def get_missing_arc_description(self, cov, start, end):
+        """Get the missing-arc description for a line arc in a coverage run."""
+        # ugh, unexposed methods??
+        filename = self.last_module_name + ".py"
+        fr = cov._get_file_reporter(filename)
+        arcs_executed = cov._analyze(filename).arcs_executed()
+        return fr.missing_arc_description(start, end, arcs_executed)
+
 
 class UsingModulesMixin:
     """A mixin for importing modules from tests/modules and tests/moremodules."""
