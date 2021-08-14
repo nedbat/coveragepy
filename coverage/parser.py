@@ -556,14 +556,14 @@ class WithBlock(BlockBase):
         # that need to go through the with-statement while exiting.
         self.break_from = set()
         self.continue_from = set()
-        self.raise_from = set()
         self.return_from = set()
 
-    def _process_exits(self, exits, add_arc, from_set):
+    def _process_exits(self, exits, add_arc, from_set=None):
         """Helper to process the four kinds of exits."""
         for xit in exits:
             add_arc(xit.lineno, self.start, xit.cause)
-        from_set.update(exits)
+        if from_set is not None:
+            from_set.update(exits)
         return True
 
     def process_break_exits(self, exits, add_arc):
@@ -573,7 +573,7 @@ class WithBlock(BlockBase):
         return self._process_exits(exits, add_arc, self.continue_from)
 
     def process_raise_exits(self, exits, add_arc):
-        return self._process_exits(exits, add_arc, self.raise_from)
+        return self._process_exits(exits, add_arc)
 
     def process_return_exits(self, exits, add_arc):
         return self._process_exits(exits, add_arc, self.return_from)
@@ -1231,10 +1231,6 @@ class AstArcAnalyzer:
             if with_block.continue_from:
                 self.process_continue_exits(
                     self._combine_finally_starts(with_block.continue_from, with_exit)
-                    )
-            if with_block.raise_from:
-                self.process_raise_exits(
-                    self._combine_finally_starts(with_block.raise_from, with_exit)
                     )
             if with_block.return_from:
                 self.process_return_exits(

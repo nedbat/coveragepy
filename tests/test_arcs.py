@@ -279,6 +279,62 @@ class WithTest(CoverageTest):
             arcz=arcz,
             )
 
+    def test_raise_through_with(self):
+        if env.PYBEHAVIOR.exit_through_with:
+            arcz = ".1 12 27 78 8. 9A A.  -23 34 45 53 6-2"
+            arcz_missing = "6-2 8."
+            arcz_unpredicted = "3-2 89"
+        else:
+            arcz = ".1 12 27 78 8. 9A A.  -23 34 45 5-2 6-2"
+            arcz_missing = "6-2 8."
+            arcz_unpredicted = "89"
+        cov = self.check_coverage("""\
+            from contextlib import suppress
+            def f(x):
+                with suppress():    # used as a null context manager
+                    print(4)
+                    raise Exception("Boo6")
+                print(6)
+            try:
+                f(8)
+            except Exception:
+                print("oops 10")
+            """,
+            arcz=arcz,
+            arcz_missing=arcz_missing,
+            arcz_unpredicted=arcz_unpredicted,
+            )
+        expected = "line 3 didn't jump to the function exit"
+        assert self.get_missing_arc_description(cov, 3, -2) == expected
+
+    def test_untaken_raise_through_with(self):
+        if env.PYBEHAVIOR.exit_through_with:
+            #arcz = ".1 12 28 89 9. AB B.  -23 3-2 34 45 56 53 63 37 7-2"
+            arcz = ".1 12 28 89 9. AB B.  -23 34 45 56 53 63 37 7-2"
+            #arcz_missing = "3-2 56 63 AB B."
+            arcz_missing = "56 63 AB B."
+        else:
+            arcz = ".1 12 28 89 9. AB B.  -23 34 45 56 6-2 57 7-2"
+            arcz_missing = "56 6-2 AB B."
+        cov = self.check_coverage("""\
+            from contextlib import suppress
+            def f(x):
+                with suppress():    # used as a null context manager
+                    print(4)
+                    if x == 5:
+                        raise Exception("Boo6")
+                print(7)
+            try:
+                f(9)
+            except Exception:
+                print("oops 11")
+            """,
+            arcz=arcz,
+            arcz_missing=arcz_missing,
+            )
+        expected = "line 3 didn't jump to the function exit"
+        assert self.get_missing_arc_description(cov, 3, -2) == expected
+
 
 class LoopArcTest(CoverageTest):
     """Arc-measuring tests involving loops."""

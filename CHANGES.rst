@@ -37,6 +37,10 @@ Unreleased
   now warnings, to ease the use of coverage across versions.  Fixes `issue
   1035`_.
 
+- Fix handling of exceptions through context managers in Python 3.10. A missing
+  exception is no longer considered a missing branch from the with statement.
+  Fixes `issue 1205`_.
+
 - Fix another rarer instance of "Error binding parameter 0 - probably
   unsupported type." (`issue 1010`_).
 
@@ -44,6 +48,7 @@ Unreleased
 .. _issue 1105: https://github.com/nedbat/coveragepy/issues/1105
 .. _issue 1163: https://github.com/nedbat/coveragepy/issues/1163
 .. _issue 1195: https://github.com/nedbat/coveragepy/issues/1195
+.. _issue 1205: https://github.com/nedbat/coveragepy/issues/1205
 
 
 .. _changes_60b1:
