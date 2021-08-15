@@ -24,8 +24,8 @@ from tests.helpers import assert_count_equal
 
 
 LINES_1 = {
-    'a.py': {1: None, 2: None},
-    'b.py': {3: None},
+    'a.py': {1, 2},
+    'b.py': {3},
 }
 SUMMARY_1 = {'a.py': 2, 'b.py': 1}
 MEASURED_FILES_1 = ['a.py', 'b.py']
@@ -33,24 +33,15 @@ A_PY_LINES_1 = [1, 2]
 B_PY_LINES_1 = [3]
 
 LINES_2 = {
-    'a.py': {1: None, 5: None},
-    'c.py': {17: None},
+    'a.py': {1, 5},
+    'c.py': {17},
 }
 SUMMARY_1_2 = {'a.py': 3, 'b.py': 1, 'c.py': 1}
 MEASURED_FILES_1_2 = ['a.py', 'b.py', 'c.py']
 
 ARCS_3 = {
-    'x.py': {
-        (-1, 1): None,
-        (1, 2): None,
-        (2, 3): None,
-        (3, -1): None,
-    },
-    'y.py': {
-        (-1, 17): None,
-        (17, 23): None,
-        (23, -1): None,
-    },
+    'x.py': {(-1, 1), (1, 2), (2, 3), (3, -1)},
+    'y.py': {(-1, 17), (17, 23), (23, -1)},
 }
 X_PY_ARCS_3 = [(-1, 1), (1, 2), (2, 3), (3, -1)]
 Y_PY_ARCS_3 = [(-1, 17), (17, 23), (23, -1)]
@@ -60,15 +51,8 @@ X_PY_LINES_3 = [1, 2, 3]
 Y_PY_LINES_3 = [17, 23]
 
 ARCS_4 = {
-    'x.py': {
-        (-1, 2): None,
-        (2, 5): None,
-        (5, -1): None,
-    },
-    'z.py': {
-        (-1, 1000): None,
-        (1000, -1): None,
-    },
+    'x.py': {(-1, 2), (2, 5), (5, -1)},
+    'z.py': {(-1, 1000), (1000, -1)},
 }
 SUMMARY_3_4 = {'x.py': 4, 'y.py': 2, 'z.py': 1}
 MEASURED_FILES_3_4 = ['x.py', 'y.py', 'z.py']
@@ -103,6 +87,16 @@ class DataTestHelpers(CoverageTest):
         assert covdata.has_arcs()
 
 
+def dicts_from_sets(file_data):
+    """Convert a dict of sets into a dict of dicts.
+
+    Before 6.0, file data was a dict with None as the values.  In 6.0, file
+    data is a set.  SqlData all along only cared that it was an iterable.
+    This function helps us test that the old dict format still works.
+    """
+    return {k: dict.fromkeys(v) for k, v in file_data.items()}
+
+
 class CoverageDataTest(DataTestHelpers, CoverageTest):
     """Test cases for CoverageData."""
 
@@ -130,14 +124,16 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
         covdata.add_arcs({})
         assert not covdata
 
-    def test_adding_lines(self):
+    @pytest.mark.parametrize("lines", [LINES_1, dicts_from_sets(LINES_1)])
+    def test_adding_lines(self, lines):
         covdata = CoverageData()
-        covdata.add_lines(LINES_1)
+        covdata.add_lines(lines)
         self.assert_lines1_data(covdata)
 
-    def test_adding_arcs(self):
+    @pytest.mark.parametrize("arcs", [ARCS_3, dicts_from_sets(ARCS_3)])
+    def test_adding_arcs(self, arcs):
         covdata = CoverageData()
-        covdata.add_arcs(ARCS_3)
+        covdata.add_arcs(arcs)
         self.assert_arcs3_data(covdata)
 
     def test_ok_to_add_lines_twice(self):
@@ -212,20 +208,22 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
         covdata.add_lines(LINES_1)
         assert covdata.contexts_by_lineno('a.py') == {1: ['test_a'], 2: ['test_a']}
 
-    def test_no_duplicate_lines(self):
+    @pytest.mark.parametrize("lines", [LINES_1, dicts_from_sets(LINES_1)])
+    def test_no_duplicate_lines(self, lines):
         covdata = CoverageData()
         covdata.set_context("context1")
-        covdata.add_lines(LINES_1)
+        covdata.add_lines(lines)
         covdata.set_context("context2")
-        covdata.add_lines(LINES_1)
+        covdata.add_lines(lines)
         assert covdata.lines('a.py') == A_PY_LINES_1
 
-    def test_no_duplicate_arcs(self):
+    @pytest.mark.parametrize("arcs", [ARCS_3, dicts_from_sets(ARCS_3)])
+    def test_no_duplicate_arcs(self, arcs):
         covdata = CoverageData()
         covdata.set_context("context1")
-        covdata.add_arcs(ARCS_3)
+        covdata.add_arcs(arcs)
         covdata.set_context("context2")
-        covdata.add_arcs(ARCS_3)
+        covdata.add_arcs(arcs)
         assert covdata.arcs('x.py') == X_PY_ARCS_3
 
     def test_no_arcs_vs_unmeasured_file(self):

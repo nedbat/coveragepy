@@ -48,7 +48,7 @@ class PyTracer:
         # The threading module to use, if any.
         self.threading = None
 
-        self.cur_file_dict = None
+        self.cur_file_data = None
         self.last_line = 0          # int, but uninitialized.
         self.cur_file_name = None
         self.context = None
@@ -113,7 +113,7 @@ class PyTracer:
                     self.log(">", f.f_code.co_filename, f.f_lineno, f.f_code.co_name, f.f_trace)
                     f = f.f_back
             sys.settrace(None)
-            self.cur_file_dict, self.cur_file_name, self.last_line, self.started_context = (
+            self.cur_file_data, self.cur_file_name, self.last_line, self.started_context = (
                 self.data_stack.pop()
             )
             return None
@@ -121,10 +121,10 @@ class PyTracer:
         if self.last_exc_back:
             if frame == self.last_exc_back:
                 # Someone forgot a return event.
-                if self.trace_arcs and self.cur_file_dict:
+                if self.trace_arcs and self.cur_file_data:
                     pair = (self.last_line, -self.last_exc_firstlineno)
-                    self.cur_file_dict[pair] = None
-                self.cur_file_dict, self.cur_file_name, self.last_line, self.started_context = (
+                    self.cur_file_data.add(pair)
+                self.cur_file_data, self.cur_file_name, self.last_line, self.started_context = (
                     self.data_stack.pop()
                 )
             self.last_exc_back = None
@@ -150,7 +150,7 @@ class PyTracer:
             self._activity = True
             self.data_stack.append(
                 (
-                    self.cur_file_dict,
+                    self.cur_file_data,
                     self.cur_file_name,
                     self.last_line,
                     self.started_context,
@@ -163,12 +163,12 @@ class PyTracer:
                 disp = self.should_trace(filename, frame)
                 self.should_trace_cache[filename] = disp
 
-            self.cur_file_dict = None
+            self.cur_file_data = None
             if disp.trace:
                 tracename = disp.source_filename
                 if tracename not in self.data:
-                    self.data[tracename] = {}
-                self.cur_file_dict = self.data[tracename]
+                    self.data[tracename] = set()
+                self.cur_file_data = self.data[tracename]
             # The call event is really a "start frame" event, and happens for
             # function calls and re-entering generators.  The f_lasti field is
             # -1 for calls, and a real offset for generators.  Use <0 as the
@@ -179,25 +179,25 @@ class PyTracer:
                 self.last_line = frame.f_lineno
         elif event == 'line':
             # Record an executed line.
-            if self.cur_file_dict is not None:
+            if self.cur_file_data is not None:
                 lineno = frame.f_lineno
 
                 if self.trace_arcs:
-                    self.cur_file_dict[(self.last_line, lineno)] = None
+                    self.cur_file_data.add((self.last_line, lineno))
                 else:
-                    self.cur_file_dict[lineno] = None
+                    self.cur_file_data.add(lineno)
                 self.last_line = lineno
         elif event == 'return':
-            if self.trace_arcs and self.cur_file_dict:
+            if self.trace_arcs and self.cur_file_data:
                 # Record an arc leaving the function, but beware that a
                 # "return" event might just mean yielding from a generator.
                 # Jython seems to have an empty co_code, so just assume return.
                 code = frame.f_code.co_code
                 if (not code) or code[frame.f_lasti] != YIELD_VALUE:
                     first = frame.f_code.co_firstlineno
-                    self.cur_file_dict[(self.last_line, -first)] = None
+                    self.cur_file_data.add((self.last_line, -first))
             # Leaving this function, pop the filename stack.
-            self.cur_file_dict, self.cur_file_name, self.last_line, self.started_context = (
+            self.cur_file_data, self.cur_file_name, self.last_line, self.started_context = (
                 self.data_stack.pop()
             )
             # Leaving a context?

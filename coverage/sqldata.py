@@ -450,9 +450,9 @@ class CoverageData(SimpleReprMixin):
     def add_lines(self, line_data):
         """Add measured line data.
 
-        `line_data` is a dictionary mapping file names to dictionaries::
+        `line_data` is a dictionary mapping file names to iterables of ints::
 
-            { filename: { lineno: None, ... }, ...}
+            { filename: { line1, line2, ... }, ...}
 
         """
         if self._debug.should('dataop'):
@@ -483,9 +483,10 @@ class CoverageData(SimpleReprMixin):
     def add_arcs(self, arc_data):
         """Add measured arc data.
 
-        `arc_data` is a dictionary mapping file names to dictionaries::
+        `arc_data` is a dictionary mapping file names to iterables of pairs of
+        ints::
 
-            { filename: { (l1,l2): None, ... }, ...}
+            { filename: { (l1,l2), (l1,l2), ... }, ...}
 
         """
         if self._debug.should('dataop'):

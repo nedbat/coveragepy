@@ -182,7 +182,7 @@ CTracer_record_pair(CTracer *self, int l1, int l2)
         goto error;
     }
 
-    if (PyDict_SetItem(self->pcur_entry->file_data, t, Py_None) < 0) {
+    if (PySet_Add(self->pcur_entry->file_data, t) < 0) {
         goto error;
     }
 
@@ -504,7 +504,7 @@ CTracer_handle_call(CTracer *self, PyFrameObject *frame)
             if (PyErr_Occurred()) {
                 goto error;
             }
-            file_data = PyDict_New();
+            file_data = PySet_New(NULL);
             if (file_data == NULL) {
                 goto error;
             }
@@ -674,7 +674,7 @@ CTracer_handle_line(CTracer *self, PyFrameObject *frame)
                             goto error;
                         }
 
-                        ret2 = PyDict_SetItem(self->pcur_entry->file_data, this_line, Py_None);
+                        ret2 = PySet_Add(self->pcur_entry->file_data, this_line);
                         Py_DECREF(this_line);
                         if (ret2 < 0) {
                             goto error;

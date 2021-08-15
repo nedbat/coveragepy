@@ -12,7 +12,7 @@
  * possible.
  */
 typedef struct DataStackEntry {
-    /* The current file_data dictionary. Owned. */
+    /* The current file_data set. Owned. */
     PyObject * file_data;
 
     /* The disposition object for this frame. A borrowed instance of CFileDisposition. */
