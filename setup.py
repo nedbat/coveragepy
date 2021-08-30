@@ -129,6 +129,7 @@ setup_args = dict(
             '?utm_source=pypi-coverage&utm_medium=referral&utm_campaign=pypi'
         ),
         'Issues': 'https://github.com/nedbat/coveragepy/issues',
+        'Twitter': 'https://twitter.com/coveragepy',
     },
     python_requires=">=3.6",
 )
