@@ -44,11 +44,16 @@ Unreleased
 - Fix another rarer instance of "Error binding parameter 0 - probably
   unsupported type." (`issue 1010`_).
 
+- Creating a directory for the coverage data file now is safer against
+  conflicts when two coverage runs happen simultaneously (`pull 1220`_).
+  Thanks, Clément Pit-Claudel.
+
 .. _issue 1035: https://github.com/nedbat/coveragepy/issues/1035
 .. _issue 1105: https://github.com/nedbat/coveragepy/issues/1105
 .. _issue 1163: https://github.com/nedbat/coveragepy/issues/1163
 .. _issue 1195: https://github.com/nedbat/coveragepy/issues/1195
 .. _issue 1205: https://github.com/nedbat/coveragepy/issues/1205
+.. _pull 1220: https://github.com/nedbat/coveragepy/pull/1220
 
 
 .. _changes_60b1:

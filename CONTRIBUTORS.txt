@@ -37,6 +37,7 @@ Chris Warrick
 Christian Heimes
 Christine Lytwynec
 Christoph Zwerschke
+Clément Pit-Claudel
 Conrad Ho
 Cosimo Lupo
 Dan Hemberger
