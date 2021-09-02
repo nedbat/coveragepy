@@ -156,8 +156,8 @@ def ensure_dir(directory):
 
     If `directory` is None or empty, do nothing.
     """
-    if directory and not os.path.isdir(directory):
-        os.makedirs(directory)
+    if directory:
+        os.makedirs(directory, exist_ok=True)
 
 
 def ensure_dir_for_file(path):
