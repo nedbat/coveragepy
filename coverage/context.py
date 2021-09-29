@@ -80,7 +80,7 @@ def qualname_from_frame(frame):
                     if f is func:
                         return base.__module__ + '.' + base.__name__ + "." + fname
                 for base in bases:
-                    qname = mro(base.__bases__)
+                    qname = mro(base.__bases__)  # pylint: disable=cell-var-from-loop
                     if qname is not None:
                         return qname
                 return None
