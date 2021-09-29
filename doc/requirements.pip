@@ -4,11 +4,11 @@
 
 # https://requires.io/github/nedbat/coveragepy/requirements/
 
-doc8==0.9.0
+doc8==0.9.1
 pyenchant==3.2.1
-sphinx==4.1.2
+sphinx==4.2.0
 sphinx-autobuild==2021.3.14
-sphinx_rtd_theme==0.5.2
+sphinx_rtd_theme==1.0.0
 sphinx-tabs==3.2.0
 sphinxcontrib-restbuilder==0.3
 sphinxcontrib-spelling==7.2.1
