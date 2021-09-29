@@ -15,7 +15,7 @@ tox
 
 # for linting.
 greenlet==1.1.1
-pylint==2.9.6
+pylint==2.11.1
 check-manifest==0.46
 readme_renderer==29.0
 
