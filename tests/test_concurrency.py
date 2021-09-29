@@ -336,8 +336,8 @@ MULTI_CODE = """
     def process_worker_main(args):
         # Need to pause, or the tasks go too quickly, and some processes
         # in the pool don't get any work, and then don't record data.
-        time.sleep(0.02)
         ret = work(*args)
+        time.sleep(0.1)
         return os.getpid(), ret
 
     if __name__ == "__main__":      # pragma: no branch
