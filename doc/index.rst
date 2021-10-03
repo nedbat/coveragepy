@@ -16,14 +16,14 @@ not.
 The latest version is coverage.py |release|, released |release_date|.  It is
 supported on:
 
-* Python versions 3.6, 3.7, 3.8, 3.9, and 3.10 alpha.
+* Python versions 3.6 through 3.10.
 
 * PyPy3 7.3.3.
 
 .. ifconfig:: prerelease
 
     **This is a pre-release build.  The usual warnings about possible bugs
-    apply.** The latest stable version is coverage.py 5.5, `described here`_.
+    apply.** The latest stable version is coverage.py 6.0, `described here`_.
 
 .. _described here: http://coverage.readthedocs.io/
 
