@@ -108,17 +108,17 @@ h2.stats { margin-top: .5em; font-size: 1em; }
 
 #keyboard_icon { float: right; margin: 5px; cursor: pointer; }
 
-.help_panel { padding: .5em; border: 1px solid #883; }
+.help_panel { padding: .75em; border: 1px solid #883; }
 
 .help_panel .legend { font-style: italic; margin-bottom: 1em; }
 
-.indexfile .help_panel { width: 20em; min-height: 4em; }
+.indexfile .help_panel { width: 25em; }
 
-.pyfile .help_panel { width: 16em; min-height: 8em; }
+.pyfile .help_panel { width: 18em; }
 
 #panel_icon { float: right; cursor: pointer; }
 
-.keyhelp { margin: .75em; }
+.keyhelp { margin-top: .75em; }
 
 .keyhelp .key { border: 1px solid black; border-color: #888 #333 #333 #888; padding: .1em .35em; font-family: SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-weight: bold; background: #eee; }
 

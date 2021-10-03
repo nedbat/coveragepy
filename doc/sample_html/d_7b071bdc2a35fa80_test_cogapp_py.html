@@ -3,7 +3,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=emulateIE7" />
-    <title>Coverage for cogapp/test_cogapp.py: 30.00%</title>
+    <title>Coverage for cogapp/test_cogapp.py: 30.07%</title>
     <link rel="icon" sizes="32x32" href="favicon_32.png">
     <link rel="stylesheet" href="style.css" type="text/css">
     <script type="text/javascript" src="jquery.min.js"></script>
@@ -18,14 +18,14 @@
 <div id="header">
     <div class="content">
         <h1>Coverage for <b>cogapp/test_cogapp.py</b> :
-            <span class="pc_cov">30.00%</span>
+            <span class="pc_cov">30.07%</span>
         </h1>
         <img id="keyboard_icon" src="keybd_closed.png" alt="Show keyboard shortcuts" />
         <h2 class="stats">
-            790 statements &nbsp;
+            788 statements &nbsp;
             <button type="button" class="run shortkey_r button_toggle_run" title="Toggle lines run">241 run</button>
-            <button type="button" class="mis show_mis shortkey_m button_toggle_mis" title="Toggle lines missing">549 missing</button>
-            <button type="button" class="exc show_exc shortkey_x button_toggle_exc" title="Toggle lines excluded">6 excluded</button>
+            <button type="button" class="mis show_mis shortkey_m button_toggle_mis" title="Toggle lines missing">547 missing</button>
+            <button type="button" class="exc show_exc shortkey_x button_toggle_exc" title="Toggle lines excluded">8 excluded</button>
             <button type="button" class="par run show_par shortkey_p button_toggle_par" title="Toggle lines partially run">0 partial</button>
         </h2>
     </div>
@@ -2076,8 +2076,8 @@
     <p id="t2021" class="pln"><span class="n"><a href="#t2021">2021</a></span><span class="t">                    <span class="op">[</span><span class="str">'cog.py'</span><span class="op">,</span> <span class="str">'-r'</span><span class="op">,</span> <span class="str">'-D'</span><span class="op">,</span> <span class="str">'FIRST={}'</span><span class="op">.</span><span class="nam">format</span><span class="op">(</span><span class="nam">num</span><span class="op">+</span><span class="num">1</span><span class="op">)</span><span class="op">,</span> <span class="str">'f{}.cog'</span><span class="op">.</span><span class="nam">format</span><span class="op">(</span><span class="nam">num</span><span class="op">)</span><span class="op">]</span>&nbsp;</span><span class="r"></span></p>
     <p id="t2022" class="pln"><span class="n"><a href="#t2022">2022</a></span><span class="t">                    <span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p id="t2023" class="mis show_mis"><span class="n"><a href="#t2023">2023</a></span><span class="t">                <span class="key">assert</span> <span class="nam">ret</span> <span class="op">==</span> <span class="num">0</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t2024" class="mis show_mis"><span class="n"><a href="#t2024">2024</a></span><span class="t">            <span class="key">except</span> <span class="nam">Exception</span> <span class="key">as</span> <span class="nam">exc</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t2025" class="mis show_mis"><span class="n"><a href="#t2025">2025</a></span><span class="t">                <span class="nam">results</span><span class="op">.</span><span class="nam">append</span><span class="op">(</span><span class="nam">exc</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t2024" class="exc show_exc"><span class="n"><a href="#t2024">2024</a></span><span class="t">            <span class="key">except</span> <span class="nam">Exception</span> <span class="key">as</span> <span class="nam">exc</span><span class="op">:</span>    <span class="com"># pragma: no cover (only happens on test failure)</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t2025" class="exc show_exc"><span class="n"><a href="#t2025">2025</a></span><span class="t">                <span class="nam">results</span><span class="op">.</span><span class="nam">append</span><span class="op">(</span><span class="nam">exc</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p id="t2026" class="pln"><span class="n"><a href="#t2026">2026</a></span><span class="t">            <span class="key">else</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p id="t2027" class="mis show_mis"><span class="n"><a href="#t2027">2027</a></span><span class="t">                <span class="nam">results</span><span class="op">.</span><span class="nam">append</span><span class="op">(</span><span class="key">None</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p id="t2028" class="pln"><span class="n"><a href="#t2028">2028</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
@@ -2535,8 +2535,8 @@
 <div id="footer">
     <div class="content">
         <p>
-            <a class="nav" href="index.html">&#xab; index</a> &nbsp; &nbsp; <a class="nav" href="https://coverage.readthedocs.io">coverage.py v5.5</a>,
-            created at 2021-02-28 12:20 -0500
+            <a class="nav" href="index.html">&#xab; index</a> &nbsp; &nbsp; <a class="nav" href="https://coverage.readthedocs.io">coverage.py v6.0</a>,
+            created at 2021-10-02 22:06 -0400
         </p>
     </div>
 </div>
