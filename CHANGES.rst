@@ -644,7 +644,7 @@ Version 5.0a6 --- 2019-07-16
 
 - The deprecated `Reporter.file_reporters` property has been removed.
 
-.. _ShiningPanda: https://wiki.jenkins.io/display/JENKINS/ShiningPanda+Plugin
+.. _ShiningPanda: https://plugins.jenkins.io/shiningpanda/
 .. _issue 806: https://github.com/nedbat/coveragepy/pull/806
 .. _issue 828: https://github.com/nedbat/coveragepy/issues/828
 
