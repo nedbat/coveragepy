@@ -222,6 +222,5 @@ More information
     contributing
     trouble
     faq
-    whatsnew5x
     changes
     sleepy

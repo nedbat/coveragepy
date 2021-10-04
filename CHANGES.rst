@@ -9,9 +9,7 @@ These changes are listed in decreasing version number order. Note this can be
 different from a strict chronological order when there are two branches in
 development at the same time, such as 4.5.x and 5.0.
 
-This list is detailed and covers changes in each pre-release version.  If you
-want to know what's different in 5.0 since 4.5.x, see :ref:`whatsnew5x`.
-
+This list is detailed and covers changes in each pre-release version.
 
     .. When updating the "Unreleased" header to a specific version, use this
     .. format.  Don't forget the jump target:
@@ -467,6 +465,9 @@ Version 5.0 --- 2019-12-14
 --------------------------
 
 Nothing new beyond 5.0b2.
+
+A summary of major changes in 5.0 since 4.5.x is in see :ref:`whatsnew5x`.
+
 
 
 .. _changes_50b2:
