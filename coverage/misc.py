@@ -5,6 +5,7 @@
 
 import errno
 import hashlib
+import importlib
 import importlib.util
 import inspect
 import locale
@@ -41,6 +42,32 @@ def isolate_module(mod):
     return ISOLATED_MODULES[mod]
 
 os = isolate_module(os)
+
+
+def import_third_party(modname):
+    """Import a third-party module we need, but might not be installed.
+
+    This also cleans out the module after the import, so that coverage won't
+    appear to have imported it.  This lets the third party use coverage for
+    their own tests.
+
+    Arguments:
+        modname (str): the name of the module to import.
+
+    Returns:
+        The imported module, or None if the module couldn't be imported.
+
+    """
+    try:
+        mod = importlib.import_module(modname)
+    except ImportError:
+        mod = None
+
+    imported = [m for m in sys.modules if m.startswith(modname)]
+    for name in imported:
+        del sys.modules[name]
+
+    return mod
 
 
 def dummy_decorator_with_args(*args_unused, **kwargs_unused):
