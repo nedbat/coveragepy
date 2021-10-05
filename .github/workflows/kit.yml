@@ -122,6 +122,7 @@ jobs:
 
   prerel:
     name: "Build ${{ matrix.python-version }} wheels on ${{ matrix.os }}"
+    if: ${{ false }}  # disable for now, since there are no pre-rel Python versions.
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
