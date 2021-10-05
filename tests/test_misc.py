@@ -3,11 +3,13 @@
 
 """Tests of miscellaneous stuff."""
 
+import sys
+
 import pytest
 
 from coverage.exceptions import CoverageException
 from coverage.misc import contract, dummy_decorator_with_args, file_be_gone
-from coverage.misc import Hasher, one_of, substitute_variables
+from coverage.misc import Hasher, one_of, substitute_variables, import_third_party
 from coverage.misc import USE_CONTRACTS
 
 from tests.coveragetest import CoverageTest
@@ -155,3 +157,19 @@ def test_substitute_variables_errors(text):
         substitute_variables(text, VARS)
     assert text in str(exc_info.value)
     assert "Variable NOTHING is undefined" in str(exc_info.value)
+
+
+class ImportThirdPartyTest(CoverageTest):
+    """Test import_third_party."""
+
+    run_in_temp_dir = False
+
+    def test_success(self):
+        mod = import_third_party("pytest")
+        assert mod.__name__ == "pytest"
+        assert "pytest" not in sys.modules
+
+    def test_failure(self):
+        mod = import_third_party("xyzzy")
+        assert mod is None
+        assert "xyzzy" not in sys.modules

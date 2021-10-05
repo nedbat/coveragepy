@@ -22,7 +22,10 @@ This list is detailed and covers changes in each pre-release version.
 Unreleased
 ----------
 
-Nothing yet.
+- Changed an internal detail of how tomli is imported, so that tomli can use
+  coverage.py for their own test suite (`issue 1228`_).
+
+.. _issue 1228: https://github.com/nedbat/coveragepy/issues/1228
 
 
 .. _changes_60:

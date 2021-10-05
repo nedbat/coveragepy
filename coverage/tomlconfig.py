@@ -8,13 +8,10 @@ import os
 import re
 
 from coverage.exceptions import CoverageException
-from coverage.misc import substitute_variables
+from coverage.misc import import_third_party, substitute_variables
 
 # TOML support is an install-time extra option.
-try:
-    import tomli
-except ImportError:         # pragma: not covered
-    tomli = None
+tomli = import_third_party("tomli")
 
 
 class TomlDecodeError(Exception):
