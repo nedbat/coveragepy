@@ -278,6 +278,8 @@ class QualnameTest(CoverageTest):
             assert get_qualname() is None
 
     def test_bug_1210(self):
+        # Under pyarmor (an obfuscator), a function can have a "self" argument,
+        # but then not have a "self" local.
         co = mock.Mock(co_name="a_co_name", co_argcount=1, co_varnames=["self"])
-        frame = mock.Mock(f_code = co, f_locals={})
+        frame = mock.Mock(f_code=co, f_locals={})
         assert qualname_from_frame(frame) == "unittest.mock.a_co_name"

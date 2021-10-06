@@ -25,7 +25,12 @@ Unreleased
 - Changed an internal detail of how tomli is imported, so that tomli can use
   coverage.py for their own test suite (`issue 1228`_).
 
+- Defend against an obscure possibility under code obfuscation, where a
+  function can have an argument called "self", but no local named "self"
+  (`pull request 1210`_).  Thanks, Ben Carlsson.
+
 .. _issue 1228: https://github.com/nedbat/coveragepy/issues/1228
+.. _pull request 1210: https://github.com/nedbat/coveragepy/pull/1210
 
 
 .. _changes_60:
