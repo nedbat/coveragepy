@@ -20,6 +20,11 @@ import types
 from coverage import env
 from coverage.exceptions import CoverageException
 
+# In 6.0, the exceptions moved from misc.py to exceptions.py.  But a number of
+# other packages were importing the exceptions from misc, so import them here.
+# pylint: disable=unused-wildcard-import
+from coverage.exceptions import *   # pylint: disable=wildcard-import
+
 ISOLATED_MODULES = {}
 
 

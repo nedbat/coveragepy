@@ -22,6 +22,12 @@ This list is detailed and covers changes in each pre-release version.
 Unreleased
 ----------
 
+- In 6.0, the coverage.py exceptions moved from coverage.misc to
+  coverage.exceptions. These exceptions are not part of the public supported
+  API, CoverageException is. But a number of other third-party packages were
+  importing the exceptions from coverage.misc, so they are now available from
+  there again (`issue 1226`_).
+
 - Changed an internal detail of how tomli is imported, so that tomli can use
   coverage.py for their own test suite (`issue 1228`_).
 
@@ -29,8 +35,9 @@ Unreleased
   function can have an argument called "self", but no local named "self"
   (`pull request 1210`_).  Thanks, Ben Carlsson.
 
-.. _issue 1228: https://github.com/nedbat/coveragepy/issues/1228
 .. _pull request 1210: https://github.com/nedbat/coveragepy/pull/1210
+.. _issue 1226: https://github.com/nedbat/coveragepy/issues/1226
+.. _issue 1228: https://github.com/nedbat/coveragepy/issues/1228
 
 
 .. _changes_60:
