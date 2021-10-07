@@ -19,8 +19,10 @@ This list is detailed and covers changes in each pre-release version.
     ..  Version 9.8.1 --- 2027-07-27
     ..  ----------------------------
 
-Unreleased
-----------
+.. _changes_601:
+
+Version 6.0.1 --- 2021-10-06
+----------------------------
 
 - In 6.0, the coverage.py exceptions moved from coverage.misc to
   coverage.exceptions. These exceptions are not part of the public supported
