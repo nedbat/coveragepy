@@ -15,7 +15,7 @@ complete: 	## Copy support files into directories so the HTML can be viewed prop
 	true	# because the for loop exits with 1 for some reason.
 
 clean:		## Remove the effects of this Makefile.
-	git clean -fq .
+	@git clean -fq .
 
 update-gold:	## Copy output files from latest tests to gold files.
 	echo Note: this doesn't work now, it has to be updated for tests/actual
