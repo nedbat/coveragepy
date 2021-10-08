@@ -172,7 +172,7 @@ class MatcherTest(CoverageTest):
             files.canonical_filename("SUB5/file6.py"),
             ]
         tm = TreeMatcher(trees, "test")
-        assert tm.info() == trees
+        assert tm.info() == sorted(trees)
         for filepath, matches in matches_to_try:
             self.assertMatches(tm, filepath, matches)
 

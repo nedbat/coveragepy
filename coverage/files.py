@@ -199,7 +199,7 @@ class TreeMatcher:
 
     """
     def __init__(self, paths, name):
-        self.original_paths = list(paths)
+        self.original_paths = sorted(paths)
         self.paths = list(map(os.path.normcase, paths))
         self.name = name
 
