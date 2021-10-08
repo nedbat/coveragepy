@@ -437,11 +437,15 @@ class BlockBase:
     # pylint: disable=unused-argument
     def process_break_exits(self, exits, add_arc):
         """Process break exits."""
-        return False
+        # Because break can only appear in loops, and most subclasses
+        # implement process_break_exits, this function is never reached.
+        raise AssertionError
 
     def process_continue_exits(self, exits, add_arc):
         """Process continue exits."""
-        return False
+        # Because continue can only appear in loops, and most subclasses
+        # implement process_continue_exits, this function is never reached.
+        raise AssertionError
 
     def process_raise_exits(self, exits, add_arc):
         """Process raise exits."""

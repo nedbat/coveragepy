@@ -329,10 +329,12 @@ def substitute_variables(text, variables):
         )
         """
 
+    dollar_groups = ('dollar', 'word1', 'word2')
+
     def dollar_replace(match):
         """Called for each $replacement."""
         # Only one of the groups will have matched, just get its text.
-        word = next(g for g in match.group('dollar', 'word1', 'word2') if g)
+        word = next(g for g in match.group(*dollar_groups) if g)    # pragma: always breaks
         if word == "$":
             return "$"
         elif word in variables:
