@@ -12,10 +12,7 @@ import os
 import pprint
 import reprlib
 import sys
-try:
-    import _thread
-except ImportError:
-    import thread as _thread
+import _thread
 
 from coverage.misc import isolate_module
 
