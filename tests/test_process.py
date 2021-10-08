@@ -1411,7 +1411,7 @@ def possible_pth_dirs():
 
     # If we're still looking, then try the Python library directory.
     # https://github.com/nedbat/coveragepy/issues/339
-    yield sysconfig.get_python_lib()                # pragma: cant happen
+    yield sysconfig.get_path("purelib")             # pragma: cant happen
 
 
 def find_writable_pth_directory():

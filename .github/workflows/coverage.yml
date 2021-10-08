@@ -73,9 +73,7 @@ jobs:
           COVERAGE_CONTEXT: "${{ matrix.python-version }}.${{ matrix.os }}"
         run: |
           set -xe
-          # Something about pytest 6.x with xdist keeps data from collecting.
-          # Use -n0 for now.
-          python -m tox -- -n 0
+          python -m tox
 
       - name: "Upload coverage data"
         uses: actions/upload-artifact@v2
