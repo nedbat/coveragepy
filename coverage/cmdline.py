@@ -646,6 +646,9 @@ class CoverageScript:
                 show_contexts=options.show_contexts,
                 **report_args
             )
+        else:
+            # There are no other possible actions.
+            raise AssertionError
 
         if total is not None:
             # Apply the command line fail-under options, and then use the config
