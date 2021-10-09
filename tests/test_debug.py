@@ -150,7 +150,6 @@ class DebugTraceTest(CoverageTest):
 
     def test_debug_callers(self):
         out_lines = self.f1_debug_output(["pid", "dataop", "dataio", "callers"])
-        print(out_lines)
         # For every real message, there should be a stack trace with a line like
         #       "f1_debug_output : /Users/ned/coverage/tests/test_debug.py @71"
         real_messages = re_lines(out_lines, r":\d+", match=False).splitlines()
