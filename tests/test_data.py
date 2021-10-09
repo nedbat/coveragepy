@@ -180,9 +180,9 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
         covdata = CoverageData()
         covdata.set_context('test_a')
         covdata.add_lines(LINES_1)
-        covdata.set_query_contexts(['test_*'])
+        covdata.set_query_contexts(['te.*a'])
         assert covdata.lines('a.py') == [1, 2]
-        covdata.set_query_contexts(['other*'])
+        covdata.set_query_contexts(['other'])
         assert covdata.lines('a.py') == []
 
     def test_no_lines_vs_unmeasured_file(self):
@@ -197,9 +197,9 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
         covdata.set_context('test_a')
         covdata.add_lines(LINES_1)
         assert covdata.lines('a.py') == [1, 2]
-        covdata.set_query_contexts(['test*'])
+        covdata.set_query_contexts(['test'])
         assert covdata.lines('a.py') == [1, 2]
-        covdata.set_query_contexts(['other*'])
+        covdata.set_query_contexts(['other'])
         assert covdata.lines('a.py') == []
 
     def test_contexts_by_lineno_with_lines(self):
@@ -240,9 +240,9 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
         covdata.set_context('test_x')
         covdata.add_arcs(ARCS_3)
         assert covdata.arcs('x.py') == [(-1, 1), (1, 2), (2, 3), (3, -1)]
-        covdata.set_query_contexts(['test*'])
+        covdata.set_query_contexts(['test_.$'])
         assert covdata.arcs('x.py') == [(-1, 1), (1, 2), (2, 3), (3, -1)]
-        covdata.set_query_contexts(['other*'])
+        covdata.set_query_contexts(['other'])
         assert covdata.arcs('x.py') == []
 
     def test_contexts_by_lineno_with_arcs(self):
