@@ -473,6 +473,12 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
         covdata.touch_file("abc.py")
         assert covdata.has_arcs()
 
+    def test_cant_touch_in_empty_data(self):
+        covdata = CoverageData()
+        msg = "Can't touch files in an empty CoverageData"
+        with pytest.raises(CoverageException, match=msg):
+            covdata.touch_file("abc.py")
+
     def test_read_and_write_are_opposites(self):
         covdata1 = CoverageData()
         covdata1.add_arcs(ARCS_3)
