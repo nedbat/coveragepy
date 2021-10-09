@@ -22,7 +22,9 @@ This list is detailed and covers changes in each pre-release version.
 Unreleased
 ----------
 
-Nothing yet.
+- The :meth:`.CoverageData.contexts_by_lineno` method was documented to return
+  a dict, but was returning a defaultdict.  Now it returns a plain dict.  It
+  also no longer returns negative numbered keys.
 
 
 .. _changes_601:

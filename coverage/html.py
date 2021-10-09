@@ -123,7 +123,7 @@ class HtmlDataGeneration:
             contexts = contexts_label = None
             context_list = None
             if category and self.config.show_contexts:
-                contexts = sorted(c or self.EMPTY for c in contexts_by_lineno[lineno])
+                contexts = sorted(c or self.EMPTY for c in contexts_by_lineno.get(lineno, ()))
                 if contexts == [self.EMPTY]:
                     contexts_label = self.EMPTY
                 else:

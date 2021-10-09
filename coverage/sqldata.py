@@ -942,12 +942,13 @@ class CoverageData(SimpleReprMixin):
         .. versionadded:: 5.0
 
         """
-        lineno_contexts_map = collections.defaultdict(list)
         self._start_using()
         with self._connect() as con:
             file_id = self._file_id(filename)
             if file_id is None:
-                return lineno_contexts_map
+                return {}
+
+            lineno_contexts_map = collections.defaultdict(set)
             if self.has_arcs():
                 query = (
                     "select arc.fromno, arc.tono, context.context " +
@@ -960,10 +961,10 @@ class CoverageData(SimpleReprMixin):
                     query += " and arc.context_id in (" + ids_array + ")"
                     data += self._query_context_ids
                 for fromno, tono, context in con.execute(query, data):
-                    if context not in lineno_contexts_map[fromno]:
-                        lineno_contexts_map[fromno].append(context)
-                    if context not in lineno_contexts_map[tono]:
-                        lineno_contexts_map[tono].append(context)
+                    if fromno > 0:
+                        lineno_contexts_map[fromno].add(context)
+                    if tono > 0:
+                        lineno_contexts_map[tono].add(context)
             else:
                 query = (
                     "select l.numbits, c.context from line_bits l, context c " +
@@ -977,8 +978,9 @@ class CoverageData(SimpleReprMixin):
                     data += self._query_context_ids
                 for numbits, context in con.execute(query, data):
                     for lineno in numbits_to_nums(numbits):
-                        lineno_contexts_map[lineno].append(context)
-        return lineno_contexts_map
+                        lineno_contexts_map[lineno].add(context)
+
+        return {lineno: list(contexts) for lineno, contexts in lineno_contexts_map.items()}
 
     @classmethod
     def sys_info(cls):

@@ -206,7 +206,8 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
         covdata = CoverageData()
         covdata.set_context('test_a')
         covdata.add_lines(LINES_1)
-        assert covdata.contexts_by_lineno('a.py') == {1: ['test_a'], 2: ['test_a']}
+        expected = {1: ['test_a'], 2: ['test_a']}
+        assert covdata.contexts_by_lineno('a.py') == expected
 
     @pytest.mark.parametrize("lines", [LINES_1, dicts_from_sets(LINES_1)])
     def test_no_duplicate_lines(self, lines):
@@ -249,12 +250,32 @@ class CoverageDataTest(DataTestHelpers, CoverageTest):
         covdata = CoverageData()
         covdata.set_context('test_x')
         covdata.add_arcs(ARCS_3)
-        expected = {-1: ['test_x'], 1: ['test_x'], 2: ['test_x'], 3: ['test_x']}
-        assert expected == covdata.contexts_by_lineno('x.py')
+        expected = {1: ['test_x'], 2: ['test_x'], 3: ['test_x']}
+        assert covdata.contexts_by_lineno('x.py') == expected
 
     def test_contexts_by_lineno_with_unknown_file(self):
         covdata = CoverageData()
+        covdata.set_context('test_x')
+        covdata.add_arcs(ARCS_3)
         assert covdata.contexts_by_lineno('xyz.py') == {}
+
+    def test_context_by_lineno_with_query_contexts_with_lines(self):
+        covdata = CoverageData()
+        covdata.set_context("test_1")
+        covdata.add_lines(LINES_1)
+        covdata.set_context("test_2")
+        covdata.add_lines(LINES_2)
+        covdata.set_query_context("test_1")
+        assert covdata.contexts_by_lineno("a.py") == dict.fromkeys([1,2], ["test_1"])
+
+    def test_context_by_lineno_with_query_contexts_with_arcs(self):
+        covdata = CoverageData()
+        covdata.set_context("test_1")
+        covdata.add_arcs(ARCS_3)
+        covdata.set_context("test_2")
+        covdata.add_arcs(ARCS_4)
+        covdata.set_query_context("test_1")
+        assert covdata.contexts_by_lineno("x.py") == dict.fromkeys([1,2,3], ["test_1"])
 
     def test_file_tracer_name(self):
         covdata = CoverageData()
