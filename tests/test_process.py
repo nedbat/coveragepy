@@ -1654,9 +1654,9 @@ def run_in_venv(cmd):
     """
     words = cmd.split()
     if env.WINDOWS:
-        words[0] = r"{}\Scripts\{}.exe".format("venv", words[0])
+        words[0] = fr"venv\Scripts\{words[0]}.exe"
     else:
-        words[0] = "{}/bin/{}".format("venv", words[0])
+        words[0] = fr"venv/bin/{words[0]}"
     status, output = run_command(" ".join(words))
     assert status == 0
     return output

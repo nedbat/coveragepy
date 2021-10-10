@@ -584,7 +584,7 @@ class CoverageDataInTempDirTest(CoverageTest):
         assert_arcs3_data(covdata2)
 
     def test_read_errors(self):
-        msg = r"Couldn't .* '.*[/\\]{0}': \S+"
+        msg = r"Couldn't .* '.*[/\\]{}': \S+"
 
         self.make_file("xyzzy.dat", "xyzzy")
         with pytest.raises(CoverageException, match=msg.format("xyzzy.dat")):
@@ -602,7 +602,7 @@ class CoverageDataInTempDirTest(CoverageTest):
         with sqlite3.connect("wrong_schema.db") as con:
             con.execute("create table coverage_schema (version integer)")
             con.execute("insert into coverage_schema (version) values (99)")
-        msg = r"Couldn't .* '.*[/\\]{}': wrong schema: 99 instead of \d+".format("wrong_schema.db")
+        msg = r"Couldn't .* '.*[/\\]wrong_schema.db': wrong schema: 99 instead of \d+"
         with pytest.raises(CoverageException, match=msg):
             covdata = DebugCoverageData("wrong_schema.db")
             covdata.read()
@@ -610,7 +610,7 @@ class CoverageDataInTempDirTest(CoverageTest):
 
         with sqlite3.connect("no_schema.db") as con:
             con.execute("create table foobar (baz text)")
-        msg = r"Couldn't .* '.*[/\\]{}': \S+".format("no_schema.db")
+        msg = r"Couldn't .* '.*[/\\]no_schema.db': \S+"
         with pytest.raises(CoverageException, match=msg):
             covdata = DebugCoverageData("no_schema.db")
             covdata.read()
