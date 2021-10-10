@@ -58,6 +58,19 @@ SUMMARY_3_4 = {'x.py': 4, 'y.py': 2, 'z.py': 1}
 MEASURED_FILES_3_4 = ['x.py', 'y.py', 'z.py']
 
 
+def DebugCoverageData(*args, **kwargs):
+    """Factory for CovergeData instances with debugging turned on.
+
+    This lets us exercise the debugging lines in sqldata.py.  We don't make
+    any assertions about the debug output, but at least we can know that they
+    execute successfully, and they won't be marked as distracting missing
+    lines in our coverage reports.
+    """
+    assert "debug" not in kwargs
+    debug = DebugControlString(options=["dataio", "dataop", "sql"])
+    return CoverageData(*args, debug=debug, **kwargs)
+
+
 def assert_line_counts(covdata, counts, fullpath=False):
     """Check that the line_counts of `covdata` is `counts`."""
     assert line_counts(covdata, fullpath) == counts
@@ -98,83 +111,83 @@ class CoverageDataTest(CoverageTest):
     """Test cases for CoverageData."""
 
     def test_empty_data_is_false(self):
-        covdata = CoverageData()
+        covdata = DebugCoverageData()
         assert not covdata
 
     def test_line_data_is_true(self):
-        covdata = CoverageData()
+        covdata = DebugCoverageData()
         covdata.add_lines(LINES_1)
         assert covdata
 
     def test_arc_data_is_true(self):
-        covdata = CoverageData()
+        covdata = DebugCoverageData()
         covdata.add_arcs(ARCS_3)
         assert covdata
 
     def test_empty_line_data_is_false(self):
-        covdata = CoverageData()
+        covdata = DebugCoverageData()
         covdata.add_lines({})
         assert not covdata
 
     def test_empty_arc_data_is_false(self):
-        covdata = CoverageData()
+        covdata = DebugCoverageData()
         covdata.add_arcs({})
         assert not covdata
 
     @pytest.mark.parametrize("lines", [LINES_1, dicts_from_sets(LINES_1)])
     def test_adding_lines(self, lines):
-        covdata = CoverageData()
+        covdata = DebugCoverageData()
         covdata.add_lines(lines)
         assert_lines1_data(covdata)
 
     @pytest.mark.parametrize("arcs", [ARCS_3, dicts_from_sets(ARCS_3)])
     def test_adding_arcs(self, arcs):
-        covdata = CoverageData()
+        covdata = DebugCoverageData()
         covdata.add_arcs(arcs)
         assert_arcs3_data(covdata)
 
     def test_ok_to_add_lines_twice(self):
-        covdata = CoverageData()
+        covdata = DebugCoverageData()
         covdata.add_lines(LINES_1)
         covdata.add_lines(LINES_2)
         assert_line_counts(covdata, SUMMARY_1_2)
         assert_measured_files(covdata, MEASURED_FILES_1_2)
 
     def test_ok_to_add_arcs_twice(self):
-        covdata = CoverageData()
+        covdata = DebugCoverageData()
         covdata.add_arcs(ARCS_3)
         covdata.add_arcs(ARCS_4)
         assert_line_counts(covdata, SUMMARY_3_4)
         assert_measured_files(covdata, MEASURED_FILES_3_4)
 
     def test_cant_add_arcs_with_lines(self):
-        covdata = CoverageData()
+        covdata = DebugCoverageData()
         covdata.add_lines(LINES_1)
         msg = "Can't add branch measurements to existing line data"
         with pytest.raises(CoverageException, match=msg):
             covdata.add_arcs(ARCS_3)
 
     def test_cant_add_lines_with_arcs(self):
-        covdata = CoverageData()
+        covdata = DebugCoverageData()
         covdata.add_arcs(ARCS_3)
         msg = "Can't add line measurements to existing branch data"
         with pytest.raises(CoverageException, match=msg):
             covdata.add_lines(LINES_1)
 
     def test_touch_file_with_lines(self):
-        covdata = CoverageData()
+        covdata = DebugCoverageData()
         covdata.add_lines(LINES_1)
         covdata.touch_file('zzz.py')
         assert_measured_files(covdata, MEASURED_FILES_1 + ['zzz.py'])
 
     def test_touch_file_with_arcs(self):
-        covdata = CoverageData()
+        covdata = DebugCoverageData()
         covdata.add_arcs(ARCS_3)
         covdata.touch_file('zzz.py')
         assert_measured_files(covdata, MEASURED_FILES_3 + ['zzz.py'])
 
     def test_set_query_contexts(self):
-        covdata = CoverageData()
+        covdata = DebugCoverageData()
         covdata.set_context('test_a')
         covdata.add_lines(LINES_1)
         covdata.set_query_contexts(['te.*a'])
@@ -183,14 +196,14 @@ class CoverageDataTest(CoverageTest):
         assert covdata.lines('a.py') == []
 
     def test_no_lines_vs_unmeasured_file(self):
-        covdata = CoverageData()
+        covdata = DebugCoverageData()
         covdata.add_lines(LINES_1)
         covdata.touch_file('zzz.py')
         assert covdata.lines('zzz.py') == []
         assert covdata.lines('no_such_file.py') is None
 
     def test_lines_with_contexts(self):
-        covdata = CoverageData()
+        covdata = DebugCoverageData()
         covdata.set_context('test_a')
         covdata.add_lines(LINES_1)
         assert covdata.lines('a.py') == [1, 2]
@@ -200,7 +213,7 @@ class CoverageDataTest(CoverageTest):
         assert covdata.lines('a.py') == []
 
     def test_contexts_by_lineno_with_lines(self):
-        covdata = CoverageData()
+        covdata = DebugCoverageData()
         covdata.set_context('test_a')
         covdata.add_lines(LINES_1)
         expected = {1: ['test_a'], 2: ['test_a']}
@@ -208,7 +221,7 @@ class CoverageDataTest(CoverageTest):
 
     @pytest.mark.parametrize("lines", [LINES_1, dicts_from_sets(LINES_1)])
     def test_no_duplicate_lines(self, lines):
-        covdata = CoverageData()
+        covdata = DebugCoverageData()
         covdata.set_context("context1")
         covdata.add_lines(lines)
         covdata.set_context("context2")
@@ -217,7 +230,7 @@ class CoverageDataTest(CoverageTest):
 
     @pytest.mark.parametrize("arcs", [ARCS_3, dicts_from_sets(ARCS_3)])
     def test_no_duplicate_arcs(self, arcs):
-        covdata = CoverageData()
+        covdata = DebugCoverageData()
         covdata.set_context("context1")
         covdata.add_arcs(arcs)
         covdata.set_context("context2")
@@ -225,7 +238,7 @@ class CoverageDataTest(CoverageTest):
         assert covdata.arcs('x.py') == X_PY_ARCS_3
 
     def test_no_arcs_vs_unmeasured_file(self):
-        covdata = CoverageData()
+        covdata = DebugCoverageData()
         covdata.add_arcs(ARCS_3)
         covdata.touch_file('zzz.py')
         assert covdata.lines('zzz.py') == []
@@ -234,7 +247,7 @@ class CoverageDataTest(CoverageTest):
         assert covdata.arcs('no_such_file.py') is None
 
     def test_arcs_with_contexts(self):
-        covdata = CoverageData()
+        covdata = DebugCoverageData()
         covdata.set_context('test_x')
         covdata.add_arcs(ARCS_3)
         assert covdata.arcs('x.py') == [(-1, 1), (1, 2), (2, 3), (3, -1)]
@@ -244,20 +257,20 @@ class CoverageDataTest(CoverageTest):
         assert covdata.arcs('x.py') == []
 
     def test_contexts_by_lineno_with_arcs(self):
-        covdata = CoverageData()
+        covdata = DebugCoverageData()
         covdata.set_context('test_x')
         covdata.add_arcs(ARCS_3)
         expected = {1: ['test_x'], 2: ['test_x'], 3: ['test_x']}
         assert covdata.contexts_by_lineno('x.py') == expected
 
     def test_contexts_by_lineno_with_unknown_file(self):
-        covdata = CoverageData()
+        covdata = DebugCoverageData()
         covdata.set_context('test_x')
         covdata.add_arcs(ARCS_3)
         assert covdata.contexts_by_lineno('xyz.py') == {}
 
     def test_context_by_lineno_with_query_contexts_with_lines(self):
-        covdata = CoverageData()
+        covdata = DebugCoverageData()
         covdata.set_context("test_1")
         covdata.add_lines(LINES_1)
         covdata.set_context("test_2")
@@ -266,7 +279,7 @@ class CoverageDataTest(CoverageTest):
         assert covdata.contexts_by_lineno("a.py") == dict.fromkeys([1,2], ["test_1"])
 
     def test_context_by_lineno_with_query_contexts_with_arcs(self):
-        covdata = CoverageData()
+        covdata = DebugCoverageData()
         covdata.set_context("test_1")
         covdata.add_arcs(ARCS_3)
         covdata.set_context("test_2")
@@ -275,7 +288,7 @@ class CoverageDataTest(CoverageTest):
         assert covdata.contexts_by_lineno("x.py") == dict.fromkeys([1,2,3], ["test_1"])
 
     def test_file_tracer_name(self):
-        covdata = CoverageData()
+        covdata = DebugCoverageData()
         covdata.add_lines({
             "p1.foo": dict.fromkeys([1, 2, 3]),
             "p2.html": dict.fromkeys([10, 11, 12]),
@@ -287,7 +300,7 @@ class CoverageDataTest(CoverageTest):
         assert covdata.file_tracer("p3.not_here") is None
 
     def test_cant_file_tracer_unmeasured_files(self):
-        covdata = CoverageData()
+        covdata = DebugCoverageData()
         msg = "Can't add file tracer data for unmeasured file 'p1.foo'"
         with pytest.raises(CoverageException, match=msg):
             covdata.add_file_tracers({"p1.foo": "p1.plugin"})
@@ -297,7 +310,7 @@ class CoverageDataTest(CoverageTest):
             covdata.add_file_tracers({"p1.foo": "p1.plugin"})
 
     def test_cant_change_file_tracer_name(self):
-        covdata = CoverageData()
+        covdata = DebugCoverageData()
         covdata.add_lines({"p1.foo": dict.fromkeys([1, 2, 3])})
         covdata.add_file_tracers({"p1.foo": "p1.plugin"})
 
@@ -306,13 +319,13 @@ class CoverageDataTest(CoverageTest):
             covdata.add_file_tracers({"p1.foo": "p1.plugin.foo"})
 
     def test_update_lines(self):
-        covdata1 = CoverageData(suffix='1')
+        covdata1 = DebugCoverageData(suffix='1')
         covdata1.add_lines(LINES_1)
 
-        covdata2 = CoverageData(suffix='2')
+        covdata2 = DebugCoverageData(suffix='2')
         covdata2.add_lines(LINES_2)
 
-        covdata3 = CoverageData(suffix='3')
+        covdata3 = DebugCoverageData(suffix='3')
         covdata3.update(covdata1)
         covdata3.update(covdata2)
 
@@ -320,13 +333,13 @@ class CoverageDataTest(CoverageTest):
         assert_measured_files(covdata3, MEASURED_FILES_1_2)
 
     def test_update_arcs(self):
-        covdata1 = CoverageData(suffix='1')
+        covdata1 = DebugCoverageData(suffix='1')
         covdata1.add_arcs(ARCS_3)
 
-        covdata2 = CoverageData(suffix='2')
+        covdata2 = DebugCoverageData(suffix='2')
         covdata2.add_arcs(ARCS_4)
 
-        covdata3 = CoverageData(suffix='3')
+        covdata3 = DebugCoverageData(suffix='3')
         covdata3.update(covdata1)
         covdata3.update(covdata2)
 
@@ -334,10 +347,10 @@ class CoverageDataTest(CoverageTest):
         assert_measured_files(covdata3, MEASURED_FILES_3_4)
 
     def test_update_cant_mix_lines_and_arcs(self):
-        covdata1 = CoverageData(suffix='1')
+        covdata1 = DebugCoverageData(suffix='1')
         covdata1.add_lines(LINES_1)
 
-        covdata2 = CoverageData(suffix='2')
+        covdata2 = DebugCoverageData(suffix='2')
         covdata2.add_arcs(ARCS_3)
 
         with pytest.raises(CoverageException, match="Can't combine arc data with line data"):
@@ -347,7 +360,7 @@ class CoverageDataTest(CoverageTest):
             covdata2.update(covdata1)
 
     def test_update_file_tracers(self):
-        covdata1 = CoverageData(suffix='1')
+        covdata1 = DebugCoverageData(suffix='1')
         covdata1.add_lines({
             "p1.html": dict.fromkeys([1, 2, 3, 4]),
             "p2.html": dict.fromkeys([5, 6, 7]),
@@ -358,7 +371,7 @@ class CoverageDataTest(CoverageTest):
             "p2.html": "html.plugin2",
         })
 
-        covdata2 = CoverageData(suffix='2')
+        covdata2 = DebugCoverageData(suffix='2')
         covdata2.add_lines({
             "p1.html": dict.fromkeys([3, 4, 5, 6]),
             "p2.html": dict.fromkeys([7, 8, 9]),
@@ -371,7 +384,7 @@ class CoverageDataTest(CoverageTest):
             "p3.foo": "foo_plugin",
         })
 
-        covdata3 = CoverageData(suffix='3')
+        covdata3 = DebugCoverageData(suffix='3')
         covdata3.update(covdata1)
         covdata3.update(covdata2)
         assert covdata3.file_tracer("p1.html") == "html.plugin"
@@ -380,11 +393,11 @@ class CoverageDataTest(CoverageTest):
         assert covdata3.file_tracer("main.py") == ""
 
     def test_update_conflicting_file_tracers(self):
-        covdata1 = CoverageData(suffix='1')
+        covdata1 = DebugCoverageData(suffix='1')
         covdata1.add_lines({"p1.html": dict.fromkeys([1, 2, 3])})
         covdata1.add_file_tracers({"p1.html": "html.plugin"})
 
-        covdata2 = CoverageData(suffix='2')
+        covdata2 = DebugCoverageData(suffix='2')
         covdata2.add_lines({"p1.html": dict.fromkeys([1, 2, 3])})
         covdata2.add_file_tracers({"p1.html": "html.other_plugin"})
 
@@ -397,11 +410,11 @@ class CoverageDataTest(CoverageTest):
             covdata2.update(covdata1)
 
     def test_update_file_tracer_vs_no_file_tracer(self):
-        covdata1 = CoverageData(suffix="1")
+        covdata1 = DebugCoverageData(suffix="1")
         covdata1.add_lines({"p1.html": dict.fromkeys([1, 2, 3])})
         covdata1.add_file_tracers({"p1.html": "html.plugin"})
 
-        covdata2 = CoverageData(suffix="2")
+        covdata2 = DebugCoverageData(suffix="2")
         covdata2.add_lines({"p1.html": dict.fromkeys([1, 2, 3])})
 
         msg = "Conflicting file tracer name for 'p1.html': u?'html.plugin' vs u?''"
@@ -413,30 +426,30 @@ class CoverageDataTest(CoverageTest):
             covdata2.update(covdata1)
 
     def test_update_lines_empty(self):
-        covdata1 = CoverageData(suffix='1')
+        covdata1 = DebugCoverageData(suffix='1')
         covdata1.add_lines(LINES_1)
 
-        covdata2 = CoverageData(suffix='2')
+        covdata2 = DebugCoverageData(suffix='2')
         covdata1.update(covdata2)
         assert_line_counts(covdata1, SUMMARY_1)
 
     def test_update_arcs_empty(self):
-        covdata1 = CoverageData(suffix='1')
+        covdata1 = DebugCoverageData(suffix='1')
         covdata1.add_arcs(ARCS_3)
 
-        covdata2 = CoverageData(suffix='2')
+        covdata2 = DebugCoverageData(suffix='2')
         covdata1.update(covdata2)
         assert_line_counts(covdata1, SUMMARY_3)
 
     def test_asking_isnt_measuring(self):
         # Asking about an unmeasured file shouldn't make it seem measured.
-        covdata = CoverageData()
+        covdata = DebugCoverageData()
         assert_measured_files(covdata, [])
         assert covdata.arcs("missing.py") is None
         assert_measured_files(covdata, [])
 
     def test_add_to_hash_with_lines(self):
-        covdata = CoverageData()
+        covdata = DebugCoverageData()
         covdata.add_lines(LINES_1)
         hasher = mock.Mock()
         add_data_to_hash(covdata, "a.py", hasher)
@@ -446,7 +459,7 @@ class CoverageDataTest(CoverageTest):
         ]
 
     def test_add_to_hash_with_arcs(self):
-        covdata = CoverageData()
+        covdata = DebugCoverageData()
         covdata.add_arcs(ARCS_3)
         covdata.add_file_tracers({"y.py": "hologram_plugin"})
         hasher = mock.Mock()
@@ -458,7 +471,7 @@ class CoverageDataTest(CoverageTest):
 
     def test_add_to_lines_hash_with_missing_file(self):
         # https://github.com/nedbat/coveragepy/issues/403
-        covdata = CoverageData()
+        covdata = DebugCoverageData()
         covdata.add_lines(LINES_1)
         hasher = mock.Mock()
         add_data_to_hash(covdata, "missing.py", hasher)
@@ -469,7 +482,7 @@ class CoverageDataTest(CoverageTest):
 
     def test_add_to_arcs_hash_with_missing_file(self):
         # https://github.com/nedbat/coveragepy/issues/403
-        covdata = CoverageData()
+        covdata = DebugCoverageData()
         covdata.add_arcs(ARCS_3)
         covdata.add_file_tracers({"y.py": "hologram_plugin"})
         hasher = mock.Mock()
@@ -480,34 +493,34 @@ class CoverageDataTest(CoverageTest):
         ]
 
     def test_empty_lines_are_still_lines(self):
-        covdata = CoverageData()
+        covdata = DebugCoverageData()
         covdata.add_lines({})
         covdata.touch_file("abc.py")
         assert not covdata.has_arcs()
 
     def test_empty_arcs_are_still_arcs(self):
-        covdata = CoverageData()
+        covdata = DebugCoverageData()
         covdata.add_arcs({})
         covdata.touch_file("abc.py")
         assert covdata.has_arcs()
 
     def test_cant_touch_in_empty_data(self):
-        covdata = CoverageData()
+        covdata = DebugCoverageData()
         msg = "Can't touch files in an empty CoverageData"
         with pytest.raises(CoverageException, match=msg):
             covdata.touch_file("abc.py")
 
     def test_read_and_write_are_opposites(self):
-        covdata1 = CoverageData()
+        covdata1 = DebugCoverageData()
         covdata1.add_arcs(ARCS_3)
         covdata1.write()
 
-        covdata2 = CoverageData()
+        covdata2 = DebugCoverageData()
         covdata2.read()
         assert_arcs3_data(covdata2)
 
     def test_thread_stress(self):
-        covdata = CoverageData()
+        covdata = DebugCoverageData()
         exceptions = []
 
         def thread_main():
@@ -531,20 +544,20 @@ class CoverageDataInTempDirTest(CoverageTest):
     """Tests of CoverageData that need a temporary directory to make files."""
 
     def test_read_write_lines(self):
-        covdata1 = CoverageData("lines.dat")
+        covdata1 = DebugCoverageData("lines.dat")
         covdata1.add_lines(LINES_1)
         covdata1.write()
 
-        covdata2 = CoverageData("lines.dat")
+        covdata2 = DebugCoverageData("lines.dat")
         covdata2.read()
         assert_lines1_data(covdata2)
 
     def test_read_write_arcs(self):
-        covdata1 = CoverageData("arcs.dat")
+        covdata1 = DebugCoverageData("arcs.dat")
         covdata1.add_arcs(ARCS_3)
         covdata1.write()
 
-        covdata2 = CoverageData("arcs.dat")
+        covdata2 = DebugCoverageData("arcs.dat")
         covdata2.read()
         assert_arcs3_data(covdata2)
 
@@ -553,13 +566,13 @@ class CoverageDataInTempDirTest(CoverageTest):
 
         self.make_file("xyzzy.dat", "xyzzy")
         with pytest.raises(CoverageException, match=msg.format("xyzzy.dat")):
-            covdata = CoverageData("xyzzy.dat")
+            covdata = DebugCoverageData("xyzzy.dat")
             covdata.read()
         assert not covdata
 
         self.make_file("empty.dat", "")
         with pytest.raises(CoverageException, match=msg.format("empty.dat")):
-            covdata = CoverageData("empty.dat")
+            covdata = DebugCoverageData("empty.dat")
             covdata.read()
         assert not covdata
 
@@ -569,7 +582,7 @@ class CoverageDataInTempDirTest(CoverageTest):
             con.execute("insert into coverage_schema (version) values (99)")
         msg = r"Couldn't .* '.*[/\\]{}': wrong schema: 99 instead of \d+".format("wrong_schema.db")
         with pytest.raises(CoverageException, match=msg):
-            covdata = CoverageData("wrong_schema.db")
+            covdata = DebugCoverageData("wrong_schema.db")
             covdata.read()
         assert not covdata
 
@@ -577,7 +590,7 @@ class CoverageDataInTempDirTest(CoverageTest):
             con.execute("create table foobar (baz text)")
         msg = r"Couldn't .* '.*[/\\]{}': \S+".format("no_schema.db")
         with pytest.raises(CoverageException, match=msg):
-            covdata = CoverageData("no_schema.db")
+            covdata = DebugCoverageData("no_schema.db")
             covdata.read()
         assert not covdata
 
@@ -587,16 +600,16 @@ class CoverageDataFilesTest(CoverageTest):
 
     def test_reading_missing(self):
         self.assert_doesnt_exist(".coverage")
-        covdata = CoverageData()
+        covdata = DebugCoverageData()
         covdata.read()
         assert_line_counts(covdata, {})
 
     def test_writing_and_reading(self):
-        covdata1 = CoverageData()
+        covdata1 = DebugCoverageData()
         covdata1.add_lines(LINES_1)
         covdata1.write()
 
-        covdata2 = CoverageData()
+        covdata2 = DebugCoverageData()
         covdata2.read()
         assert_line_counts(covdata2, SUMMARY_1)
 
@@ -635,7 +648,7 @@ class CoverageDataFilesTest(CoverageTest):
 
     def test_explicit_suffix(self):
         self.assert_doesnt_exist(".coverage.SUFFIX")
-        covdata = CoverageData(suffix='SUFFIX')
+        covdata = DebugCoverageData(suffix='SUFFIX')
         covdata.add_lines(LINES_1)
         covdata.write()
         self.assert_exists(".coverage.SUFFIX")
@@ -645,7 +658,7 @@ class CoverageDataFilesTest(CoverageTest):
         self.assert_file_count(".coverage.*", 0)
 
         # suffix=True will make a randomly named data file.
-        covdata1 = CoverageData(suffix=True)
+        covdata1 = DebugCoverageData(suffix=True)
         covdata1.add_lines(LINES_1)
         covdata1.write()
         self.assert_doesnt_exist(".coverage")
@@ -653,7 +666,7 @@ class CoverageDataFilesTest(CoverageTest):
         assert len(data_files1) == 1
 
         # Another suffix=True will choose a different name.
-        covdata2 = CoverageData(suffix=True)
+        covdata2 = DebugCoverageData(suffix=True)
         covdata2.add_lines(LINES_1)
         covdata2.write()
         self.assert_doesnt_exist(".coverage")
@@ -666,33 +679,33 @@ class CoverageDataFilesTest(CoverageTest):
     def test_combining(self):
         self.assert_file_count(".coverage.*", 0)
 
-        covdata1 = CoverageData(suffix='1')
+        covdata1 = DebugCoverageData(suffix='1')
         covdata1.add_lines(LINES_1)
         covdata1.write()
         self.assert_exists(".coverage.1")
         self.assert_file_count(".coverage.*", 1)
 
-        covdata2 = CoverageData(suffix='2')
+        covdata2 = DebugCoverageData(suffix='2')
         covdata2.add_lines(LINES_2)
         covdata2.write()
         self.assert_exists(".coverage.2")
         self.assert_file_count(".coverage.*", 2)
 
-        covdata3 = CoverageData()
+        covdata3 = DebugCoverageData()
         combine_parallel_data(covdata3)
         assert_line_counts(covdata3, SUMMARY_1_2)
         assert_measured_files(covdata3, MEASURED_FILES_1_2)
         self.assert_file_count(".coverage.*", 0)
 
     def test_erasing(self):
-        covdata1 = CoverageData()
+        covdata1 = DebugCoverageData()
         covdata1.add_lines(LINES_1)
         covdata1.write()
 
         covdata1.erase()
         assert_line_counts(covdata1, {})
 
-        covdata2 = CoverageData()
+        covdata2 = DebugCoverageData()
         covdata2.read()
         assert_line_counts(covdata2, {})
 
@@ -700,13 +713,13 @@ class CoverageDataFilesTest(CoverageTest):
         self.make_file("datafile.1")
         self.make_file("datafile.2")
         self.make_file(".coverage")
-        data = CoverageData("datafile")
+        data = DebugCoverageData("datafile")
         data.erase(parallel=True)
         self.assert_file_count("datafile.*", 0)
         self.assert_exists(".coverage")
 
     def test_combining_with_aliases(self):
-        covdata1 = CoverageData(suffix='1')
+        covdata1 = DebugCoverageData(suffix='1')
         covdata1.add_lines({
             '/home/ned/proj/src/a.py': {1: None, 2: None},
             '/home/ned/proj/src/sub/b.py': {3: None},
@@ -717,7 +730,7 @@ class CoverageDataFilesTest(CoverageTest):
         })
         covdata1.write()
 
-        covdata2 = CoverageData(suffix='2')
+        covdata2 = DebugCoverageData(suffix='2')
         covdata2.add_lines({
             r'c:\ned\test\a.py': {4: None, 5: None},
             r'c:\ned\test\sub\b.py': {3: None, 6: None},
@@ -726,7 +739,7 @@ class CoverageDataFilesTest(CoverageTest):
 
         self.assert_file_count(".coverage.*", 2)
 
-        covdata3 = CoverageData()
+        covdata3 = DebugCoverageData()
         aliases = PathAliases()
         aliases.add("/home/ned/proj/src/", "./")
         aliases.add(r"c:\ned\test", "./")
@@ -745,21 +758,21 @@ class CoverageDataFilesTest(CoverageTest):
 
     def test_combining_from_different_directories(self):
         os.makedirs('cov1')
-        covdata1 = CoverageData('cov1/.coverage.1')
+        covdata1 = DebugCoverageData('cov1/.coverage.1')
         covdata1.add_lines(LINES_1)
         covdata1.write()
 
         os.makedirs('cov2')
-        covdata2 = CoverageData('cov2/.coverage.2')
+        covdata2 = DebugCoverageData('cov2/.coverage.2')
         covdata2.add_lines(LINES_2)
         covdata2.write()
 
         # This data won't be included.
-        covdata_xxx = CoverageData('.coverage.xxx')
+        covdata_xxx = DebugCoverageData('.coverage.xxx')
         covdata_xxx.add_arcs(ARCS_3)
         covdata_xxx.write()
 
-        covdata3 = CoverageData()
+        covdata3 = DebugCoverageData()
         combine_parallel_data(covdata3, data_paths=['cov1', 'cov2'])
 
         assert_line_counts(covdata3, SUMMARY_1_2)
@@ -770,25 +783,25 @@ class CoverageDataFilesTest(CoverageTest):
 
     def test_combining_from_files(self):
         os.makedirs('cov1')
-        covdata1 = CoverageData('cov1/.coverage.1')
+        covdata1 = DebugCoverageData('cov1/.coverage.1')
         covdata1.add_lines(LINES_1)
         covdata1.write()
 
         os.makedirs('cov2')
-        covdata2 = CoverageData('cov2/.coverage.2')
+        covdata2 = DebugCoverageData('cov2/.coverage.2')
         covdata2.add_lines(LINES_2)
         covdata2.write()
 
         # This data won't be included.
-        covdata_xxx = CoverageData('.coverage.xxx')
+        covdata_xxx = DebugCoverageData('.coverage.xxx')
         covdata_xxx.add_arcs(ARCS_3)
         covdata_xxx.write()
 
-        covdata_2xxx = CoverageData('cov2/.coverage.xxx')
+        covdata_2xxx = DebugCoverageData('cov2/.coverage.xxx')
         covdata_2xxx.add_arcs(ARCS_3)
         covdata_2xxx.write()
 
-        covdata3 = CoverageData()
+        covdata3 = DebugCoverageData()
         combine_parallel_data(covdata3, data_paths=['cov1', 'cov2/.coverage.2'])
 
         assert_line_counts(covdata3, SUMMARY_1_2)
@@ -799,15 +812,15 @@ class CoverageDataFilesTest(CoverageTest):
         self.assert_exists("cov2/.coverage.xxx")
 
     def test_combining_from_nonexistent_directories(self):
-        covdata = CoverageData()
+        covdata = DebugCoverageData()
         msg = "Couldn't combine from non-existent path 'xyzzy'"
         with pytest.raises(CoverageException, match=msg):
             combine_parallel_data(covdata, data_paths=['xyzzy'])
 
     def test_interleaved_erasing_bug716(self):
         # pytest-cov could produce this scenario. #716
-        covdata1 = CoverageData()
-        covdata2 = CoverageData()
+        covdata1 = DebugCoverageData()
+        covdata2 = DebugCoverageData()
         # this used to create the .coverage database file..
         covdata2.set_context("")
         # then this would erase it all..
@@ -822,13 +835,14 @@ class DumpsLoadsTest(CoverageTest):
 
     run_in_temp_dir = False
 
-    def test_serialization(self):
-        covdata1 = CoverageData(no_disk=True)
+    @pytest.mark.parametrize("klass", [CoverageData, DebugCoverageData])
+    def test_serialization(self, klass):
+        covdata1 = klass(no_disk=True)
         covdata1.add_lines(LINES_1)
         covdata1.add_lines(LINES_2)
         serial = covdata1.dumps()
 
-        covdata2 = CoverageData(no_disk=True)
+        covdata2 = klass(no_disk=True)
         covdata2.loads(serial)
         assert_line_counts(covdata2, SUMMARY_1_2)
         assert_measured_files(covdata2, MEASURED_FILES_1_2)
