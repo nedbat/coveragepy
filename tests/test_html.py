@@ -607,7 +607,7 @@ class HtmlStaticFileTest(CoverageTest):
         self.make_file("main.py", "print(17)")
         cov = coverage.Coverage()
         self.start_import_stop(cov, "main")
-        msg = "Couldn't find static file u?'.*'"
+        msg = "Couldn't find static file '.*'"
         with pytest.raises(CoverageException, match=msg):
             cov.html_report()
 

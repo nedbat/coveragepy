@@ -314,7 +314,7 @@ class CoverageDataTest(CoverageTest):
         covdata.add_lines({"p1.foo": dict.fromkeys([1, 2, 3])})
         covdata.add_file_tracers({"p1.foo": "p1.plugin"})
 
-        msg = "Conflicting file tracer name for 'p1.foo': u?'p1.plugin' vs u?'p1.plugin.foo'"
+        msg = "Conflicting file tracer name for 'p1.foo': 'p1.plugin' vs 'p1.plugin.foo'"
         with pytest.raises(CoverageException, match=msg):
             covdata.add_file_tracers({"p1.foo": "p1.plugin.foo"})
 
@@ -401,11 +401,11 @@ class CoverageDataTest(CoverageTest):
         covdata2.add_lines({"p1.html": dict.fromkeys([1, 2, 3])})
         covdata2.add_file_tracers({"p1.html": "html.other_plugin"})
 
-        msg = "Conflicting file tracer name for 'p1.html': u?'html.plugin' vs u?'html.other_plugin'"
+        msg = "Conflicting file tracer name for 'p1.html': 'html.plugin' vs 'html.other_plugin'"
         with pytest.raises(CoverageException, match=msg):
             covdata1.update(covdata2)
 
-        msg = "Conflicting file tracer name for 'p1.html': u?'html.other_plugin' vs u?'html.plugin'"
+        msg = "Conflicting file tracer name for 'p1.html': 'html.other_plugin' vs 'html.plugin'"
         with pytest.raises(CoverageException, match=msg):
             covdata2.update(covdata1)
 
@@ -417,11 +417,11 @@ class CoverageDataTest(CoverageTest):
         covdata2 = DebugCoverageData(suffix="2")
         covdata2.add_lines({"p1.html": dict.fromkeys([1, 2, 3])})
 
-        msg = "Conflicting file tracer name for 'p1.html': u?'html.plugin' vs u?''"
+        msg = "Conflicting file tracer name for 'p1.html': 'html.plugin' vs ''"
         with pytest.raises(CoverageException, match=msg):
             covdata1.update(covdata2)
 
-        msg = "Conflicting file tracer name for 'p1.html': u?'' vs u?'html.plugin'"
+        msg = "Conflicting file tracer name for 'p1.html': '' vs 'html.plugin'"
         with pytest.raises(CoverageException, match=msg):
             covdata2.update(covdata1)
 

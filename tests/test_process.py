@@ -1788,11 +1788,11 @@ class VirtualenvTest(CoverageTest):
         print(re_lines(debug_out, "myproduct"))
         assert re_lines(
             debug_out,
-            r"^Not tracing .*\bmyproduct.py': module u?'myproduct' falls outside the --source spec"
+            r"^Not tracing .*\bmyproduct.py': module 'myproduct' falls outside the --source spec"
             )
         assert re_lines(
             debug_out,
-            r"^Not tracing .*\bcolorsys.py': module u?'colorsys' falls outside the --source spec"
+            r"^Not tracing .*\bcolorsys.py': module 'colorsys' falls outside the --source spec"
             )
 
         out = run_in_venv("python -m coverage report")
