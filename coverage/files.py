@@ -204,7 +204,7 @@ class TreeMatcher:
         self.name = name
 
     def __repr__(self):
-        return f"<TreeMatcher {self.name!r} {self.original_paths!r}>"
+        return f"<TreeMatcher {self.name} {self.original_paths!r}>"
 
     def info(self):
         """A list of strings for displaying when dumping state."""
@@ -231,7 +231,7 @@ class ModuleMatcher:
         self.name = name
 
     def __repr__(self):
-        return f"<ModuleMatcher {self.name!r} {self.modules!r}>"
+        return f"<ModuleMatcher {self.name} {self.modules!r}>"
 
     def info(self):
         """A list of strings for displaying when dumping state."""
@@ -261,7 +261,7 @@ class FnmatchMatcher:
         self.name = name
 
     def __repr__(self):
-        return f"<FnmatchMatcher {self.name!r} {self.pats!r}>"
+        return f"<FnmatchMatcher {self.name} {self.pats!r}>"
 
     def info(self):
         """A list of strings for displaying when dumping state."""
