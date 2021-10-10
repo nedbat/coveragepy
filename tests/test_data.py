@@ -598,6 +598,14 @@ class CoverageDataInTempDirTest(CoverageTest):
             covdata.read()
         assert not covdata
 
+    def test_hard_read_error(self):
+        self.make_file("noperms.dat", "go away")
+        os.chmod("noperms.dat", 0)
+        msg = r"Couldn't .* '.*[/\\]{}': \S+"
+        with pytest.raises(CoverageException, match=msg.format("noperms.dat")):
+            covdata = DebugCoverageData("noperms.dat")
+            covdata.read()
+
     def test_read_sql_errors(self):
         with sqlite3.connect("wrong_schema.db") as con:
             con.execute("create table coverage_schema (version integer)")

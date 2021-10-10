@@ -1032,7 +1032,11 @@ class SqliteDb(SimpleReprMixin):
         # is not a problem.
         if self.debug:
             self.debug.write(f"Connecting to {self.filename!r}")
-        self.con = sqlite3.connect(self.filename, check_same_thread=False)
+        try:
+            self.con = sqlite3.connect(self.filename, check_same_thread=False)
+        except sqlite3.Error as exc:
+            raise CoverageException(f"Couldn't use data file {self.filename!r}: {exc}") from exc
+
         self.con.create_function("REGEXP", 2, _regexp)
 
         # This pragma makes writing faster. It disables rollbacks, but we never need them.
