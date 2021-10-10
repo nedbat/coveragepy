@@ -296,8 +296,30 @@ class CoverageDataTest(CoverageTest):
         })
         covdata.add_file_tracers({"p1.foo": "p1.plugin", "p2.html": "p2.plugin"})
         assert covdata.file_tracer("p1.foo") == "p1.plugin"
+        assert covdata.file_tracer("p2.html") == "p2.plugin"
         assert covdata.file_tracer("main.py") == ""
         assert covdata.file_tracer("p3.not_here") is None
+
+    def test_ok_to_repeat_file_tracer(self):
+        covdata = DebugCoverageData()
+        covdata.add_lines({
+            "p1.foo": dict.fromkeys([1, 2, 3]),
+            "p2.html": dict.fromkeys([10, 11, 12]),
+        })
+        covdata.add_file_tracers({"p1.foo": "p1.plugin", "p2.html": "p2.plugin"})
+        covdata.add_file_tracers({"p1.foo": "p1.plugin"})
+        assert covdata.file_tracer("p1.foo") == "p1.plugin"
+
+    def test_ok_to_set_empty_file_tracer(self):
+        covdata = DebugCoverageData()
+        covdata.add_lines({
+            "p1.foo": dict.fromkeys([1, 2, 3]),
+            "p2.html": dict.fromkeys([10, 11, 12]),
+            "main.py": dict.fromkeys([20]),
+        })
+        covdata.add_file_tracers({"p1.foo": "p1.plugin", "main.py": ""})
+        assert covdata.file_tracer("p1.foo") == "p1.plugin"
+        assert covdata.file_tracer("main.py") == ""
 
     def test_cant_file_tracer_unmeasured_files(self):
         covdata = DebugCoverageData()
