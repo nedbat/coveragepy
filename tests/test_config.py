@@ -169,14 +169,14 @@ class ConfigTest(CoverageTest):
             ("timid = 1\n", r"no section headers"),
             ("[run\n", r"\[run"),
             ("[report]\nexclude_lines = foo(\n",
-                r"Invalid \[report\].exclude_lines value 'foo\(': "
+                r"Invalid \[report\].exclude_lines value 'foo\(': " +
                 r"(unbalanced parenthesis|missing \))"),
             ("[report]\npartial_branches = foo[\n",
-                r"Invalid \[report\].partial_branches value 'foo\[': "
+                r"Invalid \[report\].partial_branches value 'foo\[': " +
                 r"(unexpected end of regular expression|unterminated character set)"),
             ("[report]\npartial_branches_always = foo***\n",
-                r"Invalid \[report\].partial_branches_always value "
-                r"'foo\*\*\*': "
+                r"Invalid \[report\].partial_branches_always value " +
+                r"'foo\*\*\*': " +
                 r"multiple repeat"),
         ]
 
@@ -190,14 +190,14 @@ class ConfigTest(CoverageTest):
         ("[tool.coverage.run]\ntimid = \"maybe?\"\n", r"maybe[?]"),
         ("[tool.coverage.run\n", None),
         ('[tool.coverage.report]\nexclude_lines = ["foo("]\n',
-         r"Invalid \[tool.coverage.report\].exclude_lines value u?'foo\(': "
+         r"Invalid \[tool.coverage.report\].exclude_lines value u?'foo\(': " +
          r"(unbalanced parenthesis|missing \))"),
         ('[tool.coverage.report]\npartial_branches = ["foo["]\n',
-         r"Invalid \[tool.coverage.report\].partial_branches value u?'foo\[': "
+         r"Invalid \[tool.coverage.report\].partial_branches value u?'foo\[': " +
          r"(unexpected end of regular expression|unterminated character set)"),
         ('[tool.coverage.report]\npartial_branches_always = ["foo***"]\n',
-         r"Invalid \[tool.coverage.report\].partial_branches_always value "
-         r"u?'foo\*\*\*': "
+         r"Invalid \[tool.coverage.report\].partial_branches_always value " +
+         r"u?'foo\*\*\*': " +
          r"multiple repeat"),
         ('[tool.coverage.run]\nconcurrency="foo"', "not a list"),
         ("[tool.coverage.report]\nprecision=1.23", "not an integer"),

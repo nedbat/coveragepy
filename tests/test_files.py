@@ -93,8 +93,8 @@ def test_flat_rootname(original, flat):
 
 
 @pytest.mark.parametrize(
-        "patterns, case_insensitive, partial,"
-            "matches,"
+        "patterns, case_insensitive, partial," +
+            "matches," +
             "nomatches",
 [
     (

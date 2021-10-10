@@ -187,15 +187,13 @@ def cant_trace_msg(concurrency, the_module):
         # We don't even have the underlying module installed, we expect
         # coverage to alert us to this fact.
         expected_out = (
-            "Couldn't trace with concurrency=%s, "
-            "the module isn't installed.\n" % concurrency
+            f"Couldn't trace with concurrency={concurrency}, the module isn't installed.\n"
         )
     elif env.C_TRACER or concurrency == "thread" or concurrency == "":
         expected_out = None
     else:
         expected_out = (
-            "Can't support concurrency=%s with PyTracer, "
-            "only threads are supported\n" % concurrency
+            f"Can't support concurrency={concurrency} with PyTracer, only threads are supported\n"
         )
     return expected_out
 

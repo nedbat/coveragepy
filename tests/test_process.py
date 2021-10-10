@@ -130,7 +130,7 @@ class ProcessTest(CoverageTest):
         self.assert_exists(".coverage")
         self.assert_exists(".coverage.bad")
         warning_regex = (
-            r"CoverageWarning: Couldn't use data file '.*\.coverage\.bad': "
+            r"CoverageWarning: Couldn't use data file '.*\.coverage\.bad': " +
             r"file (is encrypted or )?is not a database"
         )
         assert re.search(warning_regex, out)
@@ -163,9 +163,8 @@ class ProcessTest(CoverageTest):
         for n in "12":
             self.assert_exists(f".coverage.bad{n}")
             warning_regex = (
-                r"CoverageWarning: Couldn't use data file '.*\.coverage.bad{}': "
+                fr"CoverageWarning: Couldn't use data file '.*\.coverage.bad{n}': " +
                 r"file (is encrypted or )?is not a database"
-                .format(n)
             )
             assert re.search(warning_regex, out)
         assert re.search(r"No usable data files", out)
@@ -725,9 +724,9 @@ class ProcessTest(CoverageTest):
         assert "Goodbye!" in out
 
         msg = (
-            "CoverageWarning: "
-            "Already imported a file that will be measured: {} "
-            "(already-imported)").format(goodbye_path)
+            f"CoverageWarning: Already imported a file that will be measured: {goodbye_path} " +
+            "(already-imported)"
+        )
         assert msg in out
 
     @pytest.mark.expensive
@@ -1313,10 +1312,10 @@ class UnicodeFilePathsTest(CoverageTest):
         assert ' name="h\xe2t.py"'.encode() in xml
 
         report_expected = (
-            "Name     Stmts   Miss  Cover\n"
-            "----------------------------\n"
-            "h\xe2t.py       1      0   100%\n"
-            "----------------------------\n"
+            "Name     Stmts   Miss  Cover\n" +
+            "----------------------------\n" +
+            "h\xe2t.py       1      0   100%\n" +
+            "----------------------------\n" +
             "TOTAL        1      0   100%\n"
         )
 
@@ -1357,12 +1356,12 @@ class UnicodeFilePathsTest(CoverageTest):
         }
 
         report_expected = (
-            "Name            Stmts   Miss  Cover\n"
-            "-----------------------------------\n"
-            "\xe2%saccented.py       1      0   100%%\n"
-            "-----------------------------------\n"
-            "TOTAL               1      0   100%%\n"
-        ) % os.sep
+            "Name            Stmts   Miss  Cover\n" +
+            "-----------------------------------\n" +
+            f"\xe2{os.sep}accented.py       1      0   100%\n" +
+            "-----------------------------------\n" +
+            "TOTAL               1      0   100%\n"
+        )
 
         out = self.run_command("coverage report")
         assert out == report_expected

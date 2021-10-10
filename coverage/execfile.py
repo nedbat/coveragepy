@@ -52,9 +52,8 @@ def find_module(modulename):
         spec = importlib.util.find_spec(mod_main)
         if not spec:
             raise NoSource(
-                "No module named %s; "
-                "%r is a package and cannot be directly executed"
-                % (mod_main, modulename)
+                f"No module named {mod_main}; " +
+                f"{modulename!r} is a package and cannot be directly executed"
             )
         pathname = spec.origin
         packagename = spec.name

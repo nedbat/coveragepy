@@ -616,8 +616,8 @@ class CoverageDataFilesTest(DataTestHelpers, CoverageTest):
         self.assert_line_counts(covdata2, SUMMARY_1)
 
         assert re.search(
-            r"^Erasing data file '.*\.coverage'\n"
-            r"Creating data file '.*\.coverage'\n"
+            r"^Erasing data file '.*\.coverage'\n" +
+            r"Creating data file '.*\.coverage'\n" +
             r"Opening data file '.*\.coverage'\n$",
             debug.get_output()
         )

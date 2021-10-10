@@ -45,7 +45,7 @@ class Opts:
         '', '--concurrency', action='store', metavar="LIB",
         choices=CONCURRENCY_CHOICES,
         help=(
-            "Properly measure code using a concurrency library. "
+            "Properly measure code using a concurrency library. " +
             "Valid values are: {}."
         ).format(", ".join(CONCURRENCY_CHOICES)),
     )
@@ -77,20 +77,20 @@ class Opts:
         '', '--include', action='store',
         metavar="PAT1,PAT2,...",
         help=(
-            "Include only files whose paths match one of these patterns. "
+            "Include only files whose paths match one of these patterns. " +
             "Accepts shell-style wildcards, which must be quoted."
         ),
     )
     pylib = optparse.make_option(
         '-L', '--pylib', action='store_true',
         help=(
-            "Measure coverage even inside the Python installed library, "
+            "Measure coverage even inside the Python installed library, " +
             "which isn't done by default."
         ),
     )
     sort = optparse.make_option(
         '--sort', action='store', metavar='COLUMN',
-        help="Sort the report by the named column: name, stmts, miss, branch, brpart, or cover. "
+        help="Sort the report by the named column: name, stmts, miss, branch, brpart, or cover. " +
              "Default is name."
     )
     show_missing = optparse.make_option(
@@ -117,7 +117,7 @@ class Opts:
         '', '--omit', action='store',
         metavar="PAT1,PAT2,...",
         help=(
-            "Omit files whose paths match one of these patterns. "
+            "Omit files whose paths match one of these patterns. " +
             "Accepts shell-style wildcards, which must be quoted."
         ),
     )
@@ -125,7 +125,7 @@ class Opts:
         '', '--contexts', action='store',
         metavar="REGEX1,REGEX2,...",
         help=(
-            "Only display data from lines covered in the given contexts. "
+            "Only display data from lines covered in the given contexts. " +
             "Accepts Python regexes, which must be quoted."
         ),
     )
@@ -146,30 +146,30 @@ class Opts:
     parallel_mode = optparse.make_option(
         '-p', '--parallel-mode', action='store_true',
         help=(
-            "Append the machine name, process id and random number to the "
-            ".coverage data file name to simplify collecting data from "
+            "Append the machine name, process id and random number to the " +
+            ".coverage data file name to simplify collecting data from " +
             "many processes."
         ),
     )
     module = optparse.make_option(
         '-m', '--module', action='store_true',
         help=(
-            "<pyfile> is an importable Python module, not a script path, "
+            "<pyfile> is an importable Python module, not a script path, " +
             "to be run as 'python -m' would run it."
         ),
     )
     precision = optparse.make_option(
         '', '--precision', action='store', metavar='N', type=int,
         help=(
-            "Number of digits after the decimal point to display for "
+            "Number of digits after the decimal point to display for " +
             "reported coverage percentages."
         ),
     )
     rcfile = optparse.make_option(
         '', '--rcfile', action='store',
         help=(
-            "Specify configuration file. "
-            "By default '.coveragerc', 'setup.cfg', 'tox.ini', and "
+            "Specify configuration file. " +
+            "By default '.coveragerc', 'setup.cfg', 'tox.ini', and " +
             "'pyproject.toml' are tried. [env: COVERAGE_RCFILE]"
         ),
     )
@@ -180,7 +180,7 @@ class Opts:
     timid = optparse.make_option(
         '', '--timid', action='store_true',
         help=(
-            "Use a simpler but slower trace method. Try this if you get "
+            "Use a simpler but slower trace method. Try this if you get " +
             "seemingly impossible results!"
         ),
     )
@@ -328,7 +328,7 @@ CMDS = {
             ] + GLOBAL_ARGS,
         usage="[options] [modules]",
         description=(
-            "Make annotated copies of the given files, marking statements that are executed "
+            "Make annotated copies of the given files, marking statements that are executed " +
             "with > and statements that are missed with !."
         ),
     ),
@@ -341,11 +341,11 @@ CMDS = {
             ] + GLOBAL_ARGS,
         usage="[options] <path1> <path2> ... <pathN>",
         description=(
-            "Combine data from multiple coverage files collected "
-            "with 'run -p'.  The combined results are written to a single "
-            "file representing the union of the data. The positional "
-            "arguments are data files or directories containing data files. "
-            "If no paths are provided, data files in the default data file's "
+            "Combine data from multiple coverage files collected " +
+            "with 'run -p'.  The combined results are written to a single " +
+            "file representing the union of the data. The positional " +
+            "arguments are data files or directories containing data files. " +
+            "If no paths are provided, data files in the default data file's " +
             "directory are combined."
         ),
     ),
@@ -354,12 +354,12 @@ CMDS = {
         "debug", GLOBAL_ARGS,
         usage="<topic>",
         description=(
-            "Display information about the internals of coverage.py, "
-            "for diagnosing problems. "
-            "Topics are: "
-                "'data' to show a summary of the collected data; "
-                "'sys' to show installation information; "
-                "'config' to show the configuration; "
+            "Display information about the internals of coverage.py, " +
+            "for diagnosing problems. " +
+            "Topics are: " +
+                "'data' to show a summary of the collected data; " +
+                "'sys' to show installation information; " +
+                "'config' to show the configuration; " +
                 "'premain' to show what is calling coverage."
         ),
     ),
@@ -393,8 +393,8 @@ CMDS = {
             ] + GLOBAL_ARGS,
         usage="[options] [modules]",
         description=(
-            "Create an HTML report of the coverage of the files.  "
-            "Each file gets its own page, with the source decorated to show "
+            "Create an HTML report of the coverage of the files.  " +
+            "Each file gets its own page, with the source decorated to show " +
             "executed, excluded, and missed lines."
         ),
     ),
@@ -732,9 +732,9 @@ class CoverageScript:
                 # they will be None if they have not been specified.
                 if getattr(options, opt_name) is not None:
                     show_help(
-                        "Options affecting multiprocessing must only be specified "
-                        "in a configuration file.\n"
-                        "Remove --{} from the command line.".format(opt_name)
+                        "Options affecting multiprocessing must only be specified " +
+                        "in a configuration file.\n" +
+                        f"Remove --{opt_name} from the command line."
                     )
                     return ERR
 

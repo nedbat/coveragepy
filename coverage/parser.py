@@ -367,7 +367,7 @@ class ByteParser:
         for attr in ['co_lnotab', 'co_firstlineno']:
             if not hasattr(self.code, attr):
                 raise StopEverything(                   # pragma: only jython
-                    "This implementation of Python doesn't support code analysis.\n"
+                    "This implementation of Python doesn't support code analysis.\n" +
                     "Run coverage.py under another Python for this command."
                 )
 

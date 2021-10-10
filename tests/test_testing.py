@@ -61,20 +61,19 @@ class CoverageTestTest(CoverageTest):
         self.assert_file_count("afile.*", 1)
         self.assert_file_count("*.q", 0)
         msg = re.escape(
-            "There should be 13 files matching 'a*.txt', but there are these: "
+            "There should be 13 files matching 'a*.txt', but there are these: " +
             "['abcde.txt', 'afile.txt', 'axczz.txt']"
         )
         with pytest.raises(AssertionError, match=msg):
             self.assert_file_count("a*.txt", 13)
         msg = re.escape(
-            "There should be 12 files matching '*c*.txt', but there are these: "
+            "There should be 12 files matching '*c*.txt', but there are these: " +
             "['abcde.txt', 'axczz.txt']"
         )
         with pytest.raises(AssertionError, match=msg):
             self.assert_file_count("*c*.txt", 12)
         msg = re.escape(
-            "There should be 11 files matching 'afile.*', but there are these: "
-            "['afile.txt']"
+            "There should be 11 files matching 'afile.*', but there are these: ['afile.txt']"
         )
         with pytest.raises(AssertionError, match=msg):
             self.assert_file_count("afile.*", 11)
@@ -374,11 +373,11 @@ class ArczTest(CoverageTest):
         ([(-1, 1), (1, 2), (2, -5)], "(-1, 1) # .1\n(1, 2) # 12\n(2, -5) # 2-5\n"),
         ([(-26, 10), (12, 11), (18, 29), (35, -10), (1, 33), (100, 7)],
             (
-            "(-26, 10) # -QA\n"
-            "(12, 11) # CB\n"
-            "(18, 29) # IT\n"
-            "(35, -10) # Z-A\n"
-            "(1, 33) # 1X\n"
+            "(-26, 10) # -QA\n" +
+            "(12, 11) # CB\n" +
+            "(18, 29) # IT\n" +
+            "(35, -10) # Z-A\n" +
+            "(1, 33) # 1X\n" +
             "(100, 7) # ?7\n"
             )
         ),

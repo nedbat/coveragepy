@@ -120,7 +120,7 @@ class PythonParserTest(CoverageTest):
 
     def test_indentation_error(self):
         msg = (
-            "Couldn't parse '<code>' as Python source: "
+            "Couldn't parse '<code>' as Python source: " +
             "'unindent does not match any outer indentation level' at line 3"
         )
         with pytest.raises(NotPython, match=msg):

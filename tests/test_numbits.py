@@ -115,9 +115,9 @@ class NumbitsSqliteFunctionTest(CoverageTest):
 
     def test_numbits_union(self):
         res = self.cursor.execute(
-            "select numbits_union("
-                "(select numbits from data where id = 7),"
-                "(select numbits from data where id = 9)"
+            "select numbits_union(" +
+                "(select numbits from data where id = 7)," +
+                "(select numbits from data where id = 9)" +
                 ")"
         )
         expected = [
@@ -129,9 +129,9 @@ class NumbitsSqliteFunctionTest(CoverageTest):
 
     def test_numbits_intersection(self):
         res = self.cursor.execute(
-            "select numbits_intersection("
-                "(select numbits from data where id = 7),"
-                "(select numbits from data where id = 9)"
+            "select numbits_intersection(" +
+                "(select numbits from data where id = 7)," +
+                "(select numbits from data where id = 9)" +
                 ")"
         )
         answer = numbits_to_nums(list(res)[0][0])

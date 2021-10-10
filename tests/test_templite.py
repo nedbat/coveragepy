@@ -148,7 +148,7 @@ class TempliteTest(CoverageTest):
 
     def test_multiple_loops(self):
         self.try_render(
-            "{% for n in nums %}{{n}}{% endfor %} and "
+            "{% for n in nums %}{{n}}{% endfor %} and " +
                                     "{% for n in nums %}{{n}}{% endfor %}",
             {'nums': [1,2,3]},
             "123 and 123"
@@ -201,10 +201,10 @@ class TempliteTest(CoverageTest):
                 return self.it
         obj = Complex(it={'x':"Hello", 'y': 0})
         self.try_render(
-            "@"
-            "{% if obj.getit.x %}X{% endif %}"
-            "{% if obj.getit.y %}Y{% endif %}"
-            "{% if obj.getit.y|str %}S{% endif %}"
+            "@" +
+            "{% if obj.getit.x %}X{% endif %}" +
+            "{% if obj.getit.y %}Y{% endif %}" +
+            "{% if obj.getit.y|str %}S{% endif %}" +
             "!",
             { 'obj': obj, 'str': str },
             "@XS!"
@@ -229,10 +229,10 @@ class TempliteTest(CoverageTest):
 
     def test_nested_loops(self):
         self.try_render(
-            "@"
-            "{% for n in nums %}"
-                "{% for a in abc %}{{a}}{{n}}{% endfor %}"
-            "{% endfor %}"
+            "@" +
+            "{% for n in nums %}" +
+                "{% for a in abc %}{{a}}{{n}}{% endfor %}" +
+            "{% endfor %}" +
             "!",
             {'nums': [0,1,2], 'abc': ['a', 'b', 'c']},
             "@a0b0c0a1b1c1a2b2c2!"
@@ -240,28 +240,28 @@ class TempliteTest(CoverageTest):
 
     def test_whitespace_handling(self):
         self.try_render(
-            "@{% for n in nums %}\n"
-            " {% for a in abc %}{{a}}{{n}}{% endfor %}\n"
+            "@{% for n in nums %}\n" +
+            " {% for a in abc %}{{a}}{{n}}{% endfor %}\n" +
             "{% endfor %}!\n",
             {'nums': [0, 1, 2], 'abc': ['a', 'b', 'c']},
             "@\n a0b0c0\n\n a1b1c1\n\n a2b2c2\n!\n"
             )
         self.try_render(
-            "@{% for n in nums -%}\n"
-            " {% for a in abc -%}\n"
-            "  {# this disappears completely -#}\n"
-            "  {{a-}}\n"
-            "  {{n -}}\n"
-            "  {{n    -}}\n"
-            " {% endfor %}\n"
+            "@{% for n in nums -%}\n" +
+            " {% for a in abc -%}\n" +
+            "  {# this disappears completely -#}\n" +
+            "  {{a-}}\n" +
+            "  {{n -}}\n" +
+            "  {{n    -}}\n" +
+            " {% endfor %}\n" +
             "{% endfor %}!\n",
             {'nums': [0, 1, 2], 'abc': ['a', 'b', 'c']},
             "@a00b00c00\na11b11c11\na22b22c22\n!\n"
             )
         self.try_render(
-            "@{% for n in nums -%}\n"
-            "  {{n -}}\n"
-            "  x\n"
+            "@{% for n in nums -%}\n" +
+            "  {{n -}}\n" +
+            "  x\n" +
             "{% endfor %}!\n",
             {'nums': [0, 1, 2]},
             "@0x\n1x\n2x\n!\n"
@@ -270,17 +270,17 @@ class TempliteTest(CoverageTest):
 
     def test_eat_whitespace(self):
         self.try_render(
-            "Hey!\n"
-            "{% joined %}\n"
-            "@{% for n in nums %}\n"
-            " {% for a in abc %}\n"
-            "  {# this disappears completely #}\n"
-            "  X\n"
-            "  Y\n"
-            "  {{a}}\n"
-            "  {{n }}\n"
-            " {% endfor %}\n"
-            "{% endfor %}!\n"
+            "Hey!\n" +
+            "{% joined %}\n" +
+            "@{% for n in nums %}\n" +
+            " {% for a in abc %}\n" +
+            "  {# this disappears completely #}\n" +
+            "  X\n" +
+            "  Y\n" +
+            "  {{a}}\n" +
+            "  {{n }}\n" +
+            " {% endfor %}\n" +
+            "{% endfor %}!\n" +
             "{% endjoined %}\n",
             {'nums': [0, 1, 2], 'abc': ['a', 'b', 'c']},
             "Hey!\n@XYa0XYb0XYc0XYa1XYb1XYc1XYa2XYb2XYc2!\n"

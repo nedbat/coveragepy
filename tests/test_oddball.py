@@ -484,9 +484,9 @@ class GettraceTest(CoverageTest):
 
         out = self.stdout().replace(self.last_module_name, "coverage_test")
         expected = (
-            "call: coverage_test.py @ 12\n"
-            "line: coverage_test.py @ 13\n"
-            "line: coverage_test.py @ 14\n"
+            "call: coverage_test.py @ 12\n" +
+            "line: coverage_test.py @ 13\n" +
+            "line: coverage_test.py @ 14\n" +
             "return: coverage_test.py @ 14\n"
         )
         assert expected == out

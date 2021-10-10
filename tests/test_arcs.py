@@ -517,8 +517,8 @@ class LoopArcTest(CoverageTest):
             branches_3([0,1])
             """,
             arcz=
-                ".1 18 8G GH H. "
-                ".2 23 34 43 26 3. 6. "
+                ".1 18 8G GH H. " +
+                ".2 23 34 43 26 3. 6. " +
                 "-89 9A 9-8 AB BC CB B9 AE E9",
             arcz_missing="26 6."
             )
@@ -1077,18 +1077,18 @@ class ExceptionArcTest(CoverageTest):
     def test_except_jump_finally(self):
         if env.PYBEHAVIOR.finally_jumps_back:
             arcz = (
-                ".1 1Q QR RS ST TU U. "
-                ".2 23 34 45 56 4O 6L "
-                "78 89 9A AL LA AO  8B BC CD DL LD D4  BE EF FG GL LG G.  EH HI IJ JL  HL "
-                "L4 LM "
+                ".1 1Q QR RS ST TU U. " +
+                ".2 23 34 45 56 4O 6L " +
+                "78 89 9A AL LA AO  8B BC CD DL LD D4  BE EF FG GL LG G.  EH HI IJ JL  HL " +
+                "L4 LM " +
                 "MN NO O."
             )
         else:
             arcz = (
-                ".1 1Q QR RS ST TU U. "
-                ".2 23 34 45 56 4O 6L "
-                "78 89 9A AL  8B BC CD DL  BE EF FG GL  EH HI IJ JL  HL "
-                "LO L4 L. LM "
+                ".1 1Q QR RS ST TU U. " +
+                ".2 23 34 45 56 4O 6L " +
+                "78 89 9A AL  8B BC CD DL  BE EF FG GL  EH HI IJ JL  HL " +
+                "LO L4 L. LM " +
                 "MN NO O."
             )
         self.check_coverage("""\
@@ -1131,18 +1131,18 @@ class ExceptionArcTest(CoverageTest):
     def test_else_jump_finally(self):
         if env.PYBEHAVIOR.finally_jumps_back:
             arcz = (
-                ".1 1S ST TU UV VW W. "
-                ".2 23 34 45 56 6A 78 8N 4Q "
-                "AB BC CN NC CQ  AD DE EF FN NF F4  DG GH HI IN NI I.  GJ JK KL LN  JN "
-                "N4 NO "
+                ".1 1S ST TU UV VW W. " +
+                ".2 23 34 45 56 6A 78 8N 4Q " +
+                "AB BC CN NC CQ  AD DE EF FN NF F4  DG GH HI IN NI I.  GJ JK KL LN  JN " +
+                "N4 NO " +
                 "OP PQ Q."
             )
         else:
             arcz = (
-                ".1 1S ST TU UV VW W. "
-                ".2 23 34 45 56 6A 78 8N 4Q "
-                "AB BC CN  AD DE EF FN  DG GH HI IN  GJ JK KL LN  JN "
-                "N4 NQ N. NO "
+                ".1 1S ST TU UV VW W. " +
+                ".2 23 34 45 56 6A 78 8N 4Q " +
+                "AB BC CN  AD DE EF FN  DG GH HI IN  GJ JK KL LN  JN " +
+                "N4 NQ N. NO " +
                 "OP PQ Q."
             )
         self.check_coverage("""\
@@ -1280,9 +1280,7 @@ class YieldTest(CoverageTest):
             next(gen)
             print(gen.send(6))
             """,
-            arcz=
-                ".1 17 78 89 9A AB B. "
-                ".2 23 34 45 52 2.",
+            arcz=".1 17 78 89 9A AB B. .2 23 34 45 52 2.",
             arcz_missing="2.",
         )
         assert self.stdout() == "20\n12\n"
@@ -1850,8 +1848,8 @@ class AsyncTest(CoverageTest):
             loop.close()                                    # G
             """,
             arcz=
-                ".1 13 38 8E EF FG G. "
-                "-34 45 56 6-3 "
+                ".1 13 38 8E EF FG G. " +
+                "-34 45 56 6-3 " +
                 "-89 9C C-8",
             arcz_unpredicted="5-3 9-8",
         )
