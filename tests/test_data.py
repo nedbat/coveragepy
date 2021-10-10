@@ -601,10 +601,20 @@ class CoverageDataInTempDirTest(CoverageTest):
     def test_hard_read_error(self):
         self.make_file("noperms.dat", "go away")
         os.chmod("noperms.dat", 0)
-        msg = r"Couldn't .* '.*[/\\]{}': \S+"
-        with pytest.raises(CoverageException, match=msg.format("noperms.dat")):
+        with pytest.raises(CoverageException, match=r"Couldn't .* '.*[/\\]noperms.dat': "):
             covdata = DebugCoverageData("noperms.dat")
             covdata.read()
+
+    @pytest.mark.parametrize("klass", [CoverageData, DebugCoverageData])
+    def test_error_when_closing(self, klass):
+        msg = r"Couldn't .* '.*[/\\]flaked.dat': \S+"
+        with pytest.raises(CoverageException, match=msg):
+            covdata = klass("flaked.dat")
+            covdata.add_lines(LINES_1)
+            # I don't know how to make a real error, so let's fake one.
+            sqldb = list(covdata._dbs.values())[0]
+            sqldb.close = lambda: 1/0
+            covdata.add_lines(LINES_1)
 
     def test_read_sql_errors(self):
         with sqlite3.connect("wrong_schema.db") as con:

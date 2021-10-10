@@ -1068,7 +1068,7 @@ class SqliteDb(SimpleReprMixin):
             except Exception as exc:
                 if self.debug:
                     self.debug.write(f"EXCEPTION from __exit__: {exc}")
-                raise
+                raise CoverageException(f"Couldn't end data file {self.filename!r}: {exc}") from exc
 
     def execute(self, sql, parameters=()):
         """Same as :meth:`python:sqlite3.Connection.execute`."""
@@ -1095,7 +1095,7 @@ class SqliteDb(SimpleReprMixin):
                             "Looks like a coverage 4.x data file. " +
                             "Are you mixing versions of coverage?"
                         )
-            except Exception:
+            except Exception:   # pragma: cant happen
                 pass
             if self.debug:
                 self.debug.write(f"EXCEPTION from execute: {msg}")
@@ -1116,7 +1116,7 @@ class SqliteDb(SimpleReprMixin):
         elif len(rows) == 1:
             return rows[0]
         else:
-            raise CoverageException(f"Sql {sql!r} shouldn't return {len(rows)} rows")
+            raise AssertionError(f"SQL {sql!r} shouldn't return {len(rows)} rows")
 
     def executemany(self, sql, data):
         """Same as :meth:`python:sqlite3.Connection.executemany`."""
@@ -1125,7 +1125,7 @@ class SqliteDb(SimpleReprMixin):
             self.debug.write(f"Executing many {sql!r} with {len(data)} rows")
         try:
             return self.con.executemany(sql, data)
-        except Exception:
+        except Exception:   # pragma: cant happen
             # In some cases, an error might happen that isn't really an
             # error.  Try again immediately.
             # https://github.com/nedbat/coveragepy/issues/1010
