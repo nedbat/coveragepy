@@ -817,7 +817,6 @@ class ProcessTest(CoverageTest):
         # Remove the file location and source line from the warning.
         out = re.sub(r"(?m)^[\\/\w.:~_-]+:\d+: CoverageWarning: ", "f:d: CoverageWarning: ", out)
         out = re.sub(r"(?m)^\s+self.warn.*$\n", "", out)
-        print("out:", repr(out))
         expected = (
             "Run 1\n" +
             "Run 2\n" +
@@ -1615,7 +1614,6 @@ class ProcessStartupWithSourceTest(ProcessCoverageMixin, CoverageTest):
         data = coverage.CoverageData()
         data.read()
         summary = line_counts(data)
-        print(summary)
         assert summary[source + '.py'] == 3
         assert len(summary) == 1
 
@@ -1785,7 +1783,6 @@ class VirtualenvTest(CoverageTest):
             r"^Not tracing .*\bexecfile.py': " +
             "module 'coverage.execfile' falls outside the --source spec"
             )
-        print(re_lines(debug_out, "myproduct"))
         assert re_lines(
             debug_out,
             r"^Not tracing .*\bmyproduct.py': module 'myproduct' falls outside the --source spec"
