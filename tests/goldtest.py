@@ -122,7 +122,7 @@ def canonicalize_xml(xtext):
     for node in root.iter():
         node.attrib = dict(sorted(node.items()))
     xtext = xml.etree.ElementTree.tostring(root)
-    return xtext.decode('utf8')
+    return xtext.decode("utf-8")
 
 
 def contains(filename, *strlist):

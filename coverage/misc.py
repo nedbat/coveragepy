@@ -236,15 +236,15 @@ class Hasher:
 
     def update(self, v):
         """Add `v` to the hash, recursively if needed."""
-        self.hash.update(str(type(v)).encode("utf8"))
+        self.hash.update(str(type(v)).encode("utf-8"))
         if isinstance(v, str):
-            self.hash.update(v.encode('utf8'))
+            self.hash.update(v.encode("utf-8"))
         elif isinstance(v, bytes):
             self.hash.update(v)
         elif v is None:
             pass
         elif isinstance(v, (int, float)):
-            self.hash.update(str(v).encode("utf8"))
+            self.hash.update(str(v).encode("utf-8"))
         elif isinstance(v, (tuple, list)):
             for e in v:
                 self.update(e)

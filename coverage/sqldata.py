@@ -349,7 +349,7 @@ class CoverageData(SimpleReprMixin):
         if self._debug.should("dataio"):
             self._debug.write(f"Dumping data from data file {self._filename!r}")
         with self._connect() as con:
-            return b"z" + zlib.compress(con.dump().encode("utf8"))
+            return b"z" + zlib.compress(con.dump().encode("utf-8"))
 
     @contract(data="bytes")
     def loads(self, data):
@@ -373,7 +373,7 @@ class CoverageData(SimpleReprMixin):
             raise CoverageException(
                 f"Unrecognized serialization: {data[:40]!r} (head of {len(data)} bytes)"
                 )
-        script = zlib.decompress(data[1:]).decode("utf8")
+        script = zlib.decompress(data[1:]).decode("utf-8")
         self._dbs[threading.get_ident()] = db = SqliteDb(self._filename, self._debug)
         with db:
             db.executescript(script)

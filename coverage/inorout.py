@@ -432,7 +432,7 @@ class InOrOut:
 
         # No point tracing a file we can't later write to SQLite.
         try:
-            filename.encode("utf8")
+            filename.encode("utf-8")
         except UnicodeEncodeError:
             return "non-encodable filename"
 

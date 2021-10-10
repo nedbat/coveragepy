@@ -234,7 +234,7 @@ def do_zip_mods():
             """)
         # These encodings should match the list in tests/test_python.py
         details = [
-            ('utf8', 'ⓗⓔⓛⓛⓞ, ⓦⓞⓡⓛⓓ'),
+            ('utf-8', 'ⓗⓔⓛⓛⓞ, ⓦⓞⓡⓛⓓ'),
             ('gb2312', '你好，世界'),
             ('hebrew', 'שלום, עולם'),
             ('shift_jis', 'こんにちは世界'),

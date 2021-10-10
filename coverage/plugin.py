@@ -359,12 +359,12 @@ class FileReporter:
         Returns a Unicode string.
 
         The base implementation simply reads the `self.filename` file and
-        decodes it as UTF8.  Override this method if your file isn't readable
+        decodes it as UTF-8.  Override this method if your file isn't readable
         as a text file, or if you need other encoding support.
 
         """
         with open(self.filename, "rb") as f:
-            return f.read().decode("utf8")
+            return f.read().decode("utf-8")
 
     def lines(self):
         """Get the executable lines in this file.

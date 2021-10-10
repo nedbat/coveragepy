@@ -73,7 +73,7 @@ class AnnotateReporter:
         else:
             dest_file = fr.filename + ",cover"
 
-        with open(dest_file, 'w', encoding='utf8') as dest:
+        with open(dest_file, 'w', encoding='utf-8') as dest:
             i = 0
             j = 0
             covered = True

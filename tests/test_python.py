@@ -21,7 +21,7 @@ class GetZipBytesTest(CoverageTest):
 
     @pytest.mark.parametrize(
         "encoding",
-        ["utf8", "gb2312", "hebrew", "shift_jis", "cp1252"],
+        ["utf-8", "gb2312", "hebrew", "shift_jis", "cp1252"],
     )
     def test_get_encoded_zip_files(self, encoding):
         # See igor.py, do_zipmods, for the text of these files.

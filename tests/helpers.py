@@ -69,7 +69,7 @@ def make_file(filename, text="", bytes=b"", newline=None):
         text = textwrap.dedent(text)
         if newline:
             text = text.replace("\n", newline)
-        data = text.encode('utf8')
+        data = text.encode("utf-8")
 
     # Make sure the directories are available.
     dirs, _ = os.path.split(filename)

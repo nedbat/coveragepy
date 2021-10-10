@@ -759,7 +759,7 @@ class ProcessTest(CoverageTest):
     # Pypy passes locally, but fails in CI? Perhaps the version of macOS is
     # significant?  https://foss.heptapod.net/pypy/pypy/-/issues/3074
     @pytest.mark.skipif(env.PYPY, reason="PyPy is unreliable with this test")
-    # Jython as of 2.7.1rc3 won't compile a filename that isn't utf8.
+    # Jython as of 2.7.1rc3 won't compile a filename that isn't utf-8.
     @pytest.mark.skipif(env.JYTHON, reason="Jython can't handle this test")
     def test_lang_c(self):
         # LANG=C forces getfilesystemencoding on Linux to 'ascii', which causes
