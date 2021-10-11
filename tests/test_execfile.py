@@ -8,6 +8,7 @@ import json
 import os
 import os.path
 import pathlib
+import py_compile
 import re
 
 import pytest
@@ -105,7 +106,7 @@ class RunFileTest(CoverageTest):
 class RunPycFileTest(CoverageTest):
     """Test cases for `run_python_file`."""
 
-    def make_pyc(self):
+    def make_pyc(self, **kwargs):
         """Create a .pyc file, and return the path to it."""
         if env.JYTHON:
             pytest.skip("Can't make .pyc files on Jython")
@@ -116,7 +117,7 @@ class RunPycFileTest(CoverageTest):
 
             doit()
             """)
-        compileall.compile_dir(".", quiet=True)
+        compileall.compile_dir(".", quiet=True, **kwargs)
         os.remove("compiled.py")
 
         # Find the .pyc file!
@@ -148,6 +149,12 @@ class RunPycFileTest(CoverageTest):
 
         # In some environments, the pycfile persists and pollutes another test.
         os.remove(pycfile)
+
+    @pytest.mark.skipif(not env.PYBEHAVIOR.hashed_pyc_pep552, reason="No hashed .pyc here")
+    def test_running_hashed_pyc(self):
+        pycfile = self.make_pyc(invalidation_mode=py_compile.PycInvalidationMode.CHECKED_HASH)
+        run_python_file([pycfile])
+        assert self.stdout() == "I am here!\n"
 
     def test_no_such_pyc_file(self):
         path = python_reported_file('xyzzy.pyc')
