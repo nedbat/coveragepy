@@ -49,22 +49,19 @@ LINTABLE = coverage tests igor.py setup.py __main__.py
 lint:					## Run linters and checkers.
 	tox -q -e lint
 
-todo:
-	-grep -R --include=*.py TODO $(LINTABLE)
-
-pep8:
-	pycodestyle --filename=*.py --repeat $(LINTABLE)
-
 test:
-	tox -q -e py35 $(ARGS)
+	tox -q -e py39 $(ARGS)
 
 PYTEST_SMOKE_ARGS = -n 6 -m "not expensive" --maxfail=3 $(ARGS)
 
 smoke: 					## Run tests quickly with the C tracer in the lowest supported Python versions.
-	COVERAGE_NO_PYTRACER=1 tox -q -e py35 -- $(PYTEST_SMOKE_ARGS)
+	COVERAGE_NO_PYTRACER=1 tox -q -e py39 -- $(PYTEST_SMOKE_ARGS)
 
 pysmoke: 				## Run tests quickly with the Python tracer in the lowest supported Python versions.
-	COVERAGE_NO_CTRACER=1 tox -q -e py35 -- $(PYTEST_SMOKE_ARGS)
+	COVERAGE_NO_CTRACER=1 tox -q -e py39 -- $(PYTEST_SMOKE_ARGS)
+
+metasmoke:
+	COVERAGE_NO_PYTRACER=1 ARGS="-e py39" make clean metacov metahtml
 
 # Coverage measurement of coverage.py itself (meta-coverage). See metacov.ini
 # for details.
