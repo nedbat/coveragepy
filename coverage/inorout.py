@@ -18,6 +18,7 @@ from coverage.disposition import FileDisposition, disposition_init
 from coverage.exceptions import CoverageException
 from coverage.files import TreeMatcher, FnmatchMatcher, ModuleMatcher
 from coverage.files import prep_patterns, find_python_files, canonical_filename
+from coverage.misc import sys_modules_saved
 from coverage.python import source_for_file, source_for_morf
 
 
@@ -270,27 +271,28 @@ class InOrOut:
 
         # Check if the source we want to measure has been installed as a
         # third-party package.
-        for pkg in self.source_pkgs:
-            try:
-                modfile, path = file_and_path_for_module(pkg)
-                debug(f"Imported source package {pkg!r} as {modfile!r}")
-            except CoverageException as exc:
-                debug(f"Couldn't import source package {pkg!r}: {exc}")
-                continue
-            if modfile:
-                if self.third_match.match(modfile):
-                    debug(
-                        f"Source is in third-party because of source_pkg {pkg!r} at {modfile!r}"
-                    )
-                    self.source_in_third = True
-            else:
-                for pathdir in path:
-                    if self.third_match.match(pathdir):
+        with sys_modules_saved():
+            for pkg in self.source_pkgs:
+                try:
+                    modfile, path = file_and_path_for_module(pkg)
+                    debug(f"Imported source package {pkg!r} as {modfile!r}")
+                except CoverageException as exc:
+                    debug(f"Couldn't import source package {pkg!r}: {exc}")
+                    continue
+                if modfile:
+                    if self.third_match.match(modfile):
                         debug(
-                            f"Source is in third-party because of {pkg!r} path directory " +
-                            f"at {pathdir!r}"
+                            f"Source is in third-party because of source_pkg {pkg!r} at {modfile!r}"
                         )
                         self.source_in_third = True
+                else:
+                    for pathdir in path:
+                        if self.third_match.match(pathdir):
+                            debug(
+                                f"Source is in third-party because of {pkg!r} path directory " +
+                                f"at {pathdir!r}"
+                            )
+                            self.source_in_third = True
 
         for src in self.source:
             if self.third_match.match(src):

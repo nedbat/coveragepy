@@ -10,7 +10,11 @@ import re
 from coverage.exceptions import CoverageException
 from coverage.misc import import_third_party, substitute_variables
 
-# TOML support is an install-time extra option.
+# TOML support is an install-time extra option. (Import typing is here because
+# import_third_party will unload any module that wasn't already imported.
+# tomli imports typing, and if we unload it, later it's imported again, and on
+# Python 3.6, this causes infinite recursion.)
+import typing   # pylint: disable=unused-import, wrong-import-order
 tomli = import_third_party("tomli")
 
 
