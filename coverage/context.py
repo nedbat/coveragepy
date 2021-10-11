@@ -55,37 +55,11 @@ def qualname_from_frame(frame):
         func = frame.f_globals.get(fname)
         if func is None:
             return None
-        return func.__module__ + '.' + fname
+        return func.__module__ + "." + fname
 
-    func = getattr(method, '__func__', None)
+    func = getattr(method, "__func__", None)
     if func is None:
         cls = self.__class__
-        return cls.__module__ + '.' + cls.__name__ + "." + fname
+        return cls.__module__ + "." + cls.__name__ + "." + fname
 
-    if hasattr(func, '__qualname__'):
-        qname = func.__module__ + '.' + func.__qualname__
-    else:
-        for cls in getattr(self.__class__, '__mro__', ()):
-            f = cls.__dict__.get(fname, None)
-            if f is None:
-                continue
-            if f is func:
-                qname = cls.__module__ + '.' + cls.__name__ + "." + fname
-                break
-        else:
-            # Support for old-style classes.
-            def mro(bases):
-                for base in bases:
-                    f = base.__dict__.get(fname, None)
-                    if f is func:
-                        return base.__module__ + '.' + base.__name__ + "." + fname
-                for base in bases:
-                    qname = mro(base.__bases__)  # pylint: disable=cell-var-from-loop
-                    if qname is not None:
-                        return qname
-                return None
-            qname = mro([self.__class__])
-            if qname is None:
-                qname = func.__module__ + '.' + fname
-
-    return qname
+    return func.__module__ + "." + func.__qualname__
