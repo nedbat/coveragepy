@@ -14,7 +14,7 @@ import re
 import pytest
 
 from coverage import env
-from coverage.exceptions import NoCode, NoSource
+from coverage.exceptions import NoCode, NoSource, ExceptionDuringRun
 from coverage.execfile import run_python_file, run_python_module
 from coverage.files import python_reported_file
 
@@ -101,6 +101,91 @@ class RunFileTest(CoverageTest):
         self.make_file("without_main/__init__.py", "")
         with pytest.raises(NoSource, match="Can't find '__main__' module in 'without_main'"):
             run_python_file(["without_main"])
+
+    def test_code_throws(self):
+        self.make_file("throw.py", """\
+            class MyException(Exception):
+                pass
+
+            def f1():
+                print("about to raise..")
+                raise MyException("hey!")
+
+            def f2():
+                f1()
+
+            f2()
+            """)
+
+        with pytest.raises(SystemExit) as exc_info:
+            run_python_file(["throw.py"])
+        assert exc_info.value.args == (1,)
+        assert self.stdout() == "about to raise..\n"
+        assert self.stderr() == ""
+
+    def test_code_exits(self):
+        self.make_file("exit.py", """\
+            import sys
+            def f1():
+                print("about to exit..")
+                sys.exit(17)
+
+            def f2():
+                f1()
+
+            f2()
+            """)
+
+        with pytest.raises(SystemExit) as exc_info:
+            run_python_file(["exit.py"])
+        assert exc_info.value.args == (17,)
+        assert self.stdout() == "about to exit..\n"
+        assert self.stderr() == ""
+
+    @pytest.mark.skipif(not env.CPYTHON,
+        reason="non-CPython handles excepthook exits differently, punt for now."
+    )
+    def test_excepthook_exit(self):
+        self.make_file("excepthook_exit.py", """\
+            import sys
+
+            def excepthook(*args):
+                print('in excepthook')
+                sys.exit(0)
+
+            sys.excepthook = excepthook
+
+            raise RuntimeError('Error Outside')
+            """)
+        with pytest.raises(SystemExit):
+            run_python_file(["excepthook_exit.py"])
+        cov_out = self.stdout()
+        assert cov_out == "in excepthook\n"
+
+    @pytest.mark.skipif(env.PYPY, reason="PyPy handles excepthook throws differently.")
+    def test_excepthook_throw(self):
+        self.make_file("excepthook_throw.py", """\
+            import sys
+
+            def excepthook(*args):
+                # Write this message to stderr so that we don't have to deal
+                # with interleaved stdout/stderr comparisons in the assertions
+                # in the test.
+                sys.stderr.write('in excepthook\\n')
+                raise RuntimeError('Error Inside')
+
+            sys.excepthook = excepthook
+
+            raise RuntimeError('Error Outside')
+            """)
+        with pytest.raises(ExceptionDuringRun) as exc_info:
+            run_python_file(["excepthook_throw.py"])
+        # The ExceptionDuringRun exception has the RuntimeError as its argument.
+        assert exc_info.value.args[1].args[0] == "Error Outside"
+        stderr = self.stderr()
+        assert "in excepthook\n" in stderr
+        assert "Error in sys.excepthook:\n" in stderr
+        assert "RuntimeError: Error Inside" in stderr
 
 
 class RunPycFileTest(CoverageTest):

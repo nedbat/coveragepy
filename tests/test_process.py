@@ -468,8 +468,11 @@ class ProcessTest(CoverageTest):
 
     def test_code_throws(self):
         self.make_file("throw.py", """\
+            class MyException(Exception):
+                pass
+
             def f1():
-                raise Exception("hey!")
+                raise MyException("hey!")
 
             def f2():
                 f1()
@@ -488,9 +491,9 @@ class ProcessTest(CoverageTest):
 
         # But also make sure that the output is what we expect.
         path = python_reported_file('throw.py')
-        msg = f'File "{re.escape(path)}", line 5,? in f2'
+        msg = f'File "{re.escape(path)}", line 8, in f2'
         assert re.search(msg, out)
-        assert 'raise Exception("hey!")' in out
+        assert 'raise MyException("hey!")' in out
         assert status == 1
 
     def test_code_exits(self):
@@ -1121,7 +1124,7 @@ class ExcepthookTest(CoverageTest):
         assert cov_st == py_st
         assert cov_st == 0
 
-        assert "in excepthook" in py_out
+        assert py_out == "in excepthook\n"
         assert cov_out == py_out
 
     @pytest.mark.skipif(env.PYPY, reason="PyPy handles excepthook throws differently.")

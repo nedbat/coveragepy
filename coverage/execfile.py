@@ -220,8 +220,7 @@ class PyRunner:
 
             # Call the excepthook.
             try:
-                if hasattr(err, "__traceback__"):
-                    err.__traceback__ = err.__traceback__.tb_next
+                err.__traceback__ = err.__traceback__.tb_next
                 sys.excepthook(typ, err, tb.tb_next)
             except SystemExit:                      # pylint: disable=try-except-raise
                 raise
@@ -231,8 +230,7 @@ class PyRunner:
                 sys.stderr.write("Error in sys.excepthook:\n")
                 typ2, err2, tb2 = sys.exc_info()
                 err2.__suppress_context__ = True
-                if hasattr(err2, "__traceback__"):
-                    err2.__traceback__ = err2.__traceback__.tb_next
+                err2.__traceback__ = err2.__traceback__.tb_next
                 sys.__excepthook__(typ2, err2, tb2.tb_next)
                 sys.stderr.write("\nOriginal exception was:\n")
                 raise ExceptionDuringRun(typ, err, tb.tb_next) from exc
