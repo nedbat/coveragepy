@@ -19,8 +19,11 @@ This list is detailed and covers changes in each pre-release version.
     ..  Version 9.8.1 --- 2027-07-27
     ..  ----------------------------
 
-Unreleased
-----------
+
+.. _changes_602:
+
+Version 6.0.2 --- 2021-10-11
+----------------------------
 
 - Namespace packages being measured weren't properly handled by the new code
   that ignores third-party packages. If the namespace package was installed, it

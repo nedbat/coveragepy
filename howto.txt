@@ -57,6 +57,8 @@
 - Tag the tree
     $ git tag -a 3.0.1
     $ git push --follow-tags
+- Update GitHub releases:
+    $ make github_releases
 - Bump version:
     - coverage/version.py
         - increment version number
@@ -65,8 +67,6 @@
     - CHANGES.rst
         - add an "Unreleased" section to the top.
     $ git push
-- Update GitHub releases:
-    $ make github_releases
 - Update readthedocs
     - @ https://readthedocs.org/projects/coverage/versions/
         - find the latest tag in the inactive list, edit it, make it active.
