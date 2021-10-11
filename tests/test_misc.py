@@ -165,8 +165,15 @@ class ImportThirdPartyTest(CoverageTest):
     run_in_temp_dir = False
 
     def test_success(self):
+        # Make sure we don't have pytest in sys.modules before we start.
+        del sys.modules["pytest"]
+        # Import pytest
         mod = import_third_party("pytest")
+        # Yes, it's really pytest:
         assert mod.__name__ == "pytest"
+        print(dir(mod))
+        assert all(hasattr(mod, name) for name in ["skip", "mark", "raises", "warns"])
+        # But it's not in sys.modules:
         assert "pytest" not in sys.modules
 
     def test_failure(self):

@@ -27,11 +27,20 @@ Unreleased
   was ignored as a third-party package.  That problem (`issue 1231`_) is now
   fixed.
 
+- Packages named as "source packages" (with ``source``, or ``source_pkgs``, or
+  pytest-cov's ``--cov``) might have been only partially measured.  Their
+  top-level statements could be marked as unexecuted, because they were
+  imported by coverage.py before measurement began (`issue 1232`_).  This is
+  now fixed, but the package will be imported twice, once by coverage.py, then
+  again by your test suite.  This could cause problems if importing the package
+  has side effects.
+
 - The :meth:`.CoverageData.contexts_by_lineno` method was documented to return
   a dict, but was returning a defaultdict.  Now it returns a plain dict.  It
   also no longer returns negative numbered keys.
 
 .. _issue 1231: https://github.com/nedbat/coveragepy/issues/1231
+.. _issue 1232: https://github.com/nedbat/coveragepy/issues/1232
 
 
 .. _changes_601:

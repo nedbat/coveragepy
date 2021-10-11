@@ -15,6 +15,7 @@ import sys
 
 import pytest
 
+from coverage.misc import SysModuleSaver
 from tests.helpers import change_dir, make_file, remove_files
 
 
@@ -96,21 +97,11 @@ class SysPathModulesMixin:
     @pytest.fixture(autouse=True)
     def _module_saving(self):
         """Remove modules we imported during the test."""
-        self._old_modules = list(sys.modules)
+        self._sys_module_saver = SysModuleSaver()
         try:
             yield
         finally:
-            self._cleanup_modules()
-
-    def _cleanup_modules(self):
-        """Remove any new modules imported since our construction.
-
-        This lets us import the same source files for more than one test, or
-        if called explicitly, within one test.
-
-        """
-        for m in [m for m in sys.modules if m not in self._old_modules]:
-            del sys.modules[m]
+            self._sys_module_saver.restore()
 
     def clean_local_file_imports(self):
         """Clean up the results of calls to `import_local_file`.
@@ -120,7 +111,7 @@ class SysPathModulesMixin:
 
         """
         # So that we can re-import files, clean them out first.
-        self._cleanup_modules()
+        self._sys_module_saver.restore()
 
         # Also have to clean out the .pyc file, since the timestamp
         # resolution is only one second, a changed file might not be

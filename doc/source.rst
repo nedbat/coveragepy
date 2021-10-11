@@ -39,6 +39,11 @@ in their names will be skipped (they are assumed to be scratch files written by
 text editors). Files that do not end with ``.py``, ``.pyw``, ``.pyo``, or
 ``.pyc`` will also be skipped.
 
+.. note:: Modules named as sources may be imported twice, once by coverage.py
+   to find their location, then again by your own code or test suite.  Usually
+   this isn't a problem, but could cause trouble if a module has side-effects
+   at import time.
+
 You can further fine-tune coverage.py's attention with the ``--include`` and
 ``--omit`` switches (or ``[run] include`` and ``[run] omit`` configuration
 values). ``--include`` is a list of file name patterns. If specified, only
