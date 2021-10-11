@@ -20,6 +20,12 @@ This list is detailed and covers changes in each pre-release version.
     ..  ----------------------------
 
 
+Unreleased
+----------
+
+Nothing yet.
+
+
 .. _changes_602:
 
 Version 6.0.2 --- 2021-10-11
