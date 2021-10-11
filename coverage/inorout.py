@@ -107,17 +107,26 @@ def module_has_file(mod):
     return os.path.exists(mod__file__)
 
 
-def file_for_module(modulename):
-    """Find the file for `modulename`, or return None."""
+def file_and_path_for_module(modulename):
+    """Find the file and search path for `modulename`.
+
+    Returns:
+        filename: The filename of the module, or None.
+        path: A list (possibly empty) of directories to find submodules in.
+
+    """
     filename = None
+    path = []
     try:
         spec = importlib.util.find_spec(modulename)
     except ImportError:
         pass
     else:
         if spec is not None:
-            filename = spec.origin
-    return filename
+            if spec.origin != "namespace":
+                filename = spec.origin
+            path = list(spec.submodule_search_locations or ())
+    return filename, path
 
 
 def add_stdlib_paths(paths):
@@ -263,15 +272,29 @@ class InOrOut:
         # third-party package.
         for pkg in self.source_pkgs:
             try:
-                modfile = file_for_module(pkg)
-                debug(f"Imported {pkg} as {modfile}")
+                modfile, path = file_and_path_for_module(pkg)
+                debug(f"Imported source package {pkg!r} as {modfile!r}")
             except CoverageException as exc:
-                debug(f"Couldn't import {pkg}: {exc}")
+                debug(f"Couldn't import source package {pkg!r}: {exc}")
                 continue
-            if modfile and self.third_match.match(modfile):
-                self.source_in_third = True
+            if modfile:
+                if self.third_match.match(modfile):
+                    debug(
+                        f"Source is in third-party because of source_pkg {pkg!r} at {modfile!r}"
+                    )
+                    self.source_in_third = True
+            else:
+                for pathdir in path:
+                    if self.third_match.match(pathdir):
+                        debug(
+                            f"Source is in third-party because of {pkg!r} path directory " +
+                            f"at {pathdir!r}"
+                        )
+                        self.source_in_third = True
+
         for src in self.source:
             if self.third_match.match(src):
+                debug(f"Source is in third-party because of source directory {src!r}")
                 self.source_in_third = True
 
     def should_trace(self, filename, frame=None):

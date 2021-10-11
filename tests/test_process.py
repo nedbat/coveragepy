@@ -1691,13 +1691,37 @@ def venv_world_fixture(tmp_path_factory):
             def fourth(x):
                 return 4 * x
             """)
+        # Some namespace packages.
+        make_file("third_pkg/nspkg/fifth/__init__.py", """\
+            def fifth(x):
+                return 5 * x
+            """)
+        # The setup.py to install everything.
         make_file("third_pkg/setup.py", """\
             import setuptools
-            setuptools.setup(name="third", packages=["third", "fourth"])
+            setuptools.setup(
+                name="third",
+                packages=["third", "fourth", "nspkg.fifth"],
+            )
+            """)
+
+        # Some namespace packages.
+        make_file("another_pkg/nspkg/sixth/__init__.py", """\
+            def sixth(x):
+                return 6 * x
+            """)
+        # The setup.py to install everything.
+        make_file("another_pkg/setup.py", """\
+            import setuptools
+            setuptools.setup(
+                name="another",
+                packages=["nspkg.sixth"],
+            )
             """)
 
         # Install the third-party packages.
         run_in_venv("python -m pip install --no-index ./third_pkg")
+        run_in_venv("python -m pip install --no-index -e ./another_pkg")
         shutil.rmtree("third_pkg")
 
         # Install coverage.
@@ -1719,6 +1743,8 @@ def coverage_command_fixture(request):
 class VirtualenvTest(CoverageTest):
     """Tests of virtualenv considerations."""
 
+    expected_stdout = "33\n110\n198\n1.5\n"
+
     @pytest.fixture(autouse=True)
     def in_venv_world_fixture(self, venv_world):
         """For running tests inside venv_world, and cleaning up made files."""
@@ -1726,10 +1752,13 @@ class VirtualenvTest(CoverageTest):
             self.make_file("myproduct.py", """\
                 import colorsys
                 import third
+                import nspkg.fifth
+                import nspkg.sixth
                 print(third.third(11))
+                print(nspkg.fifth.fifth(22))
+                print(nspkg.sixth.sixth(33))
                 print(sum(colorsys.rgb_to_hls(1, 0, 0)))
                 """)
-            self.expected_stdout = "33\n1.5\n"      # pylint: disable=attribute-defined-outside-init
 
             self.del_environ("COVERAGE_TESTING")    # To avoid needing contracts installed.
             self.set_environ("COVERAGE_DEBUG_FILE", "debug_out.txt")
@@ -1738,7 +1767,7 @@ class VirtualenvTest(CoverageTest):
             yield
 
             for fname in os.listdir("."):
-                if fname != "venv":
+                if fname not in {"venv", "another_pkg"}:
                     os.remove(fname)
 
     def get_trace_output(self):
@@ -1829,3 +1858,45 @@ class VirtualenvTest(CoverageTest):
         # The output should not have this warning:
         # Already imported a file that will be measured: ...third/render.py (already-imported)
         assert out == "HTML: hello.html@1723\n"
+
+    def test_installed_namespace_packages(self, coverage_command):
+        # https://github.com/nedbat/coveragepy/issues/1231
+        # When namespace packages were installed, they were considered
+        # third-party packages.  Test that isn't still happening.
+        out = run_in_venv(coverage_command + " run --source=nspkg myproduct.py")
+        # In particular, this warning doesn't appear:
+        # Already imported a file that will be measured: .../coverage/__main__.py
+        assert out == self.expected_stdout
+
+        # Check that our tracing was accurate. Files are mentioned because
+        # --source refers to a file.
+        debug_out = self.get_trace_output()
+        assert re_lines(
+            debug_out,
+            r"^Not tracing .*\bexecfile.py': " +
+            "module 'coverage.execfile' falls outside the --source spec"
+            )
+        assert re_lines(
+            debug_out,
+            r"^Not tracing .*\bmyproduct.py': module 'myproduct' falls outside the --source spec"
+            )
+        assert re_lines(
+            debug_out,
+            r"^Not tracing .*\bcolorsys.py': module 'colorsys' falls outside the --source spec"
+            )
+
+        out = run_in_venv("python -m coverage report")
+
+        # Name                                                       Stmts   Miss  Cover
+        # ------------------------------------------------------------------------------
+        # another_pkg/nspkg/sixth/__init__.py                            2      0   100%
+        # venv/lib/python3.9/site-packages/nspkg/fifth/__init__.py       2      0   100%
+        # ------------------------------------------------------------------------------
+        # TOTAL                                                          4      0   100%
+
+        assert "myproduct.py" not in out
+        assert "third" not in out
+        assert "coverage" not in out
+        assert "colorsys" not in out
+        assert "fifth" in out
+        assert "sixth" in out

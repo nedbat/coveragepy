@@ -22,9 +22,16 @@ This list is detailed and covers changes in each pre-release version.
 Unreleased
 ----------
 
+- Namespace packages being measured weren't properly handled by the new code
+  that ignores third-party packages. If the namespace package was installed, it
+  was ignored as a third-party package.  That problem (`issue 1231`_) is now
+  fixed.
+
 - The :meth:`.CoverageData.contexts_by_lineno` method was documented to return
   a dict, but was returning a defaultdict.  Now it returns a plain dict.  It
   also no longer returns negative numbered keys.
+
+.. _issue 1231: https://github.com/nedbat/coveragepy/issues/1231
 
 
 .. _changes_601:
