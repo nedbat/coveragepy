@@ -674,18 +674,14 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
             print("y")
             """)
         cov = coverage.Coverage(branch=True, source=["."])
-        cov.start()
-        import main     # pragma: nested # pylint: disable=unused-import, import-error
-        cov.stop()      # pragma: nested
+        self.start_import_stop(cov, "main")
         report = self.get_report(cov).splitlines()
         assert "mybranch.py 5 5 2 0 0%" in report
 
     def run_TheCode_and_report_it(self):
         """A helper for the next few tests."""
         cov = coverage.Coverage()
-        cov.start()
-        import TheCode  # pragma: nested # pylint: disable=import-error, unused-import
-        cov.stop()      # pragma: nested
+        self.start_import_stop(cov, "TheCode")
         return self.get_report(cov)
 
     def test_bug_203_mixed_case_listed_twice_with_rc(self):
@@ -716,6 +712,7 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
             print("In mod.pyw")
             """)
         cov = coverage.Coverage()
+        # start_import_stop can't import the .pyw file, so use the long form.
         cov.start()
         import start    # pragma: nested # pylint: disable=import-error, unused-import
         cov.stop()      # pragma: nested
@@ -736,9 +733,7 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
 
         # Run the program.
         cov = coverage.Coverage()
-        cov.start()
-        import main     # pragma: nested # pylint: disable=unused-import, import-error
-        cov.stop()      # pragma: nested
+        self.start_import_stop(cov, "main")
 
         report = self.get_report(cov).splitlines()
         assert "mod.py 1 0 100%" in report
@@ -762,9 +757,7 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
 
         # Run the program.
         cov = coverage.Coverage()
-        cov.start()
-        import main     # pragma: nested # pylint: disable=unused-import, import-error
-        cov.stop()      # pragma: nested
+        self.start_import_stop(cov, "main")
 
         # Put back the missing Python file.
         self.make_file("mod.py", "a = 1\n")
@@ -851,9 +844,7 @@ class SummaryReporterConfigurationTest(CoverageTest):
         self.make_file("doit.py", "import file1, file2, file10")
 
         cov = Coverage(source=["."], omit=["doit.py"])
-        cov.start()
-        import doit             # pragma: nested # pylint: disable=import-error, unused-import
-        cov.stop()              # pragma: nested
+        self.start_import_stop(cov, "doit")
         for name, value in options:
             cov.set_option(name, value)
         printer = SummaryReporter(cov)
