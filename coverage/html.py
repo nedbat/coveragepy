@@ -15,6 +15,7 @@ from coverage.data import add_data_to_hash
 from coverage.exceptions import CoverageException
 from coverage.files import flat_rootname
 from coverage.misc import ensure_dir, file_be_gone, Hasher, isolate_module, format_local_datetime
+from coverage.misc import human_sorted
 from coverage.report import get_analysis_to_report
 from coverage.results import Numbers
 from coverage.templite import Templite
@@ -123,7 +124,7 @@ class HtmlDataGeneration:
             contexts = contexts_label = None
             context_list = None
             if category and self.config.show_contexts:
-                contexts = sorted(c or self.EMPTY for c in contexts_by_lineno.get(lineno, ()))
+                contexts = human_sorted(c or self.EMPTY for c in contexts_by_lineno.get(lineno, ()))
                 if contexts == [self.EMPTY]:
                     contexts_label = self.EMPTY
                 else:

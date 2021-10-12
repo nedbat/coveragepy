@@ -6,6 +6,7 @@
 import sys
 
 from coverage.exceptions import CoverageException
+from coverage.misc import human_sorted_items
 from coverage.report import get_analysis_to_report
 from coverage.results import Numbers
 
@@ -89,15 +90,17 @@ class SummaryReporter:
             lines.append((text, args))
 
         # Sort the lines and write them out.
-        if getattr(self.config, 'sort', None):
-            sort_option = self.config.sort.lower()
-            reverse = False
-            if sort_option[0] == '-':
-                reverse = True
-                sort_option = sort_option[1:]
-            elif sort_option[0] == '+':
-                sort_option = sort_option[1:]
+        sort_option = (self.config.sort or "name").lower()
+        reverse = False
+        if sort_option[0] == '-':
+            reverse = True
+            sort_option = sort_option[1:]
+        elif sort_option[0] == '+':
+            sort_option = sort_option[1:]
 
+        if sort_option == "name":
+            lines = human_sorted_items(lines, reverse=reverse)
+        else:
             position = column_order.get(sort_option)
             if position is None:
                 raise CoverageException(f"Invalid sorting option: {self.config.sort!r}")

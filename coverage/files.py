@@ -14,7 +14,7 @@ import sys
 
 from coverage import env
 from coverage.exceptions import CoverageException
-from coverage.misc import contract, join_regex, isolate_module
+from coverage.misc import contract, human_sorted, isolate_module, join_regex
 
 
 os = isolate_module(os)
@@ -199,7 +199,7 @@ class TreeMatcher:
 
     """
     def __init__(self, paths, name):
-        self.original_paths = sorted(paths)
+        self.original_paths = human_sorted(paths)
         self.paths = list(map(os.path.normcase, paths))
         self.name = name
 

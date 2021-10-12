@@ -23,7 +23,9 @@ This list is detailed and covers changes in each pre-release version.
 Unreleased
 ----------
 
-Nothing yet.
+- When sorting human-readable names, numeric components are sorted correctly:
+  file10.py will appear after file9.py.  This applies to file names, module
+  names, environment variables, and test contexts.
 
 
 .. _changes_602:

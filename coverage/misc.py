@@ -389,3 +389,34 @@ def import_local_file(modname, modfile=None):
     spec.loader.exec_module(mod)
 
     return mod
+
+
+def human_key(s):
+    """Turn a string into a list of string and number chunks.
+        "z23a" -> ["z", 23, "a"]
+    """
+    def tryint(s):
+        """If `s` is a number, return an int, else `s` unchanged."""
+        try:
+            return int(s)
+        except ValueError:
+            return s
+
+    return [tryint(c) for c in re.split(r"(\d+)", s)]
+
+def human_sorted(strings):
+    """Sort the given iterable of strings the way that humans expect.
+
+    Numeric components in the strings are sorted as numbers.
+
+    Returns the sorted list.
+
+    """
+    return sorted(strings, key=human_key)
+
+def human_sorted_items(items, reverse=False):
+    """Sort the (string, value) items the way humans expect.
+
+    Returns the sorted list of items.
+    """
+    return sorted(items, key=lambda pair: (human_key(pair[0]), pair[1]), reverse=reverse)

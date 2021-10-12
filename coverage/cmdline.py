@@ -20,6 +20,7 @@ from coverage.data import line_counts
 from coverage.debug import info_formatter, info_header, short_stack
 from coverage.exceptions import BaseCoverageException, ExceptionDuringRun, NoSource
 from coverage.execfile import PyRunner
+from coverage.misc import human_sorted
 from coverage.results import Numbers, should_fail_under
 
 
@@ -780,7 +781,7 @@ class CoverageScript:
                 if data:
                     print(f"has_arcs: {data.has_arcs()!r}")
                     summary = line_counts(data, fullpath=True)
-                    filenames = sorted(summary.keys())
+                    filenames = human_sorted(summary.keys())
                     print(f"\n{len(filenames)} files:")
                     for f in filenames:
                         line = f"{f}: {summary[f]} lines"

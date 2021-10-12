@@ -10,7 +10,7 @@ import time
 import xml.dom.minidom
 
 from coverage import __url__, __version__, files
-from coverage.misc import isolate_module
+from coverage.misc import isolate_module, human_sorted, human_sorted_items
 from coverage.report import get_analysis_to_report
 
 os = isolate_module(os)
@@ -77,7 +77,7 @@ class XmlReporter:
         xcoverage.appendChild(xsources)
 
         # Populate the XML DOM with the source info.
-        for path in sorted(self.source_paths):
+        for path in human_sorted(self.source_paths):
             xsource = self.xml_out.createElement("source")
             xsources.appendChild(xsource)
             txt = self.xml_out.createTextNode(path)
@@ -90,13 +90,13 @@ class XmlReporter:
         xcoverage.appendChild(xpackages)
 
         # Populate the XML DOM with the package info.
-        for pkg_name, pkg_data in sorted(self.packages.items()):
+        for pkg_name, pkg_data in human_sorted_items(self.packages.items()):
             class_elts, lhits, lnum, bhits, bnum = pkg_data
             xpackage = self.xml_out.createElement("package")
             xpackages.appendChild(xpackage)
             xclasses = self.xml_out.createElement("classes")
             xpackage.appendChild(xclasses)
-            for _, class_elt in sorted(class_elts.items()):
+            for _, class_elt in human_sorted_items(class_elts.items()):
                 xclasses.appendChild(class_elt)
             xpackage.setAttribute("name", pkg_name.replace(os.sep, '.'))
             xpackage.setAttribute("line-rate", rate(lhits, lnum))

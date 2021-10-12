@@ -26,7 +26,7 @@ from coverage.files import PathAliases, abs_file, relative_filename, set_relativ
 from coverage.html import HtmlReporter
 from coverage.inorout import InOrOut
 from coverage.jsonreport import JsonReporter
-from coverage.misc import bool_or_none, join_regex
+from coverage.misc import bool_or_none, join_regex, human_sorted, human_sorted_items
 from coverage.misc import DefaultValue, ensure_dir_for_file, isolate_module
 from coverage.plugin import FileReporter
 from coverage.plugin_support import Plugins
@@ -309,7 +309,7 @@ class Coverage:
         wrote_any = False
         with self._debug.without_callers():
             if self._debug.should('config'):
-                config_info = sorted(self.config.__dict__.items())
+                config_info = human_sorted_items(self.config.__dict__.items())
                 config_info = [(k, v) for k, v in config_info if not k.startswith('_')]
                 write_formatted_info(self._debug, "config", config_info)
                 wrote_any = True
@@ -1076,7 +1076,7 @@ class Coverage:
             ('pid', os.getpid()),
             ('cwd', os.getcwd()),
             ('path', sys.path),
-            ('environment', sorted(
+            ('environment', human_sorted(
                 f"{k} = {v}"
                 for k, v in os.environ.items()
                 if (

@@ -10,6 +10,7 @@ import pytest
 from coverage.exceptions import CoverageException
 from coverage.misc import contract, dummy_decorator_with_args, file_be_gone
 from coverage.misc import Hasher, one_of, substitute_variables, import_third_party
+from coverage.misc import human_sorted, human_sorted_items
 from coverage.misc import USE_CONTRACTS
 
 from tests.coveragetest import CoverageTest
@@ -180,3 +181,23 @@ class ImportThirdPartyTest(CoverageTest):
         mod = import_third_party("xyzzy")
         assert mod is None
         assert "xyzzy" not in sys.modules
+
+
+HUMAN_DATA = [
+    ("z1 a2z a2a a3 a1", "a1 a2a a2z a3 z1"),
+    ("a10 a9 a100 a1", "a1 a9 a10 a100"),
+    ("4.0 3.10-win 3.10-mac 3.9-mac 3.9-win", "3.9-mac 3.9-win 3.10-mac 3.10-win 4.0"),
+]
+
+@pytest.mark.parametrize("words, ordered", HUMAN_DATA)
+def test_human_sorted(words, ordered):
+    assert " ".join(human_sorted(words.split())) == ordered
+
+@pytest.mark.parametrize("words, ordered", HUMAN_DATA)
+def test_human_sorted_items(words, ordered):
+    keys = words.split()
+    items = [(k, 1) for k in keys] + [(k, 2) for k in keys]
+    okeys = ordered.split()
+    oitems = [(k, v) for k in okeys for v in [1, 2]]
+    assert human_sorted_items(items) == oitems
+    assert human_sorted_items(items, reverse=True) == oitems[::-1]
