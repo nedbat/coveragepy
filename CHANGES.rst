@@ -16,8 +16,8 @@ This list is detailed and covers changes in each pre-release version.
     ..
     ..  .. _changes_981:
     ..
-    ..  Version 9.8.1 --- 2027-07-27
-    ..  ----------------------------
+    ..  Version 9.8.1 — 2027-07-27
+    ..  --------------------------
 
 
 Unreleased
@@ -28,8 +28,8 @@ Nothing yet.
 
 .. _changes_602:
 
-Version 6.0.2 --- 2021-10-11
-----------------------------
+Version 6.0.2 — 2021-10-11
+--------------------------
 
 - Namespace packages being measured weren't properly handled by the new code
   that ignores third-party packages. If the namespace package was installed, it
@@ -54,8 +54,8 @@ Version 6.0.2 --- 2021-10-11
 
 .. _changes_601:
 
-Version 6.0.1 --- 2021-10-06
-----------------------------
+Version 6.0.1 — 2021-10-06
+--------------------------
 
 - In 6.0, the coverage.py exceptions moved from coverage.misc to
   coverage.exceptions. These exceptions are not part of the public supported
@@ -77,8 +77,8 @@ Version 6.0.1 --- 2021-10-06
 
 .. _changes_60:
 
-Version 6.0 --- 2021-10-03
---------------------------
+Version 6.0 — 2021-10-03
+------------------------
 
 - The ``coverage html`` command now prints a message indicating where the HTML
   report was written.  Fixes `issue 1195`_.
@@ -114,8 +114,8 @@ Version 6.0 --- 2021-10-03
 
 .. _changes_60b1:
 
-Version 6.0b1 --- 2021-07-18
-----------------------------
+Version 6.0b1 — 2021-07-18
+--------------------------
 
 - Dropped support for Python 2.7, PyPy 2, and Python 3.5.
 
@@ -164,8 +164,8 @@ Version 6.0b1 --- 2021-07-18
 
 .. _changes_56b1:
 
-Version 5.6b1 --- 2021-04-13
-----------------------------
+Version 5.6b1 — 2021-04-13
+--------------------------
 
 Note: 5.6 final was never released. These changes are part of 6.0.
 
@@ -193,8 +193,8 @@ Note: 5.6 final was never released. These changes are part of 6.0.
 
 .. _changes_55:
 
-Version 5.5 --- 2021-02-28
---------------------------
+Version 5.5 — 2021-02-28
+------------------------
 
 - ``coverage combine`` has a new option, ``--keep`` to keep the original data
   files after combining them.  The default is still to delete the files after
@@ -229,8 +229,8 @@ Version 5.5 --- 2021-02-28
 
 .. _changes_54:
 
-Version 5.4 --- 2021-01-24
---------------------------
+Version 5.4 — 2021-01-24
+------------------------
 
 - The text report produced by ``coverage report`` now always outputs a TOTAL
   line, even if only one Python file is reported.  This makes regex parsing
@@ -264,8 +264,8 @@ Version 5.4 --- 2021-01-24
 
 .. _changes_531:
 
-Version 5.3.1 --- 2020-12-19
-----------------------------
+Version 5.3.1 — 2020-12-19
+--------------------------
 
 - When using ``--source`` on a large source tree, v5.x was slower than previous
   versions.  This performance regression is now fixed, closing `issue 1037`_.
@@ -290,8 +290,8 @@ Version 5.3.1 --- 2020-12-19
 
 .. _changes_53:
 
-Version 5.3 --- 2020-09-13
---------------------------
+Version 5.3 — 2020-09-13
+------------------------
 
 - The ``source`` setting has always been interpreted as either a file path or a
   module, depending on which existed.  If both interpretations were valid, it

@@ -10,55 +10,10 @@
 
 .. Older changes here:
 
-.. _changes_531:
-
-Version 5.3.1 --- 2020-12-19
-----------------------------
-
-- When using ``--source`` on a large source tree, v5.x was slower than previous
-  versions.  This performance regression is now fixed, closing `issue 1037`_.
-
-- Mysterious SQLite errors can happen on PyPy, as reported in `issue 1010`_. An
-  immediate retry seems to fix the problem, although it is an unsatisfying
-  solution.
-
-- The HTML report now saves the sort order in a more widely supported way,
-  fixing `issue 986`_.  Thanks, Sebastián Ramírez (`pull request 1066`_).
-
-- The HTML report pages now have a :ref:`Sleepy Snake <sleepy>` favicon.
-
-- Wheels are now provided for manylinux2010, and for PyPy3 (pp36 and pp37).
-
-- Continuous integration has moved from Travis and AppVeyor to GitHub Actions.
-
-.. _issue 986: https://github.com/nedbat/coveragepy/issues/986
-.. _issue 1037: https://github.com/nedbat/coveragepy/issues/1037
-.. _issue 1010: https://github.com/nedbat/coveragepy/issues/1010
-.. _pull request 1066: https://github.com/nedbat/coveragepy/pull/1066
-
-.. _changes_53:
-
-Version 5.3 --- 2020-09-13
---------------------------
-
-- The ``source`` setting has always been interpreted as either a file path or a
-  module, depending on which existed.  If both interpretations were valid, it
-  was assumed to be a file path.  The new ``source_pkgs`` setting can be used
-  to name a package to disambiguate this case.  Thanks, Thomas Grainger. Fixes
-  `issue 268`_.
-
-- If a plugin was disabled due to an exception, we used to still try to record
-  its information, causing an exception, as reported in `issue 1011`_.  This is
-  now fixed.
-
-.. _issue 268: https://github.com/nedbat/coveragepy/issues/268
-.. _issue 1011: https://github.com/nedbat/coveragepy/issues/1011
-
-
 .. _changes_521:
 
-Version 5.2.1 --- 2020-07-23
-----------------------------
+Version 5.2.1 — 2020-07-23
+--------------------------
 
 - The dark mode HTML report still used light colors for the context listing,
   making them unreadable (`issue 1009`_).  This is now fixed.
@@ -72,8 +27,8 @@ Version 5.2.1 --- 2020-07-23
 
 .. _changes_52:
 
-Version 5.2 --- 2020-07-05
---------------------------
+Version 5.2 — 2020-07-05
+------------------------
 
 - The HTML report has been redesigned by Vince Salvino.  There is now a dark
   mode, the code text is larger, and system sans serif fonts are used, in
@@ -117,8 +72,8 @@ Version 5.2 --- 2020-07-05
 
 .. _changes_51:
 
-Version 5.1 --- 2020-04-12
---------------------------
+Version 5.1 — 2020-04-12
+------------------------
 
 - The JSON report now includes counts of covered and missing branches. Thanks,
   Salvatore Zagaria.
@@ -138,8 +93,8 @@ Version 5.1 --- 2020-04-12
 
 .. _changes_504:
 
-Version 5.0.4 --- 2020-03-16
-----------------------------
+Version 5.0.4 — 2020-03-16
+--------------------------
 
 - If using the ``[run] relative_files`` setting, the XML report will use
   relative files in the ``<source>`` elements indicating the location of source
@@ -166,8 +121,8 @@ Version 5.0.4 --- 2020-03-16
 
 .. _changes_503:
 
-Version 5.0.3 --- 2020-01-12
-----------------------------
+Version 5.0.3 — 2020-01-12
+--------------------------
 
 - A performance improvement in 5.0.2 didn't work for test suites that changed
   directory before combining data, causing "Couldn't use data file: no such
@@ -191,8 +146,8 @@ Version 5.0.3 --- 2020-01-12
 
 .. _changes_502:
 
-Version 5.0.2 --- 2020-01-05
-----------------------------
+Version 5.0.2 — 2020-01-05
+--------------------------
 
 - Programs that used multiprocessing and changed directories would fail under
   coverage.  This is now fixed (`issue 890`_).  A side effect is that debug
@@ -228,8 +183,8 @@ Version 5.0.2 --- 2020-01-05
 
 .. _changes_501:
 
-Version 5.0.1 --- 2019-12-22
-----------------------------
+Version 5.0.1 — 2019-12-22
+--------------------------
 
 - If a 4.x data file is the cause of a "file is not a database" error, then use
   a more specific error message, "Looks like a coverage 4.x data file, are you
@@ -259,8 +214,8 @@ Version 5.0.1 --- 2019-12-22
 
 .. _changes_50:
 
-Version 5.0 --- 2019-12-14
---------------------------
+Version 5.0 — 2019-12-14
+------------------------
 
 Nothing new beyond 5.0b2.
 
@@ -270,8 +225,8 @@ A summary of major changes in 5.0 since 4.5.x is in see :ref:`whatsnew5x`.
 
 .. _changes_50b2:
 
-Version 5.0b2 --- 2019-12-08
-----------------------------
+Version 5.0b2 — 2019-12-08
+--------------------------
 
 - An experimental ``[run] relative_files`` setting tells coverage to store
   relative file names in the data file. This makes it easier to run tests in
@@ -307,8 +262,8 @@ Version 5.0b2 --- 2019-12-08
 
 .. _changes_50b1:
 
-Version 5.0b1 --- 2019-11-11
-----------------------------
+Version 5.0b1 — 2019-11-11
+--------------------------
 
 - The HTML and textual reports now have a ``--skip-empty`` option that skips
   files with no statements, notably ``__init__.py`` files.  Thanks, Reya B.
@@ -341,8 +296,8 @@ Version 5.0b1 --- 2019-11-11
 
 .. _changes_50a8:
 
-Version 5.0a8 --- 2019-10-02
-----------------------------
+Version 5.0a8 — 2019-10-02
+--------------------------
 
 - The :class:`.CoverageData` API has changed how queries are limited to
   specific contexts.  Now you use :meth:`.CoverageData.set_query_context` to
@@ -354,8 +309,8 @@ Version 5.0a8 --- 2019-10-02
 
 .. _changes_50a7:
 
-Version 5.0a7 --- 2019-09-21
-----------------------------
+Version 5.0a7 — 2019-09-21
+--------------------------
 
 - Data can now be "reported" in JSON format, for programmatic use, as requested
   in `issue 720`_.  The new ``coverage json`` command writes raw and summarized
@@ -390,8 +345,8 @@ Version 5.0a7 --- 2019-09-21
 
 .. _changes_50a6:
 
-Version 5.0a6 --- 2019-07-16
-----------------------------
+Version 5.0a6 — 2019-07-16
+--------------------------
 
 - Reporting on contexts. Big thanks to Stephan Richter and Albertas Agejevas
   for the contribution.
@@ -458,8 +413,8 @@ Version 5.0a6 --- 2019-07-16
 
 .. _changes_50a5:
 
-Version 5.0a5 --- 2019-05-07
-----------------------------
+Version 5.0a5 — 2019-05-07
+--------------------------
 
 - Drop support for Python 3.4
 
@@ -509,8 +464,8 @@ Version 5.0a5 --- 2019-05-07
 
 .. _changes_50a4:
 
-Version 5.0a4 --- 2018-11-25
-----------------------------
+Version 5.0a4 — 2018-11-25
+--------------------------
 
 - You can specify the command line to run your program with the ``[run]
   command_line`` configuration setting, as requested in `issue 695`_.
@@ -539,8 +494,8 @@ Version 5.0a4 --- 2018-11-25
 
 .. _changes_50a3:
 
-Version 5.0a3 --- 2018-10-06
-----------------------------
+Version 5.0a3 — 2018-10-06
+--------------------------
 
 - Context support: static contexts let you specify a label for a coverage run,
   which is recorded in the data, and retained when you combine files.  See
@@ -580,8 +535,8 @@ Version 5.0a3 --- 2018-10-06
 
 .. _changes_50a2:
 
-Version 5.0a2 --- 2018-09-03
-----------------------------
+Version 5.0a2 — 2018-09-03
+--------------------------
 
 - Coverage's data storage has changed.  In version 4.x, .coverage files were
   basically JSON.  Now, they are SQLite databases.  This means the data file
@@ -616,8 +571,8 @@ Version 5.0a2 --- 2018-09-03
 
 .. _changes_50a1:
 
-Version 5.0a1 --- 2018-06-05
-----------------------------
+Version 5.0a1 — 2018-06-05
+--------------------------
 
 - Coverage.py no longer supports Python 2.6 or 3.3.
 
@@ -643,8 +598,8 @@ Version 5.0a1 --- 2018-06-05
 
 .. _changes_454:
 
-Version 4.5.4 --- 2019-07-29
-----------------------------
+Version 4.5.4 — 2019-07-29
+--------------------------
 
 - Multiprocessing support in Python 3.8 was broken, but is now fixed.  Closes
   `issue 828`_.
@@ -654,16 +609,16 @@ Version 4.5.4 --- 2019-07-29
 
 .. _changes_453:
 
-Version 4.5.3 --- 2019-03-09
-----------------------------
+Version 4.5.3 — 2019-03-09
+--------------------------
 
 - Only packaging metadata changes.
 
 
 .. _changes_452:
 
-Version 4.5.2 --- 2018-11-12
-----------------------------
+Version 4.5.2 — 2018-11-12
+--------------------------
 
 - Namespace packages are supported on Python 3.7, where they used to cause
   TypeErrors about path being None. Fixes `issue 700`_.
@@ -683,8 +638,8 @@ Version 4.5.2 --- 2018-11-12
 
 .. _changes_451:
 
-Version 4.5.1 --- 2018-02-10
-----------------------------
+Version 4.5.1 — 2018-02-10
+--------------------------
 
 - Now that 4.5 properly separated the ``[run] omit`` and ``[report] omit``
   settings, an old bug has become apparent.  If you specified a package name
@@ -703,8 +658,8 @@ Version 4.5.1 --- 2018-02-10
 
 .. _changes_45:
 
-Version 4.5 --- 2018-02-03
---------------------------
+Version 4.5 — 2018-02-03
+------------------------
 
 - A new kind of plugin is supported: configurers are invoked at start-up to
   allow more complex configuration than the .coveragerc file can easily do.
@@ -748,8 +703,8 @@ Version 4.5 --- 2018-02-03
 
 .. _changes_442:
 
-Version 4.4.2 --- 2017-11-05
-----------------------------
+Version 4.4.2 — 2017-11-05
+--------------------------
 
 - Support for Python 3.7.  In some cases, class and module docstrings are no
   longer counted in statement totals, which could slightly change your total
@@ -784,16 +739,16 @@ Version 4.4.2 --- 2017-11-05
 
 .. _changes_441:
 
-Version 4.4.1 --- 2017-05-14
-----------------------------
+Version 4.4.1 — 2017-05-14
+--------------------------
 
 - No code changes: just corrected packaging for Python 2.7 Linux wheels.
 
 
 .. _changes_44:
 
-Version 4.4 --- 2017-05-07
---------------------------
+Version 4.4 — 2017-05-07
+------------------------
 
 - Reports could produce the wrong file names for packages, reporting ``pkg.py``
   instead of the correct ``pkg/__init__.py``.  This is now fixed.  Thanks, Dirk
@@ -821,8 +776,8 @@ Version 4.4 --- 2017-05-07
 .. _issue 575: https://github.com/nedbat/coveragepy/issues/575
 
 
-Version 4.4b1 --- 2017-04-04
-----------------------------
+Version 4.4b1 — 2017-04-04
+--------------------------
 
 - Some warnings can now be individually disabled.  Warnings that can be
   disabled have a short name appended.  The ``[run] disable_warnings`` setting
@@ -859,8 +814,8 @@ Version 4.4b1 --- 2017-04-04
 
 .. _changes_434:
 
-Version 4.3.4 --- 2017-01-17
-----------------------------
+Version 4.3.4 — 2017-01-17
+--------------------------
 
 - Fixing 2.6 in version 4.3.3 broke other things, because the too-tricky
   exception wasn't properly derived from Exception, described in `issue 556`_.
@@ -871,8 +826,8 @@ Version 4.3.4 --- 2017-01-17
 
 .. _changes_433:
 
-Version 4.3.3 --- 2017-01-17
-----------------------------
+Version 4.3.3 — 2017-01-17
+--------------------------
 
 - Python 2.6 support was broken due to a testing exception imported for the
   benefit of the coverage.py test suite.  Properly conditionalizing it fixed
@@ -883,8 +838,8 @@ Version 4.3.3 --- 2017-01-17
 
 .. _changes_432:
 
-Version 4.3.2 --- 2017-01-16
-----------------------------
+Version 4.3.2 — 2017-01-16
+--------------------------
 
 - Using the ``--skip-covered`` option on an HTML report with 100% coverage
   would cause a "No data to report" error, as reported in `issue 549`_. This is
@@ -930,8 +885,8 @@ Version 4.3.2 --- 2017-01-16
 
 .. _changes_431:
 
-Version 4.3.1 --- 2016-12-28
-----------------------------
+Version 4.3.1 — 2016-12-28
+--------------------------
 
 - Some environments couldn't install 4.3, as described in `issue 540`_. This is
   now fixed.
@@ -947,8 +902,8 @@ Version 4.3.1 --- 2016-12-28
 
 .. _changes_43:
 
-Version 4.3 --- 2016-12-27
---------------------------
+Version 4.3 — 2016-12-27
+------------------------
 
 Special thanks to **Loïc Dachary**, who took an extraordinary interest in
 coverage.py and contributed a number of improvements in this release.
@@ -1076,8 +1031,8 @@ coverage.py and contributed a number of improvements in this release.
 
 .. _changes_42:
 
-Version 4.2 --- 2016-07-26
---------------------------
+Version 4.2 — 2016-07-26
+------------------------
 
 - Since ``concurrency=multiprocessing`` uses subprocesses, options specified on
   the coverage.py command line will not be communicated down to them.  Only
@@ -1092,8 +1047,8 @@ Version 4.2 --- 2016-07-26
 .. _issue 495: https://github.com/nedbat/coveragepy/issues/495
 
 
-Version 4.2b1 --- 2016-07-04
-----------------------------
+Version 4.2b1 — 2016-07-04
+--------------------------
 
 Work from the PyCon 2016 Sprints!
 
@@ -1155,16 +1110,16 @@ Work from the PyCon 2016 Sprints!
 
 .. _changes_41:
 
-Version 4.1 --- 2016-05-21
---------------------------
+Version 4.1 — 2016-05-21
+------------------------
 
 - The internal attribute `Reporter.file_reporters` was removed in 4.1b3.  It
   should have come has no surprise that there were third-party tools out there
   using that attribute.  It has been restored, but with a deprecation warning.
 
 
-Version 4.1b3 --- 2016-05-10
-----------------------------
+Version 4.1b3 — 2016-05-10
+--------------------------
 
 - When running your program, execution can jump from an ``except X:`` line to
   some other line when an exception other than ``X`` happens.  This jump is no
@@ -1229,8 +1184,8 @@ Version 4.1b3 --- 2016-05-10
 .. _issue 485: https://github.com/nedbat/coveragepy/issues/485
 
 
-Version 4.1b2 --- 2016-01-23
-----------------------------
+Version 4.1b2 — 2016-01-23
+--------------------------
 
 - Problems with the new branch measurement in 4.1 beta 1 were fixed:
 
@@ -1253,8 +1208,8 @@ Version 4.1b2 --- 2016-01-23
 .. _issue 466: https://github.com/nedbat/coveragepy/issues/466
 
 
-Version 4.1b1 --- 2016-01-10
-----------------------------
+Version 4.1b1 — 2016-01-10
+--------------------------
 
 - Branch analysis has been rewritten: it used to be based on bytecode, but now
   uses AST analysis.  This has changed a number of things:
@@ -1311,8 +1266,8 @@ Version 4.1b1 --- 2016-01-10
 
 .. _changes_403:
 
-Version 4.0.3 --- 2015-11-24
-----------------------------
+Version 4.0.3 — 2015-11-24
+--------------------------
 
 - Fixed a mysterious problem that manifested in different ways: sometimes
   hanging the process (`issue 420`_), sometimes making database connections
@@ -1338,8 +1293,8 @@ Version 4.0.3 --- 2015-11-24
 
 .. _changes_402:
 
-Version 4.0.2 --- 2015-11-04
-----------------------------
+Version 4.0.2 — 2015-11-04
+--------------------------
 
 - More work on supporting unusually encoded source. Fixed `issue 431`_.
 
@@ -1359,8 +1314,8 @@ Version 4.0.2 --- 2015-11-04
 
 .. _changes_401:
 
-Version 4.0.1 --- 2015-10-13
-----------------------------
+Version 4.0.1 — 2015-10-13
+--------------------------
 
 - When combining data files, unreadable files will now generate a warning
   instead of failing the command.  This is more in line with the older
@@ -1407,14 +1362,14 @@ Version 4.0.1 --- 2015-10-13
 
 .. _changes_40:
 
-Version 4.0 --- 2015-09-20
---------------------------
+Version 4.0 — 2015-09-20
+------------------------
 
 No changes from 4.0b3
 
 
-Version 4.0b3 --- 2015-09-07
-----------------------------
+Version 4.0b3 — 2015-09-07
+--------------------------
 
 - Reporting on an unmeasured file would fail with a traceback.  This is now
   fixed, closing `issue 403`_.
@@ -1433,8 +1388,8 @@ Version 4.0b3 --- 2015-09-07
 .. _issue 404: https://github.com/nedbat/coveragepy/issues/404
 
 
-Version 4.0b2 --- 2015-08-22
-----------------------------
+Version 4.0b2 — 2015-08-22
+--------------------------
 
 - 4.0b1 broke ``--append`` creating new data files.  This is now fixed, closing
   `issue 392`_.
@@ -1466,8 +1421,8 @@ Version 4.0b2 --- 2015-08-22
 .. _sys.version_info: https://docs.python.org/3/library/sys.html#sys.version_info
 
 
-Version 4.0b1 --- 2015-08-02
-----------------------------
+Version 4.0b1 — 2015-08-02
+--------------------------
 
 - Coverage.py is now licensed under the Apache 2.0 license.  See NOTICE.txt for
   details.  Closes `issue 313`_.
@@ -1545,8 +1500,8 @@ Version 4.0b1 --- 2015-08-02
 .. 40 issues closed in 4.0 below here
 
 
-Version 4.0a6 --- 2015-06-21
-----------------------------
+Version 4.0a6 — 2015-06-21
+--------------------------
 
 - Python 3.5b2 and PyPy 2.6.0 are supported.
 
@@ -1607,8 +1562,8 @@ Version 4.0a6 --- 2015-06-21
 .. _issue 375: https://github.com/nedbat/coveragepy/issues/375
 
 
-Version 4.0a5 --- 2015-02-16
-----------------------------
+Version 4.0a5 — 2015-02-16
+--------------------------
 
 - Plugin support is now implemented in the C tracer instead of the Python
   tracer. This greatly improves the speed of tracing projects using plugins.
@@ -1641,8 +1596,8 @@ Version 4.0a5 --- 2015-02-16
 .. _issue 358: https://github.com/nedbat/coveragepy/issues/358
 
 
-Version 4.0a4 --- 2015-01-25
-----------------------------
+Version 4.0a4 — 2015-01-25
+--------------------------
 
 - Plugins can now provide sys_info for debugging output.
 
@@ -1651,8 +1606,8 @@ Version 4.0a4 --- 2015-01-25
 - Prepared to move the docs to readthedocs.org.
 
 
-Version 4.0a3 --- 2015-01-20
-----------------------------
+Version 4.0a3 — 2015-01-20
+--------------------------
 
 - Reports now use file names with extensions.  Previously, a report would
   describe a/b/c.py as "a/b/c".  Now it is shown as "a/b/c.py".  This allows
@@ -1685,8 +1640,8 @@ Version 4.0a3 --- 2015-01-20
 .. _issue 349: https://github.com/nedbat/coveragepy/issues/349
 
 
-Version 4.0a2 --- 2015-01-14
-----------------------------
+Version 4.0a2 — 2015-01-14
+--------------------------
 
 - Officially support PyPy 2.4, and PyPy3 2.4.  Drop support for
   CPython 3.2 and older versions of PyPy.  The code won't work on CPython 3.2.
@@ -1753,8 +1708,8 @@ Version 4.0a2 --- 2015-01-14
 .. _issue 343: https://github.com/nedbat/coveragepy/issues/343
 
 
-Version 4.0a1 --- 2014-09-27
-----------------------------
+Version 4.0a1 — 2014-09-27
+--------------------------
 
 - Python versions supported are now CPython 2.6, 2.7, 3.2, 3.3, and 3.4, and
   PyPy 2.2.
@@ -1809,8 +1764,8 @@ Version 4.0a1 --- 2014-09-27
 
 .. _changes_371:
 
-Version 3.7.1 --- 2013-12-13
-----------------------------
+Version 3.7.1 — 2013-12-13
+--------------------------
 
 - Improved the speed of HTML report generation by about 20%.
 
@@ -1820,8 +1775,8 @@ Version 3.7.1 --- 2013-12-13
 
 .. _changes_37:
 
-Version 3.7 --- 2013-10-06
---------------------------
+Version 3.7 — 2013-10-06
+------------------------
 
 - Added the ``--debug`` switch to ``coverage run``.  It accepts a list of
   options indicating the type of internal activity to log to stderr.
@@ -1879,8 +1834,8 @@ Version 3.7 --- 2013-10-06
 
 .. _changes_36:
 
-Version 3.6 --- 2013-01-05
---------------------------
+Version 3.6 — 2013-01-05
+------------------------
 
 - Added a page to the docs about troublesome situations, closing `issue 226`_,
   and added some info to the TODO file, closing `issue 227`_.
@@ -1889,16 +1844,16 @@ Version 3.6 --- 2013-01-05
 .. _issue 227: https://github.com/nedbat/coveragepy/issues/227
 
 
-Version 3.6b3 --- 2012-12-29
-----------------------------
+Version 3.6b3 — 2012-12-29
+--------------------------
 
 - Beta 2 broke the nose plugin. It's fixed again, closing `issue 224`_.
 
 .. _issue 224: https://github.com/nedbat/coveragepy/issues/224
 
 
-Version 3.6b2 --- 2012-12-23
-----------------------------
+Version 3.6b2 — 2012-12-23
+--------------------------
 
 - Coverage.py runs on Python 2.3 and 2.4 again. It was broken in 3.6b1.
 
@@ -1917,8 +1872,8 @@ Version 3.6b2 --- 2012-12-23
 .. _issue 221: https://github.com/nedbat/coveragepy/issues/221
 
 
-Version 3.6b1 --- 2012-11-28
-----------------------------
+Version 3.6b1 — 2012-11-28
+--------------------------
 
 - Wildcards in ``include=`` and ``omit=`` arguments were not handled properly
   in reporting functions, though they were when running.  Now they are handled
@@ -2033,8 +1988,8 @@ Version 3.6b1 --- 2012-11-28
 
 .. _changes_353:
 
-Version 3.5.3 --- 2012-09-29
-----------------------------
+Version 3.5.3 — 2012-09-29
+--------------------------
 
 - Line numbers in the HTML report line up better with the source lines, fixing
   `issue 197`_, thanks Marius Gedminas.
@@ -2074,14 +2029,14 @@ Version 3.5.3 --- 2012-09-29
 
 .. _changes_352:
 
-Version 3.5.2 --- 2012-05-04
-----------------------------
+Version 3.5.2 — 2012-05-04
+--------------------------
 
 No changes since 3.5.2.b1
 
 
-Version 3.5.2b1 --- 2012-04-29
-------------------------------
+Version 3.5.2b1 — 2012-04-29
+----------------------------
 
 - The HTML report has slightly tweaked controls: the buttons at the top of
   the page are color-coded to the source lines they affect.
@@ -2126,16 +2081,16 @@ Version 3.5.2b1 --- 2012-04-29
 
 .. _changes_351:
 
-Version 3.5.1 --- 2011-09-23
-----------------------------
+Version 3.5.1 — 2011-09-23
+--------------------------
 
 - The ``[paths]`` feature unfortunately didn't work in real world situations
   where you wanted to, you know, report on the combined data.  Now all paths
   stored in the combined file are canonicalized properly.
 
 
-Version 3.5.1b1 --- 2011-08-28
-------------------------------
+Version 3.5.1b1 — 2011-08-28
+----------------------------
 
 - When combining data files from parallel runs, you can now instruct
   coverage.py about which directories are equivalent on different machines.  A
@@ -2175,8 +2130,8 @@ Version 3.5.1b1 --- 2011-08-28
 
 .. _changes_35:
 
-Version 3.5 --- 2011-06-29
---------------------------
+Version 3.5 — 2011-06-29
+------------------------
 
 - The HTML report hotkeys now behave slightly differently when the current
   chunk isn't visible at all:  a chunk on the screen will be selected,
@@ -2184,8 +2139,8 @@ Version 3.5 --- 2011-06-29
   The hotkeys now work in Google Chrome.  Thanks, Guido van Rossum.
 
 
-Version 3.5b1 --- 2011-06-05
-----------------------------
+Version 3.5b1 — 2011-06-05
+--------------------------
 
 - The HTML report now has hotkeys.  Try ``n``, ``s``, ``m``, ``x``, ``b``,
   ``p``, and ``c`` on the overview page to change the column sorting.
@@ -2265,8 +2220,8 @@ Version 3.5b1 --- 2011-06-05
 
 .. _changes_34:
 
-Version 3.4 --- 2010-09-19
---------------------------
+Version 3.4 — 2010-09-19
+------------------------
 
 - The XML report is now sorted by package name, fixing `issue 88`_.
 
@@ -2276,8 +2231,8 @@ Version 3.4 --- 2010-09-19
 .. _issue 88: https://github.com/nedbat/coveragepy/issues/88
 
 
-Version 3.4b2 --- 2010-09-06
-----------------------------
+Version 3.4b2 — 2010-09-06
+--------------------------
 
 - Completely unexecuted files can now be included in coverage results, reported
   as 0% covered.  This only happens if the --source option is specified, since
@@ -2306,8 +2261,8 @@ Version 3.4b2 --- 2010-09-06
 .. _issue 85: https://github.com/nedbat/coveragepy/issues/85
 
 
-Version 3.4b1 --- 2010-08-21
-----------------------------
+Version 3.4b1 — 2010-08-21
+--------------------------
 
 - BACKWARD INCOMPATIBILITY: the ``--omit`` and ``--include`` switches now take
   file patterns rather than file prefixes, closing `issue 34`_ and `issue 36`_.
@@ -2394,8 +2349,8 @@ Version 3.4b1 --- 2010-08-21
 
 .. _changes_331:
 
-Version 3.3.1 --- 2010-03-06
-----------------------------
+Version 3.3.1 — 2010-03-06
+--------------------------
 
 - Using `parallel=True` in .coveragerc file prevented reporting, but now does
   not, fixing `issue 49`_.
@@ -2409,8 +2364,8 @@ Version 3.3.1 --- 2010-03-06
 
 .. _changes_33:
 
-Version 3.3 --- 2010-02-24
---------------------------
+Version 3.3 — 2010-02-24
+------------------------
 
 - Settings are now read from a .coveragerc file.  A specific file can be
   specified on the command line with --rcfile=FILE.  The name of the file can
@@ -2450,14 +2405,14 @@ Version 3.3 --- 2010-02-24
 
 .. _changes_32:
 
-Version 3.2 --- 2009-12-05
---------------------------
+Version 3.2 — 2009-12-05
+------------------------
 
 - Added a ``--version`` option on the command line.
 
 
-Version 3.2b4 --- 2009-12-01
-----------------------------
+Version 3.2b4 — 2009-12-01
+--------------------------
 
 - Branch coverage improvements:
 
@@ -2472,8 +2427,8 @@ Version 3.2b4 --- 2009-12-01
 .. _Distribute: https://pypi.org/project/distribute/
 
 
-Version 3.2b3 --- 2009-11-23
-----------------------------
+Version 3.2b3 — 2009-11-23
+--------------------------
 
 - Fixed a memory leak in the C tracer that was introduced in 3.2b1.
 
@@ -2487,8 +2442,8 @@ Version 3.2b3 --- 2009-11-23
 .. _Chris Adams: http://chris.improbable.org
 
 
-Version 3.2b2 --- 2009-11-19
-----------------------------
+Version 3.2b2 — 2009-11-19
+--------------------------
 
 - Branch coverage improvements:
 
@@ -2511,8 +2466,8 @@ Version 3.2b2 --- 2009-11-19
 .. _issue 35: https://github.com/nedbat/coveragepy/issues/35
 
 
-Version 3.2b1 --- 2009-11-10
-----------------------------
+Version 3.2b1 — 2009-11-10
+--------------------------
 
 - Branch coverage!
 
@@ -2528,8 +2483,8 @@ Version 3.2b1 --- 2009-11-10
 
 .. _changes_31:
 
-Version 3.1 --- 2009-10-04
---------------------------
+Version 3.1 — 2009-10-04
+------------------------
 
 - Source code can now be read from eggs.  Thanks, Ross Lawley.  Fixes
   `issue 25`_.
@@ -2537,8 +2492,8 @@ Version 3.1 --- 2009-10-04
 .. _issue 25: https://github.com/nedbat/coveragepy/issues/25
 
 
-Version 3.1b1 --- 2009-09-27
-----------------------------
+Version 3.1b1 — 2009-09-27
+--------------------------
 
 - Python 3.1 is now supported.
 
@@ -2572,8 +2527,8 @@ Version 3.1b1 --- 2009-09-27
 
 .. _changes_301:
 
-Version 3.0.1 --- 2009-07-07
-----------------------------
+Version 3.0.1 — 2009-07-07
+--------------------------
 
 - Removed the recursion limit in the tracer function.  Previously, code that
   ran more than 500 frames deep would crash. Fixed `issue 9`_.
@@ -2599,8 +2554,8 @@ Version 3.0.1 --- 2009-07-07
 
 .. _changes_30:
 
-Version 3.0 --- 2009-06-13
---------------------------
+Version 3.0 — 2009-06-13
+------------------------
 
 - Fixed the way the Python library was ignored.  Too much code was being
   excluded the old way.
@@ -2613,8 +2568,8 @@ Version 3.0 --- 2009-06-13
 .. _issue 6: https://github.com/nedbat/coveragepy/issues/6
 
 
-Version 3.0b3 --- 2009-05-16
-----------------------------
+Version 3.0b3 — 2009-05-16
+--------------------------
 
 - Added parameters to coverage.__init__ for options that had been set on the
   coverage object itself.
@@ -2634,8 +2589,8 @@ Version 3.0b3 --- 2009-05-16
   interface still uses automatic saving.
 
 
-Version 3.0b --- 2009-04-30
----------------------------
+Version 3.0b — 2009-04-30
+-------------------------
 
 HTML reporting, and continued refactoring.
 
@@ -2662,8 +2617,8 @@ HTML reporting, and continued refactoring.
 - Removed the undocumented cache_file argument to coverage.usecache().
 
 
-Version 3.0b1 --- 2009-03-07
-----------------------------
+Version 3.0b1 — 2009-03-07
+--------------------------
 
 Major overhaul.
 
@@ -2687,8 +2642,8 @@ Major overhaul.
 - The minimum supported Python version is 2.3.
 
 
-Version 2.85 --- 2008-09-14
----------------------------
+Version 2.85 — 2008-09-14
+-------------------------
 
 - Add support for finding source files in eggs. Don't check for
   morf's being instances of ModuleType, instead use duck typing so that
@@ -2698,35 +2653,35 @@ Version 2.85 --- 2008-09-14
   confuse things. Thanks, Patrick Mezard.
 
 
-Version 2.80 --- 2008-05-25
----------------------------
+Version 2.80 — 2008-05-25
+-------------------------
 
 - Open files in rU mode to avoid line ending craziness. Thanks, Edward Loper.
 
 
-Version 2.78 --- 2007-09-30
----------------------------
+Version 2.78 — 2007-09-30
+-------------------------
 
 - Don't try to predict whether a file is Python source based on the extension.
   Extension-less files are often Pythons scripts. Instead, simply parse the
   file and catch the syntax errors. Hat tip to Ben Finney.
 
 
-Version 2.77 --- 2007-07-29
----------------------------
+Version 2.77 — 2007-07-29
+-------------------------
 
 - Better packaging.
 
 
-Version 2.76 --- 2007-07-23
----------------------------
+Version 2.76 — 2007-07-23
+-------------------------
 
 - Now Python 2.5 is *really* fully supported: the body of the new with
   statement is counted as executable.
 
 
-Version 2.75 --- 2007-07-22
----------------------------
+Version 2.75 — 2007-07-22
+-------------------------
 
 - Python 2.5 now fully supported. The method of dealing with multi-line
   statements is now less sensitive to the exact line that Python reports during
@@ -2734,8 +2689,8 @@ Version 2.75 --- 2007-07-22
   during execution won't throw off the measurement.
 
 
-Version 2.7 --- 2007-07-21
---------------------------
+Version 2.7 — 2007-07-21
+------------------------
 
 - "#pragma: nocover" is excluded by default.
 
@@ -2758,8 +2713,8 @@ Version 2.7 --- 2007-07-21
 - Minor changes to avoid lint warnings.
 
 
-Version 2.6 --- 2006-08-23
---------------------------
+Version 2.6 — 2006-08-23
+------------------------
 
 - Applied Joseph Tate's patch for function decorators.
 
@@ -2771,8 +2726,8 @@ Version 2.6 --- 2006-08-23
   mode and collect.
 
 
-Version 2.5 --- 2005-12-04
---------------------------
+Version 2.5 — 2005-12-04
+------------------------
 
 - Call threading.settrace so that all threads are measured. Thanks Martin
   Fuzzey.
@@ -2786,21 +2741,21 @@ Version 2.5 --- 2005-12-04
   omitting files to report on.
 
 
-Version 2.2 --- 2004-12-31
---------------------------
+Version 2.2 — 2004-12-31
+------------------------
 
 - Allow for keyword arguments in the module global functions. Thanks, Allen.
 
 
-Version 2.1 --- 2004-12-14
---------------------------
+Version 2.1 — 2004-12-14
+------------------------
 
 - Return 'analysis' to its original behavior and add 'analysis2'. Add a global
   for 'annotate', and factor it, adding 'annotate_file'.
 
 
-Version 2.0 --- 2004-12-12
---------------------------
+Version 2.0 — 2004-12-12
+------------------------
 
 Significant code changes.
 
