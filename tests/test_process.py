@@ -1419,11 +1419,11 @@ def find_writable_pth_directory():
     """Find a place to write a .pth file."""
     for pth_dir in possible_pth_dirs():             # pragma: part covered
         try_it = os.path.join(pth_dir, f"touch_{WORKER}.it")
-        with open(try_it, "w") as f:
-            try:
+        try:
+            with open(try_it, "w") as f:
                 f.write("foo")
-            except OSError:                         # pragma: cant happen
-                continue
+        except OSError:                             # pragma: cant happen
+            continue
 
         os.remove(try_it)
         return pth_dir
