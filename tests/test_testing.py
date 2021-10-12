@@ -203,6 +203,15 @@ class CoverageTestTest(CoverageTest):
         assert "StdOut\n" in out
         assert "StdErr\n" in out
 
+    def test_stdout(self):
+        # stdout is captured.
+        print("This is stdout")
+        print("Line 2")
+        assert self.stdout() == "This is stdout\nLine 2\n"
+        # When we grab stdout(), it's reset.
+        print("Some more")
+        assert self.stdout() == "Some more\n"
+
 
 class CheckUniqueFilenamesTest(CoverageTest):
     """Tests of CheckUniqueFilenames."""
