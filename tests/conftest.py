@@ -51,6 +51,11 @@ def set_warnings():
         category=ImportWarning,
         message=r".*find_spec\(\) not found; falling back to find_module\(\)",
         )
+    warnings.filterwarnings(
+        "ignore",
+        category=DeprecationWarning,
+        message=r".*imp module is deprecated in favour of importlib",
+        )
 
     if env.PYPY:
         # pypy3 warns about unclosed files a lot.
