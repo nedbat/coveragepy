@@ -604,10 +604,6 @@ class ArcStart(collections.namedtuple("Arc", "lineno, cause")):
 new_contract('ArcStarts', lambda seq: all(isinstance(x, ArcStart) for x in seq))
 
 
-# Turn on AST dumps with an environment variable.
-# $set_env.py: COVERAGE_AST_DUMP - Dump the AST nodes when parsing code.
-AST_DUMP = bool(int(os.environ.get("COVERAGE_AST_DUMP", 0)))
-
 class NodeList:
     """A synthetic fictitious node, containing a sequence of nodes.
 
@@ -619,22 +615,30 @@ class NodeList:
         self.body = body
         self.lineno = body[0].lineno
 
-
 # TODO: some add_arcs methods here don't add arcs, they return them. Rename them.
 # TODO: the cause messages have too many commas.
 # TODO: Shouldn't the cause messages join with "and" instead of "or"?
+
+def ast_parse(text):
+    """How we create an AST parse."""
+    return ast.parse(neuter_encoding_declaration(text))
+
 
 class AstArcAnalyzer:
     """Analyze source text with an AST to find executable code paths."""
 
     @contract(text='unicode', statements=set)
     def __init__(self, text, statements, multiline):
-        self.root_node = ast.parse(neuter_encoding_declaration(text))
+        self.root_node = ast_parse(text)
         # TODO: I think this is happening in too many places.
         self.statements = {multiline.get(l, l) for l in statements}
         self.multiline = multiline
 
-        if AST_DUMP:                                # pragma: debugging
+        # Turn on AST dumps with an environment variable.
+        # $set_env.py: COVERAGE_AST_DUMP - Dump the AST nodes when parsing code.
+        dump_ast = bool(int(os.environ.get("COVERAGE_AST_DUMP", 0)))
+
+        if dump_ast:                                # pragma: debugging
             # Dump the AST so that failing tests have helpful output.
             print(f"Statements: {self.statements}")
             print(f"Multiline map: {self.multiline}")
@@ -1294,69 +1298,64 @@ class AstArcAnalyzer:
     _code_object__ListComp = _make_expression_code_method("list comprehension")
 
 
-if AST_DUMP:            # pragma: debugging
-    # Code only used when dumping the AST for debugging.
+# Code only used when dumping the AST for debugging.
 
-    SKIP_DUMP_FIELDS = ["ctx"]
+SKIP_DUMP_FIELDS = ["ctx"]
 
-    def _is_simple_value(value):
-        """Is `value` simple enough to be displayed on a single line?"""
-        return (
-            value in [None, [], (), {}, set()] or
-            isinstance(value, (str, int, float))
-        )
+def _is_simple_value(value):
+    """Is `value` simple enough to be displayed on a single line?"""
+    return (
+        value in [None, [], (), {}, set()] or
+        isinstance(value, (str, int, float))
+    )
 
-    def ast_dump(node, depth=0):
-        """Dump the AST for `node`.
+def ast_dump(node, depth=0, print=print):   # pylint: disable=redefined-builtin
+    """Dump the AST for `node`.
 
-        This recursively walks the AST, printing a readable version.
+    This recursively walks the AST, printing a readable version.
 
-        """
-        indent = " " * depth
-        if not isinstance(node, ast.AST):
-            print(f"{indent}<{node.__class__.__name__} {node!r}>")
-            return
+    """
+    indent = " " * depth
+    lineno = getattr(node, "lineno", None)
+    if lineno is not None:
+        linemark = f" @ {node.lineno},{node.col_offset}"
+        if hasattr(node, "end_lineno"):
+            linemark += ":"
+            if node.end_lineno != node.lineno:
+                linemark += f"{node.end_lineno},"
+            linemark += f"{node.end_col_offset}"
+    else:
+        linemark = ""
+    head = f"{indent}<{node.__class__.__name__}{linemark}"
 
-        lineno = getattr(node, "lineno", None)
-        if lineno is not None:
-            linemark = f" @ {node.lineno},{node.col_offset}"
-            if hasattr(node, "end_lineno"):
-                linemark += ":"
-                if node.end_lineno != node.lineno:
-                    linemark += f"{node.end_lineno},"
-                linemark += f"{node.end_col_offset}"
-        else:
-            linemark = ""
-        head = f"{indent}<{node.__class__.__name__}{linemark}"
+    named_fields = [
+        (name, value)
+        for name, value in ast.iter_fields(node)
+        if name not in SKIP_DUMP_FIELDS
+    ]
+    if not named_fields:
+        print(f"{head}>")
+    elif len(named_fields) == 1 and _is_simple_value(named_fields[0][1]):
+        field_name, value = named_fields[0]
+        print(f"{head} {field_name}: {value!r}>")
+    else:
+        print(head)
+        if 0:
+            print("{}# mro: {}".format(
+                indent, ", ".join(c.__name__ for c in node.__class__.__mro__[1:]),
+            ))
+        next_indent = indent + "    "
+        for field_name, value in named_fields:
+            prefix = f"{next_indent}{field_name}:"
+            if _is_simple_value(value):
+                print(f"{prefix} {value!r}")
+            elif isinstance(value, list):
+                print(f"{prefix} [")
+                for n in value:
+                    ast_dump(n, depth + 8, print=print)
+                print(f"{next_indent}]")
+            else:
+                print(prefix)
+                ast_dump(value, depth + 8, print=print)
 
-        named_fields = [
-            (name, value)
-            for name, value in ast.iter_fields(node)
-            if name not in SKIP_DUMP_FIELDS
-        ]
-        if not named_fields:
-            print(f"{head}>")
-        elif len(named_fields) == 1 and _is_simple_value(named_fields[0][1]):
-            field_name, value = named_fields[0]
-            print(f"{head} {field_name}: {value!r}>")
-        else:
-            print(head)
-            if 0:
-                print("{}# mro: {}".format(
-                    indent, ", ".join(c.__name__ for c in node.__class__.__mro__[1:]),
-                ))
-            next_indent = indent + "    "
-            for field_name, value in named_fields:
-                prefix = f"{next_indent}{field_name}:"
-                if _is_simple_value(value):
-                    print(f"{prefix} {value!r}")
-                elif isinstance(value, list):
-                    print(f"{prefix} [")
-                    for n in value:
-                        ast_dump(n, depth + 8)
-                    print(f"{next_indent}]")
-                else:
-                    print(prefix)
-                    ast_dump(value, depth + 8)
-
-            print(f"{indent}>")
+        print(f"{indent}>")

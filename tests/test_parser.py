@@ -3,15 +3,17 @@
 
 """Tests for coverage.py's code parsing."""
 
+import os.path
+import re
 import textwrap
 
 import pytest
 
 from coverage import env
 from coverage.exceptions import NotPython
-from coverage.parser import PythonParser
+from coverage.parser import ast_dump, ast_parse, PythonParser
 
-from tests.coveragetest import CoverageTest
+from tests.coveragetest import CoverageTest, TESTS_DIR
 from tests.helpers import arcz_to_arcs
 
 
@@ -477,3 +479,23 @@ class ParserFileTest(CoverageTest):
 
         parser = self.parse_file("abrupt.py")
         assert parser.statements == {1}
+
+
+def test_ast_dump():
+    # Run the AST_DUMP code to make sure it doesn't fail, with some light
+    # assertions. Use parser.py as the test code since it is the longest file,
+    # and fitting, since it's the AST_DUMP code.
+    parser_py = os.path.join(TESTS_DIR, "../coverage/parser.py")
+    with open(parser_py) as f:
+        ast_root = ast_parse(f.read())
+    result = []
+    ast_dump(ast_root, print=result.append)
+    assert len(result) > 10000
+    assert result[0] == "<Module"
+    assert result[-1] == ">"
+
+    def count(pat):
+        return sum(1 for line in result if re.search(pat, line))
+
+    assert count(r"^\s+>") > 2000
+    assert count(r"<Name @ \d+,\d+(:\d+)? id: '\w+'>") > 1000
