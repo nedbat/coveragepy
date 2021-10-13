@@ -33,14 +33,6 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
             a = 1
             print('done')
             """)
-        self.omit_site_packages()
-
-    def omit_site_packages(self):
-        """Write a .coveragerc file that will omit site-packages from reports."""
-        self.make_file(".coveragerc", """\
-            [report]
-            omit = */site-packages/*
-            """)
 
     def test_report(self):
         self.make_mycode()
@@ -237,7 +229,6 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
                     print("y")
             branch(1, 1)
             """)
-        self.omit_site_packages()
         out = self.run_command("coverage run --branch mybranch.py")
         assert out == 'x\ny\n'
         report = self.report_from_command("coverage report --show-missing")
@@ -269,7 +260,6 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
                 return x
             branch(1, 1, 0)
             """)
-        self.omit_site_packages()
         out = self.run_command("coverage run --branch main.py")
         assert out == 'x\ny\n'
         report = self.report_from_command("coverage report --show-missing")
@@ -297,7 +287,6 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
             def not_covered():
                 print("n")
             """)
-        self.omit_site_packages()
         out = self.run_command("coverage run main.py")
         assert out == "z\n"
         report = self.report_from_command("coverage report --skip-covered --fail-under=70")
@@ -338,7 +327,6 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
                 pass
             foo()
             """)
-        self.omit_site_packages()
         out = self.run_command("coverage run --branch main.py")
         assert out == "n\nz\n"
         report = self.report_from_command("coverage report --skip-covered")
@@ -378,7 +366,6 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
             def does_not_appear_in_this_film(ni):
                 print("Ni!")
             """)
-        self.omit_site_packages()
         out = self.run_command("coverage run --branch main.py")
         assert out == "n\nz\n"
         report = self.report_from_command("coverage report --skip-covered")
@@ -461,7 +448,6 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
             normal()
             """)
         self.make_file("submodule/__init__.py", "")
-        self.omit_site_packages()
         out = self.run_command("coverage run main.py")
         assert out == "z\n"
         report = self.report_from_command("coverage report --skip-empty")
@@ -483,7 +469,6 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
 
     def test_report_skip_empty_no_data(self):
         self.make_file("__init__.py", "")
-        self.omit_site_packages()
         out = self.run_command("coverage run __init__.py")
         assert out == ""
         report = self.report_from_command("coverage report --skip-empty")
