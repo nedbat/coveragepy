@@ -451,6 +451,7 @@ class UsingModulesMixin:
         # Parent class saves and restores sys.path, we can just modify it.
         sys.path.append(nice_file(TESTS_DIR, "modules"))
         sys.path.append(nice_file(TESTS_DIR, "moremodules"))
+        sys.path.append(nice_file(TESTS_DIR, "zipmods.zip"))
 
 
 def command_line(args):
