@@ -78,6 +78,16 @@ class CoverageTest(
             cov.stop()
         return mod
 
+    def get_report(self, cov, squeeze=True, **kwargs):
+        """Get the report from `cov`, and canonicalize it."""
+        repout = io.StringIO()
+        kwargs.setdefault("show_missing", False)
+        cov.report(file=repout, **kwargs)
+        report = repout.getvalue().replace('\\', '/')
+        if squeeze:
+            report = re.sub(r" +", " ", report)
+        return report
+
     def get_module_name(self):
         """Return a random module name to use for this test run."""
         self.last_module_name = 'coverage_test_' + str(random.random())[2:]
@@ -451,6 +461,7 @@ class UsingModulesMixin:
         # Parent class saves and restores sys.path, we can just modify it.
         sys.path.append(nice_file(TESTS_DIR, "modules"))
         sys.path.append(nice_file(TESTS_DIR, "moremodules"))
+        sys.path.append(nice_file(TESTS_DIR, "zipmods.zip"))
 
 
 def command_line(args):

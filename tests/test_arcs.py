@@ -462,8 +462,9 @@ class LoopArcTest(CoverageTest):
                 while True:
                     return 1
             """)
-        out = self.run_command("coverage run --branch --source=. main.py")
-        assert out == 'done\n'
+        cov = coverage.Coverage(source=["."], branch=True)
+        self.start_import_stop(cov, "main")
+        assert self.stdout() == 'done\n'
         if env.PYBEHAVIOR.keep_constant_test:
             num_stmts = 3
         elif env.PYBEHAVIOR.nix_while_true:
@@ -471,7 +472,7 @@ class LoopArcTest(CoverageTest):
         else:
             num_stmts = 3
         expected = "zero.py {n} {n} 0 0 0% 1-3".format(n=num_stmts)
-        report = self.report_from_command("coverage report -m")
+        report = self.get_report(cov, show_missing=True)
         squeezed = self.squeezed_lines(report)
         assert expected in squeezed[3]
 

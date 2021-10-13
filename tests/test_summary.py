@@ -36,9 +36,10 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
 
     def test_report(self):
         self.make_mycode()
-        out = self.run_command("coverage run mycode.py")
-        assert out == 'done\n'
-        report = self.report_from_command("coverage report")
+        cov = coverage.Coverage()
+        self.start_import_stop(cov, "mycode")
+        assert self.stdout() == 'done\n'
+        report = self.get_report(cov)
 
         # Name                                           Stmts   Miss  Cover
         # ------------------------------------------------------------------
@@ -57,8 +58,9 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
     def test_report_just_one(self):
         # Try reporting just one module
         self.make_mycode()
-        self.run_command("coverage run mycode.py")
-        report = self.report_from_command("coverage report mycode.py")
+        cov = coverage.Coverage()
+        self.start_import_stop(cov, "mycode")
+        report = self.get_report(cov, morfs=["mycode.py"])
 
         # Name        Stmts   Miss  Cover
         # -------------------------------
@@ -76,6 +78,7 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
     def test_report_wildcard(self):
         # Try reporting using wildcards to get the modules.
         self.make_mycode()
+        # Wildcard is handled by shell or cmdline.py, so use real commands
         self.run_command("coverage run mycode.py")
         report = self.report_from_command("coverage report my*.py")
 
@@ -95,9 +98,9 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
     def test_report_omitting(self):
         # Try reporting while omitting some modules
         self.make_mycode()
-        self.run_command("coverage run mycode.py")
-        omit = f'{TESTS_DIR}/*,*/site-packages/*'
-        report = self.report_from_command(f"coverage report --omit '{omit}'")
+        cov = coverage.Coverage()
+        self.start_import_stop(cov, "mycode")
+        report = self.get_report(cov, omit=[f"{TESTS_DIR}/*", "*/site-packages/*"])
 
         # Name        Stmts   Miss  Cover
         # -------------------------------
@@ -115,8 +118,9 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
     def test_report_including(self):
         # Try reporting while including some modules
         self.make_mycode()
-        self.run_command("coverage run mycode.py")
-        report = self.report_from_command("coverage report --include=mycode*")
+        cov = coverage.Coverage()
+        self.start_import_stop(cov, "mycode")
+        report = self.get_report(cov, include=["mycode*"])
 
         # Name        Stmts   Miss  Cover
         # -------------------------------
@@ -174,9 +178,10 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
                 return x
             branch(1)
             """)
-        out = self.run_command("coverage run --source=. --branch mybranch.py")
-        assert out == 'x\n'
-        report = self.report_from_command("coverage report")
+        cov = coverage.Coverage(source=["."], branch=True)
+        self.start_import_stop(cov, "mybranch")
+        assert self.stdout() == 'x\n'
+        report = self.get_report(cov)
 
         # Name          Stmts   Miss Branch BrPart  Cover
         # -----------------------------------------------
@@ -205,9 +210,10 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
                 return x
             missing(0, 1)
             """)
-        out = self.run_command("coverage run --source=. mymissing.py")
-        assert out == 'y\nz\n'
-        report = self.report_from_command("coverage report --show-missing")
+        cov = coverage.Coverage(source=["."])
+        self.start_import_stop(cov, "mymissing")
+        assert self.stdout() == 'y\nz\n'
+        report = self.get_report(cov, show_missing=True)
 
         # Name           Stmts   Miss  Cover   Missing
         # --------------------------------------------
@@ -229,9 +235,10 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
                     print("y")
             branch(1, 1)
             """)
-        out = self.run_command("coverage run --branch mybranch.py")
-        assert out == 'x\ny\n'
-        report = self.report_from_command("coverage report --show-missing")
+        cov = coverage.Coverage(branch=True)
+        self.start_import_stop(cov, "mybranch")
+        assert self.stdout() == 'x\ny\n'
+        report = self.get_report(cov, show_missing=True)
 
         # Name           Stmts   Miss Branch BrPart  Cover   Missing
         # ----------------------------------------------------------
@@ -260,10 +267,10 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
                 return x
             branch(1, 1, 0)
             """)
-        out = self.run_command("coverage run --branch main.py")
-        assert out == 'x\ny\n'
-        report = self.report_from_command("coverage report --show-missing")
-        report_lines = report.splitlines()
+        cov = coverage.Coverage(branch=True)
+        self.start_import_stop(cov, "main")
+        assert self.stdout() == 'x\ny\n'
+        report_lines = self.get_report(cov, squeeze=False, show_missing=True).splitlines()
 
         expected = [
             'Name          Stmts   Miss Branch BrPart  Cover   Missing',
@@ -287,6 +294,7 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
             def not_covered():
                 print("n")
             """)
+        # --fail-under is handled by cmdline.py, use real commands.
         out = self.run_command("coverage run main.py")
         assert out == "z\n"
         report = self.report_from_command("coverage report --skip-covered --fail-under=70")
@@ -327,9 +335,10 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
                 pass
             foo()
             """)
-        out = self.run_command("coverage run --branch main.py")
-        assert out == "n\nz\n"
-        report = self.report_from_command("coverage report --skip-covered")
+        cov = coverage.Coverage(branch=True)
+        self.start_import_stop(cov, "main")
+        assert self.stdout() == "n\nz\n"
+        report = self.get_report(cov, skip_covered=True)
 
         # Name             Stmts   Miss Branch BrPart  Cover
         # --------------------------------------------------
@@ -366,9 +375,10 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
             def does_not_appear_in_this_film(ni):
                 print("Ni!")
             """)
-        out = self.run_command("coverage run --branch main.py")
-        assert out == "n\nz\n"
-        report = self.report_from_command("coverage report --skip-covered")
+        cov = coverage.Coverage(branch=True)
+        self.start_import_stop(cov, "main")
+        assert self.stdout() == "n\nz\n"
+        report = self.get_report(cov, skip_covered=True)
 
         # Name             Stmts   Miss Branch BrPart  Cover
         # --------------------------------------------------
@@ -392,9 +402,10 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
                 pass
             foo()
             """)
-        out = self.run_command("coverage run --source=. --branch main.py")
-        assert out == ""
-        report = self.report_from_command("coverage report --skip-covered")
+        cov = coverage.Coverage(source=["."], branch=True)
+        self.start_import_stop(cov, "main")
+        assert self.stdout() == ""
+        report = self.get_report(cov, skip_covered=True)
 
         # Name      Stmts   Miss Branch BrPart  Cover
         # -------------------------------------------
@@ -413,9 +424,10 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
                 pass
             foo()
             """)
-        out = self.run_command("coverage run --source=. --branch long_______________filename.py")
-        assert out == ""
-        report = self.report_from_command("coverage report --skip-covered")
+        cov = coverage.Coverage(source=["."], branch=True)
+        self.start_import_stop(cov, "long_______________filename")
+        assert self.stdout() == ""
+        report = self.get_report(cov, squeeze=False, skip_covered=True)
 
         # Name    Stmts   Miss Branch BrPart  Cover
         # -----------------------------------------
@@ -448,9 +460,10 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
             normal()
             """)
         self.make_file("submodule/__init__.py", "")
-        out = self.run_command("coverage run main.py")
-        assert out == "z\n"
-        report = self.report_from_command("coverage report --skip-empty")
+        cov = coverage.Coverage()
+        self.start_import_stop(cov, "main")
+        assert self.stdout() == "z\n"
+        report = self.get_report(cov, skip_empty=True)
 
         # Name             Stmts   Miss  Cover
         # ------------------------------------
@@ -465,13 +478,13 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         assert squeezed[2] == "main.py 4 0 100%"
         assert squeezed[4] == "TOTAL 4 0 100%"
         assert squeezed[6] == "1 empty file skipped."
-        assert self.last_command_status == 0
 
     def test_report_skip_empty_no_data(self):
         self.make_file("__init__.py", "")
-        out = self.run_command("coverage run __init__.py")
-        assert out == ""
-        report = self.report_from_command("coverage report --skip-empty")
+        cov = coverage.Coverage()
+        self.start_import_stop(cov, "__init__")
+        assert self.stdout() == ""
+        report = self.get_report(cov, skip_empty=True)
 
         # Name             Stmts   Miss  Cover
         # ------------------------------------
@@ -509,9 +522,10 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
                 pass
             foo()
             """)
-        out = self.run_command("coverage run --branch main.py")
-        assert out == "n\nz\n"
-        report = self.report_from_command("coverage report")
+        cov = coverage.Coverage(branch=True)
+        self.start_import_stop(cov, "main")
+        assert self.stdout() == "n\nz\n"
+        report = self.get_report(cov)
 
         # Name             Stmts   Miss Branch BrPart      Cover
         # ------------------------------------------------------
@@ -637,14 +651,6 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         assert out == "Line One\nLine Two\nhello\n"
         report = self.report_from_command("coverage report")
         assert self.last_line_squeezed(report) == "TOTAL 5 0 100%"
-
-    def get_report(self, cov):
-        """Get the report from `cov`, and canonicalize it."""
-        repout = io.StringIO()
-        cov.report(file=repout, show_missing=False)
-        report = repout.getvalue().replace('\\', '/')
-        report = re.sub(r" +", " ", report)
-        return report
 
     def test_bug_156_file_not_run_should_be_zero(self):
         # https://github.com/nedbat/coveragepy/issues/156
