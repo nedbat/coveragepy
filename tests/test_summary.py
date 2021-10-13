@@ -756,12 +756,7 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         cov.start()
         import usepkgs  # pragma: nested # pylint: disable=import-error, unused-import
         cov.stop()      # pragma: nested
-
-        repout = io.StringIO()
-        cov.report(file=repout, show_missing=False)
-
-        report = repout.getvalue().replace('\\', '/')
-        report = re.sub(r"\s+", " ", report)
+        report = self.get_report(cov)
         assert "tests/modules/pkg1/__init__.py 1 0 0 0 100%" in report
         assert "tests/modules/pkg2/__init__.py 0 0 0 0 100%" in report
 
