@@ -1613,28 +1613,25 @@ class MiscArcTest(CoverageTest):
             arcz=".1 15 5A A."
         )
 
-    def test_pathologically_long_code_object(self):
+    @pytest.mark.parametrize("n", [10, 50, 100, 500, 1000, 2000, 10000])
+    def test_pathologically_long_code_object(self, n):
         # https://github.com/nedbat/coveragepy/issues/359
-        # The structure of this file is such that an EXTENDED_ARG bytecode is
-        # needed to encode the jump at the end.  We weren't interpreting those
-        # opcodes.
-        # Note that we no longer interpret bytecode at all, but it couldn't
-        # hurt to keep the test...
-        sizes = [10, 50, 100, 500, 1000, 2000]
-        for n in sizes:
-            code = """\
-                data = [
-                """ + "".join("""\
-                    [
-                        {i}, {i}, {i}, {i}, {i}, {i}, {i}, {i}, {i}, {i}],
-                """.format(i=i) for i in range(n)
-                ) + """\
-                ]
+        # Long code objects sometimes cause problems. Originally, it was
+        # due to EXTENDED_ARG bytes codes.  Then it showed a mistake in
+        # line-number packing.
+        code = """\
+            data = [
+            """ + "".join("""\
+                [
+                    {i}, {i}, {i}, {i}, {i}, {i}, {i}, {i}, {i}, {i}],
+            """.format(i=i) for i in range(n)
+            ) + """\
+            ]
 
-                print(len(data))
-                """
-            self.check_coverage(code, arcs=[(-1, 1), (1, 2*n+4), (2*n+4, -1)])
-        assert self.stdout().split() == [str(n) for n in sizes]
+            print(len(data))
+            """
+        self.check_coverage(code, arcs=[(-1, 1), (1, 2*n+4), (2*n+4, -1)])
+        assert self.stdout() == f"{n}\n"
 
     def test_partial_generators(self):
         # https://github.com/nedbat/coveragepy/issues/475
