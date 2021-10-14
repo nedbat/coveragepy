@@ -2792,4 +2792,3 @@ and 2.1.1.
 
 2002-01-07 GDR Update sys.path when running a file with the -x option, so that
 it matches the value the program would get if it were run on its own.
-
