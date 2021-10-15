@@ -7,7 +7,7 @@ import pytest
 
 from coverage.misc import import_local_file
 
-from tests.mixins import TempDirMixin, SysPathModulesMixin
+from tests.mixins import TempDirMixin, RestoreModulesMixin
 
 
 class TempDirMixinTest(TempDirMixin):
@@ -59,7 +59,7 @@ class TempDirMixinTest(TempDirMixin):
         assert data == b"\x99\x33\x66hello\0"
 
 
-class SysPathModulessMixinTest(TempDirMixin, SysPathModulesMixin):
+class RestoreModulessMixinTest(TempDirMixin, RestoreModulesMixin):
     """Tests of SysPathModulesMixin."""
 
     @pytest.mark.parametrize("val", [17, 42])

@@ -24,7 +24,7 @@ from coverage.misc import import_local_file
 
 from tests.helpers import arcs_to_arcz_repr, arcz_to_arcs, assert_count_equal
 from tests.helpers import nice_file, run_command
-from tests.mixins import PytestBase, StdStreamCapturingMixin, SysPathModulesMixin, TempDirMixin
+from tests.mixins import PytestBase, StdStreamCapturingMixin, RestoreModulesMixin, TempDirMixin
 
 
 # Status returns for the command line.
@@ -36,7 +36,7 @@ TESTS_DIR = os.path.dirname(__file__)
 
 class CoverageTest(
     StdStreamCapturingMixin,
-    SysPathModulesMixin,
+    RestoreModulesMixin,
     TempDirMixin,
     PytestBase,
 ):

@@ -82,17 +82,8 @@ class TempDirMixin:
         return make_file(filename, text, bytes, newline)
 
 
-class SysPathModulesMixin:
-    """Auto-restore sys.path and the imported modules at the end of each test."""
-
-    @pytest.fixture(autouse=True)
-    def _save_sys_path(self):
-        """Restore sys.path at the end of each test."""
-        old_syspath = sys.path[:]
-        try:
-            yield
-        finally:
-            sys.path = old_syspath
+class RestoreModulesMixin:
+    """Auto-restore the imported modules at the end of each test."""
 
     @pytest.fixture(autouse=True)
     def _module_saving(self):
