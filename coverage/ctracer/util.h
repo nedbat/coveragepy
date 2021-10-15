@@ -36,6 +36,11 @@ typedef int BOOL;
 #define FALSE   0
 #define TRUE    1
 
+#if SIZEOF_LONG_LONG < 8
+#error long long too small!
+#endif
+typedef unsigned long long uint64;
+
 /* Only for extreme machete-mode debugging! */
 #define CRASH       { printf("*** CRASH! ***\n"); *((int*)1) = 1; }
 

@@ -157,9 +157,11 @@ class Collector:
         if self._trace_class is CTracer:
             self.file_disposition_class = CFileDisposition
             self.supports_plugins = True
+            self.packed_arcs = True
         else:
             self.file_disposition_class = FileDisposition
             self.supports_plugins = False
+            self.packed_arcs = False
 
     def __repr__(self):
         return f"<Collector at 0x{id(self):x}: {self.tracer_name()}>"
@@ -437,7 +439,25 @@ class Collector:
             return False
 
         if self.branch:
-            self.covdata.add_arcs(self.mapped_file_dict(self.data))
+            if self.packed_arcs:
+                # Unpack the line number pairs packed into integers.  See
+                # tracer.c:CTracer_record_pair for the C code that creates
+                # these packed ints.
+                data = {}
+                for fname, packeds in self.data.items():
+                    tuples = []
+                    for packed in packeds:
+                        l1 = packed & 0xFFFFF
+                        l2 = (packed & (0xFFFFF << 20)) >> 20
+                        if packed & (1 << 40):
+                            l1 *= -1
+                        if packed & (1 << 41):
+                            l2 *= -1
+                        tuples.append((l1, l2))
+                    data[fname] = tuples
+            else:
+                data = self.data
+            self.covdata.add_arcs(self.mapped_file_dict(data))
         else:
             self.covdata.add_lines(self.mapped_file_dict(self.data))
 

@@ -27,6 +27,9 @@ Unreleased
   file10.py will appear after file9.py.  This applies to file names, module
   names, environment variables, and test contexts.
 
+- Branch coverage measurement is faster, though you might only notice on
+  code that is executed many times, such as long-running loops.
+
 
 .. _changes_602:
 

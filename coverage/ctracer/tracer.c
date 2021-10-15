@@ -174,22 +174,38 @@ static int
 CTracer_record_pair(CTracer *self, int l1, int l2)
 {
     int ret = RET_ERROR;
+    PyObject * packed_obj = NULL;
+    uint64 packed = 0;
 
-    PyObject * t = NULL;
-
-    t = Py_BuildValue("(ii)", l1, l2);
-    if (t == NULL) {
+    // Conceptually, data is a set of tuples (l1, l2), but that literally
+    // making a set of tuples would require us to construct a tuple just to
+    // see if we'd already recorded an arc.  On many-times-executed code,
+    // that would mean we construct a tuple, find the tuple is already in the
+    // set, then discard the tuple.  We can avoid that overhead by packing
+    // the two line numbers into one integer instead.
+    // See collector.py:flush_data for the Python code that unpacks this.
+    if (l1 < 0) {
+        packed |= (1LL << 40);
+        l1 = -l1;
+    }
+    if (l2 < 0) {
+        packed |= (1LL << 41);
+        l2 = -l2;
+    }
+    packed |= (((uint64)l2) << 20) + (uint64)l1;
+    packed_obj = PyLong_FromUnsignedLongLong(packed);
+    if (packed_obj == NULL) {
         goto error;
     }
 
-    if (PySet_Add(self->pcur_entry->file_data, t) < 0) {
+    if (PySet_Add(self->pcur_entry->file_data, packed_obj) < 0) {
         goto error;
     }
 
     ret = RET_OK;
 
 error:
-    Py_XDECREF(t);
+    Py_XDECREF(packed_obj);
 
     return ret;
 }
