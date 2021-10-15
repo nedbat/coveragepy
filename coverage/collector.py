@@ -21,7 +21,7 @@ try:
     from coverage.tracer import CTracer, CFileDisposition
 except ImportError:
     # Couldn't import the C extension, maybe it isn't built.
-    if os.getenv('COVERAGE_TEST_TRACER') == 'c':
+    if os.getenv('COVERAGE_TEST_TRACER') == 'c':        # pragma: part covered
         # During testing, we use the COVERAGE_TEST_TRACER environment variable
         # to indicate that we've fiddled with the environment to test this
         # fallback code.  If we thought we had a C tracer, but couldn't import
@@ -411,15 +411,15 @@ class Collector:
         # in other threads. We try three times in case of concurrent
         # access, hoping to get a clean copy.
         runtime_err = None
-        for _ in range(3):
+        for _ in range(3):                      # pragma: part covered
             try:
                 items = list(d.items())
-            except RuntimeError as ex:
+            except RuntimeError as ex:          # pragma: cant happen
                 runtime_err = ex
             else:
                 break
         else:
-            raise runtime_err
+            raise runtime_err                   # pragma: cant happen
 
         return {self.cached_mapped_file(k): v for k, v in items if v}
 
