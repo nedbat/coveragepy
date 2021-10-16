@@ -263,7 +263,6 @@ class ProcessTest(CoverageTest):
         self.assert_exists(".coverage")
         self.assert_file_count(".coverage.*", 2)
 
-
     def test_append_data(self):
         self.make_b_or_c_py()
 
@@ -830,6 +829,10 @@ class ProcessTest(CoverageTest):
 
     def test_module_name(self):
         # https://github.com/nedbat/coveragepy/issues/478
+        # Make sure help doesn't show a silly command name when run as a
+        # module, like it used to:
+        #   $ python -m coverage
+        #   Code coverage for Python.  Use '__main__.py help' for help.
         out = self.run_command("python -m coverage")
         assert "Use 'coverage help' for help" in out
 
