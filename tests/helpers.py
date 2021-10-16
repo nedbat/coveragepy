@@ -24,6 +24,12 @@ def run_command(cmd):
     Returns the exit status code and the combined stdout and stderr.
 
     """
+    # Subprocesses are expensive, but convenient, and so may be over-used in
+    # the test suite.  Use these lines to get a list of the tests using them:
+    if 0:       # pragma: debugging
+        with open("/tmp/processes.txt", "a") as proctxt:
+            print(os.environ.get("PYTEST_CURRENT_TEST", "unknown"), file=proctxt, flush=True)
+
     # In some strange cases (PyPy3 in a virtualenv!?) the stdout encoding of
     # the subprocess is set incorrectly to ascii.  Use an environment variable
     # to force the encoding to be the same as ours.
