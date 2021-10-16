@@ -6,6 +6,7 @@
 
 import glob
 import optparse     # pylint: disable=deprecated-module
+import os
 import os.path
 import shlex
 import sys
@@ -738,6 +739,8 @@ class CoverageScript:
                         f"Remove --{opt_name} from the command line."
                     )
                     return ERR
+
+        os.environ["COVERAGE_RUN"] = "true"
 
         runner = PyRunner(args, as_module=bool(options.module))
         runner.prepare()

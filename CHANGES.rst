@@ -23,12 +23,18 @@ This list is detailed and covers changes in each pre-release version.
 Unreleased
 ----------
 
-- When sorting human-readable names, numeric components are sorted correctly:
-  file10.py will appear after file9.py.  This applies to file names, module
-  names, environment variables, and test contexts.
+- Feature: Coverage now sets an environment variable, ``COVERAGE_RUN`` when
+  running your code with the ``coverage run`` command.  The value is not
+  important, and may change in the future.  Closes `issue 553`_.
 
-- Branch coverage measurement is faster, though you might only notice on
-  code that is executed many times, such as long-running loops.
+- Fix: When sorting human-readable names, numeric components are sorted
+  correctly: file10.py will appear after file9.py.  This applies to file names,
+  module names, environment variables, and test contexts.
+
+- Performance: Branch coverage measurement is faster, though you might only
+  notice on code that is executed many times, such as long-running loops.
+
+ .. _issue 553: https://github.com/nedbat/coveragepy/issues/553
 
 
 .. _changes_602:

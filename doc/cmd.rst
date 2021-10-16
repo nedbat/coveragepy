@@ -137,6 +137,10 @@ If your coverage results seem to be overlooking code that you know has been
 executed, try running coverage.py again with the ``--timid`` flag.  This uses a
 simpler but slower trace method, and might be needed in rare cases.
 
+Coverage.py sets an environment variable, ``COVERAGE_RUN`` to indicate that
+your code is running under coverage measurement.  The value is not relevant,
+and may change in the future.
+
 
 .. _cmd_warnings:
 

@@ -39,7 +39,7 @@ class ProcessTest(CoverageTest):
         self.run_command("coverage run mycode.py")
         self.assert_exists(".coverage")
 
-    def test_environment(self):
+    def test_tests_dir_is_importable(self):
         # Checks that we can import modules from the tests directory at all!
         self.make_file("mycode.py", """\
             import covmod1
@@ -52,6 +52,21 @@ class ProcessTest(CoverageTest):
         out = self.run_command("coverage run mycode.py")
         self.assert_exists(".coverage")
         assert out == 'done\n'
+
+    def test_coverage_run_envvar_is_in_coveragerun(self):
+        # Test that we are setting COVERAGE_RUN when we run.
+        self.make_file("envornot.py", """\
+            import os
+            print(os.environ.get("COVERAGE_RUN", "nope"))
+            """)
+        self.del_environ("COVERAGE_RUN")
+        # Regular Python doesn't have the environment variable.
+        out = self.run_command("python envornot.py")
+        assert out == "nope\n"
+        self.del_environ("COVERAGE_RUN")
+        # But `coverage run` does have it.
+        out = self.run_command("coverage run envornot.py")
+        assert out == "true\n"
 
     def make_b_or_c_py(self):
         """Create b_or_c.py, used in a few of these tests."""
