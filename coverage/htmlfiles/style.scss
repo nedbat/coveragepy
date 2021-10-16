@@ -157,7 +157,7 @@ a.nav {
 }
 
 // Page structure
-#header {
+header {
     background: $light-gray1;
     @include background-dark(black);
     width: 100%;
@@ -165,15 +165,15 @@ a.nav {
     @include border-color-dark($dark-gray2);
 }
 
-.indexfile #footer {
+.indexfile footer {
     margin: 1rem $left-gutter;
 }
 
-.pyfile #footer {
+.pyfile footer {
     margin: 1rem 1rem;
 }
 
-#footer .content {
+footer .content {
     padding: 0;
     color: $light-gray5;
     @include color-dark($dark-gray5);
@@ -185,7 +185,7 @@ a.nav {
 }
 
 // Header styles
-#header .content {
+header .content {
     padding: 1rem $left-gutter;
 }
 

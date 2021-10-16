@@ -28,23 +28,23 @@ a.nav { text-decoration: none; color: inherit; }
 
 a.nav:hover { text-decoration: underline; color: inherit; }
 
-#header { background: #f8f8f8; width: 100%; border-bottom: 1px solid #eee; }
+header { background: #f8f8f8; width: 100%; border-bottom: 1px solid #eee; }
 
-@media (prefers-color-scheme: dark) { #header { background: black; } }
+@media (prefers-color-scheme: dark) { header { background: black; } }
 
-@media (prefers-color-scheme: dark) { #header { border-color: #333; } }
+@media (prefers-color-scheme: dark) { header { border-color: #333; } }
 
-.indexfile #footer { margin: 1rem 3.5rem; }
+.indexfile footer { margin: 1rem 3.5rem; }
 
-.pyfile #footer { margin: 1rem 1rem; }
+.pyfile footer { margin: 1rem 1rem; }
 
-#footer .content { padding: 0; color: #666; font-style: italic; }
+footer .content { padding: 0; color: #666; font-style: italic; }
 
-@media (prefers-color-scheme: dark) { #footer .content { color: #aaa; } }
+@media (prefers-color-scheme: dark) { footer .content { color: #aaa; } }
 
 #index { margin: 1rem 0 0 3.5rem; }
 
-#header .content { padding: 1rem 3.5rem; }
+header .content { padding: 1rem 3.5rem; }
 
 h1 { font-size: 1.25em; display: inline-block; }
 

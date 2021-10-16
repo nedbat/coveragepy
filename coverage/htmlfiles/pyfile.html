@@ -24,7 +24,7 @@
 </head>
 <body class="pyfile">
 
-<div id="header">
+<header>
     <div class="content">
         <h1>Coverage for <b>{{relative_filename|escape}}</b> :
             <span class="pc_cov">{{nums.pc_covered_str}}%</span>
@@ -43,9 +43,9 @@
             {% endif %}
         </h2>
     </div>
-</div>
+</header>
 
-<div class="help_panel">
+<aside class="help_panel">
     <img id="panel_icon" src="keybd_open.png" alt="Hide keyboard shortcuts" />
     <p class="legend">Hot-keys on this page</p>
     <div>
@@ -66,9 +66,9 @@
         <span class="key">1</span> &nbsp; (one) first highlighted chunk
     </p>
     </div>
-</div>
+</aside>
 
-<div id="source">
+<main id="source">
     {% for line in lines -%}
         {% joined %}
         <p id="t{{line.number}}" class="{{line.css_class}}">
@@ -98,16 +98,16 @@
         </p>
         {% endjoined %}
     {% endfor %}
-</div>
+</main>
 
-<div id="footer">
+<footer>
     <div class="content">
         <p>
             <a class="nav" href="index.html">&#xab; index</a> &nbsp; &nbsp; <a class="nav" href="{{__url__}}">coverage.py v{{__version__}}</a>,
             created at {{ time_stamp }}
         </p>
     </div>
-</div>
+</footer>
 
 </body>
 </html>
