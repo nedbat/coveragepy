@@ -629,8 +629,6 @@ def compare_html(expected, actual, extra_scrubs=None):
         (r'coverage.py v[\d.abc]+', 'coverage.py vVER'),
         (r'created at \d\d\d\d-\d\d-\d\d \d\d:\d\d [-+]\d\d\d\d', 'created at DATE'),
         (r'created at \d\d\d\d-\d\d-\d\d \d\d:\d\d', 'created at DATE'),
-        # Some words are identifiers in one version, keywords in another.
-        (r'<span class="(nam|key)">(print|True|False)</span>', r'<span class="nam">\2</span>'),
         # Occasionally an absolute path is in the HTML report.
         (filepath_to_regex(TESTS_DIR), 'TESTS_DIR'),
         (filepath_to_regex(flat_rootname(str(TESTS_DIR))), '_TESTS_DIR'),
@@ -640,9 +638,6 @@ def compare_html(expected, actual, extra_scrubs=None):
         (filepath_to_regex(abs_file(os.getcwd())), 'TEST_TMPDIR'),
         (filepath_to_regex(flat_rootname(str(abs_file(os.getcwd())))), '_TEST_TMPDIR'),
         (r'/private/var/folders/[\w/]{35}/pytest-of-\w+/pytest-\d+/t\d+', 'TEST_TMPDIR'),
-        # Old format of test directories that could be in the gold files.
-        (r'/private/var/folders/[\w/]{35}/coverage_test/tests_test_html_\w+_\d{8}', 'TEST_TMPDIR'),
-        (r'_private_var_folders_\w{35}_coverage_test_tests_test_html_\w+_\d{8}', '_TEST_TMPDIR'),
     ]
     if env.WINDOWS:
         # For file paths...
