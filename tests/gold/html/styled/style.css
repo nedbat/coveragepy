@@ -28,11 +28,17 @@ a.nav { text-decoration: none; color: inherit; }
 
 a.nav:hover { text-decoration: underline; color: inherit; }
 
-header { background: #f8f8f8; width: 100%; border-bottom: 1px solid #eee; }
+header { background: #f8f8f8; width: 100%; border-bottom: 1px solid #ccc; }
 
 @media (prefers-color-scheme: dark) { header { background: black; } }
 
 @media (prefers-color-scheme: dark) { header { border-color: #333; } }
+
+header .content { padding: 1rem 3.5rem; }
+
+header.hidden { visibility: hidden; }
+
+main { position: relative; z-index: 1; }
 
 .indexfile footer { margin: 1rem 3.5rem; }
 
@@ -44,7 +50,13 @@ footer .content { padding: 0; color: #666; font-style: italic; }
 
 #index { margin: 1rem 0 0 3.5rem; }
 
-header .content { padding: 1rem 3.5rem; }
+#sticky_header { display: none; position: fixed; z-index: 2; left: 0; right: 0; background: #f8f8f8; border-bottom: 1px solid #ccc; }
+
+#sticky_header .content { padding: 0.5rem 3.5rem; }
+
+#sticky_header .content p { font-size: 1em; }
+
+#sticky_header.visible { display: block; }
 
 h1 { font-size: 1.25em; display: inline-block; }
 
@@ -65,8 +77,6 @@ h2.stats { margin-top: .5em; font-size: 1em; }
 .stats button { font-family: inherit; font-size: inherit; border: 1px solid; border-radius: .2em; color: inherit; padding: .1em .5em; margin: 1px calc(.1em + 1px); cursor: pointer; border-color: #ccc; }
 
 @media (prefers-color-scheme: dark) { .stats button { border-color: #444; } }
-
-.stats button:active, .stats button:focus { outline: 2px dashed #007acc; }
 
 .stats button:active, .stats button:focus { outline: 2px dashed #007acc; }
 
@@ -280,7 +290,7 @@ h2.stats { margin-top: .5em; font-size: 1em; }
 
 #index tr.file:hover td.name { text-decoration: underline; color: inherit; }
 
-#scroll_marker { position: fixed; right: 0; top: 0; width: 16px; height: 100%; background: #fff; border-left: 1px solid #eee; will-change: transform; }
+#scroll_marker { position: fixed; z-index: 3; right: 0; top: 0; width: 16px; height: 100%; background: #fff; border-left: 1px solid #eee; will-change: transform; }
 
 @media (prefers-color-scheme: dark) { #scroll_marker { background: #1e1e1e; } }
 

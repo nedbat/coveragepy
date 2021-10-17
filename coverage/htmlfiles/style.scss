@@ -73,6 +73,7 @@ $dark-context-bg-color:   #056;
 //
 // Mixins and utilities
 //
+
 @mixin background-dark($color) {
     @media (prefers-color-scheme: dark) {
         background: $color;
@@ -161,8 +162,21 @@ header {
     background: $light-gray1;
     @include background-dark(black);
     width: 100%;
-    border-bottom: 1px solid $light-gray2;
+    border-bottom: 1px solid $light-gray3;
     @include border-color-dark($dark-gray2);
+
+    .content {
+        padding: 1rem $left-gutter;
+    }
+
+    &.hidden {
+        visibility: hidden;
+    }
+}
+
+main {
+    position: relative;
+    z-index: 1;
 }
 
 .indexfile footer {
@@ -184,10 +198,28 @@ footer .content {
     margin: 1rem 0 0 $left-gutter;
 }
 
-// Header styles
-header .content {
-    padding: 1rem $left-gutter;
+#sticky_header {
+    display: none;
+    position: fixed;
+    z-index: 2;
+    left: 0;
+    right: 0;
+    background: $light-gray1;
+    border-bottom: 1px solid $light-gray3;
+
+    .content {
+        padding: .5rem $left-gutter;
+        p {
+            font-size: 1em;
+        }
+    }
+
+    &.visible {
+        display: block;
+    }
 }
+
+// Header styles
 
 h1 {
     font-size: 1.25em;
@@ -228,8 +260,6 @@ h2.stats {
     cursor: pointer;
     border-color: $light-gray3;
     @include border-color-dark($dark-gray3);
-    @include focus-border;
-
     @include focus-border;
 
     &.run {
@@ -640,6 +670,7 @@ $border-indicator-width: .2em;
 // scroll marker styles
 #scroll_marker {
     position: fixed;
+    z-index: 3;
     right: 0;
     top: 0;
     width: 16px;

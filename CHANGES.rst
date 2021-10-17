@@ -27,6 +27,9 @@ Unreleased
   running your code with the ``coverage run`` command.  The value is not
   important, and may change in the future.  Closes `issue 553`_.
 
+- Feature: The HTML report pages for Python source files now have a sticky
+  header so the file name and controls are always visible.
+
 - Fix: When sorting human-readable names, numeric components are sorted
   correctly: file10.py will appear after file9.py.  This applies to file names,
   module names, environment variables, and test contexts.
