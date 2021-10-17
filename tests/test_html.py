@@ -894,15 +894,15 @@ assert len(math) == 18
             """)
 
         with change_dir("src"):
-            sys.path.insert(0, "")          # pytest sometimes has this, sometimes not!?
             sys.path.insert(0, "../othersrc")
             cov = coverage.Coverage(include=["./*", "../othersrc/*"])
             self.start_import_stop(cov, "here")
             cov.html_report(directory="../out/other")
 
         # Different platforms will name the "other" file differently. Rename it
-        for p in glob.glob("out/other/*_other_py.html"):
-            os.rename(p, "out/other/blah_blah_other_py.html")
+        actual_file = list(glob.glob("out/other/*_other_py.html"))
+        assert len(actual_file) == 1
+        os.rename(actual_file[0], "out/other/blah_blah_other_py.html")
 
         compare_html(
             gold_path("html/other"), "out/other",
