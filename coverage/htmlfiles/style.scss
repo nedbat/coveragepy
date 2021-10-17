@@ -18,7 +18,6 @@
 // Dimensions
 $left-gutter: 3.5rem;
 
-
 //
 // Declare colors and variables
 //
@@ -34,7 +33,7 @@ $focus-color:             #007acc;
 $mis-color:               #ff0000;
 $run-color:               #00dd00;
 $exc-color:               #808080;
-$par-color:               #dddd00;
+$par-color:               #bbbb00;
 
 $light-bg:                #fff;
 $light-fg:                #000;
@@ -50,8 +49,8 @@ $light-run-bg:            #dfd;
 $light-exc-bg:            $light-gray2;
 $light-par-bg:            #ffa;
 $light-token-com:         #008000;
-$light-token-str:         #0451A5;
-$light-context-bg-color:  #aef;
+$light-token-str:         #0451a5;
+$light-context-bg-color:  #d0e8ff;
 
 $dark-bg:                 #1e1e1e;
 $dark-fg:                 #eee;
@@ -66,8 +65,8 @@ $dark-mis-bg:             #4b1818;
 $dark-run-bg:             #373d29;
 $dark-exc-bg:             $dark-gray2;
 $dark-par-bg:             #650;
-$dark-token-com:          #6A9955;
-$dark-token-str:          #9CDCFE;
+$dark-token-com:          #6a9955;
+$dark-token-str:          #9cdcfe;
 $dark-context-bg-color:   #056;
 
 //
