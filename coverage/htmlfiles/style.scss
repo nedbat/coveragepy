@@ -613,16 +613,17 @@ $border-indicator-width: .2em;
             background: $light-gray2;
             @include background-dark($dark-gray2);
         }
-        &.headerSortDown, &.headerSortUp {
+        &[aria-sort="ascending"], &[aria-sort="descending"] {
             white-space: nowrap;
             background: $light-gray2;
             @include background-dark($dark-gray2);
+            padding-left: .5em;
         }
-        &.headerSortDown:after {
-            content: " ↑";
+        &[aria-sort="ascending"]::after {
+            content: "↑";
         }
-        &.headerSortUp:after {
-            content: " ↓";
+        &[aria-sort="descending"]::after {
+            content: "↓";
         }
     }
     td.name a {

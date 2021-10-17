@@ -7,6 +7,7 @@
 
 coverage = {};
 
+// General helpers
 function debounce(callback, wait) {
     let timeoutId = null;
     return function(...args) {
@@ -17,8 +18,52 @@ function debounce(callback, wait) {
     };
 };
 
-function clamp(n, min, max) {
-    return Math.min(Math.max(min, n), max);
+function checkVisible(element) {
+    var rect = element.getBoundingClientRect();
+    var viewHeight = Math.max(document.documentElement.clientHeight, window.innerHeight);
+    return !(rect.bottom < 0 || rect.top - viewHeight >= 0);
+}
+
+// Helpers for table sorting
+function getCellValue(row, column = 0) {
+    const cell = row.cells[column]
+    if (cell.childElementCount == 1) {
+        const child = cell.firstElementChild
+        if (child instanceof HTMLTimeElement && child.dateTime) {
+            return child.dateTime
+        } else if (child instanceof HTMLDataElement && child.value) {
+            return child.value
+        }
+    }
+    return cell.innerText || cell.textContent;
+}
+
+function rowComparator(rowA, rowB, column = 0) {
+    let valueA = getCellValue(rowA, column);
+    let valueB = getCellValue(rowB, column);
+    if (!isNaN(valueA) && !isNaN(valueB)) {
+        return valueA - valueB
+    }
+    return valueA.localeCompare(valueB, undefined, {numeric: true});
+}
+
+function sortColumn(th) {
+    // Get the current sorting direction of the selected header,
+    // clear state on other headers and then set the new sorting direction
+    const currentSortOrder = th.ariaSort;
+    [...th.parentElement.cells].forEach(header => header.ariaSort = "none");
+    if (currentSortOrder === "none") {
+        th.ariaSort = th.dataset.defaultSortOrder || "ascending"
+    } else {
+        th.ariaSort = currentSortOrder === "ascending" ? "descending" : "ascending";
+    }
+
+    const column = [...th.parentElement.cells].indexOf(th)
+
+    // Sort all rows and afterwards append them in order to move them in the DOM
+    Array.from(th.closest("table").querySelectorAll("tbody tr"))
+        .sort((rowA, rowB) => rowComparator(rowA, rowB, column) * (th.ariaSort === "ascending" ? 1 : -1))
+        .forEach(tr => tr.parentElement.appendChild(tr) );
 }
 
 // Find all the elements with data-shortcut attribute, and use them to assign a shortcut key.
@@ -89,10 +134,11 @@ coverage.wire_up_filter = function () {
         no_rows.style.display = null;
         table.style.display = null;
 
+        const footer = table.tFoot.rows[0];
         // Calculate new dynamic sum values based on visible rows.
         for (let column = 1; column < totals.length; column++) {
             // Get footer cell element.
-            const cell = table.tFoot.rows[0].cells[column];
+            const cell = footer.cells[column];
 
             // Set value into dynamic footer cell element.
             if (column === totals.length - 1) {
@@ -117,65 +163,27 @@ coverage.wire_up_filter = function () {
     document.getElementById("filter").dispatchEvent(new Event("change"));
 };
 
+coverage.INDEX_SORT_STORAGE = "COVERAGE_INDEX_SORT";
+
 // Loaded on index.html
-coverage.index_ready = function ($) {
-    // Look for a localStorage item containing previous sort settings:
-    var sort_list = [];
-    var storage_name = "COVERAGE_INDEX_SORT";
-    var stored_list = undefined;
-    try {
-        stored_list = localStorage.getItem(storage_name);
-    } catch(err) {}
-
-    if (stored_list) {
-        sort_list = JSON.parse('[[' + stored_list + ']]');
-    }
-
-    // Create a new widget which exists only to save and restore
-    // the sort order:
-    $.tablesorter.addWidget({
-        id: "persistentSort",
-
-        // Format is called by the widget before displaying:
-        format: function (table) {
-            if (table.config.sortList.length === 0 && sort_list.length > 0) {
-                // This table hasn't been sorted before - we'll use
-                // our stored settings:
-                $(table).trigger('sorton', [sort_list]);
-            }
-            else {
-                // This is not the first load - something has
-                // already defined sorting so we'll just update
-                // our stored value to match:
-                sort_list = table.config.sortList;
-            }
-        }
-    });
-
-    // Configure our tablesorter to handle the variable number of
-    // columns produced depending on report options:
-    var headers = [];
-    var col_count = $("table.index > thead > tr > th").length;
-
-    headers[0] = { sorter: 'text' };
-    for (i = 1; i < col_count-1; i++) {
-        headers[i] = { sorter: 'digit' };
-    }
-    headers[col_count-1] = { sorter: 'percent' };
-
-    // Enable the table sorter:
-    $("table.index").tablesorter({
-        widgets: ['persistentSort'],
-        headers: headers
-    });
-
+coverage.index_ready = function () {
     coverage.assign_shortkeys();
     coverage.wire_up_filter();
+    document.querySelectorAll('[data-sortable] th[aria-sort]').forEach(
+        th => th.addEventListener('click', e => sortColumn(e.target))
+    );
+
+    // Look for a localStorage item containing previous sort settings:
+    const stored_list = localStorage.getItem(coverage.INDEX_SORT_STORAGE);
+
+    if (stored_list) {
+        sort_list = JSON.parse(stored_list);
+    }
 
     // Watch for page unload events so we can save the final sort settings:
-    $(window).on("unload", function () {
+    window.addEventListener("unload", function () {
         try {
-            localStorage.setItem(storage_name, sort_list.toString())
+            localStorage.setItem(storage_name, JSON.stringify(sort_list))
         } catch(err) {}
     });
 };
@@ -184,28 +192,25 @@ coverage.index_ready = function ($) {
 
 coverage.LINE_FILTERS_STORAGE = "COVERAGE_LINE_FILTERS";
 
-coverage.pyfile_ready = function ($) {
+coverage.pyfile_ready = function () {
     // If we're directed to a particular line number, highlight the line.
     var frag = location.hash;
     if (frag.length > 2 && frag[1] === 't') {
-        $(frag).addClass('highlight');
+        document.getElementById(frag.substring(1)).classList.add("highlight");
         coverage.set_sel(parseInt(frag.substr(2), 10));
-    }
-    else {
+    } else {
         coverage.set_sel(0);
     }
 
-    $(document)
-        .bind('keydown', 'j', coverage.to_next_chunk_nicely)
-        .bind('keydown', 'k', coverage.to_prev_chunk_nicely)
-        .bind('keydown', '0', coverage.to_top)
-        .bind('keydown', '1', coverage.to_first_chunk)
-        ;
+    document.querySelector(".button_toggle_run").addEventListener("click", coverage.toggle_lines);
+    document.querySelector(".button_toggle_mis").addEventListener("click", coverage.toggle_lines);
+    document.querySelector(".button_toggle_exc").addEventListener("click", coverage.toggle_lines);
+    document.querySelector(".button_toggle_par").addEventListener("click", coverage.toggle_lines);
 
-    $(".button_toggle_run").click(function (evt) {coverage.toggle_lines(evt.target, "run");});
-    $(".button_toggle_exc").click(function (evt) {coverage.toggle_lines(evt.target, "exc");});
-    $(".button_toggle_mis").click(function (evt) {coverage.toggle_lines(evt.target, "mis");});
-    $(".button_toggle_par").click(function (evt) {coverage.toggle_lines(evt.target, "par");});
+    document.querySelector(".button_next_chunk").addEventListener("click", coverage.to_next_chunk_nicely);
+    document.querySelector(".button_prev_chunk").addEventListener("click", coverage.to_prev_chunk_nicely);
+    document.querySelector(".button_top_of_page").addEventListener("click", coverage.to_top);
+    document.querySelector(".button_first_chunk").addEventListener("click", coverage.to_first_chunk);
 
     coverage.filters = undefined;
     try {
@@ -227,35 +232,37 @@ coverage.pyfile_ready = function ($) {
     coverage.init_scroll_markers();
 
     // Rebuild scroll markers when the window height changes.
-    $(window).resize(coverage.build_scroll_markers);
+    window.addEventListener("resize", coverage.build_scroll_markers);
 };
 
-coverage.toggle_lines = function (btn, cls) {
-    var onoff = !$(btn).hasClass("show_" + cls);
-    coverage.set_line_visibilty(cls, onoff);
+coverage.toggle_lines = function (event) {
+    const btn = event.target;
+    const category = btn.value
+    const show = !btn.classList.contains("show_" + category);
+    coverage.set_line_visibilty(category, show);
     coverage.build_scroll_markers();
-    coverage.filters[cls] = onoff;
+    coverage.filters[category] = show;
     try {
         localStorage.setItem(coverage.LINE_FILTERS_STORAGE, JSON.stringify(coverage.filters));
     } catch(err) {}
 };
 
-coverage.set_line_visibilty = function (cls, onoff) {
-    var show = "show_" + cls;
-    var btn = $(".button_toggle_" + cls);
-    if (onoff) {
-        $("#source ." + cls).addClass(show);
-        btn.addClass(show);
+coverage.set_line_visibilty = function (category, should_show) {
+    const cls = "show_" + category;
+    const btn = document.querySelector(".button_toggle_" + category);
+    if (should_show) {
+        document.querySelectorAll("#source ." + category).forEach(e => e.classList.add(cls));
+        btn.classList.add(cls);
     }
     else {
-        $("#source ." + cls).removeClass(show);
-        btn.removeClass(show);
+        document.querySelectorAll("#source ." + category).forEach(e => e.classList.remove(cls));
+        btn.classList.remove(cls);
     }
 };
 
 // Return the nth line div.
 coverage.line_elt = function (n) {
-    return $("#t" + n);
+    return document.getElementById("t" + n);
 };
 
 // Set the selection.  b and e are line numbers.
@@ -279,25 +286,26 @@ coverage.to_first_chunk = function () {
 // Return a string indicating what kind of chunk this line belongs to,
 // or null if not a chunk.
 coverage.chunk_indicator = function (line_elt) {
-    var klass = line_elt.attr('class');
-    if (klass) {
-        var m = klass.match(/\bshow_\w+\b/);
-        if (m) {
-            return m[0];
-        }
+    const classes = line_elt.className;
+    if (!classes) {
+        return null;
     }
-    return null;
+    const match = classes.match(/\bshow_\w+\b/);
+    if (!match) {
+        return null;
+    }
+    return match[0];
 };
 
 coverage.to_next_chunk = function () {
-    var c = coverage;
+    const c = coverage;
 
     // Find the start of the next colored chunk.
     var probe = c.sel_end;
     var chunk_indicator, probe_line;
     while (true) {
         probe_line = c.line_elt(probe);
-        if (probe_line.length === 0) {
+        if (!probe_line) {
             return;
         }
         chunk_indicator = c.chunk_indicator(probe_line);
@@ -322,7 +330,7 @@ coverage.to_next_chunk = function () {
 };
 
 coverage.to_prev_chunk = function () {
-    var c = coverage;
+    const c = coverage;
 
     // Find the end of the prev colored chunk.
     var probe = c.sel_begin-1;
@@ -334,7 +342,7 @@ coverage.to_prev_chunk = function () {
     while (probe > 0 && !chunk_indicator) {
         probe--;
         probe_line = c.line_elt(probe);
-        if (probe_line.length === 0) {
+        if (!probe_line) {
             return;
         }
         chunk_indicator = c.chunk_indicator(probe_line);
@@ -354,28 +362,6 @@ coverage.to_prev_chunk = function () {
     c.show_selection();
 };
 
-// Return the line number of the line nearest pixel position pos
-coverage.line_at_pos = function (pos) {
-    var l1 = coverage.line_elt(1),
-        l2 = coverage.line_elt(2),
-        result;
-    if (l1.length && l2.length) {
-        var l1_top = l1.offset().top,
-            line_height = l2.offset().top - l1_top,
-            nlines = (pos - l1_top) / line_height;
-        if (nlines < 1) {
-            result = 1;
-        }
-        else {
-            result = Math.ceil(nlines);
-        }
-    }
-    else {
-        result = 1;
-    }
-    return result;
-};
-
 // Returns 0, 1, or 2: how many of the two ends of the selection are on
 // the screen right now?
 coverage.selection_ends_on_screen = function () {
@@ -383,31 +369,49 @@ coverage.selection_ends_on_screen = function () {
         return 0;
     }
 
-    var top = coverage.line_elt(coverage.sel_begin);
-    var next = coverage.line_elt(coverage.sel_end-1);
+    const begin = coverage.line_elt(coverage.sel_begin);
+    const end = coverage.line_elt(coverage.sel_end-1);
 
     return (
-        (top.isOnScreen() ? 1 : 0) +
-        (next.isOnScreen() ? 1 : 0)
+        (checkVisible(begin) ? 1 : 0)
+        + (checkVisible(end) ? 1 : 0)
     );
 };
 
 coverage.to_next_chunk_nicely = function () {
-    coverage.finish_scrolling();
     if (coverage.selection_ends_on_screen() === 0) {
-        // The selection is entirely off the screen: select the top line on
-        // the screen.
-        var win = $(window);
-        coverage.select_line_or_chunk(coverage.line_at_pos(win.scrollTop()));
+        // The selection is entirely off the screen:
+        // Set the top line on the screen as selection.
+
+        // This will select the top-left of the viewport
+        // As this is most likely the span with the line number we take the parent
+        const line = document.elementFromPoint(0, 0).parentElement;
+        if (line.parentElement !== document.getElementById("source")) {
+            // The element is not a source line but the header or similar
+            coverage.select_line_or_chunk(1);
+        } else {
+            // We extract the line number from the id
+            coverage.select_line_or_chunk(parseInt(line.id.substring(1), 10));
+        }
     }
     coverage.to_next_chunk();
 };
 
 coverage.to_prev_chunk_nicely = function () {
-    coverage.finish_scrolling();
     if (coverage.selection_ends_on_screen() === 0) {
-        var win = $(window);
-        coverage.select_line_or_chunk(coverage.line_at_pos(win.scrollTop() + win.height()));
+        // The selection is entirely off the screen:
+        // Set the lowest line on the screen as selection.
+
+        // This will select the bottom-left of the viewport
+        // As this is most likely the span with the line number we take the parent
+        const line = document.elementFromPoint(document.documentElement.clientHeight-1, 0).parentElement;
+        if (line.parentElement !== document.getElementById("source")) {
+            // The element is not a source line but the header or similar
+            coverage.select_line_or_chunk(coverage.lines_len);
+        } else {
+            // We extract the line number from the id
+            coverage.select_line_or_chunk(parseInt(line.id.substring(1), 10));
+        }
     }
     coverage.to_prev_chunk();
 };
@@ -453,43 +457,33 @@ coverage.select_line_or_chunk = function (lineno) {
 };
 
 coverage.show_selection = function () {
-    var c = coverage;
-
     // Highlight the lines in the chunk
-    $("#source .highlight").removeClass("highlight");
-    for (var probe = c.sel_begin; probe > 0 && probe < c.sel_end; probe++) {
-        c.line_elt(probe).addClass("highlight");
+    document.querySelectorAll("#source .highlight").forEach(e => e.classList.remove("highlight"));
+    for (let probe = coverage.sel_begin; probe < coverage.sel_end; probe++) {
+        coverage.line_elt(probe).classList.add("highlight");
     }
 
-    c.scroll_to_selection();
+    coverage.scroll_to_selection();
 };
 
 coverage.scroll_to_selection = function () {
     // Scroll the page if the chunk isn't fully visible.
     if (coverage.selection_ends_on_screen() < 2) {
-        // Need to move the page. The html,body trick makes it scroll in all
-        // browsers, got it from http://stackoverflow.com/questions/3042651
-        var top = coverage.line_elt(coverage.sel_begin);
-        var top_pos = parseInt(top.offset().top, 10);
-        coverage.scroll_window(top_pos - 30);
+        const element = coverage.line_elt(coverage.sel_begin);
+        coverage.scroll_window(element.offsetTop - 30);
     }
 };
 
 coverage.scroll_window = function (to_pos) {
-    $("html,body").animate({scrollTop: to_pos}, 200);
-};
-
-coverage.finish_scrolling = function () {
-    $("html,body").stop(true, true);
+    window.scroll({top: to_pos, behavior: "smooth"});
 };
 
 coverage.init_scroll_markers = function () {
-    var c = coverage;
     // Init some variables
-    c.lines_len = document.querySelectorAll('#source p').length;
+    coverage.lines_len = document.querySelectorAll('#source > p').length;
 
     // Build html
-    c.build_scroll_markers();
+    coverage.build_scroll_markers();
 };
 
 coverage.build_scroll_markers = function () {
@@ -501,7 +495,7 @@ coverage.build_scroll_markers = function () {
     }
 
     const marker_scale = window.innerHeight / document.body.scrollHeight;
-    const line_height = clamp(window.innerHeight / coverage.lines_len, 3, 10);
+    const line_height = Math.min(Math.max(3, window.innerHeight / coverage.lines_len), 10);
     
     let previous_line = -99, last_mark, last_top;
     
@@ -533,3 +527,11 @@ coverage.build_scroll_markers = function () {
     // Append last to prevent layout calculation
     document.body.append(scroll_marker);
 };
+
+document.addEventListener("DOMContentLoaded", () => {
+    if (document.body.classList.contains("indexfile")) {
+        coverage.index_ready();
+    } else {
+        coverage.pyfile_ready();
+    }
+});

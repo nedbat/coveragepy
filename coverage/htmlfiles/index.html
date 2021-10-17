@@ -11,14 +11,7 @@
     {% if extra_css %}
         <link rel="stylesheet" href="{{ extra_css }}" type="text/css">
     {% endif %}
-    <script type="text/javascript" src="jquery.min.js"></script>
-    <script type="text/javascript" src="jquery.ba-throttle-debounce.min.js"></script>
-    <script type="text/javascript" src="jquery.tablesorter.min.js"></script>
-    <script type="text/javascript" src="jquery.hotkeys.js"></script>
-    <script type="text/javascript" src="coverage_html.js"></script>
-    <script type="text/javascript">
-        jQuery(document).ready(coverage.index_ready);
-    </script>
+    <script type="text/javascript" src="coverage_html.js" defer></script>
 </head>
 <body class="indexfile">
 
@@ -58,19 +51,19 @@
 </div>
 
 <div id="index">
-    <table class="index">
+    <table class="index" data-sortable>
         <thead>
             {# The title="" attr doesn"t work in Safari. #}
             <tr class="tablehead" title="Click to sort">
-                <th class="name left headerSortDown" data-shortcut="n">Module</th>
-                <th data-shortcut="s">statements</th>
-                <th data-shortcut="m">missing</th>
-                <th data-shortcut="x">excluded</th>
+                <th class="name left" aria-sort="none" data-shortcut="n">Module</th>
+                <th aria-sort="none" data-default-sort-order="descending" data-shortcut="s">statements</th>
+                <th aria-sort="none" data-default-sort-order="descending" data-shortcut="m">missing</th>
+                <th aria-sort="none" data-default-sort-order="descending" data-shortcut="x">excluded</th>
                 {% if has_arcs %}
-                <th data-shortcut="b">branches</th>
-                <th data-shortcut="p">partial</th>
+                <th aria-sort="none" data-default-sort-order="descending" data-shortcut="b">branches</th>
+                <th aria-sort="none" data-default-sort-order="descending" data-shortcut="p">partial</th>
                 {% endif %}
-                <th class="right" data-shortcut="c">coverage</th>
+                <th class="right" aria-sort="none" data-shortcut="c">coverage</th>
             </tr>
         </thead>
         <tbody>
