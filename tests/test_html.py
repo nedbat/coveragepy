@@ -623,6 +623,7 @@ def filepath_to_regex(path):
 
 def compare_html(expected, actual, extra_scrubs=None):
     """Specialized compare function for our HTML files."""
+    __tracebackhide__ = True    # pytest, please don't show me this function.
     scrubs = [
         (r'/coverage.readthedocs.io/?[-.\w/]*', '/coverage.readthedocs.io/VER'),
         (r'coverage.py v[\d.abc]+', 'coverage.py vVER'),

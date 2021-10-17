@@ -60,6 +60,8 @@ def compare(
     matches.
 
     """
+    __tracebackhide__ = True    # pytest, please don't show me this function.
+
     expected_dir = versioned_directory(expected_dir)
 
     dc = filecmp.dircmp(expected_dir, actual_dir)
