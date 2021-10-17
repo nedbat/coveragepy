@@ -34,6 +34,7 @@ setuptools-*.egg
 covmain.zip
 zipmods.zip
 zip1.zip
+tests/actual
 
 # Stuff in the doc directory.
 doc/_build
