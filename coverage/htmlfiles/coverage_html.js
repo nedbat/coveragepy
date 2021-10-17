@@ -169,22 +169,30 @@ coverage.INDEX_SORT_STORAGE = "COVERAGE_INDEX_SORT";
 coverage.index_ready = function () {
     coverage.assign_shortkeys();
     coverage.wire_up_filter();
-    document.querySelectorAll('[data-sortable] th[aria-sort]').forEach(
-        th => th.addEventListener('click', e => sortColumn(e.target))
+    document.querySelectorAll("[data-sortable] th[aria-sort]").forEach(
+        th => th.addEventListener("click", e => sortColumn(e.target))
     );
 
     // Look for a localStorage item containing previous sort settings:
     const stored_list = localStorage.getItem(coverage.INDEX_SORT_STORAGE);
 
     if (stored_list) {
-        sort_list = JSON.parse(stored_list);
+        const {column, direction} = JSON.parse(stored_list);
+        const th = document.querySelector("[data-sortable]").tHead.rows[0].cells[column];
+        th.ariaSort = direction === "ascending" ? "descending" : "ascending";
+        th.click()
     }
 
     // Watch for page unload events so we can save the final sort settings:
     window.addEventListener("unload", function () {
-        try {
-            localStorage.setItem(storage_name, JSON.stringify(sort_list))
-        } catch(err) {}
+        const th = document.querySelector('[data-sortable] th[aria-sort="ascending"], [data-sortable] [aria-sort="descending"]');
+        if (!th) {
+            return;
+        }
+        localStorage.setItem(coverage.INDEX_SORT_STORAGE, JSON.stringify({
+            column: [...th.parentElement.cells].indexOf(th),
+            direction: th.ariaSort,
+        }));
     });
 };
 
