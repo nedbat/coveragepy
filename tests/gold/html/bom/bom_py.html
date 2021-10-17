@@ -15,7 +15,17 @@
     </script>
 </head>
 <body class="pyfile">
-<div id="header">
+<aside id="sticky_header">
+    <div class="content stats">
+        <p><b>bom.py</b> : 71%&nbsp;&nbsp;
+            <button type="button" class="run button_toggle_run" title="Toggle lines run">5</button>
+            <button type="button" class="mis show_mis button_toggle_mis" title="Toggle lines missing">2</button>
+            <button type="button" class="exc show_exc button_toggle_exc" title="Toggle lines excluded">0</button>
+            <img id="keyboard_icon" src="keybd_closed.png" alt="Show keyboard shortcuts" />
+        </p>
+    </div>
+</aside>
+<header>
     <div class="content">
         <h1>Coverage for <b>bom.py</b> :
             <span class="pc_cov">71%</span>
@@ -28,8 +38,8 @@
             <button type="button" class="exc show_exc shortkey_x button_toggle_exc" title="Toggle lines excluded">0 excluded</button>
         </h2>
     </div>
-</div>
-<div class="help_panel">
+</header>
+<aside class="help_panel">
     <img id="panel_icon" src="keybd_open.png" alt="Hide keyboard shortcuts" />
     <p class="legend">Hot-keys on this page</p>
     <div>
@@ -50,8 +60,8 @@
         <span class="key">1</span> &nbsp; (one) first highlighted chunk
     </p>
     </div>
-</div>
-<div id="source">
+</aside>
+<main id="source">
     <p id="t1" class="pln"><span class="n"><a href="#t1">1</a></span><span class="t"><span class="com"># A Python source file in utf-8, with BOM.</span>&nbsp;</span><span class="r"></span></p>
     <p id="t2" class="run"><span class="n"><a href="#t2">2</a></span><span class="t"><span class="nam">math</span> <span class="op">=</span> <span class="str">"3&#215;4 = 12, &#247;2 = 6&#177;0"</span>&nbsp;</span><span class="r"></span></p>
     <p id="t3" class="pln"><span class="n"><a href="#t3">3</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
@@ -63,14 +73,14 @@
     <p id="t9" class="pln"><span class="n"><a href="#t9">9</a></span><span class="t"><span class="key">else</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p id="t10" class="mis show_mis"><span class="n"><a href="#t10">10</a></span><span class="t">    <span class="key">assert</span> <span class="nam">len</span><span class="op">(</span><span class="nam">math</span><span class="op">)</span> <span class="op">==</span> <span class="num">21</span>&nbsp;</span><span class="r"></span></p>
     <p id="t11" class="mis show_mis"><span class="n"><a href="#t11">11</a></span><span class="t">    <span class="key">assert</span> <span class="nam">len</span><span class="op">(</span><span class="nam">math</span><span class="op">.</span><span class="nam">decode</span><span class="op">(</span><span class="str">'utf-8'</span><span class="op">)</span><span class="op">)</span> <span class="op">==</span> <span class="num">18</span>&nbsp;</span><span class="r"></span></p>
-</div>
-<div id="footer">
+</main>
+<footer>
     <div class="content">
         <p>
-            <a class="nav" href="index.html">&#xab; index</a> &nbsp; &nbsp; <a class="nav" href="https://coverage.readthedocs.io/en/coverage-5.3.1a0">coverage.py v5.3.1a0</a>,
-            created at 2020-12-05 15:14 -0500
+            <a class="nav" href="index.html">&#xab; index</a> &nbsp; &nbsp; <a class="nav" href="https://coverage.readthedocs.io/en/6.1a0">coverage.py v6.1a0</a>,
+            created at 2021-10-17 10:52 -0400
         </p>
     </div>
-</div>
+</footer>
 </body>
 </html>

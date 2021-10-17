@@ -15,7 +15,18 @@
     </script>
 </head>
 <body class="pyfile">
-<div id="header">
+<aside id="sticky_header">
+    <div class="content stats">
+        <p><b>b.py</b> : 70%&nbsp;&nbsp;
+            <button type="button" class="run button_toggle_run" title="Toggle lines run">14</button>
+            <button type="button" class="mis show_mis button_toggle_mis" title="Toggle lines missing">3</button>
+            <button type="button" class="exc show_exc button_toggle_exc" title="Toggle lines excluded">0</button>
+            <button type="button" class="par run show_par button_toggle_par" title="Toggle lines partially run">4</button>
+            <img id="keyboard_icon" src="keybd_closed.png" alt="Show keyboard shortcuts" />
+        </p>
+    </div>
+</aside>
+<header>
     <div class="content">
         <h1>Coverage for <b>b.py</b> :
             <span class="pc_cov">70%</span>
@@ -29,8 +40,8 @@
             <button type="button" class="par run show_par shortkey_p button_toggle_par" title="Toggle lines partially run">4 partial</button>
         </h2>
     </div>
-</div>
-<div class="help_panel">
+</header>
+<aside class="help_panel">
     <img id="panel_icon" src="keybd_open.png" alt="Hide keyboard shortcuts" />
     <p class="legend">Hot-keys on this page</p>
     <div>
@@ -51,8 +62,8 @@
         <span class="key">1</span> &nbsp; (one) first highlighted chunk
     </p>
     </div>
-</div>
-<div id="source">
+</aside>
+<main id="source">
     <p id="t1" class="run"><span class="n"><a href="#t1">1</a></span><span class="t"><span class="key">def</span> <span class="nam">one</span><span class="op">(</span><span class="nam">x</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p id="t2" class="pln"><span class="n"><a href="#t2">2</a></span><span class="t">    <span class="com"># This will be a branch that misses the else.</span>&nbsp;</span><span class="r"></span></p>
     <p id="t3" class="par run show_par"><span class="n"><a href="#t3">3</a></span><span class="t">    <span class="key">if</span> <span class="nam">x</span> <span class="op">&lt;</span> <span class="num">2</span><span class="op">:</span>&nbsp;</span><span class="r"><span class="annotate short">3&#x202F;&#x219B;&#x202F;6</span><span class="annotate long">line 3 didn't jump to line 6, because the condition on line 3 was never false</span></span></p>
@@ -80,14 +91,14 @@
     <p id="t25" class="run"><span class="n"><a href="#t25">25</a></span><span class="t">        <span class="key">pass</span>&nbsp;</span><span class="r"></span></p>
     <p id="t26" class="pln"><span class="n"><a href="#t26">26</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p id="t27" class="run"><span class="n"><a href="#t27">27</a></span><span class="t"><span class="nam">three</span><span class="op">(</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-</div>
-<div id="footer">
+</main>
+<footer>
     <div class="content">
         <p>
-            <a class="nav" href="index.html">&#xab; index</a> &nbsp; &nbsp; <a class="nav" href="https://coverage.readthedocs.io/en/coverage-5.3.1a0">coverage.py v5.3.1a0</a>,
-            created at 2020-12-05 14:55 -0500
+            <a class="nav" href="index.html">&#xab; index</a> &nbsp; &nbsp; <a class="nav" href="https://coverage.readthedocs.io/en/6.1a0">coverage.py v6.1a0</a>,
+            created at 2021-10-17 10:52 -0400
         </p>
     </div>
-</div>
+</footer>
 </body>
 </html>
