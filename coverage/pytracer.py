@@ -55,8 +55,6 @@ class PyTracer:
         self.started_context = False
 
         self.data_stack = []
-        self.last_exc_back = None
-        self.last_exc_firstlineno = 0
         self.thread = None
         self.stopped = False
         self._activity = False
@@ -117,17 +115,6 @@ class PyTracer:
                 self.data_stack.pop()
             )
             return None
-
-        if self.last_exc_back:
-            if frame == self.last_exc_back:
-                # Someone forgot a return event.
-                if self.trace_arcs and self.cur_file_data:
-                    pair = (self.last_line, -self.last_exc_firstlineno)
-                    self.cur_file_data.add(pair)
-                self.cur_file_data, self.cur_file_name, self.last_line, self.started_context = (
-                    self.data_stack.pop()
-                )
-            self.last_exc_back = None
 
         # if event != 'call' and frame.f_code.co_filename != self.cur_file_name:
         #     self.log("---\n*", frame.f_code.co_filename, self.cur_file_name, frame.f_lineno)
@@ -204,9 +191,6 @@ class PyTracer:
             if self.started_context:
                 self.context = None
                 self.switch_context(None)
-        elif event == 'exception':
-            self.last_exc_back = frame.f_back
-            self.last_exc_firstlineno = frame.f_code.co_firstlineno
         return self._trace
 
     def start(self):

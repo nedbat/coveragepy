@@ -349,11 +349,6 @@ class InOrOut:
             # can't do anything with the data later anyway.
             return nope(disp, "not a real file name")
 
-        # pyexpat does a dumb thing, calling the trace function explicitly from
-        # C code with a C file name.
-        if re.search(r"[/\\]Modules[/\\]pyexpat.c", filename):
-            return nope(disp, "pyexpat lies about itself")
-
         # Jython reports the .class file to the tracer, use the source file.
         if filename.endswith("$py.class"):
             filename = filename[:-9] + ".py"

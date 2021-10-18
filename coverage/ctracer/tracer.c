@@ -296,48 +296,6 @@ error:
  */
 
 static int
-CTracer_check_missing_return(CTracer *self, PyFrameObject *frame)
-{
-    int ret = RET_ERROR;
-
-    if (self->last_exc_back) {
-        if (frame == self->last_exc_back) {
-            /* Looks like someone forgot to send a return event. We'll clear
-               the exception state and do the RETURN code here.  Notice that the
-               frame we have in hand here is not the correct frame for the RETURN,
-               that frame is gone.  Our handling for RETURN doesn't need the
-               actual frame, but we do log it, so that will look a little off if
-               you're looking at the detailed log.
-
-               If someday we need to examine the frame when doing RETURN, then
-               we'll need to keep more of the missed frame's state.
-            */
-            STATS( self->stats.missed_returns++; )
-            if (CTracer_set_pdata_stack(self) < 0) {
-                goto error;
-            }
-            if (self->pdata_stack->depth >= 0) {
-                if (self->tracing_arcs && self->pcur_entry->file_data) {
-                    if (CTracer_record_pair(self, self->pcur_entry->last_line, -self->last_exc_firstlineno) < 0) {
-                        goto error;
-                    }
-                }
-                SHOWLOG(PyFrame_GetLineNumber(frame), MyFrame_GetCode(frame)->co_filename, "missedreturn");
-                self->pdata_stack->depth--;
-                self->pcur_entry = &self->pdata_stack->stack[self->pdata_stack->depth];
-            }
-        }
-        self->last_exc_back = NULL;
-    }
-
-    ret = RET_OK;
-
-error:
-
-    return ret;
-}
-
-static int
 CTracer_handle_call(CTracer *self, PyFrameObject *frame)
 {
     int ret = RET_ERROR;
@@ -773,30 +731,6 @@ error:
     return ret;
 }
 
-static int
-CTracer_handle_exception(CTracer *self, PyFrameObject *frame)
-{
-    /* Some code (Python 2.3, and pyexpat anywhere) fires an exception event
-        without a return event.  To detect that, we'll keep a copy of the
-        parent frame for an exception event.  If the next event is in that
-        frame, then we must have returned without a return event.  We can
-        synthesize the missing event then.
-
-        Python itself fixed this problem in 2.4.  Pyexpat still has the bug.
-        I've reported the problem with pyexpat as http://bugs.python.org/issue6359 .
-        If it gets fixed, this code should still work properly.  Maybe some day
-        the bug will be fixed everywhere coverage.py is supported, and we can
-        remove this missing-return detection.
-
-        More about this fix: https://nedbatchelder.com/blog/200907/a_nasty_little_bug.html
-    */
-    STATS( self->stats.exceptions++; )
-    self->last_exc_back = frame->f_back;
-    self->last_exc_firstlineno = MyFrame_GetCode(frame)->co_firstlineno;
-
-    return RET_OK;
-}
-
 /*
  * The Trace Function
  */
@@ -837,11 +771,6 @@ CTracer_trace(CTracer *self, PyFrameObject *frame, int what, PyObject *arg_unuse
     Py_DECREF(ascii);
     #endif
 
-    /* See below for details on missing-return detection. */
-    if (CTracer_check_missing_return(self, frame) < 0) {
-        goto error;
-    }
-
     self->activity = TRUE;
 
     switch (what) {
@@ -859,12 +788,6 @@ CTracer_trace(CTracer *self, PyFrameObject *frame, int what, PyObject *arg_unuse
 
     case PyTrace_LINE:
         if (CTracer_handle_line(self, frame) < 0) {
-            goto error;
-        }
-        break;
-
-    case PyTrace_EXCEPTION:
-        if (CTracer_handle_exception(self, frame) < 0) {
             goto error;
         }
         break;
@@ -1050,10 +973,8 @@ CTracer_get_stats(CTracer *self, PyObject *args_unused)
         "calls", self->stats.calls,
         "lines", self->stats.lines,
         "returns", self->stats.returns,
-        "exceptions", self->stats.exceptions,
         "others", self->stats.others,
         "files", self->stats.files,
-        "missed_returns", self->stats.missed_returns,
         "stack_reallocs", self->stats.stack_reallocs,
         "stack_alloc", self->pdata_stack->alloc,
         "errors", self->stats.errors,
