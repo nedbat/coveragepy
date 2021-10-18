@@ -203,6 +203,10 @@ file paths in the data file.  This makes it easier to measure code in one (or
 multiple) environments, and then report in another. See :ref:`cmd_combine`
 for details.
 
+Note that setting ``source`` has to be done in the configuration file rather
+than the command line for this option to work, since the reporting commands
+need to know the source origin.
+
 .. versionadded:: 5.0
 
 .. _config_run_source:

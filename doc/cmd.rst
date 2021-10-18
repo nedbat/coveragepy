@@ -103,6 +103,13 @@ but before the program invocation::
     $ coverage run --source=dir1,dir2 my_program.py arg1 arg2
     $ coverage run --source=dir1,dir2 -m packagename.modulename arg1 arg2
 
+.. note::
+   Specifying ``--source`` on the ``coverage run`` command line won't affect
+   subsequent reporting commands like ``coverage xml``.  Use the
+   :ref:`source <config_run_source>` setting in the configuration file to apply
+   the setting uniformly to all commands.
+
+
 Coverage.py can measure multi-threaded programs by default. If you are using
 more exotic concurrency, with the `multiprocessing`_, `greenlet`_, `eventlet`_,
 or `gevent`_ libraries, then coverage.py will get very confused.  Use the
