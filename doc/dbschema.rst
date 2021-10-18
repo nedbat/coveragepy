@@ -35,9 +35,7 @@ packed format that will need custom functions to access.  See
 Database schema
 ---------------
 
-This is the database schema.
-
-TODO: explain more. Readers: what needs explaining?
+This is the database schema:
 
 .. copied_from: coverage/sqldata.py
 
