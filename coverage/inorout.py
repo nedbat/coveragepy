@@ -317,6 +317,9 @@ class InOrOut:
             disp.reason = reason
             return disp
 
+        if original_filename.startswith('<'):
+            return nope(disp, "not a real original file name")
+
         if frame is not None:
             # Compiled Python files have two file names: frame.f_code.co_filename is
             # the file name at the time the .pyc was compiled.  The second name is

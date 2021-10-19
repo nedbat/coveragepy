@@ -30,6 +30,12 @@ Unreleased
 - Feature: The HTML report pages for Python source files now have a sticky
   header so the file name and controls are always visible.
 
+- Fix: more generated code is now excluded from measurement.  Code such as
+  `attrs`_ boilerplate, or doctest code, was being measured though the
+  synthetic line numbers meant they were never reported.  Once Cython was
+  involved though, the generated .so files were parsed as Python, raising
+  syntax errors, as reported in `issue 1160`_.  This is now fixed.
+
 - Fix: When sorting human-readable names, numeric components are sorted
   correctly: file10.py will appear after file9.py.  This applies to file names,
   module names, environment variables, and test contexts.
@@ -41,6 +47,8 @@ Unreleased
 
 .. _issue 553: https://github.com/nedbat/coveragepy/issues/553
 .. _issue 840: https://github.com/nedbat/coveragepy/issues/840
+.. _issue 1160: https://github.com/nedbat/coveragepy/issues/1160
+.. _attrs: https://www.attrs.org/
 
 
 .. _changes_602:

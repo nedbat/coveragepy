@@ -393,7 +393,13 @@ class DoctestTest(CoverageTest):
     """Tests invoked with doctest should measure properly."""
 
     def test_doctest(self):
-        self.check_coverage('''\
+        # Doctests used to be traced, with their line numbers credited to the
+        # file they were in.  Below, one of the doctests has four lines (1-4),
+        # which would incorrectly claim that lines 1-4 of the file were
+        # executed.  In this file, line 2 is not executed.
+        self.make_file("the_doctest.py", '''\
+            if "x" in "abc":
+                print("hello")
             def return_arg_or_void(arg):
                 """If <arg> is None, return "Void"; otherwise return <arg>
 
@@ -403,6 +409,11 @@ class DoctestTest(CoverageTest):
                 'arg'
                 >>> return_arg_or_void("None")
                 'None'
+                >>> if "x" in "xyz":                # line 1
+                ...   if "a" in "aswed":            # line 2
+                ...      if "a" in "abc":           # line 3
+                ...         return_arg_or_void(12)  # line 4
+                12
                 """
                 if arg is None:
                     return "Void"
@@ -411,8 +422,13 @@ class DoctestTest(CoverageTest):
 
             import doctest, sys
             doctest.testmod(sys.modules[__name__])  # we're not __main__ :(
-            ''',
-            [1, 11, 12, 14, 16, 17], "")
+            ''')
+        cov = coverage.Coverage()
+        self.start_import_stop(cov, "the_doctest")
+        data = cov.get_data()
+        assert len(data.measured_files()) == 1
+        lines = data.lines(data.measured_files().pop())
+        assert lines == [1, 3, 18, 19, 21, 23, 24]
 
 
 class GettraceTest(CoverageTest):

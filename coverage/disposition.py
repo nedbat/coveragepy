@@ -30,6 +30,8 @@ def disposition_debug_msg(disp):
     """Make a nice debug message of what the FileDisposition is doing."""
     if disp.trace:
         msg = f"Tracing {disp.original_filename!r}"
+        if disp.original_filename != disp.source_filename:
+            msg += f" as {disp.source_filename!r}"
         if disp.file_tracer:
             msg += ": will be traced by %r" % disp.file_tracer
     else:
