@@ -1691,7 +1691,7 @@ def venv_world_fixture(tmp_path_factory):
     venv_world = tmp_path_factory.mktemp("venv_world")
     with change_dir(venv_world):
         # Create a virtualenv.
-        run_command("python -m virtualenv venv")
+        run_command("python -m venv venv")
 
         # A third-party package that installs a few different packages.
         make_file("third_pkg/third/__init__.py", """\

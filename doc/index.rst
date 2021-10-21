@@ -18,7 +18,7 @@ supported on:
 
 * Python versions 3.6 through 3.10.
 
-* PyPy3 7.3.3.
+* PyPy3 7.3.7.
 
 .. ifconfig:: prerelease
 

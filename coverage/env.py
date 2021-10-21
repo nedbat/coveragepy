@@ -50,6 +50,9 @@ class PYBEHAVIOR:
     if pep626:
         optimize_if_not_debug2 = False
 
+    # Yet another way to optimize "if not __debug__"?
+    optimize_if_not_debug3 = (PYPY and PYVERSION >= (3, 8))
+
     # Can co_lnotab have negative deltas?
     negative_lnotab = not (PYPY and PYPYVERSION < (7, 2))
 
@@ -77,7 +80,7 @@ class PYBEHAVIOR:
     # When a function is decorated, does the trace function get called for the
     # @-line and also the def-line (new behavior in 3.8)? Or just the @-line
     # (old behavior)?
-    trace_decorated_def = (PYVERSION >= (3, 8))
+    trace_decorated_def = (CPYTHON and PYVERSION >= (3, 8))
 
     # Are while-true loops optimized into absolute jumps with no loop setup?
     nix_while_true = (PYVERSION >= (3, 8))

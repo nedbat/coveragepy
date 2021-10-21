@@ -148,6 +148,7 @@ class MemoryLeakTest(CoverageTest):
     """
     @flaky
     @pytest.mark.skipif(env.JYTHON, reason="Don't bother on Jython")
+    @pytest.mark.skipif(not env.C_TRACER, reason="Only the C tracer has refcounting issues")
     def test_for_leaks(self):
         # Our original bad memory leak only happened on line numbers > 255, so
         # make a code object with more lines than that.  Ugly string mumbo

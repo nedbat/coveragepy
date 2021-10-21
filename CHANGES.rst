@@ -30,6 +30,8 @@ Unreleased
 - Feature: The HTML report pages for Python source files now have a sticky
   header so the file name and controls are always visible.
 
+- Added support for PyPy 3.8.
+
 - Fix: more generated code is now excluded from measurement.  Code such as
   `attrs`_ boilerplate, or doctest code, was being measured though the
   synthetic line numbers meant they were never reported.  Once Cython was

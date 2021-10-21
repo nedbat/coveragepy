@@ -1530,6 +1530,8 @@ class OptimizedIfTest(CoverageTest):
         arcz_missing = ""
         if env.PYBEHAVIOR.pep626:
             arcz = ".1 12 23 34 42 37 72 28 8."
+        elif env.PYBEHAVIOR.optimize_if_not_debug3:
+            arcz = ".1 12 23 32 37 72 28 8."
         elif env.PYBEHAVIOR.optimize_if_not_debug2:
             arcz = ".1 12 23 35 52 37 72 28 8."
         elif env.PYBEHAVIOR.optimize_if_not_debug:
