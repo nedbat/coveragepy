@@ -36,7 +36,7 @@ header { background: #f8f8f8; width: 100%; border-bottom: 1px solid #ccc; }
 
 header .content { padding: 1rem 3.5rem; }
 
-header.hidden { visibility: hidden; }
+.littlehead header { visibility: hidden; }
 
 main { position: relative; z-index: 1; }
 
@@ -56,7 +56,7 @@ footer .content { padding: 0; color: #666; font-style: italic; }
 
 #sticky_header .content p { font-size: 1em; }
 
-#sticky_header.visible { display: block; }
+.littlehead #sticky_header { display: block; }
 
 h1 { font-size: 1.25em; display: inline-block; }
 
@@ -134,7 +134,7 @@ h2.stats { margin-top: .5em; font-size: 1em; }
 
 #source { padding: 1em 0 1em 3.5rem; font-family: SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
 
-#source p { position: relative; white-space: pre; }
+#source p { margin-top: -4em; padding-top: 4em; position: relative; white-space: pre; }
 
 #source p * { box-sizing: border-box; }
 

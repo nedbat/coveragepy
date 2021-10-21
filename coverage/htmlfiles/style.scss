@@ -168,7 +168,7 @@ header {
         padding: 1rem $left-gutter;
     }
 
-    &.hidden {
+    .littlehead & {
         visibility: hidden;
     }
 }
@@ -213,7 +213,7 @@ footer .content {
         }
     }
 
-    &.visible {
+    .littlehead & {
         display: block;
     }
 }
@@ -381,6 +381,11 @@ $border-indicator-width: .2em;
     font-family: $font-code;
 
     p {
+        // These two lines make anchors to the line scroll the line to be
+        // visible beneath the fixed-position header.
+        margin-top: -4em;
+        padding-top: 4em;
+
         // position relative makes position:absolute pop-ups appear in the right place.
         position: relative;
         white-space: pre;
