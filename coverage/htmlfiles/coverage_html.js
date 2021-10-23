@@ -611,24 +611,20 @@ coverage.build_scroll_markers = function () {
 };
 
 coverage.wire_up_sticky_header = function () {
-    const body = document.querySelector('body');
+    const header = document.querySelector('header');
     const header_bottom = (
-        document.querySelector('header .content .stats').getBoundingClientRect().top -
-        document.querySelector('header').getBoundingClientRect().top
+        header.querySelector('.content h2').getBoundingClientRect().top -
+        header.getBoundingClientRect().top
     );
 
     function updateHeader() {
         if (window.scrollY > header_bottom) {
-            body.classList.remove('bighead');
-            body.classList.add('littlehead');
+            header.classList.add('sticky');
         } else {
-            body.classList.add('bighead');
-            body.classList.remove('littlehead');
+            header.classList.remove('sticky');
         }
     }
 
+    window.addEventListener('scroll', updateHeader);
     updateHeader();
-    window.addEventListener('scroll', function() {
-        updateHeader();
-    });
 };

@@ -161,6 +161,7 @@ header {
     background: $light-gray1;
     @include background-dark(black);
     width: 100%;
+    z-index: 2;
     border-bottom: 1px solid $light-gray3;
     @include border-color-dark($dark-gray2);
 
@@ -168,8 +169,37 @@ header {
         padding: 1rem $left-gutter;
     }
 
-    .littlehead & {
-        visibility: hidden;
+    h2 {
+        margin-top: .5em;
+        font-size: 1em;
+    }
+
+    &.sticky {
+        position: fixed;
+        left: 0;
+        right: 0;
+        height: 2.5em;
+
+        .text {
+            display: none;
+        }
+
+        h1, h2 {
+            font-size: 1em;
+            margin-top: 0;
+            display: inline-block;
+        }
+
+        .content {
+            padding: .5rem $left-gutter;
+            p {
+                font-size: 1em;
+            }
+        }
+
+        & ~ #source {
+            padding-top: 6.5em;
+        }
     }
 }
 
@@ -195,27 +225,6 @@ footer .content {
 
 #index {
     margin: 1rem 0 0 $left-gutter;
-}
-
-#sticky_header {
-    display: none;
-    position: fixed;
-    z-index: 2;
-    left: 0;
-    right: 0;
-    background: $light-gray1;
-    border-bottom: 1px solid $light-gray3;
-
-    .content {
-        padding: .5rem $left-gutter;
-        p {
-            font-size: 1em;
-        }
-    }
-
-    .littlehead & {
-        display: block;
-    }
 }
 
 // Header styles
@@ -244,11 +253,7 @@ h1 {
     }
 }
 
-h2.stats {
-    margin-top: .5em;
-    font-size: 1em;
-}
-.stats button {
+header button {
     font-family: inherit;
     font-size: inherit;
     border: 1px solid;

@@ -24,35 +24,22 @@
 </head>
 <body class="pyfile">
 
-<aside id="sticky_header">
-    <div class="content stats">
-        <p><b>{{relative_filename|escape}}</b> : {{nums.pc_covered_str}}%&nbsp;&nbsp;
-            <button type="button" class="{{category.run}} button_toggle_run" title="Toggle lines run">{{nums.n_executed}}</button>
-            <button type="button" class="{{category.mis}} button_toggle_mis" title="Toggle lines missing">{{nums.n_missing}}</button>
-            <button type="button" class="{{category.exc}} button_toggle_exc" title="Toggle lines excluded">{{nums.n_excluded}}</button>
-            {% if has_arcs %}
-            <button type="button" class="{{category.par}} button_toggle_par" title="Toggle lines partially run">{{nums.n_partial_branches}}</button>
-            {% endif %}
-            <img id="keyboard_icon" src="keybd_closed.png" alt="Show keyboard shortcuts" />
-        </p>
-    </div>
-</aside>
-
 <header>
     <div class="content">
-        <h1>Coverage for <b>{{relative_filename|escape}}</b> :
+        <h1>
+            <span class="text">Coverage for </span><b>{{relative_filename|escape}}</b> :
             <span class="pc_cov">{{nums.pc_covered_str}}%</span>
         </h1>
 
         <img id="keyboard_icon" src="keybd_closed.png" alt="Show keyboard shortcuts" />
 
-        <h2 class="stats">
-            {{nums.n_statements}} statements &nbsp;
-            <button type="button" class="{{category.run}} shortkey_r button_toggle_run" title="Toggle lines run">{{nums.n_executed}} run</button>
-            <button type="button" class="{{category.mis}} shortkey_m button_toggle_mis" title="Toggle lines missing">{{nums.n_missing}} missing</button>
-            <button type="button" class="{{category.exc}} shortkey_x button_toggle_exc" title="Toggle lines excluded">{{nums.n_excluded}} excluded</button>
+        <h2>
+            <span class="text">{{nums.n_statements}} statements &nbsp;</span>
+            <button type="button" class="{{category.run}} shortkey_r button_toggle_run" title="Toggle lines run">{{nums.n_executed}}<span class="text"> run</span></button>
+            <button type="button" class="{{category.mis}} shortkey_m button_toggle_mis" title="Toggle lines missing">{{nums.n_missing}}<span class="text"> missing</span></button>
+            <button type="button" class="{{category.exc}} shortkey_x button_toggle_exc" title="Toggle lines excluded">{{nums.n_excluded}}<span class="text"> excluded</span></button>
             {% if has_arcs %}
-            <button type="button" class="{{category.par}} shortkey_p button_toggle_par" title="Toggle lines partially run">{{nums.n_partial_branches}} partial</button>
+            <button type="button" class="{{category.par}} shortkey_p button_toggle_par" title="Toggle lines partially run">{{nums.n_partial_branches}}<span class="text"> partial</span></button>
             {% endif %}
         </h2>
     </div>
