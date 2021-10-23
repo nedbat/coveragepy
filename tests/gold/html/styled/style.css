@@ -140,7 +140,7 @@ kbd { border: 1px solid black; border-color: #888 #333 #333 #888; padding: .1em 
 
 #source { padding: 1em 0 1em 3.5rem; font-family: SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
 
-#source p { margin-top: -4em; padding-top: 4em; position: relative; white-space: pre; }
+#source p { position: relative; white-space: pre; }
 
 #source p * { box-sizing: border-box; }
 
@@ -148,15 +148,15 @@ kbd { border: 1px solid black; border-color: #888 #333 #333 #888; padding: .1em 
 
 @media (prefers-color-scheme: dark) { #source p .n { color: #777; } }
 
-#source p .n a { text-decoration: none; color: #999; }
+#source p .n.highlight { background: #ffdd00; }
+
+#source p .n a { margin-top: -4em; padding-top: 4em; text-decoration: none; color: #999; }
 
 @media (prefers-color-scheme: dark) { #source p .n a { color: #777; } }
 
 #source p .n a:hover { text-decoration: underline; color: #999; }
 
 @media (prefers-color-scheme: dark) { #source p .n a:hover { color: #777; } }
-
-#source p.highlight .n { background: #ffdd00; }
 
 #source p .t { display: inline-block; width: 100%; box-sizing: border-box; margin-left: -.5em; padding-left: 0.3em; border-left: 0.2em solid #fff; }
 

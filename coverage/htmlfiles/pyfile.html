@@ -75,8 +75,8 @@
 <main id="source">
     {% for line in lines -%}
         {% joined %}
-        <p id="t{{line.number}}" class="{{line.css_class}}">
-            <span class="n"><a href="#t{{line.number}}">{{line.number}}</a></span>
+        <p class="{{line.css_class}}">
+            <span class="n"><a id="t{{line.number}}" href="#t{{line.number}}">{{line.number}}</a></span>
             <span class="t">{{line.html}}&nbsp;</span>
             {% if line.context_list %}
                 <input type="checkbox" id="ctxs{{line.number}}" />

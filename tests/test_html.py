@@ -23,7 +23,7 @@ from coverage.report import get_analysis_to_report
 
 from tests.coveragetest import CoverageTest, TESTS_DIR
 from tests.goldtest import gold_path
-from tests.goldtest import compare, contains, doesnt_contain, contains_any
+from tests.goldtest import compare, contains, contains_rx, doesnt_contain, contains_any
 from tests.helpers import assert_coverage_warnings, change_dir
 
 
@@ -893,14 +893,14 @@ assert len(math) == 18
         if env.PYBEHAVIOR.pep626:
             cov.html_report(partial, directory="out/partial_626")
             compare_html(gold_path("html/partial_626"), "out/partial_626")
-            contains(
+            contains_rx(
                 "out/partial_626/partial_py.html",
-                '<p id="t4" class="par run show_par">',
-                '<p id="t7" class="run">',
+                r'<p class="par run show_par">.* id="t4"',
+                r'<p class="run">.* id="t7"',
                 # The "if 0" and "if 1" statements are marked as run.
-                '<p id="t10" class="run">',
+                r'<p class="run">.* id="t10"',
                 # The "raise ZeroDivisionError" is excluded by regex in the .ini.
-                '<p id="t17" class="exc show_exc">',
+                r'<p class="exc show_exc">.* id="t17"',
             )
             contains(
                 "out/partial_626/index.html",
@@ -910,14 +910,14 @@ assert len(math) == 18
         else:
             cov.html_report(partial, directory="out/partial")
             compare_html(gold_path("html/partial"), "out/partial")
-            contains(
+            contains_rx(
                 "out/partial/partial_py.html",
-                '<p id="t4" class="par run show_par">',
-                '<p id="t7" class="run">',
+                r'<p class="par run show_par">.* id="t4"',
+                r'<p class="run">.* id="t7"',
                 # The "if 0" and "if 1" statements are optimized away.
-                '<p id="t10" class="pln">',
+                r'<p class="pln">.* id="t10"',
                 # The "raise ZeroDivisionError" is excluded by regex in the .ini.
-                '<p id="t17" class="exc show_exc">',
+                r'<p class="exc show_exc">.* id="t17"',
             )
             contains(
                 "out/partial/index.html",

@@ -134,10 +134,25 @@ def contains(filename, *strlist):
     missing in `filename`.
 
     """
+    __tracebackhide__ = True    # pytest, please don't show me this function.
     with open(filename) as fobj:
         text = fobj.read()
     for s in strlist:
         assert s in text, f"Missing content in {filename}: {s!r}"
+
+
+def contains_rx(filename, *rxlist):
+    """Check that the file has lines that re.search all of the regexes.
+
+    An assert will be raised if one of the regexes in `rxlist` doesn't match
+    any lines in `filename`.
+
+    """
+    __tracebackhide__ = True    # pytest, please don't show me this function.
+    with open(filename) as fobj:
+        lines = fobj.readlines()
+    for rx in rxlist:
+        assert any(re.search(rx, line) for line in lines), f"Missing rx in {filename}: {rx!r}"
 
 
 def contains_any(filename, *strlist):
@@ -147,6 +162,7 @@ def contains_any(filename, *strlist):
     `filename`.
 
     """
+    __tracebackhide__ = True    # pytest, please don't show me this function.
     with open(filename) as fobj:
         text = fobj.read()
     for s in strlist:
@@ -165,6 +181,7 @@ def doesnt_contain(filename, *strlist):
     `filename`.
 
     """
+    __tracebackhide__ = True    # pytest, please don't show me this function.
     with open(filename) as fobj:
         text = fobj.read()
     for s in strlist:
