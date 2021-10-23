@@ -6,61 +6,56 @@
     <title>Coverage for bom.py: 71%</title>
     <link rel="icon" sizes="32x32" href="favicon_32.png">
     <link rel="stylesheet" href="style.css" type="text/css">
-    <script type="text/javascript" src="jquery.min.js"></script>
-    <script type="text/javascript" src="jquery.hotkeys.js"></script>
-    <script type="text/javascript" src="jquery.isonscreen.js"></script>
-    <script type="text/javascript" src="coverage_html.js"></script>
-    <script type="text/javascript">
-        jQuery(document).ready(coverage.pyfile_ready);
-    </script>
+    <script type="text/javascript" src="coverage_html.js" defer></script>
 </head>
 <body class="pyfile">
-<aside id="sticky_header">
-    <div class="content stats">
-        <p><b>bom.py</b> : 71%&nbsp;&nbsp;
-            <button type="button" class="run button_toggle_run" title="Toggle lines run">5</button>
-            <button type="button" class="mis show_mis button_toggle_mis" title="Toggle lines missing">2</button>
-            <button type="button" class="exc show_exc button_toggle_exc" title="Toggle lines excluded">0</button>
-            <img id="keyboard_icon" src="keybd_closed.png" alt="Show keyboard shortcuts" />
-        </p>
-    </div>
-</aside>
 <header>
     <div class="content">
-        <h1>Coverage for <b>bom.py</b> :
+        <h1>
+            <span class="text">Coverage for </span><b>bom.py</b>:
             <span class="pc_cov">71%</span>
         </h1>
-        <img id="keyboard_icon" src="keybd_closed.png" alt="Show keyboard shortcuts" />
-        <h2 class="stats">
-            7 statements &nbsp;
-            <button type="button" class="run shortkey_r button_toggle_run" title="Toggle lines run">5 run</button>
-            <button type="button" class="mis show_mis shortkey_m button_toggle_mis" title="Toggle lines missing">2 missing</button>
-            <button type="button" class="exc show_exc shortkey_x button_toggle_exc" title="Toggle lines excluded">0 excluded</button>
+        <div id="help_panel_wrapper">
+            <input id="help_panel_state" type="checkbox">
+            <label for="help_panel_state">
+                <img id="keyboard_icon" src="keybd_closed.png" alt="Show/hide keyboard shortcuts" />
+            </label>
+            <div id="help_panel">
+                <p class="legend">Shortcuts on this page</p>
+                <div>
+                    <p class="keyhelp">
+                        <kbd>r</kbd>
+                        <kbd>m</kbd>
+                        <kbd>x</kbd>
+                        <kbd>p</kbd> &nbsp; toggle line displays
+                    </p>
+                    <p class="keyhelp">
+                        <kbd>j</kbd>
+                        <kbd>k</kbd> &nbsp; next/prev highlighted chunk
+                    </p>
+                    <p class="keyhelp">
+                        <kbd>0</kbd> &nbsp; (zero) top of page
+                    </p>
+                    <p class="keyhelp">
+                        <kbd>1</kbd> &nbsp; (one) first highlighted chunk
+                    </p>
+                </div>
+            </div>
+        </div>
+        <h2>
+            <span class="text">7 statements &nbsp;</span>
+            <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">5<span class="text"> run</span></button>
+            <button type="button" class="mis show_mis button_toggle_mis" value="mis" data-shortcut="m" title="Toggle lines missing">2<span class="text"> missing</span></button>
+            <button type="button" class="exc show_exc button_toggle_exc" value="exc" data-shortcut="x" title="Toggle lines excluded">0<span class="text"> excluded</span></button>
         </h2>
+        <div style="display: none;">
+            <button type="button" class="button_next_chunk" data-shortcut="j">Next highlighted chunk</button>
+            <button type="button" class="button_prev_chunk" data-shortcut="k">Previous highlighted chunk</button>
+            <button type="button" class="button_top_of_page" data-shortcut="0">Goto top of page</button>
+            <button type="button" class="button_first_chunk" data-shortcut="1">Goto first highlighted chunk</button>
+        </div>
     </div>
 </header>
-<aside class="help_panel">
-    <img id="panel_icon" src="keybd_open.png" alt="Hide keyboard shortcuts" />
-    <p class="legend">Hot-keys on this page</p>
-    <div>
-    <p class="keyhelp">
-        <span class="key">r</span>
-        <span class="key">m</span>
-        <span class="key">x</span>
-        <span class="key">p</span> &nbsp; toggle line displays
-    </p>
-    <p class="keyhelp">
-        <span class="key">j</span>
-        <span class="key">k</span> &nbsp; next/prev highlighted chunk
-    </p>
-    <p class="keyhelp">
-        <span class="key">0</span> &nbsp; (zero) top of page
-    </p>
-    <p class="keyhelp">
-        <span class="key">1</span> &nbsp; (one) first highlighted chunk
-    </p>
-    </div>
-</aside>
 <main id="source">
     <p id="t1" class="pln"><span class="n"><a href="#t1">1</a></span><span class="t"><span class="com"># A Python source file in utf-8, with BOM.</span>&nbsp;</span><span class="r"></span></p>
     <p id="t2" class="run"><span class="n"><a href="#t2">2</a></span><span class="t"><span class="nam">math</span> <span class="op">=</span> <span class="str">"3&#215;4 = 12, &#247;2 = 6&#177;0"</span>&nbsp;</span><span class="r"></span></p>
@@ -78,7 +73,7 @@
     <div class="content">
         <p>
             <a class="nav" href="index.html">&#xab; index</a> &nbsp; &nbsp; <a class="nav" href="https://coverage.readthedocs.io/en/6.1a0">coverage.py v6.1a0</a>,
-            created at 2021-10-17 10:52 -0400
+            created at 2021-10-23 08:16 -0400
         </p>
     </div>
 </footer>
