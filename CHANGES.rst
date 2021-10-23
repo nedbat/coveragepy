@@ -43,7 +43,8 @@ Unreleased
 - Performance: Branch coverage measurement is faster, though you might only
   notice on code that is executed many times, such as long-running loops.
 
-- Build: jQuery is updated to 3.6.0 (`issue 840`_).
+- Build: jQuery is no longer used or vendored (`issue 840`_). Huge thanks to
+  Nils Kattenbeck (septatrix) for the conversion to vanilla JavaScript.
 
 .. _issue 553: https://github.com/nedbat/coveragepy/issues/553
 .. _issue 840: https://github.com/nedbat/coveragepy/issues/840
