@@ -23,42 +23,12 @@ from coverage.templite import Templite
 os = isolate_module(os)
 
 
-# Static files are looked for in a list of places.
-STATIC_PATH = [
-    # The place Debian puts system Javascript libraries.
-    "/usr/share/javascript",
-
-    # Our htmlfiles directory.
-    os.path.join(os.path.dirname(__file__), "htmlfiles"),
-]
-
-
-def data_filename(fname, pkgdir=""):
-    """Return the path to a data file of ours.
-
-    The file is searched for on `STATIC_PATH`, and the first place it's found,
-    is returned.
-
-    Each directory in `STATIC_PATH` is searched as-is, and also, if `pkgdir`
-    is provided, at that sub-directory.
-
+def data_filename(fname):
+    """Return the path to an "htmlfiles" data file of ours.
     """
-    tried = []
-    for static_dir in STATIC_PATH:
-        static_filename = os.path.join(static_dir, fname)
-        if os.path.exists(static_filename):
-            return static_filename
-        else:
-            tried.append(static_filename)
-        if pkgdir:
-            static_filename = os.path.join(static_dir, pkgdir, fname)
-            if os.path.exists(static_filename):
-                return static_filename
-            else:
-                tried.append(static_filename)
-    raise CoverageException(
-        f"Couldn't find static file {fname!r} from {os.getcwd()!r}, tried: {tried!r}"
-    )
+    static_dir = os.path.join(os.path.dirname(__file__), "htmlfiles")
+    static_filename = os.path.join(static_dir, fname)
+    return static_filename
 
 
 def read_data(fname):
@@ -158,11 +128,11 @@ class HtmlReporter:
     # These files will be copied from the htmlfiles directory to the output
     # directory.
     STATIC_FILES = [
-        ("style.css", ""),
-        ("coverage_html.js", ""),
-        ("keybd_closed.png", ""),
-        ("keybd_open.png", ""),
-        ("favicon_32.png", ""),
+        "style.css",
+        "coverage_html.js",
+        "keybd_closed.png",
+        "keybd_open.png",
+        "favicon_32.png",
     ]
 
     def __init__(self, cov):
@@ -251,18 +221,12 @@ class HtmlReporter:
     def make_local_static_report_files(self):
         """Make local instances of static files for HTML report."""
         # The files we provide must always be copied.
-        for static, pkgdir in self.STATIC_FILES:
-            shutil.copyfile(
-                data_filename(static, pkgdir),
-                os.path.join(self.directory, static)
-            )
+        for static in self.STATIC_FILES:
+            shutil.copyfile(data_filename(static), os.path.join(self.directory, static))
 
         # The user may have extra CSS they want copied.
         if self.extra_css:
-            shutil.copyfile(
-                self.config.extra_css,
-                os.path.join(self.directory, self.extra_css)
-            )
+            shutil.copyfile(self.config.extra_css, os.path.join(self.directory, self.extra_css))
 
     def html_file(self, fr, analysis):
         """Generate an HTML file for one source file."""

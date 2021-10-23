@@ -16,7 +16,7 @@ import pytest
 
 import coverage
 from coverage import env
-from coverage.exceptions import CoverageException, NotPython, NoSource
+from coverage.exceptions import NotPython, NoSource
 from coverage.files import abs_file, flat_rootname
 import coverage.html
 from coverage.report import get_analysis_to_report
@@ -554,62 +554,6 @@ class HtmlTest(HtmlTestHelpers, CoverageTest):
         self.assert_exists("htmlcov/main_file_py.html")
         self.assert_doesnt_exist("htmlcov/submodule___init___py.html")
 
-
-class HtmlStaticFileTest(CoverageTest):
-    """Tests of the static file copying for the HTML report."""
-
-    def setup_test(self):
-        super().setup_test()
-        original_path = list(coverage.html.STATIC_PATH)
-        self.addCleanup(setattr, coverage.html, 'STATIC_PATH', original_path)
-
-    def test_copying_static_files_from_system(self):
-        # Make a new place for static files.
-        self.make_file("static_here/jquery.min.js", "Not Really JQuery!")
-        coverage.html.STATIC_PATH.insert(0, "static_here")
-
-        self.make_file("main.py", "print(17)")
-        cov = coverage.Coverage()
-        self.start_import_stop(cov, "main")
-        cov.html_report()
-
-        with open("htmlcov/jquery.min.js") as f:
-            jquery = f.read()
-        assert jquery == "Not Really JQuery!"
-
-    def test_copying_static_files_from_system_in_dir(self):
-        # Make a new place for static files.
-        INSTALLED = [
-            "jquery/jquery.min.js",
-            "jquery-hotkeys/jquery.hotkeys.js",
-            "jquery-isonscreen/jquery.isonscreen.js",
-            "jquery-tablesorter/jquery.tablesorter.min.js",
-        ]
-        for fpath in INSTALLED:
-            self.make_file(os.path.join("static_here", fpath), "Not real.")
-        coverage.html.STATIC_PATH.insert(0, "static_here")
-
-        self.make_file("main.py", "print(17)")
-        cov = coverage.Coverage()
-        self.start_import_stop(cov, "main")
-        cov.html_report()
-
-        for fpath in INSTALLED:
-            the_file = os.path.basename(fpath)
-            with open(os.path.join("htmlcov", the_file)) as f:
-                contents = f.read()
-            assert contents == "Not real."
-
-    def test_cant_find_static_files(self):
-        # Make the path point to useless places.
-        coverage.html.STATIC_PATH = ["/xyzzy"]
-
-        self.make_file("main.py", "print(17)")
-        cov = coverage.Coverage()
-        self.start_import_stop(cov, "main")
-        msg = "Couldn't find static file '.*'"
-        with pytest.raises(CoverageException, match=msg):
-            cov.html_report()
 
 def filepath_to_regex(path):
     """Create a regex for scrubbing a file path."""
