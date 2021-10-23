@@ -581,7 +581,7 @@ def compare_html(expected, actual, extra_scrubs=None):
         (filepath_to_regex(flat_rootname(str(os.getcwd()))), '_TEST_TMPDIR'),
         (filepath_to_regex(abs_file(os.getcwd())), 'TEST_TMPDIR'),
         (filepath_to_regex(flat_rootname(str(abs_file(os.getcwd())))), '_TEST_TMPDIR'),
-        (r'/private/var/folders/[\w/]{35}/pytest-of-\w+/pytest-\d+/t\d+', 'TEST_TMPDIR'),
+        (r'/private/var/[\w/]+/pytest-of-\w+/pytest-\d+/(popen-gw\d+/)?t\d+', 'TEST_TMPDIR'),
     ]
     if env.WINDOWS:
         # For file paths...
@@ -852,9 +852,10 @@ assert len(math) == 18
                 ],
             )
         contains(
-            "out/other/index.html",
+            'out/other/index.html',
             '<a href="here_py.html">here.py</a>',
-            'other_py.html">', 'other.py</a>',
+            'other_py.html">',
+            'other.py</a>',
         )
 
     def test_partial(self):
