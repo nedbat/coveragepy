@@ -19,9 +19,10 @@ function debounce(callback, wait) {
 };
 
 function checkVisible(element) {
-    var rect = element.getBoundingClientRect();
-    var viewHeight = Math.max(document.documentElement.clientHeight, window.innerHeight);
-    return !(rect.bottom < 0 || rect.top - viewHeight >= 0);
+    const rect = element.getBoundingClientRect();
+    const viewBottom = Math.max(document.documentElement.clientHeight, window.innerHeight);
+    const viewTop = 30;
+    return !(rect.bottom < viewTop || rect.top >= viewBottom);
 }
 
 // Helpers for table sorting
@@ -204,7 +205,7 @@ coverage.pyfile_ready = function () {
     // If we're directed to a particular line number, highlight the line.
     var frag = location.hash;
     if (frag.length > 2 && frag[1] === 't') {
-        document.getElementById(frag.substring(1)).classList.add("highlight");
+        document.querySelector(frag).closest(".n").classList.add("highlight");
         coverage.set_sel(parseInt(frag.substr(2), 10));
     } else {
         coverage.set_sel(0);
@@ -245,7 +246,7 @@ coverage.pyfile_ready = function () {
 };
 
 coverage.toggle_lines = function (event) {
-    const btn = event.target;
+    const btn = event.target.closest("button");
     const category = btn.value
     const show = !btn.classList.contains("show_" + category);
     coverage.set_line_visibilty(category, show);
@@ -271,7 +272,7 @@ coverage.set_line_visibilty = function (category, should_show) {
 
 // Return the nth line div.
 coverage.line_elt = function (n) {
-    return document.getElementById("t" + n);
+    return document.getElementById("t" + n)?.closest("p");
 };
 
 // Set the selection.  b and e are line numbers.
@@ -295,7 +296,7 @@ coverage.to_first_chunk = function () {
 // Return a string indicating what kind of chunk this line belongs to,
 // or null if not a chunk.
 coverage.chunk_indicator = function (line_elt) {
-    const classes = line_elt.className;
+    const classes = line_elt?.className;
     if (!classes) {
         return null;
     }
@@ -344,11 +345,11 @@ coverage.to_prev_chunk = function () {
     // Find the end of the prev colored chunk.
     var probe = c.sel_begin-1;
     var probe_line = c.line_elt(probe);
-    if (probe_line.length === 0) {
+    if (!probe_line) {
         return;
     }
     var chunk_indicator = c.chunk_indicator(probe_line);
-    while (probe > 0 && !chunk_indicator) {
+    while (probe > 1 && !chunk_indicator) {
         probe--;
         probe_line = c.line_elt(probe);
         if (!probe_line) {
@@ -364,6 +365,9 @@ coverage.to_prev_chunk = function () {
     var prev_indicator = chunk_indicator;
     while (prev_indicator === chunk_indicator) {
         probe--;
+        if (probe <= 0) {
+            return;
+        }
         probe_line = c.line_elt(probe);
         prev_indicator = c.chunk_indicator(probe_line);
     }
@@ -430,7 +434,7 @@ coverage.to_prev_chunk_nicely = function () {
 coverage.select_line_or_chunk = function (lineno) {
     var c = coverage;
     var probe_line = c.line_elt(lineno);
-    if (probe_line.length === 0) {
+    if (!probe_line) {
         return;
     }
     var the_indicator = c.chunk_indicator(probe_line);
@@ -442,7 +446,7 @@ coverage.select_line_or_chunk = function (lineno) {
         while (probe > 0 && indicator === the_indicator) {
             probe--;
             probe_line = c.line_elt(probe);
-            if (probe_line.length === 0) {
+            if (!probe_line) {
                 break;
             }
             indicator = c.chunk_indicator(probe_line);
@@ -469,7 +473,7 @@ coverage.show_selection = function () {
     // Highlight the lines in the chunk
     document.querySelectorAll("#source .highlight").forEach(e => e.classList.remove("highlight"));
     for (let probe = coverage.sel_begin; probe < coverage.sel_end; probe++) {
-        coverage.line_elt(probe).classList.add("highlight");
+        coverage.line_elt(probe).querySelector(".n").classList.add("highlight");
     }
 
     coverage.scroll_to_selection();
@@ -479,7 +483,7 @@ coverage.scroll_to_selection = function () {
     // Scroll the page if the chunk isn't fully visible.
     if (coverage.selection_ends_on_screen() < 2) {
         const element = coverage.line_elt(coverage.sel_begin);
-        coverage.scroll_window(element.offsetTop - 30);
+        coverage.scroll_window(element.offsetTop - 60);
     }
 };
 
