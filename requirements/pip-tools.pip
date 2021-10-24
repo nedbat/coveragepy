@@ -4,12 +4,17 @@
 #
 #    make upgrade
 #
-auditwheel==5.0.0
-    # via -r requirements/wheel.in
-pyelftools==0.27
-    # via auditwheel
+click==8.0.3
+    # via pip-tools
+pep517==0.12.0
+    # via pip-tools
+pip-tools==6.4.0
+    # via -r requirements/pip-tools.in
+tomli==1.2.1
+    # via pep517
 wheel==0.37.0
-    # via -r requirements/wheel.in
+    # via pip-tools
 
 # The following packages are considered to be unsafe in a requirements file:
+# pip
 # setuptools
