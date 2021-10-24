@@ -45,10 +45,10 @@ jobs:
       - name: "Check out the repo"
         uses: actions/checkout@v2
 
-      - name: "Install Python 3.7"
+      - name: "Install Python 3.8"
         uses: actions/setup-python@v2
         with:
-          python-version: "3.7"
+          python-version: "3.8"
 
       - name: "Install cibuildwheel"
         run: |
@@ -76,10 +76,10 @@ jobs:
       - name: "Check out the repo"
         uses: actions/checkout@v2
 
-      - name: "Install Python 3.7"
+      - name: "Install Python 3.8"
         uses: actions/setup-python@v2
         with:
-          python-version: "3.7"
+          python-version: "3.8"
 
       - name: "Build sdist"
         run: |
