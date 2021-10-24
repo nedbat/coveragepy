@@ -9,6 +9,7 @@ import glob
 import os
 import os.path
 import re
+import shutil
 import subprocess
 import textwrap
 
@@ -95,6 +96,11 @@ def nice_file(*fparts):
     return os.path.normcase(os.path.abspath(os.path.realpath(fname)))
 
 
+def os_sep(s):
+    """Replace slashes in `s` with the correct separator for the OS."""
+    return s.replace("/", os.sep)
+
+
 class CheckUniqueFilenames:
     """Asserts the uniqueness of file names passed to a function."""
     def __init__(self, wrapped):
@@ -155,6 +161,14 @@ def remove_files(*patterns):
     for pattern in patterns:
         for fname in glob.glob(pattern):
             os.remove(fname)
+
+def remove_tree(dirname):
+    """Remove a directory tree.
+
+    It's fine for the directory to not exist in the first place.
+    """
+    if os.path.exists(dirname):
+        shutil.rmtree(dirname)
 
 
 # Map chars to numbers for arcz_to_arcs

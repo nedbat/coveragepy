@@ -3,7 +3,6 @@
 
 """Test cmdline.py for coverage.py."""
 
-import os
 import pprint
 import sys
 import textwrap
@@ -20,6 +19,7 @@ from coverage.exceptions import ExceptionDuringRun
 from coverage.version import __url__
 
 from tests.coveragetest import CoverageTest, OK, ERR, command_line
+from tests.helpers import os_sep
 
 
 class BaseCmdLineTest(CoverageTest):
@@ -818,7 +818,7 @@ class CmdLineStdoutTest(BaseCmdLineTest):
     @pytest.mark.skipif(env.JYTHON, reason="Jython gets mad if you patch sys.argv")
     def test_help_contains_command_name(self):
         # Command name should be present in help output.
-        fake_command_path = "lorem/ipsum/dolor".replace("/", os.sep)
+        fake_command_path = os_sep("lorem/ipsum/dolor")
         expected_command_name = "dolor"
         fake_argv = [fake_command_path, "sit", "amet"]
         with mock.patch.object(sys, 'argv', new=fake_argv):
@@ -834,7 +834,7 @@ class CmdLineStdoutTest(BaseCmdLineTest):
         # has the `__main__.py` file's patch as the command name. Instead, the command name should
         # be derived from the package name.
 
-        fake_command_path = "lorem/ipsum/dolor/__main__.py".replace("/", os.sep)
+        fake_command_path = os_sep("lorem/ipsum/dolor/__main__.py")
         expected_command_name = "dolor"
         fake_argv = [fake_command_path, "sit", "amet"]
         with mock.patch.object(sys, 'argv', new=fake_argv):

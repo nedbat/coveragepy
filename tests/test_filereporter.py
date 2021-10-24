@@ -3,21 +3,16 @@
 
 """Tests for FileReporters"""
 
-import os
 import sys
 
 from coverage.plugin import FileReporter
 from coverage.python import PythonFileReporter
 
 from tests.coveragetest import CoverageTest, UsingModulesMixin
+from tests.helpers import os_sep
 
 # pylint: disable=import-error
 # Unable to import 'aa' (No module named aa)
-
-
-def native(filename):
-    """Make `filename` into a native form."""
-    return filename.replace("/", os.sep)
 
 
 class FileReporterTest(UsingModulesMixin, CoverageTest):
@@ -55,9 +50,9 @@ class FileReporterTest(UsingModulesMixin, CoverageTest):
         acu = PythonFileReporter(aa)
         bcu = PythonFileReporter(aa.bb)
         ccu = PythonFileReporter(aa.bb.cc)
-        assert acu.relative_filename() == native("aa/__init__.py")
-        assert bcu.relative_filename() == native("aa/bb/__init__.py")
-        assert ccu.relative_filename() == native("aa/bb/cc/__init__.py")
+        assert acu.relative_filename() == os_sep("aa/__init__.py")
+        assert bcu.relative_filename() == os_sep("aa/bb/__init__.py")
+        assert ccu.relative_filename() == os_sep("aa/bb/cc/__init__.py")
         assert acu.source() == "# aa\n"
         assert bcu.source() == "# bb\n"
         assert ccu.source() == ""  # yes, empty
@@ -70,9 +65,9 @@ class FileReporterTest(UsingModulesMixin, CoverageTest):
         acu = PythonFileReporter(aa.afile)
         bcu = PythonFileReporter(aa.bb.bfile)
         ccu = PythonFileReporter(aa.bb.cc.cfile)
-        assert acu.relative_filename() == native("aa/afile.py")
-        assert bcu.relative_filename() == native("aa/bb/bfile.py")
-        assert ccu.relative_filename() == native("aa/bb/cc/cfile.py")
+        assert acu.relative_filename() == os_sep("aa/afile.py")
+        assert bcu.relative_filename() == os_sep("aa/bb/bfile.py")
+        assert ccu.relative_filename() == os_sep("aa/bb/cc/cfile.py")
         assert acu.source() == "# afile.py\n"
         assert bcu.source() == "# bfile.py\n"
         assert ccu.source() == "# cfile.py\n"

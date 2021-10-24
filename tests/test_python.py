@@ -3,7 +3,6 @@
 
 """Tests of coverage/python.py"""
 
-import os
 import sys
 
 import pytest
@@ -12,6 +11,7 @@ from coverage import env
 from coverage.python import get_zip_bytes, source_for_file
 
 from tests.coveragetest import CoverageTest
+from tests.helpers import os_sep
 
 
 class GetZipBytesTest(CoverageTest):
@@ -28,7 +28,7 @@ class GetZipBytesTest(CoverageTest):
         zip_file = "tests/zipmods.zip"
         sys.path.append(zip_file)       # So we can import the files.
         filename = zip_file + "/encoded_" + encoding + ".py"
-        filename = filename.replace("/", os.sep)
+        filename = os_sep(filename)
         zip_data = get_zip_bytes(filename)
         zip_text = zip_data.decode(encoding)
         assert 'All OK' in zip_text

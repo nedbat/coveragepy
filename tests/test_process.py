@@ -23,7 +23,7 @@ from coverage.data import line_counts
 from coverage.files import abs_file, python_reported_file
 
 from tests.coveragetest import CoverageTest, TESTS_DIR
-from tests.helpers import change_dir, make_file, nice_file, re_lines, run_command
+from tests.helpers import change_dir, make_file, nice_file, os_sep, re_lines, run_command
 
 
 class ProcessTest(CoverageTest):
@@ -1378,7 +1378,7 @@ class UnicodeFilePathsTest(CoverageTest):
         report_expected = (
             "Name            Stmts   Miss  Cover\n" +
             "-----------------------------------\n" +
-            f"\xe2{os.sep}accented.py       1      0   100%\n" +
+            os_sep("\xe2/accented.py       1      0   100%\n") +
             "-----------------------------------\n" +
             "TOTAL               1      0   100%\n"
         )

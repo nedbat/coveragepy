@@ -10,13 +10,12 @@ Some of these are transitional while working toward pure-pytest style.
 import importlib
 import os
 import os.path
-import shutil
 import sys
 
 import pytest
 
 from coverage.misc import SysModuleSaver
-from tests.helpers import change_dir, make_file, remove_files
+from tests.helpers import change_dir, make_file, remove_files, remove_tree
 
 
 class PytestBase:
@@ -108,9 +107,7 @@ class RestoreModulesMixin:
         # resolution is only one second, a changed file might not be
         # picked up.
         remove_files("*.pyc", "*$py.class")
-        if os.path.exists("__pycache__"):
-            shutil.rmtree("__pycache__")
-
+        remove_tree("__pycache__")
         importlib.invalidate_caches()
 
 
