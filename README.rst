@@ -103,9 +103,6 @@ Licensed under the `Apache 2.0 License`_.  For details, see `NOTICE.txt`_.
 .. |docs| image:: https://readthedocs.org/projects/coverage/badge/?version=latest&style=flat
     :target: https://coverage.readthedocs.io/
     :alt: Documentation
-.. |reqs| image:: https://requires.io/github/nedbat/coveragepy/requirements.svg?branch=master
-    :target: https://requires.io/github/nedbat/coveragepy/requirements/?branch=master
-    :alt: Requirements status
 .. |kit| image:: https://badge.fury.io/py/coverage.svg
     :target: https://pypi.org/project/coverage/
     :alt: PyPI status

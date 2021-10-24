@@ -72,6 +72,17 @@ metacov:				## Run meta-coverage, measuring ourself.
 metahtml:				## Produce meta-coverage HTML reports.
 	python igor.py combine_html
 
+upgrade: export CUSTOM_COMPILE_COMMAND=make upgrade
+upgrade: ## update the *.pip files with the latest packages satisfying *.in files
+	pip install -q -r requirements/pip-tools.pip
+	pip-compile --upgrade -o requirements/pip-tools.pip requirements/pip-tools.in
+	pip-compile --upgrade -o requirements/pip.pip requirements/pip.in
+	pip-compile --upgrade -o requirements/pytest.pip requirements/pytest.in
+	pip-compile --upgrade -o requirements/ci.pip requirements/ci.in
+	pip-compile --upgrade -o requirements/dev.pip requirements/dev.in
+	pip-compile --upgrade -o requirements/wheel.pip requirements/wheel.in
+	pip-compile --upgrade -o doc/requirements.pip doc/requirements.in
+
 # Kitting
 
 kit:					## Make the source distribution.
