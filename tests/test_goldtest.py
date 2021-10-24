@@ -10,7 +10,8 @@ import pytest
 
 from tests.coveragetest import CoverageTest, TESTS_DIR
 from tests.goldtest import compare, gold_path
-from tests.helpers import os_sep, re_line, remove_tree
+from tests.goldtest import contains, contains_any, contains_rx, doesnt_contain
+from tests.helpers import re_line, remove_tree
 
 GOOD_GETTY = """\
 Four score and seven years ago our fathers brought forth upon this continent, a
@@ -23,19 +24,26 @@ BAD_GETTY = """\
 Five score and seven years ago our fathers brought forth upon this continent, a
 new nation, conceived in Liberty, and dedicated to the proposition that all men
 are created equal.
-333/4444/55555, Gettysburg, Pennsylvania
+333:4444:55555, Gettysburg, Pennsylvania
 """
 
 SCRUBS = [
     # Numbers don't matter when comparing.
     (r'\d+', 'D'),
+    (r'[/:]', '-'),
 ]
 
-ACTUAL_DIR = os.path.join(TESTS_DIR, "actual/testing")
-ACTUAL_GETTY_FILE = os.path.join(ACTUAL_DIR, "gettysburg.txt")
+def path_regex(path):
+    """Convert a file path into a regex that will match that path on any OS."""
+    return re.sub(r"[/\\]", r"[/\\\\]", path.replace(".", "[.]"))
 
-GOLD_PATH_RE = re.escape(os_sep("/tests/gold/testing/gettysburg.txt"))
-OUT_PATH_RE = re.escape(os_sep("out/gettysburg.txt"))
+ACTUAL_DIR = os.path.join(TESTS_DIR, "actual/testing/getty")
+ACTUAL_GETTY_FILE = os.path.join(ACTUAL_DIR, "gettysburg.txt")
+GOLD_GETTY_FILE = os.path.join(TESTS_DIR, "gold/testing/getty/gettysburg.txt")
+GOLD_GETTY_FILE_RX = path_regex(GOLD_GETTY_FILE)
+
+GOLD_PATH_RX = path_regex("/tests/gold/testing/getty/gettysburg.txt")
+OUT_PATH_RX = path_regex("out/gettysburg.txt")
 
 class CompareTest(CoverageTest):
     """Tests of goldtest.py:compare()"""
@@ -46,25 +54,24 @@ class CompareTest(CoverageTest):
 
     def test_good(self):
         self.make_file("out/gettysburg.txt", GOOD_GETTY)
-        compare(gold_path("testing"), "out", scrubs=SCRUBS)
+        compare(gold_path("testing/getty"), "out", scrubs=SCRUBS)
         self.assert_doesnt_exist(ACTUAL_GETTY_FILE)
 
     def test_bad(self):
         self.make_file("out/gettysburg.txt", BAD_GETTY)
 
         # compare() raises an assertion.
-        msg = rf"Files differ: .*{GOLD_PATH_RE} != {OUT_PATH_RE}"
+        msg = rf"Files differ: .*{GOLD_PATH_RX} != {OUT_PATH_RX}"
         with pytest.raises(AssertionError, match=msg):
-            compare(gold_path("testing"), "out", scrubs=SCRUBS)
+            compare(gold_path("testing/getty"), "out", scrubs=SCRUBS)
 
         # Stdout has a description of the diff.  The diff shows the scrubbed content.
         stdout = self.stdout()
-        print(stdout)
         assert "- Four score" in stdout
         assert "+ Five score" in stdout
-        assert re_line(stdout, rf"^:::: diff '.*{GOLD_PATH_RE}' and '{OUT_PATH_RE}'")
-        assert re_line(stdout, rf"^:::: end diff '.*{GOLD_PATH_RE}' and '{OUT_PATH_RE}'")
-        assert "  D/D/D, Gettysburg, Pennsylvania" in stdout
+        assert re_line(stdout, rf"^:::: diff '.*{GOLD_PATH_RX}' and '{OUT_PATH_RX}'")
+        assert re_line(stdout, rf"^:::: end diff '.*{GOLD_PATH_RX}' and '{OUT_PATH_RX}'")
+        assert "  D-D-D, Gettysburg, Pennsylvania" in stdout
 
         # The actual file was saved.
         with open(ACTUAL_GETTY_FILE) as f:
@@ -76,9 +83,9 @@ class CompareTest(CoverageTest):
         self.make_file("out/gettysburg.txt", GOOD_GETTY)
 
         # compare() raises an assertion.
-        msg = rf"Files differ: .*{GOLD_PATH_RE} != {OUT_PATH_RE}"
+        msg = rf"Files differ: .*{GOLD_PATH_RX} != {OUT_PATH_RX}"
         with pytest.raises(AssertionError, match=msg):
-            compare(gold_path("testing"), "out")
+            compare(gold_path("testing/getty"), "out")
 
         stdout = self.stdout()
         assert "- 11/19/1863, Gettysburg, Pennsylvania" in stdout
@@ -89,13 +96,54 @@ class CompareTest(CoverageTest):
         self.make_file("out/another.more", "hi")
 
         # Extra files in the output are ok with actual_extra=True.
-        compare(gold_path("testing"), "out", scrubs=SCRUBS, actual_extra=True)
+        compare(gold_path("testing/getty"), "out", scrubs=SCRUBS, actual_extra=True)
 
         # But not without it:
         msg = r"Files in out only: \['another.more'\]"
         with pytest.raises(AssertionError, match=msg):
-            compare(gold_path("testing"), "out", scrubs=SCRUBS)
-        self.assert_exists(os.path.join(TESTS_DIR, "actual/testing/another.more"))
+            compare(gold_path("testing/getty"), "out", scrubs=SCRUBS)
+        self.assert_exists(os.path.join(TESTS_DIR, "actual/testing/getty/another.more"))
 
         # But only the files matching the file_pattern are considered.
-        compare(gold_path("testing"), "out", file_pattern="*.txt", scrubs=SCRUBS)
+        compare(gold_path("testing/getty"), "out", file_pattern="*.txt", scrubs=SCRUBS)
+
+    def test_xml(self):
+        self.make_file("out/output.xml", """\
+            <?xml version="1.0" ?>
+            <the_root c="3" b="2" a="1">
+                <also z="9" x="7" y="8">
+                    Hello
+                </also>
+            </the_root>
+            """)
+        compare(gold_path("testing/xml"), "out")
+
+
+class ContainsTest(CoverageTest):
+    """Tests of the various "contains" functions in goldtest.py"""
+
+    run_in_temp_dir = False
+
+    def test_contains(self):
+        contains(GOLD_GETTY_FILE, "Four", "fathers", "dedicated")
+        msg = rf"Missing content in {GOLD_GETTY_FILE_RX}: 'xyzzy'"
+        with pytest.raises(AssertionError, match=msg):
+            contains(GOLD_GETTY_FILE, "Four", "fathers", "xyzzy", "dedicated")
+
+    def test_contains_rx(self):
+        contains_rx(GOLD_GETTY_FILE, r"Fo.r", r"f[abc]thers", "dedi[cdef]ated")
+        msg = rf"Missing regex in {GOLD_GETTY_FILE_RX}: r'm\[opq\]thers'"
+        with pytest.raises(AssertionError, match=msg):
+            contains_rx(GOLD_GETTY_FILE, r"Fo.r", r"m[opq]thers")
+
+    def test_contains_any(self):
+        contains_any(GOLD_GETTY_FILE, "Five", "Four", "Three")
+        msg = rf"Missing content in {GOLD_GETTY_FILE_RX}: 'One' \[1 of 3\]"
+        with pytest.raises(AssertionError, match=msg):
+            contains_any(GOLD_GETTY_FILE, "One", "Two", "Three")
+
+    def test_doesnt_contain(self):
+        doesnt_contain(GOLD_GETTY_FILE, "One", "Two", "Three")
+        msg = rf"Forbidden content in {GOLD_GETTY_FILE_RX}: 'Four'"
+        with pytest.raises(AssertionError, match=msg):
+            doesnt_contain(GOLD_GETTY_FILE, "Three", "Four", "Five")
