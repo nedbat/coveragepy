@@ -32,12 +32,12 @@ recursive-include .github *
 recursive-include coverage/fullcoverage *.py
 recursive-include coverage/ctracer *.c *.h
 
-recursive-include doc *.py *.pip *.rst *.txt *.png
+recursive-include doc *.py *.in *.pip *.rst *.txt *.png
 recursive-include doc/_static *
 prune doc/_build
 prune doc/_spell
 
-recursive-include requirements *.pip
+recursive-include requirements *.in *.pip
 
 recursive-include tests *.py *.tok
 recursive-include tests/gold *

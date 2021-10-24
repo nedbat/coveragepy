@@ -1,0 +1,15 @@
+# Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
+# For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
+
+-c pins.pip
+
+# The pytest specifics used by coverage.py
+# "make upgrade" turns this into requirements/pytest.pip.
+
+flaky
+hypothesis
+pytest
+pytest-xdist
+# Use a fork of PyContracts that supports Python 3.9
+#PyContracts==1.8.12
+git+https://github.com/slorg1/contracts@collections_and_validator
