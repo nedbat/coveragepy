@@ -659,10 +659,12 @@ $border-indicator-width: .2em;
             padding-left: .5em;
         }
         &[aria-sort="ascending"]::after {
-            content: "↑";
+            font-family: sans-serif;
+            content: " ↑";
         }
         &[aria-sort="descending"]::after {
-            content: "↓";
+            font-family: sans-serif;
+            content: " ↓";
         }
     }
     td.name a {

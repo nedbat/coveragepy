@@ -51,19 +51,19 @@ function rowComparator(rowA, rowB, column = 0) {
 function sortColumn(th) {
     // Get the current sorting direction of the selected header,
     // clear state on other headers and then set the new sorting direction
-    const currentSortOrder = th.ariaSort;
-    [...th.parentElement.cells].forEach(header => header.ariaSort = "none");
+    const currentSortOrder = th.getAttribute("aria-sort");
+    [...th.parentElement.cells].forEach(header => header.setAttribute("aria-sort", "none"));
     if (currentSortOrder === "none") {
-        th.ariaSort = th.dataset.defaultSortOrder || "ascending"
+        th.setAttribute("aria-sort", th.dataset.defaultSortOrder || "ascending");
     } else {
-        th.ariaSort = currentSortOrder === "ascending" ? "descending" : "ascending";
+        th.setAttribute("aria-sort", currentSortOrder === "ascending" ? "descending" : "ascending");
     }
 
     const column = [...th.parentElement.cells].indexOf(th)
 
     // Sort all rows and afterwards append them in order to move them in the DOM
     Array.from(th.closest("table").querySelectorAll("tbody tr"))
-        .sort((rowA, rowB) => rowComparator(rowA, rowB, column) * (th.ariaSort === "ascending" ? 1 : -1))
+        .sort((rowA, rowB) => rowComparator(rowA, rowB, column) * (th.getAttribute("aria-sort") === "ascending" ? 1 : -1))
         .forEach(tr => tr.parentElement.appendChild(tr) );
 }
 
@@ -121,8 +121,6 @@ coverage.wire_up_filter = function () {
             }
         });
 
-        console.log(totals)
-
         // Show placeholder if no rows will be displayed.
         if (!totals[0]) {
             // Show placeholder, hide table.
@@ -164,7 +162,7 @@ coverage.wire_up_filter = function () {
     document.getElementById("filter").dispatchEvent(new Event("change"));
 };
 
-coverage.INDEX_SORT_STORAGE = "COVERAGE_INDEX_SORT";
+coverage.INDEX_SORT_STORAGE = "COVERAGE_INDEX_SORT_2";
 
 // Loaded on index.html
 coverage.index_ready = function () {
@@ -180,7 +178,7 @@ coverage.index_ready = function () {
     if (stored_list) {
         const {column, direction} = JSON.parse(stored_list);
         const th = document.querySelector("[data-sortable]").tHead.rows[0].cells[column];
-        th.ariaSort = direction === "ascending" ? "descending" : "ascending";
+        th.setAttribute("aria-sort", direction === "ascending" ? "descending" : "ascending");
         th.click()
     }
 
@@ -192,7 +190,7 @@ coverage.index_ready = function () {
         }
         localStorage.setItem(coverage.INDEX_SORT_STORAGE, JSON.stringify({
             column: [...th.parentElement.cells].indexOf(th),
-            direction: th.ariaSort,
+            direction: th.getAttribute("aria-sort"),
         }));
     });
 };
