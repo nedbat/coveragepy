@@ -118,7 +118,9 @@ def contains_rx(filename, *rxlist):
     with open(filename) as fobj:
         lines = fobj.readlines()
     for rx in rxlist:
-        assert any(re.search(rx, line) for line in lines), f"Missing rx in {filename}: {rx!r}"
+        assert any(re.search(rx, line) for line in lines), (
+            f"Missing regex in {filename}: r{rx!r}"
+        )
 
 
 def contains_any(filename, *strlist):
@@ -135,9 +137,7 @@ def contains_any(filename, *strlist):
         if s in text:
             return
 
-    assert False, (                         # pragma: only failure
-        f"Missing content in {filename}: {strlist[0]!r} [1 of {len(strlist)}]"
-    )
+    assert False, f"Missing content in {filename}: {strlist[0]!r} [1 of {len(strlist)}]"
 
 
 def doesnt_contain(filename, *strlist):
@@ -180,6 +180,6 @@ def scrub(strdata, scrubs):
     `scrubs` is a list of (find, replace) pairs of regexes that are used on
     `strdata`.  A string is returned.
     """
-    for rgx_find, rgx_replace in scrubs:
-        strdata = re.sub(rgx_find, rgx_replace, strdata)
+    for rx_find, rx_replace in scrubs:
+        strdata = re.sub(rx_find, rx_replace, strdata)
     return strdata
