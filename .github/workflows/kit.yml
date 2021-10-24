@@ -112,6 +112,7 @@ jobs:
         run: |
           pypy3 setup.py bdist_wheel --python-tag pp36
           pypy3 setup.py bdist_wheel --python-tag pp37
+          pypy3 setup.py bdist_wheel --python-tag pp38
           ls -al dist/
 
       - name: "Upload wheels"
