@@ -9,12 +9,24 @@ attrs==21.2.0
     #   -r requirements/pytest.pip
     #   hypothesis
     #   pytest
+auditwheel==5.0.0
+    # via -r requirements/ci.in
 backports.entry-points-selectable==1.1.0
     # via virtualenv
 backports.functools-lru-cache==1.6.4
     # via
     #   -r requirements/pytest.pip
     #   pycontracts
+bashlex==0.16
+    # via cibuildwheel
+bracex==2.2
+    # via cibuildwheel
+build==0.7.0
+    # via -r requirements/ci.in
+certifi==2021.10.8
+    # via cibuildwheel
+cibuildwheel==2.1.3
+    # via -r requirements/ci.in
 decorator==5.1.0
     # via
     #   -r requirements/pytest.pip
@@ -44,8 +56,12 @@ iniconfig==1.1.1
 packaging==21.0
     # via
     #   -r requirements/pytest.pip
+    #   build
+    #   cibuildwheel
     #   pytest
     #   tox
+pep517==0.12.0
+    # via build
 platformdirs==2.4.0
     # via virtualenv
 pluggy==1.0.0
@@ -61,6 +77,8 @@ py==1.10.0
     #   tox
 pycontracts @ git+https://github.com/slorg1/contracts@collections_and_validator
     # via -r requirements/pytest.pip
+pyelftools==0.27
+    # via auditwheel
 pyparsing==3.0.1
     # via
     #   -r requirements/pytest.pip
@@ -94,8 +112,13 @@ sortedcontainers==2.4.0
 toml==0.10.2
     # via
     #   -r requirements/pytest.pip
+    #   cibuildwheel
     #   pytest
     #   tox
+tomli==1.2.2
+    # via
+    #   build
+    #   pep517
 tox==3.24.4
     # via
     #   -r requirements/ci.in
