@@ -101,7 +101,7 @@ jobs:
           set -xe
           python -VV
           python -m site
-          python setup.py --quiet clean develop
+          python -m pip install -e .
           python igor.py zip_mods
 
       - name: "Download coverage data"

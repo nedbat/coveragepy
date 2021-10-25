@@ -6,6 +6,9 @@
 # Things CI servers need for running tests.
 # "make upgrade" turns this into requirements/ci.pip.
 
+auditwheel
+build
+cibuildwheel
 setuptools
 tox
 tox-gh-actions

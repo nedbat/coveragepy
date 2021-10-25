@@ -39,7 +39,7 @@ jobs:
           set -xe
           python -VV
           python -m site
-          python -m pip install -c requirements/pins.pip tox
+          python -m pip install -r requirements/ci.pip
 
       - name: "Tox lint"
         run: |
@@ -63,7 +63,7 @@ jobs:
           set -xe
           python -VV
           python -m site
-          python -m pip install -c requirements/pins.pip tox
+          python -m pip install -r requirements/ci.pip
 
       - name: "Tox doc"
         run: |
