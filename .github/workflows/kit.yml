@@ -52,7 +52,7 @@ jobs:
 
       - name: "Install tools"
         run: |
-          python -m pip install -r requirements/ci.pip
+          python -m pip install -r requirements/kit.pip
 
       - name: "Build wheels"
         env:
@@ -83,7 +83,7 @@ jobs:
 
       - name: "Install tools"
         run: |
-          python -m pip install -r requirements/ci.pip
+          python -m pip install -r requirements/kit.pip
 
       - name: "Build sdist"
         run: |
@@ -110,7 +110,7 @@ jobs:
 
       - name: "Install requirements"
         run: |
-          pypy3 -m pip install -r requirements/ci.pip
+          pypy3 -m pip install -r requirements/kit.pip
 
       - name: "Build wheels"
         run: |
@@ -150,11 +150,11 @@ jobs:
 
       - name: "Install wheel tools"
         run: |
-          python -m pip install -r requirements/ci.pip
+          python -m pip install -r requirements/kit.pip
 
       - name: "Build wheel"
         run: |
-          python setup.py bdist_wheel
+          python -m build
 
       - name: "Convert to manylinux wheel"
         if: runner.os == 'Linux'

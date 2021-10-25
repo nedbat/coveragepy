@@ -3,15 +3,8 @@
 
 -c pins.pip
 
-# Things CI servers need for running tests.
-# "make upgrade" turns this into requirements/ci.pip.
+# Just install tox, which will then install more things.
+# "make upgrade" turns this into requirements/tox.pip.
 
-auditwheel
-build
-cibuildwheel
-setuptools
 tox
 tox-gh-actions
-wheel
-
--r pytest.pip

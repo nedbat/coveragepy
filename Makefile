@@ -78,7 +78,8 @@ upgrade: 				## update the *.pip files with the latest packages satisfying *.in 
 	pip-compile --upgrade -o requirements/pip-tools.pip requirements/pip-tools.in
 	pip-compile --upgrade -o requirements/pip.pip requirements/pip.in
 	pip-compile --upgrade -o requirements/pytest.pip requirements/pytest.in
-	pip-compile --upgrade -o requirements/ci.pip requirements/ci.in
+	pip-compile --upgrade -o requirements/kit.pip requirements/kit.in
+	pip-compile --upgrade -o requirements/tox.pip requirements/tox.in
 	pip-compile --upgrade -o requirements/dev.pip requirements/dev.in
 	pip-compile --upgrade -o doc/requirements.pip doc/requirements.in
 
