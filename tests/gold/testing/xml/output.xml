@@ -1,6 +1,6 @@
-<?xml version="1.0" ?>
-<the_root a="1" b="2" c="3">
-    <also z="9"   y="8"   x="7">
-        Hello
+<?xml version="1.0"?>
+<the_root a="one" b="2" c="three">
+    <also z="nine"   y="8"   x="seven">
+        Goodbye
     </also>
 </the_root>

@@ -24,21 +24,21 @@ BAD_GETTY = """\
 Five score and seven years ago our fathers brought forth upon this continent, a
 new nation, conceived in Liberty, and dedicated to the proposition that all men
 are created equal.
-333:4444:55555, Gettysburg, Pennsylvania
+333/4444/55555, Gabcdef, Pennsylvania
 """
 
 SCRUBS = [
     # Numbers don't matter when comparing.
     (r'\d+', 'D'),
-    (r'[/:]', '-'),
+    (r'G\w+', 'Gxxx'),
 ]
 
 def path_regex(path):
     """Convert a file path into a regex that will match that path on any OS."""
     return re.sub(r"[/\\]", r"[/\\\\]", path.replace(".", "[.]"))
 
-ACTUAL_DIR = os.path.join(TESTS_DIR, "actual/testing/getty")
-ACTUAL_GETTY_FILE = os.path.join(ACTUAL_DIR, "gettysburg.txt")
+ACTUAL_DIR = os.path.join(TESTS_DIR, "actual/testing")
+ACTUAL_GETTY_FILE = os.path.join(ACTUAL_DIR, "getty/gettysburg.txt")
 GOLD_GETTY_FILE = os.path.join(TESTS_DIR, "gold/testing/getty/gettysburg.txt")
 GOLD_GETTY_FILE_RX = path_regex(GOLD_GETTY_FILE)
 
@@ -71,7 +71,7 @@ class CompareTest(CoverageTest):
         assert "+ Five score" in stdout
         assert re_line(stdout, rf"^:::: diff '.*{GOLD_PATH_RX}' and '{OUT_PATH_RX}'")
         assert re_line(stdout, rf"^:::: end diff '.*{GOLD_PATH_RX}' and '{OUT_PATH_RX}'")
-        assert "  D-D-D, Gettysburg, Pennsylvania" in stdout
+        assert "  D/D/D, Gxxx, Pennsylvania" in stdout
 
         # The actual file was saved.
         with open(ACTUAL_GETTY_FILE) as f:
@@ -107,16 +107,39 @@ class CompareTest(CoverageTest):
         # But only the files matching the file_pattern are considered.
         compare(gold_path("testing/getty"), "out", file_pattern="*.txt", scrubs=SCRUBS)
 
-    def test_xml(self):
+    def test_xml_good(self):
         self.make_file("out/output.xml", """\
             <?xml version="1.0" ?>
-            <the_root c="3" b="2" a="1">
-                <also z="9" x="7" y="8">
-                    Hello
+            <the_root c="three" b="222" a="one">
+                <also z="nine" x="seven" y="888">
+                    Goodie
                 </also>
             </the_root>
             """)
-        compare(gold_path("testing/xml"), "out")
+        compare(gold_path("testing/xml"), "out", scrubs=SCRUBS)
+
+    def test_xml_bad(self):
+        self.make_file("out/output.xml", """\
+            <?xml version="1.0" ?>
+            <the_root c="nine" b="2" a="one">
+                <also z="three" x="seven" y="8">
+                    Goodbye
+                </also>
+            </the_root>
+            """)
+
+        # compare() raises an exception.
+        gold_rx = path_regex(gold_path("testing/xml/output.xml"))
+        out_rx = path_regex("out/output.xml")
+        msg = rf"Files differ: .*{gold_rx} != {out_rx}"
+        with pytest.raises(AssertionError, match=msg):
+            compare(gold_path("testing/xml"), "out", scrubs=SCRUBS)
+
+        # Stdout has a description of the diff.  The diff shows the
+        # canonicalized and scrubbed content.
+        stdout = self.stdout()
+        assert '- <the_root a="one" b="D" c="three">' in stdout
+        assert '+ <the_root a="one" b="D" c="nine">' in stdout
 
 
 class ContainsTest(CoverageTest):
