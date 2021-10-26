@@ -67,6 +67,7 @@ disable=
     broad-except,
     no-else-return,
     misplaced-comparison-constant,
+    subprocess-run-check,
 # Messages that may be silly:
     no-self-use,
     no-member,

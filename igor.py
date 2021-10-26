@@ -14,6 +14,7 @@ import glob
 import inspect
 import os
 import platform
+import subprocess
 import sys
 import sysconfig
 import textwrap
@@ -349,6 +350,12 @@ def print_banner(label):
         which_python = sys.executable
     print(f'=== {impl} {version} {label} ({which_python}) ===')
     sys.stdout.flush()
+
+
+def do_quietly(command):
+    """Run a command in a shell, and suppress all output."""
+    proc = subprocess.run(command, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    return proc.returncode
 
 
 def do_help():
