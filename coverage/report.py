@@ -10,7 +10,7 @@ from coverage.misc import ensure_dir_for_file, file_be_gone
 
 
 def render_report(output_path, reporter, morfs):
-    """Run a report generator, managing the output file.
+    """Run a one-file report generator, managing the output file.
 
     This function ensures the output file is ready to be written to. Then writes
     the report to it. Then closes the file and cleans up.
