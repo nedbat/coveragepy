@@ -13,6 +13,8 @@ from tests.coveragetest import CoverageTest
 class FakeReporter:
     """A fake implementation of a one-file reporter."""
 
+    report_type = "fake report file"
+
     def __init__(self, output="", error=False):
         self.output = output
         self.error = error
@@ -31,20 +33,26 @@ class RenderReportTest(CoverageTest):
 
     def test_stdout(self):
         fake = FakeReporter(output="Hello!\n")
-        render_report("-", fake, [pytest, "coverage"])
+        msgs = []
+        render_report("-", fake, [pytest, "coverage"], msgs.append)
         assert fake.morfs == [pytest, "coverage"]
         assert self.stdout() == "Hello!\n"
+        assert msgs == []
 
     def test_file(self):
         fake = FakeReporter(output="Gréètings!\n")
-        render_report("output.txt", fake, [])
+        msgs = []
+        render_report("output.txt", fake, [], msgs.append)
         assert self.stdout() == ""
         with open("output.txt", "rb") as f:
-            assert f.read() == b"Gr\xc3\xa9\xc3\xa8tings!\n"
+            assert f.read().rstrip() == b"Gr\xc3\xa9\xc3\xa8tings!"
+        assert msgs == ["Wrote fake report file to output.txt"]
 
     def test_exception(self):
         fake = FakeReporter(error=True)
+        msgs = []
         with pytest.raises(CoverageException, match="You asked for it!"):
-            render_report("output.txt", fake, [])
+            render_report("output.txt", fake, [], msgs.append)
         assert self.stdout() == ""
         self.assert_doesnt_exist("output.txt")
+        assert msgs == []

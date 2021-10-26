@@ -30,6 +30,8 @@ def rate(hit, num):
 class XmlReporter:
     """A reporter for writing Cobertura-style XML coverage results."""
 
+    report_type = "XML report"
+
     def __init__(self, coverage):
         self.coverage = coverage
         self.config = self.coverage.config

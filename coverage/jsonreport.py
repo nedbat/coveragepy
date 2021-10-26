@@ -14,6 +14,8 @@ from coverage.results import Numbers
 class JsonReporter:
     """A reporter for writing JSON coverage results."""
 
+    report_type = "JSON report"
+
     def __init__(self, coverage):
         self.coverage = coverage
         self.config = self.coverage.config

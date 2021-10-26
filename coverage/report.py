@@ -2,6 +2,7 @@
 # For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
 
 """Reporter foundation for coverage.py."""
+
 import sys
 
 from coverage.exceptions import CoverageException, NoSource, NotPython
@@ -9,7 +10,7 @@ from coverage.files import prep_patterns, FnmatchMatcher
 from coverage.misc import ensure_dir_for_file, file_be_gone
 
 
-def render_report(output_path, reporter, morfs):
+def render_report(output_path, reporter, morfs, msgfn):
     """Run a one-file report generator, managing the output file.
 
     This function ensures the output file is ready to be written to. Then writes
@@ -40,6 +41,8 @@ def render_report(output_path, reporter, morfs):
             file_to_close.close()
             if delete_file:
                 file_be_gone(output_path)           # pragma: part covered (doesn't return)
+            else:
+                msgfn(f"Wrote {reporter.report_type} to {output_path}")
 
 
 def get_analysis_to_report(coverage, morfs):

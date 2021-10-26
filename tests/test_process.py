@@ -1325,7 +1325,7 @@ class UnicodeFilePathsTest(CoverageTest):
 
         # The XML report is always UTF8-encoded.
         out = self.run_command("coverage xml")
-        assert out == ""
+        assert out == "Wrote XML report to coverage.xml\n"
         with open("coverage.xml", "rb") as xmlf:
             xml = xmlf.read()
         assert ' filename="h\xe2t.py"'.encode() in xml
@@ -1358,7 +1358,7 @@ class UnicodeFilePathsTest(CoverageTest):
         assert expected % os.sep in index
 
         # The XML report is always UTF8-encoded.
-        out = self.run_command("coverage xml")
+        out = self.run_command("coverage xml -q")
         assert out == ""
         with open("coverage.xml", "rb") as xmlf:
             xml = xmlf.read()

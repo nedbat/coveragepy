@@ -234,6 +234,17 @@ class CmdLineTest(BaseCmdLineTest):
             cov.combine(None, strict=True, keep=False)
             cov.save()
             """)
+        # coverage combine quietly
+        self.cmd_executes("combine -q", """\
+            cov = Coverage(messages=False)
+            cov.combine(None, strict=True, keep=False)
+            cov.save()
+            """)
+        self.cmd_executes("combine --quiet", """\
+            cov = Coverage(messages=False)
+            cov.combine(None, strict=True, keep=False)
+            cov.save()
+            """)
 
     def test_combine_doesnt_confuse_options_with_args(self):
         # https://github.com/nedbat/coveragepy/issues/385
@@ -335,6 +346,16 @@ class CmdLineTest(BaseCmdLineTest):
             cov.load()
             cov.html_report(title='Hello_there')
             """)
+        self.cmd_executes("html -q", """\
+            cov = Coverage(messages=False)
+            cov.load()
+            cov.html_report()
+            """)
+        self.cmd_executes("html --quiet", """\
+            cov = Coverage(messages=False)
+            cov.load()
+            cov.html_report()
+            """)
 
     def test_json(self):
         # coverage json [-i] [--omit DIR,...] [FILE1 FILE2 ...]
@@ -387,6 +408,16 @@ class CmdLineTest(BaseCmdLineTest):
             cov = Coverage()
             cov.load()
             cov.json_report(morfs=["mod1", "mod2", "mod3"])
+            """)
+        self.cmd_executes("json -q", """\
+            cov = Coverage(messages=False)
+            cov.load()
+            cov.json_report()
+            """)
+        self.cmd_executes("json --quiet", """\
+            cov = Coverage(messages=False)
+            cov.load()
+            cov.json_report()
             """)
 
     def test_report(self):
@@ -752,6 +783,16 @@ class CmdLineTest(BaseCmdLineTest):
             cov = Coverage()
             cov.load()
             cov.xml_report(morfs=["mod1", "mod2", "mod3"])
+            """)
+        self.cmd_executes("xml -q", """\
+            cov = Coverage(messages=False)
+            cov.load()
+            cov.xml_report()
+            """)
+        self.cmd_executes("xml --quiet", """\
+            cov = Coverage(messages=False)
+            cov.load()
+            cov.xml_report()
             """)
 
     def test_no_arguments_at_all(self):

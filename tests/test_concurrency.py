@@ -450,13 +450,8 @@ class MultiprocessingTest(CoverageTest):
             out = self.run_command(f"coverage run --rcfile=multi.rc multi.py {start_method}")
             assert out.rstrip() == expected_out
 
-            out = self.run_command("coverage combine")
-            out_lines = out.splitlines()
-            assert len(out_lines) == nprocs + 1
-            assert all(
-                re.fullmatch(r"Combined data file \.coverage\..*\.\d+\.\d+", line)
-                for line in out_lines
-            )
+            out = self.run_command("coverage combine -q")   # sneak in a test of -q
+            assert out == ""
             out = self.run_command("coverage report -m")
 
             last_line = self.squeezed_lines(out)[-1]

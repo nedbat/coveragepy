@@ -146,6 +146,10 @@ class Opts:
             "reported coverage percentages."
         ),
     )
+    quiet = optparse.make_option(
+        '-q', '--quiet', action='store_true',
+        help="Don't print messages about what is happening.",
+    )
     rcfile = optparse.make_option(
         '', '--rcfile', action='store',
         help=(
@@ -227,6 +231,7 @@ class CoverageOptionParser(optparse.OptionParser):
             parallel_mode=None,
             precision=None,
             pylib=None,
+            quiet=None,
             rcfile=True,
             show_contexts=None,
             show_missing=None,
@@ -340,6 +345,7 @@ CMDS = {
         [
             Opts.append,
             Opts.keep,
+            Opts.quiet,
             ] + GLOBAL_ARGS,
         usage="[options] <path1> <path2> ... <pathN>",
         description=(
@@ -387,6 +393,7 @@ CMDS = {
             Opts.include,
             Opts.omit,
             Opts.precision,
+            Opts.quiet,
             Opts.show_contexts,
             Opts.skip_covered,
             Opts.no_skip_covered,
@@ -411,6 +418,7 @@ CMDS = {
             Opts.omit,
             Opts.output_json,
             Opts.json_pretty_print,
+            Opts.quiet,
             Opts.show_contexts,
             ] + GLOBAL_ARGS,
         usage="[options] [modules]",
@@ -463,6 +471,7 @@ CMDS = {
             Opts.include,
             Opts.omit,
             Opts.output_xml,
+            Opts.quiet,
             Opts.skip_empty,
             ] + GLOBAL_ARGS,
         usage="[options] [modules]",
@@ -576,7 +585,7 @@ class CoverageScript:
             concurrency=options.concurrency,
             check_preimported=True,
             context=options.context,
-            messages=True,
+            messages=not options.quiet,
             )
 
         if options.action == "debug":

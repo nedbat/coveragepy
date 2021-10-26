@@ -30,7 +30,14 @@ Unreleased
 - Feature: The HTML report pages for Python source files now have a sticky
   header so the file name and controls are always visible.
 
-- Added support for PyPy 3.8.
+- Feature: The ``xml`` and ``json`` commands now describe what they wrote
+  where.
+
+- Feature: The ``html``, ``combine``, ``xml``, and ``json`` commands all accept
+  a ``-q/--quiet`` option to suppress the messages they write to stdout about
+  what they are doing (`issue 1254`_).
+
+- Feature: Added support for PyPy 3.8.
 
 - Fix: more generated code is now excluded from measurement.  Code such as
   `attrs`_ boilerplate, or doctest code, was being measured though the
@@ -51,6 +58,7 @@ Unreleased
 .. _issue 553: https://github.com/nedbat/coveragepy/issues/553
 .. _issue 840: https://github.com/nedbat/coveragepy/issues/840
 .. _issue 1160: https://github.com/nedbat/coveragepy/issues/1160
+.. _issue 1254: https://github.com/nedbat/coveragepy/issues/1254
 .. _attrs: https://www.attrs.org/
 
 

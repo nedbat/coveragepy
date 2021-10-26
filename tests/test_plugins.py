@@ -6,7 +6,6 @@
 import inspect
 import io
 import os.path
-import re
 from xml.etree import ElementTree
 
 import pytest
@@ -256,8 +255,8 @@ class PluginTest(CoverageTest):
 
         out = self.run_command("coverage run main_file.py")
         assert out == "MAIN\n"
-        out = self.run_command("coverage html")
-        assert re.fullmatch(r"Wrote HTML report to htmlcov[/\\]index.html\n", out)
+        out = self.run_command("coverage html -q")  # sneak in a test of -q
+        assert out == ""
 
 
 @pytest.mark.skipif(env.C_TRACER, reason="This test is only about PyTracer.")

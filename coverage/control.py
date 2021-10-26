@@ -1006,7 +1006,7 @@ class Coverage:
             ignore_errors=ignore_errors, report_omit=omit, report_include=include,
             xml_output=outfile, report_contexts=contexts, skip_empty=skip_empty,
         ):
-            return render_report(self.config.xml_output, XmlReporter(self), morfs)
+            return render_report(self.config.xml_output, XmlReporter(self), morfs, self._message)
 
     def json_report(
         self, morfs=None, outfile=None, ignore_errors=None,
@@ -1030,7 +1030,7 @@ class Coverage:
             json_output=outfile, report_contexts=contexts, json_pretty_print=pretty_print,
             json_show_contexts=show_contexts
         ):
-            return render_report(self.config.json_output, JsonReporter(self), morfs)
+            return render_report(self.config.json_output, JsonReporter(self), morfs, self._message)
 
     def sys_info(self):
         """Return a list of (key, value) pairs showing internal information."""
