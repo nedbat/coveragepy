@@ -55,6 +55,14 @@ class Opts:
         '', '--context', action='store', metavar="LABEL",
         help="The context label to record for this coverage run.",
     )
+    contexts = optparse.make_option(
+        '', '--contexts', action='store',
+        metavar="REGEX1,REGEX2,...",
+        help=(
+            "Only display data from lines covered in the given contexts. " +
+            "Accepts Python regexes, which must be quoted."
+        ),
+    )
     debug = optparse.make_option(
         '', '--debug', action='store', metavar="OPTS",
         help="Debug options, separated by commas. [env: COVERAGE_DEBUG]",
@@ -90,30 +98,16 @@ class Opts:
             "which isn't done by default."
         ),
     )
-    sort = optparse.make_option(
-        '--sort', action='store', metavar='COLUMN',
-        help="Sort the report by the named column: name, stmts, miss, branch, brpart, or cover. " +
-             "Default is name."
-    )
     show_missing = optparse.make_option(
         '-m', '--show-missing', action='store_true',
         help="Show line numbers of statements in each module that weren't executed.",
     )
-    skip_covered = optparse.make_option(
-        '--skip-covered', action='store_true',
-        help="Skip files with 100% coverage.",
-    )
-    no_skip_covered = optparse.make_option(
-        '--no-skip-covered', action='store_false', dest='skip_covered',
-        help="Disable --skip-covered.",
-    )
-    skip_empty = optparse.make_option(
-        '--skip-empty', action='store_true',
-        help="Skip files with no code.",
-    )
-    show_contexts = optparse.make_option(
-        '--show-contexts', action='store_true',
-        help="Show contexts for covered lines.",
+    module = optparse.make_option(
+        '-m', '--module', action='store_true',
+        help=(
+            "<pyfile> is an importable Python module, not a script path, " +
+            "to be run as 'python -m' would run it."
+        ),
     )
     omit = optparse.make_option(
         '', '--omit', action='store',
@@ -121,14 +115,6 @@ class Opts:
         help=(
             "Omit files whose paths match one of these patterns. " +
             "Accepts shell-style wildcards, which must be quoted."
-        ),
-    )
-    contexts = optparse.make_option(
-        '', '--contexts', action='store',
-        metavar="REGEX1,REGEX2,...",
-        help=(
-            "Only display data from lines covered in the given contexts. " +
-            "Accepts Python regexes, which must be quoted."
         ),
     )
     output_xml = optparse.make_option(
@@ -153,13 +139,6 @@ class Opts:
             "many processes."
         ),
     )
-    module = optparse.make_option(
-        '-m', '--module', action='store_true',
-        help=(
-            "<pyfile> is an importable Python module, not a script path, " +
-            "to be run as 'python -m' would run it."
-        ),
-    )
     precision = optparse.make_option(
         '', '--precision', action='store', metavar='N', type=int,
         help=(
@@ -174,6 +153,27 @@ class Opts:
             "By default '.coveragerc', 'setup.cfg', 'tox.ini', and " +
             "'pyproject.toml' are tried. [env: COVERAGE_RCFILE]"
         ),
+    )
+    show_contexts = optparse.make_option(
+        '--show-contexts', action='store_true',
+        help="Show contexts for covered lines.",
+    )
+    skip_covered = optparse.make_option(
+        '--skip-covered', action='store_true',
+        help="Skip files with 100% coverage.",
+    )
+    no_skip_covered = optparse.make_option(
+        '--no-skip-covered', action='store_false', dest='skip_covered',
+        help="Disable --skip-covered.",
+    )
+    skip_empty = optparse.make_option(
+        '--skip-empty', action='store_true',
+        help="Skip files with no code.",
+    )
+    sort = optparse.make_option(
+        '--sort', action='store', metavar='COLUMN',
+        help="Sort the report by the named column: name, stmts, miss, branch, brpart, or cover. " +
+             "Default is name."
     )
     source = optparse.make_option(
         '', '--source', action='store', metavar="SRC1,SRC2,...",
@@ -214,6 +214,7 @@ class CoverageOptionParser(optparse.OptionParser):
             branch=None,
             concurrency=None,
             context=None,
+            contexts=None,
             debug=None,
             directory=None,
             fail_under=None,
@@ -223,15 +224,14 @@ class CoverageOptionParser(optparse.OptionParser):
             keep=None,
             module=None,
             omit=None,
-            contexts=None,
             parallel_mode=None,
             precision=None,
             pylib=None,
             rcfile=True,
+            show_contexts=None,
             show_missing=None,
             skip_covered=None,
             skip_empty=None,
-            show_contexts=None,
             sort=None,
             source=None,
             timid=None,

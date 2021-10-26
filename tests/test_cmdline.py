@@ -336,6 +336,59 @@ class CmdLineTest(BaseCmdLineTest):
             cov.html_report(title='Hello_there')
             """)
 
+    def test_json(self):
+        # coverage json [-i] [--omit DIR,...] [FILE1 FILE2 ...]
+        self.cmd_executes("json", """\
+            cov = Coverage()
+            cov.load()
+            cov.json_report()
+            """)
+        self.cmd_executes("json --pretty-print", """\
+            cov = Coverage()
+            cov.load()
+            cov.json_report(pretty_print=True)
+            """)
+        self.cmd_executes("json --pretty-print --show-contexts", """\
+            cov = Coverage()
+            cov.load()
+            cov.json_report(pretty_print=True, show_contexts=True)
+            """)
+        self.cmd_executes("json -i", """\
+            cov = Coverage()
+            cov.load()
+            cov.json_report(ignore_errors=True)
+            """)
+        self.cmd_executes("json -o myjson.foo", """\
+            cov = Coverage()
+            cov.load()
+            cov.json_report(outfile="myjson.foo")
+            """)
+        self.cmd_executes("json -o -", """\
+            cov = Coverage()
+            cov.load()
+            cov.json_report(outfile="-")
+            """)
+        self.cmd_executes("json --omit fooey", """\
+            cov = Coverage(omit=["fooey"])
+            cov.load()
+            cov.json_report(omit=["fooey"])
+            """)
+        self.cmd_executes("json --omit fooey,booey", """\
+            cov = Coverage(omit=["fooey", "booey"])
+            cov.load()
+            cov.json_report(omit=["fooey", "booey"])
+            """)
+        self.cmd_executes("json mod1", """\
+            cov = Coverage()
+            cov.load()
+            cov.json_report(morfs=["mod1"])
+            """)
+        self.cmd_executes("json mod1 mod2 mod3", """\
+            cov = Coverage()
+            cov.load()
+            cov.json_report(morfs=["mod1", "mod2", "mod3"])
+            """)
+
     def test_report(self):
         # coverage report [-m] [-i] [-o DIR,...] [FILE1 FILE2 ...]
         self.cmd_executes("report", """\
@@ -699,59 +752,6 @@ class CmdLineTest(BaseCmdLineTest):
             cov = Coverage()
             cov.load()
             cov.xml_report(morfs=["mod1", "mod2", "mod3"])
-            """)
-
-    def test_json(self):
-        # coverage json [-i] [--omit DIR,...] [FILE1 FILE2 ...]
-        self.cmd_executes("json", """\
-            cov = Coverage()
-            cov.load()
-            cov.json_report()
-            """)
-        self.cmd_executes("json --pretty-print", """\
-            cov = Coverage()
-            cov.load()
-            cov.json_report(pretty_print=True)
-            """)
-        self.cmd_executes("json --pretty-print --show-contexts", """\
-            cov = Coverage()
-            cov.load()
-            cov.json_report(pretty_print=True, show_contexts=True)
-            """)
-        self.cmd_executes("json -i", """\
-            cov = Coverage()
-            cov.load()
-            cov.json_report(ignore_errors=True)
-            """)
-        self.cmd_executes("json -o myjson.foo", """\
-            cov = Coverage()
-            cov.load()
-            cov.json_report(outfile="myjson.foo")
-            """)
-        self.cmd_executes("json -o -", """\
-            cov = Coverage()
-            cov.load()
-            cov.json_report(outfile="-")
-            """)
-        self.cmd_executes("json --omit fooey", """\
-            cov = Coverage(omit=["fooey"])
-            cov.load()
-            cov.json_report(omit=["fooey"])
-            """)
-        self.cmd_executes("json --omit fooey,booey", """\
-            cov = Coverage(omit=["fooey", "booey"])
-            cov.load()
-            cov.json_report(omit=["fooey", "booey"])
-            """)
-        self.cmd_executes("json mod1", """\
-            cov = Coverage()
-            cov.load()
-            cov.json_report(morfs=["mod1"])
-            """)
-        self.cmd_executes("json mod1 mod2 mod3", """\
-            cov = Coverage()
-            cov.load()
-            cov.json_report(morfs=["mod1", "mod2", "mod3"])
             """)
 
     def test_no_arguments_at_all(self):
