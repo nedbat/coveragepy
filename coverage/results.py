@@ -263,9 +263,8 @@ class Numbers(SimpleReprMixin):
 
     def __radd__(self, other):
         # Implementing 0+Numbers allows us to sum() a list of Numbers.
-        if other == 0:
-            return self
-        return NotImplemented       # pragma: not covered (we never call it this way)
+        assert other == 0   # we only ever call it this way.
+        return self
 
 
 def _line_ranges(statements, lines):
