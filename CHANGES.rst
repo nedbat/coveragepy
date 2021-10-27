@@ -37,6 +37,10 @@ Unreleased
   a ``-q/--quiet`` option to suppress the messages they write to stdout about
   what they are doing (`issue 1254`_).
 
+- Feature: The ``html`` command writes a ``.gitignore`` file into the HTML
+  output directory, to prevent the report from being committed to git.  If you
+  want to commit it, you will need to delete that file.  Closes `issue 1244`_.
+
 - Feature: Added support for PyPy 3.8.
 
 - Fix: more generated code is now excluded from measurement.  Code such as
@@ -58,6 +62,7 @@ Unreleased
 .. _issue 553: https://github.com/nedbat/coveragepy/issues/553
 .. _issue 840: https://github.com/nedbat/coveragepy/issues/840
 .. _issue 1160: https://github.com/nedbat/coveragepy/issues/1160
+.. _issue 1244: https://github.com/nedbat/coveragepy/issues/1244
 .. _issue 1254: https://github.com/nedbat/coveragepy/issues/1254
 .. _attrs: https://www.attrs.org/
 

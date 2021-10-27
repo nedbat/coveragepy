@@ -224,6 +224,11 @@ class HtmlReporter:
         for static in self.STATIC_FILES:
             shutil.copyfile(data_filename(static), os.path.join(self.directory, static))
 
+        # .gitignore can't be copied from the source tree because it would
+        # prevent the static files from being checked in.
+        with open(os.path.join(self.directory, ".gitignore"), "w") as fgi:
+            fgi.write("# Created by coverage.py\n*\n")
+
         # The user may have extra CSS they want copied.
         if self.extra_css:
             shutil.copyfile(self.config.extra_css, os.path.join(self.directory, self.extra_css))

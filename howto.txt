@@ -30,9 +30,11 @@
     - IF PRE-RELEASE:
         $ rm -f ~/coverage/trunk/doc/sample_html_beta/*.*
         $ cp -r htmlcov/ ~/coverage/trunk/doc/sample_html_beta/
+        $ rm ~/coverage/trunk/doc/sample_html_beta/.gitignore
     - IF NOT PRE-RELEASE:
         $ rm -f ~/coverage/trunk/doc/sample_html/*.*
         $ cp -r htmlcov/ ~/coverage/trunk/doc/sample_html/
+        $ rm ~/coverage/trunk/doc/sample_html/.gitignore
     $ cd ~/coverage/trunk
     - IF NOT PRE-RELEASE:
         check in the new sample html

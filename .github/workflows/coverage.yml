@@ -116,6 +116,7 @@ jobs:
         run: |
           set -xe
           python -m igor combine_html
+          rm htmlcov/.gitignore
           python -m coverage json
           echo "::set-output name=total::$(python -c "import json;print(json.load(open('coverage.json'))['totals']['percent_covered_display'])")"
 

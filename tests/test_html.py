@@ -144,6 +144,7 @@ class HtmlDeltaTest(HtmlTestHelpers, CoverageTest):
         self.assert_exists("htmlcov/helper2_py.html")
         self.assert_exists("htmlcov/style.css")
         self.assert_exists("htmlcov/coverage_html.js")
+        self.assert_exists("htmlcov/.gitignore")
 
     def test_html_created(self):
         # Test basic HTML generation: files should be created.
