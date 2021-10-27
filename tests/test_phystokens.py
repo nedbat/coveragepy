@@ -15,6 +15,7 @@ from coverage.phystokens import neuter_encoding_declaration, compile_unicode
 from coverage.python import get_python_source
 
 from tests.coveragetest import CoverageTest, TESTS_DIR
+from tests.helpers import re_lines
 
 
 # A simple program and its token stream.
@@ -97,10 +98,15 @@ class PhysTokensTest(CoverageTest):
 
     def test_stress(self):
         # Check the tokenization of a stress-test file.
+        # And check that those files haven't been incorrectly "fixed".
         stress = os.path.join(TESTS_DIR, "stress_phystoken.tok")
         self.check_file_tokenization(stress)
+        with open(stress) as fstress:
+            assert re_lines(fstress.read(), r"\s$"), f"{stress} needs a trailing space."
         stress = os.path.join(TESTS_DIR, "stress_phystoken_dos.tok")
         self.check_file_tokenization(stress)
+        with open(stress) as fstress:
+            assert re_lines(fstress.read(), r"\s$"), f"{stress} needs a trailing space."
 
 
 @pytest.mark.skipif(not env.PYBEHAVIOR.soft_keywords, reason="Soft keywords are new in Python 3.10")
