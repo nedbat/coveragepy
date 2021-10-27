@@ -19,7 +19,7 @@ from coverage.files import actual_path
 from tests.coveragetest import CoverageTest
 from tests.helpers import (
     arcs_to_arcz_repr, arcz_to_arcs, assert_count_equal, assert_coverage_warnings,
-    CheckUniqueFilenames, re_lines, re_line, without_module,
+    CheckUniqueFilenames, re_lines, re_lines_text, re_line, without_module,
 )
 
 
@@ -302,7 +302,8 @@ class ReLinesTest(CoverageTest):
         ("line1\nline2\nline3\n", "X", ""),
     ])
     def test_re_lines(self, text, pat, result):
-        assert re_lines(text, pat) == result
+        assert re_lines_text(text, pat) == result
+        assert re_lines(text, pat) == result.splitlines()
 
     @pytest.mark.parametrize("text, pat, result", [
         ("line1\nline2\nline3\n", "line", ""),
@@ -310,7 +311,8 @@ class ReLinesTest(CoverageTest):
         ("line1\nline2\nline3\n", "X", "line1\nline2\nline3\n"),
     ])
     def test_re_lines_inverted(self, text, pat, result):
-        assert re_lines(text, pat, match=False) == result
+        assert re_lines_text(text, pat, match=False) == result
+        assert re_lines(text, pat, match=False) == result.splitlines()
 
     @pytest.mark.parametrize("text, pat, result", [
         ("line1\nline2\nline3\n", "2", "line2"),

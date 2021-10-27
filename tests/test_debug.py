@@ -15,7 +15,7 @@ from coverage.debug import filter_text, info_formatter, info_header, short_id, s
 from coverage.debug import clipped_repr
 
 from tests.coveragetest import CoverageTest
-from tests.helpers import re_line, re_lines
+from tests.helpers import re_line, re_lines, re_lines_text
 
 
 class InfoFormatterTest(CoverageTest):
@@ -141,7 +141,7 @@ class DebugTraceTest(CoverageTest):
 
         # Now our lines are always prefixed with the process id.
         pid_prefix = r"^%5d\.[0-9a-f]{4}: " % os.getpid()
-        pid_lines = re_lines(out_lines, pid_prefix)
+        pid_lines = re_lines_text(out_lines, pid_prefix)
         assert pid_lines == out_lines
 
         # We still have some tracing, and some not tracing.
@@ -152,9 +152,9 @@ class DebugTraceTest(CoverageTest):
         out_lines = self.f1_debug_output(["pid", "dataop", "dataio", "callers"])
         # For every real message, there should be a stack trace with a line like
         #       "f1_debug_output : /Users/ned/coverage/tests/test_debug.py @71"
-        real_messages = re_lines(out_lines, r":\d+", match=False).splitlines()
+        real_messages = re_lines(out_lines, r":\d+", match=False)
         frame_pattern = r"\s+f1_debug_output : .*tests[/\\]test_debug.py:\d+$"
-        frames = re_lines(out_lines, frame_pattern).splitlines()
+        frames = re_lines(out_lines, frame_pattern)
         assert len(real_messages) == len(frames)
 
         last_line = out_lines.splitlines()[-1]
@@ -178,7 +178,7 @@ class DebugTraceTest(CoverageTest):
         for label in labels:
             label_pat = r"^\s*%s: " % label
             msg = "Incorrect lines for %r" % label
-            assert 1 == len(re_lines(out_lines, label_pat).splitlines()), msg
+            assert 1 == len(re_lines(out_lines, label_pat)), msg
 
     def test_debug_sys(self):
         out_lines = self.f1_debug_output(["sys"])
@@ -192,7 +192,7 @@ class DebugTraceTest(CoverageTest):
         for label in labels:
             label_pat = r"^\s*%s: " % label
             msg = "Incorrect lines for %r" % label
-            assert 1 == len(re_lines(out_lines, label_pat).splitlines()), msg
+            assert 1 == len(re_lines(out_lines, label_pat)), msg
 
     def test_debug_sys_ctracer(self):
         out_lines = self.f1_debug_output(["sys"])

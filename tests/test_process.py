@@ -23,7 +23,8 @@ from coverage.data import line_counts
 from coverage.files import abs_file, python_reported_file
 
 from tests.coveragetest import CoverageTest, TESTS_DIR
-from tests.helpers import change_dir, make_file, nice_file, os_sep, re_lines, run_command
+from tests.helpers import change_dir, make_file, nice_file, os_sep
+from tests.helpers import re_lines, re_lines_text, run_command
 
 
 class ProcessTest(CoverageTest):
@@ -500,7 +501,7 @@ class ProcessTest(CoverageTest):
         out2 = self.run_command("python throw.py")
         if env.PYPY:
             # Pypy has an extra frame in the traceback for some reason
-            out2 = re_lines(out2, "toplevel", match=False)
+            out2 = re_lines_text(out2, "toplevel", match=False)
         assert out == out2
 
         # But also make sure that the output is what we expect.
@@ -869,8 +870,8 @@ class EnvironmentTest(CoverageTest):
 
         if env.JYTHON:                  # pragma: only jython
             # Argv0 is different for Jython, remove that from the comparison.
-            expected = re_lines(expected, r'\s+"argv0":', match=False)
-            actual = re_lines(actual, r'\s+"argv0":', match=False)
+            expected = re_lines_text(expected, r'\s+"argv0":', match=False)
+            actual = re_lines_text(actual, r'\s+"argv0":', match=False)
 
         assert actual == expected
 
@@ -906,8 +907,8 @@ class EnvironmentTest(CoverageTest):
         # the comparison also...
         if env.PYPY:
             ignored = re.escape(os.getcwd())
-            expected = re_lines(expected, ignored, match=False)
-            actual = re_lines(actual, ignored, match=False)
+            expected = re_lines_text(expected, ignored, match=False)
+            actual = re_lines_text(actual, ignored, match=False)
         self.assert_tryexecfile_output(expected, actual)
 
     def test_coverage_run_dashm_dir_no_init_is_like_python(self):
