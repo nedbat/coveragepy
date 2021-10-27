@@ -1306,7 +1306,7 @@ def _is_simple_value(value):
     """Is `value` simple enough to be displayed on a single line?"""
     return (
         value in [None, [], (), {}, set()] or
-        isinstance(value, (str, int, float))
+        isinstance(value, (bytes, int, float, str))
     )
 
 def ast_dump(node, depth=0, print=print):   # pylint: disable=redefined-builtin
@@ -1352,7 +1352,10 @@ def ast_dump(node, depth=0, print=print):   # pylint: disable=redefined-builtin
             elif isinstance(value, list):
                 print(f"{prefix} [")
                 for n in value:
-                    ast_dump(n, depth + 8, print=print)
+                    if _is_simple_value(n):
+                        print(f"{next_indent}    {n!r}")
+                    else:
+                        ast_dump(n, depth + 8, print=print)
                 print(f"{next_indent}]")
             else:
                 print(prefix)
