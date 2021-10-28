@@ -20,6 +20,7 @@
                             Accepts shell-style wildcards, which must be quoted.
       -o OUTFILE            Write the XML report to this file. Defaults to
                             'coverage.xml'
+      -q, --quiet           Don't print messages about what is happening.
       --skip-empty          Skip files with no code.
       --debug=OPTS          Debug options, separated by commas. [env:
                             COVERAGE_DEBUG]

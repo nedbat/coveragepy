@@ -27,6 +27,7 @@
                             Accepts shell-style wildcards, which must be quoted.
       --precision=N         Number of digits after the decimal point to display
                             for reported coverage percentages.
+      -q, --quiet           Don't print messages about what is happening.
       --show-contexts       Show contexts for covered lines.
       --skip-covered        Skip files with 100% coverage.
       --no-skip-covered     Disable --skip-covered.

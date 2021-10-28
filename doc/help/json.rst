@@ -25,6 +25,7 @@
       -o OUTFILE            Write the JSON report to this file. Defaults to
                             'coverage.json'
       --pretty-print        Format the JSON for human readers.
+      -q, --quiet           Don't print messages about what is happening.
       --show-contexts       Show contexts for covered lines.
       --debug=OPTS          Debug options, separated by commas. [env:
                             COVERAGE_DEBUG]
