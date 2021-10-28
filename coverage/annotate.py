@@ -74,8 +74,7 @@ class AnnotateReporter:
             dest_file = fr.filename + ",cover"
 
         with open(dest_file, 'w', encoding='utf-8') as dest:
-            i = 0
-            j = 0
+            i = j = 0
             covered = True
             source = fr.source()
             for lineno, line in enumerate(source.splitlines(True), start=1):
@@ -89,9 +88,7 @@ class AnnotateReporter:
                     dest.write('  ')
                 elif self.else_re.match(line):
                     # Special logic for lines containing only 'else:'.
-                    if i >= len(statements) and j >= len(missing):
-                        dest.write('! ')
-                    elif i >= len(statements) or j >= len(missing):
+                    if j >= len(missing):
                         dest.write('> ')
                     elif statements[i] == missing[j]:
                         dest.write('! ')
