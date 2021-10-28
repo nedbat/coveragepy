@@ -104,7 +104,7 @@ class AnnotationGoldTest(CoverageTest):
         cov = coverage.Coverage()
         self.start_import_stop(cov, "white")
         cov.annotate()
-        compare(gold_path("annotate/annotate"), ".", "*,cover")
+        compare(gold_path("annotate/white"), ".", "*,cover")
 
     def test_missing_after_else(self):
         self.make_file("mae.py", """\
