@@ -183,12 +183,12 @@ class CoverageTestTest(CoverageTest):
         # Try it with a "coverage debug sys" command.
         out = self.run_command("coverage debug sys")
 
-        executable = re_line(out, "executable:")
+        executable = re_line("executable:", out)
         executable = executable.split(":", 1)[1].strip()
         assert _same_python_executable(executable, sys.executable)
 
         # "environment: COV_FOOBAR = XYZZY" or "COV_FOOBAR = XYZZY"
-        environ = re_line(out, "COV_FOOBAR")
+        environ = re_line("COV_FOOBAR", out)
         _, _, environ = environ.rpartition(":")
         assert environ.strip() == "COV_FOOBAR = XYZZY"
 
@@ -296,37 +296,37 @@ class ReLinesTest(CoverageTest):
 
     run_in_temp_dir = False
 
-    @pytest.mark.parametrize("text, pat, result", [
-        ("line1\nline2\nline3\n", "line", "line1\nline2\nline3\n"),
-        ("line1\nline2\nline3\n", "[13]", "line1\nline3\n"),
-        ("line1\nline2\nline3\n", "X", ""),
+    @pytest.mark.parametrize("pat, text, result", [
+        ("line", "line1\nline2\nline3\n", "line1\nline2\nline3\n"),
+        ("[13]", "line1\nline2\nline3\n", "line1\nline3\n"),
+        ("X", "line1\nline2\nline3\n", ""),
     ])
-    def test_re_lines(self, text, pat, result):
-        assert re_lines_text(text, pat) == result
-        assert re_lines(text, pat) == result.splitlines()
+    def test_re_lines(self, pat, text, result):
+        assert re_lines_text(pat, text) == result
+        assert re_lines(pat, text) == result.splitlines()
 
-    @pytest.mark.parametrize("text, pat, result", [
-        ("line1\nline2\nline3\n", "line", ""),
-        ("line1\nline2\nline3\n", "[13]", "line2\n"),
-        ("line1\nline2\nline3\n", "X", "line1\nline2\nline3\n"),
+    @pytest.mark.parametrize("pat, text, result", [
+        ("line", "line1\nline2\nline3\n", ""),
+        ("[13]", "line1\nline2\nline3\n", "line2\n"),
+        ("X", "line1\nline2\nline3\n", "line1\nline2\nline3\n"),
     ])
-    def test_re_lines_inverted(self, text, pat, result):
-        assert re_lines_text(text, pat, match=False) == result
-        assert re_lines(text, pat, match=False) == result.splitlines()
+    def test_re_lines_inverted(self, pat, text, result):
+        assert re_lines_text(pat, text, match=False) == result
+        assert re_lines(pat, text, match=False) == result.splitlines()
 
-    @pytest.mark.parametrize("text, pat, result", [
-        ("line1\nline2\nline3\n", "2", "line2"),
+    @pytest.mark.parametrize("pat, text, result", [
+        ("2", "line1\nline2\nline3\n", "line2"),
     ])
-    def test_re_line(self, text, pat, result):
-        assert re_line(text, pat) == result
+    def test_re_line(self, pat, text, result):
+        assert re_line(pat, text) == result
 
-    @pytest.mark.parametrize("text, pat", [
-        ("line1\nline2\nline3\n", "line"),      # too many matches
-        ("line1\nline2\nline3\n", "X"),         # no matches
+    @pytest.mark.parametrize("pat, text", [
+        ("line", "line1\nline2\nline3\n"),      # too many matches
+        ("X", "line1\nline2\nline3\n"),         # no matches
     ])
-    def test_re_line_bad(self, text, pat):
+    def test_re_line_bad(self, pat, text):
         with pytest.raises(AssertionError):
-            re_line(text, pat)
+            re_line(pat, text)
 
 
 def _same_python_executable(e1, e2):

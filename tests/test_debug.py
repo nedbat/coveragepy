@@ -126,35 +126,30 @@ class DebugTraceTest(CoverageTest):
 
         # We should have a line like "Tracing 'f1.py'", perhaps with an
         # absolute path.
-        f1 = re_lines(out_lines, r"Tracing '.*f1.py'")
-        assert f1
+        assert re.search(r"Tracing '.*f1.py'", out_lines)
 
         # We should have lines like "Not tracing 'collector.py'..."
-        coverage_lines = re_lines(
-            out_lines,
-            r"^Not tracing .*: is part of coverage.py$"
-            )
-        assert coverage_lines
+        assert re_lines(r"^Not tracing .*: is part of coverage.py$", out_lines)
 
     def test_debug_trace_pid(self):
         out_lines = self.f1_debug_output(["trace", "pid"])
 
         # Now our lines are always prefixed with the process id.
         pid_prefix = r"^%5d\.[0-9a-f]{4}: " % os.getpid()
-        pid_lines = re_lines_text(out_lines, pid_prefix)
+        pid_lines = re_lines_text(pid_prefix, out_lines)
         assert pid_lines == out_lines
 
         # We still have some tracing, and some not tracing.
-        assert re_lines(out_lines, pid_prefix + "Tracing ")
-        assert re_lines(out_lines, pid_prefix + "Not tracing ")
+        assert re_lines(pid_prefix + "Tracing ", out_lines)
+        assert re_lines(pid_prefix + "Not tracing ", out_lines)
 
     def test_debug_callers(self):
         out_lines = self.f1_debug_output(["pid", "dataop", "dataio", "callers"])
         # For every real message, there should be a stack trace with a line like
         #       "f1_debug_output : /Users/ned/coverage/tests/test_debug.py @71"
-        real_messages = re_lines(out_lines, r":\d+", match=False)
+        real_messages = re_lines(r":\d+", out_lines, match=False)
         frame_pattern = r"\s+f1_debug_output : .*tests[/\\]test_debug.py:\d+$"
-        frames = re_lines(out_lines, frame_pattern)
+        frames = re_lines(frame_pattern, out_lines)
         assert len(real_messages) == len(frames)
 
         last_line = out_lines.splitlines()[-1]
@@ -162,8 +157,8 @@ class DebugTraceTest(CoverageTest):
         # The details of what to expect on the stack are empirical, and can change
         # as the code changes. This test is here to ensure that the debug code
         # continues working. It's ok to adjust these details over time.
-        assert re.search(r"^\s*\d+\.\w{4}: Adding file tracers: 0 files", real_messages[-1])
-        assert re.search(r"\s+add_file_tracers : .*coverage[/\\]sqldata.py:\d+$", last_line)
+        assert re_lines(r"^\s*\d+\.\w{4}: Adding file tracers: 0 files", real_messages[-1])
+        assert re_lines(r"\s+add_file_tracers : .*coverage[/\\]sqldata.py:\d+$", last_line)
 
     def test_debug_config(self):
         out_lines = self.f1_debug_output(["config"])
@@ -178,7 +173,7 @@ class DebugTraceTest(CoverageTest):
         for label in labels:
             label_pat = r"^\s*%s: " % label
             msg = "Incorrect lines for %r" % label
-            assert 1 == len(re_lines(out_lines, label_pat)), msg
+            assert 1 == len(re_lines(label_pat, out_lines)), msg
 
     def test_debug_sys(self):
         out_lines = self.f1_debug_output(["sys"])
@@ -192,11 +187,11 @@ class DebugTraceTest(CoverageTest):
         for label in labels:
             label_pat = r"^\s*%s: " % label
             msg = "Incorrect lines for %r" % label
-            assert 1 == len(re_lines(out_lines, label_pat)), msg
+            assert 1 == len(re_lines(label_pat, out_lines)), msg
 
     def test_debug_sys_ctracer(self):
         out_lines = self.f1_debug_output(["sys"])
-        tracer_line = re_line(out_lines, r"CTracer:").strip()
+        tracer_line = re_line(r"CTracer:", out_lines).strip()
         if env.C_TRACER:
             expected = "CTracer: available"
         else:

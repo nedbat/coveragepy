@@ -502,5 +502,5 @@ def test_ast_dump():
         assert result[0] == "<Module"
         assert result[-1] == ">"
         result_text = "\n".join(result)
-        assert len(re_lines(result_text, r"^\s+>")) > num_lines
-        assert len(re_lines(result_text, r"<Name @ \d+,\d+(:\d+)? id: '\w+'>")) > num_lines // 2
+        assert len(re_lines(r"^\s+>", result_text)) > num_lines
+        assert len(re_lines(r"<Name @ \d+,\d+(:\d+)? id: '\w+'>", result_text)) > num_lines // 2

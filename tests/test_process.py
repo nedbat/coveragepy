@@ -501,7 +501,7 @@ class ProcessTest(CoverageTest):
         out2 = self.run_command("python throw.py")
         if env.PYPY:
             # Pypy has an extra frame in the traceback for some reason
-            out2 = re_lines_text(out2, "toplevel", match=False)
+            out2 = re_lines_text("toplevel", out2, match=False)
         assert out == out2
 
         # But also make sure that the output is what we expect.
@@ -870,8 +870,8 @@ class EnvironmentTest(CoverageTest):
 
         if env.JYTHON:                  # pragma: only jython
             # Argv0 is different for Jython, remove that from the comparison.
-            expected = re_lines_text(expected, r'\s+"argv0":', match=False)
-            actual = re_lines_text(actual, r'\s+"argv0":', match=False)
+            expected = re_lines_text(r'\s+"argv0":', expected, match=False)
+            actual = re_lines_text(r'\s+"argv0":', actual, match=False)
 
         assert actual == expected
 
@@ -907,8 +907,8 @@ class EnvironmentTest(CoverageTest):
         # the comparison also...
         if env.PYPY:
             ignored = re.escape(os.getcwd())
-            expected = re_lines_text(expected, ignored, match=False)
-            actual = re_lines_text(actual, ignored, match=False)
+            expected = re_lines_text(ignored, expected, match=False)
+            actual = re_lines_text(ignored, actual, match=False)
         self.assert_tryexecfile_output(expected, actual)
 
     def test_coverage_run_dashm_dir_no_init_is_like_python(self):
@@ -1807,13 +1807,13 @@ class VirtualenvTest(CoverageTest):
         # --source refers to a file.
         debug_out = self.get_trace_output()
         assert re_lines(
+            r"^Not tracing .*\bexecfile.py': inside --source, but is third-party",
             debug_out,
-            r"^Not tracing .*\bexecfile.py': inside --source, but is third-party"
             )
-        assert re_lines(debug_out, r"^Tracing .*\bmyproduct.py")
+        assert re_lines(r"^Tracing .*\bmyproduct.py", debug_out)
         assert re_lines(
+            r"^Not tracing .*\bcolorsys.py': falls outside the --source spec",
             debug_out,
-            r"^Not tracing .*\bcolorsys.py': falls outside the --source spec"
             )
 
         out = run_in_venv("python -m coverage report")
@@ -1830,17 +1830,17 @@ class VirtualenvTest(CoverageTest):
         # --source refers to a module.
         debug_out = self.get_trace_output()
         assert re_lines(
-            debug_out,
             r"^Not tracing .*\bexecfile.py': " +
-            "module 'coverage.execfile' falls outside the --source spec"
+            "module 'coverage.execfile' falls outside the --source spec",
+            debug_out,
             )
         assert re_lines(
+            r"^Not tracing .*\bmyproduct.py': module 'myproduct' falls outside the --source spec",
             debug_out,
-            r"^Not tracing .*\bmyproduct.py': module 'myproduct' falls outside the --source spec"
             )
         assert re_lines(
+            r"^Not tracing .*\bcolorsys.py': module 'colorsys' falls outside the --source spec",
             debug_out,
-            r"^Not tracing .*\bcolorsys.py': module 'colorsys' falls outside the --source spec"
             )
 
         out = run_in_venv("python -m coverage report")
@@ -1854,9 +1854,9 @@ class VirtualenvTest(CoverageTest):
         assert out == self.expected_stdout
 
         debug_out = self.get_trace_output()
-        assert re_lines(debug_out, r"^Not tracing .*\bexecfile.py': is part of coverage.py")
-        assert re_lines(debug_out, r"^Tracing .*\bmyproduct.py")
-        assert re_lines(debug_out, r"^Not tracing .*\bcolorsys.py': is in the stdlib")
+        assert re_lines(r"^Not tracing .*\bexecfile.py': is part of coverage.py", debug_out)
+        assert re_lines(r"^Tracing .*\bmyproduct.py", debug_out)
+        assert re_lines(r"^Not tracing .*\bcolorsys.py': is in the stdlib", debug_out)
 
         out = run_in_venv("python -m coverage report")
         assert "myproduct.py" in out
@@ -1894,17 +1894,17 @@ class VirtualenvTest(CoverageTest):
         # --source refers to a file.
         debug_out = self.get_trace_output()
         assert re_lines(
-            debug_out,
             r"^Not tracing .*\bexecfile.py': " +
-            "module 'coverage.execfile' falls outside the --source spec"
+            "module 'coverage.execfile' falls outside the --source spec",
+            debug_out,
             )
         assert re_lines(
+            r"^Not tracing .*\bmyproduct.py': module 'myproduct' falls outside the --source spec",
             debug_out,
-            r"^Not tracing .*\bmyproduct.py': module 'myproduct' falls outside the --source spec"
             )
         assert re_lines(
+            r"^Not tracing .*\bcolorsys.py': module 'colorsys' falls outside the --source spec",
             debug_out,
-            r"^Not tracing .*\bcolorsys.py': module 'colorsys' falls outside the --source spec"
             )
 
         out = run_in_venv("python -m coverage report")

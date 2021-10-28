@@ -133,7 +133,7 @@ class CheckUniqueFilenames:
         return ret
 
 
-def re_lines(text, pat, match=True):
+def re_lines(pat, text, match=True):
     """Return a list of lines selected by `pat` in the string `text`.
 
     If `match` is false, the selection is inverted: only the non-matching
@@ -146,18 +146,18 @@ def re_lines(text, pat, match=True):
     return [l for l in text.splitlines() if bool(re.search(pat, l)) == match]
 
 
-def re_lines_text(text, pat, match=True):
+def re_lines_text(pat, text, match=True):
     """Return the multi-line text of lines selected by `pat`."""
-    return "".join(l + "\n" for l in re_lines(text, pat, match=match))
+    return "".join(l + "\n" for l in re_lines(pat, text, match=match))
 
 
-def re_line(text, pat):
+def re_line(pat, text):
     """Return the one line in `text` that matches regex `pat`.
 
     Raises an AssertionError if more than one, or less than one, line matches.
 
     """
-    lines = re_lines(text, pat)
+    lines = re_lines(pat, text)
     assert len(lines) == 1
     return lines[0]
 

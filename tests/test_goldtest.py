@@ -69,8 +69,8 @@ class CompareTest(CoverageTest):
         stdout = self.stdout()
         assert "- Four score" in stdout
         assert "+ Five score" in stdout
-        assert re_line(stdout, rf"^:::: diff '.*{GOLD_PATH_RX}' and '{OUT_PATH_RX}'")
-        assert re_line(stdout, rf"^:::: end diff '.*{GOLD_PATH_RX}' and '{OUT_PATH_RX}'")
+        assert re_line(rf"^:::: diff '.*{GOLD_PATH_RX}' and '{OUT_PATH_RX}'", stdout)
+        assert re_line(rf"^:::: end diff '.*{GOLD_PATH_RX}' and '{OUT_PATH_RX}'", stdout)
         assert "  D/D/D, Gxxx, Pennsylvania" in stdout
 
         # The actual file was saved.
