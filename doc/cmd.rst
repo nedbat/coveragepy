@@ -511,6 +511,11 @@ Other common reporting options are described above in :ref:`cmd_reporting`.
 Text annotation: ``coverage annotate``
 --------------------------------------
 
+.. note::
+   The **annotate** command has been obsoleted by more modern reporting tools,
+   including the **html** command.  **annotate** will be removed in a future
+   version.
+
 The **annotate** command produces a text annotation of your source code.  With
 a ``-d`` argument specifying an output directory, each Python file becomes a
 text file in that directory.  Without ``-d``, the files are written into the

@@ -932,6 +932,11 @@ class Coverage:
     ):
         """Annotate a list of modules.
 
+        .. note::
+           This method has been obsoleted by more modern reporting tools,
+           including the :meth:`html_report` method.  It will be removed in a
+           future version.
+
         Each module in `morfs` is annotated.  The source is written to a new
         file, named with a ",cover" suffix, with each line prefixed with a
         marker to indicate the coverage of the line.  Covered lines have ">",
@@ -940,6 +945,9 @@ class Coverage:
         See :meth:`report` for other arguments.
 
         """
+        print("The annotate command will be removed in a future version.")
+        print("Get in touch if you still use it: ned@nedbatchelder.com")
+
         with override_config(self,
             ignore_errors=ignore_errors, report_omit=omit,
             report_include=include, report_contexts=contexts,

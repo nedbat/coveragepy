@@ -23,6 +23,10 @@ This list is detailed and covers changes in each pre-release version.
 Unreleased
 ----------
 
+- Deprecated: The ``annotate`` command and the ``Coverage.annotate`` function
+  will be removed in a future version, unless people let me know that they are
+  using it.  Get in touch if you do: ned@nedbatchelder.com.
+
 - Feature: Coverage now sets an environment variable, ``COVERAGE_RUN`` when
   running your code with the ``coverage run`` command.  The value is not
   important, and may change in the future.  Closes `issue 553`_.
@@ -43,7 +47,7 @@ Unreleased
 
 - Feature: Added support for PyPy 3.8.
 
-- Fix: more generated code is now excluded from measurement.  Code such as
+- Fix: More generated code is now excluded from measurement.  Code such as
   `attrs`_ boilerplate, or doctest code, was being measured though the
   synthetic line numbers meant they were never reported.  Once Cython was
   involved though, the generated .so files were parsed as Python, raising
