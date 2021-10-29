@@ -25,7 +25,10 @@ Unreleased
 
 - Deprecated: The ``annotate`` command and the ``Coverage.annotate`` function
   will be removed in a future version, unless people let me know that they are
-  using it.  Get in touch if you do: ned@nedbatchelder.com.
+  using it.  Instead, the ``html`` command gives better-looking (and more
+  accurate) output, and the ``report -m`` command will tell you line numbers of
+  missing lines.  Please get in touch if you have a reason to use ``annotate``
+  over those better options: ned@nedbatchelder.com.
 
 - Feature: Coverage now sets an environment variable, ``COVERAGE_RUN`` when
   running your code with the ``coverage run`` command.  The value is not
