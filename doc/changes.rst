@@ -379,7 +379,7 @@ Version 5.0a6 — 2019-07-16
     so should only be used between two installations of the same version of
     coverage.py.
 
-  - The :meth:`CoverageData constructor<.CoverageData.__init__>` has a new
+  - The :class:`CoverageData constructor<.CoverageData>` has a new
     argument, `no_disk` (default: False).  Setting it to True prevents writing
     any data to the disk.  This is useful for transient data objects.
 
