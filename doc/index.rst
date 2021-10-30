@@ -223,5 +223,5 @@ More information
     contributing
     trouble
     faq
-    changes
+    Change history <changes>
     sleepy
