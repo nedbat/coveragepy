@@ -200,6 +200,7 @@ def do_combine_html():
     show_contexts = bool(os.environ.get('COVERAGE_DYNCTX') or os.environ.get('COVERAGE_CONTEXT'))
     cov.html_report(show_contexts=show_contexts)
     cov.xml_report()
+    cov.json_report(pretty_print=True)
 
 
 def do_test_with_tracer(tracer, *runner_args):

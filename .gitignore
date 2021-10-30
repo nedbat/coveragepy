@@ -8,6 +8,7 @@
 .coverage
 .coverage.*
 coverage.xml
+coverage.json
 .metacov
 .metacov.*
 *.swp

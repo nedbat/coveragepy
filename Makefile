@@ -22,7 +22,7 @@ clean: clean_platform                   ## Remove artifacts of test execution, i
 	@rm -f *$$py.class */*$$py.class */*/*$$py.class */*/*/*$$py.class */*/*/*/*$$py.class */*/*/*/*/*$$py.class
 	@rm -f coverage/*,cover
 	@rm -f MANIFEST
-	@rm -f .coverage .coverage.* coverage.xml .metacov*
+	@rm -f .coverage .coverage.* coverage.xml coverage.json .metacov*
 	@rm -f .tox/*/lib/*/site-packages/zzz_metacov.pth
 	@rm -f */.coverage */*/.coverage */*/*/.coverage */*/*/*/.coverage */*/*/*/*/.coverage */*/*/*/*/*/.coverage
 	@rm -f tests/covmain.zip tests/zipmods.zip tests/zip1.zip
