@@ -96,8 +96,8 @@ setup_args = dict(
     },
 
     entry_points={
-        # Install a script as "coverage", and as "coverage[23]", and as
-        # "coverage-2.7" (or whatever).
+        # Install a script as "coverage", and as "coverage3", and as
+        # "coverage-3.7" (or whatever).
         'console_scripts': [
             'coverage = coverage.cmdline:main',
             'coverage%d = coverage.cmdline:main' % sys.version_info[:1],
