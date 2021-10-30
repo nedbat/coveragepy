@@ -22,7 +22,9 @@ This list is detailed and covers changes in each pre-release version.
 Unreleased
 ----------
 
-Nothing yet.
+- Fix: the sticky header on the HTML report didn't work unless you had branch
+  coverage enabled. This is now fixed, the sticky header works for everyone.
+  (Do people still use coverage without branch measurement!? j/k)
 
 
 .. _changes_61:
