@@ -210,4 +210,9 @@ zipp==3.6.0
     # via importlib-metadata
 
 # The following packages are considered to be unsafe in a requirements file:
-# setuptools
+pip==21.3.1
+    # via -r requirements/pip.pip
+setuptools==58.3.0
+    # via
+    #   astroid
+    #   check-manifest

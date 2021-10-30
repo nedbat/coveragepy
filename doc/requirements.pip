@@ -97,4 +97,5 @@ urllib3==1.26.7
     # via requests
 
 # The following packages are considered to be unsafe in a requirements file:
-# setuptools
+setuptools==58.3.0
+    # via sphinx
