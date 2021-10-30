@@ -5,6 +5,7 @@
 
 import os.path
 import textwrap
+import warnings
 
 import pytest
 
@@ -492,8 +493,10 @@ def test_ast_dump():
         with open(fname) as f:
             source = f.read()
             num_lines = len(source.splitlines())
-            print(f"file {fname} has {num_lines} lines")
-            ast_root = ast_parse(source)
+            with warnings.catch_warnings():
+                # stress_phystoken.tok has deprecation warnings, suppress them.
+                warnings.filterwarnings("ignore", message=r".*invalid escape sequence",)
+                ast_root = ast_parse(source)
         result = []
         ast_dump(ast_root, print=result.append)
         if num_lines < 100:

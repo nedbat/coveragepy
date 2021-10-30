@@ -6,6 +6,7 @@
 import os.path
 import re
 import textwrap
+import warnings
 
 import pytest
 
@@ -95,18 +96,20 @@ class PhysTokensTest(CoverageTest):
         real_file = os.path.join(TESTS_DIR, "test_coverage.py")
         self.check_file_tokenization(real_file)
 
-    def test_stress(self):
-        # Check the tokenization of a stress-test file.
+    @pytest.mark.parametrize("fname", [
+        "stress_phystoken.tok",
+        "stress_phystoken_dos.tok",
+    ])
+    def test_stress(self, fname):
+        # Check the tokenization of the stress-test files.
         # And check that those files haven't been incorrectly "fixed".
-        stress = os.path.join(TESTS_DIR, "stress_phystoken.tok")
-        self.check_file_tokenization(stress)
-        with open(stress) as fstress:
-            assert re.search(r"\s$", fstress.read()), f"{stress} needs a trailing space."
-        stress = os.path.join(TESTS_DIR, "stress_phystoken_dos.tok")
-        self.check_file_tokenization(stress)
-        with open(stress) as fstress:
-            assert re.search(r"\s$", fstress.read()), f"{stress} needs a trailing space."
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", message=r".*invalid escape sequence",)
 
+            stress = os.path.join(TESTS_DIR, fname)
+            self.check_file_tokenization(stress)
+            with open(stress) as fstress:
+                assert re.search(r"(?m) $", fstress.read()), f"{stress} needs a trailing space."
 
 @pytest.mark.skipif(not env.PYBEHAVIOR.soft_keywords, reason="Soft keywords are new in Python 3.10")
 class SoftKeywordTest(CoverageTest):
