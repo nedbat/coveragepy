@@ -20,8 +20,10 @@ This list is detailed and covers changes in each pre-release version.
     ..  --------------------------
 
 
-Unreleased
-----------
+.. _changes_61:
+
+Version 6.1 — 2021-10-30
+------------------------
 
 - Deprecated: The ``annotate`` command and the ``Coverage.annotate`` function
   will be removed in a future version, unless people let me know that they are
