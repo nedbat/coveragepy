@@ -7,6 +7,7 @@ Pytest auto configuration.
 This module is run automatically by pytest, to define and enable fixtures.
 """
 
+import os
 import sys
 import warnings
 
@@ -74,5 +75,12 @@ def reset_sys_path():
 def pytest_runtest_call(item):
     """Convert StopEverything into skipped tests."""
     outcome = yield
-    if outcome.excinfo and issubclass(outcome.excinfo[0], StopEverything):
+    if outcome.excinfo and issubclass(outcome.excinfo[0], StopEverything):  # pragma: only jython
         pytest.skip(f"Skipping {item.nodeid} for StopEverything: {outcome.excinfo[1]}")
+
+    # For diagnosing test running:
+    if 0:
+        with open("/tmp/tests.txt", "a") as proctxt:
+            worker = os.environ.get('PYTEST_XDIST_WORKER', 'none')
+            test = os.environ.get("PYTEST_CURRENT_TEST", "unknown")
+            print(f"{worker}: {test}", file=proctxt, flush=True)
