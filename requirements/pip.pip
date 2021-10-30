@@ -8,7 +8,7 @@ backports.entry-points-selectable==1.1.0
     # via virtualenv
 distlib==0.3.3
     # via virtualenv
-filelock==3.3.1
+filelock==3.3.2
     # via virtualenv
 platformdirs==2.4.0
     # via virtualenv

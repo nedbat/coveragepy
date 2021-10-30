@@ -4,7 +4,7 @@
 #
 #    make upgrade
 #
-astroid==2.8.3
+astroid==2.8.4
     # via pylint
 attrs==21.2.0
     # via
@@ -47,7 +47,7 @@ execnet==1.9.0
     # via
     #   -r requirements/pytest.pip
     #   pytest-xdist
-filelock==3.3.1
+filelock==3.3.2
     # via
     #   -r requirements/pip.pip
     #   tox
@@ -84,7 +84,7 @@ libsass==0.21.0
     # via -r requirements/dev.in
 mccabe==0.6.1
     # via pylint
-packaging==21.0
+packaging==21.2
     # via
     #   -r requirements/pytest.pip
     #   bleach
@@ -107,7 +107,7 @@ pluggy==1.0.0
     #   -r requirements/pytest.pip
     #   pytest
     #   tox
-pudb==2021.1
+pudb==2021.2
     # via -r requirements/dev.in
 py==1.10.0
     # via
@@ -123,7 +123,7 @@ pygments==2.10.0
     #   readme-renderer
 pylint==2.11.1
     # via -r requirements/dev.in
-pyparsing==3.0.1
+pyparsing==2.4.7
     # via
     #   -r requirements/pytest.pip
     #   packaging
@@ -193,6 +193,10 @@ typing-extensions==3.10.0.2
 urllib3==1.26.7
     # via requests
 urwid==2.1.2
+    # via
+    #   pudb
+    #   urwid-readline
+urwid-readline==0.13
     # via pudb
 virtualenv==20.9.0
     # via
@@ -200,7 +204,7 @@ virtualenv==20.9.0
     #   tox
 webencodings==0.5.1
     # via bleach
-wrapt==1.13.2
+wrapt==1.13.3
     # via astroid
 zipp==3.6.0
     # via importlib-metadata
