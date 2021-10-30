@@ -611,9 +611,9 @@ class HtmlGoldTest(CoverageTest):
         compare_html(gold_path("html/a"), "out/a")
         contains(
             "out/a/a_py.html",
-            ('<span class="key">if</span> <span class="num">1</span> '
+            ('<span class="key">if</span> <span class="num">1</span> ' +
              '<span class="op">&lt;</span> <span class="num">2</span>'),
-            ('    <span class="nam">a</span> '
+            ('    <span class="nam">a</span> ' +
              '<span class="op">=</span> <span class="num">3</span>'),
             '<span class="pc_cov">67%</span>',
         )
@@ -662,24 +662,24 @@ class HtmlGoldTest(CoverageTest):
         compare_html(gold_path("html/b_branch"), "out/b_branch")
         contains(
             "out/b_branch/b_py.html",
-            ('<span class="key">if</span> <span class="nam">x</span> '
+            ('<span class="key">if</span> <span class="nam">x</span> ' +
              '<span class="op">&lt;</span> <span class="num">2</span>'),
-            ('    <span class="nam">a</span> <span class="op">=</span> '
+            ('    <span class="nam">a</span> <span class="op">=</span> ' +
              '<span class="num">3</span>'),
             '<span class="pc_cov">70%</span>',
 
-            ('<span class="annotate short">3&#x202F;&#x219B;&#x202F;6</span>'
-             '<span class="annotate long">line 3 didn\'t jump to line 6, '
+            ('<span class="annotate short">3&#x202F;&#x219B;&#x202F;6</span>' +
+             '<span class="annotate long">line 3 didn\'t jump to line 6, ' +
                             'because the condition on line 3 was never false</span>'),
-            ('<span class="annotate short">12&#x202F;&#x219B;&#x202F;exit</span>'
-             '<span class="annotate long">line 12 didn\'t return from function \'two\', '
+            ('<span class="annotate short">12&#x202F;&#x219B;&#x202F;exit</span>' +
+             '<span class="annotate long">line 12 didn\'t return from function \'two\', ' +
                             'because the condition on line 12 was never false</span>'),
-            ('<span class="annotate short">20&#x202F;&#x219B;&#x202F;21,&nbsp;&nbsp; '
-                            '20&#x202F;&#x219B;&#x202F;23</span>'
-             '<span class="annotate long">2 missed branches: '
-                            '1) line 20 didn\'t jump to line 21, '
-                                'because the condition on line 20 was never true, '
-                            '2) line 20 didn\'t jump to line 23, '
+            ('<span class="annotate short">20&#x202F;&#x219B;&#x202F;21,&nbsp;&nbsp; ' +
+                            '20&#x202F;&#x219B;&#x202F;23</span>' +
+             '<span class="annotate long">2 missed branches: ' +
+                            '1) line 20 didn\'t jump to line 21, ' +
+                                'because the condition on line 20 was never true, ' +
+                            '2) line 20 didn\'t jump to line 23, ' +
                                 'because the condition on line 20 was never false</span>'),
         )
         contains(
@@ -906,7 +906,7 @@ assert len(math) == 18
             contains(
                 "out/partial_626/index.html",
                 '<a href="partial_py.html">partial.py</a>',
-                '<span class="pc_cov">87%</span>'
+                '<span class="pc_cov">87%</span>',
             )
         else:
             cov.html_report(partial, directory="out/partial")
@@ -923,7 +923,7 @@ assert len(math) == 18
             contains(
                 "out/partial/index.html",
                 '<a href="partial_py.html">partial.py</a>',
-                '<span class="pc_cov">91%</span>'
+                '<span class="pc_cov">91%</span>',
             )
 
     def test_styled(self):
@@ -946,17 +946,17 @@ assert len(math) == 18
         contains(
             "out/styled/a_py.html",
             '<link rel="stylesheet" href="extra.css" type="text/css">',
-            ('<span class="key">if</span> <span class="num">1</span> '
+            ('<span class="key">if</span> <span class="num">1</span> ' +
              '<span class="op">&lt;</span> <span class="num">2</span>'),
-            ('    <span class="nam">a</span> <span class="op">=</span> '
+            ('    <span class="nam">a</span> <span class="op">=</span> ' +
              '<span class="num">3</span>'),
-            '<span class="pc_cov">67%</span>'
+            '<span class="pc_cov">67%</span>',
         )
         contains(
             "out/styled/index.html",
             '<link rel="stylesheet" href="extra.css" type="text/css">',
             '<a href="a_py.html">a.py</a>',
-            '<span class="pc_cov">67%</span>'
+            '<span class="pc_cov">67%</span>',
         )
 
     def test_tabbed(self):
@@ -985,10 +985,10 @@ assert len(math) == 18
 
         contains(
             "out/tabbed_py.html",
-            '>        <span class="key">if</span> '
-            '<span class="nam">x</span><span class="op">:</span>'
-            '                                   '
-            '<span class="com"># look nice</span>'
+            '>        <span class="key">if</span> ' +
+            '<span class="nam">x</span><span class="op">:</span>' +
+            '                                   ' +
+            '<span class="com"># look nice</span>',
         )
 
         doesnt_contain("out/tabbed_py.html", "\t")

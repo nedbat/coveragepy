@@ -316,7 +316,7 @@ class ApiTest(CoverageTest):
 
     def test_cov4_data_file(self):
         cov4_data = (
-            "!coverage.py: This is a private format, don't read it directly!"
+            "!coverage.py: This is a private format, don't read it directly!" +
             '{"lines":{"/private/tmp/foo.py":[1,5,2,3]}}'
         )
         self.make_file(".coverage", cov4_data)

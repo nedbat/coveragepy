@@ -125,7 +125,7 @@ setup_args = dict(
     project_urls={
         'Documentation': __url__,
         'Funding': (
-            'https://tidelift.com/subscription/pkg/pypi-coverage'
+            'https://tidelift.com/subscription/pkg/pypi-coverage' +
             '?utm_source=pypi-coverage&utm_medium=referral&utm_campaign=pypi'
         ),
         'Issues': 'https://github.com/nedbat/coveragepy/issues',
