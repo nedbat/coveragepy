@@ -57,10 +57,10 @@
     - upload kits:
         $ make kit_upload
 - Tag the tree
-    $ git tag -a 3.0.1
+    $ git tag -a -m "Version 3.0.1" 3.0.1
     $ git push --follow-tags
 - Update GitHub releases:
-    $ make github_releases
+    $ make clean github_releases
 - Bump version:
     - coverage/version.py
         - increment version number
@@ -84,11 +84,9 @@
             - change the default version to the new version
 - Visit the fixed issues on GitHub and mention the version it was fixed in.
     - "This is now released as part of [coverage 5.2](https://pypi.org/project/coverage/5.2)."
-    - make a milestone for the next release and move open issues into it.
 - Announce:
     - twitter @coveragepy
     - nedbatchelder.com blog post?
-    - testing-in-python mailing list?
 
 
 * Testing
