@@ -96,9 +96,6 @@
     - pip install -r requirements/dev.pip
     - $ tox
 
-- Testing on Linux:
-    - $ make test_linux
-
 - For complete coverage testing:
 
     $ make metacov

@@ -44,24 +44,13 @@ $(CSS): $(SCSS)
 	pysassc --style=compact $(SCSS) $@
 	cp $@ tests/gold/html/styled
 
-LINTABLE = coverage tests igor.py setup.py __main__.py
-
 lint:					## Run linters and checkers.
 	tox -q -e lint
 
-test:
-	tox -q -e py39 $(ARGS)
-
-PYTEST_SMOKE_ARGS = -n 6 -m "not expensive" --maxfail=3 $(ARGS)
+PYTEST_SMOKE_ARGS = -n auto -m "not expensive" --maxfail=3 $(ARGS)
 
 smoke: 					## Run tests quickly with the C tracer in the lowest supported Python versions.
-	COVERAGE_NO_PYTRACER=1 tox -q -e py39 -- $(PYTEST_SMOKE_ARGS)
-
-pysmoke: 				## Run tests quickly with the Python tracer in the lowest supported Python versions.
-	COVERAGE_NO_CTRACER=1 tox -q -e py39 -- $(PYTEST_SMOKE_ARGS)
-
-metasmoke:
-	COVERAGE_NO_PYTRACER=1 ARGS="-e py39" make clean metacov metahtml
+	COVERAGE_NO_PYTRACER=1 tox -q -e py36 -- $(PYTEST_SMOKE_ARGS)
 
 # Coverage measurement of coverage.py itself (meta-coverage). See metacov.ini
 # for details.
@@ -71,6 +60,9 @@ metacov:				## Run meta-coverage, measuring ourself.
 
 metahtml:				## Produce meta-coverage HTML reports.
 	python igor.py combine_html
+
+metasmoke:
+	COVERAGE_NO_PYTRACER=1 ARGS="-e py39" make clean metacov metahtml
 
 PIP_COMPILE = pip-compile --upgrade --allow-unsafe
 upgrade: export CUSTOM_COMPILE_COMMAND=make upgrade
