@@ -134,15 +134,16 @@ def venv_world_fixture(tmp_path_factory):
                 print("Plugin here")
             """)
 
-        # Install the third-party packages.
-        run_in_venv("python -m pip install --no-index ./third_pkg")
-        run_in_venv("python -m pip install --no-index -e ./another_pkg")
-        run_in_venv("python -m pip install --no-index -e ./bug888/app -e ./bug888/plugin")
-        shutil.rmtree("third_pkg")
-
-        # Install coverage.
+        # Install everything.
         coverage_src = nice_file(TESTS_DIR, "..")
-        run_in_venv(f"python -m pip install --no-index {coverage_src}")
+        run_in_venv(
+            "python -m pip install --no-index " +
+            "./third_pkg " +
+            "-e ./another_pkg " +
+            "-e ./bug888/app -e ./bug888/plugin " +
+            coverage_src
+        )
+        shutil.rmtree("third_pkg")
 
     return venv_world
 
