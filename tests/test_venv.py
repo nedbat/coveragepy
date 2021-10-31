@@ -1,0 +1,276 @@
+# Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
+# For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
+
+"""Tests about understanding how third-party code is installed."""
+
+import os
+import os.path
+import shutil
+
+import pytest
+
+from coverage import env
+
+from tests.coveragetest import CoverageTest, TESTS_DIR
+from tests.helpers import change_dir, make_file, nice_file
+from tests.helpers import re_lines, run_command
+
+
+def run_in_venv(cmd):
+    r"""Run `cmd` in the virtualenv at `venv`.
+
+    The first word of the command will be adjusted to run it from the
+    venv/bin or venv\Scripts directory.
+
+    Returns the text output of the command.
+    """
+    words = cmd.split()
+    if env.WINDOWS:
+        words[0] = fr"venv\Scripts\{words[0]}.exe"
+    else:
+        words[0] = fr"venv/bin/{words[0]}"
+    status, output = run_command(" ".join(words))
+    assert status == 0
+    return output
+
+
+@pytest.fixture(scope="session", name="venv_world")
+def venv_world_fixture(tmp_path_factory):
+    """Create a virtualenv with a few test packages for VirtualenvTest to use.
+
+    Returns the directory containing the "venv" virtualenv.
+    """
+
+    venv_world = tmp_path_factory.mktemp("venv_world")
+    with change_dir(venv_world):
+        # Create a virtualenv.
+        run_command("python -m venv venv")
+
+        # A third-party package that installs a few different packages.
+        make_file("third_pkg/third/__init__.py", """\
+            import fourth
+            def third(x):
+                return 3 * x
+            """)
+        # Use plugin2.py as third.plugin
+        with open(os.path.join(os.path.dirname(__file__), "plugin2.py")) as f:
+            make_file("third_pkg/third/plugin.py", f.read())
+        # A render function for plugin2 to use for dynamic file names.
+        make_file("third_pkg/third/render.py", """\
+            def render(filename, linenum):
+                return "HTML: {}@{}".format(filename, linenum)
+            """)
+        # Another package that third can use.
+        make_file("third_pkg/fourth/__init__.py", """\
+            def fourth(x):
+                return 4 * x
+            """)
+        # Some namespace packages.
+        make_file("third_pkg/nspkg/fifth/__init__.py", """\
+            def fifth(x):
+                return 5 * x
+            """)
+        # The setup.py to install everything.
+        make_file("third_pkg/setup.py", """\
+            import setuptools
+            setuptools.setup(
+                name="third",
+                packages=["third", "fourth", "nspkg.fifth"],
+            )
+            """)
+
+        # Some namespace packages.
+        make_file("another_pkg/nspkg/sixth/__init__.py", """\
+            def sixth(x):
+                return 6 * x
+            """)
+        # The setup.py to install everything.
+        make_file("another_pkg/setup.py", """\
+            import setuptools
+            setuptools.setup(
+                name="another",
+                packages=["nspkg.sixth"],
+            )
+            """)
+
+        # Install the third-party packages.
+        run_in_venv("python -m pip install --no-index ./third_pkg")
+        run_in_venv("python -m pip install --no-index -e ./another_pkg")
+        shutil.rmtree("third_pkg")
+
+        # Install coverage.
+        coverage_src = nice_file(TESTS_DIR, "..")
+        run_in_venv(f"python -m pip install --no-index {coverage_src}")
+
+    return venv_world
+
+
+@pytest.fixture(params=[
+    "coverage",
+    "python -m coverage",
+], name="coverage_command")
+def coverage_command_fixture(request):
+    """Parametrized fixture to use multiple forms of "coverage" command."""
+    return request.param
+
+
+class VirtualenvTest(CoverageTest):
+    """Tests of virtualenv considerations."""
+
+    expected_stdout = "33\n110\n198\n1.5\n"
+
+    @pytest.fixture(autouse=True)
+    def in_venv_world_fixture(self, venv_world):
+        """For running tests inside venv_world, and cleaning up made files."""
+        with change_dir(venv_world):
+            self.make_file("myproduct.py", """\
+                import colorsys
+                import third
+                import nspkg.fifth
+                import nspkg.sixth
+                print(third.third(11))
+                print(nspkg.fifth.fifth(22))
+                print(nspkg.sixth.sixth(33))
+                print(sum(colorsys.rgb_to_hls(1, 0, 0)))
+                """)
+
+            self.del_environ("COVERAGE_TESTING")    # To avoid needing contracts installed.
+            self.set_environ("COVERAGE_DEBUG_FILE", "debug_out.txt")
+            self.set_environ("COVERAGE_DEBUG", "trace")
+
+            yield
+
+            for fname in os.listdir("."):
+                if fname not in {"venv", "another_pkg"}:
+                    os.remove(fname)
+
+    def get_trace_output(self):
+        """Get the debug output of coverage.py"""
+        with open("debug_out.txt") as f:
+            return f.read()
+
+    def test_third_party_venv_isnt_measured(self, coverage_command):
+        out = run_in_venv(coverage_command + " run --source=. myproduct.py")
+        # In particular, this warning doesn't appear:
+        # Already imported a file that will be measured: .../coverage/__main__.py
+        assert out == self.expected_stdout
+
+        # Check that our tracing was accurate. Files are mentioned because
+        # --source refers to a file.
+        debug_out = self.get_trace_output()
+        assert re_lines(
+            r"^Not tracing .*\bexecfile.py': inside --source, but is third-party",
+            debug_out,
+            )
+        assert re_lines(r"^Tracing .*\bmyproduct.py", debug_out)
+        assert re_lines(
+            r"^Not tracing .*\bcolorsys.py': falls outside the --source spec",
+            debug_out,
+            )
+
+        out = run_in_venv("python -m coverage report")
+        assert "myproduct.py" in out
+        assert "third" not in out
+        assert "coverage" not in out
+        assert "colorsys" not in out
+
+    def test_us_in_venv_isnt_measured(self, coverage_command):
+        out = run_in_venv(coverage_command + " run --source=third myproduct.py")
+        assert out == self.expected_stdout
+
+        # Check that our tracing was accurate. Modules are mentioned because
+        # --source refers to a module.
+        debug_out = self.get_trace_output()
+        assert re_lines(
+            r"^Not tracing .*\bexecfile.py': " +
+            "module 'coverage.execfile' falls outside the --source spec",
+            debug_out,
+            )
+        assert re_lines(
+            r"^Not tracing .*\bmyproduct.py': module 'myproduct' falls outside the --source spec",
+            debug_out,
+            )
+        assert re_lines(
+            r"^Not tracing .*\bcolorsys.py': module 'colorsys' falls outside the --source spec",
+            debug_out,
+            )
+
+        out = run_in_venv("python -m coverage report")
+        assert "myproduct.py" not in out
+        assert "third" in out
+        assert "coverage" not in out
+        assert "colorsys" not in out
+
+    def test_venv_isnt_measured(self, coverage_command):
+        out = run_in_venv(coverage_command + " run myproduct.py")
+        assert out == self.expected_stdout
+
+        debug_out = self.get_trace_output()
+        assert re_lines(r"^Not tracing .*\bexecfile.py': is part of coverage.py", debug_out)
+        assert re_lines(r"^Tracing .*\bmyproduct.py", debug_out)
+        assert re_lines(r"^Not tracing .*\bcolorsys.py': is in the stdlib", debug_out)
+
+        out = run_in_venv("python -m coverage report")
+        assert "myproduct.py" in out
+        assert "third" not in out
+        assert "coverage" not in out
+        assert "colorsys" not in out
+
+    @pytest.mark.skipif(not env.C_TRACER, reason="Plugins are only supported with the C tracer.")
+    def test_venv_with_dynamic_plugin(self, coverage_command):
+        # https://github.com/nedbat/coveragepy/issues/1150
+        # Django coverage plugin was incorrectly getting warnings:
+        # "Already imported: ... django/template/blah.py"
+        # It happened because coverage imported the plugin, which imported
+        # Django, and then the Django files were reported as traceable.
+        self.make_file(".coveragerc", "[run]\nplugins=third.plugin\n")
+        self.make_file("myrender.py", """\
+            import third.render
+            print(third.render.render("hello.html", 1723))
+            """)
+        out = run_in_venv(coverage_command + " run --source=. myrender.py")
+        # The output should not have this warning:
+        # Already imported a file that will be measured: ...third/render.py (already-imported)
+        assert out == "HTML: hello.html@1723\n"
+
+    def test_installed_namespace_packages(self, coverage_command):
+        # https://github.com/nedbat/coveragepy/issues/1231
+        # When namespace packages were installed, they were considered
+        # third-party packages.  Test that isn't still happening.
+        out = run_in_venv(coverage_command + " run --source=nspkg myproduct.py")
+        # In particular, this warning doesn't appear:
+        # Already imported a file that will be measured: .../coverage/__main__.py
+        assert out == self.expected_stdout
+
+        # Check that our tracing was accurate. Files are mentioned because
+        # --source refers to a file.
+        debug_out = self.get_trace_output()
+        assert re_lines(
+            r"^Not tracing .*\bexecfile.py': " +
+            "module 'coverage.execfile' falls outside the --source spec",
+            debug_out,
+            )
+        assert re_lines(
+            r"^Not tracing .*\bmyproduct.py': module 'myproduct' falls outside the --source spec",
+            debug_out,
+            )
+        assert re_lines(
+            r"^Not tracing .*\bcolorsys.py': module 'colorsys' falls outside the --source spec",
+            debug_out,
+            )
+
+        out = run_in_venv("python -m coverage report")
+
+        # Name                                                       Stmts   Miss  Cover
+        # ------------------------------------------------------------------------------
+        # another_pkg/nspkg/sixth/__init__.py                            2      0   100%
+        # venv/lib/python3.9/site-packages/nspkg/fifth/__init__.py       2      0   100%
+        # ------------------------------------------------------------------------------
+        # TOTAL                                                          4      0   100%
+
+        assert "myproduct.py" not in out
+        assert "third" not in out
+        assert "coverage" not in out
+        assert "colorsys" not in out
+        assert "fifth" in out
+        assert "sixth" in out
