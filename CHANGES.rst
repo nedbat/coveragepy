@@ -19,8 +19,10 @@ This list is detailed and covers changes in each pre-release version.
     ..  Version 9.8.1 — 2027-07-27
     ..  --------------------------
 
-Unreleased
-----------
+.. _changes_611:
+
+Version 6.1.1 — 2021-10-31
+--------------------------
 
 - Fix: The sticky header on the HTML report didn't work unless you had branch
   coverage enabled. This is now fixed: the sticky header works for everyone.
