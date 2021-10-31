@@ -479,6 +479,10 @@ class InOrOut:
                 if filename in warned:
                     continue
 
+                if len(getattr(mod, "__path__", ())) > 1:
+                    # A namespace package, which confuses this code, so ignore it.
+                    continue
+
                 disp = self.should_trace(filename)
                 if disp.has_dynamic_filename:
                     # A plugin with dynamic filenames: the Python file

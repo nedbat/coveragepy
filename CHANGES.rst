@@ -22,9 +22,15 @@ This list is detailed and covers changes in each pre-release version.
 Unreleased
 ----------
 
-- Fix: the sticky header on the HTML report didn't work unless you had branch
-  coverage enabled. This is now fixed, the sticky header works for everyone.
+- Fix: The sticky header on the HTML report didn't work unless you had branch
+  coverage enabled. This is now fixed: the sticky header works for everyone.
   (Do people still use coverage without branch measurement!? j/k)
+
+- Fix: When using explicitly declared namespace packages, the "already imported
+  a file that will be measured" warning would be issued (`issue 888`_).  This
+  is now fixed.
+
+.. _issue 888: https://github.com/nedbat/coveragepy/issues/888
 
 
 .. _changes_61:

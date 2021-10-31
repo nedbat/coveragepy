@@ -84,7 +84,6 @@ def venv_world_fixture(tmp_path_factory):
             def sixth(x):
                 return 6 * x
             """)
-        # The setup.py to install everything.
         make_file("another_pkg/setup.py", """\
             import setuptools
             setuptools.setup(
@@ -93,9 +92,52 @@ def venv_world_fixture(tmp_path_factory):
             )
             """)
 
+        # Bug888 code.
+        make_file("bug888/app/setup.py", """\
+            from setuptools import setup
+            setup(
+                name='testcov',
+                packages=['testcov'],
+                namespace_packages=['testcov'],
+            )
+            """)
+        make_file("bug888/app/testcov/__init__.py", """\
+            try:  # pragma: no cover
+                __import__('pkg_resources').declare_namespace(__name__)
+            except ImportError:  # pragma: no cover
+                from pkgutil import extend_path
+                __path__ = extend_path(__path__, __name__)
+            """)
+        make_file("bug888/app/testcov/main.py", """\
+            import pkg_resources
+            for entry_point in pkg_resources.iter_entry_points('plugins'):
+                entry_point.load()()
+            """)
+        make_file("bug888/plugin/setup.py", """\
+            from setuptools import setup
+            setup(
+                name='testcov-plugin',
+                packages=['testcov'],
+                namespace_packages=['testcov'],
+                entry_points={'plugins': ['testp = testcov.plugin:testp']},
+            )
+            """)
+        make_file("bug888/plugin/testcov/__init__.py", """\
+            try:  # pragma: no cover
+                __import__('pkg_resources').declare_namespace(__name__)
+            except ImportError:  # pragma: no cover
+                from pkgutil import extend_path
+                __path__ = extend_path(__path__, __name__)
+            """)
+        make_file("bug888/plugin/testcov/plugin.py", """\
+            def testp():
+                print("Plugin here")
+            """)
+
         # Install the third-party packages.
         run_in_venv("python -m pip install --no-index ./third_pkg")
         run_in_venv("python -m pip install --no-index -e ./another_pkg")
+        run_in_venv("python -m pip install --no-index -e ./bug888/app -e ./bug888/plugin")
         shutil.rmtree("third_pkg")
 
         # Install coverage.
@@ -141,7 +183,7 @@ class VirtualenvTest(CoverageTest):
             yield
 
             for fname in os.listdir("."):
-                if fname not in {"venv", "another_pkg"}:
+                if fname not in {"venv", "another_pkg", "bug888"}:
                     os.remove(fname)
 
     def get_trace_output(self):
@@ -274,3 +316,11 @@ class VirtualenvTest(CoverageTest):
         assert "colorsys" not in out
         assert "fifth" in out
         assert "sixth" in out
+
+    def test_bug888(self, coverage_command):
+        out = run_in_venv(
+            coverage_command +
+            " run --source=bug888/app,bug888/plugin bug888/app/testcov/main.py"
+            )
+        # When the test fails, the output includes "Already imported a file that will be measured"
+        assert out == "Plugin here\n"
