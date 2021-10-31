@@ -210,7 +210,7 @@ class VirtualenvTest(CoverageTest):
             debug_out,
             )
 
-        out = run_in_venv("python -m coverage report")
+        out = run_in_venv(coverage_command + " report")
         assert "myproduct.py" in out
         assert "third" not in out
         assert "coverage" not in out
@@ -237,7 +237,7 @@ class VirtualenvTest(CoverageTest):
             debug_out,
             )
 
-        out = run_in_venv("python -m coverage report")
+        out = run_in_venv(coverage_command + " report")
         assert "myproduct.py" not in out
         assert "third" in out
         assert "coverage" not in out
@@ -252,7 +252,7 @@ class VirtualenvTest(CoverageTest):
         assert re_lines(r"^Tracing .*\bmyproduct.py", debug_out)
         assert re_lines(r"^Not tracing .*\bcolorsys.py': is in the stdlib", debug_out)
 
-        out = run_in_venv("python -m coverage report")
+        out = run_in_venv(coverage_command + " report")
         assert "myproduct.py" in out
         assert "third" not in out
         assert "coverage" not in out
@@ -301,7 +301,7 @@ class VirtualenvTest(CoverageTest):
             debug_out,
             )
 
-        out = run_in_venv("python -m coverage report")
+        out = run_in_venv(coverage_command + " report")
 
         # Name                                                       Stmts   Miss  Cover
         # ------------------------------------------------------------------------------
