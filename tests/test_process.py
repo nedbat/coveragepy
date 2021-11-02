@@ -1092,6 +1092,8 @@ class EnvironmentTest(CoverageTest):
 class ExcepthookTest(CoverageTest):
     """Tests of sys.excepthook support."""
 
+    # TODO: do we need these as process tests if we have test_execfile.py:RunFileTest?
+
     def test_excepthook(self):
         self.make_file("excepthook.py", """\
             import sys

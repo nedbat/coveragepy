@@ -10,6 +10,7 @@ import os.path
 import pathlib
 import py_compile
 import re
+import sys
 
 import pytest
 
@@ -25,6 +26,12 @@ TRY_EXECFILE = os.path.join(TESTS_DIR, "modules/process_test/try_execfile.py")
 
 class RunFileTest(CoverageTest):
     """Test cases for `run_python_file`."""
+
+    @pytest.fixture(autouse=True)
+    def clean_up(self):
+        """These tests all run in-process. Clean up global changes."""
+        yield
+        sys.excepthook = sys.__excepthook__
 
     def test_run_python_file(self):
         run_python_file([TRY_EXECFILE, "arg1", "arg2"])
