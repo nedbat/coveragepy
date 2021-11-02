@@ -209,15 +209,21 @@ coverage.pyfile_ready = function () {
         coverage.set_sel(0);
     }
 
-    document.querySelector(".button_toggle_run").addEventListener("click", coverage.toggle_lines);
-    document.querySelector(".button_toggle_mis").addEventListener("click", coverage.toggle_lines);
-    document.querySelector(".button_toggle_exc").addEventListener("click", coverage.toggle_lines);
-    document.querySelector(".button_toggle_par").addEventListener("click", coverage.toggle_lines);
+    const on_click = function(sel, fn) {
+        const elt = document.querySelector(sel);
+        if (elt) {
+            elt.addEventListener("click", fn);
+        }
+    }
+    on_click(".button_toggle_run", coverage.toggle_lines);
+    on_click(".button_toggle_mis", coverage.toggle_lines);
+    on_click(".button_toggle_exc", coverage.toggle_lines);
+    on_click(".button_toggle_par", coverage.toggle_lines);
 
-    document.querySelector(".button_next_chunk").addEventListener("click", coverage.to_next_chunk_nicely);
-    document.querySelector(".button_prev_chunk").addEventListener("click", coverage.to_prev_chunk_nicely);
-    document.querySelector(".button_top_of_page").addEventListener("click", coverage.to_top);
-    document.querySelector(".button_first_chunk").addEventListener("click", coverage.to_first_chunk);
+    on_click(".button_next_chunk", coverage.to_next_chunk_nicely);
+    on_click(".button_prev_chunk", coverage.to_prev_chunk_nicely);
+    on_click(".button_top_of_page", coverage.to_top);
+    on_click(".button_first_chunk", coverage.to_first_chunk);
 
     coverage.filters = undefined;
     try {
@@ -258,13 +264,15 @@ coverage.toggle_lines = function (event) {
 coverage.set_line_visibilty = function (category, should_show) {
     const cls = "show_" + category;
     const btn = document.querySelector(".button_toggle_" + category);
-    if (should_show) {
-        document.querySelectorAll("#source ." + category).forEach(e => e.classList.add(cls));
-        btn.classList.add(cls);
-    }
-    else {
-        document.querySelectorAll("#source ." + category).forEach(e => e.classList.remove(cls));
-        btn.classList.remove(cls);
+    if (btn) {
+        if (should_show) {
+            document.querySelectorAll("#source ." + category).forEach(e => e.classList.add(cls));
+            btn.classList.add(cls);
+        }
+        else {
+            document.querySelectorAll("#source ." + category).forEach(e => e.classList.remove(cls));
+            btn.classList.remove(cls);
+        }
     }
 };
 

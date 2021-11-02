@@ -22,7 +22,8 @@ This list is detailed and covers changes in each pre-release version.
 Unreleased
 ----------
 
-Nothing yet.
+- Fix: Removed another vestige of jQuery from the source tarball
+  (`issue 840`_).
 
 
 .. _changes_611:
