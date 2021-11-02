@@ -7,6 +7,7 @@ Pytest auto configuration.
 This module is run automatically by pytest, to define and enable fixtures.
 """
 
+import itertools
 import os
 import sys
 import warnings
@@ -71,16 +72,58 @@ def reset_sys_path():
     sys.path[:] = sys_path
 
 
+TRACK_TESTS = False
+TEST_TXT = "/tmp/tests.txt"
+
+def pytest_sessionstart():
+    """Run once at the start of the test session."""
+    if TRACK_TESTS:     # pragma: debugging
+        with open(TEST_TXT, "w") as testtxt:
+            print("Starting:", file=testtxt)
+
+
+def write_test_name(prefix):
+    """For tracking where and when tests are running."""
+    if TRACK_TESTS:     # pragma: debugging
+        with open(TEST_TXT, "a") as testtxt:
+            worker = os.environ.get('PYTEST_XDIST_WORKER', 'none')
+            test = os.environ.get("PYTEST_CURRENT_TEST", "unknown")
+            print(f"{prefix} {worker}: {test}", file=testtxt, flush=True)
+
+
 @pytest.hookimpl(hookwrapper=True)
 def pytest_runtest_call(item):
-    """Convert StopEverything into skipped tests."""
+    """Run once for each test."""
+    write_test_name(">")
+
+    # Convert StopEverything into skipped tests.
     outcome = yield
     if outcome.excinfo and issubclass(outcome.excinfo[0], StopEverything):  # pragma: only jython
         pytest.skip(f"Skipping {item.nodeid} for StopEverything: {outcome.excinfo[1]}")
 
-    # For diagnosing test running:
-    if 0:
-        with open("/tmp/tests.txt", "a") as proctxt:
-            worker = os.environ.get('PYTEST_XDIST_WORKER', 'none')
-            test = os.environ.get("PYTEST_CURRENT_TEST", "unknown")
-            print(f"{worker}: {test}", file=proctxt, flush=True)
+    write_test_name("<")
+
+
+def interleaved(firsts, rest, n):
+    """Interleave the firsts among the rest so that they occur each n items."""
+    num = sum(len(l) for l in firsts) + len(rest)
+    lists = firsts + [rest] * (n - len(firsts))
+    listcycle = itertools.cycle(lists)
+
+    while num:
+        alist = next(listcycle)     # pylint: disable=stop-iteration-return
+        if alist:
+            yield alist.pop()
+            num -= 1
+
+def pytest_collection_modifyitems(items):
+    """Re-order the collected tests."""
+    # Trick the xdist scheduler to put all of the VirtualenvTest tests on the
+    # same worker by sprinkling them into the collected items every Nth place.
+    virt = set(i for i in items if "VirtualenvTest" in i.nodeid)
+    rest = [i for i in items if i not in virt]
+    nworkers = int(os.environ.get("PYTEST_XDIST_WORKER_COUNT", 4))
+    items[:] = interleaved([virt], rest, nworkers)
+    if TRACK_TESTS:     # pragma: debugging
+        with open("/tmp/items.txt", "w") as f:
+            print("\n".join(i.nodeid for i in items), file=f)
