@@ -17,8 +17,6 @@ import disgen
 from coverage.parser import PythonParser
 from coverage.python import get_python_source
 
-opcode_counts = collections.Counter()
-
 
 class ParserMain:
     """A main for code parsing experiments."""
@@ -30,10 +28,6 @@ class ParserMain:
         parser.add_option(
             "-d", action="store_true", dest="dis",
             help="Disassemble"
-            )
-        parser.add_option(
-            "-H", action="store_true", dest="histogram",
-            help="Count occurrences of opcodes"
             )
         parser.add_option(
             "-R", action="store_true", dest="recursive",
@@ -62,12 +56,6 @@ class ParserMain:
         else:
             self.one_file(options, args[0])
 
-        if options.histogram:
-            total = sum(opcode_counts.values())
-            print(f"{total} total opcodes")
-            for opcode, number in opcode_counts.most_common():
-                print(f"{opcode:20s} {number:6d}  {number/total:.1%}")
-
     def one_file(self, options, filename):
         """Process just one file."""
         # `filename` can have a line number suffix. In that case, extract those
@@ -93,7 +81,7 @@ class ParserMain:
 
         if options.dis:
             print("Main code:")
-            self.disassemble(pyparser.byte_parser, histogram=options.histogram)
+            self.disassemble(pyparser.byte_parser)
 
         arcs = pyparser.arcs()
 
@@ -132,7 +120,7 @@ class ParserMain:
 
                     print("%4d %s%s %s" % (lineno, "".join(marks), a, ltext))
 
-    def disassemble(self, byte_parser, histogram=False):
+    def disassemble(self, byte_parser):
         """Disassemble code, for ad-hoc experimenting."""
 
         for bp in byte_parser.child_parsers():
@@ -143,9 +131,6 @@ class ParserMain:
             print("\n%s: " % bp.code)
             upto = None
             for disline in disgen.disgen(bp.code):
-                if histogram:
-                    opcode_counts[disline.opcode] += 1
-                    continue
                 if disline.first:
                     if srclines:
                         upto = upto or disline.lineno-1
