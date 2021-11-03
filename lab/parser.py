@@ -5,14 +5,14 @@
 
 
 import collections
+import dis
 import glob
 import optparse
 import os
 import re
 import sys
 import textwrap
-
-import disgen
+import types
 
 from coverage.parser import PythonParser
 from coverage.python import get_python_source
@@ -81,7 +81,7 @@ class ParserMain:
 
         if options.dis:
             print("Main code:")
-            self.disassemble(pyparser.byte_parser)
+            disassemble(pyparser)
 
         arcs = pyparser.arcs()
 
@@ -119,30 +119,6 @@ class ParserMain:
                         a = ""
 
                     print("%4d %s%s %s" % (lineno, "".join(marks), a, ltext))
-
-    def disassemble(self, byte_parser):
-        """Disassemble code, for ad-hoc experimenting."""
-
-        for bp in byte_parser.child_parsers():
-            if bp.text:
-                srclines = bp.text.splitlines()
-            else:
-                srclines = None
-            print("\n%s: " % bp.code)
-            upto = None
-            for disline in disgen.disgen(bp.code):
-                if disline.first:
-                    if srclines:
-                        upto = upto or disline.lineno-1
-                        while upto <= disline.lineno-1:
-                            print("{:>100}{}".format("", srclines[upto]))
-                            upto += 1
-                    elif disline.offset > 0:
-                        print("")
-                line = disgen.format_dis_line(disline)
-                print(f"{line:<70}")
-
-        print("")
 
     def arc_ascii_art(self, arcs):
         """Draw arcs as ascii art.
@@ -185,6 +161,43 @@ class ParserMain:
             )
 
         return arc_chars
+
+
+def all_code_objects(code):
+    """Iterate over all the code objects in `code`."""
+    stack = [code]
+    while stack:
+        # We're going to return the code object on the stack, but first
+        # push its children for later returning.
+        code = stack.pop()
+        stack.extend(c for c in code.co_consts if isinstance(c, types.CodeType))
+        yield code
+
+
+def disassemble(pyparser):
+    """Disassemble code, for ad-hoc experimenting."""
+
+    code = compile(pyparser.text, "", "exec")
+    for code_obj in all_code_objects(code):
+        if pyparser.text:
+            srclines = pyparser.text.splitlines()
+        else:
+            srclines = None
+        print("\n%s: " % code_obj)
+        upto = None
+        for inst in dis.get_instructions(code_obj):
+            if inst.starts_line is not None:
+                if srclines:
+                    upto = upto or inst.starts_line - 1
+                    while upto <= inst.starts_line - 1:
+                        print("{:>100}{}".format("", srclines[upto]))
+                        upto += 1
+                elif inst.offset > 0:
+                    print("")
+            line = inst._disassemble()
+            print(f"{line:<70}")
+
+    print("")
 
 
 def set_char(s, n, c):
