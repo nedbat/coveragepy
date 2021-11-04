@@ -956,10 +956,11 @@ class CmdMainTest(CoverageTest):
         assert ret == 1
         out, err = self.stdouterr()
         assert out == ""
-        err = err.split('\n')
-        assert err[0] == 'Traceback (most recent call last):'
-        assert err[-3] == '    raise Exception("oh noes!")'
-        assert err[-2] == 'Exception: oh noes!'
+        print(err)
+        err = err.splitlines(keepends=True)
+        assert err[0] == 'Traceback (most recent call last):\n'
+        assert '    raise Exception("oh noes!")\n' in err
+        assert err[-1] == 'Exception: oh noes!\n'
 
     def test_internalraise(self):
         with pytest.raises(ValueError, match="coverage is broken"):

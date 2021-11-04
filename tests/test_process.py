@@ -1412,12 +1412,15 @@ class YankedDirectoryTest(CoverageTest):
         self.make_file("bug806.py", self.BUG_806)
         out = self.run_command("coverage run bug806.py")
         path = python_reported_file('bug806.py')
-        assert out == textwrap.dedent("""\
+        # Python 3.11 adds an extra line to the traceback.
+        # Check that the lines we expect are there.
+        lines = textwrap.dedent(f"""\
             Traceback (most recent call last):
-              File "{}", line 8, in <module>
+              File "{path}", line 8, in <module>
                 print(sys.argv[1])
             IndexError: list index out of range
-            """.format(path))
+            """).splitlines(keepends=True)
+        assert all(line in out for line in lines)
 
 
 def possible_pth_dirs():
