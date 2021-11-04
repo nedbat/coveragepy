@@ -124,3 +124,8 @@ METACOV = os.getenv('COVERAGE_COVERAGE', '') != ''
 # Even when running tests, you can use COVERAGE_TESTING=0 to disable the
 # test-specific behavior like contracts.
 TESTING = os.getenv('COVERAGE_TESTING', '') == 'True'
+
+# Environment COVERAGE_NO_CONTRACTS=1 can turn off contracts while debugging
+# tests to remove noise from stack traces.
+# $set_env.py: COVERAGE_NO_CONTRACTS - Disable PyContracts to simplify stack traces.
+USE_CONTRACTS = TESTING and not bool(int(os.environ.get("COVERAGE_NO_CONTRACTS", 0)))

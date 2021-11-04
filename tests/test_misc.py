@@ -7,11 +7,11 @@ import sys
 
 import pytest
 
+from coverage import env
 from coverage.exceptions import CoverageException
 from coverage.misc import contract, dummy_decorator_with_args, file_be_gone
 from coverage.misc import Hasher, one_of, substitute_variables, import_third_party
 from coverage.misc import human_sorted, human_sorted_items
-from coverage.misc import USE_CONTRACTS
 
 from tests.coveragetest import CoverageTest
 
@@ -80,7 +80,7 @@ class RemoveFileTest(CoverageTest):
             file_be_gone(".")
 
 
-@pytest.mark.skipif(not USE_CONTRACTS, reason="Contracts are disabled, can't test them")
+@pytest.mark.skipif(not env.USE_CONTRACTS, reason="Contracts are disabled, can't test them")
 class ContractTest(CoverageTest):
     """Tests of our contract decorators."""
 

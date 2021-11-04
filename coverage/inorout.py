@@ -180,10 +180,11 @@ def add_coverage_paths(paths):
         # When testing, we use PyContracts, which should be considered
         # part of coverage.py, and it uses six. Exclude those directories
         # just as we exclude ourselves.
-        import contracts
-        import six
-        for mod in [contracts, six]:
-            paths.add(canonical_path(mod))
+        if env.USE_CONTRACTS:
+            import contracts
+            import six
+            for mod in [contracts, six]:
+                paths.add(canonical_path(mod))
 
 
 class InOrOut:
