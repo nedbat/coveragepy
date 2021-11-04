@@ -18,7 +18,7 @@ platformdirs==2.4.0
     # via virtualenv
 pluggy==1.0.0
     # via tox
-py==1.10.0
+py==1.11.0
     # via tox
 pyparsing==2.4.7
     # via packaging
@@ -34,5 +34,5 @@ tox==3.24.4
     #   tox-gh-actions
 tox-gh-actions==2.8.1
     # via -r requirements/tox.in
-virtualenv==20.9.0
+virtualenv==20.10.0
     # via tox

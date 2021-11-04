@@ -18,7 +18,7 @@ flaky==3.7.0
     # via -r requirements/pytest.in
 future==0.18.2
     # via pycontracts
-hypothesis==6.24.0
+hypothesis==6.24.1
     # via -r requirements/pytest.in
 iniconfig==1.1.1
     # via pytest
@@ -26,7 +26,7 @@ packaging==21.2
     # via pytest
 pluggy==1.0.0
     # via pytest
-py==1.10.0
+py==1.11.0
     # via
     #   pytest
     #   pytest-forked

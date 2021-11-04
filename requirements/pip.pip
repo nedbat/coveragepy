@@ -14,7 +14,7 @@ platformdirs==2.4.0
     # via virtualenv
 six==1.16.0
     # via virtualenv
-virtualenv==20.9.0
+virtualenv==20.10.0
     # via -r requirements/pip.in
 
 # The following packages are considered to be unsafe in a requirements file:

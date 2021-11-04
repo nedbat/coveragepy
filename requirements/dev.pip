@@ -60,7 +60,7 @@ future==0.18.2
     #   pycontracts
 greenlet==1.1.2
     # via -r requirements/dev.in
-hypothesis==6.24.0
+hypothesis==6.24.1
     # via -r requirements/pytest.pip
 idna==3.3
     # via requests
@@ -72,7 +72,7 @@ iniconfig==1.1.1
     # via
     #   -r requirements/pytest.pip
     #   pytest
-isort==5.9.3
+isort==5.10.0
     # via pylint
 jedi==0.18.0
     # via pudb
@@ -107,9 +107,9 @@ pluggy==1.0.0
     #   -r requirements/pytest.pip
     #   pytest
     #   tox
-pudb==2021.2
+pudb==2021.2.2
     # via -r requirements/dev.in
-py==1.10.0
+py==1.11.0
     # via
     #   -r requirements/pytest.pip
     #   pytest
@@ -184,7 +184,7 @@ tox==3.24.4
     # via -r requirements/dev.in
 tqdm==4.62.3
     # via twine
-twine==3.4.2
+twine==3.5.0
     # via -r requirements/dev.in
 typing-extensions==3.10.0.2
     # via
@@ -198,7 +198,7 @@ urwid==2.1.2
     #   urwid-readline
 urwid-readline==0.13
     # via pudb
-virtualenv==20.9.0
+virtualenv==20.10.0
     # via
     #   -r requirements/pip.pip
     #   tox
@@ -212,7 +212,7 @@ zipp==3.6.0
 # The following packages are considered to be unsafe in a requirements file:
 pip==21.3.1
     # via -r requirements/pip.pip
-setuptools==58.3.0
+setuptools==58.5.2
     # via
     #   astroid
     #   check-manifest
