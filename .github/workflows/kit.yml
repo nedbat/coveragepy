@@ -22,10 +22,20 @@ env:
 
 jobs:
   wheels:
-    name: "Build wheels on ${{ matrix.os }}"
+    name: "Build ${{ matrix.cibw_build }} ${{ matrix.os }} wheels"
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
+        os:
+          - ubuntu-latest
+          - macos-latest
+          - windows-latest
+        cibw_build:
+          - cp36
+          - cp37
+          - cp38
+          - cp39
+          - cp310
         include:
           - os: ubuntu-latest
             cibw_arch: x86_64 i686 aarch64
@@ -56,9 +66,10 @@ jobs:
 
       - name: "Build wheels"
         env:
-          # Don't build wheels for PyPy.
-          CIBW_SKIP: pp*
+          CIBW_BUILD: ${{ matrix.cibw_build }}-*
           CIBW_ARCHS: ${{ matrix.cibw_arch }}
+          CIBW_ENVIRONMENT: PIP_DISABLE_PIP_VERSION_CHECK=1
+          CIBW_TEST_COMMAND: python -c "from coverage.tracer import CTracer; print('CTracer OK!')"
         run: |
           python -m cibuildwheel --output-dir wheelhouse
           ls -al wheelhouse/
