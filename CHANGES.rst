@@ -28,7 +28,13 @@ Unreleased
 - Fix: Removed another vestige of jQuery from the source tarball
   (`issue 840`_).
 
+- Fix: Added a default value for a new-to-6.x argument of an internal class.
+  This unsupported class is being used by coveralls (`issue 1273`_). Although
+  I'd rather not "fix" unsupported interfaces, it's actually nicer with a
+  default value.
+
 .. _issue 1271: https://github.com/nedbat/coveragepy/issues/1271
+.. _issue 1273: https://github.com/nedbat/coveragepy/issues/1273
 
 
 .. _changes_611:

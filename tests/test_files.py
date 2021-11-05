@@ -171,7 +171,7 @@ class MatcherTest(CoverageTest):
             files.canonical_filename("sub4/file5.py"),
             files.canonical_filename("SUB5/file6.py"),
             ]
-        tm = TreeMatcher(trees, "test")
+        tm = TreeMatcher(trees)
         assert tm.info() == sorted(trees)
         for filepath, matches in matches_to_try:
             self.assertMatches(tm, filepath, matches)
@@ -194,7 +194,7 @@ class MatcherTest(CoverageTest):
             ('yourmain', False),
         ]
         modules = ['test', 'py.test', 'mymain']
-        mm = ModuleMatcher(modules, "test")
+        mm = ModuleMatcher(modules)
         assert mm.info() == modules
         for modulename, matches in matches_to_try:
             assert mm.match(modulename) == matches, modulename
@@ -207,13 +207,13 @@ class MatcherTest(CoverageTest):
             (self.make_file("sub3/file4.py"), True),
             (self.make_file("sub3/file5.c"), False),
         ]
-        fnm = FnmatchMatcher(["*.py", "*/sub2/*"], "test")
+        fnm = FnmatchMatcher(["*.py", "*/sub2/*"])
         assert fnm.info() == ["*.py", "*/sub2/*"]
         for filepath, matches in matches_to_try:
             self.assertMatches(fnm, filepath, matches)
 
     def test_fnmatch_matcher_overload(self):
-        fnm = FnmatchMatcher(["*x%03d*.txt" % i for i in range(500)], "test")
+        fnm = FnmatchMatcher(["*x%03d*.txt" % i for i in range(500)])
         self.assertMatches(fnm, "x007foo.txt", True)
         self.assertMatches(fnm, "x123foo.txt", True)
         self.assertMatches(fnm, "x798bar.txt", False)
@@ -221,9 +221,9 @@ class MatcherTest(CoverageTest):
     def test_fnmatch_windows_paths(self):
         # We should be able to match Windows paths even if we are running on
         # a non-Windows OS.
-        fnm = FnmatchMatcher(["*/foo.py"], "test")
+        fnm = FnmatchMatcher(["*/foo.py"])
         self.assertMatches(fnm, r"dir\foo.py", True)
-        fnm = FnmatchMatcher([r"*\foo.py"], "test")
+        fnm = FnmatchMatcher([r"*\foo.py"])
         self.assertMatches(fnm, r"dir\foo.py", True)
 
 

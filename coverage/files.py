@@ -198,7 +198,7 @@ class TreeMatcher:
     somewhere in a subtree rooted at one of the directories.
 
     """
-    def __init__(self, paths, name):
+    def __init__(self, paths, name="unknown"):
         self.original_paths = human_sorted(paths)
         self.paths = list(map(os.path.normcase, paths))
         self.name = name
@@ -226,7 +226,7 @@ class TreeMatcher:
 
 class ModuleMatcher:
     """A matcher for modules in a tree."""
-    def __init__(self, module_names, name):
+    def __init__(self, module_names, name="unknown"):
         self.modules = list(module_names)
         self.name = name
 
@@ -255,7 +255,7 @@ class ModuleMatcher:
 
 class FnmatchMatcher:
     """A matcher for files by file name pattern."""
-    def __init__(self, pats, name):
+    def __init__(self, pats, name="unknown"):
         self.pats = list(pats)
         self.re = fnmatches_to_regex(self.pats, case_insensitive=env.WINDOWS)
         self.name = name
