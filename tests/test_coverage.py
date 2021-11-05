@@ -1492,7 +1492,7 @@ class ExcludeTest(CoverageTest):
             """,
             [1,2,3,7,8], "", excludes=['#pragma: NO COVER'],
             arcz=".1 12 23 37 45 58 78 8.",
-            arcz_missing="45 58",
+            arcz_missing="58",
         )
 
     def test_excluding_try_except_stranded_else(self):
@@ -1597,6 +1597,20 @@ class ExcludeTest(CoverageTest):
             )
             """,
             [1, 6], "", excludes=['assert'],
+        )
+
+    def test_excluded_comprehension_branches(self):
+        # https://github.com/nedbat/coveragepy/issues/1271
+        self.check_coverage("""\
+            x, y = [0], [1]
+            if x == [2]:
+                raise NotImplementedError   # pragma: NO COVER
+            if all(_ == __ for _, __ in zip(x, y)):
+                raise NotImplementedError   # pragma: NO COVER
+            """,
+            [1,2,4], "", excludes=['#pragma: NO COVER'],
+            arcz=".1 12 23 24 45 4.  -44 4-4",
+            arcz_missing="4-4",
         )
 
 

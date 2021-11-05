@@ -22,8 +22,13 @@ This list is detailed and covers changes in each pre-release version.
 Unreleased
 ----------
 
+- Fix: Complex conditionals over excluded lines could have incorrectly reported
+  a missing branch (`issue 1271`_). This is now fixed.
+
 - Fix: Removed another vestige of jQuery from the source tarball
   (`issue 840`_).
+
+.. _issue 1271: https://github.com/nedbat/coveragepy/issues/1271
 
 
 .. _changes_611:

@@ -84,13 +84,14 @@ class Analysis:
 
     @contract(returns='list(tuple(int, int))')
     def arcs_missing(self):
-        """Returns a sorted list of the arcs in the code not executed."""
+        """Returns a sorted list of the unexecuted arcs in the code."""
         possible = self.arc_possibilities()
         executed = self.arcs_executed()
         missing = (
             p for p in possible
                 if p not in executed
                     and p[0] not in self.no_branch
+                    and p[1] not in self.excluded
         )
         return sorted(missing)
 
