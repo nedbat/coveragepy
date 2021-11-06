@@ -227,66 +227,72 @@ class MatcherTest(CoverageTest):
         self.assertMatches(fnm, r"dir\foo.py", True)
 
 
+@pytest.fixture(params=[False, True], name="rel_yn")
+def relative_setting(request):
+    """Parameterized fixture to choose whether PathAliases is relative or not."""
+    return request.param
+
+
 class PathAliasesTest(CoverageTest):
     """Tests for coverage/files.py:PathAliases"""
 
     run_in_temp_dir = False
 
-    def assert_mapped(self, aliases, inp, out):
+    def assert_mapped(self, aliases, inp, out, relative=False):
         """Assert that `inp` mapped through `aliases` produces `out`.
 
-        `out` is canonicalized first, since aliases always produce
-        canonicalized paths.
+        `out` is canonicalized first, since aliases produce canonicalized
+        paths by default.
 
         """
-        aliases.pprint()
-        print(inp)
-        print(out)
-        assert aliases.map(inp) == files.canonical_filename(out)
+        mapped = aliases.map(inp)
+        expected = files.canonical_filename(out) if not relative else out
+        assert mapped == expected
 
     def assert_unchanged(self, aliases, inp):
         """Assert that `inp` mapped through `aliases` is unchanged."""
         assert aliases.map(inp) == inp
 
-    def test_noop(self):
-        aliases = PathAliases()
+    def test_noop(self, rel_yn):
+        aliases = PathAliases(relative=rel_yn)
         self.assert_unchanged(aliases, '/ned/home/a.py')
 
-    def test_nomatch(self):
-        aliases = PathAliases()
+    def test_nomatch(self, rel_yn):
+        aliases = PathAliases(relative=rel_yn)
         aliases.add('/home/*/src', './mysrc')
         self.assert_unchanged(aliases, '/home/foo/a.py')
 
-    def test_wildcard(self):
-        aliases = PathAliases()
+    def test_wildcard(self, rel_yn):
+        aliases = PathAliases(relative=rel_yn)
         aliases.add('/ned/home/*/src', './mysrc')
-        self.assert_mapped(aliases, '/ned/home/foo/src/a.py', './mysrc/a.py')
+        self.assert_mapped(aliases, '/ned/home/foo/src/a.py', './mysrc/a.py', relative=rel_yn)
 
-        aliases = PathAliases()
+        aliases = PathAliases(relative=rel_yn)
         aliases.add('/ned/home/*/src/', './mysrc')
-        self.assert_mapped(aliases, '/ned/home/foo/src/a.py', './mysrc/a.py')
+        self.assert_mapped(aliases, '/ned/home/foo/src/a.py', './mysrc/a.py', relative=rel_yn)
 
-    def test_no_accidental_match(self):
-        aliases = PathAliases()
+    def test_no_accidental_match(self, rel_yn):
+        aliases = PathAliases(relative=rel_yn)
         aliases.add('/home/*/src', './mysrc')
         self.assert_unchanged(aliases, '/home/foo/srcetc')
 
-    def test_multiple_patterns(self):
-        aliases = PathAliases()
+    def test_multiple_patterns(self, rel_yn):
+        aliases = PathAliases(relative=rel_yn)
         aliases.add('/home/*/src', './mysrc')
         aliases.add('/lib/*/libsrc', './mylib')
-        self.assert_mapped(aliases, '/home/foo/src/a.py', './mysrc/a.py')
-        self.assert_mapped(aliases, '/lib/foo/libsrc/a.py', './mylib/a.py')
+        self.assert_mapped(aliases, '/home/foo/src/a.py', './mysrc/a.py', relative=rel_yn)
+        self.assert_mapped(aliases, '/lib/foo/libsrc/a.py', './mylib/a.py', relative=rel_yn)
 
-    def test_cant_have_wildcard_at_end(self):
+    @pytest.mark.parametrize("badpat", [
+        "/ned/home/*",
+        "/ned/home/*/",
+        "/ned/home/*/*/",
+    ])
+    def test_cant_have_wildcard_at_end(self, badpat):
         aliases = PathAliases()
         msg = "Pattern must not end with wildcards."
         with pytest.raises(CoverageException, match=msg):
-            aliases.add("/ned/home/*", "fooey")
-        with pytest.raises(CoverageException, match=msg):
-            aliases.add("/ned/home/*/", "fooey")
-        with pytest.raises(CoverageException, match=msg):
-            aliases.add("/ned/home/*/*/", "fooey")
+            aliases.add(badpat, "fooey")
 
     def test_no_accidental_munging(self):
         aliases = PathAliases()
@@ -295,94 +301,104 @@ class PathAliasesTest(CoverageTest):
         self.assert_mapped(aliases, r'c:\Zoo\boo\foo.py', 'src/foo.py')
         self.assert_mapped(aliases, r'/home/ned$/foo.py', 'src/foo.py')
 
-    def test_paths_are_os_corrected(self):
-        aliases = PathAliases()
+    def test_paths_are_os_corrected(self, rel_yn):
+        aliases = PathAliases(relative=rel_yn)
         aliases.add('/home/ned/*/src', './mysrc')
         aliases.add(r'c:\ned\src', './mysrc')
-        self.assert_mapped(aliases, r'C:\Ned\src\sub\a.py', './mysrc/sub/a.py')
+        self.assert_mapped(aliases, r'C:\Ned\src\sub\a.py', './mysrc/sub/a.py', relative=rel_yn)
 
-        aliases = PathAliases()
+        aliases = PathAliases(relative=rel_yn)
         aliases.add('/home/ned/*/src', r'.\mysrc')
         aliases.add(r'c:\ned\src', r'.\mysrc')
-        self.assert_mapped(aliases, r'/home/ned/foo/src/sub/a.py', r'.\mysrc\sub\a.py')
+        self.assert_mapped(
+            aliases,
+            r'/home/ned/foo/src/sub/a.py',
+            r'.\mysrc\sub\a.py',
+            relative=rel_yn,
+        )
 
-    def test_windows_on_linux(self):
+    def test_windows_on_linux(self, rel_yn):
         # https://github.com/nedbat/coveragepy/issues/618
         lin = "*/project/module/"
         win = "*\\project\\module\\"
 
         # Try the paths in both orders.
         for paths in [[lin, win], [win, lin]]:
-            aliases = PathAliases()
+            aliases = PathAliases(relative=rel_yn)
             for path in paths:
                 aliases.add(path, "project/module")
             self.assert_mapped(
                 aliases,
                 "C:\\a\\path\\somewhere\\coveragepy_test\\project\\module\\tests\\file.py",
-                "project/module/tests/file.py"
+                "project/module/tests/file.py",
+                relative=rel_yn,
             )
 
-    def test_linux_on_windows(self):
+    def test_linux_on_windows(self, rel_yn):
         # https://github.com/nedbat/coveragepy/issues/618
         lin = "*/project/module/"
         win = "*\\project\\module\\"
 
         # Try the paths in both orders.
         for paths in [[lin, win], [win, lin]]:
-            aliases = PathAliases()
+            aliases = PathAliases(relative=rel_yn)
             for path in paths:
                 aliases.add(path, "project\\module")
             self.assert_mapped(
                 aliases,
                 "C:/a/path/somewhere/coveragepy_test/project/module/tests/file.py",
-                "project\\module\\tests\\file.py"
+                "project\\module\\tests\\file.py",
+                relative=rel_yn,
             )
 
-    def test_multiple_wildcard(self):
-        aliases = PathAliases()
+    def test_multiple_wildcard(self, rel_yn):
+        aliases = PathAliases(relative=rel_yn)
         aliases.add('/home/jenkins/*/a/*/b/*/django', './django')
         self.assert_mapped(
             aliases,
             '/home/jenkins/xx/a/yy/b/zz/django/foo/bar.py',
-            './django/foo/bar.py'
+            './django/foo/bar.py',
+            relative=rel_yn,
         )
 
-    def test_windows_root_paths(self):
-        aliases = PathAliases()
+    def test_windows_root_paths(self, rel_yn):
+        aliases = PathAliases(relative=rel_yn)
         aliases.add('X:\\', '/tmp/src')
         self.assert_mapped(
             aliases,
             "X:\\a\\file.py",
-            "/tmp/src/a/file.py"
+            "/tmp/src/a/file.py",
+            relative=rel_yn,
         )
         self.assert_mapped(
             aliases,
             "X:\\file.py",
-            "/tmp/src/file.py"
+            "/tmp/src/file.py",
+            relative=rel_yn,
         )
 
-    def test_leading_wildcard(self):
-        aliases = PathAliases()
+    def test_leading_wildcard(self, rel_yn):
+        aliases = PathAliases(relative=rel_yn)
         aliases.add('*/d1', './mysrc1')
         aliases.add('*/d2', './mysrc2')
-        self.assert_mapped(aliases, '/foo/bar/d1/x.py', './mysrc1/x.py')
-        self.assert_mapped(aliases, '/foo/bar/d2/y.py', './mysrc2/y.py')
+        self.assert_mapped(aliases, '/foo/bar/d1/x.py', './mysrc1/x.py', relative=rel_yn)
+        self.assert_mapped(aliases, '/foo/bar/d2/y.py', './mysrc2/y.py', relative=rel_yn)
 
-    def test_dot(self):
-        cases = ['.', '..', '../other']
-        if not env.WINDOWS:
-            # The root test case was added for the manylinux Docker images,
-            # and I'm not sure how it should work on Windows, so skip it.
-            cases += ['/']
-        for d in cases:
-            aliases = PathAliases()
-            aliases.add(d, '/the/source')
-            the_file = os.path.join(d, 'a.py')
-            the_file = os.path.expanduser(the_file)
-            the_file = os.path.abspath(os.path.realpath(the_file))
+    # The root test case was added for the manylinux Docker images,
+    # and I'm not sure how it should work on Windows, so skip it.
+    cases = [".", "..", "../other"]
+    if not env.WINDOWS:
+        cases += ["/"]
+    @pytest.mark.parametrize("dirname", cases)
+    def test_dot(self, dirname):
+        aliases = PathAliases()
+        aliases.add(dirname, '/the/source')
+        the_file = os.path.join(dirname, 'a.py')
+        the_file = os.path.expanduser(the_file)
+        the_file = os.path.abspath(os.path.realpath(the_file))
 
-            assert '~' not in the_file  # to be sure the test is pure.
-            self.assert_mapped(aliases, the_file, '/the/source/a.py')
+        assert '~' not in the_file  # to be sure the test is pure.
+        self.assert_mapped(aliases, the_file, '/the/source/a.py')
 
 
 class FindPythonFilesTest(CoverageTest):

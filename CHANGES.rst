@@ -22,6 +22,10 @@ This list is detailed and covers changes in each pre-release version.
 Unreleased
 ----------
 
+- Fix: When remapping file paths through the ``[paths]`` setting while
+  combining, the ``[run] relative_files`` setting was ignored, resulting in
+  absolute paths for remapped file names (`issue 1147`_).  This is now fixed.
+
 - Fix: Complex conditionals over excluded lines could have incorrectly reported
   a missing branch (`issue 1271`_). This is now fixed.
 
@@ -33,6 +37,7 @@ Unreleased
   I'd rather not "fix" unsupported interfaces, it's actually nicer with a
   default value.
 
+.. _issue 1147: https://github.com/nedbat/coveragepy/issues/1147
 .. _issue 1271: https://github.com/nedbat/coveragepy/issues/1271
 .. _issue 1273: https://github.com/nedbat/coveragepy/issues/1273
 

@@ -23,7 +23,8 @@ from coverage.files import abs_file, relative_filename
 from coverage.misc import import_local_file
 
 from tests.coveragetest import CoverageTest, TESTS_DIR, UsingModulesMixin
-from tests.helpers import assert_count_equal, assert_coverage_warnings, change_dir, nice_file
+from tests.helpers import assert_count_equal, assert_coverage_warnings
+from tests.helpers import change_dir, nice_file, os_sep
 
 
 class ApiTest(CoverageTest):
@@ -1151,16 +1152,19 @@ class RelativePathTest(CoverageTest):
             assert res == 100
 
     def test_combine_relative(self):
-        self.make_file("dir1/foo.py", "a = 1")
-        self.make_file("dir1/.coveragerc", """\
+        self.make_file("foo.py", """\
+            import mod
+            a = 1
+            """)
+        self.make_file("lib/mod/__init__.py", "x = 1")
+        self.make_file(".coveragerc", """\
             [run]
             relative_files = true
             """)
-        with change_dir("dir1"):
-            cov = coverage.Coverage(source=["."], data_suffix=True)
-            self.start_import_stop(cov, "foo")
-            cov.save()
-            shutil.move(glob.glob(".coverage.*")[0], "..")
+        sys.path.append("lib")
+        cov = coverage.Coverage(source=["."], data_suffix=True)
+        self.start_import_stop(cov, "foo")
+        cov.save()
 
         self.make_file("dir2/bar.py", "a = 1")
         self.make_file("dir2/.coveragerc", """\
@@ -1176,6 +1180,10 @@ class RelativePathTest(CoverageTest):
         self.make_file(".coveragerc", """\
             [run]
             relative_files = true
+            [paths]
+            source =
+                modsrc
+                */mod
             """)
         cov = coverage.Coverage()
         cov.combine()
@@ -1183,10 +1191,11 @@ class RelativePathTest(CoverageTest):
 
         self.make_file("foo.py", "a = 1")
         self.make_file("bar.py", "a = 1")
+        self.make_file("modsrc/__init__.py", "x = 1")
 
         cov = coverage.Coverage()
         cov.load()
         files = cov.get_data().measured_files()
-        assert files == {'foo.py', 'bar.py'}
+        assert files == {'foo.py', 'bar.py', os_sep('modsrc/__init__.py')}
         res = cov.report()
         assert res == 100

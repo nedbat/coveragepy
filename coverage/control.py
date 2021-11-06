@@ -706,7 +706,7 @@ class Coverage:
 
         aliases = None
         if self.config.paths:
-            aliases = PathAliases()
+            aliases = PathAliases(relative=self.config.relative_files)
             for paths in self.config.paths.values():
                 result = paths[0]
                 for pattern in paths[1:]:

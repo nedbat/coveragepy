@@ -326,11 +326,13 @@ class PathAliases:
     map a path through those aliases to produce a unified path.
 
     """
-    def __init__(self):
+    def __init__(self, relative=False):
         self.aliases = []
+        self.relative = relative
 
     def pprint(self):       # pragma: debugging
         """Dump the important parts of the PathAliases, for debugging."""
+        print(f"Aliases (relative={self.relative}):")
         for regex, result in self.aliases:
             print(f"{regex.pattern!r} --> {result!r}")
 
@@ -393,7 +395,8 @@ class PathAliases:
             if m:
                 new = path.replace(m.group(0), result)
                 new = new.replace(sep(path), sep(result))
-                new = canonical_filename(new)
+                if not self.relative:
+                    new = canonical_filename(new)
                 return new
         return path
 
