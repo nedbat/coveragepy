@@ -488,6 +488,8 @@ compatible with `Cobertura`_.
 
 You can specify the name of the output file with the ``-o`` switch.
 
+Other common reporting options are described above in :ref:`cmd_reporting`.
+
 To include complete file paths in the output file, rather than just
 the file name, use [include] vs [source] in your ".coveragerc" file.
 
@@ -505,9 +507,9 @@ which will result in
 
 .. code:: xml
 
-    <class branch-rate="0" complexity="0" filename="bar/hello.py" line-rate="1" name="hello.py">
-    <class branch-rate="0" complexity="0" filename="bar/baz/hello.py" line-rate="1" name="hello.py">
-    <class branch-rate="0" complexity="0" filename="foo/hello.py" line-rate="1" name="hello.py">
+    <class filename="bar/hello.py">
+    <class filename="bar/baz/hello.py">
+    <class filename="foo/hello.py">
 
 in place of this:
 
@@ -522,11 +524,9 @@ which may result in
 
 .. code:: xml
 
-    <class branch-rate="0" complexity="0" filename="hello.py" line-rate="1" name="hello.py">
-    <class branch-rate="0" complexity="0" filename="baz/hello.py" line-rate="1" name="hello.py">
+    <class filename="hello.py">
+    <class filename="baz/hello.py">
 
-
-Other common reporting options are described above in :ref:`cmd_reporting`.
 
 
 .. _cmd_json:
