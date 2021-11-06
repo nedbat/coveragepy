@@ -72,6 +72,9 @@ jobs:
           CIBW_TEST_COMMAND: python -c "from coverage.tracer import CTracer; print('CTracer OK!')"
         run: |
           python -m cibuildwheel --output-dir wheelhouse
+
+      - name: "List wheels"
+        run: |
           ls -al wheelhouse/
 
       - name: "Remove unwanted wheels"
@@ -106,6 +109,9 @@ jobs:
       - name: "Build sdist"
         run: |
           python -m build
+
+      - name: "List tarballs"
+        run: |
           ls -al dist/
 
       - name: "Upload sdist"
@@ -136,6 +142,9 @@ jobs:
           pypy3 -m build -w -C="--global-option=--python-tag" -C="--global-option=pp36"
           pypy3 -m build -w -C="--global-option=--python-tag" -C="--global-option=pp37"
           pypy3 -m build -w -C="--global-option=--python-tag" -C="--global-option=pp38"
+
+      - name: "List wheels"
+        run: |
           ls -al dist/
 
       - name: "Upload wheels"
@@ -185,6 +194,9 @@ jobs:
           auditwheel show wheelhouse/*.whl
           rm dist/*.whl
           mv wheelhouse/*.whl dist/
+
+      - name: "List wheels"
+        run: |
           ls -al dist/
 
       - name: "Upload wheels"
