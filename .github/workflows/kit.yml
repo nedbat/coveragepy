@@ -22,32 +22,76 @@ env:
 
 jobs:
   wheels:
-    name: "Build ${{ matrix.cibw_build }} ${{ matrix.os }} wheels"
-    runs-on: ${{ matrix.os }}
+    name: "Build ${{ matrix.os }} ${{ matrix.cibw_build }} ${{ matrix.cibw_arch }} wheels"
+    runs-on: ${{ matrix.os }}-latest
     strategy:
       matrix:
-        os:
-          - ubuntu-latest
-          - macos-latest
-          - windows-latest
-        cibw_build:
-          - cp36
-          - cp37
-          - cp38
-          - cp39
-          - cp310
         include:
-          - os: ubuntu-latest
-            cibw_arch: x86_64 i686 aarch64
-          - os: windows-latest
-            cibw_arch: x86 AMD64
-          - os: macos-latest
-            cibw_arch: x86_64
+          # To change the matrix, edit the choices, then process this file with cog:
+          #
+          # $ python -m pip install cogapp
+          # $ python -m cogapp -r .github/workflows/kit.yml
+          #
+          #
+          # [[[cog
+          #   #----- vvv Choices for the matrix vvv -----
+          #   oss = ["ubuntu", "macos", "windows"]
+          #   pys = ["cp36", "cp37", "cp38", "cp39", "cp310"]
+          #   archs = {
+          #       "ubuntu": ["x86_64", "i686", "aarch64"],
+          #       "macos": ["x86_64"],
+          #       "windows": ["x86", "AMD64"],
+          #   }
+          #   #----- ^^^ ---------------------- ^^^ -----
+          #
+          #   import json
+          #   import cog
+          #   for the_os in oss:
+          #       for the_py in pys:
+          #           for the_arch in archs[the_os]:
+          #               them = {
+          #                   "os": the_os,
+          #                   "cibw_build": the_py,
+          #                   "cibw_arch": the_arch,
+          #               }
+          #               cog.outl(f"- {json.dumps(them)}")
+          # ]]]
+          - {"os": "ubuntu", "cibw_build": "cp36", "cibw_arch": "x86_64"}
+          - {"os": "ubuntu", "cibw_build": "cp36", "cibw_arch": "i686"}
+          - {"os": "ubuntu", "cibw_build": "cp36", "cibw_arch": "aarch64"}
+          - {"os": "ubuntu", "cibw_build": "cp37", "cibw_arch": "x86_64"}
+          - {"os": "ubuntu", "cibw_build": "cp37", "cibw_arch": "i686"}
+          - {"os": "ubuntu", "cibw_build": "cp37", "cibw_arch": "aarch64"}
+          - {"os": "ubuntu", "cibw_build": "cp38", "cibw_arch": "x86_64"}
+          - {"os": "ubuntu", "cibw_build": "cp38", "cibw_arch": "i686"}
+          - {"os": "ubuntu", "cibw_build": "cp38", "cibw_arch": "aarch64"}
+          - {"os": "ubuntu", "cibw_build": "cp39", "cibw_arch": "x86_64"}
+          - {"os": "ubuntu", "cibw_build": "cp39", "cibw_arch": "i686"}
+          - {"os": "ubuntu", "cibw_build": "cp39", "cibw_arch": "aarch64"}
+          - {"os": "ubuntu", "cibw_build": "cp310", "cibw_arch": "x86_64"}
+          - {"os": "ubuntu", "cibw_build": "cp310", "cibw_arch": "i686"}
+          - {"os": "ubuntu", "cibw_build": "cp310", "cibw_arch": "aarch64"}
+          - {"os": "macos", "cibw_build": "cp36", "cibw_arch": "x86_64"}
+          - {"os": "macos", "cibw_build": "cp37", "cibw_arch": "x86_64"}
+          - {"os": "macos", "cibw_build": "cp38", "cibw_arch": "x86_64"}
+          - {"os": "macos", "cibw_build": "cp39", "cibw_arch": "x86_64"}
+          - {"os": "macos", "cibw_build": "cp310", "cibw_arch": "x86_64"}
+          - {"os": "windows", "cibw_build": "cp36", "cibw_arch": "x86"}
+          - {"os": "windows", "cibw_build": "cp36", "cibw_arch": "AMD64"}
+          - {"os": "windows", "cibw_build": "cp37", "cibw_arch": "x86"}
+          - {"os": "windows", "cibw_build": "cp37", "cibw_arch": "AMD64"}
+          - {"os": "windows", "cibw_build": "cp38", "cibw_arch": "x86"}
+          - {"os": "windows", "cibw_build": "cp38", "cibw_arch": "AMD64"}
+          - {"os": "windows", "cibw_build": "cp39", "cibw_arch": "x86"}
+          - {"os": "windows", "cibw_build": "cp39", "cibw_arch": "AMD64"}
+          - {"os": "windows", "cibw_build": "cp310", "cibw_arch": "x86"}
+          - {"os": "windows", "cibw_build": "cp310", "cibw_arch": "AMD64"}
+        # [[[end]]]
       fail-fast: false
 
     steps:
       - name: Setup QEMU
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.os == 'ubuntu'
         uses: docker/setup-qemu-action@v1
         with:
           platforms: arm64
@@ -78,7 +122,7 @@ jobs:
           ls -al wheelhouse/
 
       - name: "Remove unwanted wheels"
-        if: matrix.os == 'ubuntu-latest' && matrix.cibw_build == 'cp39'
+        if: matrix.os == 'ubuntu' && matrix.cibw_build == 'cp39'
         run: |
           # Python 3.9 musllinux wheels don't work in some places, so delete them.
           # https://github.com/nedbat/coveragepy/issues/1268
@@ -154,15 +198,15 @@ jobs:
           path: dist/*.whl
 
   prerel:
-    name: "Build ${{ matrix.python-version }} wheels on ${{ matrix.os }}"
+    name: "Build pre-rel ${{ matrix.os }} ${{ matrix.python-version }} wheels"
     if: ${{ false }}  # disable for now, since there are no pre-rel Python versions.
-    runs-on: ${{ matrix.os }}
+    runs-on: "${{ matrix.os }}-latest"
     strategy:
       matrix:
         os:
-          - ubuntu-latest
-          - windows-latest
-          - macos-latest
+          - ubuntu
+          - windows
+          - macos
         python-version:
           - "3.10.0-rc.2"
       fail-fast: false
