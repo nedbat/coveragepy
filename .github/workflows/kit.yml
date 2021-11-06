@@ -74,6 +74,13 @@ jobs:
           python -m cibuildwheel --output-dir wheelhouse
           ls -al wheelhouse/
 
+      - name: "Remove unwanted wheels"
+        if: matrix.os == 'ubuntu-latest' && matrix.cibw_build == 'cp39'
+        run: |
+          # Python 3.9 musllinux wheels don't work in some places, so delete them.
+          # https://github.com/nedbat/coveragepy/issues/1268
+          rm -f wheelhouse/*-cp39-musllinux*.whl
+
       - name: "Upload wheels"
         uses: actions/upload-artifact@v2
         with:
