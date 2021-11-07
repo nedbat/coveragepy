@@ -22,7 +22,7 @@ env:
 
 jobs:
   wheels:
-    name: "Build ${{ matrix.os }} ${{ matrix.cibw_build }} ${{ matrix.cibw_arch }} wheels"
+    name: "Build ${{ matrix.os }} ${{ matrix.py }} ${{ matrix.arch }} wheels"
     runs-on: ${{ matrix.os }}-latest
     strategy:
       matrix:
@@ -51,41 +51,41 @@ jobs:
           #           for the_arch in archs[the_os]:
           #               them = {
           #                   "os": the_os,
-          #                   "cibw_build": the_py,
-          #                   "cibw_arch": the_arch,
+          #                   "py": the_py,
+          #                   "arch": the_arch,
           #               }
           #               cog.outl(f"- {json.dumps(them)}")
           # ]]]
-          - {"os": "ubuntu", "cibw_build": "cp36", "cibw_arch": "x86_64"}
-          - {"os": "ubuntu", "cibw_build": "cp36", "cibw_arch": "i686"}
-          - {"os": "ubuntu", "cibw_build": "cp36", "cibw_arch": "aarch64"}
-          - {"os": "ubuntu", "cibw_build": "cp37", "cibw_arch": "x86_64"}
-          - {"os": "ubuntu", "cibw_build": "cp37", "cibw_arch": "i686"}
-          - {"os": "ubuntu", "cibw_build": "cp37", "cibw_arch": "aarch64"}
-          - {"os": "ubuntu", "cibw_build": "cp38", "cibw_arch": "x86_64"}
-          - {"os": "ubuntu", "cibw_build": "cp38", "cibw_arch": "i686"}
-          - {"os": "ubuntu", "cibw_build": "cp38", "cibw_arch": "aarch64"}
-          - {"os": "ubuntu", "cibw_build": "cp39", "cibw_arch": "x86_64"}
-          - {"os": "ubuntu", "cibw_build": "cp39", "cibw_arch": "i686"}
-          - {"os": "ubuntu", "cibw_build": "cp39", "cibw_arch": "aarch64"}
-          - {"os": "ubuntu", "cibw_build": "cp310", "cibw_arch": "x86_64"}
-          - {"os": "ubuntu", "cibw_build": "cp310", "cibw_arch": "i686"}
-          - {"os": "ubuntu", "cibw_build": "cp310", "cibw_arch": "aarch64"}
-          - {"os": "macos", "cibw_build": "cp36", "cibw_arch": "x86_64"}
-          - {"os": "macos", "cibw_build": "cp37", "cibw_arch": "x86_64"}
-          - {"os": "macos", "cibw_build": "cp38", "cibw_arch": "x86_64"}
-          - {"os": "macos", "cibw_build": "cp39", "cibw_arch": "x86_64"}
-          - {"os": "macos", "cibw_build": "cp310", "cibw_arch": "x86_64"}
-          - {"os": "windows", "cibw_build": "cp36", "cibw_arch": "x86"}
-          - {"os": "windows", "cibw_build": "cp36", "cibw_arch": "AMD64"}
-          - {"os": "windows", "cibw_build": "cp37", "cibw_arch": "x86"}
-          - {"os": "windows", "cibw_build": "cp37", "cibw_arch": "AMD64"}
-          - {"os": "windows", "cibw_build": "cp38", "cibw_arch": "x86"}
-          - {"os": "windows", "cibw_build": "cp38", "cibw_arch": "AMD64"}
-          - {"os": "windows", "cibw_build": "cp39", "cibw_arch": "x86"}
-          - {"os": "windows", "cibw_build": "cp39", "cibw_arch": "AMD64"}
-          - {"os": "windows", "cibw_build": "cp310", "cibw_arch": "x86"}
-          - {"os": "windows", "cibw_build": "cp310", "cibw_arch": "AMD64"}
+          - {"os": "ubuntu", "py": "cp36", "arch": "x86_64"}
+          - {"os": "ubuntu", "py": "cp36", "arch": "i686"}
+          - {"os": "ubuntu", "py": "cp36", "arch": "aarch64"}
+          - {"os": "ubuntu", "py": "cp37", "arch": "x86_64"}
+          - {"os": "ubuntu", "py": "cp37", "arch": "i686"}
+          - {"os": "ubuntu", "py": "cp37", "arch": "aarch64"}
+          - {"os": "ubuntu", "py": "cp38", "arch": "x86_64"}
+          - {"os": "ubuntu", "py": "cp38", "arch": "i686"}
+          - {"os": "ubuntu", "py": "cp38", "arch": "aarch64"}
+          - {"os": "ubuntu", "py": "cp39", "arch": "x86_64"}
+          - {"os": "ubuntu", "py": "cp39", "arch": "i686"}
+          - {"os": "ubuntu", "py": "cp39", "arch": "aarch64"}
+          - {"os": "ubuntu", "py": "cp310", "arch": "x86_64"}
+          - {"os": "ubuntu", "py": "cp310", "arch": "i686"}
+          - {"os": "ubuntu", "py": "cp310", "arch": "aarch64"}
+          - {"os": "macos", "py": "cp36", "arch": "x86_64"}
+          - {"os": "macos", "py": "cp37", "arch": "x86_64"}
+          - {"os": "macos", "py": "cp38", "arch": "x86_64"}
+          - {"os": "macos", "py": "cp39", "arch": "x86_64"}
+          - {"os": "macos", "py": "cp310", "arch": "x86_64"}
+          - {"os": "windows", "py": "cp36", "arch": "x86"}
+          - {"os": "windows", "py": "cp36", "arch": "AMD64"}
+          - {"os": "windows", "py": "cp37", "arch": "x86"}
+          - {"os": "windows", "py": "cp37", "arch": "AMD64"}
+          - {"os": "windows", "py": "cp38", "arch": "x86"}
+          - {"os": "windows", "py": "cp38", "arch": "AMD64"}
+          - {"os": "windows", "py": "cp39", "arch": "x86"}
+          - {"os": "windows", "py": "cp39", "arch": "AMD64"}
+          - {"os": "windows", "py": "cp310", "arch": "x86"}
+          - {"os": "windows", "py": "cp310", "arch": "AMD64"}
         # [[[end]]]
       fail-fast: false
 
@@ -110,8 +110,8 @@ jobs:
 
       - name: "Build wheels"
         env:
-          CIBW_BUILD: ${{ matrix.cibw_build }}-*
-          CIBW_ARCHS: ${{ matrix.cibw_arch }}
+          CIBW_BUILD: ${{ matrix.py }}-*
+          CIBW_ARCHS: ${{ matrix.arch }}
           CIBW_ENVIRONMENT: PIP_DISABLE_PIP_VERSION_CHECK=1
           CIBW_TEST_COMMAND: python -c "from coverage.tracer import CTracer; print('CTracer OK!')"
         run: |
@@ -122,7 +122,7 @@ jobs:
           ls -al wheelhouse/
 
       - name: "Remove unwanted wheels"
-        if: matrix.os == 'ubuntu' && matrix.cibw_build == 'cp39'
+        if: matrix.os == 'ubuntu' && matrix.py == 'cp39'
         run: |
           # Python 3.9 musllinux wheels don't work in some places, so delete them.
           # https://github.com/nedbat/coveragepy/issues/1268
@@ -198,7 +198,7 @@ jobs:
           path: dist/*.whl
 
   prerel:
-    name: "Build pre-rel ${{ matrix.os }} ${{ matrix.python-version }} wheels"
+    name: "Build pre-rel ${{ matrix.os }} ${{ matrix.py }} wheels"
     if: ${{ false }}  # disable for now, since there are no pre-rel Python versions.
     runs-on: "${{ matrix.os }}-latest"
     strategy:
@@ -207,7 +207,7 @@ jobs:
           - ubuntu
           - windows
           - macos
-        python-version:
+        py:
           - "3.10.0-rc.2"
       fail-fast: false
 
@@ -215,10 +215,10 @@ jobs:
       - name: "Check out the repo"
         uses: actions/checkout@v2
 
-      - name: "Install Python ${{ matrix.python-version }}"
+      - name: "Install Python ${{ matrix.py }}"
         uses: actions/setup-python@v2
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: ${{ matrix.py }}
 
       - name: "Install wheel tools"
         run: |
