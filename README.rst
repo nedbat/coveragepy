@@ -9,7 +9,7 @@ Code coverage testing for Python.
 
 |  |license| |versions| |status|
 |  |test-status| |quality-status| |docs| |codecov|
-|  |kit| |format| |repos| |downloads|
+|  |kit| |downloads| |format| |repos|
 |  |stars| |forks| |contributors|
 |  |tidelift| |twitter-coveragepy| |twitter-nedbat|
 
@@ -125,7 +125,7 @@ Licensed under the `Apache 2.0 License`_.  For details, see `NOTICE.txt`_.
     :target: https://codecov.io/github/nedbat/coveragepy?branch=master
     :alt: Coverage!
 .. |repos| image:: https://repology.org/badge/tiny-repos/python:coverage.svg
-    :target: https://repology.org/metapackage/python:coverage/versions
+    :target: https://repology.org/project/python:coverage/versions
     :alt: Packaging status
 .. |tidelift| image:: https://tidelift.com/badges/package/pypi/coverage
     :target: https://tidelift.com/subscription/pkg/pypi-coverage?utm_source=pypi-coverage&utm_medium=referral&utm_campaign=readme
