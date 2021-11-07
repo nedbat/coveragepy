@@ -127,6 +127,7 @@ Salvatore Zagaria
 Sandra Martocchia
 Scott Belden
 Sebastián Ramírez
+Sergey B Kirpichev
 Sigve Tjora
 Simon Willison
 Stan Hu
