@@ -30,7 +30,7 @@ jobs:
           # To change the matrix, edit the choices, then process this file with cog:
           #
           # $ python -m pip install cogapp
-          # $ python -m cogapp -r .github/workflows/kit.yml
+          # $ python -m cogapp -rP .github/workflows/kit.yml
           #
           #
           # [[[cog
@@ -45,7 +45,6 @@ jobs:
           #   #----- ^^^ ---------------------- ^^^ -----
           #
           #   import json
-          #   import cog
           #   for the_os in oss:
           #       for the_py in pys:
           #           for the_arch in archs[the_os]:
@@ -54,7 +53,7 @@ jobs:
           #                   "py": the_py,
           #                   "arch": the_arch,
           #               }
-          #               cog.outl(f"- {json.dumps(them)}")
+          #               print(f"- {json.dumps(them)}")
           # ]]]
           - {"os": "ubuntu", "py": "cp36", "arch": "x86_64"}
           - {"os": "ubuntu", "py": "cp36", "arch": "i686"}
