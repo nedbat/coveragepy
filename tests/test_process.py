@@ -1574,9 +1574,10 @@ class ProcessStartupWithSourceTest(ProcessCoverageMixin, CoverageTest):
 
     """
 
-    def assert_pth_and_source_work_together(
-        self, dashm, package, source
-    ):
+    @pytest.mark.parametrize("dashm", ["-m", ""])
+    @pytest.mark.parametrize("package", ["pkg", ""])
+    @pytest.mark.parametrize("source", ["main", "sub"])
+    def test_pth_and_source_work_together(self, dashm, package, source):
         """Run the test for a particular combination of factors.
 
         The arguments are all strings:
@@ -1641,27 +1642,3 @@ class ProcessStartupWithSourceTest(ProcessCoverageMixin, CoverageTest):
         summary = line_counts(data)
         assert summary[source + '.py'] == 3
         assert len(summary) == 1
-
-    def test_dashm_main(self):
-        self.assert_pth_and_source_work_together('-m', '', 'main')
-
-    def test_script_main(self):
-        self.assert_pth_and_source_work_together('', '', 'main')
-
-    def test_dashm_sub(self):
-        self.assert_pth_and_source_work_together('-m', '', 'sub')
-
-    def test_script_sub(self):
-        self.assert_pth_and_source_work_together('', '', 'sub')
-
-    def test_dashm_pkg_main(self):
-        self.assert_pth_and_source_work_together('-m', 'pkg', 'main')
-
-    def test_script_pkg_main(self):
-        self.assert_pth_and_source_work_together('', 'pkg', 'main')
-
-    def test_dashm_pkg_sub(self):
-        self.assert_pth_and_source_work_together('-m', 'pkg', 'sub')
-
-    def test_script_pkg_sub(self):
-        self.assert_pth_and_source_work_together('', 'pkg', 'sub')
