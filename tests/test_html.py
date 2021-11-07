@@ -111,8 +111,8 @@ class FileWriteTracker:
 class HtmlDeltaTest(HtmlTestHelpers, CoverageTest):
     """Tests of the HTML delta speed-ups."""
 
-    def setup_test(self):
-        super().setup_test()
+    def setUp(self):
+        super().setUp()
 
         # At least one of our tests monkey-patches the version of coverage.py,
         # so grab it here to restore it later.

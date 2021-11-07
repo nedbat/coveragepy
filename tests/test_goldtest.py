@@ -48,8 +48,8 @@ OUT_PATH_RX = path_regex("out/gettysburg.txt")
 class CompareTest(CoverageTest):
     """Tests of goldtest.py:compare()"""
 
-    def setup_test(self):
-        super().setup_test()
+    def setUp(self):
+        super().setUp()
         self.addCleanup(remove_tree, ACTUAL_DIR)
 
     def test_good(self):

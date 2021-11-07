@@ -51,8 +51,8 @@ class CoverageTest(
     # Let stderr go to stderr, pytest will capture it for us.
     show_stderr = True
 
-    def setup_test(self):
-        super().setup_test()
+    def setUp(self):
+        super().setUp()
 
         # Attributes for getting info about what happened.
         self.last_command_status = None
@@ -455,8 +455,8 @@ class CoverageTest(
 class UsingModulesMixin:
     """A mixin for importing modules from tests/modules and tests/moremodules."""
 
-    def setup_test(self):
-        super().setup_test()
+    def setUp(self):
+        super().setUp()
 
         # Parent class saves and restores sys.path, we can just modify it.
         sys.path.append(nice_file(TESTS_DIR, "modules"))

@@ -1236,8 +1236,8 @@ class PydocTest(CoverageTest):
 class FailUnderTest(CoverageTest):
     """Tests of the --fail-under switch."""
 
-    def setup_test(self):
-        super().setup_test()
+    def setUp(self):
+        super().setUp()
         self.make_file("forty_two_plus.py", """\
             # I have 42.857% (3/7) coverage!
             a = 1
@@ -1473,8 +1473,8 @@ def persistent_remove(path):
 class ProcessCoverageMixin:
     """Set up a .pth file to coverage-measure all sub-processes."""
 
-    def setup_test(self):
-        super().setup_test()
+    def setUp(self):
+        super().setUp()
 
         # Create the .pth file.
         assert PTH_DIR
@@ -1490,8 +1490,8 @@ class ProcessCoverageMixin:
 class ProcessStartupTest(ProcessCoverageMixin, CoverageTest):
     """Test that we can measure coverage in sub-processes."""
 
-    def setup_test(self):
-        super().setup_test()
+    def setUp(self):
+        super().setUp()
 
         # Main will run sub.py
         self.make_file("main.py", """\

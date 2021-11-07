@@ -27,12 +27,9 @@ class PytestBase:
         # pylint: disable=attribute-defined-outside-init
         self._pytest_request = request
         self._monkeypatch = monkeypatch
-        self.setup_test()
+        self.setUp()
 
-    # Can't call this setUp or setup because pytest sniffs out unittest and
-    # nosetest special names, and does things with them.
-    # https://github.com/pytest-dev/pytest/issues/8424
-    def setup_test(self):
+    def setUp(self):
         """Per-test initialization. Override this as you wish."""
         pass
 

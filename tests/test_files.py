@@ -144,8 +144,8 @@ def test_fnmatches_to_regex(patterns, case_insensitive, partial, matches, nomatc
 class MatcherTest(CoverageTest):
     """Tests of file matchers."""
 
-    def setup_test(self):
-        super().setup_test()
+    def setUp(self):
+        super().setUp()
         files.set_relative_directory()
 
     def assertMatches(self, matcher, filepath, matches):

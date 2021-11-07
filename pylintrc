@@ -148,7 +148,7 @@ evaluation=10.0 - ((float(5 * error + warning + refactor + convention) / stateme
 # TestCase overrides don't: setUp, tearDown
 # Nested decorator implementations: _decorator, _wrapper
 # Dispatched methods don't: _xxx__Xxxx
-no-docstring-rgx=__.*__|test[A-Z_].*|setup_test|_decorator|_wrapper|_.*__.*
+no-docstring-rgx=__.*__|test[A-Z_].*|setUp|_decorator|_wrapper|_.*__.*
 
 # Regular expression which should only match correct module names
 module-rgx=(([a-z_][a-z0-9_]*)|([A-Z][a-zA-Z0-9]+))$
@@ -236,7 +236,7 @@ additional-builtins=
 [CLASSES]
 
 # List of method names used to declare (i.e. assign) instance attributes.
-defining-attr-methods=__init__,__new__,setup_test,reset
+defining-attr-methods=__init__,__new__,setUp,reset
 
 
 # checks for sign of poor/misdesign:
