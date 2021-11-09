@@ -164,7 +164,7 @@ jobs:
           path: dist/*.tar.gz
 
   pypy:
-    name: "Build PyPy wheels"
+    name: "Build PyPy wheel"
     runs-on: ubuntu-latest
     steps:
       - name: "Check out the repo"
@@ -179,12 +179,11 @@ jobs:
         run: |
           pypy3 -m pip install -r requirements/kit.pip
 
-      - name: "Build wheels"
+      - name: "Build wheel"
         run: |
+          # One wheel works for all PyPy versions.
           # yes, this is weird syntax: https://github.com/pypa/build/issues/202
-          pypy3 -m build -w -C="--global-option=--python-tag" -C="--global-option=pp36"
-          pypy3 -m build -w -C="--global-option=--python-tag" -C="--global-option=pp37"
-          pypy3 -m build -w -C="--global-option=--python-tag" -C="--global-option=pp38"
+          pypy3 -m build -w -C="--global-option=--python-tag" -C="--global-option=pp36.pp37.pp38"
 
       - name: "List wheels"
         run: |
