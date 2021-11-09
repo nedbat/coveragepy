@@ -30,7 +30,8 @@ the ``[run] source`` configuration value.  The value is a comma- or
 newline-separated list of directories or importable names (packages or
 modules).
 
-If the source option is specified, only code those locations will be measured.
+If the source option is specified,
+only code in those locations will be measured.
 Specifying the source option also enables coverage.py to report on unexecuted
 files, since it can search the source tree for files that haven't been measured
 at all.  Only importable files (ones at the root of the tree, or in directories
