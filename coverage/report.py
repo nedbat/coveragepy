@@ -5,7 +5,7 @@
 
 import sys
 
-from coverage.exceptions import CoverageException, NoSource, NotPython
+from coverage.exceptions import CoverageException, NotPython
 from coverage.files import prep_patterns, FnmatchMatcher
 from coverage.misc import ensure_dir_for_file, file_be_gone
 
@@ -70,9 +70,6 @@ def get_analysis_to_report(coverage, morfs):
     for fr in sorted(file_reporters):
         try:
             analysis = coverage._analyze(fr)
-        except NoSource:
-            if not config.ignore_errors:
-                raise
         except NotPython:
             # Only report errors for .py files, and only if we didn't
             # explicitly suppress those errors.
@@ -84,5 +81,11 @@ def get_analysis_to_report(coverage, morfs):
                     coverage._warn(msg, slug="couldnt-parse")
                 else:
                     raise
+        except Exception as exc:
+            if config.ignore_errors:
+                msg = f"Couldn't parse '{fr.filename}': {exc}".rstrip()
+                coverage._warn(msg, slug="couldnt-parse")
+            else:
+                raise
         else:
             yield (fr, analysis)

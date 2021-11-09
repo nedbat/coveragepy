@@ -57,9 +57,7 @@ def get_python_source(filename):
             break
     else:
         # Couldn't find source.
-        exc_msg = f"No source for code: '{filename}'.\n"
-        exc_msg += "Aborting report output, consider using -i."
-        raise NoSource(exc_msg)
+        raise NoSource(f"No source for code: '{filename}'.")
 
     # Replace \f because of http://bugs.python.org/issue19035
     source = source.replace(b'\f', b' ')

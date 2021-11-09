@@ -135,7 +135,12 @@ class XmlReportTest(XmlTestHelpers, CoverageTest):
         cov = coverage.Coverage()
         self.start_import_stop(cov, "innocuous")
         os.remove("innocuous.py")
-        cov.xml_report(ignore_errors=True)
+        with pytest.warns(Warning) as warns:
+            cov.xml_report(ignore_errors=True)
+        assert_coverage_warnings(
+            warns,
+            re.compile(r"Couldn't parse '.*innocuous.py'. \(couldnt-parse\)"),
+            )
         self.assert_exists("coverage.xml")
 
     def test_filename_format_showing_everything(self):

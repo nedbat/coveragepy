@@ -29,6 +29,11 @@ Unreleased
 - Fix: Complex conditionals over excluded lines could have incorrectly reported
   a missing branch (`issue 1271`_). This is now fixed.
 
+- Fix: More exceptions are now handled when trying to parse source files for
+  reporting.  Problems that used to terminate coverage.py can now be handled
+  with ``[report] ignore_errors``.  This helps with plugins failing to read
+  files (`django_coverage_plugin issue 78`_).
+
 - Fix: Removed another vestige of jQuery from the source tarball
   (`issue 840`_).
 
@@ -37,6 +42,7 @@ Unreleased
   I'd rather not "fix" unsupported interfaces, it's actually nicer with a
   default value.
 
+.. _django_coverage_plugin issue 78: https://github.com/nedbat/django_coverage_plugin/issues/78
 .. _issue 1147: https://github.com/nedbat/coveragepy/issues/1147
 .. _issue 1271: https://github.com/nedbat/coveragepy/issues/1271
 .. _issue 1273: https://github.com/nedbat/coveragepy/issues/1273
