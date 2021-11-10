@@ -4,6 +4,15 @@
 # Based on:
 # https://github.com/joerick/cibuildwheel/blob/master/examples/github-deploy.yml
 
+# To test installing wheels without uploading them to PyPI:
+#
+#   $ mkdir /tmp/pypi
+#   $ cp dist/* /tmp/pypi
+#   $ python -m pip install piprepo
+#   $ piprepo build /tmp/pypi
+#   $ python -m pip install -v coverage --index-url=file:///tmp/pypi/simple
+#
+
 name: "Kits"
 
 on:
@@ -197,7 +206,7 @@ jobs:
 
   prerel:
     name: "Build pre-rel ${{ matrix.os }} ${{ matrix.py }} wheels"
-    if: ${{ false }}  # disable for now, since there are no pre-rel Python versions.
+    if: ${{ true }}  # true when there are pre-rel, false when not.
     runs-on: "${{ matrix.os }}-latest"
     strategy:
       matrix:
@@ -206,7 +215,7 @@ jobs:
           - windows
           - macos
         py:
-          - "3.10.0-rc.2"
+          - "3.11.0-alpha.2"
       fail-fast: false
 
     steps:

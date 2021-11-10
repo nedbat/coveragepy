@@ -22,6 +22,9 @@ This list is detailed and covers changes in each pre-release version.
 Unreleased
 ----------
 
+- Python 3.11 is supported (tested with 3.11.0a2).  One still-open issue has to
+  do with `exits through with-statements <issue 1270_>`_.
+
 - Fix: When remapping file paths through the ``[paths]`` setting while
   combining, the ``[run] relative_files`` setting was ignored, resulting in
   absolute paths for remapped file names (`issue 1147`_).  This is now fixed.
@@ -44,6 +47,7 @@ Unreleased
 
 .. _django_coverage_plugin issue 78: https://github.com/nedbat/django_coverage_plugin/issues/78
 .. _issue 1147: https://github.com/nedbat/coveragepy/issues/1147
+.. _issue 1270: https://github.com/nedbat/coveragepy/issues/1270
 .. _issue 1271: https://github.com/nedbat/coveragepy/issues/1271
 .. _issue 1273: https://github.com/nedbat/coveragepy/issues/1273
 

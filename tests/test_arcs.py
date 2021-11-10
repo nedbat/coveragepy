@@ -279,6 +279,8 @@ class WithTest(CoverageTest):
             arcz=arcz,
             )
 
+    @pytest.mark.skipif(env.PYVERSION[:2] >= (3, 11), reason="avoid a 3.11 bug: 45709")
+    # https://github.com/nedbat/coveragepy/issues/1270
     def test_raise_through_with(self):
         if env.PYBEHAVIOR.exit_through_with:
             arcz = ".1 12 27 78 8. 9A A.  -23 34 45 53 6-2"
