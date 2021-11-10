@@ -15,17 +15,17 @@
 // The f_lasti field changed meaning in 3.10.0a7. It had been bytes, but
 // now is instructions, so we need to adjust it to use it as a byte index.
 #if PY_VERSION_HEX >= 0x030A00A7
-#define MyFrame_lasti(f)    (f->f_lasti * 2)
+#define MyFrame_lasti(f)    ((f)->f_lasti * 2)
 #else
-#define MyFrame_lasti(f)    f->f_lasti
-#endif // 3.10.0a7
+#define MyFrame_lasti(f)    ((f)->f_lasti)
+#endif
 
 // Access f_code should be done through a helper starting in 3.9.
 #if PY_VERSION_HEX >= 0x03090000
 #define MyFrame_GetCode(f)      (PyFrame_GetCode(f))
 #else
 #define MyFrame_GetCode(f)      ((f)->f_code)
-#endif // 3.11
+#endif
 
 /* The values returned to indicate ok or error. */
 #define RET_OK      0
