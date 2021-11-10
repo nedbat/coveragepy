@@ -19,8 +19,10 @@ This list is detailed and covers changes in each pre-release version.
     ..  Version 9.8.1 — 2027-07-27
     ..  --------------------------
 
-Unreleased
-----------
+.. _changes_612:
+
+Version 6.1.2 — 2021-11-10
+--------------------------
 
 - Python 3.11 is supported (tested with 3.11.0a2).  One still-open issue has to
   do with `exits through with-statements <issue 1270_>`_.
