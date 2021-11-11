@@ -1835,7 +1835,7 @@ class AsyncTest(CoverageTest):
             import asyncio
 
             async def compute(x, y):                        # 3
-                print("Compute %s + %s ..." % (x, y))
+                print(f"Compute {x} + {y} ...")
                 await asyncio.sleep(0.001)
                 return x + y                                # 6
 
@@ -1843,7 +1843,7 @@ class AsyncTest(CoverageTest):
                 result = (0 +
                             await compute(x, y)             # A
                 )
-                print("%s + %s = %s" % (x, y, result))
+                print(f"{x} + {y} = {result}")
 
             loop = asyncio.new_event_loop()                 # E
             loop.run_until_complete(print_sum(1, 2))

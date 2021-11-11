@@ -282,14 +282,14 @@ def do_check_eol():
             for n, line in enumerate(f, start=1):
                 if crlf:
                     if b"\r" in line:
-                        print("%s@%d: CR found" % (fname, n))
+                        print(f"{fname}@{n}: CR found")
                         return
                 if trail_white:
                     line = line[:-1]
                     if not crlf:
                         line = line.rstrip(b'\r')
                     if line.rstrip() != line:
-                        print("%s@%d: trailing whitespace found" % (fname, n))
+                        print(f"{fname}@{n}: trailing whitespace found")
                         return
 
         if line is not None and not line.strip():
@@ -391,7 +391,7 @@ def main(args):
         verb = args.pop(0)
         handler = globals().get('do_'+verb)
         if handler is None:
-            print("*** No handler for %r" % verb)
+            print(f"*** No handler for {verb!r}")
             return 1
         star, num_args = analyze_args(handler)
         if star:

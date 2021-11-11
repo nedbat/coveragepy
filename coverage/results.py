@@ -317,7 +317,7 @@ def format_lines(statements, lines, arcs=None):
             for ex in sorted(exits):
                 if line not in lines and ex not in lines:
                     dest = (ex if ex > 0 else "exit")
-                    line_items.append((line, "%d->%s" % (line, dest)))
+                    line_items.append((line, f"{line}->{dest}"))
 
     ret = ', '.join(t[-1] for t in sorted(line_items))
     return ret

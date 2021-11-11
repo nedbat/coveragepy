@@ -382,7 +382,7 @@ class ProcessTest(CoverageTest):
         self.make_file("d1/x.py", """\
             a = 1
             b = 2
-            print("%s %s" % (a, b))
+            print(f"{a} {b}")
             """)
 
         self.make_file("d2/x.py", """\
@@ -391,7 +391,7 @@ class ProcessTest(CoverageTest):
             # 3
             c = 4
             d = 5
-            print("%s %s" % (c, d))
+            print(f"{c} {d}")
             """)
 
         self.make_file(".coveragerc", """\
@@ -823,7 +823,7 @@ class ProcessTest(CoverageTest):
             import coverage
 
             for i in [1, 2]:
-                sys.stderr.write("Run %s\\n" % i)
+                sys.stderr.write(f"Run {i}\\n")
                 inst = coverage.Coverage(source=['foo'])
                 inst.load()
                 inst.start()
@@ -1206,9 +1206,9 @@ class AliasedCommandTest(CoverageTest):
             "coverage-%d.%d" % sys.version_info[:2],
         ]
         for cmd in cmds:
-            out = self.run_command("%s foobar" % cmd)
+            out = self.run_command(f"{cmd} foobar")
             assert "Unknown command: 'foobar'" in out
-            assert "Use '%s help' for help" % cmd in out
+            assert f"Use '{cmd} help' for help" in out
 
 
 class PydocTest(CoverageTest):
@@ -1557,7 +1557,7 @@ class ProcessStartupTest(ProcessCoverageMixin, CoverageTest):
         data_files = glob.glob(os.getcwd() + '/.coverage*')
         msg = (
             "Expected only .coverage after combine, looks like there are " +
-            "extra data files that were not cleaned up: %r" % data_files
+            f"extra data files that were not cleaned up: {data_files!r}"
         )
         assert len(data_files) == 1, msg
 

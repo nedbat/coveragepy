@@ -16,7 +16,7 @@ def _make_version(major, minor, micro, releaselevel, serial):
         version += ".%d" % (micro,)
     if releaselevel != 'final':
         short = {'alpha': 'a', 'beta': 'b', 'candidate': 'rc'}[releaselevel]
-        version += "%s%d" % (short, serial)
+        version += f"{short}{serial}"
     return version
 
 

@@ -83,7 +83,7 @@ class RunFileTest(CoverageTest):
         self.make_file("abrupt.py", """\
             if 1:
                 a = 1
-                print("a is %r" % a)
+                print(f"a is {a!r}")
                 #""")
         with open("abrupt.py") as f:
             abrupt = f.read()

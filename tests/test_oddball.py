@@ -475,7 +475,7 @@ class GettraceTest(CoverageTest):
 
             def tracer(frame, event, arg):
                 filename = os.path.basename(frame.f_code.co_filename)
-                print("%s: %s @ %d" % (event, filename, frame.f_lineno))
+                print(f"{event}: {filename} @ {frame.f_lineno}")
                 return tracer
 
             def begin():

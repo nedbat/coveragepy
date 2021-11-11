@@ -181,7 +181,7 @@ class ConfigTest(CoverageTest):
         ]
 
         for bad_config, msg in bad_configs_and_msgs:
-            print("Trying %r" % bad_config)
+            print(f"Trying {bad_config!r}")
             self.make_file(".coveragerc", bad_config)
             with pytest.raises(CoverageException, match=msg):
                 coverage.Coverage()
@@ -689,7 +689,7 @@ class ConfigFileTest(UsingModulesMixin, CoverageTest):
             ".",
         ]
         for bad_file in bad_files:
-            msg = "Couldn't read %r as a config file" % bad_file
+            msg = f"Couldn't read {bad_file!r} as a config file"
             with pytest.raises(CoverageException, match=msg):
                 coverage.Coverage(config_file=bad_file)
 

@@ -32,7 +32,7 @@ class AnnotationGoldTest(CoverageTest):
         self.make_file("b/__init__.py")
         self.make_file("b/b.py", """\
             def b(x):
-                msg = "x is %s" % x
+                msg = f"x is {x}"
                 print(msg)
             """)
 

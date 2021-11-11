@@ -144,7 +144,7 @@ class PyRunner:
                     self.arg0 = try_filename
                     break
             else:
-                raise NoSource("Can't find '__main__' module in '%s'" % self.arg0)
+                raise NoSource(f"Can't find '__main__' module in '{self.arg0}'")
 
             # Make a spec. I don't know if this is the right way to do it.
             try_filename = python_reported_file(try_filename)

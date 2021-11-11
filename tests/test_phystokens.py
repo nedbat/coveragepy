@@ -171,7 +171,7 @@ class SourceEncodingTest(CoverageTest):
 
     def test_detect_source_encoding(self):
         for _, source, expected in ENCODING_DECLARATION_SOURCES:
-            assert source_encoding(source) == expected, "Wrong encoding in %r" % source
+            assert source_encoding(source) == expected, f"Wrong encoding in {source!r}"
 
     # PyPy3 gets this case wrong. Not sure what I can do about it, so skip the test.
     @pytest.mark.skipif(env.PYPY, reason="PyPy3 is wrong about non-comment encoding. Skip it.")
@@ -233,7 +233,7 @@ class NeuterEncodingDeclarationTest(CoverageTest):
 
             # The neutered source will be detected as having no encoding
             # declaration.
-            assert source_encoding(neutered) == DEF_ENCODING, "Wrong encoding in %r" % neutered
+            assert source_encoding(neutered) == DEF_ENCODING, f"Wrong encoding in {neutered!r}"
 
     def test_two_encoding_declarations(self):
         input_src = textwrap.dedent("""\

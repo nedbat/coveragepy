@@ -275,13 +275,11 @@ class CoverageTest(
 
     def assert_exists(self, fname):
         """Assert that `fname` is a file that exists."""
-        msg = "File %r should exist" % fname
-        assert os.path.exists(fname), msg
+        assert os.path.exists(fname), f"File {fname!r} should exist"
 
     def assert_doesnt_exist(self, fname):
         """Assert that `fname` is a file that doesn't exist."""
-        msg = "File %r shouldn't exist" % fname
-        assert not os.path.exists(fname), msg
+        assert not os.path.exists(fname), f"File {fname!r} shouldn't exist"
 
     def assert_file_count(self, pattern, count):
         """Assert that there are `count` files matching `pattern`."""

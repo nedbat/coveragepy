@@ -631,7 +631,7 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
             if not b:
                 c = 6
             d = 7
-            print("xxx: %r %r %r %r" % (a, b, c, d))
+            print(f"xxx: {a} {b} {c} {d}")
             """)
         out = self.run_command("coverage run --source=. xxx")
         assert out == "xxx: 3 4 0 7\n"

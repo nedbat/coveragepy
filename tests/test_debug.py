@@ -171,8 +171,8 @@ class DebugTraceTest(CoverageTest):
             report_include report_omit
             """.split()
         for label in labels:
-            label_pat = r"^\s*%s: " % label
-            msg = "Incorrect lines for %r" % label
+            label_pat = fr"^\s*{label}: "
+            msg = f"Incorrect lines for {label!r}"
             assert 1 == len(re_lines(label_pat, out_lines)), msg
 
     def test_debug_sys(self):
@@ -185,8 +185,8 @@ class DebugTraceTest(CoverageTest):
             pid cwd path environment command_line cover_match pylib_match
             """.split()
         for label in labels:
-            label_pat = r"^\s*%s: " % label
-            msg = "Incorrect lines for %r" % label
+            label_pat = fr"^\s*{label}: "
+            msg = f"Incorrect lines for {label!r}"
             assert 1 == len(re_lines(label_pat, out_lines)), msg
 
     def test_debug_sys_ctracer(self):

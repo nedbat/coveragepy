@@ -33,7 +33,7 @@ def disposition_debug_msg(disp):
         if disp.original_filename != disp.source_filename:
             msg += f" as {disp.source_filename!r}"
         if disp.file_tracer:
-            msg += ": will be traced by %r" % disp.file_tracer
+            msg += f": will be traced by {disp.file_tracer!r}"
     else:
         msg = f"Not tracing {disp.original_filename!r}: {disp.reason}"
     return msg

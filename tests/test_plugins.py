@@ -988,7 +988,7 @@ class DynamicContextPluginTest(CoverageTest):
         """Make some files to use while testing dynamic context plugins."""
         self.make_file("rendering.py", """\
             def html_tag(tag, content):
-                return '<%s>%s</%s>' % (tag, content, tag)
+                return f'<{tag}>{content}</{tag}>'
 
             def render_paragraph(text):
                 return html_tag('p', text)

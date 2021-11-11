@@ -215,7 +215,7 @@ class ConcurrencyTest(CoverageTest):
 
         self.make_file("try_it.py", code)
 
-        cmd = "coverage run --concurrency=%s try_it.py" % concurrency
+        cmd = f"coverage run --concurrency={concurrency} try_it.py"
         out = self.run_command(cmd)
 
         expected_cant_trace = cant_trace_msg(concurrency, the_module)
@@ -366,11 +366,11 @@ class MultiprocessingTest(CoverageTest):
     ):
         """Run code using multiprocessing, it should produce `expected_out`."""
         self.make_file("multi.py", code)
-        self.make_file(".coveragerc", """\
+        self.make_file(".coveragerc", f"""\
             [run]
-            concurrency = %s
+            concurrency = {concurrency}
             source = .
-            """ % concurrency)
+            """)
 
         for start_method in ["fork", "spawn"]:
             if start_method and start_method not in multiprocessing.get_all_start_methods():
