@@ -162,31 +162,28 @@ class ConfigTest(CoverageTest):
         with pytest.raises(CoverageException, match=msg):
             coverage.Coverage()
 
-    def test_parse_errors(self):
+    @pytest.mark.parametrize("bad_config, msg", [
+        ("[run]\ntimid = maybe?\n", r"maybe[?]"),
+        ("timid = 1\n", r"no section headers"),
+        ("[run\n", r"\[run"),
+        ("[report]\nexclude_lines = foo(\n",
+            r"Invalid \[report\].exclude_lines value 'foo\(': " +
+            r"(unbalanced parenthesis|missing \))"),
+        ("[report]\npartial_branches = foo[\n",
+            r"Invalid \[report\].partial_branches value 'foo\[': " +
+            r"(unexpected end of regular expression|unterminated character set)"),
+        ("[report]\npartial_branches_always = foo***\n",
+            r"Invalid \[report\].partial_branches_always value " +
+            r"'foo\*\*\*': " +
+            r"multiple repeat"),
+    ])
+    def test_parse_errors(self, bad_config, msg):
         # Im-parsable values raise CoverageException, with details.
-        bad_configs_and_msgs = [
-            ("[run]\ntimid = maybe?\n", r"maybe[?]"),
-            ("timid = 1\n", r"no section headers"),
-            ("[run\n", r"\[run"),
-            ("[report]\nexclude_lines = foo(\n",
-                r"Invalid \[report\].exclude_lines value 'foo\(': " +
-                r"(unbalanced parenthesis|missing \))"),
-            ("[report]\npartial_branches = foo[\n",
-                r"Invalid \[report\].partial_branches value 'foo\[': " +
-                r"(unexpected end of regular expression|unterminated character set)"),
-            ("[report]\npartial_branches_always = foo***\n",
-                r"Invalid \[report\].partial_branches_always value " +
-                r"'foo\*\*\*': " +
-                r"multiple repeat"),
-        ]
+        self.make_file(".coveragerc", bad_config)
+        with pytest.raises(CoverageException, match=msg):
+            coverage.Coverage()
 
-        for bad_config, msg in bad_configs_and_msgs:
-            print(f"Trying {bad_config!r}")
-            self.make_file(".coveragerc", bad_config)
-            with pytest.raises(CoverageException, match=msg):
-                coverage.Coverage()
-
-    @pytest.mark.parametrize("bad_config,msg", [
+    @pytest.mark.parametrize("bad_config, msg", [
         ("[tool.coverage.run]\ntimid = \"maybe?\"\n", r"maybe[?]"),
         ("[tool.coverage.run\n", None),
         ('[tool.coverage.report]\nexclude_lines = ["foo("]\n',
@@ -681,17 +678,13 @@ class ConfigFileTest(UsingModulesMixin, CoverageTest):
         assert cov.config.exclude_list == ["first", "✘weirdo", "third"]
         assert cov.config.html_title == "tabblo & «ταБЬℓσ» # numbers"
 
-    def test_unreadable_config(self):
+    @pytest.mark.parametrize("bad_file", ["nosuchfile.txt", "."])
+    def test_unreadable_config(self, bad_file):
         # If a config file is explicitly specified, then it is an error for it
         # to not be readable.
-        bad_files = [
-            "nosuchfile.txt",
-            ".",
-        ]
-        for bad_file in bad_files:
-            msg = f"Couldn't read {bad_file!r} as a config file"
-            with pytest.raises(CoverageException, match=msg):
-                coverage.Coverage(config_file=bad_file)
+        msg = f"Couldn't read {bad_file!r} as a config file"
+        with pytest.raises(CoverageException, match=msg):
+            coverage.Coverage(config_file=bad_file)
 
     def test_nocoveragerc_file_when_specified(self):
         cov = coverage.Coverage(config_file=".coveragerc")

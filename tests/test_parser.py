@@ -444,7 +444,10 @@ class ParserFileTest(CoverageTest):
         parser.parse_source()
         return parser
 
-    def test_line_endings(self):
+    @pytest.mark.parametrize("slug, newline", [
+        ("unix", "\n"), ("dos", "\r\n"), ("mac", "\r"),
+    ])
+    def test_line_endings(self, slug, newline):
         text = """\
             # check some basic branch counting
             class Foo:
@@ -458,12 +461,10 @@ class ParserFileTest(CoverageTest):
                 pass
             """
         counts = { 2:2, 3:1, 4:2, 5:1, 7:1, 9:2, 10:1 }
-        name_endings = (("unix", "\n"), ("dos", "\r\n"), ("mac", "\r"))
-        for fname, newline in name_endings:
-            fname = fname + ".py"
-            self.make_file(fname, text, newline=newline)
-            parser = self.parse_file(fname)
-            assert parser.exit_counts() == counts, f"Wrong for {fname!r}"
+        fname = slug + ".py"
+        self.make_file(fname, text, newline=newline)
+        parser = self.parse_file(fname)
+        assert parser.exit_counts() == counts, f"Wrong for {fname!r}"
 
     def test_encoding(self):
         self.make_file("encoded.py", """\

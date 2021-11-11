@@ -429,7 +429,11 @@ class MultiprocessingTest(CoverageTest):
             code, expected_out, eventlet, nprocs, concurrency="multiprocessing,eventlet"
         )
 
-    def test_multiprocessing_with_branching(self):
+    @pytest.mark.parametrize("start_method", ["fork", "spawn"])
+    def test_multiprocessing_with_branching(self, start_method):
+        if start_method not in multiprocessing.get_all_start_methods():
+            pytest.skip(f"{start_method} not supported here")
+
         nprocs = 3
         upto = 30
         code = (SQUARE_OR_CUBE_WORK + MULTI_CODE).format(NPROCS=nprocs, UPTO=upto)
@@ -443,19 +447,15 @@ class MultiprocessingTest(CoverageTest):
             omit = */site-packages/*
             """)
 
-        for start_method in ["fork", "spawn"]:
-            if start_method and start_method not in multiprocessing.get_all_start_methods():
-                continue
+        out = self.run_command(f"coverage run --rcfile=multi.rc multi.py {start_method}")
+        assert out.rstrip() == expected_out
 
-            out = self.run_command(f"coverage run --rcfile=multi.rc multi.py {start_method}")
-            assert out.rstrip() == expected_out
+        out = self.run_command("coverage combine -q")   # sneak in a test of -q
+        assert out == ""
+        out = self.run_command("coverage report -m")
 
-            out = self.run_command("coverage combine -q")   # sneak in a test of -q
-            assert out == ""
-            out = self.run_command("coverage report -m")
-
-            last_line = self.squeezed_lines(out)[-1]
-            assert re.search(r"TOTAL \d+ 0 \d+ 0 100%", last_line)
+        last_line = self.squeezed_lines(out)[-1]
+        assert re.search(r"TOTAL \d+ 0 \d+ 0 100%", last_line)
 
     def test_multiprocessing_bootstrap_error_handling(self):
         # An exception during bootstrapping will be reported.
