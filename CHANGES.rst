@@ -22,7 +22,8 @@ This list is detailed and covers changes in each pre-release version.
 Unreleased
 ----------
 
-Nothing yet.
+- Fix: A colon in a decorator expression would cause an exclusion to end too
+  early, preventing the exclusion of the decorated function. This is now fixed.
 
 
 .. _changes_612:

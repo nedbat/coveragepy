@@ -67,7 +67,7 @@ class PythonParser:
         # The raw line numbers of excluded lines of code, as marked by pragmas.
         self.raw_excluded = set()
 
-        # The line numbers of class and function definitions.
+        # The line numbers of class definitions.
         self.raw_classdefs = set()
 
         # The line numbers of docstring lines.
@@ -120,6 +120,7 @@ class PythonParser:
         first_line = None
         empty = True
         first_on_line = True
+        nesting = 0
 
         tokgen = generate_tokens(self.text)
         for toktype, ttext, (slineno, _), (elineno, _), ltext in tokgen:
@@ -139,7 +140,7 @@ class PythonParser:
                     # lines with the 'class' keyword.
                     self.raw_classdefs.add(slineno)
             elif toktype == token.OP:
-                if ttext == ':':
+                if ttext == ':' and nesting == 0:
                     should_exclude = (elineno in self.raw_excluded) or excluding_decorators
                     if not excluding and should_exclude:
                         # Start excluding a suite.  We trigger off of the colon
@@ -155,6 +156,10 @@ class PythonParser:
                         excluding_decorators = True
                     if excluding_decorators:
                         self.raw_excluded.add(elineno)
+                elif ttext in "([{":
+                    nesting += 1
+                elif ttext in ")]}":
+                    nesting -= 1
             elif toktype == token.STRING and prev_toktype == token.INDENT:
                 # Strings that are first on an indented line are docstrings.
                 # (a trick from trace.py in the stdlib.) This works for

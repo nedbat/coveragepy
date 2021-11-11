@@ -174,9 +174,29 @@ class PythonParserTest(CoverageTest):
             """)
         raw_statements = {3, 4, 5, 6, 8, 9, 10, 13, 15, 16, 17, 20, 22, 23, 25, 26}
         if env.PYBEHAVIOR.trace_decorated_def:
-            raw_statements.update([11, 19])
+            raw_statements.update({11, 19})
         assert parser.raw_statements == raw_statements
         assert parser.statements == {8}
+
+    def test_decorator_pragmas_with_colons(self):
+        # A colon in a decorator expression would confuse the parser,
+        # ending the exclusion of the decorated function.
+        parser = self.parse_source("""\
+            @decorate(X)        # nocover
+            @decorate("Hello"[2])
+            def f():
+                x = 4
+
+            @decorate(X)        # nocover
+            @decorate("Hello"[:7])
+            def g():
+                x = 9
+            """)
+        raw_statements = {1, 2, 4, 6, 7, 9}
+        if env.PYBEHAVIOR.trace_decorated_def:
+            raw_statements.update({3, 8})
+        assert parser.raw_statements == raw_statements
+        assert parser.statements == set()
 
     def test_class_decorator_pragmas(self):
         parser = self.parse_source("""\
