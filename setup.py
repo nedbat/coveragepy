@@ -19,7 +19,7 @@ import distutils.log                                # pylint: disable=wrong-impo
 # $set_env.py: COVERAGE_QUIETER - Set to remove some noise from test output.
 if bool(int(os.getenv("COVERAGE_QUIETER", "0"))):
     # Distutils has its own mini-logging code, and it sets the level too high.
-    # When I ask for --quiet when running tessts, I don't want to see warnings.
+    # When I ask for --quiet when running tests, I don't want to see warnings.
     old_set_verbosity = distutils.log.set_verbosity
     def better_set_verbosity(v):
         """--quiet means no warnings!"""
