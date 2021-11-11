@@ -43,7 +43,7 @@ class PythonParserTest(CoverageTest):
                 pass
             """)
         assert parser.exit_counts() == {
-            2:1, 3:1, 4:2, 5:1, 7:1, 9:1, 10:1
+            2:2, 3:1, 4:2, 5:1, 7:1, 9:2, 10:1
             }
 
     def test_generator_exit_counts(self):
@@ -89,7 +89,7 @@ class PythonParserTest(CoverageTest):
                     pass
             """)
         assert parser.exit_counts() == {
-            1:0, 2:1, 3:1
+            1:1, 2:1, 3:1
             }
 
     def test_missing_branch_to_excluded_code(self):
@@ -457,7 +457,7 @@ class ParserFileTest(CoverageTest):
             class Bar:
                 pass
             """
-        counts = { 2:1, 3:1, 4:2, 5:1, 7:1, 9:1, 10:1 }
+        counts = { 2:2, 3:1, 4:2, 5:1, 7:1, 9:2, 10:1 }
         name_endings = (("unix", "\n"), ("dos", "\r\n"), ("mac", "\r"))
         for fname, newline in name_endings:
             fname = fname + ".py"

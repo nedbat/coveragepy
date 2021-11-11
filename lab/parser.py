@@ -108,8 +108,6 @@ class ParserMain:
                         marks[2] = str(exits)
                     if lineno in pyparser.raw_docstrings:
                         marks[3] = '"'
-                    if lineno in pyparser.raw_classdefs:
-                        marks[3] = 'C'
                     if lineno in pyparser.raw_excluded:
                         marks[4] = 'x'
 
