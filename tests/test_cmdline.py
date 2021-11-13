@@ -4,6 +4,7 @@
 """Test cmdline.py for coverage.py."""
 
 import pprint
+import re
 import sys
 import textwrap
 
@@ -279,6 +280,20 @@ class CmdLineTest(BaseCmdLineTest):
         assert "cover_pylib:" in out
         assert "skip_covered:" in out
         assert "skip_empty:" in out
+
+    def test_debug_premain(self):
+        self.command_line("debug premain")
+        out = self.stdout()
+        #   ... many lines ...
+        #   pytest_pyfunc_call : /Users/ned/cov/trunk/.tox/py39/site-packages/_pytest/python.py:183
+        #   test_debug_premain : /Users/ned/cov/trunk/tests/test_cmdline.py:284
+        #         command_line : /Users/ned/cov/trunk/tests/coveragetest.py:309
+        #         command_line : /Users/ned/cov/trunk/tests/coveragetest.py:472
+        #         command_line : /Users/ned/cov/trunk/coverage/cmdline.py:592
+        #             do_debug : /Users/ned/cov/trunk/coverage/cmdline.py:804
+        assert re.search(r"(?m)^\s+test_debug_premain : .*[/\\]tests[/\\]test_cmdline.py:\d+$", out)
+        assert re.search(r"(?m)^\s+command_line : .*[/\\]coverage[/\\]cmdline.py:\d+$", out)
+        assert re.search(r"(?m)^\s+do_debug : .*[/\\]coverage[/\\]cmdline.py:\d+$", out)
 
     def test_erase(self):
         # coverage erase
