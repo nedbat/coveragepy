@@ -480,8 +480,8 @@ class ApiTest(CoverageTest):
         # The order of the [paths] setting matters
         def make_data_file():
             data = coverage.CoverageData(".coverage.1")
-            data.add_lines({abs_file('ci/girder/g1.py'): dict.fromkeys(range(10))})
-            data.add_lines({abs_file('ci/girder/plugins/p1.py'): dict.fromkeys(range(10))})
+            data.add_lines({abs_file('ci/girder/g1.py'): range(10)})
+            data.add_lines({abs_file('ci/girder/plugins/p1.py'): range(10)})
             data.write()
 
         def get_combined_filenames():

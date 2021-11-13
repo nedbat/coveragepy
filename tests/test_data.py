@@ -290,9 +290,9 @@ class CoverageDataTest(CoverageTest):
     def test_file_tracer_name(self):
         covdata = DebugCoverageData()
         covdata.add_lines({
-            "p1.foo": dict.fromkeys([1, 2, 3]),
-            "p2.html": dict.fromkeys([10, 11, 12]),
-            "main.py": dict.fromkeys([20]),
+            "p1.foo": [1, 2, 3],
+            "p2.html": [10, 11, 12],
+            "main.py": [20],
         })
         covdata.add_file_tracers({"p1.foo": "p1.plugin", "p2.html": "p2.plugin"})
         assert covdata.file_tracer("p1.foo") == "p1.plugin"
@@ -303,8 +303,8 @@ class CoverageDataTest(CoverageTest):
     def test_ok_to_repeat_file_tracer(self):
         covdata = DebugCoverageData()
         covdata.add_lines({
-            "p1.foo": dict.fromkeys([1, 2, 3]),
-            "p2.html": dict.fromkeys([10, 11, 12]),
+            "p1.foo": [1, 2, 3],
+            "p2.html": [10, 11, 12],
         })
         covdata.add_file_tracers({"p1.foo": "p1.plugin", "p2.html": "p2.plugin"})
         covdata.add_file_tracers({"p1.foo": "p1.plugin"})
@@ -313,9 +313,9 @@ class CoverageDataTest(CoverageTest):
     def test_ok_to_set_empty_file_tracer(self):
         covdata = DebugCoverageData()
         covdata.add_lines({
-            "p1.foo": dict.fromkeys([1, 2, 3]),
-            "p2.html": dict.fromkeys([10, 11, 12]),
-            "main.py": dict.fromkeys([20]),
+            "p1.foo": [1, 2, 3],
+            "p2.html": [10, 11, 12],
+            "main.py": [20],
         })
         covdata.add_file_tracers({"p1.foo": "p1.plugin", "main.py": ""})
         assert covdata.file_tracer("p1.foo") == "p1.plugin"
@@ -327,13 +327,13 @@ class CoverageDataTest(CoverageTest):
         with pytest.raises(CoverageException, match=msg):
             covdata.add_file_tracers({"p1.foo": "p1.plugin"})
 
-        covdata.add_lines({"p2.html": dict.fromkeys([10, 11, 12])})
+        covdata.add_lines({"p2.html": [10, 11, 12]})
         with pytest.raises(CoverageException, match=msg):
             covdata.add_file_tracers({"p1.foo": "p1.plugin"})
 
     def test_cant_change_file_tracer_name(self):
         covdata = DebugCoverageData()
-        covdata.add_lines({"p1.foo": dict.fromkeys([1, 2, 3])})
+        covdata.add_lines({"p1.foo": [1, 2, 3]})
         covdata.add_file_tracers({"p1.foo": "p1.plugin"})
 
         msg = "Conflicting file tracer name for 'p1.foo': 'p1.plugin' vs 'p1.plugin.foo'"
@@ -384,9 +384,9 @@ class CoverageDataTest(CoverageTest):
     def test_update_file_tracers(self):
         covdata1 = DebugCoverageData(suffix='1')
         covdata1.add_lines({
-            "p1.html": dict.fromkeys([1, 2, 3, 4]),
-            "p2.html": dict.fromkeys([5, 6, 7]),
-            "main.py": dict.fromkeys([10, 11, 12]),
+            "p1.html": [1, 2, 3, 4],
+            "p2.html": [5, 6, 7],
+            "main.py": [10, 11, 12],
         })
         covdata1.add_file_tracers({
             "p1.html": "html.plugin",
@@ -395,10 +395,10 @@ class CoverageDataTest(CoverageTest):
 
         covdata2 = DebugCoverageData(suffix='2')
         covdata2.add_lines({
-            "p1.html": dict.fromkeys([3, 4, 5, 6]),
-            "p2.html": dict.fromkeys([7, 8, 9]),
-            "p3.foo": dict.fromkeys([1000, 1001]),
-            "main.py": dict.fromkeys([10, 11, 12]),
+            "p1.html": [3, 4, 5, 6],
+            "p2.html": [7, 8, 9],
+            "p3.foo": [1000, 1001],
+            "main.py": [10, 11, 12],
         })
         covdata2.add_file_tracers({
             "p1.html": "html.plugin",
@@ -416,11 +416,11 @@ class CoverageDataTest(CoverageTest):
 
     def test_update_conflicting_file_tracers(self):
         covdata1 = DebugCoverageData(suffix='1')
-        covdata1.add_lines({"p1.html": dict.fromkeys([1, 2, 3])})
+        covdata1.add_lines({"p1.html": [1, 2, 3]})
         covdata1.add_file_tracers({"p1.html": "html.plugin"})
 
         covdata2 = DebugCoverageData(suffix='2')
-        covdata2.add_lines({"p1.html": dict.fromkeys([1, 2, 3])})
+        covdata2.add_lines({"p1.html": [1, 2, 3]})
         covdata2.add_file_tracers({"p1.html": "html.other_plugin"})
 
         msg = "Conflicting file tracer name for 'p1.html': 'html.plugin' vs 'html.other_plugin'"
@@ -433,11 +433,11 @@ class CoverageDataTest(CoverageTest):
 
     def test_update_file_tracer_vs_no_file_tracer(self):
         covdata1 = DebugCoverageData(suffix="1")
-        covdata1.add_lines({"p1.html": dict.fromkeys([1, 2, 3])})
+        covdata1.add_lines({"p1.html": [1, 2, 3]})
         covdata1.add_file_tracers({"p1.html": "html.plugin"})
 
         covdata2 = DebugCoverageData(suffix="2")
-        covdata2.add_lines({"p1.html": dict.fromkeys([1, 2, 3])})
+        covdata2.add_lines({"p1.html": [1, 2, 3]})
 
         msg = "Conflicting file tracer name for 'p1.html': 'html.plugin' vs ''"
         with pytest.raises(CoverageException, match=msg):
@@ -761,9 +761,9 @@ class CoverageDataFilesTest(CoverageTest):
     def test_combining_with_aliases(self):
         covdata1 = DebugCoverageData(suffix='1')
         covdata1.add_lines({
-            '/home/ned/proj/src/a.py': {1: None, 2: None},
-            '/home/ned/proj/src/sub/b.py': {3: None},
-            '/home/ned/proj/src/template.html': {10: None},
+            '/home/ned/proj/src/a.py': {1, 2},
+            '/home/ned/proj/src/sub/b.py': {3},
+            '/home/ned/proj/src/template.html': {10},
         })
         covdata1.add_file_tracers({
             '/home/ned/proj/src/template.html': 'html.plugin',
@@ -772,8 +772,8 @@ class CoverageDataFilesTest(CoverageTest):
 
         covdata2 = DebugCoverageData(suffix='2')
         covdata2.add_lines({
-            r'c:\ned\test\a.py': {4: None, 5: None},
-            r'c:\ned\test\sub\b.py': {3: None, 6: None},
+            r'c:\ned\test\a.py': {4, 5},
+            r'c:\ned\test\sub\b.py': {3, 6},
         })
         covdata2.write()
 

@@ -1511,7 +1511,7 @@ class ProcessStartupTest(ProcessCoverageMixin, CoverageTest):
         # measured automatically.  Create the data file here with bogus data in
         # it.
         data = coverage.CoverageData(".mycovdata")
-        data.add_lines({os.path.abspath('sub.py'): dict.fromkeys(range(100))})
+        data.add_lines({os.path.abspath('sub.py'): range(100)})
         data.write()
 
         self.make_file("coverage.ini", """\
