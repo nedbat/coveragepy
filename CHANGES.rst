@@ -28,6 +28,9 @@ Unreleased
 - Fix: The HTML report now will not overwrite a .gitignore file that already
   exists in the HTML output directory (follow-on for `issue 1244`_).
 
+- Debug: The `coverage debug data` command will now sniff out combinable data
+  files, and report on all of them.
+
 
 .. _changes_612:
 

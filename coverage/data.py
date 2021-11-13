@@ -53,10 +53,35 @@ def add_data_to_hash(data, filename, hasher):
     hasher.update(data.file_tracer(filename))
 
 
+def combinable_files(data_file, data_paths=None):
+    """Make a list of data files to be combined.
+
+    `data_file` is a path to a data file.  `data_paths` is a list of files or
+    directories of files.
+
+    Returns a list of absolute file paths.
+    """
+    data_dir, local = os.path.split(os.path.abspath(data_file))
+
+    data_paths = data_paths or [data_dir]
+    files_to_combine = []
+    for p in data_paths:
+        if os.path.isfile(p):
+            files_to_combine.append(os.path.abspath(p))
+        elif os.path.isdir(p):
+            pattern = os.path.join(os.path.abspath(p), f"{local}.*")
+            files_to_combine.extend(glob.glob(pattern))
+        else:
+            raise CoverageException(f"Couldn't combine from non-existent path '{p}'")
+    return files_to_combine
+
+
 def combine_parallel_data(
     data, aliases=None, data_paths=None, strict=False, keep=False, message=None,
 ):
     """Combine a number of data files together.
+
+    `data` is a CoverageData.
 
     Treat `data.filename` as a file prefix, and combine the data from all
     of the data files starting with that prefix plus a dot.
@@ -79,21 +104,7 @@ def combine_parallel_data(
     raised.
 
     """
-    # Because of the os.path.abspath in the constructor, data_dir will
-    # never be an empty string.
-    data_dir, local = os.path.split(data.base_filename())
-    localdot = local + '.*'
-
-    data_paths = data_paths or [data_dir]
-    files_to_combine = []
-    for p in data_paths:
-        if os.path.isfile(p):
-            files_to_combine.append(os.path.abspath(p))
-        elif os.path.isdir(p):
-            pattern = os.path.join(os.path.abspath(p), localdot)
-            files_to_combine.extend(glob.glob(pattern))
-        else:
-            raise CoverageException(f"Couldn't combine from non-existent path '{p}'")
+    files_to_combine = combinable_files(data.base_filename(), data_paths)
 
     if strict and not files_to_combine:
         raise CoverageException("No data to combine")

@@ -17,7 +17,7 @@ import coverage
 from coverage import Coverage
 from coverage import env
 from coverage.collector import CTracer
-from coverage.data import line_counts
+from coverage.data import CoverageData, combinable_files, line_counts
 from coverage.debug import info_formatter, info_header, short_stack
 from coverage.exceptions import BaseCoverageException, ExceptionDuringRun, NoSource
 from coverage.execfile import PyRunner
@@ -601,8 +601,8 @@ class CoverageScript:
         elif options.action == "combine":
             if options.append:
                 self.coverage.load()
-            data_dirs = args or None
-            self.coverage.combine(data_dirs, strict=True, keep=bool(options.keep))
+            data_paths = args or None
+            self.coverage.combine(data_paths, strict=True, keep=bool(options.keep))
             self.coverage.save()
             return OK
 
@@ -786,23 +786,12 @@ class CoverageScript:
                 for line in info_formatter(sys_info):
                     print(f" {line}")
             elif info == 'data':
-                self.coverage.load()
-                data = self.coverage.get_data()
                 print(info_header("data"))
-                print(f"path: {data.data_filename()}")
-                if data:
-                    print(f"has_arcs: {data.has_arcs()!r}")
-                    summary = line_counts(data, fullpath=True)
-                    filenames = human_sorted(summary.keys())
-                    print(f"\n{len(filenames)} files:")
-                    for f in filenames:
-                        line = f"{f}: {summary[f]} lines"
-                        plugin = data.file_tracer(f)
-                        if plugin:
-                            line += f" [{plugin}]"
-                        print(line)
-                else:
-                    print("No data collected")
+                data_file = self.coverage.config.data_file
+                self.do_debug_data_file(data_file)
+                for filename in combinable_files(data_file):
+                    print("-----")
+                    self.do_debug_data_file(filename)
             elif info == 'config':
                 print(info_header("config"))
                 config_info = self.coverage.config.__dict__.items()
@@ -816,6 +805,27 @@ class CoverageScript:
                 return ERR
 
         return OK
+
+    def do_debug_data_file(self, filename):
+        """Implementation of 'coverage debug data'."""
+        data = CoverageData(filename)
+        filename = data.data_filename()
+        print(f"path: {filename}")
+        if not os.path.exists(filename):
+            print("No data collected: file doesn't exist")
+            return
+        data.read()
+        print(f"has_arcs: {data.has_arcs()!r}")
+        summary = line_counts(data, fullpath=True)
+        filenames = human_sorted(summary.keys())
+        nfiles = len(filenames)
+        print(f"{nfiles} file{'' if nfiles == 1 else 's'}:")
+        for f in filenames:
+            line = f"{f}: {summary[f]} line{'' if summary[f] == 1 else 's'}"
+            plugin = data.file_tracer(f)
+            if plugin:
+                line += f" [{plugin}]"
+            print(line)
 
 
 def unshell_list(s):

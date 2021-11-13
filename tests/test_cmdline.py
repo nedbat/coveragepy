@@ -817,24 +817,46 @@ class CmdLineWithFilesTest(BaseCmdLineTest):
         data.write()
 
         self.command_line("debug data")
-        assert self.stdout() == textwrap.dedent("""\
+        assert self.stdout() == textwrap.dedent(f"""\
             -- data ------------------------------------------------------
-            path: FILENAME
+            path: {data.data_filename()}
             has_arcs: False
-
             2 files:
             file1.py: 17 lines [a_plugin]
             file2.py: 23 lines
-            """).replace("FILENAME", data.data_filename())
+            """)
 
-    def test_debug_data_with_no_data(self):
+    def test_debug_data_with_no_data_file(self):
         data = CoverageData()
         self.command_line("debug data")
-        assert self.stdout() == textwrap.dedent("""\
+        assert self.stdout() == textwrap.dedent(f"""\
             -- data ------------------------------------------------------
-            path: FILENAME
-            No data collected
-            """).replace("FILENAME", data.data_filename())
+            path: {data.data_filename()}
+            No data collected: file doesn't exist
+            """)
+
+    def test_debug_combinable_data(self):
+        data1 = CoverageData()
+        data1.add_lines({"file1.py": range(1, 18), "file2.py": [1]})
+        data1.write()
+        data2 = CoverageData(suffix="123")
+        data2.add_lines({"file2.py": range(1, 10)})
+        data2.write()
+
+        self.command_line("debug data")
+        assert self.stdout() == textwrap.dedent(f"""\
+            -- data ------------------------------------------------------
+            path: {data1.data_filename()}
+            has_arcs: False
+            2 files:
+            file1.py: 17 lines
+            file2.py: 1 line
+            -----
+            path: {data2.data_filename()}
+            has_arcs: False
+            1 file:
+            file2.py: 9 lines
+            """)
 
 
 class CmdLineStdoutTest(BaseCmdLineTest):
