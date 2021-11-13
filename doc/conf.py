@@ -58,7 +58,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'Coverage.py'
-copyright = '2009\N{EN DASH}2021, Ned Batchelder.'     # CHANGEME  # pylint: disable=redefined-builtin
+copyright = '2009\N{EN DASH}2021, Ned Batchelder'       # CHANGEME  # pylint: disable=redefined-builtin
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
