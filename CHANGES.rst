@@ -22,6 +22,12 @@ This list is detailed and covers changes in each pre-release version.
 Unreleased
 ----------
 
+- Fix: A module specified as the ``source`` setting is imported during startup,
+  before the user program imports it.  This could cause problems if the rest of
+  the program isn't ready yet.  For example, `issue 1203`_ describes a Django
+  setting that is accessed before settings have been configured.  Now that
+  early import is wrapped in a try/except so the error doesn't stop execution.
+
 - Fix: A colon in a decorator expression would cause an exclusion to end too
   early, preventing the exclusion of the decorated function. This is now fixed.
 
@@ -30,6 +36,8 @@ Unreleased
 
 - Debug: The `coverage debug data` command will now sniff out combinable data
   files, and report on all of them.
+
+.. _issue 1203: https://github.com/nedbat/coveragepy/issues/1203
 
 
 .. _changes_612:

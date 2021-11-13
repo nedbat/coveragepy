@@ -120,7 +120,7 @@ def file_and_path_for_module(modulename):
     path = []
     try:
         spec = importlib.util.find_spec(modulename)
-    except ImportError:
+    except Exception:
         pass
     else:
         if spec is not None:

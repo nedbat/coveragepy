@@ -46,6 +46,8 @@ scratch files written by text editors). Files that do not end with ``.py``,
     isn't a problem, but could cause trouble if a module has side-effects at
     import time.
 
+    Exceptions during the early import are suppressed and ignored.
+
 You can further fine-tune coverage.py's attention with the ``--include`` and
 ``--omit`` switches (or ``[run] include`` and ``[run] omit`` configuration
 values). ``--include`` is a list of file name patterns. If specified, only
