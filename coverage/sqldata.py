@@ -316,7 +316,7 @@ class CoverageData(SimpleReprMixin):
                 self._create_db()
         return self._dbs[threading.get_ident()]
 
-    def __nonzero__(self):
+    def __bool__(self):
         if (threading.get_ident() not in self._dbs and not os.path.exists(self._filename)):
             return False
         try:
@@ -325,8 +325,6 @@ class CoverageData(SimpleReprMixin):
                 return bool(list(rows))
         except CoverageException:
             return False
-
-    __bool__ = __nonzero__
 
     @contract(returns="bytes")
     def dumps(self):

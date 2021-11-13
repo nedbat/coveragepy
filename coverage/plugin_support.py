@@ -110,10 +110,8 @@ class Plugins:
         if specialized is not None:
             specialized.append(plugin)
 
-    def __nonzero__(self):
+    def __bool__(self):
         return bool(self.order)
-
-    __bool__ = __nonzero__
 
     def __iter__(self):
         return iter(self.order)
