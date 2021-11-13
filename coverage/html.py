@@ -226,8 +226,10 @@ class HtmlReporter:
 
         # .gitignore can't be copied from the source tree because it would
         # prevent the static files from being checked in.
-        with open(os.path.join(self.directory, ".gitignore"), "w") as fgi:
-            fgi.write("# Created by coverage.py\n*\n")
+        gitigore_path = os.path.join(self.directory, ".gitignore")
+        if not os.path.exists(gitigore_path):
+            with open(gitigore_path, "w") as fgi:
+                fgi.write("# Created by coverage.py\n*\n")
 
         # The user may have extra CSS they want copied.
         if self.extra_css:

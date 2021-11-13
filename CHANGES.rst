@@ -25,6 +25,9 @@ Unreleased
 - Fix: A colon in a decorator expression would cause an exclusion to end too
   early, preventing the exclusion of the decorated function. This is now fixed.
 
+- Fix: The HTML report now will not overwrite a .gitignore file that already
+  exists in the HTML output directory (follow-on for `issue 1244`_).
+
 
 .. _changes_612:
 

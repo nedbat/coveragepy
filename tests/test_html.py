@@ -284,6 +284,13 @@ class HtmlDeltaTest(HtmlTestHelpers, CoverageTest):
         assert "htmlcov/helper2_py.html" in self.files_written
         assert "htmlcov/main_file_py.html" in self.files_written
 
+    def test_dont_overwrite_gitignore(self):
+        self.create_initial_files()
+        self.make_file("htmlcov/.gitignore", "# ignore nothing")
+        self.run_coverage()
+        with open("htmlcov/.gitignore") as fgi:
+            assert fgi.read() == "# ignore nothing"
+
 
 class HtmlTitleTest(HtmlTestHelpers, CoverageTest):
     """Tests of the HTML title support."""
