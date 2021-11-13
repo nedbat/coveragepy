@@ -21,7 +21,7 @@ from coverage.data import CoverageData, combinable_files, line_counts
 from coverage.debug import info_formatter, info_header, short_stack
 from coverage.exceptions import BaseCoverageException, ExceptionDuringRun, NoSource
 from coverage.execfile import PyRunner
-from coverage.misc import human_sorted
+from coverage.misc import human_sorted, plural
 from coverage.results import Numbers, should_fail_under
 
 
@@ -819,9 +819,9 @@ class CoverageScript:
         summary = line_counts(data, fullpath=True)
         filenames = human_sorted(summary.keys())
         nfiles = len(filenames)
-        print(f"{nfiles} file{'' if nfiles == 1 else 's'}:")
+        print(f"{nfiles} file{plural(nfiles)}:")
         for f in filenames:
-            line = f"{f}: {summary[f]} line{'' if summary[f] == 1 else 's'}"
+            line = f"{f}: {summary[f]} line{plural(summary[f])}"
             plugin = data.file_tracer(f)
             if plugin:
                 line += f" [{plugin}]"

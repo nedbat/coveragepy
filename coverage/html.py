@@ -15,7 +15,7 @@ from coverage.data import add_data_to_hash
 from coverage.exceptions import CoverageException
 from coverage.files import flat_rootname
 from coverage.misc import ensure_dir, file_be_gone, Hasher, isolate_module, format_local_datetime
-from coverage.misc import human_sorted
+from coverage.misc import human_sorted, plural
 from coverage.report import get_analysis_to_report
 from coverage.results import Numbers
 from coverage.templite import Templite
@@ -331,17 +331,11 @@ class HtmlReporter:
 
         skipped_covered_msg = skipped_empty_msg = ""
         if self.skipped_covered_count:
-            msg = "{} {} skipped due to complete coverage."
-            skipped_covered_msg = msg.format(
-                self.skipped_covered_count,
-                "file" if self.skipped_covered_count == 1 else "files",
-            )
+            n = self.skipped_covered_count
+            skipped_covered_msg = f"{n} file{plural(n)} skipped due to complete coverage."
         if self.skipped_empty_count:
-            msg = "{} empty {} skipped."
-            skipped_empty_msg = msg.format(
-                self.skipped_empty_count,
-                "file" if self.skipped_empty_count == 1 else "files",
-            )
+            n = self.skipped_empty_count
+            skipped_empty_msg = f"{n} empty file{plural(n)} skipped."
 
         html = index_tmpl.render({
             'files': self.file_summaries,

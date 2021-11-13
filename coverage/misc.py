@@ -415,3 +415,14 @@ def human_sorted_items(items, reverse=False):
     Returns the sorted list of items.
     """
     return sorted(items, key=lambda pair: (human_key(pair[0]), pair[1]), reverse=reverse)
+
+
+def plural(n, thing="", things=""):
+    """Pluralize a word.
+
+    If n is 1, return thing.  Otherwise return things, or thing+s.
+    """
+    if n == 1:
+        return thing
+    else:
+        return things or (thing + "s")
