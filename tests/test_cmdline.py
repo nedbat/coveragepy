@@ -259,9 +259,13 @@ class CmdLineTest(BaseCmdLineTest):
             cov.save()
             """)
 
-    def test_debug(self):
-        self.cmd_help("debug", "What information would you like: config, data, sys, premain?")
-        self.cmd_help("debug foo", "Don't know what you mean by 'foo'")
+    @pytest.mark.parametrize("cmd, output", [
+        ("debug", "What information would you like: config, data, sys, premain?"),
+        ("debug foo", "Don't know what you mean by 'foo'"),
+        ("debug sys config", "Only one topic at a time, please"),
+    ])
+    def test_debug(self, cmd, output):
+        self.cmd_help(cmd, output)
 
     def test_debug_sys(self):
         self.command_line("debug sys")

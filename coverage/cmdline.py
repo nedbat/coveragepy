@@ -778,31 +778,33 @@ class CoverageScript:
         if not args:
             show_help("What information would you like: config, data, sys, premain?")
             return ERR
+        if args[1:]:
+            show_help("Only one topic at a time, please")
+            return ERR
 
-        for info in args:
-            if info == 'sys':
-                sys_info = self.coverage.sys_info()
-                print(info_header("sys"))
-                for line in info_formatter(sys_info):
-                    print(f" {line}")
-            elif info == 'data':
-                print(info_header("data"))
-                data_file = self.coverage.config.data_file
-                self.do_debug_data_file(data_file)
-                for filename in combinable_files(data_file):
-                    print("-----")
-                    self.do_debug_data_file(filename)
-            elif info == 'config':
-                print(info_header("config"))
-                config_info = self.coverage.config.__dict__.items()
-                for line in info_formatter(config_info):
-                    print(f" {line}")
-            elif info == "premain":
-                print(info_header("premain"))
-                print(short_stack())
-            else:
-                show_help(f"Don't know what you mean by {info!r}")
-                return ERR
+        if args[0] == 'sys':
+            sys_info = self.coverage.sys_info()
+            print(info_header("sys"))
+            for line in info_formatter(sys_info):
+                print(f" {line}")
+        elif args[0] == 'data':
+            print(info_header("data"))
+            data_file = self.coverage.config.data_file
+            self.do_debug_data_file(data_file)
+            for filename in combinable_files(data_file):
+                print("-----")
+                self.do_debug_data_file(filename)
+        elif args[0] == 'config':
+            print(info_header("config"))
+            config_info = sorted(self.coverage.config.__dict__.items())
+            for line in info_formatter(config_info):
+                print(f" {line}")
+        elif args[0] == "premain":
+            print(info_header("premain"))
+            print(short_stack())
+        else:
+            show_help(f"Don't know what you mean by {args[0]!r}")
+            return ERR
 
         return OK
 

@@ -37,6 +37,10 @@ Unreleased
 - Debug: The `coverage debug data` command will now sniff out combinable data
   files, and report on all of them.
 
+- Debug: The `coverage debug` command used to accept a number of topics at a
+  time, and show all of them, though this was never documented.  This no longer
+  works, to allow for command-line options in the future.
+
 .. _issue 1203: https://github.com/nedbat/coveragepy/issues/1203
 
 
