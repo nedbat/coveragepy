@@ -19,10 +19,12 @@ begins coverage measurement. The environment variable's value will be used as
 the name of the :ref:`configuration file <config>` to use.
 
 .. note::
+
     The subprocess only sees options in the configuration file.  Options set on
     the command line will not be used in the subprocesses.
 
 .. note::
+
     If you have subprocesses because you are using :mod:`multiprocessing
     <python:multiprocessing>`, the ``--concurrency=multiprocessing``
     command-line option should take care of everything for you.  See

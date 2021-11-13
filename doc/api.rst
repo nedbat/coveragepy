@@ -34,7 +34,8 @@ If you want to access the data that coverage.py has collected, the
 :class:`coverage.CoverageData` class provides an API to read coverage.py data
 files.
 
-.. Note::
+.. note::
+
     Only the documented portions of the API are supported. Other names you may
     find in modules or objects can change their behavior at any time. Please
     limit yourself to documented methods to avoid problems.

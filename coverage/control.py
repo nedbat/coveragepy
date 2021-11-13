@@ -933,9 +933,10 @@ class Coverage:
         """Annotate a list of modules.
 
         .. note::
-           This method has been obsoleted by more modern reporting tools,
-           including the :meth:`html_report` method.  It will be removed in a
-           future version.
+
+            This method has been obsoleted by more modern reporting tools,
+            including the :meth:`html_report` method.  It will be removed in a
+            future version.
 
         Each module in `morfs` is annotated.  The source is written to a new
         file, named with a ",cover" suffix, with each line prefixed with a
@@ -978,6 +979,7 @@ class Coverage:
         Returns a float, the total percentage covered.
 
         .. note::
+
             The HTML report files are generated incrementally based on the
             source files and coverage results. If you modify the report files,
             the changes will not be considered.  You should be careful about

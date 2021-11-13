@@ -104,10 +104,11 @@ but before the program invocation::
     $ coverage run --source=dir1,dir2 -m packagename.modulename arg1 arg2
 
 .. note::
-   Specifying ``--source`` on the ``coverage run`` command line won't affect
-   subsequent reporting commands like ``coverage xml``.  Use the
-   :ref:`source <config_run_source>` setting in the configuration file to apply
-   the setting uniformly to all commands.
+
+    Specifying ``--source`` on the ``coverage run`` command line won't affect
+    subsequent reporting commands like ``coverage xml``.  Use the :ref:`source
+    <config_run_source>` setting in the configuration file to apply the setting
+    uniformly to all commands.
 
 
 Coverage.py can measure multi-threaded programs by default. If you are using
@@ -550,9 +551,10 @@ Text annotation: ``coverage annotate``
 --------------------------------------
 
 .. note::
-   The **annotate** command has been obsoleted by more modern reporting tools,
-   including the **html** command.  **annotate** will be removed in a future
-   version.
+
+    The **annotate** command has been obsoleted by more modern reporting tools,
+    including the **html** command.  **annotate** will be removed in a future
+    version.
 
 The **annotate** command produces a text annotation of your source code.  With
 a ``-d`` argument specifying an output directory, each Python file becomes a
