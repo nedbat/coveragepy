@@ -16,7 +16,7 @@ import coverage.cmdline
 from coverage import env
 from coverage.config import CoverageConfig
 from coverage.data import CoverageData
-from coverage.exceptions import ExceptionDuringRun
+from coverage.exceptions import _ExceptionDuringRun
 from coverage.version import __url__
 
 from tests.coveragetest import CoverageTest, OK, ERR, command_line
@@ -972,7 +972,7 @@ class CmdMainTest(CoverageTest):
                 try:
                     raise Exception("oh noes!")
                 except:
-                    raise ExceptionDuringRun(*sys.exc_info())
+                    raise _ExceptionDuringRun(*sys.exc_info())
             elif argv[0] == 'internalraise':
                 raise ValueError("coverage is broken")
             elif argv[0] == 'exit':

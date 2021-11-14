@@ -4,12 +4,12 @@
 """Exceptions coverage.py can raise."""
 
 
-class BaseCoverageException(Exception):
+class _BaseCoverageException(Exception):
     """The base of all Coverage exceptions."""
     pass
 
 
-class CoverageException(BaseCoverageException):
+class CoverageException(_BaseCoverageException):
     """An exception raised by a coverage.py function."""
     pass
 
@@ -29,7 +29,7 @@ class NotPython(CoverageException):
     pass
 
 
-class ExceptionDuringRun(CoverageException):
+class _ExceptionDuringRun(CoverageException):
     """An exception happened while running customer code.
 
     Construct it with three arguments, the values from `sys.exc_info`.
@@ -38,7 +38,7 @@ class ExceptionDuringRun(CoverageException):
     pass
 
 
-class StopEverything(BaseCoverageException):
+class _StopEverything(_BaseCoverageException):
     """An exception that means everything should stop.
 
     The CoverageTest class converts these to SkipTest, so that when running

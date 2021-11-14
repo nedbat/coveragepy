@@ -19,7 +19,7 @@ from coverage import env
 from coverage.collector import CTracer
 from coverage.data import CoverageData, combinable_files, line_counts
 from coverage.debug import info_formatter, info_header, short_stack
-from coverage.exceptions import BaseCoverageException, ExceptionDuringRun, NoSource
+from coverage.exceptions import _BaseCoverageException, _ExceptionDuringRun, NoSource
 from coverage.execfile import PyRunner
 from coverage.misc import human_sorted, plural
 from coverage.results import Numbers, should_fail_under
@@ -899,13 +899,13 @@ def main(argv=None):
         argv = sys.argv[1:]
     try:
         status = CoverageScript().command_line(argv)
-    except ExceptionDuringRun as err:
+    except _ExceptionDuringRun as err:
         # An exception was caught while running the product code.  The
-        # sys.exc_info() return tuple is packed into an ExceptionDuringRun
+        # sys.exc_info() return tuple is packed into an _ExceptionDuringRun
         # exception.
         traceback.print_exception(*err.args)    # pylint: disable=no-value-for-parameter
         status = ERR
-    except BaseCoverageException as err:
+    except _BaseCoverageException as err:
         # A controlled error inside coverage.py: print the message to the user.
         msg = err.args[0]
         print(msg)

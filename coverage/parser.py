@@ -13,7 +13,7 @@ import tokenize
 from coverage import env
 from coverage.bytecode import code_objects
 from coverage.debug import short_stack
-from coverage.exceptions import NoSource, NotPython, StopEverything
+from coverage.exceptions import NoSource, NotPython, _StopEverything
 from coverage.misc import contract, join_regex, new_contract, nice_pair, one_of
 from coverage.phystokens import compile_unicode, generate_tokens, neuter_encoding_declaration
 
@@ -356,7 +356,7 @@ class ByteParser:
         # attributes on code objects that we need to do the analysis.
         for attr in ['co_lnotab', 'co_firstlineno']:
             if not hasattr(self.code, attr):
-                raise StopEverything(                   # pragma: only jython
+                raise _StopEverything(                  # pragma: only jython
                     "This implementation of Python doesn't support code analysis.\n" +
                     "Run coverage.py under another Python for this command."
                 )

@@ -15,7 +15,7 @@ import sys
 import pytest
 
 from coverage import env
-from coverage.exceptions import NoCode, NoSource, ExceptionDuringRun
+from coverage.exceptions import NoCode, NoSource, _ExceptionDuringRun
 from coverage.execfile import run_python_file, run_python_module
 from coverage.files import python_reported_file
 
@@ -185,9 +185,9 @@ class RunFileTest(CoverageTest):
 
             raise RuntimeError('Error Outside')
             """)
-        with pytest.raises(ExceptionDuringRun) as exc_info:
+        with pytest.raises(_ExceptionDuringRun) as exc_info:
             run_python_file(["excepthook_throw.py"])
-        # The ExceptionDuringRun exception has the RuntimeError as its argument.
+        # The _ExceptionDuringRun exception has the RuntimeError as its argument.
         assert exc_info.value.args[1].args[0] == "Error Outside"
         stderr = self.stderr()
         assert "in excepthook\n" in stderr

@@ -110,7 +110,7 @@ build_ext:
 DOCBIN = .tox/doc/bin
 SPHINXOPTS = -aE
 SPHINXBUILD = $(DOCBIN)/sphinx-build $(SPHINXOPTS)
-SPHINXAUTOBUILD = $(DOCBIN)/sphinx-autobuild -p 9876 --ignore '.git/**' --open-browser
+SPHINXAUTOBUILD = $(DOCBIN)/sphinx-autobuild --port 9876 --ignore '.git/**' --open-browser
 WEBHOME = ~/web/stellated
 WEBSAMPLE = $(WEBHOME)/files/sample_coverage_html
 WEBSAMPLEBETA = $(WEBHOME)/files/sample_coverage_html_beta

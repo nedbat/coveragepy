@@ -9,10 +9,10 @@ Coverage.py API
 
 There are a few different ways to use coverage.py programmatically.
 
-The API to coverage.py is in a module called `coverage`.
-Most of the interface is in the :class:`coverage.Coverage` class.  Methods on
-the Coverage object correspond roughly to operations available in the command
-line interface. For example, a simple use would be::
+The API to coverage.py is in a module called :mod:`coverage`.  Most of the
+interface is in the :class:`coverage.Coverage` class.  Methods on the Coverage
+object correspond roughly to operations available in the command line
+interface. For example, a simple use would be::
 
     import coverage
 
@@ -48,6 +48,7 @@ only.  :ref:`dbschema` explains more.
     :maxdepth: 1
 
     api_coverage
+    api_exceptions
     api_module
     api_plugin
     api_coveragedata

@@ -15,7 +15,7 @@ import warnings
 import pytest
 
 from coverage import env
-from coverage.exceptions import StopEverything
+from coverage.exceptions import _StopEverything
 
 
 # Pytest will rewrite assertions in test modules, but not elsewhere.
@@ -96,10 +96,10 @@ def pytest_runtest_call(item):
     """Run once for each test."""
     write_test_name(">")
 
-    # Convert StopEverything into skipped tests.
+    # Convert _StopEverything into skipped tests.
     outcome = yield
-    if outcome.excinfo and issubclass(outcome.excinfo[0], StopEverything):  # pragma: only jython
-        pytest.skip(f"Skipping {item.nodeid} for StopEverything: {outcome.excinfo[1]}")
+    if outcome.excinfo and issubclass(outcome.excinfo[0], _StopEverything):  # pragma: only jython
+        pytest.skip(f"Skipping {item.nodeid} for _StopEverything: {outcome.excinfo[1]}")
 
     write_test_name("<")
 

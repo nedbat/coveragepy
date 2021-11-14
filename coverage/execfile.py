@@ -13,7 +13,7 @@ import sys
 import types
 
 from coverage import env
-from coverage.exceptions import CoverageException, ExceptionDuringRun, NoCode, NoSource
+from coverage.exceptions import CoverageException, _ExceptionDuringRun, NoCode, NoSource
 from coverage.files import canonical_filename, python_reported_file
 from coverage.misc import isolate_module
 from coverage.phystokens import compile_unicode
@@ -233,7 +233,7 @@ class PyRunner:
                 err2.__traceback__ = err2.__traceback__.tb_next
                 sys.__excepthook__(typ2, err2, tb2.tb_next)
                 sys.stderr.write("\nOriginal exception was:\n")
-                raise ExceptionDuringRun(typ, err, tb.tb_next) from exc
+                raise _ExceptionDuringRun(typ, err, tb.tb_next) from exc
             else:
                 sys.exit(1)
         finally:
