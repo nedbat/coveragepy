@@ -34,6 +34,9 @@ Unreleased
 - Fix: The HTML report now will not overwrite a .gitignore file that already
   exists in the HTML output directory (follow-on for `issue 1244`_).
 
+- API: The exceptions raised by Coverage.py have been specialized, to provide
+  finer-grained catching of exceptions by third-party code.
+
 - Debug: The `coverage debug data` command will now sniff out combinable data
   files, and report on all of them.
 

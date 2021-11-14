@@ -7,7 +7,7 @@ import configparser
 import os
 import re
 
-from coverage.exceptions import CoverageException
+from coverage.exceptions import ConfigError
 from coverage.misc import import_third_party, substitute_variables
 
 # TOML support is an install-time extra option. (Import typing is here because
@@ -57,7 +57,7 @@ class TomlConfigParser:
             if self.our_file or has_toml:
                 # Looks like they meant to read TOML, but we can't read it.
                 msg = "Can't read {!r} without TOML support. Install with [toml] extra"
-                raise CoverageException(msg.format(filename))
+                raise ConfigError(msg.format(filename))
             return []
 
     def _get_section(self, section):
@@ -148,7 +148,7 @@ class TomlConfigParser:
             try:
                 re.compile(value)
             except re.error as e:
-                raise CoverageException(f"Invalid [{name}].{option} value {value!r}: {e}") from e
+                raise ConfigError(f"Invalid [{name}].{option} value {value!r}: {e}") from e
         return values
 
     def getint(self, section, option):

@@ -18,7 +18,7 @@ import pytest
 import coverage
 from coverage import env
 from coverage.data import line_counts
-from coverage.exceptions import CoverageException
+from coverage.exceptions import CoverageException, DataError, NoDataError, NoSource
 from coverage.files import abs_file, relative_filename
 from coverage.misc import import_local_file
 
@@ -293,7 +293,7 @@ class ApiTest(CoverageTest):
         # empty summary reports raise exception, just like the xml report
         cov = coverage.Coverage()
         cov.erase()
-        with pytest.raises(CoverageException, match="No data to report."):
+        with pytest.raises(NoDataError, match="No data to report."):
             cov.report()
 
     def test_completely_zero_reporting(self):
@@ -322,7 +322,7 @@ class ApiTest(CoverageTest):
         )
         self.make_file(".coverage", cov4_data)
         cov = coverage.Coverage()
-        with pytest.raises(CoverageException, match="Looks like a coverage 4.x data file"):
+        with pytest.raises(DataError, match="Looks like a coverage 4.x data file"):
             cov.load()
         cov.erase()
 
@@ -445,7 +445,7 @@ class ApiTest(CoverageTest):
         self.assert_exists(".coverage")
 
         cov2 = coverage.Coverage()
-        with pytest.raises(CoverageException, match=r"No data to combine"):
+        with pytest.raises(NoDataError, match=r"No data to combine"):
             cov2.combine(strict=True, keep=False)
 
         cov3 = coverage.Coverage()
@@ -1126,7 +1126,7 @@ class RelativePathTest(CoverageTest):
         with change_dir("new"):
             cov = coverage.Coverage()
             cov.load()
-            with pytest.raises(CoverageException, match=expected):
+            with pytest.raises(NoSource, match=expected):
                 cov.report()
 
     def test_moving_stuff_with_relative(self):

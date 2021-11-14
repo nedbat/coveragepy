@@ -6,7 +6,7 @@
 import collections
 
 from coverage.debug import SimpleReprMixin
-from coverage.exceptions import CoverageException
+from coverage.exceptions import ConfigError
 from coverage.misc import contract, nice_pair
 
 
@@ -337,7 +337,7 @@ def should_fail_under(total, fail_under, precision):
     # We can never achieve higher than 100% coverage, or less than zero.
     if not (0 <= fail_under <= 100.0):
         msg = f"fail_under={fail_under} is invalid. Must be between 0 and 100."
-        raise CoverageException(msg)
+        raise ConfigError(msg)
 
     # Special case for fail_under=100, it must really be 100.
     if fail_under == 100.0 and total != 100.0:

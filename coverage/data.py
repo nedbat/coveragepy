@@ -13,7 +13,7 @@ imports working.
 import glob
 import os.path
 
-from coverage.exceptions import CoverageException
+from coverage.exceptions import CoverageException, NoDataError
 from coverage.misc import file_be_gone
 from coverage.sqldata import CoverageData
 
@@ -72,7 +72,7 @@ def combinable_files(data_file, data_paths=None):
             pattern = os.path.join(os.path.abspath(p), f"{local}.*")
             files_to_combine.extend(glob.glob(pattern))
         else:
-            raise CoverageException(f"Couldn't combine from non-existent path '{p}'")
+            raise NoDataError(f"Couldn't combine from non-existent path '{p}'")
     return files_to_combine
 
 
@@ -107,7 +107,7 @@ def combine_parallel_data(
     files_to_combine = combinable_files(data.base_filename(), data_paths)
 
     if strict and not files_to_combine:
-        raise CoverageException("No data to combine")
+        raise NoDataError("No data to combine")
 
     files_combined = 0
     for f in files_to_combine:
@@ -138,4 +138,4 @@ def combine_parallel_data(
                 file_be_gone(f)
 
     if strict and not files_combined:
-        raise CoverageException("No usable data files")
+        raise NoDataError("No usable data files")

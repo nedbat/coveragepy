@@ -12,7 +12,7 @@ import types
 
 import coverage
 from coverage.data import add_data_to_hash
-from coverage.exceptions import CoverageException
+from coverage.exceptions import NoDataError
 from coverage.files import flat_rootname
 from coverage.misc import ensure_dir, file_be_gone, Hasher, isolate_module, format_local_datetime
 from coverage.misc import human_sorted, plural
@@ -208,7 +208,7 @@ class HtmlReporter:
             self.html_file(fr, analysis)
 
         if not self.all_files_nums:
-            raise CoverageException("No data to report.")
+            raise NoDataError("No data to report.")
 
         self.totals = sum(self.all_files_nums)
 

@@ -26,6 +26,9 @@ interface. For example, a simple use would be::
 
     cov.html_report()
 
+Any of the methods can raise specialized exceptions described in
+:ref:`api_exceptions`.
+
 Coverage.py supports plugins that can change its behavior, to collect
 information from non-Python files, or to perform complex configuration.  See
 :ref:`api_plugin` for details.

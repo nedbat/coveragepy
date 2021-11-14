@@ -13,7 +13,7 @@ import re
 import sys
 
 from coverage import env
-from coverage.exceptions import CoverageException
+from coverage.exceptions import ConfigError
 from coverage.misc import contract, human_sorted, isolate_module, join_regex
 
 
@@ -356,7 +356,7 @@ class PathAliases:
 
         # The pattern can't end with a wildcard component.
         if pattern.endswith("*"):
-            raise CoverageException("Pattern must not end with wildcards.")
+            raise ConfigError("Pattern must not end with wildcards.")
 
         # The pattern is meant to match a filepath.  Let's make it absolute
         # unless it already is, or is meant to match any prefix.

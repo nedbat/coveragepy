@@ -5,7 +5,7 @@
 
 import pytest
 
-from coverage.exceptions import CoverageException
+from coverage.exceptions import ConfigError
 from coverage.results import format_lines, Numbers, should_fail_under
 
 from tests.coveragetest import CoverageTest
@@ -114,7 +114,7 @@ def test_should_fail_under(total, fail_under, precision, result):
 
 
 def test_should_fail_under_invalid_value():
-    with pytest.raises(CoverageException, match=r"fail_under=101"):
+    with pytest.raises(ConfigError, match=r"fail_under=101"):
         should_fail_under(100.0, 101, 0)
 
 

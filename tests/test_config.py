@@ -10,7 +10,7 @@ import pytest
 
 import coverage
 from coverage.config import HandyConfigParser
-from coverage.exceptions import CoverageException, CoverageWarning
+from coverage.exceptions import ConfigError, CoverageWarning
 
 from tests.coveragetest import CoverageTest, UsingModulesMixin
 from tests.helpers import without_module
@@ -159,7 +159,7 @@ class ConfigTest(CoverageTest):
     def test_missing_rcfile_from_environment(self):
         self.set_environ("COVERAGE_RCFILE", "nowhere.ini")
         msg = "Couldn't read 'nowhere.ini' as a config file"
-        with pytest.raises(CoverageException, match=msg):
+        with pytest.raises(ConfigError, match=msg):
             coverage.Coverage()
 
     @pytest.mark.parametrize("bad_config, msg", [
@@ -178,9 +178,9 @@ class ConfigTest(CoverageTest):
             r"multiple repeat"),
     ])
     def test_parse_errors(self, bad_config, msg):
-        # Im-parsable values raise CoverageException, with details.
+        # Im-parsable values raise ConfigError, with details.
         self.make_file(".coveragerc", bad_config)
-        with pytest.raises(CoverageException, match=msg):
+        with pytest.raises(ConfigError, match=msg):
             coverage.Coverage()
 
     @pytest.mark.parametrize("bad_config, msg", [
@@ -201,9 +201,9 @@ class ConfigTest(CoverageTest):
         ('[tool.coverage.report]\nfail_under="s"', "not a float"),
     ])
     def test_toml_parse_errors(self, bad_config, msg):
-        # Im-parsable values raise CoverageException, with details.
+        # Im-parsable values raise ConfigError, with details.
         self.make_file("pyproject.toml", bad_config)
-        with pytest.raises(CoverageException, match=msg):
+        with pytest.raises(ConfigError, match=msg):
             coverage.Coverage()
 
     def test_environment_vars_in_config(self):
@@ -360,13 +360,13 @@ class ConfigTest(CoverageTest):
     def test_tweak_error_checking(self):
         # Trying to set an unknown config value raises an error.
         cov = coverage.Coverage()
-        with pytest.raises(CoverageException, match="No such option: 'run:xyzzy'"):
+        with pytest.raises(ConfigError, match="No such option: 'run:xyzzy'"):
             cov.set_option("run:xyzzy", 12)
-        with pytest.raises(CoverageException, match="No such option: 'xyzzy:foo'"):
+        with pytest.raises(ConfigError, match="No such option: 'xyzzy:foo'"):
             cov.set_option("xyzzy:foo", 12)
-        with pytest.raises(CoverageException, match="No such option: 'run:xyzzy'"):
+        with pytest.raises(ConfigError, match="No such option: 'run:xyzzy'"):
             _ = cov.get_option("run:xyzzy")
-        with pytest.raises(CoverageException, match="No such option: 'xyzzy:foo'"):
+        with pytest.raises(ConfigError, match="No such option: 'xyzzy:foo'"):
             _ = cov.get_option("xyzzy:foo")
 
     def test_tweak_plugin_options(self):
@@ -375,12 +375,12 @@ class ConfigTest(CoverageTest):
         cov.set_option("run:plugins", ["fooey.plugin", "xyzzy.coverage.plugin"])
         cov.set_option("fooey.plugin:xyzzy", 17)
         cov.set_option("xyzzy.coverage.plugin:plugh", ["a", "b"])
-        with pytest.raises(CoverageException, match="No such option: 'no_such.plugin:foo'"):
+        with pytest.raises(ConfigError, match="No such option: 'no_such.plugin:foo'"):
             cov.set_option("no_such.plugin:foo", 23)
 
         assert cov.get_option("fooey.plugin:xyzzy") == 17
         assert cov.get_option("xyzzy.coverage.plugin:plugh") == ["a", "b"]
-        with pytest.raises(CoverageException, match="No such option: 'no_such.plugin:foo'"):
+        with pytest.raises(ConfigError, match="No such option: 'no_such.plugin:foo'"):
             _ = cov.get_option("no_such.plugin:foo")
 
     def test_unknown_option(self):
@@ -425,9 +425,9 @@ class ConfigTest(CoverageTest):
             branch = True
             """)
         config = HandyConfigParser("config.ini")
-        with pytest.raises(Exception, match="No section: 'xyzzy'"):
+        with pytest.raises(ConfigError, match="No section: 'xyzzy'"):
             config.options("xyzzy")
-        with pytest.raises(Exception, match="No option 'foo' in section: 'xyzzy'"):
+        with pytest.raises(ConfigError, match="No option 'foo' in section: 'xyzzy'"):
             config.get("xyzzy", "foo")
 
 
@@ -683,7 +683,7 @@ class ConfigFileTest(UsingModulesMixin, CoverageTest):
         # If a config file is explicitly specified, then it is an error for it
         # to not be readable.
         msg = f"Couldn't read {bad_file!r} as a config file"
-        with pytest.raises(CoverageException, match=msg):
+        with pytest.raises(ConfigError, match=msg):
             coverage.Coverage(config_file=bad_file)
 
     def test_nocoveragerc_file_when_specified(self):
@@ -707,7 +707,7 @@ class ConfigFileTest(UsingModulesMixin, CoverageTest):
         # Can't read a toml file that doesn't exist.
         with without_module(coverage.tomlconfig, 'tomli'):
             msg = "Couldn't read 'cov.toml' as a config file"
-            with pytest.raises(CoverageException, match=msg):
+            with pytest.raises(ConfigError, match=msg):
                 coverage.Coverage(config_file="cov.toml")
 
     def test_no_toml_installed_explicit_toml(self):
@@ -715,7 +715,7 @@ class ConfigFileTest(UsingModulesMixin, CoverageTest):
         self.make_file("cov.toml", "# A toml file!")
         with without_module(coverage.tomlconfig, 'tomli'):
             msg = "Can't read 'cov.toml' without TOML support"
-            with pytest.raises(CoverageException, match=msg):
+            with pytest.raises(ConfigError, match=msg):
                 coverage.Coverage(config_file="cov.toml")
 
     def test_no_toml_installed_pyproject_toml(self):
@@ -727,7 +727,7 @@ class ConfigFileTest(UsingModulesMixin, CoverageTest):
             """)
         with without_module(coverage.tomlconfig, 'tomli'):
             msg = "Can't read 'pyproject.toml' without TOML support"
-            with pytest.raises(CoverageException, match=msg):
+            with pytest.raises(ConfigError, match=msg):
                 coverage.Coverage()
 
     def test_no_toml_installed_pyproject_no_coverage(self):

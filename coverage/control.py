@@ -21,7 +21,7 @@ from coverage.context import should_start_context_test_function, combine_context
 from coverage.data import CoverageData, combine_parallel_data
 from coverage.debug import DebugControl, short_stack, write_formatted_info
 from coverage.disposition import disposition_debug_msg
-from coverage.exceptions import CoverageException, CoverageWarning
+from coverage.exceptions import ConfigError, CoverageException, CoverageWarning, PluginError
 from coverage.files import PathAliases, abs_file, relative_filename, set_relative_directory
 from coverage.html import HtmlReporter
 from coverage.inorout import InOrOut
@@ -78,6 +78,8 @@ class Coverage:
     Note: in keeping with Python custom, names starting with underscore are
     not part of the public API. They might stop working at any point.  Please
     limit yourself to documented methods to avoid problems.
+
+    Methods can raise any of the exceptions described in :ref:`api_exceptions`.
 
     """
 
@@ -449,7 +451,7 @@ class Coverage:
         concurrency = self.config.concurrency or ()
         if "multiprocessing" in concurrency:
             if not patch_multiprocessing:
-                raise CoverageException(                    # pragma: only jython
+                raise ConfigError(                      # pragma: only jython
                     "multiprocessing is not supported on this Python"
                 )
             patch_multiprocessing(rcfile=self.config.config_file)
@@ -460,7 +462,7 @@ class Coverage:
         elif dycon == "test_function":
             context_switchers = [should_start_context_test_function]
         else:
-            raise CoverageException(f"Don't understand dynamic_context setting: {dycon!r}")
+            raise ConfigError(f"Don't understand dynamic_context setting: {dycon!r}")
 
         context_switchers.extend(
             plugin.dynamic_context for plugin in self._plugins.context_switchers
@@ -835,7 +837,7 @@ class Coverage:
                 if plugin:
                     file_reporter = plugin.file_reporter(mapped_morf)
                     if file_reporter is None:
-                        raise CoverageException(
+                        raise PluginError(
                             "Plugin {!r} did not provide a file reporter for {!r}.".format(
                                 plugin._coverage_plugin_name, morf
                             )

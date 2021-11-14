@@ -14,7 +14,7 @@ import coverage
 from coverage import env
 from coverage.control import Plugins
 from coverage.data import line_counts
-from coverage.exceptions import CoverageException, CoverageWarning
+from coverage.exceptions import CoverageWarning, NoSource, PluginError
 from coverage.misc import import_local_file
 
 import coverage.plugin
@@ -133,7 +133,7 @@ class LoadPluginsTest(CoverageTest):
             Nothing = 0
             """)
         msg_pat = "Plugin module 'no_plugin' didn't define a coverage_init function"
-        with pytest.raises(CoverageException, match=msg_pat):
+        with pytest.raises(PluginError, match=msg_pat):
             list(Plugins.load_plugins(["no_plugin"], None))
 
 
@@ -576,7 +576,7 @@ class GoodFileTracerTest(FileTracerTest):
 
         # But completely new filenames are not in the results.
         assert len(cov.get_data().measured_files()) == 3
-        with pytest.raises(CoverageException):
+        with pytest.raises(NoSource):
             cov.analysis("fictional.py")
 
 

@@ -5,12 +5,26 @@
 
 
 class _BaseCoverageException(Exception):
-    """The base of all Coverage exceptions."""
+    """The base-base of all Coverage exceptions."""
     pass
 
 
 class CoverageException(_BaseCoverageException):
-    """An exception raised by a coverage.py function."""
+    """The base class of all exceptions raised by Coverage.py."""
+    pass
+
+
+class ConfigError(_BaseCoverageException):
+    """A problem with a config file, or a value in one."""
+    pass
+
+
+class DataError(CoverageException):
+    """An error in using a data file."""
+    pass
+
+class NoDataError(CoverageException):
+    """We didn't have data to work with."""
     pass
 
 
@@ -26,6 +40,11 @@ class NoCode(NoSource):
 
 class NotPython(CoverageException):
     """A source file turned out not to be parsable Python."""
+    pass
+
+
+class PluginError(CoverageException):
+    """A plugin misbehaved."""
     pass
 
 

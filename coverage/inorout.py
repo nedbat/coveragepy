@@ -15,7 +15,7 @@ import traceback
 
 from coverage import env
 from coverage.disposition import FileDisposition, disposition_init
-from coverage.exceptions import CoverageException
+from coverage.exceptions import CoverageException, PluginError
 from coverage.files import TreeMatcher, FnmatchMatcher, ModuleMatcher
 from coverage.files import prep_patterns, find_python_files, canonical_filename
 from coverage.misc import sys_modules_saved
@@ -392,7 +392,7 @@ class InOrOut:
 
         if not disp.has_dynamic_filename:
             if not disp.source_filename:
-                raise CoverageException(
+                raise PluginError(
                     f"Plugin {plugin!r} didn't set source_filename for '{disp.original_filename}'"
                 )
             reason = self.check_include_omit_etc(disp.source_filename, frame)

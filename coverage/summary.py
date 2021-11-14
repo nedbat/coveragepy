@@ -5,7 +5,7 @@
 
 import sys
 
-from coverage.exceptions import CoverageException
+from coverage.exceptions import ConfigError, NoDataError
 from coverage.misc import human_sorted_items
 from coverage.report import get_analysis_to_report
 from coverage.results import Numbers
@@ -103,7 +103,7 @@ class SummaryReporter:
         else:
             position = column_order.get(sort_option)
             if position is None:
-                raise CoverageException(f"Invalid sorting option: {self.config.sort!r}")
+                raise ConfigError(f"Invalid sorting option: {self.config.sort!r}")
             lines.sort(key=lambda l: (l[1][position], l[0]), reverse=reverse)
 
         for line in lines:
@@ -122,7 +122,7 @@ class SummaryReporter:
 
         # Write other final lines.
         if not self.total.n_files and not self.skipped_count:
-            raise CoverageException("No data to report.")
+            raise NoDataError("No data to report.")
 
         if self.config.skip_covered and self.skipped_count:
             self.writeout(

@@ -10,7 +10,7 @@ import pytest
 
 from coverage import env
 from coverage import files
-from coverage.exceptions import CoverageException
+from coverage.exceptions import ConfigError
 from coverage.files import (
     TreeMatcher, FnmatchMatcher, ModuleMatcher, PathAliases,
     find_python_files, abs_file, actual_path, flat_rootname, fnmatches_to_regex,
@@ -291,7 +291,7 @@ class PathAliasesTest(CoverageTest):
     def test_cant_have_wildcard_at_end(self, badpat):
         aliases = PathAliases()
         msg = "Pattern must not end with wildcards."
-        with pytest.raises(CoverageException, match=msg):
+        with pytest.raises(ConfigError, match=msg):
             aliases.add(badpat, "fooey")
 
     def test_no_accidental_munging(self):

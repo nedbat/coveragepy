@@ -10,7 +10,7 @@ import os
 import os.path
 import re
 
-from coverage.exceptions import CoverageException
+from coverage.exceptions import ConfigError
 from coverage.misc import contract, isolate_module, substitute_variables
 
 from coverage.tomlconfig import TomlConfigParser, TomlDecodeError
@@ -59,7 +59,7 @@ class HandyConfigParser(configparser.RawConfigParser):
             real_section = section_prefix + section
             if configparser.RawConfigParser.has_section(self, real_section):
                 return configparser.RawConfigParser.options(self, real_section)
-        raise configparser.NoSectionError(section)
+        raise ConfigError(f"No section: {section!r}")
 
     def get_section(self, section):
         """Get the contents of a section, as a dictionary."""
@@ -83,7 +83,7 @@ class HandyConfigParser(configparser.RawConfigParser):
             if configparser.RawConfigParser.has_option(self, real_section, option):
                 break
         else:
-            raise configparser.NoOptionError(option, section)
+            raise ConfigError(f"No option {option!r} in section: {section!r}")
 
         v = configparser.RawConfigParser.get(self, real_section, option, *args, **kwargs)
         v = substitute_variables(v, os.environ)
@@ -123,7 +123,7 @@ class HandyConfigParser(configparser.RawConfigParser):
             try:
                 re.compile(value)
             except re.error as e:
-                raise CoverageException(
+                raise ConfigError(
                     f"Invalid [{section}].{option} value {value!r}: {e}"
                 ) from e
             if value:
@@ -272,7 +272,7 @@ class CoverageConfig:
         try:
             files_read = cp.read(filename)
         except (configparser.Error, TomlDecodeError) as err:
-            raise CoverageException(f"Couldn't read config file {filename}: {err}") from err
+            raise ConfigError(f"Couldn't read config file {filename}: {err}") from err
         if not files_read:
             return False
 
@@ -285,7 +285,7 @@ class CoverageConfig:
                 if was_set:
                     any_set = True
         except ValueError as err:
-            raise CoverageException(f"Couldn't read config file {filename}: {err}") from err
+            raise ConfigError(f"Couldn't read config file {filename}: {err}") from err
 
         # Check that there are no unrecognized options.
         all_options = collections.defaultdict(set)
@@ -443,7 +443,7 @@ class CoverageConfig:
             return
 
         # If we get here, we didn't find the option.
-        raise CoverageException(f"No such option: {option_name!r}")
+        raise ConfigError(f"No such option: {option_name!r}")
 
     def get_option(self, option_name):
         """Get an option from the configuration.
@@ -471,7 +471,7 @@ class CoverageConfig:
             return self.plugin_options.get(plugin_name, {}).get(key)
 
         # If we get here, we didn't find the option.
-        raise CoverageException(f"No such option: {option_name!r}")
+        raise ConfigError(f"No such option: {option_name!r}")
 
     def post_process_file(self, path):
         """Make final adjustments to a file path to make it usable."""
@@ -546,7 +546,7 @@ def read_coverage_config(config_file, warn, **kwargs):
             if config_read:
                 break
             if specified_file:
-                raise CoverageException(f"Couldn't read {fname!r} as a config file")
+                raise ConfigError(f"Couldn't read {fname!r} as a config file")
 
     # $set_env.py: COVERAGE_DEBUG - Options for --debug.
     # 3) from environment variables:

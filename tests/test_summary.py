@@ -16,7 +16,7 @@ import coverage
 from coverage import env
 from coverage.control import Coverage
 from coverage.data import CoverageData
-from coverage.exceptions import CoverageException
+from coverage.exceptions import ConfigError
 from coverage.summary import SummaryReporter
 
 from tests.coveragetest import CoverageTest, TESTS_DIR, UsingModulesMixin
@@ -921,5 +921,5 @@ class SummaryReporterConfigurationTest(CoverageTest):
     def test_sort_report_by_invalid_option(self):
         # Sort the text report by a nonsense column.
         msg = "Invalid sorting option: 'Xyzzy'"
-        with pytest.raises(CoverageException, match=msg):
+        with pytest.raises(ConfigError, match=msg):
             self.get_summary_text(('report:sort', 'Xyzzy'))

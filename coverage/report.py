@@ -5,7 +5,7 @@
 
 import sys
 
-from coverage.exceptions import CoverageException, NotPython
+from coverage.exceptions import CoverageException, NoDataError, NotPython
 from coverage.files import prep_patterns, FnmatchMatcher
 from coverage.misc import ensure_dir_for_file, file_be_gone
 
@@ -65,7 +65,7 @@ def get_analysis_to_report(coverage, morfs):
         file_reporters = [fr for fr in file_reporters if not matcher.match(fr.filename)]
 
     if not file_reporters:
-        raise CoverageException("No data to report.")
+        raise NoDataError("No data to report.")
 
     for fr in sorted(file_reporters):
         try:

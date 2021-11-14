@@ -19,7 +19,7 @@ import threading
 import zlib
 
 from coverage.debug import NoDebugging, SimpleReprMixin, clipped_repr
-from coverage.exceptions import CoverageException
+from coverage.exceptions import CoverageException, DataError
 from coverage.files import PathAliases
 from coverage.misc import contract, file_be_gone, filename_suffix, isolate_module
 from coverage.numbits import numbits_to_nums, numbits_union, nums_to_numbits
@@ -287,14 +287,14 @@ class CoverageData(SimpleReprMixin):
             try:
                 schema_version, = db.execute_one("select version from coverage_schema")
             except Exception as exc:
-                raise CoverageException(
+                raise DataError(
                     "Data file {!r} doesn't seem to be a coverage data file: {}".format(
                         self._filename, exc
                     )
                 ) from exc
             else:
                 if schema_version != SCHEMA_VERSION:
-                    raise CoverageException(
+                    raise DataError(
                         "Couldn't use data file {!r}: wrong schema: {} instead of {}".format(
                             self._filename, schema_version, SCHEMA_VERSION
                         )
@@ -368,9 +368,9 @@ class CoverageData(SimpleReprMixin):
         if self._debug.should("dataio"):
             self._debug.write(f"Loading data into data file {self._filename!r}")
         if data[:1] != b"z":
-            raise CoverageException(
+            raise DataError(
                 f"Unrecognized serialization: {data[:40]!r} (head of {len(data)} bytes)"
-                )
+            )
         script = zlib.decompress(data[1:]).decode("utf-8")
         self._dbs[threading.get_ident()] = db = SqliteDb(self._filename, self._debug)
         with db:
@@ -511,9 +511,9 @@ class CoverageData(SimpleReprMixin):
         assert lines or arcs
         assert not (lines and arcs)
         if lines and self._has_arcs:
-            raise CoverageException("Can't add line measurements to existing branch data")
+            raise DataError("Can't add line measurements to existing branch data")
         if arcs and self._has_lines:
-            raise CoverageException("Can't add branch measurements to existing line data")
+            raise DataError("Can't add branch measurements to existing line data")
         if not self._has_arcs and not self._has_lines:
             self._has_lines = lines
             self._has_arcs = arcs
@@ -539,14 +539,14 @@ class CoverageData(SimpleReprMixin):
             for filename, plugin_name in file_tracers.items():
                 file_id = self._file_id(filename)
                 if file_id is None:
-                    raise CoverageException(
+                    raise DataError(
                         f"Can't add file tracer data for unmeasured file '{filename}'"
                     )
 
                 existing_plugin = self.file_tracer(filename)
                 if existing_plugin:
                     if existing_plugin != plugin_name:
-                        raise CoverageException(
+                        raise DataError(
                             "Conflicting file tracer name for '{}': {!r} vs {!r}".format(
                                 filename, existing_plugin, plugin_name,
                             )
@@ -576,7 +576,7 @@ class CoverageData(SimpleReprMixin):
         self._start_using()
         with self._connect(): # Use this to get one transaction.
             if not self._has_arcs and not self._has_lines:
-                raise CoverageException("Can't touch files in an empty CoverageData")
+                raise DataError("Can't touch files in an empty CoverageData")
 
             for filename in filenames:
                 self._file_id(filename, add=True)
@@ -595,9 +595,9 @@ class CoverageData(SimpleReprMixin):
                 getattr(other_data, "_filename", "???"),
             ))
         if self._has_lines and other_data._has_arcs:
-            raise CoverageException("Can't combine arc data with line data")
+            raise DataError("Can't combine arc data with line data")
         if self._has_arcs and other_data._has_lines:
-            raise CoverageException("Can't combine line data with arc data")
+            raise DataError("Can't combine line data with arc data")
 
         aliases = aliases or PathAliases()
 
@@ -690,7 +690,7 @@ class CoverageData(SimpleReprMixin):
                 other_tracer = tracers.get(path, "")
                 # If there is no tracer, there is always the None tracer.
                 if this_tracer is not None and this_tracer != other_tracer:
-                    raise CoverageException(
+                    raise DataError(
                         "Conflicting file tracer name for '{}': {!r} vs {!r}".format(
                             path, this_tracer, other_tracer
                         )
@@ -1033,7 +1033,7 @@ class SqliteDb(SimpleReprMixin):
         try:
             self.con = sqlite3.connect(self.filename, check_same_thread=False)
         except sqlite3.Error as exc:
-            raise CoverageException(f"Couldn't use data file {self.filename!r}: {exc}") from exc
+            raise DataError(f"Couldn't use data file {self.filename!r}: {exc}") from exc
 
         self.con.create_function("REGEXP", 2, _regexp)
 
@@ -1066,7 +1066,7 @@ class SqliteDb(SimpleReprMixin):
             except Exception as exc:
                 if self.debug:
                     self.debug.write(f"EXCEPTION from __exit__: {exc}")
-                raise CoverageException(f"Couldn't end data file {self.filename!r}: {exc}") from exc
+                raise DataError(f"Couldn't end data file {self.filename!r}: {exc}") from exc
 
     def execute(self, sql, parameters=()):
         """Same as :meth:`python:sqlite3.Connection.execute`."""
@@ -1097,7 +1097,7 @@ class SqliteDb(SimpleReprMixin):
                 pass
             if self.debug:
                 self.debug.write(f"EXCEPTION from execute: {msg}")
-            raise CoverageException(f"Couldn't use data file {self.filename!r}: {msg}") from exc
+            raise DataError(f"Couldn't use data file {self.filename!r}: {msg}") from exc
 
     def execute_one(self, sql, parameters=()):
         """Execute a statement and return the one row that results.

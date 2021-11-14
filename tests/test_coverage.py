@@ -7,7 +7,7 @@ import pytest
 
 import coverage
 from coverage import env
-from coverage.exceptions import CoverageException
+from coverage.exceptions import NoDataError
 
 from tests.coveragetest import CoverageTest
 
@@ -1850,19 +1850,19 @@ class ReportingTest(CoverageTest):
     def test_no_data_to_report_on_annotate(self):
         # Reporting with no data produces a nice message and no output
         # directory.
-        with pytest.raises(CoverageException, match="No data to report."):
+        with pytest.raises(NoDataError, match="No data to report."):
             self.command_line("annotate -d ann")
         self.assert_doesnt_exist("ann")
 
     def test_no_data_to_report_on_html(self):
         # Reporting with no data produces a nice message and no output
         # directory.
-        with pytest.raises(CoverageException, match="No data to report."):
+        with pytest.raises(NoDataError, match="No data to report."):
             self.command_line("html -d htmlcov")
         self.assert_doesnt_exist("htmlcov")
 
     def test_no_data_to_report_on_xml(self):
         # Reporting with no data produces a nice message.
-        with pytest.raises(CoverageException, match="No data to report."):
+        with pytest.raises(NoDataError, match="No data to report."):
             self.command_line("xml")
         self.assert_doesnt_exist("coverage.xml")

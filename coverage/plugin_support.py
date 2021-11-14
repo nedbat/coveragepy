@@ -7,7 +7,7 @@ import os
 import os.path
 import sys
 
-from coverage.exceptions import CoverageException
+from coverage.exceptions import PluginError
 from coverage.misc import isolate_module
 from coverage.plugin import CoveragePlugin, FileTracer, FileReporter
 
@@ -44,7 +44,7 @@ class Plugins:
 
             coverage_init = getattr(mod, "coverage_init", None)
             if not coverage_init:
-                raise CoverageException(
+                raise PluginError(
                     f"Plugin module {module!r} didn't define a coverage_init function"
                 )
 

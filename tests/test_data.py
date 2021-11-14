@@ -16,7 +16,7 @@ import pytest
 from coverage.data import CoverageData, combine_parallel_data
 from coverage.data import add_data_to_hash, line_counts
 from coverage.debug import DebugControlString
-from coverage.exceptions import CoverageException
+from coverage.exceptions import DataError, NoDataError
 from coverage.files import PathAliases, canonical_filename
 
 from tests.coveragetest import CoverageTest
@@ -164,14 +164,14 @@ class CoverageDataTest(CoverageTest):
         covdata = DebugCoverageData()
         covdata.add_lines(LINES_1)
         msg = "Can't add branch measurements to existing line data"
-        with pytest.raises(CoverageException, match=msg):
+        with pytest.raises(DataError, match=msg):
             covdata.add_arcs(ARCS_3)
 
     def test_cant_add_lines_with_arcs(self):
         covdata = DebugCoverageData()
         covdata.add_arcs(ARCS_3)
         msg = "Can't add line measurements to existing branch data"
-        with pytest.raises(CoverageException, match=msg):
+        with pytest.raises(DataError, match=msg):
             covdata.add_lines(LINES_1)
 
     def test_touch_file_with_lines(self):
@@ -324,11 +324,11 @@ class CoverageDataTest(CoverageTest):
     def test_cant_file_tracer_unmeasured_files(self):
         covdata = DebugCoverageData()
         msg = "Can't add file tracer data for unmeasured file 'p1.foo'"
-        with pytest.raises(CoverageException, match=msg):
+        with pytest.raises(DataError, match=msg):
             covdata.add_file_tracers({"p1.foo": "p1.plugin"})
 
         covdata.add_lines({"p2.html": [10, 11, 12]})
-        with pytest.raises(CoverageException, match=msg):
+        with pytest.raises(DataError, match=msg):
             covdata.add_file_tracers({"p1.foo": "p1.plugin"})
 
     def test_cant_change_file_tracer_name(self):
@@ -337,7 +337,7 @@ class CoverageDataTest(CoverageTest):
         covdata.add_file_tracers({"p1.foo": "p1.plugin"})
 
         msg = "Conflicting file tracer name for 'p1.foo': 'p1.plugin' vs 'p1.plugin.foo'"
-        with pytest.raises(CoverageException, match=msg):
+        with pytest.raises(DataError, match=msg):
             covdata.add_file_tracers({"p1.foo": "p1.plugin.foo"})
 
     def test_update_lines(self):
@@ -375,10 +375,10 @@ class CoverageDataTest(CoverageTest):
         covdata2 = DebugCoverageData(suffix='2')
         covdata2.add_arcs(ARCS_3)
 
-        with pytest.raises(CoverageException, match="Can't combine arc data with line data"):
+        with pytest.raises(DataError, match="Can't combine arc data with line data"):
             covdata1.update(covdata2)
 
-        with pytest.raises(CoverageException, match="Can't combine line data with arc data"):
+        with pytest.raises(DataError, match="Can't combine line data with arc data"):
             covdata2.update(covdata1)
 
     def test_update_file_tracers(self):
@@ -424,11 +424,11 @@ class CoverageDataTest(CoverageTest):
         covdata2.add_file_tracers({"p1.html": "html.other_plugin"})
 
         msg = "Conflicting file tracer name for 'p1.html': 'html.plugin' vs 'html.other_plugin'"
-        with pytest.raises(CoverageException, match=msg):
+        with pytest.raises(DataError, match=msg):
             covdata1.update(covdata2)
 
         msg = "Conflicting file tracer name for 'p1.html': 'html.other_plugin' vs 'html.plugin'"
-        with pytest.raises(CoverageException, match=msg):
+        with pytest.raises(DataError, match=msg):
             covdata2.update(covdata1)
 
     def test_update_file_tracer_vs_no_file_tracer(self):
@@ -440,11 +440,11 @@ class CoverageDataTest(CoverageTest):
         covdata2.add_lines({"p1.html": [1, 2, 3]})
 
         msg = "Conflicting file tracer name for 'p1.html': 'html.plugin' vs ''"
-        with pytest.raises(CoverageException, match=msg):
+        with pytest.raises(DataError, match=msg):
             covdata1.update(covdata2)
 
         msg = "Conflicting file tracer name for 'p1.html': '' vs 'html.plugin'"
-        with pytest.raises(CoverageException, match=msg):
+        with pytest.raises(DataError, match=msg):
             covdata2.update(covdata1)
 
     def test_update_lines_empty(self):
@@ -529,7 +529,7 @@ class CoverageDataTest(CoverageTest):
     def test_cant_touch_in_empty_data(self):
         covdata = DebugCoverageData()
         msg = "Can't touch files in an empty CoverageData"
-        with pytest.raises(CoverageException, match=msg):
+        with pytest.raises(DataError, match=msg):
             covdata.touch_file("abc.py")
 
     def test_read_and_write_are_opposites(self):
@@ -587,13 +587,13 @@ class CoverageDataInTempDirTest(CoverageTest):
         msg = r"Couldn't .* '.*[/\\]{}': \S+"
 
         self.make_file("xyzzy.dat", "xyzzy")
-        with pytest.raises(CoverageException, match=msg.format("xyzzy.dat")):
+        with pytest.raises(DataError, match=msg.format("xyzzy.dat")):
             covdata = DebugCoverageData("xyzzy.dat")
             covdata.read()
         assert not covdata
 
         self.make_file("empty.dat", "")
-        with pytest.raises(CoverageException, match=msg.format("empty.dat")):
+        with pytest.raises(DataError, match=msg.format("empty.dat")):
             covdata = DebugCoverageData("empty.dat")
             covdata.read()
         assert not covdata
@@ -601,14 +601,14 @@ class CoverageDataInTempDirTest(CoverageTest):
     def test_hard_read_error(self):
         self.make_file("noperms.dat", "go away")
         os.chmod("noperms.dat", 0)
-        with pytest.raises(CoverageException, match=r"Couldn't .* '.*[/\\]noperms.dat': "):
+        with pytest.raises(DataError, match=r"Couldn't .* '.*[/\\]noperms.dat': "):
             covdata = DebugCoverageData("noperms.dat")
             covdata.read()
 
     @pytest.mark.parametrize("klass", [CoverageData, DebugCoverageData])
     def test_error_when_closing(self, klass):
         msg = r"Couldn't .* '.*[/\\]flaked.dat': \S+"
-        with pytest.raises(CoverageException, match=msg):
+        with pytest.raises(DataError, match=msg):
             covdata = klass("flaked.dat")
             covdata.add_lines(LINES_1)
             # I don't know how to make a real error, so let's fake one.
@@ -621,7 +621,7 @@ class CoverageDataInTempDirTest(CoverageTest):
             con.execute("create table coverage_schema (version integer)")
             con.execute("insert into coverage_schema (version) values (99)")
         msg = r"Couldn't .* '.*[/\\]wrong_schema.db': wrong schema: 99 instead of \d+"
-        with pytest.raises(CoverageException, match=msg):
+        with pytest.raises(DataError, match=msg):
             covdata = DebugCoverageData("wrong_schema.db")
             covdata.read()
         assert not covdata
@@ -629,7 +629,7 @@ class CoverageDataInTempDirTest(CoverageTest):
         with sqlite3.connect("no_schema.db") as con:
             con.execute("create table foobar (baz text)")
         msg = r"Couldn't .* '.*[/\\]no_schema.db': \S+"
-        with pytest.raises(CoverageException, match=msg):
+        with pytest.raises(DataError, match=msg):
             covdata = DebugCoverageData("no_schema.db")
             covdata.read()
         assert not covdata
@@ -854,7 +854,7 @@ class CoverageDataFilesTest(CoverageTest):
     def test_combining_from_nonexistent_directories(self):
         covdata = DebugCoverageData()
         msg = "Couldn't combine from non-existent path 'xyzzy'"
-        with pytest.raises(CoverageException, match=msg):
+        with pytest.raises(NoDataError, match=msg):
             combine_parallel_data(covdata, data_paths=['xyzzy'])
 
     def test_interleaved_erasing_bug716(self):
@@ -894,5 +894,5 @@ class DumpsLoadsTest(CoverageTest):
             re.escape(repr(bad_data[:40])),
             len(bad_data),
             )
-        with pytest.raises(CoverageException, match=msg):
+        with pytest.raises(DataError, match=msg):
             covdata.loads(bad_data)

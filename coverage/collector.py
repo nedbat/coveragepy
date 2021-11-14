@@ -9,7 +9,7 @@ import sys
 from coverage import env
 from coverage.debug import short_stack
 from coverage.disposition import FileDisposition
-from coverage.exceptions import CoverageException
+from coverage.exceptions import ConfigError
 from coverage.misc import human_sorted, isolate_module
 from coverage.pytracer import PyTracer
 
@@ -116,7 +116,7 @@ class Collector:
         # We can handle a few concurrency options here, but only one at a time.
         these_concurrencies = self.SUPPORTED_CONCURRENCIES.intersection(concurrency)
         if len(these_concurrencies) > 1:
-            raise CoverageException(f"Conflicting concurrency settings: {concurrency}")
+            raise ConfigError(f"Conflicting concurrency settings: {concurrency}")
         self.concurrency = these_concurrencies.pop() if these_concurrencies else ''
 
         try:
@@ -136,9 +136,9 @@ class Collector:
                 import threading
                 self.threading = threading
             else:
-                raise CoverageException(f"Don't understand concurrency={concurrency}")
+                raise ConfigError(f"Don't understand concurrency={concurrency}")
         except ImportError as ex:
-            raise CoverageException(
+            raise ConfigError(
                 "Couldn't trace with concurrency={}, the module isn't installed.".format(
                     self.concurrency,
                 )
@@ -245,7 +245,7 @@ class Collector:
         if hasattr(tracer, 'concur_id_func'):
             tracer.concur_id_func = self.concur_id_func
         elif self.concur_id_func:
-            raise CoverageException(
+            raise ConfigError(
                 "Can't support concurrency={} with {}, only threads are supported".format(
                     self.concurrency, self.tracer_name(),
                 )
