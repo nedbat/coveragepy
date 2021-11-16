@@ -112,6 +112,8 @@ register your dynamic context switcher.
 
 """
 
+import functools
+
 from coverage import files
 from coverage.misc import contract, _needs_to_implement
 
@@ -315,6 +317,7 @@ class FileTracer:
         return lineno, lineno
 
 
+@functools.total_ordering
 class FileReporter:
     """Support needed for files during the analysis and reporting phases.
 
@@ -509,25 +512,10 @@ class FileReporter:
         for line in self.source().splitlines():
             yield [('txt', line)]
 
-    # Annoying comparison operators. Py3k wants __lt__ etc, and Py2k needs all
-    # of them defined.
-
     def __eq__(self, other):
         return isinstance(other, FileReporter) and self.filename == other.filename
 
-    def __ne__(self, other):
-        return not (self == other)
-
     def __lt__(self, other):
-        return self.filename < other.filename
-
-    def __le__(self, other):
-        return self.filename <= other.filename
-
-    def __gt__(self, other):
-        return self.filename > other.filename
-
-    def __ge__(self, other):
-        return self.filename >= other.filename
+        return isinstance(other, FileReporter) and self.filename < other.filename
 
     __hash__ = None     # This object doesn't need to be hashed.
