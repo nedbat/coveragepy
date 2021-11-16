@@ -191,7 +191,7 @@ class CoverageData(SimpleReprMixin):
 
         Arguments:
             basename (str): the base name of the data file, defaulting to
-                ".coverage".
+                ".coverage". This can be a path to a file in another directory.
             suffix (str or bool): has the same meaning as the `data_suffix`
                 argument to :class:`coverage.Coverage`.
             no_disk (bool): if True, keep all data in memory, and don't
