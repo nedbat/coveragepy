@@ -17,11 +17,10 @@ import coverage
 from coverage import Coverage
 from coverage import env
 from coverage.collector import CTracer
-from coverage.data import CoverageData, combinable_files, line_counts
+from coverage.data import combinable_files, debug_data_file
 from coverage.debug import info_formatter, info_header, short_stack
 from coverage.exceptions import _BaseCoverageException, _ExceptionDuringRun, NoSource
 from coverage.execfile import PyRunner
-from coverage.misc import human_sorted, plural
 from coverage.results import Numbers, should_fail_under
 
 
@@ -790,10 +789,10 @@ class CoverageScript:
         elif args[0] == 'data':
             print(info_header("data"))
             data_file = self.coverage.config.data_file
-            self.do_debug_data_file(data_file)
+            debug_data_file(data_file)
             for filename in combinable_files(data_file):
                 print("-----")
-                self.do_debug_data_file(filename)
+                debug_data_file(filename)
         elif args[0] == 'config':
             print(info_header("config"))
             config_info = sorted(self.coverage.config.__dict__.items())
@@ -807,27 +806,6 @@ class CoverageScript:
             return ERR
 
         return OK
-
-    def do_debug_data_file(self, filename):
-        """Implementation of 'coverage debug data'."""
-        data = CoverageData(filename)
-        filename = data.data_filename()
-        print(f"path: {filename}")
-        if not os.path.exists(filename):
-            print("No data collected: file doesn't exist")
-            return
-        data.read()
-        print(f"has_arcs: {data.has_arcs()!r}")
-        summary = line_counts(data, fullpath=True)
-        filenames = human_sorted(summary.keys())
-        nfiles = len(filenames)
-        print(f"{nfiles} file{plural(nfiles)}:")
-        for f in filenames:
-            line = f"{f}: {summary[f]} line{plural(summary[f])}"
-            plugin = data.file_tracer(f)
-            if plugin:
-                line += f" [{plugin}]"
-            print(line)
 
 
 def unshell_list(s):
