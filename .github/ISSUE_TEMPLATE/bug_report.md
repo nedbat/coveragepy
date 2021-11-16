@@ -2,7 +2,7 @@
 name: Bug report
 about: Report a problem with coverage.py
 title: ''
-labels: bug
+labels: bug, needs triage
 assignees: ''
 
 ---
