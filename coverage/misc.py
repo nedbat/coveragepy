@@ -12,9 +12,7 @@ import inspect
 import locale
 import os
 import os.path
-import random
 import re
-import socket
 import sys
 import types
 
@@ -220,26 +218,6 @@ def output_encoding(outfile=None):
         locale.getpreferredencoding()
     )
     return encoding
-
-
-def filename_suffix(suffix):
-    """Compute a filename suffix for a data file.
-
-    If `suffix` is a string or None, simply return it. If `suffix` is True,
-    then build a suffix incorporating the hostname, process id, and a random
-    number.
-
-    Returns a string or None.
-
-    """
-    if suffix is True:
-        # If data_suffix was a simple true value, then make a suffix with
-        # plenty of distinguishing information.  We do this here in
-        # `save()` at the last minute so that the pid will be correct even
-        # if the process forks.
-        dice = random.Random(os.urandom(8)).randint(0, 999999)
-        suffix = "%s.%s.%06d" % (socket.gethostname(), os.getpid(), dice)
-    return suffix
 
 
 class Hasher:

@@ -12,7 +12,9 @@ import functools
 import glob
 import itertools
 import os
+import random
 import re
+import socket
 import sqlite3
 import sys
 import threading
@@ -21,7 +23,7 @@ import zlib
 from coverage.debug import NoDebugging, SimpleReprMixin, clipped_repr
 from coverage.exceptions import CoverageException, DataError
 from coverage.files import PathAliases
-from coverage.misc import contract, file_be_gone, filename_suffix, isolate_module
+from coverage.misc import contract, file_be_gone, isolate_module
 from coverage.numbits import numbits_to_nums, numbits_union, nums_to_numbits
 from coverage.version import __version__
 
@@ -1000,6 +1002,26 @@ class CoverageData(SimpleReprMixin):
             ("sqlite3_temp_store", temp_store),
             ("sqlite3_compile_options", copts),
         ]
+
+
+def filename_suffix(suffix):
+    """Compute a filename suffix for a data file.
+
+    If `suffix` is a string or None, simply return it. If `suffix` is True,
+    then build a suffix incorporating the hostname, process id, and a random
+    number.
+
+    Returns a string or None.
+
+    """
+    if suffix is True:
+        # If data_suffix was a simple true value, then make a suffix with
+        # plenty of distinguishing information.  We do this here in
+        # `save()` at the last minute so that the pid will be correct even
+        # if the process forks.
+        dice = random.Random(os.urandom(8)).randint(0, 999999)
+        suffix = "%s.%s.%06d" % (socket.gethostname(), os.getpid(), dice)
+    return suffix
 
 
 class SqliteDb(SimpleReprMixin):
