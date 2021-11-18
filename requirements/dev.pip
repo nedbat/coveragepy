@@ -4,14 +4,14 @@
 #
 #    make upgrade
 #
-astroid==2.8.4
+astroid==2.8.5
     # via pylint
 attrs==21.2.0
     # via
     #   -r requirements/pytest.pip
     #   hypothesis
     #   pytest
-backports.entry-points-selectable==1.1.0
+backports.entry-points-selectable==1.1.1
     # via
     #   -r requirements/pip.pip
     #   virtualenv
@@ -47,7 +47,7 @@ execnet==1.9.0
     # via
     #   -r requirements/pytest.pip
     #   pytest-xdist
-filelock==3.3.2
+filelock==3.4.0
     # via
     #   -r requirements/pip.pip
     #   tox
@@ -60,11 +60,11 @@ future==0.18.2
     #   pycontracts
 greenlet==1.1.2
     # via -r requirements/dev.in
-hypothesis==6.24.1
+hypothesis==6.24.6
     # via -r requirements/pytest.pip
 idna==3.3
     # via requests
-importlib-metadata==4.8.1
+importlib-metadata==4.8.2
     # via
     #   keyring
     #   twine
@@ -72,9 +72,9 @@ iniconfig==1.1.1
     # via
     #   -r requirements/pytest.pip
     #   pytest
-isort==5.10.0
+isort==5.10.1
     # via pylint
-jedi==0.18.0
+jedi==0.18.1
     # via pudb
 keyring==23.2.1
     # via twine
@@ -84,7 +84,7 @@ libsass==0.21.0
     # via -r requirements/dev.in
 mccabe==0.6.1
     # via pylint
-packaging==21.2
+packaging==21.3
     # via
     #   -r requirements/pytest.pip
     #   bleach
@@ -123,7 +123,7 @@ pygments==2.10.0
     #   readme-renderer
 pylint==2.11.1
     # via -r requirements/dev.in
-pyparsing==2.4.7
+pyparsing==3.0.6
     # via
     #   -r requirements/pytest.pip
     #   packaging
@@ -184,9 +184,9 @@ tox==3.24.4
     # via -r requirements/dev.in
 tqdm==4.62.3
     # via twine
-twine==3.5.0
+twine==3.6.0
     # via -r requirements/dev.in
-typing-extensions==3.10.0.2
+typing-extensions==4.0.0
     # via
     #   astroid
     #   pylint
@@ -212,7 +212,7 @@ zipp==3.6.0
 # The following packages are considered to be unsafe in a requirements file:
 pip==21.3.1
     # via -r requirements/pip.pip
-setuptools==58.5.2
+setuptools==59.1.1
     # via
     #   astroid
     #   check-manifest

@@ -8,7 +8,7 @@ auditwheel==5.0.0
     # via -r requirements/kit.in
 bashlex==0.16
     # via cibuildwheel
-bracex==2.2
+bracex==2.2.1
     # via cibuildwheel
 build==0.7.0
     # via -r requirements/kit.in
@@ -16,7 +16,7 @@ certifi==2021.10.8
     # via cibuildwheel
 cibuildwheel==2.2.2
     # via -r requirements/kit.in
-packaging==21.2
+packaging==21.3
     # via
     #   build
     #   cibuildwheel
@@ -24,7 +24,7 @@ pep517==0.12.0
     # via build
 pyelftools==0.27
     # via auditwheel
-pyparsing==2.4.7
+pyparsing==3.0.6
     # via packaging
 tomli==1.2.2
     # via
@@ -35,5 +35,5 @@ wheel==0.37.0
     # via -r requirements/kit.in
 
 # The following packages are considered to be unsafe in a requirements file:
-setuptools==58.5.2
+setuptools==59.1.1
     # via -r requirements/kit.in

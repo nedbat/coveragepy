@@ -25,8 +25,8 @@ Unreleased
 - Fix: A module specified as the ``source`` setting is imported during startup,
   before the user program imports it.  This could cause problems if the rest of
   the program isn't ready yet.  For example, `issue 1203`_ describes a Django
-  setting that is accessed before settings have been configured.  Now that
-  early import is wrapped in a try/except so the error doesn't stop execution.
+  setting that is accessed before settings have been configured.  Now the early
+  import is wrapped in a try/except so errors then don't stop execution.
 
 - Fix: A colon in a decorator expression would cause an exclusion to end too
   early, preventing the exclusion of the decorated function. This is now fixed.

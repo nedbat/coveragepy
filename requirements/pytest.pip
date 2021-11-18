@@ -18,11 +18,11 @@ flaky==3.7.0
     # via -r requirements/pytest.in
 future==0.18.2
     # via pycontracts
-hypothesis==6.24.1
+hypothesis==6.24.6
     # via -r requirements/pytest.in
 iniconfig==1.1.1
     # via pytest
-packaging==21.2
+packaging==21.3
     # via pytest
 pluggy==1.0.0
     # via pytest
@@ -32,7 +32,7 @@ py==1.11.0
     #   pytest-forked
 pycontracts @ git+https://github.com/slorg1/contracts@collections_and_validator
     # via -r requirements/pytest.in
-pyparsing==2.4.7
+pyparsing==3.0.6
     # via
     #   packaging
     #   pycontracts
