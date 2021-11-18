@@ -66,10 +66,9 @@ class TempDirMixin:
                 # nose's caching importer can get confused.  The full path prevents
                 # problems.
                 sys.path.insert(0, os.getcwd())
-
-                yield None
+                yield
         else:
-            yield None
+            yield
 
     def make_file(self, filename, text="", bytes=b"", newline=None):
         """Make a file. See `tests.helpers.make_file`"""

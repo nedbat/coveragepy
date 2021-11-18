@@ -16,6 +16,7 @@ import pytest
 
 from coverage import env
 from coverage.exceptions import _StopEverything
+from coverage.files import set_relative_directory
 
 
 # Pytest will rewrite assertions in test modules, but not elsewhere.
@@ -70,6 +71,22 @@ def reset_sys_path():
     sys_path = list(sys.path)
     yield
     sys.path[:] = sys_path
+
+
+@pytest.fixture(autouse=True)
+def reset_environment():
+    """Make sure a test setting an envvar doesn't leak into another test."""
+    old_environ = os.environ.copy()
+    yield
+    os.environ.clear()
+    os.environ.update(old_environ)
+
+
+@pytest.fixture(autouse=True)
+def reset_filesdotpy_globals():
+    """coverage/files.py has some unfortunate globals. Reset them every test."""
+    set_relative_directory()
+    yield
 
 
 TRACK_TESTS = False
