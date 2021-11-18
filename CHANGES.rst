@@ -37,6 +37,10 @@ Unreleased
 - API: The exceptions raised by Coverage.py have been specialized, to provide
   finer-grained catching of exceptions by third-party code.
 
+- API: Using ``suffix=False`` when constructing a Coverage object with
+  multiprocessing wouldn't suppress the data file suffix (`issue 989`_).  This
+  is now fixed.
+
 - Debug: The `coverage debug data` command will now sniff out combinable data
   files, and report on all of them.
 
@@ -44,6 +48,7 @@ Unreleased
   time, and show all of them, though this was never documented.  This no longer
   works, to allow for command-line options in the future.
 
+.. _issue 989: https://github.com/nedbat/coveragepy/issues/989
 .. _issue 1203: https://github.com/nedbat/coveragepy/issues/1203
 
 

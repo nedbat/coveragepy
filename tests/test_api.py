@@ -1199,3 +1199,23 @@ class RelativePathTest(CoverageTest):
         assert files == {'foo.py', 'bar.py', os_sep('modsrc/__init__.py')}
         res = cov.report()
         assert res == 100
+
+    def test_combine_no_suffix_multiprocessing(self):
+        self.make_file(".coveragerc", """\
+            [run]
+            branch = True
+            """)
+        cov = coverage.Coverage(
+            config_file=".coveragerc",
+            concurrency="multiprocessing",
+            data_suffix=False,
+            )
+        cov.start()
+        cov.stop()
+        # The warning isn't the point of this test, but suppress it.
+        with pytest.warns(Warning) as warns:
+            cov.combine()
+        assert_coverage_warnings(warns, "No data was collected. (no-data-collected)")
+        cov.save()
+        self.assert_file_count(".coverage.*", 0)
+        self.assert_exists(".coverage")

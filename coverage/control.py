@@ -482,10 +482,15 @@ class Coverage:
             )
 
         suffix = self._data_suffix_specified
-        if suffix or self.config.parallel:
+        if suffix:
             if not isinstance(suffix, str):
                 # if data_suffix=True, use .machinename.pid.random
                 suffix = True
+        elif self.config.parallel:
+            if suffix is None:
+                suffix = True
+            elif not isinstance(suffix, str):
+                suffix = bool(suffix)
         else:
             suffix = None
 
