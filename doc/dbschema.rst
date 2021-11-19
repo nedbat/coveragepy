@@ -18,13 +18,18 @@ The schema can change without changing the major version of coverage.py, so be
 careful when accessing the database directly.  The `coverage_schema` table has
 the schema number of the database.  The schema described here corresponds to:
 
-.. copied_from: coverage/sqldata.py
-
+.. [[[cog
+    from coverage.sqldata import SCHEMA_VERSION
+    print(".. code::")
+    print()
+    print(f"    SCHEMA_VERSION = {SCHEMA_VERSION}")
+    print()
+.. ]]]
 .. code::
 
     SCHEMA_VERSION = 7
 
-.. end_copied_from
+.. [[[end]]] (checksum: 95a75340df33237e7e9c93b02dd1814c)
 
 You can use SQLite tools such as the :mod:`sqlite3 <python:sqlite3>` module in
 the Python standard library to access the data.  Some data is stored in a
@@ -37,8 +42,13 @@ Database schema
 
 This is the database schema:
 
-.. copied_from: coverage/sqldata.py
-
+.. [[[cog
+    import textwrap
+    from coverage.sqldata import SCHEMA
+    print(".. code::")
+    print()
+    print(textwrap.indent(SCHEMA, "    "))
+.. ]]]
 .. code::
 
     CREATE TABLE coverage_schema (
@@ -101,7 +111,7 @@ This is the database schema:
         foreign key (file_id) references file (id)
     );
 
-.. end_copied_from
+.. [[[end]]] (checksum: 207fbab355481686e0dce0a9d99d173c)
 
 
 .. _numbits:

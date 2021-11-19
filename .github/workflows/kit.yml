@@ -39,7 +39,7 @@ jobs:
           # To change the matrix, edit the choices, then process this file with cog:
           #
           # $ python -m pip install cogapp
-          # $ python -m cogapp -rP .github/workflows/kit.yml
+          # $ python -m cogapp -crP .github/workflows/kit.yml
           #
           #
           # [[[cog
@@ -94,7 +94,7 @@ jobs:
           - {"os": "windows", "py": "cp39", "arch": "AMD64"}
           - {"os": "windows", "py": "cp310", "arch": "x86"}
           - {"os": "windows", "py": "cp310", "arch": "AMD64"}
-        # [[[end]]]
+        # [[[end]]] (checksum: dfc37c84db46011e5654945563c5ce68)
       fail-fast: false
 
     steps:

@@ -29,6 +29,8 @@ charset-normalizer==2.0.7
     # via requests
 check-manifest==0.47
     # via -r requirements/dev.in
+cogapp==3.3.0
+    # via -r requirements/dev.in
 colorama==0.4.4
     # via twine
 decorator==5.1.0
@@ -60,7 +62,7 @@ future==0.18.2
     #   pycontracts
 greenlet==1.1.2
     # via -r requirements/dev.in
-hypothesis==6.24.6
+hypothesis==6.25.0
     # via -r requirements/pytest.pip
 idna==3.3
     # via requests
@@ -95,7 +97,7 @@ parso==0.8.2
     # via jedi
 pep517==0.12.0
     # via build
-pkginfo==1.7.1
+pkginfo==1.8.1
     # via twine
 platformdirs==2.4.0
     # via
@@ -212,7 +214,7 @@ zipp==3.6.0
 # The following packages are considered to be unsafe in a requirements file:
 pip==21.3.1
     # via -r requirements/pip.pip
-setuptools==59.1.1
+setuptools==59.2.0
     # via
     #   astroid
     #   check-manifest

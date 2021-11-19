@@ -12,6 +12,7 @@ tox
 -r pytest.pip
 
 # for linting.
+cogapp
 greenlet
 pylint
 check-manifest

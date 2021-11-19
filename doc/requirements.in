@@ -6,6 +6,7 @@
 
 -c ../requirements/pins.pip
 
+cogapp
 doc8
 pyenchant
 sphinx

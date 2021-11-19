@@ -1,6 +1,27 @@
 .. Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
 .. For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
 
+.. [[[cog
+    import contextlib
+    import io
+    import re
+    import textwrap
+    from coverage.cmdline import CoverageScript
+
+    def show_help(cmd):
+        with contextlib.redirect_stdout(io.StringIO()) as stdout:
+            CoverageScript().command_line([cmd, "--help"])
+        help = stdout.getvalue()
+        help = help.replace("__main__.py", "coverage")
+        help = re.sub(r"(?m)^Full doc.*$", "", help)
+        help = help.rstrip()
+
+        print(".. code::\n")
+        print(f"    $ coverage {cmd} --help")
+        print(textwrap.indent(help, "    "))
+.. ]]]
+.. [[[end]]] (checksum: d41d8cd98f00b204e9800998ecf8427e)
+
 .. _cmd:
 
 ==================
@@ -90,7 +111,48 @@ Python ``-m`` switch::
 
 There are many options:
 
-.. include:: help/run.rst
+.. [[[cog show_help("run") ]]]
+.. code::
+
+    $ coverage run --help
+    Usage: coverage run [options] <pyfile> [program options]
+
+    Run a Python program, measuring code execution.
+
+    Options:
+      -a, --append          Append coverage data to .coverage, otherwise it starts
+                            clean each time.
+      --branch              Measure branch coverage in addition to statement
+                            coverage.
+      --concurrency=LIB     Properly measure code using a concurrency library.
+                            Valid values are: thread, gevent, greenlet, eventlet,
+                            multiprocessing.
+      --context=LABEL       The context label to record for this coverage run.
+      --include=PAT1,PAT2,...
+                            Include only files whose paths match one of these
+                            patterns. Accepts shell-style wildcards, which must be
+                            quoted.
+      -m, --module          <pyfile> is an importable Python module, not a script
+                            path, to be run as 'python -m' would run it.
+      --omit=PAT1,PAT2,...  Omit files whose paths match one of these patterns.
+                            Accepts shell-style wildcards, which must be quoted.
+      -L, --pylib           Measure coverage even inside the Python installed
+                            library, which isn't done by default.
+      -p, --parallel-mode   Append the machine name, process id and random number
+                            to the .coverage data file name to simplify collecting
+                            data from many processes.
+      --source=SRC1,SRC2,...
+                            A list of directories or importable names of code to
+                            measure.
+      --timid               Use a simpler but slower trace method. Try this if you
+                            get seemingly impossible results!
+      --debug=OPTS          Debug options, separated by commas. [env:
+                            COVERAGE_DEBUG]
+      -h, --help            Get help on this command.
+      --rcfile=RCFILE       Specify configuration file. By default '.coveragerc',
+                            'setup.cfg', 'tox.ini', and 'pyproject.toml' are
+                            tried. [env: COVERAGE_RCFILE]
+.. [[[end]]] (checksum: 869a31153b3cf401c52523ae9b52c7ab)
 
 If you want :ref:`branch coverage <branch>` measurement, use the ``--branch``
 flag.  Otherwise only statement coverage is measured.
@@ -302,7 +364,29 @@ indicating the file and the problem.
 The original input data files are deleted once they've been combined. If you
 want to keep those files, use the ``--keep`` command-line option.
 
-.. include:: help/combine.rst
+.. [[[cog show_help("combine") ]]]
+.. code::
+
+    $ coverage combine --help
+    Usage: coverage combine [options] <path1> <path2> ... <pathN>
+
+    Combine data from multiple coverage files collected with 'run -p'.  The
+    combined results are written to a single file representing the union of the
+    data. The positional arguments are data files or directories containing data
+    files. If no paths are provided, data files in the default data file's
+    directory are combined.
+
+    Options:
+      -a, --append     Append coverage data to .coverage, otherwise it starts
+                       clean each time.
+      --keep           Keep original coverage files, otherwise they are deleted.
+      -q, --quiet      Don't print messages about what is happening.
+      --debug=OPTS     Debug options, separated by commas. [env: COVERAGE_DEBUG]
+      -h, --help       Get help on this command.
+      --rcfile=RCFILE  Specify configuration file. By default '.coveragerc',
+                       'setup.cfg', 'tox.ini', and 'pyproject.toml' are tried.
+                       [env: COVERAGE_RCFILE]
+.. [[[end]]] (checksum: ddd34bbd27ab1fda8dabce80e4d67795)
 
 
 .. _cmd_erase:
@@ -312,7 +396,21 @@ Erase data: ``coverage erase``
 
 To erase the collected data, use the **erase** command:
 
-.. include:: help/erase.rst
+.. [[[cog show_help("erase") ]]]
+.. code::
+
+    $ coverage erase --help
+    Usage: coverage erase [options]
+
+    Erase previously collected coverage data.
+
+    Options:
+      --debug=OPTS     Debug options, separated by commas. [env: COVERAGE_DEBUG]
+      -h, --help       Get help on this command.
+      --rcfile=RCFILE  Specify configuration file. By default '.coveragerc',
+                       'setup.cfg', 'tox.ini', and 'pyproject.toml' are tried.
+                       [env: COVERAGE_RCFILE]
+.. [[[end]]] (checksum: 27f64e800a037c7e8f90289affdd5f13)
 
 If your configuration file indicates parallel data collection, **erase** will
 remove all of the data files.
@@ -366,7 +464,44 @@ For each module executed, the report shows the count of executable statements,
 the number of those statements missed, and the resulting coverage, expressed
 as a percentage.
 
-.. include:: help/report.rst
+.. [[[cog show_help("report") ]]]
+.. code::
+
+    $ coverage report --help
+    Usage: coverage report [options] [modules]
+
+    Report coverage statistics on modules.
+
+    Options:
+      --contexts=REGEX1,REGEX2,...
+                            Only display data from lines covered in the given
+                            contexts. Accepts Python regexes, which must be
+                            quoted.
+      --fail-under=MIN      Exit with a status of 2 if the total coverage is less
+                            than MIN.
+      -i, --ignore-errors   Ignore errors while reading source files.
+      --include=PAT1,PAT2,...
+                            Include only files whose paths match one of these
+                            patterns. Accepts shell-style wildcards, which must be
+                            quoted.
+      --omit=PAT1,PAT2,...  Omit files whose paths match one of these patterns.
+                            Accepts shell-style wildcards, which must be quoted.
+      --precision=N         Number of digits after the decimal point to display
+                            for reported coverage percentages.
+      --sort=COLUMN         Sort the report by the named column: name, stmts,
+                            miss, branch, brpart, or cover. Default is name.
+      -m, --show-missing    Show line numbers of statements in each module that
+                            weren't executed.
+      --skip-covered        Skip files with 100% coverage.
+      --no-skip-covered     Disable --skip-covered.
+      --skip-empty          Skip files with no code.
+      --debug=OPTS          Debug options, separated by commas. [env:
+                            COVERAGE_DEBUG]
+      -h, --help            Get help on this command.
+      --rcfile=RCFILE       Specify configuration file. By default '.coveragerc',
+                            'setup.cfg', 'tox.ini', and 'pyproject.toml' are
+                            tried. [env: COVERAGE_RCFILE]
+.. [[[end]]] (checksum: e5e77534929d2579f9d022227ef97313)
 
 The ``-m`` flag also shows the line numbers of missing statements::
 
@@ -441,7 +576,46 @@ the highlighting.
 A number of keyboard shortcuts are available for navigating the report.
 Click the keyboard icon in the upper right to see the complete list.
 
-.. include:: help/html.rst
+.. [[[cog show_help("html") ]]]
+.. code::
+
+    $ coverage html --help
+    Usage: coverage html [options] [modules]
+
+    Create an HTML report of the coverage of the files.  Each file gets its own
+    page, with the source decorated to show executed, excluded, and missed lines.
+
+    Options:
+      --contexts=REGEX1,REGEX2,...
+                            Only display data from lines covered in the given
+                            contexts. Accepts Python regexes, which must be
+                            quoted.
+      -d DIR, --directory=DIR
+                            Write the output files to DIR.
+      --fail-under=MIN      Exit with a status of 2 if the total coverage is less
+                            than MIN.
+      -i, --ignore-errors   Ignore errors while reading source files.
+      --include=PAT1,PAT2,...
+                            Include only files whose paths match one of these
+                            patterns. Accepts shell-style wildcards, which must be
+                            quoted.
+      --omit=PAT1,PAT2,...  Omit files whose paths match one of these patterns.
+                            Accepts shell-style wildcards, which must be quoted.
+      --precision=N         Number of digits after the decimal point to display
+                            for reported coverage percentages.
+      -q, --quiet           Don't print messages about what is happening.
+      --show-contexts       Show contexts for covered lines.
+      --skip-covered        Skip files with 100% coverage.
+      --no-skip-covered     Disable --skip-covered.
+      --skip-empty          Skip files with no code.
+      --title=TITLE         A text string to use as the title on the HTML.
+      --debug=OPTS          Debug options, separated by commas. [env:
+                            COVERAGE_DEBUG]
+      -h, --help            Get help on this command.
+      --rcfile=RCFILE       Specify configuration file. By default '.coveragerc',
+                            'setup.cfg', 'tox.ini', and 'pyproject.toml' are
+                            tried. [env: COVERAGE_RCFILE]
+.. [[[end]]] (checksum: 75eda57d99b6c7b736f8ab2d60cc765d)
 
 The title of the report can be set with the ``title`` setting in the
 ``[html]`` section of the configuration file, or the ``--title`` switch on
@@ -485,7 +659,35 @@ compatible with `Cobertura`_.
 
 .. _Cobertura: http://cobertura.github.io/cobertura/
 
-.. include:: help/xml.rst
+.. [[[cog show_help("xml") ]]]
+.. code::
+
+    $ coverage xml --help
+    Usage: coverage xml [options] [modules]
+
+    Generate an XML report of coverage results.
+
+    Options:
+      --fail-under=MIN      Exit with a status of 2 if the total coverage is less
+                            than MIN.
+      -i, --ignore-errors   Ignore errors while reading source files.
+      --include=PAT1,PAT2,...
+                            Include only files whose paths match one of these
+                            patterns. Accepts shell-style wildcards, which must be
+                            quoted.
+      --omit=PAT1,PAT2,...  Omit files whose paths match one of these patterns.
+                            Accepts shell-style wildcards, which must be quoted.
+      -o OUTFILE            Write the XML report to this file. Defaults to
+                            'coverage.xml'
+      -q, --quiet           Don't print messages about what is happening.
+      --skip-empty          Skip files with no code.
+      --debug=OPTS          Debug options, separated by commas. [env:
+                            COVERAGE_DEBUG]
+      -h, --help            Get help on this command.
+      --rcfile=RCFILE       Specify configuration file. By default '.coveragerc',
+                            'setup.cfg', 'tox.ini', and 'pyproject.toml' are
+                            tried. [env: COVERAGE_RCFILE]
+.. [[[end]]] (checksum: 7f5bcdcacbd60e32514201f24c56c17f)
 
 You can specify the name of the output file with the ``-o`` switch.
 
@@ -537,7 +739,40 @@ JSON reporting: ``coverage json``
 
 The **json** command writes coverage data to a "coverage.json" file.
 
-.. include:: help/json.rst
+.. [[[cog show_help("json") ]]]
+.. code::
+
+    $ coverage json --help
+    Usage: coverage json [options] [modules]
+
+    Generate a JSON report of coverage results.
+
+    Options:
+      --contexts=REGEX1,REGEX2,...
+                            Only display data from lines covered in the given
+                            contexts. Accepts Python regexes, which must be
+                            quoted.
+      --fail-under=MIN      Exit with a status of 2 if the total coverage is less
+                            than MIN.
+      -i, --ignore-errors   Ignore errors while reading source files.
+      --include=PAT1,PAT2,...
+                            Include only files whose paths match one of these
+                            patterns. Accepts shell-style wildcards, which must be
+                            quoted.
+      --omit=PAT1,PAT2,...  Omit files whose paths match one of these patterns.
+                            Accepts shell-style wildcards, which must be quoted.
+      -o OUTFILE            Write the JSON report to this file. Defaults to
+                            'coverage.json'
+      --pretty-print        Format the JSON for human readers.
+      -q, --quiet           Don't print messages about what is happening.
+      --show-contexts       Show contexts for covered lines.
+      --debug=OPTS          Debug options, separated by commas. [env:
+                            COVERAGE_DEBUG]
+      -h, --help            Get help on this command.
+      --rcfile=RCFILE       Specify configuration file. By default '.coveragerc',
+                            'setup.cfg', 'tox.ini', and 'pyproject.toml' are
+                            tried. [env: COVERAGE_RCFILE]
+.. [[[end]]] (checksum: 6fbe1ca09a8f0379a5e1794d8ac14e79)
 
 You can specify the name of the output file with the ``-o`` switch.  The JSON
 can be nicely formatted by specifying the ``--pretty-print`` switch.
@@ -580,7 +815,32 @@ For example::
     >     else:
     >         a = 2
 
-.. include:: help/annotate.rst
+.. [[[cog show_help("annotate") ]]]
+.. code::
+
+    $ coverage annotate --help
+    Usage: coverage annotate [options] [modules]
+
+    Make annotated copies of the given files, marking statements that are executed
+    with > and statements that are missed with !.
+
+    Options:
+      -d DIR, --directory=DIR
+                            Write the output files to DIR.
+      -i, --ignore-errors   Ignore errors while reading source files.
+      --include=PAT1,PAT2,...
+                            Include only files whose paths match one of these
+                            patterns. Accepts shell-style wildcards, which must be
+                            quoted.
+      --omit=PAT1,PAT2,...  Omit files whose paths match one of these patterns.
+                            Accepts shell-style wildcards, which must be quoted.
+      --debug=OPTS          Debug options, separated by commas. [env:
+                            COVERAGE_DEBUG]
+      -h, --help            Get help on this command.
+      --rcfile=RCFILE       Specify configuration file. By default '.coveragerc',
+                            'setup.cfg', 'tox.ini', and 'pyproject.toml' are
+                            tried. [env: COVERAGE_RCFILE]
+.. [[[end]]] (checksum: 8c3175a256f38215016d03b66de23d5b)
 
 Other common reporting options are described above in :ref:`cmd_reporting`.
 
@@ -603,7 +863,24 @@ Three types of information are available:
 * ``data``: show a summary of the collected coverage data
 * ``premain``: show the call stack invoking coverage
 
-.. include:: help/debug.rst
+.. [[[cog show_help("debug") ]]]
+.. code::
+
+    $ coverage debug --help
+    Usage: coverage debug <topic>
+
+    Display information about the internals of coverage.py, for diagnosing
+    problems. Topics are: 'data' to show a summary of the collected data; 'sys' to
+    show installation information; 'config' to show the configuration; 'premain'
+    to show what is calling coverage.
+
+    Options:
+      --debug=OPTS     Debug options, separated by commas. [env: COVERAGE_DEBUG]
+      -h, --help       Get help on this command.
+      --rcfile=RCFILE  Specify configuration file. By default '.coveragerc',
+                       'setup.cfg', 'tox.ini', and 'pyproject.toml' are tried.
+                       [env: COVERAGE_RCFILE]
+.. [[[end]]] (checksum: 66c36bb462796800400d588fa5a71c5f)
 
 .. _cmd_run_debug:
 

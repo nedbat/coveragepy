@@ -35,5 +35,5 @@ wheel==0.37.0
     # via -r requirements/kit.in
 
 # The following packages are considered to be unsafe in a requirements file:
-setuptools==59.1.1
+setuptools==59.2.0
     # via -r requirements/kit.in
