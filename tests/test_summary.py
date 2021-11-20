@@ -16,10 +16,12 @@ import coverage
 from coverage import env
 from coverage.control import Coverage
 from coverage.data import CoverageData
-from coverage.exceptions import ConfigError
+from coverage.exceptions import ConfigError, NoDataError, NotPython
+from coverage.files import abs_file
 from coverage.summary import SummaryReporter
 
 from tests.coveragetest import CoverageTest, TESTS_DIR, UsingModulesMixin
+from tests.helpers import assert_coverage_warnings
 
 
 class SummaryTest(UsingModulesMixin, CoverageTest):
@@ -567,60 +569,41 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         # We run a .py file with a non-ascii name, and when reporting, we can't
         # parse it as Python.  We should get an error message in the report.
 
-        self.make_file("accented\xe2.py", "print('accented')")
-        self.run_command("coverage run accented\xe2.py")
+        self.make_data_file(lines={"accented\xe2.py": [1]})
         self.make_file("accented\xe2.py", "This isn't python at all!")
-        report = self.report_from_command("coverage report accented\xe2.py")
-
-        # Couldn't parse '...' as Python source: 'invalid syntax' at line 1
-        # Name     Stmts   Miss  Cover
-        # ----------------------------
-        # No data to report.
-
-        errmsg = self.squeezed_lines(report)[0]
-        # The actual file name varies run to run.
-        errmsg = re.sub(r"parse '.*(accented.*?\.py)", r"parse '\1", errmsg)
-        # The actual error message varies version to version
-        errmsg = re.sub(r": '.*' at", ": 'error' at", errmsg)
-        expected = "Couldn't parse 'accented\xe2.py' as Python source: 'error' at line 1"
-        assert expected == errmsg
+        cov = coverage.Coverage()
+        cov.load()
+        msg = r"Couldn't parse '.*[/\\]accented\xe2.py' as Python source: '.*' at line 1"
+        with pytest.raises(NotPython, match=msg):
+            self.get_report(cov, morfs=["accented\xe2.py"])
 
     def test_dotpy_not_python_ignored(self):
         # We run a .py file, and when reporting, we can't parse it as Python,
         # but we've said to ignore errors, so there's no error reported,
         # though we still get a warning.
-        self.make_mycode()
-        self.run_command("coverage run mycode.py")
         self.make_file("mycode.py", "This isn't python at all!")
-        report = self.report_from_command("coverage report -i mycode.py")
-
-        # CoverageWarning: Couldn't parse Python file blah_blah/mycode.py (couldnt-parse)
-        #    (source line)
-        # Name     Stmts   Miss  Cover
-        # ----------------------------
-        # No data to report.
-
-        assert self.line_count(report) == 5
-        assert 'No data to report.' in report
-        assert '(couldnt-parse)' in report
+        self.make_data_file(lines={"mycode.py": [1]})
+        cov = coverage.Coverage()
+        cov.load()
+        with pytest.raises(NoDataError, match="No data to report."):
+            with pytest.warns(Warning) as warns:
+                self.get_report(cov, morfs=["mycode.py"], ignore_errors=True)
+        assert_coverage_warnings(
+            warns,
+            re.compile(r"Couldn't parse Python file '.*[/\\]mycode.py' \(couldnt-parse\)"),
+            )
 
     def test_dothtml_not_python(self):
         # We run a .html file, and when reporting, we can't parse it as
         # Python.  Since it wasn't .py, no error is reported.
 
-        # Run an "html" file
-        self.make_file("mycode.html", "a = 1")
-        self.run_command("coverage run mycode.html")
-        # Before reporting, change it to be an HTML file.
+        # Pretend to run an html file.
         self.make_file("mycode.html", "<h1>This isn't python at all!</h1>")
-        report = self.report_from_command("coverage report mycode.html")
-
-        # Name     Stmts   Miss  Cover
-        # ----------------------------
-        # No data to report.
-
-        assert self.line_count(report) == 3
-        assert 'No data to report.' in report
+        self.make_data_file(lines={"mycode.html": [1]})
+        cov = coverage.Coverage()
+        cov.load()
+        with pytest.raises(NoDataError, match="No data to report."):
+            self.get_report(cov, morfs=["mycode.html"])
 
     def test_report_no_extension(self):
         self.make_file("xxx", """\
@@ -633,9 +616,10 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
             d = 7
             print(f"xxx: {a} {b} {c} {d}")
             """)
-        out = self.run_command("coverage run --source=. xxx")
-        assert out == "xxx: 3 4 0 7\n"
-        report = self.report_from_command("coverage report")
+        self.make_data_file(lines={abs_file("xxx"): [2, 3, 4, 5, 7, 8]})
+        cov = coverage.Coverage()
+        cov.load()
+        report = self.get_report(cov)
         assert self.last_line_squeezed(report) == "TOTAL 7 1 86%"
 
     def test_report_with_chdir(self):
