@@ -16,7 +16,7 @@ import pytest
 
 import coverage
 from coverage import env
-from coverage.exceptions import NotPython, NoSource
+from coverage.exceptions import NoDataError, NotPython, NoSource
 from coverage.files import abs_file, flat_rootname
 import coverage.html
 from coverage.report import get_analysis_to_report
@@ -362,16 +362,15 @@ class HtmlWithUnparsableFilesTest(HtmlTestHelpers, CoverageTest):
         self.assert_doesnt_exist("htmlcov/innocuous.html")
 
     def test_dothtml_not_python(self):
-        # We run a .html file, and when reporting, we can't parse it as
-        # Python.  Since it wasn't .py, no error is reported.
-
         # Run an "HTML" file
         self.make_file("innocuous.html", "a = 3")
-        self.run_command("coverage run --source=. innocuous.html")
+        self.make_data_file(lines={abs_file("innocuous.html"): [1]})
         # Before reporting, change it to be an HTML file.
         self.make_file("innocuous.html", "<h1>This isn't python at all!</h1>")
-        output = self.run_command("coverage html")
-        assert output.strip() == "No data to report."
+        cov = coverage.Coverage()
+        cov.load()
+        with pytest.raises(NoDataError, match="No data to report."):
+            cov.html_report()
 
     def test_execed_liar_ignored(self):
         # Jinja2 sets __file__ to be a non-Python file, and then execs code.
@@ -462,8 +461,13 @@ class HtmlTest(HtmlTestHelpers, CoverageTest):
         # https://github.com/nedbat/coveragepy/issues/69
         self.make_file("program", "import program\n")
         self.make_file("program.py", "a = 1\n")
-        self.run_command("coverage run program")
-        self.run_command("coverage html")
+        self.make_data_file(lines={
+            abs_file("program"): [1],
+            abs_file("program.py"): [1],
+        })
+        cov = coverage.Coverage()
+        cov.load()
+        cov.html_report()
         self.assert_exists("htmlcov/index.html")
         self.assert_exists("htmlcov/program.html")
         self.assert_exists("htmlcov/program_py.html")
