@@ -11,6 +11,7 @@ from xml.etree import ElementTree
 import pytest
 
 import coverage
+from coverage.exceptions import NoDataError
 from coverage.files import abs_file
 from coverage.misc import import_local_file
 
@@ -21,11 +22,6 @@ from tests.helpers import assert_coverage_warnings, change_dir
 
 class XmlTestHelpers(CoverageTest):
     """Methods to use from XML tests."""
-
-    def run_mycode(self):
-        """Run mycode.py, so we can report on it."""
-        self.make_file("mycode.py", "print('hello')\n")
-        self.run_command("coverage run mycode.py")
 
     def run_doit(self):
         """Construct a simple sub-package."""
@@ -98,34 +94,46 @@ class XmlTestHelpersTest(XmlTestHelpers, CoverageTest):
 class XmlReportTest(XmlTestHelpers, CoverageTest):
     """Tests of the XML reports from coverage.py."""
 
+    def make_mycode_data(self):
+        """Pretend that we ran mycode.py, so we can report on it."""
+        self.make_file("mycode.py", "print('hello')\n")
+        self.make_data_file(lines={abs_file("mycode.py"): [1]})
+
+    def run_xml_report(self, **kwargs):
+        """Run xml_report()"""
+        cov = coverage.Coverage()
+        cov.load()
+        cov.xml_report(**kwargs)
+
     def test_default_file_placement(self):
-        self.run_mycode()
-        self.run_command("coverage xml")
+        self.make_mycode_data()
+        self.run_xml_report()
         self.assert_exists("coverage.xml")
 
     def test_argument_affects_xml_placement(self):
-        self.run_mycode()
-        self.run_command("coverage xml -o put_it_there.xml")
+        self.make_mycode_data()
+        self.run_xml_report(outfile="put_it_there.xml")
         self.assert_doesnt_exist("coverage.xml")
         self.assert_exists("put_it_there.xml")
 
-    def test_config_file_directory_does_not_exist(self):
-        self.run_mycode()
-        self.run_command("coverage xml -o nonexistent/put_it_there.xml")
+    def test_output_directory_does_not_exist(self):
+        self.make_mycode_data()
+        self.run_xml_report(outfile="nonexistent/put_it_there.xml")
         self.assert_doesnt_exist("coverage.xml")
         self.assert_doesnt_exist("put_it_there.xml")
         self.assert_exists("nonexistent/put_it_there.xml")
 
     def test_config_affects_xml_placement(self):
-        self.run_mycode()
+        self.make_mycode_data()
         self.make_file(".coveragerc", "[xml]\noutput = xml.out\n")
-        self.run_command("coverage xml")
+        self.run_xml_report()
         self.assert_doesnt_exist("coverage.xml")
         self.assert_exists("xml.out")
 
     def test_no_data(self):
         # https://github.com/nedbat/coveragepy/issues/210
-        self.run_command("coverage xml")
+        with pytest.raises(NoDataError, match="No data to report."):
+            self.run_xml_report()
         self.assert_doesnt_exist("coverage.xml")
 
     def test_no_source(self):
