@@ -1031,6 +1031,33 @@ assert len(math) == 18
             '<span class="str">"db40,dd00: x&#917760;"</span>',
         )
 
+    def test_accented_dot_py(self):
+        # Make a file with a non-ascii character in the filename.
+        self.make_file("h\xe2t.py", "print('accented')")
+        self.make_data_file(lines={abs_file("h\xe2t.py"): [1]})
+        cov = coverage.Coverage()
+        cov.load()
+        cov.html_report()
+        self.assert_exists("htmlcov/h\xe2t_py.html")
+        with open("htmlcov/index.html") as indexf:
+            index = indexf.read()
+        assert '<a href="h&#226;t_py.html">h&#226;t.py</a>' in index
+
+    def test_accented_directory(self):
+        # Make a file with a non-ascii character in the directory name.
+        self.make_file("\xe2/accented.py", "print('accented')")
+        self.make_data_file(lines={abs_file("\xe2/accented.py"): [1]})
+
+        # The HTML report uses ascii-encoded HTML entities.
+        cov = coverage.Coverage()
+        cov.load()
+        cov.html_report()
+        self.assert_exists("htmlcov/d_5786906b6f0ffeb4_accented_py.html")
+        with open("htmlcov/index.html") as indexf:
+            index = indexf.read()
+        expected = '<a href="d_5786906b6f0ffeb4_accented_py.html">&#226;%saccented.py</a>'
+        assert expected % os.sep in index
+
 
 class HtmlWithContextsTest(HtmlTestHelpers, CoverageTest):
     """Tests of the HTML reports with shown contexts."""

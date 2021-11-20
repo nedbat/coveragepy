@@ -109,10 +109,14 @@ class XmlReportTest(XmlTestHelpers, CoverageTest):
         self.make_mycode_data()
         self.run_xml_report()
         self.assert_exists("coverage.xml")
+        assert self.stdout() == ""
 
     def test_argument_affects_xml_placement(self):
         self.make_mycode_data()
-        self.run_xml_report(outfile="put_it_there.xml")
+        cov = coverage.Coverage(messages=True)
+        cov.load()
+        cov.xml_report(outfile="put_it_there.xml")
+        assert self.stdout() == "Wrote XML report to put_it_there.xml\n"
         self.assert_doesnt_exist("coverage.xml")
         self.assert_exists("put_it_there.xml")
 
@@ -266,6 +270,43 @@ class XmlReportTest(XmlTestHelpers, CoverageTest):
             cov = coverage.Coverage()
             self.start_import_stop(cov, "program")
             cov.xml_report()
+
+    def test_accented_dot_py(self):
+        # Make a file with a non-ascii character in the filename.
+        self.make_file("h\xe2t.py", "print('accented')")
+        self.make_data_file(lines={abs_file("h\xe2t.py"): [1]})
+        cov = coverage.Coverage()
+        cov.load()
+        cov.xml_report()
+        # The XML report is always UTF8-encoded.
+        with open("coverage.xml", "rb") as xmlf:
+            xml = xmlf.read()
+        assert ' filename="h\xe2t.py"'.encode() in xml
+        assert ' name="h\xe2t.py"'.encode() in xml
+
+    def test_accented_directory(self):
+        # Make a file with a non-ascii character in the directory name.
+        self.make_file("\xe2/accented.py", "print('accented')")
+        self.make_data_file(lines={abs_file("\xe2/accented.py"): [1]})
+
+        # The XML report is always UTF8-encoded.
+        cov = coverage.Coverage()
+        cov.load()
+        cov.xml_report()
+        with open("coverage.xml", "rb") as xmlf:
+            xml = xmlf.read()
+        assert b' filename="\xc3\xa2/accented.py"' in xml
+        assert b' name="accented.py"' in xml
+
+        dom = ElementTree.parse("coverage.xml")
+        elts = dom.findall(".//package[@name='â']")
+        assert len(elts) == 1
+        assert elts[0].attrib == {
+            "branch-rate": "0",
+            "complexity": "0",
+            "line-rate": "1",
+            "name": "â",
+        }
 
 
 def unbackslash(v):

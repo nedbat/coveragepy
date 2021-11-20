@@ -12,7 +12,6 @@ import sys
 import sysconfig
 import textwrap
 import time
-from xml.etree import ElementTree
 
 import pytest
 
@@ -22,7 +21,7 @@ from coverage.data import line_counts
 from coverage.files import abs_file, python_reported_file
 
 from tests.coveragetest import CoverageTest, TESTS_DIR
-from tests.helpers import os_sep, re_lines_text
+from tests.helpers import re_lines_text
 
 
 class ProcessTest(CoverageTest):
@@ -1304,88 +1303,6 @@ class FailUnderEmptyFilesTest(CoverageTest):
         assert st == 0
         st, _ = self.run_command_status("coverage report")
         assert st == 2
-
-
-@pytest.mark.skipif(env.JYTHON, reason="Jython doesn't like accented file names")
-class UnicodeFilePathsTest(CoverageTest):
-    """Tests of using non-ascii characters in the names of files."""
-
-    def test_accented_dot_py(self):
-        # Make a file with a non-ascii character in the filename.
-        self.make_file("h\xe2t.py", "print('accented')")
-        out = self.run_command("coverage run --source=. h\xe2t.py")
-        assert out == "accented\n"
-
-        # The HTML report uses ascii-encoded HTML entities.
-        out = self.run_command("coverage html")
-        assert re.fullmatch(r"Wrote HTML report to htmlcov[/\\]index.html\n", out)
-        self.assert_exists("htmlcov/h\xe2t_py.html")
-        with open("htmlcov/index.html") as indexf:
-            index = indexf.read()
-        assert '<a href="h&#226;t_py.html">h&#226;t.py</a>' in index
-
-        # The XML report is always UTF8-encoded.
-        out = self.run_command("coverage xml")
-        assert out == "Wrote XML report to coverage.xml\n"
-        with open("coverage.xml", "rb") as xmlf:
-            xml = xmlf.read()
-        assert ' filename="h\xe2t.py"'.encode() in xml
-        assert ' name="h\xe2t.py"'.encode() in xml
-
-        report_expected = (
-            "Name     Stmts   Miss  Cover\n" +
-            "----------------------------\n" +
-            "h\xe2t.py       1      0   100%\n" +
-            "----------------------------\n" +
-            "TOTAL        1      0   100%\n"
-        )
-
-        out = self.run_command("coverage report")
-        assert out == report_expected
-
-    def test_accented_directory(self):
-        # Make a file with a non-ascii character in the directory name.
-        self.make_file("\xe2/accented.py", "print('accented')")
-        out = self.run_command("coverage run --source=. \xe2/accented.py")
-        assert out == "accented\n"
-
-        # The HTML report uses ascii-encoded HTML entities.
-        out = self.run_command("coverage html")
-        assert re.fullmatch(r"Wrote HTML report to htmlcov[/\\]index.html\n", out)
-        self.assert_exists("htmlcov/d_5786906b6f0ffeb4_accented_py.html")
-        with open("htmlcov/index.html") as indexf:
-            index = indexf.read()
-        expected = '<a href="d_5786906b6f0ffeb4_accented_py.html">&#226;%saccented.py</a>'
-        assert expected % os.sep in index
-
-        # The XML report is always UTF8-encoded.
-        out = self.run_command("coverage xml -q")
-        assert out == ""
-        with open("coverage.xml", "rb") as xmlf:
-            xml = xmlf.read()
-        assert b' filename="\xc3\xa2/accented.py"' in xml
-        assert b' name="accented.py"' in xml
-
-        dom = ElementTree.parse("coverage.xml")
-        elts = dom.findall(".//package[@name='â']")
-        assert len(elts) == 1
-        assert elts[0].attrib == {
-            "branch-rate": "0",
-            "complexity": "0",
-            "line-rate": "1",
-            "name": "â",
-        }
-
-        report_expected = (
-            "Name            Stmts   Miss  Cover\n" +
-            "-----------------------------------\n" +
-            os_sep("\xe2/accented.py       1      0   100%\n") +
-            "-----------------------------------\n" +
-            "TOTAL               1      0   100%\n"
-        )
-
-        out = self.run_command("coverage report")
-        assert out == report_expected
 
 
 @pytest.mark.skipif(env.WINDOWS, reason="Windows can't delete the directory in use.")

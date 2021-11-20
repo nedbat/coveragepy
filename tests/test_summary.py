@@ -552,6 +552,23 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         with pytest.raises(NotPython, match=msg):
             self.get_report(cov, morfs=["mycode.py"])
 
+    def test_accented_directory(self):
+        # Make a file with a non-ascii character in the directory name.
+        self.make_file("\xe2/accented.py", "print('accented')")
+        self.make_data_file(lines={abs_file("\xe2/accented.py"): [1]})
+        report_expected = (
+            "Name            Stmts   Miss  Cover\n" +
+            "-----------------------------------\n" +
+            "\xe2/accented.py       1      0   100%\n" +
+            "-----------------------------------\n" +
+            "TOTAL               1      0   100%\n"
+        )
+
+        cov = coverage.Coverage()
+        cov.load()
+        output = self.get_report(cov, squeeze=False)
+        assert output == report_expected
+
     @pytest.mark.skipif(env.JYTHON, reason="Jython doesn't like accented file names")
     def test_accenteddotpy_not_python(self):
         # We run a .py file with a non-ascii name, and when reporting, we can't
