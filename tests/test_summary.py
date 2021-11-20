@@ -445,13 +445,10 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         assert squeezed[5] == "1 file skipped due to complete coverage."
 
     def test_report_skip_covered_no_data(self):
-        report = self.report_from_command("coverage report --skip-covered")
-
-        # No data to report.
-
-        assert self.line_count(report) == 1, report
-        squeezed = self.squeezed_lines(report)
-        assert squeezed[0] == "No data to report."
+        cov = coverage.Coverage()
+        cov.load()
+        with pytest.raises(NoDataError, match="No data to report."):
+            self.get_report(cov, skip_covered=True)
 
     def test_report_skip_empty(self):
         self.make_file("main.py", """
@@ -547,22 +544,13 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         # We run a .py file, and when reporting, we can't parse it as Python.
         # We should get an error message in the report.
 
-        self.make_mycode()
-        self.run_command("coverage run mycode.py")
+        self.make_data_file(lines={"mycode.py": [1]})
         self.make_file("mycode.py", "This isn't python at all!")
-        report = self.report_from_command("coverage report mycode.py")
-
-        # Couldn't parse '...' as Python source: 'invalid syntax' at line 1
-        # Name     Stmts   Miss  Cover
-        # ----------------------------
-        # No data to report.
-
-        errmsg = self.squeezed_lines(report)[0]
-        # The actual file name varies run to run.
-        errmsg = re.sub(r"parse '.*mycode.py", "parse 'mycode.py", errmsg)
-        # The actual error message varies version to version
-        errmsg = re.sub(r": '.*' at", ": 'error' at", errmsg)
-        assert errmsg == "Couldn't parse 'mycode.py' as Python source: 'error' at line 1"
+        cov = coverage.Coverage()
+        cov.load()
+        msg = r"Couldn't parse '.*[/\\]mycode.py' as Python source: '.*' at line 1"
+        with pytest.raises(NotPython, match=msg):
+            self.get_report(cov, morfs=["mycode.py"])
 
     @pytest.mark.skipif(env.JYTHON, reason="Jython doesn't like accented file names")
     def test_accenteddotpy_not_python(self):
