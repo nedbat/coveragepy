@@ -15,7 +15,6 @@ import coverage
 import coverage.cmdline
 from coverage import env
 from coverage.config import CoverageConfig
-from coverage.data import CoverageData
 from coverage.exceptions import _ExceptionDuringRun
 from coverage.version import __url__
 
@@ -827,13 +826,13 @@ class CmdLineWithFilesTest(BaseCmdLineTest):
     run_in_temp_dir = True
 
     def test_debug_data(self):
-        data = CoverageData()
-        data.add_lines({
-            "file1.py": range(1, 18),
-            "file2.py": range(1, 24),
-        })
-        data.add_file_tracers({"file1.py": "a_plugin"})
-        data.write()
+        data = self.make_data_file(
+            lines={
+                "file1.py": range(1, 18),
+                "file2.py": range(1, 24),
+            },
+            file_tracers={"file1.py": "a_plugin"},
+        )
 
         self.command_line("debug data")
         assert self.stdout() == textwrap.dedent(f"""\
@@ -846,7 +845,7 @@ class CmdLineWithFilesTest(BaseCmdLineTest):
             """)
 
     def test_debug_data_with_no_data_file(self):
-        data = CoverageData()
+        data = self.make_data_file()
         self.command_line("debug data")
         assert self.stdout() == textwrap.dedent(f"""\
             -- data ------------------------------------------------------
@@ -855,12 +854,8 @@ class CmdLineWithFilesTest(BaseCmdLineTest):
             """)
 
     def test_debug_combinable_data(self):
-        data1 = CoverageData()
-        data1.add_lines({"file1.py": range(1, 18), "file2.py": [1]})
-        data1.write()
-        data2 = CoverageData(suffix="123")
-        data2.add_lines({"file2.py": range(1, 10)})
-        data2.write()
+        data1 = self.make_data_file(lines={"file1.py": range(1, 18), "file2.py": [1]})
+        data2 = self.make_data_file(suffix="123", lines={"file2.py": range(1, 10)})
 
         self.command_line("debug data")
         assert self.stdout() == textwrap.dedent(f"""\

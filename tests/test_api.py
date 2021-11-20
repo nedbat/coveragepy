@@ -479,10 +479,13 @@ class ApiTest(CoverageTest):
         # https://github.com/nedbat/coveragepy/issues/649
         # The order of the [paths] setting matters
         def make_data_file():
-            data = coverage.CoverageData(".coverage.1")
-            data.add_lines({abs_file('ci/girder/g1.py'): range(10)})
-            data.add_lines({abs_file('ci/girder/plugins/p1.py'): range(10)})
-            data.write()
+            self.make_data_file(
+                basename=".coverage.1",
+                lines={
+                    abs_file('ci/girder/g1.py'): range(10),
+                    abs_file('ci/girder/plugins/p1.py'): range(10),
+                },
+            )
 
         def get_combined_filenames():
             cov = coverage.Coverage()

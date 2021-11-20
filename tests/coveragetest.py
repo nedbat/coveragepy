@@ -213,6 +213,16 @@ class CoverageTest(
 
         return cov
 
+    def make_data_file(self, basename=None, suffix=None, lines=None, file_tracers=None):
+        """Write some data into a coverage data file."""
+        data = coverage.CoverageData(basename=basename, suffix=suffix)
+        if lines:
+            data.add_lines(lines)
+        if file_tracers:
+            data.add_file_tracers(file_tracers)
+        data.write()
+        return data
+
     @contextlib.contextmanager
     def assert_warnings(self, cov, warnings, not_warnings=()):
         """A context manager to check that particular warnings happened in `cov`.
