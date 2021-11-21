@@ -743,8 +743,8 @@ class ProcessTest(CoverageTest):
         assert msg in out
 
     @pytest.mark.expensive
-    @pytest.mark.skipif(env.METACOV, reason="Can't test fullcoverage when measuring ourselves")
     @pytest.mark.skipif(not env.C_TRACER, reason="fullcoverage only works with the C tracer.")
+    @pytest.mark.skipif(env.METACOV, reason="Can't test fullcoverage when measuring ourselves")
     def test_fullcoverage(self):
         # fullcoverage is a trick to get stdlib modules measured from
         # the very beginning of the process. Here we import os and
