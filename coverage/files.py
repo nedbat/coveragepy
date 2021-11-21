@@ -137,9 +137,9 @@ if env.WINDOWS:
         return actpath
 
 else:
-    def actual_path(filename):
+    def actual_path(path):
         """The actual path for non-Windows platforms."""
-        return filename
+        return path
 
 
 @contract(returns='unicode')

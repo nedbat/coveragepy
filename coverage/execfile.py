@@ -293,7 +293,7 @@ def make_code_from_pyc(filename):
         # match or we won't run the file.
         magic = fpyc.read(4)
         if magic != PYC_MAGIC_NUMBER:
-            raise NoCode(f"Bad magic number in .pyc file: {magic} != {PYC_MAGIC_NUMBER}")
+            raise NoCode(f"Bad magic number in .pyc file: {magic!r} != {PYC_MAGIC_NUMBER!r}")
 
         date_based = True
         if env.PYBEHAVIOR.hashed_pyc_pep552:
