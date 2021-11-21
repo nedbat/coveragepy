@@ -184,10 +184,12 @@ def create_pth_file():
     """Create a .pth file for measuring subprocess coverage."""
     pth_dir = find_writable_pth_directory()
     assert pth_dir
-    pth_path = os.path.join(pth_dir, f"subcover_{WORKER}.pth")
-    with open(pth_path, "w") as pth:
-        pth.write("import coverage; coverage.process_startup()\n")
+    pth_path = os.path.join(pth_dir, "subcover.pth")
+    if not os.path.exists(pth_path):
+        with open(pth_path, "w") as pth:
+            pth.write("import coverage; coverage.process_startup()\n")
 
     yield
 
-    os.remove(pth_path)
+    # We leave the pth file in place.  This seems not-great, but deleting it
+    # seems to always cause problems among the test workers.
