@@ -7,12 +7,12 @@ Pytest auto configuration.
 This module is run automatically by pytest, to define and enable fixtures.
 """
 
-import glob
 import itertools
 import os
 import sys
 import sysconfig
 import warnings
+from pathlib import Path
 
 import pytest
 
@@ -153,23 +153,22 @@ def possible_pth_dirs():
     """Produce a sequence of directories for trying to write .pth files."""
     # First look through sys.path, and if we find a .pth file, then it's a good
     # place to put ours.
-    for pth_dir in sys.path:                        # pragma: part covered
-        pth_files = glob.glob(os.path.join(pth_dir, "*.pth"))
+    for pth_dir in map(Path, sys.path):             # pragma: part covered
+        pth_files = list(pth_dir.glob("*.pth"))
         if pth_files:
             yield pth_dir
 
     # If we're still looking, then try the Python library directory.
     # https://github.com/nedbat/coveragepy/issues/339
-    yield sysconfig.get_path("purelib")             # pragma: cant happen
+    yield Path(sysconfig.get_path("purelib"))       # pragma: cant happen
 
 
 def find_writable_pth_directory():
     """Find a place to write a .pth file."""
     for pth_dir in possible_pth_dirs():             # pragma: part covered
-        try_it = os.path.join(pth_dir, f"touch_{WORKER}.it")
+        try_it = pth_dir / f"touch_{WORKER}.it"
         try:
-            with open(try_it, "w") as f:
-                f.write("foo")
+            try_it.write_text("foo")
         except OSError:                             # pragma: cant happen
             continue
 
@@ -184,10 +183,9 @@ def create_pth_file():
     """Create a .pth file for measuring subprocess coverage."""
     pth_dir = find_writable_pth_directory()
     assert pth_dir
-    pth_path = os.path.join(pth_dir, "subcover.pth")
-    if not os.path.exists(pth_path):
-        with open(pth_path, "w") as pth:
-            pth.write("import coverage; coverage.process_startup()\n")
+    pth_path = pth_dir / "subcover.pth"
+    if not pth_path.exists():
+        pth_path.write_text("import coverage; coverage.process_startup()\n")
 
     yield
 
