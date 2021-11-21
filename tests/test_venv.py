@@ -30,6 +30,8 @@ def run_in_venv(cmd):
     else:
         words[0] = fr"venv/bin/{words[0]}"
     status, output = run_command(" ".join(words))
+    # Print the output so if it fails, we can tell what happened.
+    print(output)
     assert status == 0
     return output
 
