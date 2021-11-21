@@ -105,10 +105,8 @@ def pytest_sessionstart():
     if WORKER == "none":
         pth_dir = find_writable_pth_directory()
         assert pth_dir
-        pth_file = pth_dir / "subcover.pth"
-        if not pth_file.exists():
-            pth_file.write_text("import coverage; coverage.process_startup()\n")
-        # pth_path is deleted by pytest_sessionfinish below.
+        (pth_dir / "subcover.pth").write_text("import coverage; coverage.process_startup()\n")
+        # subcover.pth is deleted by pytest_sessionfinish below.
 
 
 def pytest_sessionfinish():
