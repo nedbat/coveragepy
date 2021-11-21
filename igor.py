@@ -42,6 +42,8 @@ def ignore_warnings():
         yield
 
 
+VERBOSITY = int(os.environ.get("COVERAGE_IGOR_VERBOSE", "0"))
+
 # Functions named do_* are executable from the command line: do_blah is run
 # by "python igor.py blah".
 
@@ -66,10 +68,14 @@ def do_remove_extension():
     for pattern in so_patterns:
         pattern = os.path.join("coverage", pattern)
         for filename in glob.glob(pattern):
-            try:
-                os.remove(filename)
-            except OSError:
-                pass
+            if os.path.exists(filename):
+                if VERBOSITY:
+                    print(f"Removing {filename}")
+                try:
+                    os.remove(filename)
+                except OSError as exc:
+                    if VERBOSITY:
+                        print(f"Couldn't remove {filename}: {exc}")
 
 
 def label_for_tracer(tracer):

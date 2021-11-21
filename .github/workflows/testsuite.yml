@@ -17,6 +17,7 @@ defaults:
 
 env:
   PIP_DISABLE_PIP_VERSION_CHECK: 1
+  COVERAGE_IGOR_VERBOSE: 1
 
 jobs:
   tests:
