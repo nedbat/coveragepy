@@ -90,6 +90,7 @@ def reset_filesdotpy_globals():
     set_relative_directory()
     yield
 
+WORKER = os.environ.get("PYTEST_XDIST_WORKER", "none")
 
 TRACK_TESTS = False
 TEST_TXT = "/tmp/tests.txt"
@@ -100,8 +101,25 @@ def pytest_sessionstart():
         with open(TEST_TXT, "w") as testtxt:
             print("Starting:", file=testtxt)
 
+    # Create a .pth file for measuring subprocess coverage.
+    if WORKER == "none":
+        pth_dir = find_writable_pth_directory()
+        assert pth_dir
+        pth_file = pth_dir / "subcover.pth"
+        if not pth_file.exists():
+            pth_file.write_text("import coverage; coverage.process_startup()\n")
+        # pth_path is deleted by pytest_sessionfinish below.
 
-WORKER = os.environ.get("PYTEST_XDIST_WORKER", "only")
+
+def pytest_sessionfinish():
+    """Hook the end of a test session, to clean up."""
+    # This is called by each of the workers and by the main process.
+    if WORKER == "none":
+        for pth_dir in possible_pth_dirs():             # pragma: part covered
+            pth_file = pth_dir / "subcover.pth"
+            if pth_file.exists():
+                pth_file.unlink()
+
 
 def write_test_name(prefix):
     """For tracking where and when tests are running."""
@@ -135,6 +153,7 @@ def interleaved(firsts, rest, n):
         if alist:
             yield alist.pop()
             num -= 1
+
 
 def pytest_collection_modifyitems(items):
     """Re-order the collected tests."""
@@ -176,18 +195,3 @@ def find_writable_pth_directory():
         return pth_dir
 
     return None                                     # pragma: cant happen
-
-
-@pytest.fixture(scope="session", autouse=True)
-def create_pth_file():
-    """Create a .pth file for measuring subprocess coverage."""
-    pth_dir = find_writable_pth_directory()
-    assert pth_dir
-    pth_path = pth_dir / "subcover.pth"
-    if not pth_path.exists():
-        pth_path.write_text("import coverage; coverage.process_startup()\n")
-
-    yield
-
-    # We leave the pth file in place.  This seems not-great, but deleting it
-    # seems to always cause problems among the test workers.
