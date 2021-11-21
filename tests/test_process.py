@@ -9,9 +9,7 @@ import os.path
 import re
 import stat
 import sys
-import sysconfig
 import textwrap
-import time
 
 import pytest
 
@@ -1340,71 +1338,8 @@ class YankedDirectoryTest(CoverageTest):
         assert all(line in out for line in lines)
 
 
-def possible_pth_dirs():
-    """Produce a sequence of directories for trying to write .pth files."""
-    # First look through sys.path, and if we find a .pth file, then it's a good
-    # place to put ours.
-    for pth_dir in sys.path:                        # pragma: part covered
-        pth_files = glob.glob(os.path.join(pth_dir, "*.pth"))
-        if pth_files:
-            yield pth_dir
-
-    # If we're still looking, then try the Python library directory.
-    # https://github.com/nedbat/coveragepy/issues/339
-    yield sysconfig.get_path("purelib")             # pragma: cant happen
-
-
-def find_writable_pth_directory():
-    """Find a place to write a .pth file."""
-    for pth_dir in possible_pth_dirs():             # pragma: part covered
-        try_it = os.path.join(pth_dir, f"touch_{WORKER}.it")
-        try:
-            with open(try_it, "w") as f:
-                f.write("foo")
-        except OSError:                             # pragma: cant happen
-            continue
-
-        os.remove(try_it)
-        return pth_dir
-
-    return None                                     # pragma: cant happen
-
-WORKER = os.environ.get('PYTEST_XDIST_WORKER', '')
-PTH_DIR = find_writable_pth_directory()
-
-
-def persistent_remove(path):
-    """Remove a file, and retry for a while if you can't."""
-    tries = 100
-    while tries:                                    # pragma: part covered
-        try:
-            os.remove(path)
-        except OSError:                             # pragma: not covered
-            tries -= 1
-            time.sleep(.05)
-        else:
-            return
-    raise Exception(f"Sorry, couldn't remove {path!r}")     # pragma: cant happen
-
-
-class ProcessCoverageMixin:
-    """Set up a .pth file to coverage-measure all sub-processes."""
-
-    def setUp(self):
-        super().setUp()
-
-        # Create the .pth file.
-        assert PTH_DIR
-        pth_contents = "import coverage; coverage.process_startup()\n"
-        pth_path = os.path.join(PTH_DIR, f"subcover_{WORKER}.pth")
-        with open(pth_path, "w") as pth:
-            pth.write(pth_contents)
-
-        self.addCleanup(persistent_remove, pth_path)
-
-
 @pytest.mark.skipif(env.METACOV, reason="Can't test sub-process pth file during metacoverage")
-class ProcessStartupTest(ProcessCoverageMixin, CoverageTest):
+class ProcessStartupTest(CoverageTest):
     """Test that we can measure coverage in sub-processes."""
 
     def setUp(self):
@@ -1477,7 +1412,7 @@ class ProcessStartupTest(ProcessCoverageMixin, CoverageTest):
         assert len(data_files) == 1, msg
 
 
-class ProcessStartupWithSourceTest(ProcessCoverageMixin, CoverageTest):
+class ProcessStartupWithSourceTest(CoverageTest):
     """Show that we can configure {[run]source} during process-level coverage.
 
     There are three interesting variables, for a total of eight tests:

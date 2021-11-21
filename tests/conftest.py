@@ -7,9 +7,11 @@ Pytest auto configuration.
 This module is run automatically by pytest, to define and enable fixtures.
 """
 
+import glob
 import itertools
 import os
 import sys
+import sysconfig
 import warnings
 
 import pytest
@@ -99,13 +101,14 @@ def pytest_sessionstart():
             print("Starting:", file=testtxt)
 
 
+WORKER = os.environ.get("PYTEST_XDIST_WORKER", "only")
+
 def write_test_name(prefix):
     """For tracking where and when tests are running."""
     if TRACK_TESTS:     # pragma: debugging
         with open(TEST_TXT, "a") as testtxt:
-            worker = os.environ.get('PYTEST_XDIST_WORKER', 'none')
             test = os.environ.get("PYTEST_CURRENT_TEST", "unknown")
-            print(f"{prefix} {worker}: {test}", file=testtxt, flush=True)
+            print(f"{prefix} {WORKER}: {test}", file=testtxt, flush=True)
 
 
 @pytest.hookimpl(hookwrapper=True)
@@ -144,3 +147,47 @@ def pytest_collection_modifyitems(items):
     if TRACK_TESTS:     # pragma: debugging
         with open("/tmp/items.txt", "w") as f:
             print("\n".join(i.nodeid for i in items), file=f)
+
+
+def possible_pth_dirs():
+    """Produce a sequence of directories for trying to write .pth files."""
+    # First look through sys.path, and if we find a .pth file, then it's a good
+    # place to put ours.
+    for pth_dir in sys.path:                        # pragma: part covered
+        pth_files = glob.glob(os.path.join(pth_dir, "*.pth"))
+        if pth_files:
+            yield pth_dir
+
+    # If we're still looking, then try the Python library directory.
+    # https://github.com/nedbat/coveragepy/issues/339
+    yield sysconfig.get_path("purelib")             # pragma: cant happen
+
+
+def find_writable_pth_directory():
+    """Find a place to write a .pth file."""
+    for pth_dir in possible_pth_dirs():             # pragma: part covered
+        try_it = os.path.join(pth_dir, f"touch_{WORKER}.it")
+        try:
+            with open(try_it, "w") as f:
+                f.write("foo")
+        except OSError:                             # pragma: cant happen
+            continue
+
+        os.remove(try_it)
+        return pth_dir
+
+    return None                                     # pragma: cant happen
+
+
+@pytest.fixture(scope="session", autouse=True)
+def create_pth_file():
+    """Create a .pth file for measuring subprocess coverage."""
+    pth_dir = find_writable_pth_directory()
+    assert pth_dir
+    pth_path = os.path.join(pth_dir, f"subcover_{WORKER}.pth")
+    with open(pth_path, "w") as pth:
+        pth.write("import coverage; coverage.process_startup()\n")
+
+    yield
+
+    os.remove(pth_path)
