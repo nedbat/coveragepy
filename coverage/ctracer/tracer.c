@@ -104,6 +104,8 @@ CTracer_dealloc(CTracer *self)
     Py_XDECREF(self->switch_context);
     Py_XDECREF(self->context);
     Py_XDECREF(self->disable_plugin);
+    Py_XDECREF(self->another1);
+    Py_XDECREF(self->another2);
 
     DataStack_dealloc(&self->stats, &self->data_stack);
     if (self->data_stacks) {
@@ -1020,6 +1022,9 @@ CTracer_members[] = {
 
     { "disable_plugin",     T_OBJECT, offsetof(CTracer, disable_plugin), 0,
             PyDoc_STR("Function for disabling a plugin.") },
+
+    { "another1", T_OBJECT, offsetof(CTracer, another1), 0, PyDoc_STR("blah") },
+    { "another2", T_OBJECT, offsetof(CTracer, another2), 0, PyDoc_STR("blah") },
 
     { NULL }
 };
