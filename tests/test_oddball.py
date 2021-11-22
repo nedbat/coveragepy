@@ -191,6 +191,48 @@ class MemoryLeakTest(CoverageTest):
         if fails > 8:
             pytest.fail("RAM grew by %d" % (ram_growth))      # pragma: only failure
 
+    def test_leaks_while_threading(self):
+        # https://github.com/nedbat/coveragepy/issues/1283
+        self.check_coverage("""\
+            import gc
+            import threading
+
+            def thread_main():
+                return 1
+
+            def work():
+                ts = [threading.Thread(target=thread_main) for _ in range(3)]
+                for t in ts:
+                    t.start()
+                for t in ts:
+                    t.join()
+
+            def gc_collect():
+                for i in range(3):
+                    gc.collect()
+
+            gc_collect()
+            n = []
+            meths = [{} for _ in range(3)]
+            for i in range(3):
+                work()
+                gc_collect()
+                n.append(len(gc.get_objects()))
+                objs = gc.get_objects()
+                n.append(len(objs))
+                for obj in objs:
+                    if str(type(obj)) == "<class 'method'>":
+                        meths[i][id(obj)] = obj
+                del objs
+
+            print("diff 0-1", [meths[1][k] for k in set(meths[1]) - set(meths[0])])
+            print("diff 1-2", [meths[2][k] for k in set(meths[2]) - set(meths[1])])
+            assert (
+                n[0] == n[1] == n[2]
+            ), f"objects leaked: {n[1] - n[0]}, {n[2] - n[1]}"
+            """)
+        print(self.stdout())
+
 
 class MemoryFumblingTest(CoverageTest):
     """Test that we properly manage the None refcount."""
