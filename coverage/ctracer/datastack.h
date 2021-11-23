@@ -40,6 +40,8 @@ typedef struct DataStack {
 
 int DataStack_init(Stats * pstats, DataStack *pdata_stack);
 void DataStack_dealloc(Stats * pstats, DataStack *pdata_stack);
+int DataStack_traverse(DataStack *pdata_stack, visitproc visit, void *arg);
+void DataStack_clear(DataStack *pdata_stack);
 int DataStack_grow(Stats * pstats, DataStack *pdata_stack);
 
 #endif /* _COVERAGE_DATASTACK_H */

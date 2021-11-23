@@ -19,11 +19,29 @@ void
 DataStack_dealloc(Stats *pstats, DataStack *pdata_stack)
 {
     int i;
-
     for (i = 0; i < pdata_stack->alloc; i++) {
         Py_XDECREF(pdata_stack->stack[i].file_data);
     }
     PyMem_Free(pdata_stack->stack);
+}
+
+int
+DataStack_traverse(DataStack *pdata_stack, visitproc visit, void *arg)
+{
+    int i;
+    for (i = 0; i < pdata_stack->alloc; i++) {
+        Py_VISIT(pdata_stack->stack[i].file_data);
+    }
+    return 0;
+}
+
+void
+DataStack_clear(DataStack *pdata_stack)
+{
+    int i;
+    for (i = 0; i < pdata_stack->alloc; i++) {
+        Py_CLEAR(pdata_stack->stack[i].file_data);
+    }
 }
 
 int

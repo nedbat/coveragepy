@@ -121,16 +121,66 @@ CTracer_dealloc(CTracer *self)
 static int
 CTracer_traverse(CTracer *self, visitproc visit, void *arg)
 {
+    int i;
+    int tret;
+
     Py_VISIT(self->switch_context);
     Py_VISIT(self->disable_plugin);
+    Py_VISIT(self->should_trace);
+    Py_VISIT(self->check_include);
+    Py_VISIT(self->warn);
+    Py_VISIT(self->concur_id_func);
+    Py_VISIT(self->data);
+    Py_VISIT(self->file_tracers);
+    Py_VISIT(self->should_trace_cache);
+    Py_VISIT(self->trace_arcs);
+    Py_VISIT(self->should_start_context);
+    Py_VISIT(self->context);
+    Py_VISIT(self->data_stack_index);
+
+    tret = DataStack_traverse(&self->data_stack, visit, arg);
+    if (tret) {
+        return tret;
+    }
+
+    if (self->data_stacks) {
+        for (i = 0; i < self->data_stacks_used; i++) {
+            tret = DataStack_traverse(self->data_stacks + i, visit, arg);
+            if (tret) {
+                return tret;
+            }
+        }
+    }
+
     return 0;
 }
 
 static int
 CTracer_clear(CTracer *self)
 {
+    int i;
+
     Py_CLEAR(self->switch_context);
     Py_CLEAR(self->disable_plugin);
+    Py_CLEAR(self->should_trace);
+    Py_CLEAR(self->check_include);
+    Py_CLEAR(self->warn);
+    Py_CLEAR(self->concur_id_func);
+    Py_CLEAR(self->data);
+    Py_CLEAR(self->file_tracers);
+    Py_CLEAR(self->should_trace_cache);
+    Py_CLEAR(self->trace_arcs);
+    Py_CLEAR(self->should_start_context);
+    Py_CLEAR(self->context);
+    Py_CLEAR(self->data_stack_index);
+
+    DataStack_clear(&self->data_stack);
+    if (self->data_stacks) {
+        for (i = 0; i < self->data_stacks_used; i++) {
+            DataStack_clear(self->data_stacks + i);
+        }
+    }
+
     return 0;
 }
 
