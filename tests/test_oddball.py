@@ -217,7 +217,6 @@ class MemoryLeakTest(CoverageTest):
             for i in range(3):
                 work()
                 gc_collect()
-                n.append(len(gc.get_objects()))
                 objs = gc.get_objects()
                 n.append(len(objs))
                 for obj in objs:
@@ -225,8 +224,12 @@ class MemoryLeakTest(CoverageTest):
                         meths[i][id(obj)] = obj
                 del objs
 
-            print("diff 0-1", [meths[1][k] for k in set(meths[1]) - set(meths[0])])
-            print("diff 1-2", [meths[2][k] for k in set(meths[2]) - set(meths[1])])
+            import pprint
+            print("diff 0-1:")
+            pprint.pprint([meths[1][k] for k in set(meths[1]) - set(meths[0])])
+            print("diff 1-2:")
+            pprint.pprint([meths[2][k] for k in set(meths[2]) - set(meths[1])])
+            print(f"gc.garbage has {len(gc.garbage)} things")
             assert (
                 n[0] == n[1] == n[2]
             ), f"objects leaked: {n[1] - n[0]}, {n[2] - n[1]}"

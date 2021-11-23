@@ -262,8 +262,6 @@ class Collector:
             tracer.switch_context = self.switch_context
         if hasattr(tracer, 'disable_plugin'):
             tracer.disable_plugin = self.disable_plugin
-        tracer.another1 = object()
-        tracer.another2 = self._installation_trace
 
         fn = tracer.start()
         self.tracers.append(tracer)

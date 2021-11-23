@@ -104,8 +104,6 @@ CTracer_dealloc(CTracer *self)
     Py_XDECREF(self->switch_context);
     Py_XDECREF(self->context);
     Py_XDECREF(self->disable_plugin);
-    Py_XDECREF(self->another1);
-    Py_XDECREF(self->another2);
 
     DataStack_dealloc(&self->stats, &self->data_stack);
     if (self->data_stacks) {
@@ -118,6 +116,22 @@ CTracer_dealloc(CTracer *self)
     Py_XDECREF(self->data_stack_index);
 
     Py_TYPE(self)->tp_free((PyObject*)self);
+}
+
+static int
+CTracer_traverse(CTracer *self, visitproc visit, void *arg)
+{
+    Py_VISIT(self->switch_context);
+    Py_VISIT(self->disable_plugin);
+    return 0;
+}
+
+static int
+CTracer_clear(CTracer *self)
+{
+    Py_CLEAR(self->switch_context);
+    Py_CLEAR(self->disable_plugin);
+    return 0;
 }
 
 #if TRACE_LOG
@@ -1023,9 +1037,6 @@ CTracer_members[] = {
     { "disable_plugin",     T_OBJECT, offsetof(CTracer, disable_plugin), 0,
             PyDoc_STR("Function for disabling a plugin.") },
 
-    { "another1", T_OBJECT, offsetof(CTracer, another1), 0, PyDoc_STR("blah") },
-    { "another2", T_OBJECT, offsetof(CTracer, another2), 0, PyDoc_STR("blah") },
-
     { NULL }
 };
 
@@ -1055,7 +1066,8 @@ CTracerType = {
     "coverage.CTracer",        /*tp_name*/
     sizeof(CTracer),           /*tp_basicsize*/
     0,                         /*tp_itemsize*/
-    (destructor)CTracer_dealloc, /*tp_dealloc*/
+    (destructor)CTracer_dealloc,
+                               /*tp_dealloc*/
     0,                         /*tp_print*/
     0,                         /*tp_getattr*/
     0,                         /*tp_setattr*/
@@ -1070,10 +1082,12 @@ CTracerType = {
     0,                         /*tp_getattro*/
     0,                         /*tp_setattro*/
     0,                         /*tp_as_buffer*/
-    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE, /*tp_flags*/
+    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE | Py_TPFLAGS_HAVE_GC,
+                               /*tp_flags*/
     "CTracer objects",         /* tp_doc */
-    0,                         /* tp_traverse */
-    0,                         /* tp_clear */
+    (traverseproc)CTracer_traverse,
+                               /* tp_traverse */
+    (inquiry)CTracer_clear,    /* tp_clear */
     0,                         /* tp_richcompare */
     0,                         /* tp_weaklistoffset */
     0,                         /* tp_iter */
