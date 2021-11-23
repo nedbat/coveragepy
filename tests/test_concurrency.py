@@ -222,6 +222,7 @@ class ConcurrencyTest(CoverageTest):
 
         if expected_cant_trace is not None:
             assert out == expected_cant_trace
+            pytest.skip(f"Can't test: {expected_cant_trace}")
         else:
             # We can fully measure the code if we are using the C tracer, which
             # can support all the concurrency, or if we are using threads.

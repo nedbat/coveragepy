@@ -74,6 +74,7 @@ upgrade: 				## update the *.pip files with the latest packages satisfying *.in 
 	$(PIP_COMPILE) -o requirements/kit.pip requirements/kit.in
 	$(PIP_COMPILE) -o requirements/tox.pip requirements/tox.in
 	$(PIP_COMPILE) -o requirements/dev.pip requirements/dev.in
+	$(PIP_COMPILE) -o requirements/light-threads.pip requirements/light-threads.in
 	$(PIP_COMPILE) -o doc/requirements.pip doc/requirements.in
 
 # Kitting

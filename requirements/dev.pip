@@ -4,7 +4,7 @@
 #
 #    make upgrade
 #
-astroid==2.8.5
+astroid==2.8.6
     # via pylint
 attrs==21.2.0
     # via
@@ -62,7 +62,7 @@ future==0.18.2
     #   pycontracts
 greenlet==1.1.2
     # via -r requirements/dev.in
-hypothesis==6.25.0
+hypothesis==6.27.1
     # via -r requirements/pytest.pip
 idna==3.3
     # via requests
