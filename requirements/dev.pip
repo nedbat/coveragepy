@@ -25,7 +25,7 @@ build==0.7.0
     # via check-manifest
 certifi==2021.10.8
     # via requests
-charset-normalizer==2.0.7
+charset-normalizer==2.0.8
     # via requests
 check-manifest==0.47
     # via -r requirements/dev.in

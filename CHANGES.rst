@@ -22,6 +22,10 @@ This list is detailed and covers changes in each pre-release version.
 Unreleased
 ----------
 
+- Feature: Now the ``--concurrency`` setting can have a list of values, so that
+  threads and another lightweight threading package can be measured together.
+  Closes `issue 1012`_ and `issue 1082`_.
+
 - Fix: A module specified as the ``source`` setting is imported during startup,
   before the user program imports it.  This could cause problems if the rest of
   the program isn't ready yet.  For example, `issue 1203`_ describes a Django
@@ -49,6 +53,8 @@ Unreleased
   works, to allow for command-line options in the future.
 
 .. _issue 989: https://github.com/nedbat/coveragepy/issues/989
+.. _issue 1012: https://github.com/nedbat/coveragepy/issues/1012
+.. _issue 1082: https://github.com/nedbat/coveragepy/issues/1802
 .. _issue 1203: https://github.com/nedbat/coveragepy/issues/1203
 
 

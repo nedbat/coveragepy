@@ -448,7 +448,7 @@ class Coverage:
     def _init_for_start(self):
         """Initialization for start()"""
         # Construct the collector.
-        concurrency = self.config.concurrency or ()
+        concurrency = self.config.concurrency or []
         if "multiprocessing" in concurrency:
             if not patch_multiprocessing:
                 raise ConfigError(                      # pragma: only jython

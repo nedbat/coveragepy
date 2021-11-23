@@ -7,6 +7,7 @@ import os
 import sys
 
 from coverage import env
+from coverage.config import CoverageConfig
 from coverage.debug import short_stack
 from coverage.disposition import FileDisposition
 from coverage.exceptions import ConfigError
@@ -55,7 +56,7 @@ class Collector:
     _collectors = []
 
     # The concurrency settings we support here.
-    SUPPORTED_CONCURRENCIES = {"greenlet", "eventlet", "gevent", "thread"}
+    LIGHT_THREADS = {"greenlet", "eventlet", "gevent"}
 
     def __init__(
         self, should_trace, check_include, should_start_context, file_mapper,
@@ -93,58 +94,27 @@ class Collector:
 
         `concurrency` is a list of strings indicating the concurrency libraries
         in use.  Valid values are "greenlet", "eventlet", "gevent", or "thread"
-        (the default).  Of these four values, only one can be supplied.  Other
-        values are ignored.
+        (the default).  "thread" can be combined with one of the other three.
+        Other values are ignored.
 
         """
         self.should_trace = should_trace
         self.check_include = check_include
         self.should_start_context = should_start_context
         self.file_mapper = file_mapper
-        self.warn = warn
         self.branch = branch
+        self.warn = warn
+        self.concurrency = concurrency
+        assert isinstance(self.concurrency, list), f"Expected a list: {self.concurrency!r}"
+
         self.threading = None
         self.covdata = None
-
         self.static_context = None
 
         self.origin = short_stack()
 
         self.concur_id_func = None
         self.mapped_file_cache = {}
-
-        # We can handle a few concurrency options here, but only one at a time.
-        these_concurrencies = self.SUPPORTED_CONCURRENCIES.intersection(concurrency)
-        if len(these_concurrencies) > 1:
-            raise ConfigError(f"Conflicting concurrency settings: {concurrency}")
-        self.concurrency = these_concurrencies.pop() if these_concurrencies else ''
-
-        try:
-            if self.concurrency == "greenlet":
-                import greenlet
-                self.concur_id_func = greenlet.getcurrent
-            elif self.concurrency == "eventlet":
-                import eventlet.greenthread     # pylint: disable=import-error,useless-suppression
-                self.concur_id_func = eventlet.greenthread.getcurrent
-            elif self.concurrency == "gevent":
-                import gevent                   # pylint: disable=import-error,useless-suppression
-                self.concur_id_func = gevent.getcurrent
-            elif self.concurrency == "thread" or not self.concurrency:
-                # It's important to import threading only if we need it.  If
-                # it's imported early, and the program being measured uses
-                # gevent, then gevent's monkey-patching won't work properly.
-                import threading
-                self.threading = threading
-            else:
-                raise ConfigError(f"Don't understand concurrency={concurrency}")
-        except ImportError as ex:
-            raise ConfigError(
-                "Couldn't trace with concurrency={}, the module isn't installed.".format(
-                    self.concurrency,
-                )
-            ) from ex
-
-        self.reset()
 
         if timid:
             # Being timid: use the simple Python trace function.
@@ -162,6 +132,54 @@ class Collector:
             self.file_disposition_class = FileDisposition
             self.supports_plugins = False
             self.packed_arcs = False
+
+        # We can handle a few concurrency options here, but only one at a time.
+        concurrencies = set(self.concurrency)
+        unknown = concurrencies - CoverageConfig.CONCURRENCY_CHOICES
+        if unknown:
+            show = ", ".join(sorted(unknown))
+            raise ConfigError(f"Unknown concurrency choices: {show}")
+        light_threads = concurrencies & self.LIGHT_THREADS
+        if len(light_threads) > 1:
+            show = ", ".join(sorted(light_threads))
+            raise ConfigError(f"Conflicting concurrency settings: {show}")
+        do_threading = False
+
+        try:
+            if "greenlet" in concurrencies:
+                tried = "greenlet"
+                import greenlet
+                self.concur_id_func = greenlet.getcurrent
+            elif "eventlet" in concurrencies:
+                tried = "eventlet"
+                import eventlet.greenthread     # pylint: disable=import-error,useless-suppression
+                self.concur_id_func = eventlet.greenthread.getcurrent
+            elif "gevent" in concurrencies:
+                tried = "gevent"
+                import gevent                   # pylint: disable=import-error,useless-suppression
+                self.concur_id_func = gevent.getcurrent
+
+            if "thread" in concurrencies:
+                do_threading = True
+        except ImportError as ex:
+            msg = f"Couldn't trace with concurrency={tried}, the module isn't installed."
+            raise ConfigError(msg) from ex
+
+        if self.concur_id_func and not hasattr(self._trace_class, "concur_id_func"):
+            raise ConfigError(
+                "Can't support concurrency={} with {}, only threads are supported.".format(
+                    tried, self.tracer_name(),
+                )
+            )
+
+        if do_threading or not concurrencies:
+            # It's important to import threading only if we need it.  If
+            # it's imported early, and the program being measured uses
+            # gevent, then gevent's monkey-patching won't work properly.
+            import threading
+            self.threading = threading
+
+        self.reset()
 
     def __repr__(self):
         return f"<Collector at 0x{id(self):x}: {self.tracer_name()}>"
@@ -244,13 +262,6 @@ class Collector:
 
         if hasattr(tracer, 'concur_id_func'):
             tracer.concur_id_func = self.concur_id_func
-        elif self.concur_id_func:
-            raise ConfigError(
-                "Can't support concurrency={} with {}, only threads are supported".format(
-                    self.concurrency, self.tracer_name(),
-                )
-            )
-
         if hasattr(tracer, 'file_tracers'):
             tracer.file_tracers = self.file_tracers
         if hasattr(tracer, 'threading'):

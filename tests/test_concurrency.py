@@ -17,6 +17,7 @@ import pytest
 import coverage
 from coverage import env
 from coverage.data import line_counts
+from coverage.exceptions import ConfigError
 from coverage.files import abs_file
 from coverage.misc import import_local_file
 
@@ -193,7 +194,7 @@ def cant_trace_msg(concurrency, the_module):
         expected_out = None
     else:
         expected_out = (
-            f"Can't support concurrency={concurrency} with PyTracer, only threads are supported\n"
+            f"Can't support concurrency={concurrency} with PyTracer, only threads are supported.\n"
         )
     return expected_out
 
@@ -212,7 +213,6 @@ class ConcurrencyTest(CoverageTest):
         is the text we expect the code to produce.
 
         """
-
         self.make_file("try_it.py", code)
 
         cmd = f"coverage run --concurrency={concurrency} try_it.py"
@@ -261,6 +261,8 @@ class ConcurrencyTest(CoverageTest):
         code = SIMPLE.format(QLIMIT=self.QLIMIT)
         self.try_some_code(code, "eventlet", eventlet)
 
+    # https://github.com/nedbat/coveragepy/issues/663
+    @pytest.mark.skipif(env.WINDOWS, reason="gevent has problems on Windows: #663")
     def test_gevent(self):
         code = (GEVENT + SUM_RANGE_Q + PRINT_SUM_RANGE).format(QLIMIT=self.QLIMIT)
         self.try_some_code(code, "gevent", gevent)
@@ -308,6 +310,85 @@ class ConcurrencyTest(CoverageTest):
             print(len(gts))
             """
         self.try_some_code(BUG_330, "eventlet", eventlet, "0\n")
+
+    def test_threads_with_gevent(self):
+        self.make_file("both.py", """\
+            import queue
+            import threading
+
+            import gevent
+
+            def work1(q):
+                q.put(1)
+
+            def gwork(q):
+                gevent.spawn(work1, q).join()
+                q.put(None)
+                print("done")
+
+            q = queue.Queue()
+            t = threading.Thread(target=gwork, args=(q,))
+            t.start()
+            t.join()
+
+            answer = q.get()
+            assert answer == 1
+            """)
+        out = self.run_command("coverage run --concurrency=thread,gevent both.py")
+        if gevent is None:
+            assert out == (
+                "Couldn't trace with concurrency=gevent, the module isn't installed.\n"
+            )
+            pytest.skip("Can't run test without gevent installed.")
+        if not env.C_TRACER:
+            assert out == (
+                "Can't support concurrency=gevent with PyTracer, only threads are supported.\n"
+            )
+            pytest.skip("Can't run gevent with PyTracer")
+
+        assert out == "done\n"
+
+        out = self.run_command("coverage report -m")
+        last_line = self.squeezed_lines(out)[-1]
+        assert re.search(r"TOTAL \d+ 0 100%", last_line)
+
+    def test_bad_concurrency(self):
+        self.make_file("prog.py", "a = 1")
+        msg = "Unknown concurrency choices: nothing"
+        with pytest.raises(ConfigError, match=msg):
+            self.command_line("run --concurrency=nothing prog.py")
+
+    def test_bad_concurrency_in_config(self):
+        self.make_file("prog.py", "a = 1")
+        self.make_file(".coveragerc", "[run]\nconcurrency = nothing\n")
+        msg = "Unknown concurrency choices: nothing"
+        with pytest.raises(ConfigError, match=msg):
+            self.command_line("run prog.py")
+
+    def test_no_multiple_light_concurrency(self):
+        self.make_file("prog.py", "a = 1")
+        msg = "Conflicting concurrency settings: eventlet, gevent"
+        with pytest.raises(ConfigError, match=msg):
+            self.command_line("run --concurrency=gevent,eventlet prog.py")
+
+    def test_no_multiple_light_concurrency_in_config(self):
+        self.make_file("prog.py", "a = 1")
+        self.make_file(".coveragerc", "[run]\nconcurrency = gevent, eventlet\n")
+        msg = "Conflicting concurrency settings: eventlet, gevent"
+        with pytest.raises(ConfigError, match=msg):
+            self.command_line("run prog.py")
+
+
+class WithoutConcurrencyModuleTest(CoverageTest):
+    """Tests of what happens if the requested concurrency isn't installed."""
+
+    @pytest.mark.parametrize("module", ["eventlet", "gevent", "greenlet"])
+    def test_missing_module(self, module):
+        self.make_file("prog.py", "a = 1")
+        sys.modules[module] = None
+        msg = f"Couldn't trace with concurrency={module}, the module isn't installed."
+        with pytest.raises(ConfigError, match=msg):
+            self.command_line(f"run --concurrency={module} prog.py")
 
 
 SQUARE_OR_CUBE_WORK = """
@@ -385,7 +466,9 @@ class MultiprocessingTest(CoverageTest):
             expected_cant_trace = cant_trace_msg(concurrency, the_module)
 
             if expected_cant_trace is not None:
+                print(out)
                 assert out == expected_cant_trace
+                pytest.skip(f"Can't test: {expected_cant_trace}")
             else:
                 assert out.rstrip() == expected_out
                 assert len(glob.glob(".coverage.*")) == nprocs + 1

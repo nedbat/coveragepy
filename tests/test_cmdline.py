@@ -610,7 +610,7 @@ class CmdLineTest(BaseCmdLineTest):
             cov.save()
             """)
         self.cmd_executes("run --concurrency=gevent foo.py", """\
-            cov = Coverage(concurrency='gevent')
+            cov = Coverage(concurrency=['gevent'])
             runner = PyRunner(['foo.py'], as_module=False)
             runner.prepare()
             cov.start()
@@ -619,7 +619,7 @@ class CmdLineTest(BaseCmdLineTest):
             cov.save()
             """)
         self.cmd_executes("run --concurrency=multiprocessing foo.py", """\
-            cov = Coverage(concurrency='multiprocessing')
+            cov = Coverage(concurrency=['multiprocessing'])
             runner = PyRunner(['foo.py'], as_module=False)
             runner.prepare()
             cov.start()
@@ -627,19 +627,15 @@ class CmdLineTest(BaseCmdLineTest):
             cov.stop()
             cov.save()
             """)
-
-    def test_bad_concurrency(self):
-        self.command_line("run --concurrency=nothing", ret=ERR)
-        err = self.stderr()
-        assert "option --concurrency: invalid choice: 'nothing'" in err
-
-    def test_no_multiple_concurrency(self):
-        # You can't use multiple concurrency values on the command line.
-        # I would like to have a better message about not allowing multiple
-        # values for this option, but optparse is not that flexible.
-        self.command_line("run --concurrency=multiprocessing,gevent foo.py", ret=ERR)
-        err = self.stderr()
-        assert "option --concurrency: invalid choice: 'multiprocessing,gevent'" in err
+        self.cmd_executes("run --concurrency=gevent,thread foo.py", """\
+            cov = Coverage(concurrency=['gevent', 'thread'])
+            runner = PyRunner(['foo.py'], as_module=False)
+            runner.prepare()
+            cov.start()
+            runner.run()
+            cov.stop()
+            cov.save()
+            """)
 
     def test_multiprocessing_needs_config_file(self):
         # You can't use command-line args to add options to multiprocessing

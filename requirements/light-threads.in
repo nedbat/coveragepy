@@ -6,4 +6,5 @@
 # The light-threads packages we test against
 
 eventlet
+gevent
 greenlet

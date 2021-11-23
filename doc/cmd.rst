@@ -124,9 +124,9 @@ There are many options:
                             clean each time.
       --branch              Measure branch coverage in addition to statement
                             coverage.
-      --concurrency=LIB     Properly measure code using a concurrency library.
-                            Valid values are: thread, gevent, greenlet, eventlet,
-                            multiprocessing.
+      --concurrency=LIBS    Properly measure code using a concurrency library.
+                            Valid values are: eventlet, gevent, greenlet,
+                            multiprocessing, thread.
       --context=LABEL       The context label to record for this coverage run.
       --include=PAT1,PAT2,...
                             Include only files whose paths match one of these
@@ -152,7 +152,7 @@ There are many options:
       --rcfile=RCFILE       Specify configuration file. By default '.coveragerc',
                             'setup.cfg', 'tox.ini', and 'pyproject.toml' are
                             tried. [env: COVERAGE_RCFILE]
-.. [[[end]]] (checksum: 869a31153b3cf401c52523ae9b52c7ab)
+.. [[[end]]] (checksum: 072cccad7f8ad3e7b72c266305ef5e4a)
 
 If you want :ref:`branch coverage <branch>` measurement, use the ``--branch``
 flag.  Otherwise only statement coverage is measured.
@@ -174,12 +174,16 @@ but before the program invocation::
 
 
 Coverage.py can measure multi-threaded programs by default. If you are using
-more exotic concurrency, with the `multiprocessing`_, `greenlet`_, `eventlet`_,
-or `gevent`_ libraries, then coverage.py will get very confused.  Use the
+more other concurrency support, with the `multiprocessing`_, `greenlet`_,
+`eventlet`_, or `gevent`_ libraries, then coverage.py can get confused. Use the
 ``--concurrency`` switch to properly measure programs using these libraries.
 Give it a value of ``multiprocessing``, ``thread``, ``greenlet``, ``eventlet``,
 or ``gevent``.  Values other than ``thread`` require the :ref:`C extension
 <install_extension>`.
+
+You can combine multiple values for ``--concurrency``, separated with commas.
+You can specify ``thread`` and also one of ``eventlet``, ``gevent``, or
+``greenlet``.
 
 If you are using ``--concurrency=multiprocessing``, you must set other options
 in the configuration file.  Options on the command line will not be passed to

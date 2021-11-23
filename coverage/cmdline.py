@@ -17,6 +17,7 @@ import coverage
 from coverage import Coverage
 from coverage import env
 from coverage.collector import CTracer
+from coverage.config import CoverageConfig
 from coverage.data import combinable_files, debug_data_file
 from coverage.debug import info_formatter, info_header, short_stack
 from coverage.exceptions import _BaseCoverageException, _ExceptionDuringRun, NoSource
@@ -39,16 +40,12 @@ class Opts:
         '', '--branch', action='store_true',
         help="Measure branch coverage in addition to statement coverage.",
     )
-    CONCURRENCY_CHOICES = [
-        "thread", "gevent", "greenlet", "eventlet", "multiprocessing",
-    ]
     concurrency = optparse.make_option(
-        '', '--concurrency', action='store', metavar="LIB",
-        choices=CONCURRENCY_CHOICES,
+        '', '--concurrency', action='store', metavar="LIBS",
         help=(
             "Properly measure code using a concurrency library. " +
             "Valid values are: {}."
-        ).format(", ".join(CONCURRENCY_CHOICES)),
+        ).format(", ".join(sorted(CoverageConfig.CONCURRENCY_CHOICES))),
     )
     context = optparse.make_option(
         '', '--context', action='store', metavar="LABEL",
@@ -570,6 +567,11 @@ class CoverageScript:
         debug = unshell_list(options.debug)
         contexts = unshell_list(options.contexts)
 
+        if options.concurrency is not None:
+            concurrency = options.concurrency.split(",")
+        else:
+            concurrency = None
+
         # Do something.
         self.coverage = Coverage(
             data_suffix=options.parallel_mode,
@@ -581,7 +583,7 @@ class CoverageScript:
             omit=omit,
             include=include,
             debug=debug,
-            concurrency=options.concurrency,
+            concurrency=concurrency,
             check_preimported=True,
             context=options.context,
             messages=not options.quiet,

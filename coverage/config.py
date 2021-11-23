@@ -334,6 +334,8 @@ class CoverageConfig:
         """Return a copy of the configuration."""
         return copy.deepcopy(self)
 
+    CONCURRENCY_CHOICES = {"thread", "gevent", "greenlet", "eventlet", "multiprocessing"}
+
     CONFIG_FILE_OPTIONS = [
         # These are *args for _set_attr_from_config_option:
         #   (attr, where, type_="")
