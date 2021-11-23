@@ -233,11 +233,11 @@ class CoverageConfig:
         # Options for plugins
         self.plugin_options = {}
 
-    MUST_BE_LIST = [
+    MUST_BE_LIST = {
         "debug", "concurrency", "plugins",
         "report_omit", "report_include",
         "run_omit", "run_include",
-    ]
+    }
 
     def from_args(self, **kwargs):
         """Read config values from `kwargs`."""
