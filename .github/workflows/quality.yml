@@ -34,6 +34,8 @@ jobs:
         uses: "actions/setup-python@v2"
         with:
           python-version: "3.8"
+          cache: pip
+          cache-dependency-path: 'requirements/*.pip'
 
       - name: "Install dependencies"
         run: |
@@ -58,6 +60,8 @@ jobs:
         uses: "actions/setup-python@v2"
         with:
           python-version: "3.8"
+          cache: pip
+          cache-dependency-path: 'requirements/*.pip'
 
       - name: "Install dependencies"
         run: |
