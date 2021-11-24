@@ -1830,9 +1830,17 @@ class LambdaArcTest(CoverageTest):
         )
 
 
+skip_eventlet_670 = pytest.mark.skipif(
+    env.PYVERSION[:2] == (3, 9) and env.OSX,
+    reason="Avoid an eventlet bug on Mac 3.9: eventlet#670",
+    # https://github.com/eventlet/eventlet/issues/670
+)
+
+
 class AsyncTest(CoverageTest):
     """Tests of the new async and await keywords in Python 3.5"""
 
+    @skip_eventlet_670
     def test_async(self):
         self.check_coverage("""\
             import asyncio
@@ -1860,6 +1868,7 @@ class AsyncTest(CoverageTest):
         )
         assert self.stdout() == "Compute 1 + 2 ...\n1 + 2 = 3\n"
 
+    @skip_eventlet_670
     def test_async_for(self):
         self.check_coverage("""\
             import asyncio
@@ -1962,6 +1971,7 @@ class AsyncTest(CoverageTest):
         (3, 10, 0, "alpha", 0, 0) <= env.PYVERSION[:6] <= (3, 10, 0, "beta", 4, 0),
         reason="avoid a 3.10 bug fixed after beta 4: 44622"
     )
+    @skip_eventlet_670
     @pytest.mark.skipif(env.PYVERSION < (3, 7), reason="need asyncio.run")
     def test_bug1176(self):
         self.check_coverage("""\

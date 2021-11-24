@@ -10,6 +10,7 @@ import sys
 # Operating systems.
 WINDOWS = sys.platform == "win32"
 LINUX = sys.platform.startswith("linux")
+OSX = sys.platform == "darwin"
 
 # Python implementations.
 CPYTHON = (platform.python_implementation() == "CPython")
