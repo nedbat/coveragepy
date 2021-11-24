@@ -68,13 +68,13 @@ jobs:
         continue-on-error: true
         id: tox1
         run: |
-          python -m tox -- -rfeXs
+          python -m tox -- -rfsEX
 
       - name: "Retry tox for ${{ matrix.python-version }}"
         id: tox2
         if: steps.tox1.outcome == 'failure'
         run: |
-          python -m tox -- -rfeXs
+          python -m tox -- -rfsEX
 
       - name: "Set status"
         if: always()
