@@ -5,6 +5,7 @@
 
 import os
 import sys
+import weakref
 
 from coverage import env
 from coverage.debug import short_stack
@@ -259,9 +260,9 @@ class Collector:
             tracer.check_include = self.check_include
         if hasattr(tracer, 'should_start_context'):
             tracer.should_start_context = self.should_start_context
-            tracer.switch_context = self.switch_context
+            tracer.switch_context = weakref.WeakMethod(self.switch_context)
         if hasattr(tracer, 'disable_plugin'):
-            tracer.disable_plugin = self.disable_plugin
+            tracer.disable_plugin = weakref.WeakMethod(self.disable_plugin)
 
         fn = tracer.start()
         self.tracers.append(tracer)

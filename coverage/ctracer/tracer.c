@@ -404,12 +404,17 @@ CTracer_handle_call(CTracer *self, PyFrameObject *frame)
             goto error;
         }
         if (context != Py_None) {
+            PyObject * pscmeth;
             PyObject * val;
             Py_DECREF(self->context);
             self->context = context;
             self->pcur_entry->started_context = TRUE;
             STATS( self->stats.pycalls++; )
-            val = PyObject_CallFunctionObjArgs(self->switch_context, context, NULL);
+            pscmeth = PyObject_CallFunctionObjArgs(self->switch_context, NULL);
+            if (pscmeth == NULL) {
+                goto error;
+            }
+            val = PyObject_CallFunctionObjArgs(pscmeth, context, NULL);
             if (val == NULL) {
                 goto error;
             }
@@ -612,11 +617,16 @@ error:
 static void
 CTracer_disable_plugin(CTracer *self, PyObject * disposition)
 {
+    PyObject * pmeth;
     PyObject * ret;
     PyErr_Print();
 
     STATS( self->stats.pycalls++; )
-    ret = PyObject_CallFunctionObjArgs(self->disable_plugin, disposition, NULL);
+    pmeth = PyObject_CallFunctionObjArgs(self->disable_plugin, NULL);
+    if (pmeth == NULL) {
+        goto error;
+    }
+    ret = PyObject_CallFunctionObjArgs(pmeth, disposition, NULL);
     if (ret == NULL) {
         goto error;
     }
@@ -771,13 +781,18 @@ CTracer_handle_return(CTracer *self, PyFrameObject *frame)
 
         /* If this frame started a context, then returning from it ends the context. */
         if (self->pcur_entry->started_context) {
+            PyObject * pscmeth;
             PyObject * val;
             Py_DECREF(self->context);
             self->context = Py_None;
             Py_INCREF(self->context);
             STATS( self->stats.pycalls++; )
 
-            val = PyObject_CallFunctionObjArgs(self->switch_context, self->context, NULL);
+            pscmeth = PyObject_CallFunctionObjArgs(self->switch_context, NULL);
+            if (pscmeth == NULL) {
+                goto error;
+            }
+            val = PyObject_CallFunctionObjArgs(pscmeth, self->context, NULL);
             if (val == NULL) {
                 goto error;
             }
