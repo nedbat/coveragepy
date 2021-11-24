@@ -243,6 +243,9 @@ class InOrOut:
             if self.debug:
                 self.debug.write(msg)
 
+        # Generally useful information
+        debug("sys.path:" + "".join(f"\n    {p}" for p in sys.path))
+
         # Create the matchers we need for should_trace
         if self.source or self.source_pkgs:
             against = []

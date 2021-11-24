@@ -857,6 +857,17 @@ class IncludeOmitTestsMixin(UsingModulesMixin, CoverageTest):
 class SourceIncludeOmitTest(IncludeOmitTestsMixin, CoverageTest):
     """Test using `source`, `include`, and `omit` when measuring code."""
 
+    def setUp(self):
+        super().setUp()
+
+        # These tests use the TESTS_DIR/modules files, but they cd into it. To
+        # keep tests from cross-contaminating, we make a copy of the files.
+        # Since we need to import from there, we also add it to the beginning
+        # of sys.path.
+
+        shutil.copytree(nice_file(TESTS_DIR, "modules"), "tests_dir_modules")
+        sys.path.insert(0, abs_file("tests_dir_modules"))
+
     def coverage_usepkgs(self, **kwargs):
         """Run coverage on usepkgs and return the line summary.
 
@@ -867,7 +878,8 @@ class SourceIncludeOmitTest(IncludeOmitTestsMixin, CoverageTest):
         cov.start()
         import usepkgs  # pragma: nested   # pylint: disable=import-error, unused-import
         cov.stop()      # pragma: nested
-        data = cov.get_data()
+        with self.assert_warnings(cov, []):
+            data = cov.get_data()
         summary = line_counts(data)
         for k, v in list(summary.items()):
             assert k.endswith(".py")
@@ -889,7 +901,7 @@ class SourceIncludeOmitTest(IncludeOmitTestsMixin, CoverageTest):
         assert lines['p1c'] == 0
 
     def test_source_package_as_dir(self):
-        os.chdir(nice_file(TESTS_DIR, "modules"))
+        os.chdir("tests_dir_modules")
         assert os.path.isdir("pkg1")
         lines = self.coverage_usepkgs(source=["pkg1"])
         self.filenames_in(lines, "p1a p1b")
@@ -915,7 +927,7 @@ class SourceIncludeOmitTest(IncludeOmitTestsMixin, CoverageTest):
         # the search for unexecuted files, and given a score of 0%.
 
         # The omit arg is by path, so need to be in the modules directory.
-        os.chdir(nice_file(TESTS_DIR, "modules"))
+        os.chdir("tests_dir_modules")
         lines = self.coverage_usepkgs(source=["pkg1"], omit=["pkg1/p1b.py"])
         self.filenames_in(lines, "p1a")
         self.filenames_not_in(lines, "p1b")
@@ -929,16 +941,16 @@ class SourceIncludeOmitTest(IncludeOmitTestsMixin, CoverageTest):
         assert lines['p1c'] == 0
 
     def test_ambiguous_source_package_as_dir(self):
-        # pkg1 is a directory and a pkg, since we cd into tests/modules/ambiguous
-        os.chdir(nice_file(TESTS_DIR, "modules", "ambiguous"))
-        # pkg1 defaults to directory because tests/modules/ambiguous/pkg1 exists
+        # pkg1 is a directory and a pkg, since we cd into tests_dir_modules/ambiguous
+        os.chdir("tests_dir_modules/ambiguous")
+        # pkg1 defaults to directory because tests_dir_modules/ambiguous/pkg1 exists
         lines = self.coverage_usepkgs(source=["pkg1"])
         self.filenames_in(lines, "ambiguous")
         self.filenames_not_in(lines, "p1a p1b p1c")
 
     def test_ambiguous_source_package_as_package(self):
-        # pkg1 is a directory and a pkg, since we cd into tests/modules/ambiguous
-        os.chdir(nice_file(TESTS_DIR, "modules", "ambiguous"))
+        # pkg1 is a directory and a pkg, since we cd into tests_dir_modules/ambiguous
+        os.chdir("tests_dir_modules/ambiguous")
         lines = self.coverage_usepkgs(source_pkgs=["pkg1"])
         self.filenames_in(lines, "p1a p1b")
         self.filenames_not_in(lines, "p2a p2b othera otherb osa osb ambiguous")
