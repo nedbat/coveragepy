@@ -119,8 +119,10 @@ WEBSAMPLEBETA = $(WEBHOME)/files/sample_coverage_html_beta
 $(DOCBIN):
 	tox -q -e doc --notest
 
-dochtml: $(DOCBIN) 			## Build the docs HTML output.
+cogdoc: $(DOCBIN)			## Run docs through cog
 	$(DOCBIN)/python -m cogapp -crP --verbosity=1 doc/*.rst
+
+dochtml: cogdoc $(DOCBIN)		## Build the docs HTML output.
 	$(SPHINXBUILD) -b html doc doc/_build/html
 
 docdev: dochtml				## Build docs, and auto-watch for changes.
