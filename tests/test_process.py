@@ -1245,8 +1245,7 @@ class FailUnderTest(CoverageTest):
                 d = 6
                 e = 7
             """)
-        st, _ = self.run_command_status("coverage run --source=. forty_two_plus.py")
-        assert st == 0
+        self.make_data_file(lines={abs_file("forty_two_plus.py"): [2, 3, 4]})
 
     def test_report_43_is_ok(self):
         st, out = self.run_command_status("coverage report --fail-under=43")
@@ -1267,16 +1266,14 @@ class FailUnderTest(CoverageTest):
         assert expected == self.last_line_squeezed(out)
 
     def test_report_99p9_is_not_ok(self):
-        # A file with 99.99% coverage:
-        self.make_file("ninety_nine_plus.py", """\
-            a = 1
-            """ + """
-            b = 2
-            """ * 20000 + """
-            if a > 3:
-                c = 4
-            """)
-        self.run_command("coverage run --source=. ninety_nine_plus.py")
+        # A file with 99.9% coverage:
+        self.make_file("ninety_nine_plus.py",
+            "a = 1\n" +
+            "b = 2\n" * 2000 +
+            "if a > 3:\n" +
+            "    c = 4\n"
+            )
+        self.make_data_file(lines={abs_file("ninety_nine_plus.py"): range(1, 2002)})
         st, out = self.run_command_status("coverage report --fail-under=100")
         assert st == 2
         expected = "Coverage failure: total of 99 is less than fail-under=100"
