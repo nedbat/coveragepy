@@ -422,7 +422,7 @@ class ApiTest(CoverageTest):
         self.make_file(".coverage.foo", """La la la, this isn't coverage data!""")
         cov = coverage.Coverage()
         warning_regex = (
-            r"Couldn't use data file '.*\.coverage\.foo': file (is encrypted or )?is not a database"
+            r"Couldn't use data file '.*\.coverage\.foo': file is not a database"
         )
         with self.assert_warnings(cov, [warning_regex]):
             cov.combine()
@@ -1234,3 +1234,189 @@ class RelativePathTest(CoverageTest):
         cov.save()
         self.assert_file_count(".coverage.*", 0)
         self.assert_exists(".coverage")
+
+
+class CombiningTest(CoverageTest):
+    """More tests of combining data."""
+
+    B_LINES = {"b_or_c.py": [1, 2, 3, 4, 8, 9]}
+    C_LINES = {"b_or_c.py": [1, 2, 3, 6, 7, 8, 9]}
+
+    def make_b_or_c_py(self):
+        """Create b_or_c.py, used in a few of these tests."""
+        # "b_or_c.py b" will run 6 lines.
+        # "b_or_c.py c" will run 7 lines.
+        # Together, they run 8 lines.
+        self.make_file("b_or_c.py", """\
+            import sys
+            a = 2
+            if sys.argv[1] == 'b':
+                b = 4
+            else:
+                c = 6
+                c2 = 7
+            d = 8
+            print('done')
+            """)
+
+    def test_combine_parallel_data(self):
+        self.make_b_or_c_py()
+        self.make_data_file(".coverage.b", lines=self.B_LINES)
+        self.make_data_file(".coverage.c", lines=self.C_LINES)
+
+        # Combine the parallel coverage data files into .coverage .
+        cov = coverage.Coverage()
+        cov.combine(strict=True)
+        self.assert_exists(".coverage")
+
+        # After combining, there should be only the .coverage file.
+        self.assert_file_count(".coverage.*", 0)
+
+        # Read the coverage file and see that b_or_c.py has all 8 lines
+        # executed.
+        data = coverage.CoverageData()
+        data.read()
+        assert line_counts(data)['b_or_c.py'] == 8
+
+        # Running combine again should fail, because there are no parallel data
+        # files to combine.
+        cov = coverage.Coverage()
+        with pytest.raises(NoDataError, match=r"No data to combine"):
+            cov.combine(strict=True)
+
+        # And the originally combined data is still there.
+        data = coverage.CoverageData()
+        data.read()
+        assert line_counts(data)['b_or_c.py'] == 8
+
+    def test_combine_parallel_data_with_a_corrupt_file(self):
+        self.make_b_or_c_py()
+        self.make_data_file(".coverage.b", lines=self.B_LINES)
+        self.make_data_file(".coverage.c", lines=self.C_LINES)
+
+        # Make a bogus data file.
+        self.make_file(".coverage.bad", "This isn't a coverage data file.")
+
+        # Combine the parallel coverage data files into .coverage .
+        cov = coverage.Coverage()
+        with pytest.warns(Warning) as warns:
+            cov.combine(strict=True)
+        assert_coverage_warnings(
+            warns,
+            re.compile(
+                r"Couldn't use data file '.*[/\\]\.coverage\.bad': file is not a database"
+            ),
+        )
+
+        # After combining, those two should be the only data files.
+        self.assert_exists(".coverage")
+        self.assert_exists(".coverage.bad")
+        self.assert_file_count(".coverage.*", 1)
+
+        # Read the coverage file and see that b_or_c.py has all 8 lines
+        # executed.
+        data = coverage.CoverageData()
+        data.read()
+        assert line_counts(data)['b_or_c.py'] == 8
+
+    def test_combine_no_usable_files(self):
+        # https://github.com/nedbat/coveragepy/issues/629
+        self.make_b_or_c_py()
+        self.make_data_file(".coverage", lines=self.B_LINES)
+
+        # Make bogus data files.
+        self.make_file(".coverage.bad1", "This isn't a coverage data file.")
+        self.make_file(".coverage.bad2", "This isn't a coverage data file.")
+
+        # Combine the parallel coverage data files into .coverage, but nothing is readable.
+        cov = coverage.Coverage()
+        with pytest.warns(Warning) as warns:
+            with pytest.raises(NoDataError, match=r"No usable data files"):
+                cov.combine(strict=True)
+
+        warn_rx = re.compile(
+            r"Couldn't use data file '.*[/\\]\.coverage\.bad[12]': file is not a database"
+        )
+        assert_coverage_warnings(warns, warn_rx, warn_rx)
+
+        # After combining, we should have a main file and two parallel files.
+        self.assert_exists(".coverage")
+        self.assert_exists(".coverage.bad1")
+        self.assert_exists(".coverage.bad2")
+        self.assert_file_count(".coverage.*", 2)
+
+        # Read the coverage file and see that b_or_c.py has 6 lines
+        # executed (we only did b, not c).
+        data = coverage.CoverageData()
+        data.read()
+        assert line_counts(data)['b_or_c.py'] == 6
+
+    def test_combine_parallel_data_in_two_steps(self):
+        self.make_b_or_c_py()
+        self.make_data_file(".coverage.b", lines=self.B_LINES)
+
+        # Combine the (one) parallel coverage data file into .coverage .
+        cov = coverage.Coverage()
+        cov.combine(strict=True)
+
+        self.assert_exists(".coverage")
+        self.assert_file_count(".coverage.*", 0)
+
+        self.make_data_file(".coverage.c", lines=self.C_LINES)
+        self.assert_exists(".coverage")
+        self.assert_file_count(".coverage.*", 1)
+
+        # Combine the parallel coverage data files into .coverage .
+        cov = coverage.Coverage()
+        cov.load()
+        cov.combine(strict=True)
+
+        # After combining, there should be only the .coverage file.
+        self.assert_exists(".coverage")
+        self.assert_file_count(".coverage.*", 0)
+
+        # Read the coverage file and see that b_or_c.py has all 8 lines
+        # executed.
+        data = coverage.CoverageData()
+        data.read()
+        assert line_counts(data)['b_or_c.py'] == 8
+
+    def test_combine_parallel_data_no_append(self):
+        self.make_b_or_c_py()
+        self.make_data_file(".coverage.b", lines=self.B_LINES)
+
+        # Combine the (one) parallel coverage data file into .coverage .
+        cov = coverage.Coverage()
+        cov.combine(strict=True)
+        self.assert_exists(".coverage")
+        self.assert_file_count(".coverage.*", 0)
+
+        self.make_data_file(".coverage.c", lines=self.C_LINES)
+
+        # Combine the parallel coverage data files into .coverage, but don't
+        # use the data in .coverage already.
+        cov = coverage.Coverage()
+        cov.combine(strict=True)
+
+        # After combining, there should be only the .coverage file.
+        self.assert_exists(".coverage")
+        self.assert_file_count(".coverage.*", 0)
+
+        # Read the coverage file and see that b_or_c.py has only 7 lines
+        # because we didn't keep the data from running b.
+        data = coverage.CoverageData()
+        data.read()
+        assert line_counts(data)['b_or_c.py'] == 7
+
+    def test_combine_parallel_data_keep(self):
+        self.make_b_or_c_py()
+        self.make_data_file(".coverage.b", lines=self.B_LINES)
+        self.make_data_file(".coverage.c", lines=self.C_LINES)
+
+        # Combine the parallel coverage data files into .coverage with the keep flag.
+        cov = coverage.Coverage()
+        cov.combine(strict=True, keep=True)
+
+        # After combining, the .coverage file & the original combined file should still be there.
+        self.assert_exists(".coverage")
+        self.assert_file_count(".coverage.*", 2)
