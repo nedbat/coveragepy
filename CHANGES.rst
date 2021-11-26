@@ -22,9 +22,10 @@ This list is detailed and covers changes in each pre-release version.
 Unreleased
 ----------
 
-- Feature: Now the ``--concurrency`` setting can have a list of values, so that
-  threads and another lightweight threading package can be measured together.
-  Closes `issue 1012`_ and `issue 1082`_.
+- Feature: Now the ``--concurrency`` setting can now have a list of values, so
+  that threads and another lightweight threading package can be measured
+  together, such as ``--concurrency=gevent,thread``.  Closes `issue 1012`_ and
+  `issue 1082`_.
 
 - Fix: A module specified as the ``source`` setting is imported during startup,
   before the user program imports it.  This could cause problems if the rest of
