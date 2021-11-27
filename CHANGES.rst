@@ -19,8 +19,10 @@ This list is detailed and covers changes in each pre-release version.
     ..  Version 9.8.1 — 2027-07-27
     ..  --------------------------
 
-Unreleased
-----------
+.. _changes_62:
+
+Version 6.2 — 2021-11-26
+------------------------
 
 - Feature: Now the ``--concurrency`` setting can now have a list of values, so
   that threads and another lightweight threading package can be measured
