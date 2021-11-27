@@ -63,7 +63,7 @@ Version 6.2 — 2021-11-26
 
 .. _issue 989: https://github.com/nedbat/coveragepy/issues/989
 .. _issue 1012: https://github.com/nedbat/coveragepy/issues/1012
-.. _issue 1082: https://github.com/nedbat/coveragepy/issues/1802
+.. _issue 1082: https://github.com/nedbat/coveragepy/issues/1082
 .. _issue 1203: https://github.com/nedbat/coveragepy/issues/1203
 
 
