@@ -54,10 +54,10 @@ Version 6.2 — 2021-11-26
   multiprocessing wouldn't suppress the data file suffix (`issue 989`_).  This
   is now fixed.
 
-- Debug: The `coverage debug data` command will now sniff out combinable data
+- Debug: The ``coverage debug data`` command will now sniff out combinable data
   files, and report on all of them.
 
-- Debug: The `coverage debug` command used to accept a number of topics at a
+- Debug: The ``coverage debug`` command used to accept a number of topics at a
   time, and show all of them, though this was never documented.  This no longer
   works, to allow for command-line options in the future.
 
