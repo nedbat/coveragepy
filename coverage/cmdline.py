@@ -44,7 +44,7 @@ class Opts:
         '', '--concurrency', action='store', metavar="LIBS",
         help=(
             "Properly measure code using a concurrency library. " +
-            "Valid values are: {}."
+            "Valid values are: {}, or a comma-list of them."
         ).format(", ".join(sorted(CoverageConfig.CONCURRENCY_CHOICES))),
     )
     context = optparse.make_option(

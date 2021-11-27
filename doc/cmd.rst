@@ -126,7 +126,7 @@ There are many options:
                             coverage.
       --concurrency=LIBS    Properly measure code using a concurrency library.
                             Valid values are: eventlet, gevent, greenlet,
-                            multiprocessing, thread.
+                            multiprocessing, thread, or a comma-list of them.
       --context=LABEL       The context label to record for this coverage run.
       --include=PAT1,PAT2,...
                             Include only files whose paths match one of these
@@ -152,7 +152,7 @@ There are many options:
       --rcfile=RCFILE       Specify configuration file. By default '.coveragerc',
                             'setup.cfg', 'tox.ini', and 'pyproject.toml' are
                             tried. [env: COVERAGE_RCFILE]
-.. [[[end]]] (checksum: 072cccad7f8ad3e7b72c266305ef5e4a)
+.. [[[end]]] (checksum: bf76ace21288ca9d3c558ccd5fb82b08)
 
 If you want :ref:`branch coverage <branch>` measurement, use the ``--branch``
 flag.  Otherwise only statement coverage is measured.

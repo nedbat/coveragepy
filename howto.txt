@@ -18,6 +18,8 @@
     - Version of latest stable release in doc/index.rst
     - Version, release, release_date and copyright date in doc/conf.py
         - Look for CHANGEME comments
+    - Make sure the docs are cogged:
+        $ make cogdoc
     - Don't forget the man page: doc/python-coverage.1.txt
     - Check that the docs build correctly:
         $ tox -e doc
