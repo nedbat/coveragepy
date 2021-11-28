@@ -62,7 +62,7 @@ metahtml:				## Produce meta-coverage HTML reports.
 	python igor.py combine_html
 
 metasmoke:
-	COVERAGE_NO_PYTRACER=1 ARGS="-e py39" make clean metacov metahtml
+	COVERAGE_NO_PYTRACER=1 ARGS="-e py39" make metacov metahtml
 
 PIP_COMPILE = pip-compile --upgrade --allow-unsafe
 upgrade: export CUSTOM_COMPILE_COMMAND=make upgrade
