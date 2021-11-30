@@ -61,7 +61,7 @@ six==1.16.0
     # via livereload
 snowballstemmer==2.2.0
     # via sphinx
-sphinx==4.3.0
+sphinx==4.3.1
     # via
     #   -r doc/requirements.in
     #   sphinx-autobuild
@@ -99,5 +99,5 @@ urllib3==1.26.7
     # via requests
 
 # The following packages are considered to be unsafe in a requirements file:
-setuptools==59.2.0
+setuptools==59.4.0
     # via sphinx

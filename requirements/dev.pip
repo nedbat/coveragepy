@@ -4,7 +4,7 @@
 #
 #    make upgrade
 #
-astroid==2.8.6
+astroid==2.9.0
     # via pylint
 attrs==21.2.0
     # via
@@ -62,7 +62,7 @@ future==0.18.2
     #   pycontracts
 greenlet==1.1.2
     # via -r requirements/dev.in
-hypothesis==6.27.1
+hypothesis==6.29.0
     # via -r requirements/pytest.pip
 idna==3.3
     # via requests
@@ -78,7 +78,7 @@ isort==5.10.1
     # via pylint
 jedi==0.18.1
     # via pudb
-keyring==23.2.1
+keyring==23.4.0
     # via twine
 lazy-object-proxy==1.6.0
     # via astroid
@@ -123,7 +123,7 @@ pygments==2.10.0
     # via
     #   pudb
     #   readme-renderer
-pylint==2.11.1
+pylint==2.12.1
     # via -r requirements/dev.in
 pyparsing==3.0.6
     # via
@@ -214,7 +214,7 @@ zipp==3.6.0
 # The following packages are considered to be unsafe in a requirements file:
 pip==21.3.1
     # via -r requirements/pip.pip
-setuptools==59.2.0
+setuptools==59.4.0
     # via
     #   astroid
     #   check-manifest

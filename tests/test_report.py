@@ -37,7 +37,7 @@ class RenderReportTest(CoverageTest):
         render_report("-", fake, [pytest, "coverage"], msgs.append)
         assert fake.morfs == [pytest, "coverage"]
         assert self.stdout() == "Hello!\n"
-        assert msgs == []
+        assert not msgs
 
     def test_file(self):
         fake = FakeReporter(output="Gréètings!\n")
@@ -55,4 +55,4 @@ class RenderReportTest(CoverageTest):
             render_report("output.txt", fake, [], msgs.append)
         assert self.stdout() == ""
         self.assert_doesnt_exist("output.txt")
-        assert msgs == []
+        assert not msgs

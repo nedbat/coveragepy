@@ -134,7 +134,7 @@ class RecursionTest(CoverageTest):
         if pytrace:                                 # pragma: no metacov
             assert cov._warnings == ["Trace function changed, measurement is likely wrong: None"]
         else:
-            assert cov._warnings == []
+            assert not cov._warnings
 
 
 class MemoryLeakTest(CoverageTest):

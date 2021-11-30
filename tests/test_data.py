@@ -559,7 +559,7 @@ class CoverageDataTest(CoverageTest):
             t.join()
 
         assert_lines1_data(covdata)
-        assert exceptions == []
+        assert not exceptions
 
 
 class CoverageDataInTempDirTest(CoverageTest):

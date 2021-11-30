@@ -14,7 +14,7 @@ build==0.7.0
     # via -r requirements/kit.in
 certifi==2021.10.8
     # via cibuildwheel
-cibuildwheel==2.2.2
+cibuildwheel==2.3.0
     # via -r requirements/kit.in
 packaging==21.3
     # via
@@ -35,5 +35,5 @@ wheel==0.37.0
     # via -r requirements/kit.in
 
 # The following packages are considered to be unsafe in a requirements file:
-setuptools==59.2.0
+setuptools==59.4.0
     # via -r requirements/kit.in
