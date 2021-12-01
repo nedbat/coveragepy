@@ -41,22 +41,28 @@ jobs:
           # $ python -m pip install cogapp
           # $ python -m cogapp -crP .github/workflows/kit.yml
           #
+          # Choices come from the table on https://pypi.org/project/cibuildwheel/
           #
           # [[[cog
           #   #----- vvv Choices for the matrix vvv -----
+          #
           #   oss = ["ubuntu", "macos", "windows"]
-          #   pys = ["cp36", "cp37", "cp38", "cp39", "cp310"]
-          #   archs = {
+          #   os_archs = {
           #       "ubuntu": ["x86_64", "i686", "aarch64"],
-          #       "macos": ["x86_64"],
+          #       "macos": ["arm64", "x86_64"],
           #       "windows": ["x86", "AMD64"],
           #   }
+          #   pys = ["cp36", "cp37", "cp38", "cp39", "cp310"]
+          #   os_arch_pys = {
+          #     ("macos", "arm64"): ["cp38", "cp39", "cp310"],
+          #   }
+          #
           #   #----- ^^^ ---------------------- ^^^ -----
           #
           #   import json
           #   for the_os in oss:
-          #       for the_py in pys:
-          #           for the_arch in archs[the_os]:
+          #       for the_arch in os_archs[the_os]:
+          #           for the_py in os_arch_pys.get((the_os, the_arch), pys):
           #               them = {
           #                   "os": the_os,
           #                   "py": the_py,
@@ -65,36 +71,39 @@ jobs:
           #               print(f"- {json.dumps(them)}")
           # ]]]
           - {"os": "ubuntu", "py": "cp36", "arch": "x86_64"}
-          - {"os": "ubuntu", "py": "cp36", "arch": "i686"}
-          - {"os": "ubuntu", "py": "cp36", "arch": "aarch64"}
           - {"os": "ubuntu", "py": "cp37", "arch": "x86_64"}
-          - {"os": "ubuntu", "py": "cp37", "arch": "i686"}
-          - {"os": "ubuntu", "py": "cp37", "arch": "aarch64"}
           - {"os": "ubuntu", "py": "cp38", "arch": "x86_64"}
-          - {"os": "ubuntu", "py": "cp38", "arch": "i686"}
-          - {"os": "ubuntu", "py": "cp38", "arch": "aarch64"}
           - {"os": "ubuntu", "py": "cp39", "arch": "x86_64"}
-          - {"os": "ubuntu", "py": "cp39", "arch": "i686"}
-          - {"os": "ubuntu", "py": "cp39", "arch": "aarch64"}
           - {"os": "ubuntu", "py": "cp310", "arch": "x86_64"}
+          - {"os": "ubuntu", "py": "cp36", "arch": "i686"}
+          - {"os": "ubuntu", "py": "cp37", "arch": "i686"}
+          - {"os": "ubuntu", "py": "cp38", "arch": "i686"}
+          - {"os": "ubuntu", "py": "cp39", "arch": "i686"}
           - {"os": "ubuntu", "py": "cp310", "arch": "i686"}
+          - {"os": "ubuntu", "py": "cp36", "arch": "aarch64"}
+          - {"os": "ubuntu", "py": "cp37", "arch": "aarch64"}
+          - {"os": "ubuntu", "py": "cp38", "arch": "aarch64"}
+          - {"os": "ubuntu", "py": "cp39", "arch": "aarch64"}
           - {"os": "ubuntu", "py": "cp310", "arch": "aarch64"}
+          - {"os": "macos", "py": "cp38", "arch": "arm64"}
+          - {"os": "macos", "py": "cp39", "arch": "arm64"}
+          - {"os": "macos", "py": "cp310", "arch": "arm64"}
           - {"os": "macos", "py": "cp36", "arch": "x86_64"}
           - {"os": "macos", "py": "cp37", "arch": "x86_64"}
           - {"os": "macos", "py": "cp38", "arch": "x86_64"}
           - {"os": "macos", "py": "cp39", "arch": "x86_64"}
           - {"os": "macos", "py": "cp310", "arch": "x86_64"}
           - {"os": "windows", "py": "cp36", "arch": "x86"}
-          - {"os": "windows", "py": "cp36", "arch": "AMD64"}
           - {"os": "windows", "py": "cp37", "arch": "x86"}
-          - {"os": "windows", "py": "cp37", "arch": "AMD64"}
           - {"os": "windows", "py": "cp38", "arch": "x86"}
-          - {"os": "windows", "py": "cp38", "arch": "AMD64"}
           - {"os": "windows", "py": "cp39", "arch": "x86"}
-          - {"os": "windows", "py": "cp39", "arch": "AMD64"}
           - {"os": "windows", "py": "cp310", "arch": "x86"}
+          - {"os": "windows", "py": "cp36", "arch": "AMD64"}
+          - {"os": "windows", "py": "cp37", "arch": "AMD64"}
+          - {"os": "windows", "py": "cp38", "arch": "AMD64"}
+          - {"os": "windows", "py": "cp39", "arch": "AMD64"}
           - {"os": "windows", "py": "cp310", "arch": "AMD64"}
-        # [[[end]]] (checksum: dfc37c84db46011e5654945563c5ce68)
+        # [[[end]]] (checksum: dd4b4a059d9e8b8ae7e389a428a999f9)
       fail-fast: false
 
     steps:

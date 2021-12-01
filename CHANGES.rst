@@ -22,7 +22,9 @@ This list is detailed and covers changes in each pre-release version.
 Unreleased
 ----------
 
-Nothing yet.
+- Releases now have MacOS arm64 wheels for Apple Silicon (fixes `issue 1288`_).
+
+.. _issue 1288: https://github.com/nedbat/coveragepy/issues/1288
 
 
 .. _changes_62:
