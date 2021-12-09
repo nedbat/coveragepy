@@ -16,6 +16,7 @@ from coverage.files import abs_file
 from coverage.misc import import_local_file
 
 from tests.coveragetest import CoverageTest
+from tests.helpers import swallow_warnings
 from tests import osinfo
 
 
@@ -82,7 +83,7 @@ class RecursionTest(CoverageTest):
     def test_long_recursion(self):
         # We can't finish a very deep recursion, but we don't crash.
         with pytest.raises(RuntimeError):
-            with pytest.warns(None):
+            with swallow_warnings("Trace function changed, measurement is likely wrong: None"):
                 self.check_coverage("""\
                     def recur(n):
                         if n == 0:
@@ -119,7 +120,7 @@ class RecursionTest(CoverageTest):
             """)
 
         cov = coverage.Coverage()
-        with pytest.warns(None):
+        with swallow_warnings("Trace function changed, measurement is likely wrong: None"):
             self.start_import_stop(cov, "recur")
 
         pytrace = (cov._collector.tracer_name() == "PyTracer")

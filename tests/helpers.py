@@ -12,6 +12,7 @@ import re
 import shutil
 import subprocess
 import textwrap
+import warnings
 
 from unittest import mock
 
@@ -308,3 +309,14 @@ def assert_coverage_warnings(warns, *msgs):
             assert expected.search(actual), f"{actual!r} didn't match {expected!r}"
         else:
             assert expected == actual
+
+
+@contextlib.contextmanager
+def swallow_warnings(message=r".", category=CoverageWarning):
+    """Swallow particular warnings.
+
+    It's OK if they happen, or if they don't happen. Just ignore them.
+    """
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", category=category, message=message)
+        yield

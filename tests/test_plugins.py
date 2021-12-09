@@ -21,7 +21,7 @@ from coverage.misc import import_local_file
 import coverage.plugin
 
 from tests.coveragetest import CoverageTest
-from tests.helpers import CheckUniqueFilenames
+from tests.helpers import CheckUniqueFilenames, swallow_warnings
 
 
 class FakeConfig:
@@ -194,8 +194,9 @@ class PluginTest(CoverageTest):
         cov = coverage.Coverage(debug=["sys"])
         cov._debug_file = debug_out
         cov.set_option("run:plugins", ["plugin_sys_info"])
-        with pytest.warns(None):
-            # Catch warnings so we don't see "plugins aren't supported on PyTracer"
+        with swallow_warnings(
+            r"Plugin file tracers \(plugin_sys_info.Plugin\) aren't supported with PyTracer"
+            ):
             cov.start()
         cov.stop()      # pragma: nested
 
