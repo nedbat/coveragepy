@@ -2,10 +2,26 @@
 # For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
 
 """
-A pytest plugin to record test times and then balance xdist with them next time.
+A pytest plugin to record test times and then use those times to divide tests
+into evenly balanced workloads for each xdist worker.
 
-The only thing in here particular to coverage.py is the use of the tmp directory
-for storing the data.
+Two things are hard-coded here that shouldn't be:
+
+- The timing data is written to the tmp directory, but should use the pytest
+  cache (https://docs.pytest.org/en/latest/how-to/cache.html).
+
+- The number of xdist workers is hard-coded to 8 because I couldn't figure out
+  how to find the number.  Would it be crazy to read the -n argument directly?
+
+You can force some tests to run on the same worker by setting the
+`balanced_clumps` setting in your pytest config file.  Each line is a substring
+of a test name.  All tests with that substring (like -k) will run on the
+worker:
+
+    balanced_clumps =
+        LongRunningFixture
+        some_other_test_substring
+
 """
 
 import collections
