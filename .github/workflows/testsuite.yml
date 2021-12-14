@@ -39,11 +39,11 @@ jobs:
           - "3.9"
           - "3.10"
           - "3.11.0-alpha.2"
-          - "pypy3"
+          - "pypy-3.7"
         exclude:
           # Windows PyPy doesn't seem to work?
           - os: windows-latest
-            python-version: "pypy3"
+            python-version: "pypy-3.7"
       fail-fast: false
 
     steps:
