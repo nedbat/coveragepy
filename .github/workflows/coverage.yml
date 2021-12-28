@@ -140,7 +140,7 @@ jobs:
           name: json_report
           path: coverage.json
 
-      - name: "Create info for pushing to report repo"
+      - name: "Create info for later steps"
         id: info
         run: |
           export SHA10=$(echo ${{ github.sha }} | cut -c 1-10)
@@ -150,6 +150,11 @@ jobs:
           echo "::set-output name=slug::$SLUG"
           echo "::set-output name=url::https://nedbat.github.io/coverage-reports/reports/$SLUG/htmlcov"
           echo "::set-output name=branch::${REF#refs/heads/}"
+          export PCTINT=$(echo ${{ steps.combine.outputs.total }} | cut -f1 -d.)
+          if (($PCTINT >= 85)); then echo "::set-output name=badgecolor::green"; fi
+          if (($PCTINT < 85)); then echo "::set-output name=badgecolor::yellow"; fi
+          if (($PCTINT < 70)); then echo "::set-output name=badgecolor::orange"; fi
+          if (($PCTINT < 60)); then echo "::set-output name=badgecolor::red"; fi
 
       - name: "Push to report repository"
         uses: sebastian-palma/github-action-push-to-another-repository@allow-creating-destination-directory
@@ -187,3 +192,14 @@ jobs:
       - name: "Show link to report"
         run: |
           echo "Coverage report: ${{ steps.info.outputs.url }}"
+
+      - name: "Create badge"
+        # https://gist.githubusercontent.com/nedbat/8c6980f77988a327348f9b02bbaf67f5
+        uses: schneegans/dynamic-badges-action@v1.1.0
+        with:
+          auth: ${{ secrets.METACOV_GIST_SECRET }}
+          gistID: 8c6980f77988a327348f9b02bbaf67f5
+          filename: metacov.json
+          label: Coverage
+          message: ${{ steps.combine.outputs.total }}%
+          color: ${{ steps.info.outputs.badgecolor }}
