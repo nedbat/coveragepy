@@ -8,7 +8,7 @@ Coverage.py
 Code coverage testing for Python.
 
 |  |license| |versions| |status|
-|  |test-status| |quality-status| |docs| |codecov|
+|  |test-status| |quality-status| |docs|
 |  |kit| |downloads| |format| |repos|
 |  |stars| |forks| |contributors|
 |  |tidelift| |twitter-coveragepy| |twitter-nedbat|
@@ -121,9 +121,7 @@ Licensed under the `Apache 2.0 License`_.  For details, see `NOTICE.txt`_.
 .. |license| image:: https://img.shields.io/pypi/l/coverage.svg
     :target: https://pypi.org/project/coverage/
     :alt: License
-.. |codecov| image:: https://codecov.io/github/nedbat/coveragepy/coverage.svg?branch=master&precision=2
-    :target: https://codecov.io/github/nedbat/coveragepy?branch=master
-    :alt: Coverage!
+.. |metacov| image:: https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/nedbat/8c6980f77988a327348f9b02bbaf67f5/raw/metacov.json
 .. |repos| image:: https://repology.org/badge/tiny-repos/python:coverage.svg
     :target: https://repology.org/project/python:coverage/versions
     :alt: Packaging status
