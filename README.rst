@@ -122,7 +122,7 @@ Licensed under the `Apache 2.0 License`_.  For details, see `NOTICE.txt`_.
     :target: https://pypi.org/project/coverage/
     :alt: License
 .. |metacov| image:: https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/nedbat/8c6980f77988a327348f9b02bbaf67f5/raw/metacov.json
-    :target: https://github.com/nedbat/coverage-reports/commits/main
+    :target: https://nedbat.github.io/coverage-reports/latest.html
     :alt: Coverage reports
 .. |repos| image:: https://repology.org/badge/tiny-repos/python:coverage.svg
     :target: https://repology.org/project/python:coverage/versions

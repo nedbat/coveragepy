@@ -53,8 +53,6 @@ jobs:
     steps:
       - name: "Check out the repo"
         uses: "actions/checkout@v2"
-        with:
-          fetch-depth: "0"
 
       - name: "Set up Python"
         uses: "actions/setup-python@v2"
@@ -92,8 +90,6 @@ jobs:
     steps:
       - name: "Check out the repo"
         uses: "actions/checkout@v2"
-        with:
-          fetch-depth: "0"
 
       - name: "Set up Python"
         uses: "actions/setup-python@v2"
@@ -124,9 +120,7 @@ jobs:
         run: |
           set -xe
           python -m igor combine_html
-          rm htmlcov/.gitignore
           python -m coverage json
-          echo "::set-output name=total::$(python -c "import json;print(json.load(open('coverage.json'))['totals']['percent_covered_display'])")"
 
       - name: "Upload HTML report"
         uses: actions/upload-artifact@v2
@@ -140,58 +134,71 @@ jobs:
           name: json_report
           path: coverage.json
 
-      - name: "Create info for later steps"
+  publish:
+    name: "Publish coverage report"
+    needs: combine
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: "Checkout reports repo"
+        # TODO: sparse checkout would be great
+        uses: actions/checkout@v2
+        with:
+          repository: nedbat/coverage-reports
+          path: ./reports_repo
+          token: ${{ secrets.COVERAGE_REPORTS_TOKEN }}
+
+      - name: "Download coverage JSON report"
+        uses: actions/download-artifact@v2
+        with:
+          name: json_report
+
+      - name: "Compute info for later steps"
         id: info
         run: |
+          export TOTAL=$(python -c "import json;print(json.load(open('coverage.json'))['totals']['percent_covered_display'])")
+          export PCTINT=$(echo $TOTAL | cut -f1 -d.)
           export SHA10=$(echo ${{ github.sha }} | cut -c 1-10)
           export SLUG=$(date +'%Y%m%d')_$SHA10
+          export REPORT_DIR=reports/$SLUG/htmlcov
           export REF="${{ github.ref }}"
-          echo "::set-output name=sha10::$SHA10"
-          echo "::set-output name=slug::$SLUG"
-          echo "::set-output name=url::https://nedbat.github.io/coverage-reports/reports/$SLUG/htmlcov"
-          echo "::set-output name=branch::${REF#refs/heads/}"
-          export PCTINT=$(echo ${{ steps.combine.outputs.total }} | cut -f1 -d.)
-          if (($PCTINT >= 85)); then echo "::set-output name=badgecolor::green"; fi
-          if (($PCTINT < 85)); then echo "::set-output name=badgecolor::yellow"; fi
-          if (($PCTINT < 70)); then echo "::set-output name=badgecolor::orange"; fi
-          if (($PCTINT < 60)); then echo "::set-output name=badgecolor::red"; fi
+          echo "total=$TOTAL" >> $GITHUB_ENV
+          echo "sha10=$SHA10" >> $GITHUB_ENV
+          echo "slug=$SLUG" >> $GITHUB_ENV
+          echo "report_dir=$REPORT_DIR" >> $GITHUB_ENV
+          echo "url=https://nedbat.github.io/coverage-reports/$REPORT_DIR" >> $GITHUB_ENV
+          echo "branch=${REF#refs/heads/}" >> $GITHUB_ENV
+          if (($PCTINT >= 85)); then echo "badge_color=green"; fi >> $GITHUB_ENV
+          if (($PCTINT < 85)); then echo "badge_color=yellow"; fi >> $GITHUB_ENV
+          if (($PCTINT < 70)); then echo "badge_color=orange"; fi >> $GITHUB_ENV
+          if (($PCTINT < 60)); then echo "badge_color=red"; fi >> $GITHUB_ENV
 
-      - name: "Push to report repository"
-        uses: sebastian-palma/github-action-push-to-another-repository@allow-creating-destination-directory
-        env:
-          API_TOKEN_GITHUB: ${{ secrets.COVERAGE_REPORTS_TOKEN }}
+      - name: "Download coverage HTML report"
+        uses: actions/download-artifact@v2
         with:
-          source-directory: 'htmlcov'
-          destination-github-username: 'nedbat'
-          destination-repository-name: 'coverage-reports'
-          destination-repository-directory: 'reports/${{ steps.info.outputs.slug }}'
-          empty-repository: false
-          create-destination-directory: true
-          target-branch: main
-          commit-message: >-
-            ${{ steps.combine.outputs.total }}% - ${{ github.event.head_commit.message }}
+          name: html_report
+          path: reports_repo/${{ env.report_dir }}
 
-
-            ${{ steps.info.outputs.url }}
-
-            ${{ steps.info.outputs.sha10 }}: ${{ steps.info.outputs.branch }}
-          user-email: ned@nedbatchelder.com
-
-      - name: "Create redirection HTML file"
+      - name: "Push to report repo"
         run: |
-          echo "<html><head>" > coverage-report-redirect.html
-          echo "<meta http-equiv='refresh' content='0;url=${{ steps.info.outputs.url }}' />" >> coverage-report-redirect.html
-          echo "<body>Coverage report redirect..." >> coverage-report-redirect.html
-
-      - name: "Upload HTML redirect"
-        uses: actions/upload-artifact@v2
-        with:
-          name: coverage-report-redirect.html
-          path: coverage-report-redirect.html
-
-      - name: "Show link to report"
-        run: |
-          echo "Coverage report: ${{ steps.info.outputs.url }}"
+          # Make the redirect to the latest report.
+          echo "<html><head>" > reports_repo/latest.html
+          echo "<meta http-equiv='refresh' content='0;url=${{ env.url }}' />" >> reports_repo/latest.html
+          echo "<body>Coverage report redirect..." >> reports_repo/latest.html
+          # Make the commit message.
+          echo "${{ env.total }}% - ${{ github.event.head_commit.message }}" > commit.txt
+          echo "" >> commit.txt
+          echo "${{ env.url }}" >> commit.txt
+          echo "${{ env.sha10 }}: ${{ env.branch }}" >> commit.txt
+          # Commit.
+          cd ./reports_repo
+          rm ${{ env.report_dir }}/.gitignore
+          git add ${{ env.report_dir }}
+          git add latest.html
+          git config user.name nedbat
+          git config user.email ned@nedbatchelder.com
+          git commit --file=../commit.txt
+          git push
 
       - name: "Create badge"
         # https://gist.githubusercontent.com/nedbat/8c6980f77988a327348f9b02bbaf67f5
@@ -201,5 +208,5 @@ jobs:
           gistID: 8c6980f77988a327348f9b02bbaf67f5
           filename: metacov.json
           label: Coverage
-          message: ${{ steps.combine.outputs.total }}%
-          color: ${{ steps.info.outputs.badgecolor }}
+          message: ${{ env.total }}%
+          color: ${{ env.badge_color }}
