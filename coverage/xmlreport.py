@@ -107,7 +107,7 @@ class XmlReporter:
             else:
                 branch_rate = "0"
             xpackage.setAttribute("branch-rate", branch_rate)
-            xpackage.setAttribute("complexity", "0")
+            xpackage.setAttribute("complexity", "N/A")
 
             lnum_tot += lnum
             lhits_tot += lhits
