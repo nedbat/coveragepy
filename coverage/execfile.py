@@ -80,10 +80,7 @@ class PyRunner:
         This needs to happen before any importing, and without importing anything.
         """
         if self.as_module:
-            if env.PYBEHAVIOR.actual_syspath0_dash_m:
-                path0 = os.getcwd()
-            else:
-                path0 = ""
+            path0 = os.getcwd()
         elif os.path.isdir(self.arg0):
             # Running a directory means running the __main__.py file in that
             # directory.
@@ -295,18 +292,14 @@ def make_code_from_pyc(filename):
         if magic != PYC_MAGIC_NUMBER:
             raise NoCode(f"Bad magic number in .pyc file: {magic!r} != {PYC_MAGIC_NUMBER!r}")
 
-        date_based = True
-        if env.PYBEHAVIOR.hashed_pyc_pep552:
-            flags = struct.unpack('<L', fpyc.read(4))[0]
-            hash_based = flags & 0x01
-            if hash_based:
-                fpyc.read(8)    # Skip the hash.
-                date_based = False
-        if date_based:
+        flags = struct.unpack('<L', fpyc.read(4))[0]
+        hash_based = flags & 0x01
+        if hash_based:
+            fpyc.read(8)    # Skip the hash.
+        else:
             # Skip the junk in the header that we don't need.
-            fpyc.read(4)            # Skip the moddate.
-            # 3.3 added another long to the header (size), skip it.
-            fpyc.read(4)
+            fpyc.read(4)    # Skip the moddate.
+            fpyc.read(4)    # Skip the size.
 
         # The rest of the file is the code object we want.
         code = marshal.load(fpyc)

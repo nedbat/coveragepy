@@ -57,18 +57,6 @@ class PYBEHAVIOR:
     # Can co_lnotab have negative deltas?
     negative_lnotab = not (PYPY and PYPYVERSION < (7, 2))
 
-    # Do .pyc files conform to PEP 552? Hash-based pyc's.
-    hashed_pyc_pep552 = (PYVERSION >= (3, 7, 0, 'alpha', 4))
-
-    # Python 3.7.0b3 changed the behavior of the sys.path[0] entry for -m. It
-    # used to be an empty string (meaning the current directory). It changed
-    # to be the actual path to the current directory, so that os.chdir wouldn't
-    # affect the outcome.
-    actual_syspath0_dash_m = (
-        (CPYTHON and (PYVERSION >= (3, 7, 0, 'beta', 3))) or
-        (PYPY and (PYPYVERSION >= (7, 3, 4)))
-        )
-
     # 3.7 changed how functions with only docstrings are numbered.
     docstring_only_function = (not PYPY) and ((3, 7, 0, 'beta', 5) <= PYVERSION <= (3, 10))
 

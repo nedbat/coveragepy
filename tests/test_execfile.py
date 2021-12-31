@@ -242,7 +242,6 @@ class RunPycFileTest(CoverageTest):
         # In some environments, the pycfile persists and pollutes another test.
         os.remove(pycfile)
 
-    @pytest.mark.skipif(not env.PYBEHAVIOR.hashed_pyc_pep552, reason="No hashed .pyc here")
     def test_running_hashed_pyc(self):
         pycfile = self.make_pyc(invalidation_mode=py_compile.PycInvalidationMode.CHECKED_HASH)
         run_python_file([pycfile])
