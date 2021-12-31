@@ -983,34 +983,33 @@ class AliasedCommandTest(CoverageTest):
     run_in_temp_dir = False
 
     def test_major_version_works(self):
-        # "coverage2" works on py2
+        # "coverage3" works on py3
         cmd = "coverage%d" % sys.version_info[0]
         out = self.run_command(cmd)
         assert "Code coverage for Python" in out
 
     def test_wrong_alias_doesnt_work(self):
-        # "coverage3" doesn't work on py2
+        # "coverage2" doesn't work on py3
         assert sys.version_info[0] in [2, 3]    # Let us know when Python 4 is out...
         badcmd = "coverage%d" % (5 - sys.version_info[0])
         out = self.run_command(badcmd)
         assert "Code coverage for Python" not in out
 
     def test_specific_alias_works(self):
-        # "coverage-2.7" works on py2.7
+        # "coverage-3.9" works on py3.9
         cmd = "coverage-%d.%d" % sys.version_info[:2]
         out = self.run_command(cmd)
         assert "Code coverage for Python" in out
 
-    def test_aliases_used_in_messages(self):
-        cmds = [
-            "coverage",
-            "coverage%d" % sys.version_info[0],
-            "coverage-%d.%d" % sys.version_info[:2],
-        ]
-        for cmd in cmds:
-            out = self.run_command(f"{cmd} foobar")
-            assert "Unknown command: 'foobar'" in out
-            assert f"Use '{cmd} help' for help" in out
+    @pytest.mark.parametrize("cmd", [
+        "coverage",
+        "coverage%d" % sys.version_info[0],
+        "coverage-%d.%d" % sys.version_info[:2],
+    ])
+    def test_aliases_used_in_messages(self, cmd):
+        out = self.run_command(f"{cmd} foobar")
+        assert "Unknown command: 'foobar'" in out
+        assert f"Use '{cmd} help' for help" in out
 
 
 class PydocTest(CoverageTest):
