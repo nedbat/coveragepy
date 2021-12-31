@@ -19,7 +19,9 @@ library to determine which lines are executable, and which have been executed.
 
 Coverage.py runs on these versions of Python:
 
-* CPython 3.6 through 3.11.
+.. PYVERSIONS
+
+* CPython 3.7 through 3.11.
 * PyPy3 7.3.7.
 
 Documentation is on `Read the Docs`_.  Code repository and issue tracker are on
@@ -29,8 +31,8 @@ Documentation is on `Read the Docs`_.  Code repository and issue tracker are on
 .. _GitHub: https://github.com/nedbat/coveragepy
 
 
-**New in 6.x:** dropped support for Python 2.7 and 3.5; added support for 3.10
-match/case statements.
+**New in 6.x:** dropped support for Python 2.7, 3.5, and 3.6;
+added support for 3.10 match/case statements.
 
 
 For Enterprise

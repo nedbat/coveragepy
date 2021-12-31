@@ -56,7 +56,7 @@ jobs:
           #       "macos": ["arm64", "x86_64"],
           #       "windows": ["x86", "AMD64"],
           #   }
-          #   pys = ["cp36", "cp37", "cp38", "cp39", "cp310"]
+          #   pys = ["cp37", "cp38", "cp39", "cp310"]   # PYVERSIONS
           #   os_arch_pys = {
           #     ("macos", "arm64"): ["cp38", "cp39", "cp310"],
           #   }
@@ -74,17 +74,14 @@ jobs:
           #               }
           #               print(f"- {json.dumps(them)}")
           # ]]]
-          - {"os": "ubuntu", "py": "cp36", "arch": "x86_64"}
           - {"os": "ubuntu", "py": "cp37", "arch": "x86_64"}
           - {"os": "ubuntu", "py": "cp38", "arch": "x86_64"}
           - {"os": "ubuntu", "py": "cp39", "arch": "x86_64"}
           - {"os": "ubuntu", "py": "cp310", "arch": "x86_64"}
-          - {"os": "ubuntu", "py": "cp36", "arch": "i686"}
           - {"os": "ubuntu", "py": "cp37", "arch": "i686"}
           - {"os": "ubuntu", "py": "cp38", "arch": "i686"}
           - {"os": "ubuntu", "py": "cp39", "arch": "i686"}
           - {"os": "ubuntu", "py": "cp310", "arch": "i686"}
-          - {"os": "ubuntu", "py": "cp36", "arch": "aarch64"}
           - {"os": "ubuntu", "py": "cp37", "arch": "aarch64"}
           - {"os": "ubuntu", "py": "cp38", "arch": "aarch64"}
           - {"os": "ubuntu", "py": "cp39", "arch": "aarch64"}
@@ -92,22 +89,19 @@ jobs:
           - {"os": "macos", "py": "cp38", "arch": "arm64"}
           - {"os": "macos", "py": "cp39", "arch": "arm64"}
           - {"os": "macos", "py": "cp310", "arch": "arm64"}
-          - {"os": "macos", "py": "cp36", "arch": "x86_64"}
           - {"os": "macos", "py": "cp37", "arch": "x86_64"}
           - {"os": "macos", "py": "cp38", "arch": "x86_64"}
           - {"os": "macos", "py": "cp39", "arch": "x86_64"}
           - {"os": "macos", "py": "cp310", "arch": "x86_64"}
-          - {"os": "windows", "py": "cp36", "arch": "x86"}
           - {"os": "windows", "py": "cp37", "arch": "x86"}
           - {"os": "windows", "py": "cp38", "arch": "x86"}
           - {"os": "windows", "py": "cp39", "arch": "x86"}
           - {"os": "windows", "py": "cp310", "arch": "x86"}
-          - {"os": "windows", "py": "cp36", "arch": "AMD64"}
           - {"os": "windows", "py": "cp37", "arch": "AMD64"}
           - {"os": "windows", "py": "cp38", "arch": "AMD64"}
           - {"os": "windows", "py": "cp39", "arch": "AMD64"}
           - {"os": "windows", "py": "cp310", "arch": "AMD64"}
-        # [[[end]]] (checksum: dd4b4a059d9e8b8ae7e389a428a999f9)
+        # [[[end]]] (checksum: 4b02126e18e2b3798783d3cc6f303552)
       fail-fast: false
 
     steps:

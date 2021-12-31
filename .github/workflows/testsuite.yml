@@ -32,8 +32,7 @@ jobs:
           - windows-latest
         python-version:
           # When changing this list, be sure to check the [gh-actions] list in
-          # tox.ini so that tox will run properly.
-          - "3.6"
+          # tox.ini so that tox will run properly. PYVERSIONS
           - "3.7"
           - "3.8"
           - "3.9"

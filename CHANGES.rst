@@ -22,6 +22,8 @@ This list is detailed and covers changes in each pre-release version.
 Unreleased
 ----------
 
+- Dropped support for Python 3.6, which ended support on 2021-12-23.
+
 - Releases now have MacOS arm64 wheels for Apple Silicon (fixes `issue 1288`_).
 
 .. _issue 1288: https://github.com/nedbat/coveragepy/issues/1288

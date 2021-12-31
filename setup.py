@@ -32,6 +32,7 @@ if bool(int(os.getenv("COVERAGE_QUIETER", "0"))):
 # Get or massage our metadata.  We exec coverage/version.py so we can avoid
 # importing the product code into setup.py.
 
+# PYVERSIONS
 classifiers = """\
 Environment :: Console
 Intended Audience :: Developers
@@ -39,7 +40,6 @@ License :: OSI Approved :: Apache Software License
 Operating System :: OS Independent
 Programming Language :: Python
 Programming Language :: Python :: 3
-Programming Language :: Python :: 3.6
 Programming Language :: Python :: 3.7
 Programming Language :: Python :: 3.8
 Programming Language :: Python :: 3.9
@@ -77,7 +77,7 @@ elif version_info[3] in ['beta', 'candidate']:
 else:
     assert version_info[3] == 'final'
     devstat = "5 - Production/Stable"
-classifier_list.append("Development Status :: " + devstat)
+classifier_list.append(f"Development Status :: {devstat}")
 
 # Create the keyword arguments for setup()
 
@@ -132,7 +132,7 @@ setup_args = dict(
         'Issues': 'https://github.com/nedbat/coveragepy/issues',
         'Twitter': 'https://twitter.com/coveragepy',
     },
-    python_requires=">=3.6",
+    python_requires=">=3.7",    # minimum of PYVERSIONS
 )
 
 # A replacement for the build_ext command which raises a single exception

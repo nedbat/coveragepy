@@ -37,7 +37,9 @@ The coverage.py code is hosted on a GitHub repository at
 https://github.com/nedbat/coveragepy.  To get a working environment, follow
 these steps:
 
-#.  (Optional, but recommended) Create a Python 3.8 virtualenv to work in,
+.. minimum of PYVERSIONS:
+
+#.  (Optional, but recommended) Create a Python 3.7 virtualenv to work in,
     and activate it.
 
 #.  Clone the repository::
