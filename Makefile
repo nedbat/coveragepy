@@ -3,17 +3,19 @@
 
 # Makefile for utility work on coverage.py.
 
-help:					## Show this help.
-	@echo "Available targets:"
-	@grep '^[a-zA-Z]' $(MAKEFILE_LIST) | sort | awk -F ':.*?## ' 'NF==2 {printf "  %-26s%s\n", $$1, $$2}'
+.DEFAULT_GOAL := help
 
-clean_platform:                         ## Remove files that clash across platforms.
+##@ Utilities
+
+.PHONY: help clean_platform clean sterile
+
+clean_platform:
 	@rm -f *.so */*.so
 	@rm -rf __pycache__ */__pycache__ */*/__pycache__ */*/*/__pycache__ */*/*/*/__pycache__ */*/*/*/*/__pycache__
 	@rm -f *.pyc */*.pyc */*/*.pyc */*/*/*.pyc */*/*/*/*.pyc */*/*/*/*/*.pyc
 	@rm -f *.pyo */*.pyo */*/*.pyo */*/*/*.pyo */*/*/*/*.pyo */*/*/*/*/*.pyo
 
-clean: clean_platform                   ## Remove artifacts of test execution, installation, etc.
+clean: clean_platform			## Remove artifacts of test execution, installation, etc.
 	@echo "Cleaning..."
 	@-pip uninstall -yq coverage
 	@rm -f *.pyd */*.pyd
@@ -32,17 +34,17 @@ clean: clean_platform                   ## Remove artifacts of test execution, i
 	@rm -rf tests/actual
 	@-make -C tests/gold/html clean
 
-sterile: clean                          ## Remove all non-controlled content, even if expensive.
+sterile: clean				## Remove all non-controlled content, even if expensive.
 	rm -rf .tox
 
+help:					## Show this help.
+	@# Adapted from https://www.thapaliya.com/en/writings/well-documented-makefiles/
+	@echo Available targets:
+	@awk 'BEGIN{FS=":.*##";} /^[^: ]+:.*##/{printf "  \033[1m%-20s\033[m %s\n",$$1,$$2} /^##@/{printf "\n%s\n",substr($$0,5)}' $(MAKEFILE_LIST)
 
-CSS = coverage/htmlfiles/style.css
-SCSS = coverage/htmlfiles/style.scss
+##@ Tests and quality checks
 
-css: $(CSS)				## Compile .scss into .css.
-$(CSS): $(SCSS)
-	pysassc --style=compact $(SCSS) $@
-	cp $@ tests/gold/html/styled
+.PHONY: lint smoke
 
 lint:					## Run linters and checkers.
 	tox -q -e lint
@@ -50,10 +52,13 @@ lint:					## Run linters and checkers.
 PYTEST_SMOKE_ARGS = -n auto -m "not expensive" --maxfail=3 $(ARGS)
 
 smoke: 					## Run tests quickly with the C tracer in the lowest supported Python versions.
-	COVERAGE_NO_PYTRACER=1 tox -q -e py36 -- $(PYTEST_SMOKE_ARGS)
+	COVERAGE_NO_PYTRACER=1 tox -q -e py37 -- $(PYTEST_SMOKE_ARGS)
 
-# Coverage measurement of coverage.py itself (meta-coverage). See metacov.ini
-# for details.
+
+##@ Metacov: coverage measurement of coverage.py itself
+# 	See metacov.ini for details.
+
+.PHONY: metacov metahtml metasmoke
 
 metacov:				## Run meta-coverage, measuring ourself.
 	COVERAGE_COVERAGE=yes tox -q $(ARGS)
@@ -64,9 +69,14 @@ metahtml:				## Produce meta-coverage HTML reports.
 metasmoke:
 	COVERAGE_NO_PYTRACER=1 ARGS="-e py39" make metacov metahtml
 
+
+##@ Requirements management
+
+.PHONY: upgrade
+
 PIP_COMPILE = pip-compile --upgrade --allow-unsafe
 upgrade: export CUSTOM_COMPILE_COMMAND=make upgrade
-upgrade: 				## update the *.pip files with the latest packages satisfying *.in files
+upgrade: 				## Update the *.pip files with the latest packages satisfying *.in files.
 	pip install -q -r requirements/pip-tools.pip
 	$(PIP_COMPILE) -o requirements/pip-tools.pip requirements/pip-tools.in
 	$(PIP_COMPILE) -o requirements/pip.pip requirements/pip.in
@@ -77,10 +87,28 @@ upgrade: 				## update the *.pip files with the latest packages satisfying *.in 
 	$(PIP_COMPILE) -o requirements/light-threads.pip requirements/light-threads.in
 	$(PIP_COMPILE) -o doc/requirements.pip doc/requirements.in
 
+
+##@ Pre-builds for prepping the code
+
+.PHONY: css workflows prebuild
+
+CSS = coverage/htmlfiles/style.css
+SCSS = coverage/htmlfiles/style.scss
+
+css: $(CSS)				## Compile .scss into .css.
+$(CSS): $(SCSS)
+	pysassc --style=compact $(SCSS) $@
+	cp $@ tests/gold/html/styled
+
 workflows:				## Run cog on the workflows to keep them up-to-date.
 	python -m cogapp -crP .github/workflows/*.yml
 
-# Kitting
+prebuild: css workflows cogdoc		## One command for all source prep.
+
+
+##@ Kitting: making releases
+
+.PHONY: kit kit_upload test_upload kit_local download_kits check_kits
 
 kit:					## Make the source distribution.
 	python -m build
@@ -106,10 +134,10 @@ download_kits:				## Download the built kits from GitHub.
 check_kits:				## Check that dist/* are well-formed.
 	python -m twine check dist/*
 
-build_ext:
-	python setup.py build_ext
 
-# Documentation
+##@ Documentation
+
+.PHONY: cogdoc dochtml docdev docspell
 
 DOCBIN = .tox/doc/bin
 SPHINXOPTS = -aE
@@ -122,7 +150,7 @@ WEBSAMPLEBETA = $(WEBHOME)/files/sample_coverage_html_beta
 $(DOCBIN):
 	tox -q -e doc --notest
 
-cogdoc: $(DOCBIN)			## Run docs through cog
+cogdoc: $(DOCBIN)			## Run docs through cog.
 	$(DOCBIN)/python -m cogapp -crP --verbosity=1 doc/*.rst
 
 dochtml: cogdoc $(DOCBIN)		## Build the docs HTML output.
@@ -134,7 +162,12 @@ docdev: dochtml				## Build docs, and auto-watch for changes.
 docspell: $(DOCBIN)			## Run the spell checker on the docs.
 	$(SPHINXBUILD) -b spelling doc doc/_spell
 
-publish:
+
+##@ Publishing docs
+
+.PHONY: publish publishbeta relnotes_json github_releases
+
+publish:				## Publish the sample HTML report.
 	rm -f $(WEBSAMPLE)/*.*
 	mkdir -p $(WEBSAMPLE)
 	cp doc/sample_html/*.* $(WEBSAMPLE)
