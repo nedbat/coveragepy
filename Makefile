@@ -77,6 +77,9 @@ upgrade: 				## update the *.pip files with the latest packages satisfying *.in 
 	$(PIP_COMPILE) -o requirements/light-threads.pip requirements/light-threads.in
 	$(PIP_COMPILE) -o doc/requirements.pip doc/requirements.in
 
+workflows:				## Run cog on the workflows to keep them up-to-date.
+	python -m cogapp -crP .github/workflows/*.yml
+
 # Kitting
 
 kit:					## Make the source distribution.

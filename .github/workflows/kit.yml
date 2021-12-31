@@ -38,6 +38,10 @@ jobs:
         include:
           # To change the matrix, edit the choices, then process this file with cog:
           #
+          # $ make workflows
+          #
+          # which runs:
+          #
           # $ python -m pip install cogapp
           # $ python -m cogapp -crP .github/workflows/kit.yml
           #
