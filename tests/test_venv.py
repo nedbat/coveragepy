@@ -159,6 +159,8 @@ def coverage_command_fixture(request):
     return request.param
 
 
+# https://bugs.python.org/issue46028
+@pytest.mark.skipif(env.PYVERSION[:5] == (3, 11, 0, 'alpha', 3), reason="avoid 3.11 bug: bpo46028")
 class VirtualenvTest(CoverageTest):
     """Tests of virtualenv considerations."""
 
