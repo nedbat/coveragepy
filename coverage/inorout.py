@@ -124,8 +124,7 @@ def file_and_path_for_module(modulename):
         pass
     else:
         if spec is not None:
-            if spec.origin != "namespace":
-                filename = spec.origin
+            filename = spec.origin
             path = list(spec.submodule_search_locations or ())
     return filename, path
 
