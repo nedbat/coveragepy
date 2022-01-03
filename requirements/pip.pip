@@ -16,7 +16,7 @@ six==1.16.0
     # via virtualenv
 typing-extensions==4.0.1
     # via importlib-metadata
-virtualenv==20.12.0
+virtualenv==20.13.0
     # via -r requirements/pip.in
 zipp==3.7.0
     # via importlib-metadata

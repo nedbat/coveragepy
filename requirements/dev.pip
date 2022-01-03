@@ -4,7 +4,7 @@
 #
 #    make upgrade
 #
-astroid==2.9.0
+astroid==2.9.1
     # via pylint
 attrs==21.4.0
     # via
@@ -82,7 +82,7 @@ isort==5.10.1
     # via pylint
 jedi==0.18.1
     # via pudb
-keyring==23.4.0
+keyring==23.5.0
     # via twine
 lazy-object-proxy==1.7.1
     # via astroid
@@ -123,7 +123,7 @@ py==1.11.0
     #   tox
 pycontracts @ git+https://github.com/slorg1/contracts@collections_and_validator
     # via -r requirements/pytest.pip
-pygments==2.11.0
+pygments==2.11.1
     # via
     #   pudb
     #   readme-renderer
@@ -209,7 +209,7 @@ urwid==2.1.2
     #   urwid-readline
 urwid-readline==0.13
     # via pudb
-virtualenv==20.12.0
+virtualenv==20.13.0
     # via
     #   -r requirements/pip.pip
     #   tox

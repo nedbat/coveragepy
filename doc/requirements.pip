@@ -48,7 +48,7 @@ pyenchant==3.2.2
     # via
     #   -r doc/requirements.in
     #   sphinxcontrib-spelling
-pygments==2.11.0
+pygments==2.11.1
     # via
     #   doc8
     #   sphinx

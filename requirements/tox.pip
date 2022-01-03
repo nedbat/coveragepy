@@ -39,7 +39,7 @@ tox-gh-actions==2.8.1
     # via -r requirements/tox.in
 typing-extensions==4.0.1
     # via importlib-metadata
-virtualenv==20.12.0
+virtualenv==20.13.0
     # via tox
 zipp==3.7.0
     # via importlib-metadata
