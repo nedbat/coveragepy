@@ -1220,6 +1220,11 @@ class YieldTest(CoverageTest):
             arcz=".1 19 9.  .2 23 34 45 56 63 37 7.",
         )
 
+    # https://bugs.python.org/issue46225
+    @pytest.mark.skipif(
+        env.PYVERSION[:5] == (3, 11, 0, 'alpha', 3),
+        reason="avoid 3.11 bug: bpo46225",
+    )
     def test_bug_308(self):
         self.check_coverage("""\
             def run():
