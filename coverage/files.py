@@ -145,13 +145,7 @@ else:
 @contract(returns='unicode')
 def abs_file(path):
     """Return the absolute normalized form of `path`."""
-    try:
-        path = os.path.realpath(path)
-    except UnicodeError:
-        pass
-    path = os.path.abspath(path)
-    path = actual_path(path)
-    return path
+    return actual_path(os.path.abspath(os.path.realpath(path)))
 
 
 def python_reported_file(filename):
