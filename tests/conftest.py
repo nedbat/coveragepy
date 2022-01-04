@@ -39,24 +39,6 @@ def set_warnings():
     # Warnings to suppress:
     # How come these warnings are successfully suppressed here, but not in setup.cfg??
 
-    # <frozen importlib._bootstrap>:681:
-    # ImportWarning: VendorImporter.exec_module() not found; falling back to load_module()
-    warnings.filterwarnings(
-        "ignore",
-        category=ImportWarning,
-        message=r".*exec_module\(\) not found; falling back to load_module\(\)",
-        )
-    # <frozen importlib._bootstrap>:908:
-    # ImportWarning: AssertionRewritingHook.find_spec() not found; falling back to find_module()
-    # <frozen importlib._bootstrap>:908:
-    # ImportWarning: _SixMetaPathImporter.find_spec() not found; falling back to find_module()
-    # <frozen importlib._bootstrap>:908:
-    # ImportWarning: VendorImporter.find_spec() not found; falling back to find_module()
-    warnings.filterwarnings(
-        "ignore",
-        category=ImportWarning,
-        message=r".*find_spec\(\) not found; falling back to find_module\(\)",
-        )
     warnings.filterwarnings(
         "ignore",
         category=DeprecationWarning,
