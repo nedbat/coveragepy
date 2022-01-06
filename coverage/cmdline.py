@@ -625,10 +625,10 @@ class CoverageScript:
         total = None
         if options.action == "report":
             total = self.coverage.report(
+                precision=options.precision,
                 show_missing=options.show_missing,
                 skip_covered=options.skip_covered,
                 skip_empty=options.skip_empty,
-                precision=options.precision,
                 sort=options.sort,
                 **report_args
                 )
@@ -637,27 +637,26 @@ class CoverageScript:
         elif options.action == "html":
             total = self.coverage.html_report(
                 directory=options.directory,
-                title=options.title,
+                precision=options.precision,
                 skip_covered=options.skip_covered,
                 skip_empty=options.skip_empty,
                 show_contexts=options.show_contexts,
-                precision=options.precision,
+                title=options.title,
                 **report_args
                 )
         elif options.action == "xml":
-            outfile = options.outfile
             total = self.coverage.xml_report(
-                outfile=outfile, skip_empty=options.skip_empty,
+                outfile=options.outfile,
+                skip_empty=options.skip_empty,
                 **report_args
                 )
         elif options.action == "json":
-            outfile = options.outfile
             total = self.coverage.json_report(
-                outfile=outfile,
+                outfile=options.outfile,
                 pretty_print=options.pretty_print,
                 show_contexts=options.show_contexts,
                 **report_args
-            )
+                )
         else:
             # There are no other possible actions.
             raise AssertionError

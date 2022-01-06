@@ -2,6 +2,7 @@
 # For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
 
 """Json reporting for coverage.py"""
+
 import datetime
 import json
 import sys
@@ -27,7 +28,7 @@ class JsonReporter:
 
         `morfs` is a list of modules or file names.
 
-        `outfile` is a file object to write the json to
+        `outfile` is a file object to write the json to.
 
         """
         outfile = outfile or sys.stdout
@@ -75,7 +76,7 @@ class JsonReporter:
         return self.total.n_statements and self.total.pc_covered
 
     def report_one_file(self, coverage_data, analysis):
-        """Extract the relevant report data for a single file"""
+        """Extract the relevant report data for a single file."""
         nums = analysis.numbers
         self.total += nums
         summary = {
