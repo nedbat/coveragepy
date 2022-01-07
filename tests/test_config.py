@@ -3,6 +3,7 @@
 
 """Test the config file handling for coverage.py"""
 
+import math
 from collections import OrderedDict
 
 from unittest import mock
@@ -87,7 +88,7 @@ class ConfigTest(CoverageTest):
         assert cov.config.plugins == ["plugins.a_plugin"]
         assert cov.config.precision == 3
         assert cov.config.html_title == "tabblo & «ταБЬℓσ»"
-        assert round(abs(cov.config.fail_under-90.5), 7) == 0
+        assert math.isclose(cov.config.fail_under, 90.5)
         assert cov.config.get_plugin_options("plugins.a_plugin") == {"hello": "world"}
 
         # Test that our class doesn't reject integers when loading floats
@@ -97,7 +98,7 @@ class ConfigTest(CoverageTest):
             fail_under = 90
             """)
         cov = coverage.Coverage(config_file="pyproject.toml")
-        assert round(abs(cov.config.fail_under-90), 7) == 0
+        assert math.isclose(cov.config.fail_under, 90)
         assert isinstance(cov.config.fail_under, float)
 
     def test_ignored_config_file(self):

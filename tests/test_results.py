@@ -3,6 +3,8 @@
 
 """Tests for coverage.py's results analysis."""
 
+import math
+
 import pytest
 
 from coverage.exceptions import ConfigError
@@ -31,7 +33,7 @@ class NumbersTest(CoverageTest):
         assert n3.n_statements == 210
         assert n3.n_executed == 182
         assert n3.n_missing == 28
-        assert round(abs(n3.pc_covered-86.666666666), 7) == 0
+        assert math.isclose(n3.pc_covered, 86.666666666)
 
     def test_sum(self):
         n1 = Numbers(n_files=1, n_statements=200, n_missing=20)
@@ -41,7 +43,7 @@ class NumbersTest(CoverageTest):
         assert n3.n_statements == 210
         assert n3.n_executed == 182
         assert n3.n_missing == 28
-        assert round(abs(n3.pc_covered-86.666666666), 7) == 0
+        assert math.isclose(n3.pc_covered, 86.666666666)
 
     @pytest.mark.parametrize("kwargs, res", [
         (dict(n_files=1, n_statements=1000, n_missing=0), "100"),

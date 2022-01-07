@@ -5,6 +5,7 @@
 
 import glob
 import io
+import math
 import os
 import os.path
 import py_compile
@@ -778,17 +779,17 @@ class ReportingReturnValueTest(CoverageTest):
     def test_report(self):
         cov = self.run_coverage()
         val = cov.report(include="*/doit.py")
-        assert round(abs(val-85.7), 1) == 0
+        assert math.isclose(val, 6 / 7 * 100)
 
     def test_html(self):
         cov = self.run_coverage()
         val = cov.html_report(include="*/doit.py")
-        assert round(abs(val-85.7), 1) == 0
+        assert math.isclose(val, 6 / 7 * 100)
 
     def test_xml(self):
         cov = self.run_coverage()
         val = cov.xml_report(include="*/doit.py")
-        assert round(abs(val-85.7), 1) == 0
+        assert math.isclose(val, 6 / 7 * 100)
 
 
 class SummaryReporterConfigurationTest(CoverageTest):

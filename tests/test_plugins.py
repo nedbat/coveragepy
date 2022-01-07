@@ -5,6 +5,7 @@
 
 import inspect
 import io
+import math
 import os.path
 from xml.etree import ElementTree
 
@@ -426,7 +427,7 @@ class GoodFileTracerTest(FileTracerTest):
             'TOTAL           11      7      0      0    36%',
             ]
         assert expected == report
-        assert round(abs(total-36.36), 2) == 0
+        assert math.isclose(total, 4 / 11 * 100)
 
     def test_plugin2_with_html_report(self):
         self.make_render_and_caller()
@@ -437,7 +438,7 @@ class GoodFileTracerTest(FileTracerTest):
         self.start_import_stop(cov, "caller")
 
         total = cov.html_report(include=["*.html"], omit=["uni*.html"])
-        assert round(abs(total-36.36), 2) == 0
+        assert math.isclose(total, 4 / 11 * 100)
 
         self.assert_exists("htmlcov/index.html")
         self.assert_exists("htmlcov/bar_4_html.html")
@@ -452,7 +453,7 @@ class GoodFileTracerTest(FileTracerTest):
         self.start_import_stop(cov, "caller")
 
         total = cov.xml_report(include=["*.html"], omit=["uni*.html"])
-        assert round(abs(total-36.36), 2) == 0
+        assert math.isclose(total, 4 / 11 * 100)
 
         dom = ElementTree.parse("coverage.xml")
         classes = {}
