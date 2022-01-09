@@ -183,10 +183,9 @@ class WithTest(CoverageTest):
     """Arc-measuring tests involving context managers."""
 
     def test_with(self):
+        arcz = ".1 .2 23 34 4. 16 6."
         if env.PYBEHAVIOR.exit_through_with:
-            arcz = ".1 .2 23 34 42 2. 16 6."
-        else:
-            arcz = ".1 .2 23 34 4. 16 6."
+            arcz = arcz.replace("4.", "42 2.")
         self.check_coverage("""\
             def example():
                 with open("test", "w") as f:
@@ -199,10 +198,9 @@ class WithTest(CoverageTest):
             )
 
     def test_with_return(self):
+        arcz = ".1 .2 23 34 4. 16 6."
         if env.PYBEHAVIOR.exit_through_with:
-            arcz = ".1 .2 23 34 42 2. 16 6."
-        else:
-            arcz = ".1 .2 23 34 4. 16 6."
+            arcz = arcz.replace("4.", "42 2.")
         self.check_coverage("""\
             def example():
                 with open("test", "w") as f:
@@ -216,10 +214,9 @@ class WithTest(CoverageTest):
 
     def test_bug_146(self):
         # https://github.com/nedbat/coveragepy/issues/146
+        arcz = ".1 12 23 34 41 15 5."
         if env.PYBEHAVIOR.exit_through_with:
-            arcz = ".1 12 23 32 24 41 15 5."
-        else:
-            arcz = ".1 12 23 34 41 15 5."
+            arcz = arcz.replace("34", "32 24")
         self.check_coverage("""\
             for i in range(2):
                 with open("test", "w") as f:
@@ -231,10 +228,9 @@ class WithTest(CoverageTest):
             )
 
     def test_nested_with_return(self):
+        arcz = ".1 .2 23 34 45 56 6. 18 8."
         if env.PYBEHAVIOR.exit_through_with:
-            arcz = ".1 .2 23 34 45 56 64 42 2. 18 8."
-        else:
-            arcz = ".1 .2 23 34 45 56 6. 18 8."
+            arcz = arcz.replace("6.", "64 42 2.")
         self.check_coverage("""\
             def example(x):
                 with open("test", "w") as f2:
@@ -249,10 +245,9 @@ class WithTest(CoverageTest):
             )
 
     def test_break_through_with(self):
+        arcz = ".1 12 23 34 45 15 5."
         if env.PYBEHAVIOR.exit_through_with:
-            arcz = ".1 12 23 34 42 25 15 5."
-        else:
-            arcz = ".1 12 23 34 45 15 5."
+            arcz = arcz.replace("45", "42 25")
         self.check_coverage("""\
             for i in range(1+1):
                 with open("test", "w") as f:
@@ -265,10 +260,9 @@ class WithTest(CoverageTest):
             )
 
     def test_continue_through_with(self):
+        arcz = ".1 12 23 34 41 15 5."
         if env.PYBEHAVIOR.exit_through_with:
-            arcz = ".1 12 23 34 42 21 15 5."
-        else:
-            arcz = ".1 12 23 34 41 15 5."
+            arcz = arcz.replace("41", "42 21")
         self.check_coverage("""\
             for i in range(1+1):
                 with open("test", "w") as f:
@@ -314,9 +308,7 @@ class WithTest(CoverageTest):
 
     def test_untaken_raise_through_with(self):
         if env.PYBEHAVIOR.exit_through_with:
-            #arcz = ".1 12 28 89 9. AB B.  -23 3-2 34 45 56 53 63 37 7-2"
             arcz = ".1 12 28 89 9. AB B.  -23 34 45 56 53 63 37 7-2"
-            #arcz_missing = "3-2 56 63 AB B."
             arcz_missing = "56 63 AB B."
         else:
             arcz = ".1 12 28 89 9. AB B.  -23 34 45 56 6-2 57 7-2"
@@ -1718,13 +1710,12 @@ class DecoratorArcTest(CoverageTest):
                 "-66 D-6 ",                 # MyObject
         )
 
-    def test_bug_466(self):
+    def test_bug_466a(self):
         # A bad interaction between decorators and multi-line list assignments,
         # believe it or not...!
+        arcz = ".1 1A A.  13 3.     -35 58 8-3 "
         if env.PYBEHAVIOR.trace_decorated_def:
-            arcz = ".1 1A A.  13 34 4.  -35 58 8-3"
-        else:
-            arcz = ".1 1A A.  13 3.     -35 58 8-3"
+            arcz = arcz.replace("3.", "34 4.")
         self.check_coverage("""\
             class Parser(object):
 
@@ -1739,10 +1730,13 @@ class DecoratorArcTest(CoverageTest):
             """,
             arcz=arcz,
         )
+
+    def test_bug_466b(self):
+        # A bad interaction between decorators and multi-line list assignments,
+        # believe it or not...!
+        arcz = ".1 1A A.  13 3.     -35 58 8-3 "
         if env.PYBEHAVIOR.trace_decorated_def:
-            arcz = ".1 1A A.  13 34 4.  -35 58 8-3"
-        else:
-            arcz = ".1 1A A.  13 3.     -35 58 8-3"
+            arcz = arcz.replace("3.", "34 4.")
         self.check_coverage("""\
             class Parser(object):
 
@@ -1928,10 +1922,9 @@ class AsyncTest(CoverageTest):
         )
 
     def test_async_decorator(self):
+        arcz = ".1 14 4.     .2 2.  -46 6-4 "
         if env.PYBEHAVIOR.trace_decorated_def:
-            arcz = ".1 14 45 5.  .2 2.  -46 6-4"
-        else:
-            arcz = ".1 14 4.     .2 2.  -46 6-4"
+            arcz = arcz.replace("4.", "45 5.")
         self.check_coverage("""\
             def wrap(f):        # 1
                 return f
