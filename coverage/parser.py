@@ -944,10 +944,11 @@ class AstArcAnalyzer:
     def _handle_decorated(self, node):
         """Add arcs for things that can be decorated (classes and functions)."""
         main_line = last = node.lineno
-        if node.decorator_list:
+        decs = node.decorator_list
+        if decs:
             if env.PYBEHAVIOR.trace_decorated_def:
                 last = None
-            for dec_node in node.decorator_list:
+            for dec_node in decs:
                 dec_start = self.line_for_node(dec_node)
                 if last is not None and dec_start != last:
                     self.add_arc(last, dec_start)
@@ -955,6 +956,11 @@ class AstArcAnalyzer:
             if env.PYBEHAVIOR.trace_decorated_def:
                 self.add_arc(last, main_line)
                 last = main_line
+            if env.PYBEHAVIOR.trace_decorator_line_again:
+                for top, bot in zip(decs, decs[1:]):
+                    self.add_arc(self.line_for_node(bot), self.line_for_node(top))
+                self.add_arc(self.line_for_node(decs[0]), main_line)
+                self.add_arc(main_line, self.line_for_node(decs[-1]))
             # The definition line may have been missed, but we should have it
             # in `self.statements`.  For some constructs, `line_for_node` is
             # not what we'd think of as the first line in the statement, so map

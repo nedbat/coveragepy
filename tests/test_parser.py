@@ -240,6 +240,10 @@ class PythonParserTest(CoverageTest):
             expected_arcs.update(set(arcz_to_arcs("-46 6-4")))
             expected_exits.update({6: 1})
 
+        if env.PYBEHAVIOR.trace_decorator_line_again:
+            expected_arcs.update(set(arcz_to_arcs("54 98")))
+            expected_exits.update({9: 2, 5: 2})
+
         assert expected_statements == parser.statements
         assert expected_arcs == parser.arcs()
         assert expected_exits == parser.exit_counts()

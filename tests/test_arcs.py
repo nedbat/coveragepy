@@ -1664,6 +1664,13 @@ class DecoratorArcTest(CoverageTest):
     """Tests of arcs with decorators."""
 
     def test_function_decorator(self):
+        arcz = (
+            ".1 16 67 7A AE EF F. "     # main line
+            ".2 24 4.   -23 3-2 "       # decorators
+            "-6D D-6 "                  # my_function
+        )
+        if env.PYBEHAVIOR.trace_decorator_line_again:
+            arcz += "A7 76 6A "
         self.check_coverage("""\
             def decorator(arg):
                 def _dec(f):
@@ -1681,13 +1688,17 @@ class DecoratorArcTest(CoverageTest):
             a = 14
             my_function()
             """,
-            arcz=
-                ".1 16 67 7A AE EF F. "     # main line
-                ".2 24 4.   -23 3-2 "       # decorators
-                "-6D D-6 ",                 # my_function
+            arcz=arcz,
         )
 
     def test_class_decorator(self):
+        arcz = (
+            ".1 16 67 6D 7A AE E. "     # main line
+            ".2 24 4.   -23 3-2 "       # decorators
+            "-66 D-6 "                  # MyObject
+        )
+        if env.PYBEHAVIOR.trace_decorator_line_again:
+            arcz += "A7 76 6A "
         self.check_coverage("""\
             def decorator(arg):
                 def _dec(c):
@@ -1704,10 +1715,7 @@ class DecoratorArcTest(CoverageTest):
                 X = 13
             a = 14
             """,
-            arcz=
-                ".1 16 67 6D 7A AE E. "     # main line
-                ".2 24 4.   -23 3-2 "       # decorators
-                "-66 D-6 ",                 # MyObject
+            arcz=arcz,
         )
 
     def test_bug_466a(self):
@@ -1716,6 +1724,8 @@ class DecoratorArcTest(CoverageTest):
         arcz = ".1 1A A.  13 3.     -35 58 8-3 "
         if env.PYBEHAVIOR.trace_decorated_def:
             arcz = arcz.replace("3.", "34 4.")
+        if env.PYBEHAVIOR.trace_decorator_line_again:
+            arcz += "43 "
         self.check_coverage("""\
             class Parser(object):
 
@@ -1737,6 +1747,8 @@ class DecoratorArcTest(CoverageTest):
         arcz = ".1 1A A.  13 3.     -35 58 8-3 "
         if env.PYBEHAVIOR.trace_decorated_def:
             arcz = arcz.replace("3.", "34 4.")
+        if env.PYBEHAVIOR.trace_decorator_line_again:
+            arcz += "43 "
         self.check_coverage("""\
             class Parser(object):
 
@@ -1925,6 +1937,8 @@ class AsyncTest(CoverageTest):
         arcz = ".1 14 4.     .2 2.  -46 6-4 "
         if env.PYBEHAVIOR.trace_decorated_def:
             arcz = arcz.replace("4.", "45 5.")
+        if env.PYBEHAVIOR.trace_decorator_line_again:
+            arcz += "54 "
         self.check_coverage("""\
             def wrap(f):        # 1
                 return f

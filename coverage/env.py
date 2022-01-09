@@ -100,6 +100,10 @@ class PYBEHAVIOR:
     # Some words are keywords in some places, identifiers in other places.
     soft_keywords = (PYVERSION >= (3, 10))
 
+    # CPython 3.11 now jumps to the decorator line again while executing
+    # the decorator.
+    trace_decorator_line_again = (PYVERSION > (3, 11, 0, 'alpha', 3, 0))
+
 
 # Coverage.py specifics.
 
