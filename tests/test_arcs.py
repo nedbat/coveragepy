@@ -1966,7 +1966,7 @@ class AsyncTest(CoverageTest):
     # https://github.com/nedbat/coveragepy/issues/1176
     # https://bugs.python.org/issue44622
     @pytest.mark.skipif(
-        (3, 10, 0, "alpha", 0, 0) <= env.PYVERSION[:6] <= (3, 10, 0, "beta", 4, 0),
+        (3, 10, 0, "alpha", 0, 0) <= env.PYVERSION <= (3, 10, 0, "beta", 4, 0),
         reason="avoid a 3.10 bug fixed after beta 4: 44622"
     )
     @skip_eventlet_670
@@ -1991,7 +1991,7 @@ class AsyncTest(CoverageTest):
     # https://github.com/nedbat/coveragepy/issues/1205
     # https://bugs.python.org/issue44840
     @pytest.mark.skipif(
-        (3, 10, 0, "alpha", 0, 0) <= env.PYVERSION[:6] <= (3, 10, 0, "candidate", 1, 0),
+        (3, 10, 0, "alpha", 0, 0) <= env.PYVERSION <= (3, 10, 0, "candidate", 1, 0),
         reason="avoid a 3.10 bug fixed after rc1: 44840"
     )
     def test_bug_1205(self):
