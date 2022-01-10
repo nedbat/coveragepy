@@ -1941,7 +1941,7 @@ class AsyncTest(CoverageTest):
     # https://bugs.python.org/issue44621
     @pytest.mark.skipif(env.PYVERSION[:2] == (3, 9), reason="avoid a 3.9 bug: 44621")
     @pytest.mark.skipif(env.PYVERSION < (3, 7), reason="need asyncio.run")
-    def test_bug1158(self):
+    def test_bug_1158(self):
         self.check_coverage("""\
             import asyncio
 
@@ -1971,7 +1971,7 @@ class AsyncTest(CoverageTest):
     )
     @skip_eventlet_670
     @pytest.mark.skipif(env.PYVERSION < (3, 7), reason="need asyncio.run")
-    def test_bug1176(self):
+    def test_bug_1176(self):
         self.check_coverage("""\
             import asyncio
 
@@ -1994,7 +1994,7 @@ class AsyncTest(CoverageTest):
         (3, 10, 0, "alpha", 0, 0) <= env.PYVERSION[:6] <= (3, 10, 0, "candidate", 1, 0),
         reason="avoid a 3.10 bug fixed after rc1: 44840"
     )
-    def test_bug1205(self):
+    def test_bug_1205(self):
         self.check_coverage("""\
             def func():
                 if T(2):

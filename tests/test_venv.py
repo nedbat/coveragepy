@@ -322,7 +322,7 @@ class VirtualenvTest(CoverageTest):
         assert "fifth" in out
         assert "sixth" in out
 
-    def test_bug888(self, coverage_command):
+    def test_bug_888(self, coverage_command):
         out = run_in_venv(
             coverage_command +
             " run --source=bug888/app,bug888/plugin bug888/app/testcov/main.py"
