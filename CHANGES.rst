@@ -24,6 +24,10 @@ Unreleased
 
 - Dropped support for Python 3.6, which ended support on 2021-12-23.
 
+- Fix: a .gitignore file will only be written into the HTML report output
+  directory if the directory is empty.  This should prevent certain unfortunate
+  accidents of writing the file where it is not wanted.
+
 - Releases now have MacOS arm64 wheels for Apple Silicon (fixes `issue 1288`_).
 
 .. _issue 1288: https://github.com/nedbat/coveragepy/issues/1288

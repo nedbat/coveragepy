@@ -164,6 +164,7 @@ class HtmlReporter:
         self.incr = IncrementalChecker(self.directory)
         self.datagen = HtmlDataGeneration(self.coverage)
         self.totals = Numbers(precision=self.config.precision)
+        self.directory_was_empty = False
 
         self.template_globals = {
             # Functions available in the templates.
@@ -224,11 +225,11 @@ class HtmlReporter:
         for static in self.STATIC_FILES:
             shutil.copyfile(data_filename(static), os.path.join(self.directory, static))
 
+        # Only write the .gitignore file if the directory was originally empty.
         # .gitignore can't be copied from the source tree because it would
         # prevent the static files from being checked in.
-        gitigore_path = os.path.join(self.directory, ".gitignore")
-        if not os.path.exists(gitigore_path):
-            with open(gitigore_path, "w") as fgi:
+        if self.directory_was_empty:
+            with open(os.path.join(self.directory, ".gitignore"), "w") as fgi:
                 fgi.write("# Created by coverage.py\n*\n")
 
         # The user may have extra CSS they want copied.
@@ -240,6 +241,8 @@ class HtmlReporter:
         rootname = flat_rootname(fr.relative_filename())
         html_filename = rootname + ".html"
         ensure_dir(self.directory)
+        if not os.listdir(self.directory):
+            self.directory_was_empty = True
         html_path = os.path.join(self.directory, html_filename)
 
         # Get the numbers for this file.
