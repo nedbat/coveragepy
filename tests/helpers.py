@@ -87,6 +87,13 @@ def make_file(filename, text="", bytes=b"", newline=None):
     with open(filename, 'wb') as f:
         f.write(data)
 
+    # For debugging, enable this to show the contents of files created.
+    if 0:       # pragma: debugging
+        print(f"   ───┬──┤ {filename} ├───────────────────────")
+        for lineno, line in enumerate(data.splitlines(), start=1):
+            print(f"{lineno:6}│ {line.rstrip().decode()}")
+        print()
+
     return filename
 
 
