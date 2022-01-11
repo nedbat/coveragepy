@@ -1213,6 +1213,11 @@ class CompoundStatementTest(CoverageTest):
             """,
             [1,10,12,13], "")
 
+    @pytest.mark.skipif(
+        (3, 11, 0, "alpha", 3, 0) <= env.PYVERSION < (3, 11, 0, "alpha", 4, 0),
+        reason="avoid class docstring bug: bpo 46331",
+        # https://bugs.python.org/issue46331
+    )
     def test_class_def(self):
         arcz="-22 2D DE E-2  23 36 6A A-2  -68 8-6   -AB B-A"
         self.check_coverage("""\
