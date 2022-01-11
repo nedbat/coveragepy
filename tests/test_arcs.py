@@ -848,10 +848,9 @@ class ExceptionArcTest(CoverageTest):
 
 
     def test_break_through_finally(self):
+        arcz = ".1 12 23 34 3D 45 56 67 68 7A    AD 8A A3 BC CD D."
         if env.PYBEHAVIOR.finally_jumps_back:
-            arcz = ".1 12 23 34 3D 45 56 67 68 7A 7D 8A A3 A7 BC CD D."
-        else:
-            arcz = ".1 12 23 34 3D 45 56 67 68 7A 8A A3 AD BC CD D."
+            arcz = arcz.replace("AD", "A7 7D")
         self.check_coverage("""\
             a, c, d, i = 1, 1, 1, 99
             try:
@@ -892,10 +891,9 @@ class ExceptionArcTest(CoverageTest):
         )
 
     def test_continue_through_finally(self):
+        arcz = ".1 12 23 34 3D 45 56 67 68       7A 8A A3 BC CD D."
         if env.PYBEHAVIOR.finally_jumps_back:
-            arcz = ".1 12 23 34 3D 45 56 67 68 73 7A 8A A3 A7 BC CD D."
-        else:
-            arcz = ".1 12 23 34 3D 45 56 67 68 7A 8A A3 BC CD D."
+            arcz += " 73 A7"
         self.check_coverage("""\
             a, b, c, d, i = 1, 1, 1, 1, 99
             try:
@@ -1051,10 +1049,9 @@ class ExceptionArcTest(CoverageTest):
         )
 
     def test_return_finally(self):
+        arcz = ".1 12 29 9A AB BC C-1   -23 34 45  7-2   57 38 8-2"
         if env.PYBEHAVIOR.finally_jumps_back:
-            arcz = ".1 12 29 9A AB BC C-1   -23 34 45 5-2 57 75 38 8-2"
-        else:
-            arcz = ".1 12 29 9A AB BC C-1   -23 34 45 57 7-2 38 8-2"
+            arcz = arcz.replace("7-2", "75 5-2")
         self.check_coverage("""\
             a = [1]
             def check_token(data):
@@ -1073,22 +1070,15 @@ class ExceptionArcTest(CoverageTest):
         )
 
     def test_except_jump_finally(self):
+        arcz = (
+            ".1 1Q QR RS ST TU U. " +
+            ".2 23 34 45 56 4O 6L " +
+            "78 89 9A AL   8B BC CD DL   BE EF FG GL   EH HI IJ JL  HL " +
+            "LO L4 L. LM " +
+            "MN NO O."
+        )
         if env.PYBEHAVIOR.finally_jumps_back:
-            arcz = (
-                ".1 1Q QR RS ST TU U. " +
-                ".2 23 34 45 56 4O 6L " +
-                "78 89 9A AL LA AO  8B BC CD DL LD D4  BE EF FG GL LG G.  EH HI IJ JL  HL " +
-                "L4 LM " +
-                "MN NO O."
-            )
-        else:
-            arcz = (
-                ".1 1Q QR RS ST TU U. " +
-                ".2 23 34 45 56 4O 6L " +
-                "78 89 9A AL  8B BC CD DL  BE EF FG GL  EH HI IJ JL  HL " +
-                "LO L4 L. LM " +
-                "MN NO O."
-            )
+            arcz = arcz.replace("LO", "LA AO").replace("L4", "L4 LD D4").replace("L.", "LG G.")
         self.check_coverage("""\
             def func(x):
                 a = f = g = 2
@@ -1127,22 +1117,15 @@ class ExceptionArcTest(CoverageTest):
         )
 
     def test_else_jump_finally(self):
+        arcz = (
+            ".1 1S ST TU UV VW W. " +
+            ".2 23 34 45 56 6A 78 8N 4Q " +
+            "AB BC CN  AD DE EF FN  DG GH HI IN  GJ JK KL LN  JN " +
+            "N4 NQ N. NO " +
+            "OP PQ Q."
+        )
         if env.PYBEHAVIOR.finally_jumps_back:
-            arcz = (
-                ".1 1S ST TU UV VW W. " +
-                ".2 23 34 45 56 6A 78 8N 4Q " +
-                "AB BC CN NC CQ  AD DE EF FN NF F4  DG GH HI IN NI I.  GJ JK KL LN  JN " +
-                "N4 NO " +
-                "OP PQ Q."
-            )
-        else:
-            arcz = (
-                ".1 1S ST TU UV VW W. " +
-                ".2 23 34 45 56 6A 78 8N 4Q " +
-                "AB BC CN  AD DE EF FN  DG GH HI IN  GJ JK KL LN  JN " +
-                "N4 NQ N. NO " +
-                "OP PQ Q."
-            )
+            arcz = arcz.replace("NQ", "NC CQ").replace("N4", "N4 NF F4").replace("N.", "NI I.")
         self.check_coverage("""\
             def func(x):
                 a = f = g = 2
