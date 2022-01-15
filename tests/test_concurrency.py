@@ -22,7 +22,6 @@ from coverage.files import abs_file
 from coverage.misc import import_local_file
 
 from tests.coveragetest import CoverageTest
-from tests.helpers import remove_files
 
 
 # These libraries aren't always available, we'll skip tests if they aren't.
@@ -443,6 +442,7 @@ def start_method_fixture(request):
     """Parameterized fixture to choose the start_method for multiprocessing."""
     start_method = request.param
     if start_method not in multiprocessing.get_all_start_methods():
+        # Windows doesn't support "fork".
         pytest.skip(f"start_method={start_method} not supported here")
     return start_method
 
@@ -470,7 +470,6 @@ class MultiprocessingTest(CoverageTest):
             source = .
             """)
 
-        remove_files(".coverage", ".coverage.*")
         cmd = "coverage run {args} multi.py {start_method}".format(
             args=args, start_method=start_method,
         )
