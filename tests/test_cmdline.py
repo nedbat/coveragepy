@@ -14,6 +14,7 @@ import pytest
 import coverage
 import coverage.cmdline
 from coverage import env
+from coverage.control import DEFAULT_DATAFILE
 from coverage.config import CoverageConfig
 from coverage.exceptions import _ExceptionDuringRun
 from coverage.version import __url__
@@ -53,6 +54,7 @@ class BaseCmdLineTest(CoverageTest):
         contexts=None, pretty_print=None, show_contexts=None,
     )
     _defaults.Coverage(
+        data_file=DEFAULT_DATAFILE,
         cover_pylib=None, data_suffix=None, timid=None, branch=None,
         config_file=True, source=None, include=None, omit=None, debug=None,
         concurrency=None, check_preimported=True, context=None, messages=True,
@@ -629,6 +631,15 @@ class CmdLineTest(BaseCmdLineTest):
             """)
         self.cmd_executes("run --concurrency=gevent,thread foo.py", """\
             cov = Coverage(concurrency=['gevent', 'thread'])
+            runner = PyRunner(['foo.py'], as_module=False)
+            runner.prepare()
+            cov.start()
+            runner.run()
+            cov.stop()
+            cov.save()
+            """)
+        self.cmd_executes("run -o output.coverage foo.py", """\
+            cov = Coverage(data_file="output.coverage")
             runner = PyRunner(['foo.py'], as_module=False)
             runner.prepare()
             cov.start()

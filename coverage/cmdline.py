@@ -18,6 +18,7 @@ from coverage import Coverage
 from coverage import env
 from coverage.collector import CTracer
 from coverage.config import CoverageConfig
+from coverage.control import DEFAULT_DATAFILE
 from coverage.data import combinable_files, debug_data_file
 from coverage.debug import info_formatter, info_header, short_stack
 from coverage.exceptions import _BaseCoverageException, _ExceptionDuringRun, NoSource
@@ -122,6 +123,11 @@ class Opts:
         '-o', '', action='store', dest="outfile",
         metavar="OUTFILE",
         help="Write the JSON report to this file. Defaults to 'coverage.json'",
+    )
+    output_coverage = optparse.make_option(
+        '-o', '', action='store', dest="outfile",
+        metavar="OUTFILE",
+        help="Write the recorded coverage information to this file. Defaults to '.coverage'"
     )
     json_pretty_print = optparse.make_option(
         '', '--pretty-print', action='store_true',
@@ -450,6 +456,7 @@ CMDS = {
             Opts.include,
             Opts.module,
             Opts.omit,
+            Opts.output_coverage,
             Opts.pylib,
             Opts.parallel_mode,
             Opts.source,
@@ -572,8 +579,11 @@ class CoverageScript:
         else:
             concurrency = None
 
+        data_file = options.outfile if options.action in ["run", "combine"] \
+            else getattr(options, "input_coverage", None)
         # Do something.
         self.coverage = Coverage(
+            data_file=data_file or DEFAULT_DATAFILE,
             data_suffix=options.parallel_mode,
             cover_pylib=options.pylib,
             timid=options.timid,
