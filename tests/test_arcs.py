@@ -1288,7 +1288,6 @@ class YieldTest(CoverageTest):
             list(gen([1,2,3]))
             """,
             arcz=".1 19 9.  .2 23 34 45 56 63 37 7.",
-            arcz_unpredicted="5.",
         )
 
     def test_abandoned_yield(self):
@@ -1866,7 +1865,6 @@ class AsyncTest(CoverageTest):
                 ".1 13 38 8E EF FG G. " +
                 "-34 45 56 6-3 " +
                 "-89 9C C-8",
-            arcz_unpredicted="5-3 9-8",
         )
         assert self.stdout() == "Compute 1 + 2 ...\n1 + 2 = 3\n"
 

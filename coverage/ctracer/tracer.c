@@ -520,10 +520,24 @@ CTracer_handle_call(CTracer *self, PyFrameObject *frame)
     Py_XSETREF(frame->f_trace, (PyObject*)self);
 
     /* A call event is really a "start frame" event, and can happen for
-     * re-entering a generator also.  f_lasti is -1 for a true call, and a
-     * real byte offset for a generator re-entry.
+     * re-entering a generator also.  How we tell the difference depends on
+     * the version of Python.
      */
-    if (MyFrame_lasti(frame) < 0) {
+    BOOL real_call = FALSE;
+
+#ifdef RESUME   // 3.11.0a4
+    /*
+     * The current opcode is guaranteed to be RESUME. The argument
+     * determines what kind of resume it is.
+     */
+    PyObject * pCode = MyFrame_GetCode(frame)->co_code;
+    real_call = (PyBytes_AS_STRING(pCode)[MyFrame_lasti(frame) + 1] == 0);
+#else
+    // f_lasti is -1 for a true call, and a real byte offset for a generator re-entry.
+    real_call = (MyFrame_lasti(frame) < 0);
+#endif
+
+    if (real_call) {
         self->pcur_entry->last_line = -MyFrame_GetCode(frame)->co_firstlineno;
     }
     else {
@@ -683,19 +697,36 @@ CTracer_handle_return(CTracer *self, PyFrameObject *frame)
 
     if (self->pdata_stack->depth >= 0) {
         if (self->tracing_arcs && self->pcur_entry->file_data) {
+            BOOL real_return = FALSE;
+            PyObject * pCode = MyFrame_GetCode(frame)->co_code;
+            int lasti = MyFrame_lasti(frame);
+            Py_ssize_t code_size = PyBytes_GET_SIZE(pCode);
+            unsigned char * code_bytes = (unsigned char *)PyBytes_AS_STRING(pCode);
+#ifdef RESUME
+            if (lasti == code_size - 2) {
+                real_return = TRUE;
+            }
+            else {
+                real_return = (code_bytes[lasti + 2] != RESUME);
+            }
+#else
             /* Need to distinguish between RETURN_VALUE and YIELD_VALUE. Read
              * the current bytecode to see what it is.  In unusual circumstances
              * (Cython code), co_code can be the empty string, so range-check
              * f_lasti before reading the byte.
              */
-            int bytecode = RETURN_VALUE;
-            PyObject * pCode = MyFrame_GetCode(frame)->co_code;
-            int lasti = MyFrame_lasti(frame);
+            BOOL is_yield = FALSE;
+            BOOL is_yield_from = FALSE;
 
-            if (lasti < PyBytes_GET_SIZE(pCode)) {
-                bytecode = PyBytes_AS_STRING(pCode)[lasti];
+            if (lasti < code_size) {
+                is_yield = (code_bytes[lasti] == YIELD_VALUE);
+                if (lasti + 2 < code_size) {
+                    is_yield_from = (code_bytes[lasti + 2] == YIELD_FROM);
+                }
             }
-            if (bytecode != YIELD_VALUE) {
+            real_return = !(is_yield || is_yield_from);
+#endif
+            if (real_return) {
                 int first = MyFrame_GetCode(frame)->co_firstlineno;
                 if (CTracer_record_pair(self, self->pcur_entry->last_line, -first) < 0) {
                     goto error;

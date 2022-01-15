@@ -168,10 +168,10 @@ class PyTracer:
                 # The current opcode is guaranteed to be RESUME. The argument
                 # determines what kind of resume it is.
                 oparg = frame.f_code.co_code[frame.f_lasti + 1]
-                true_call = (oparg == 0)
+                real_call = (oparg == 0)
             else:
-                true_call = (getattr(frame, 'f_lasti', -1) < 0)
-            if true_call:
+                real_call = (getattr(frame, 'f_lasti', -1) < 0)
+            if real_call:
                 self.last_line = -frame.f_code.co_firstlineno
             else:
                 self.last_line = frame.f_lineno
@@ -194,13 +194,22 @@ class PyTracer:
                 if RESUME is not None:
                     if len(code) == lasti + 2:
                         # A return from the end of a code object is a real return.
-                        true_return = True
+                        real_return = True
                     else:
                         # it's a real return.
-                        true_return = (code[lasti + 2] != RESUME)
+                        real_return = (code[lasti + 2] != RESUME)
                 else:
-                    true_return = not ( (code[lasti] == YIELD_VALUE) or ((len(code) > lasti + YIELD_FROM_OFFSET) and code[lasti + YIELD_FROM_OFFSET] == YIELD_FROM) )
-                if true_return:
+                    if code[lasti] == RETURN_VALUE:
+                        real_return = True
+                    elif code[lasti] == YIELD_VALUE:
+                        real_return = False
+                    elif len(code) <= lasti + YIELD_FROM_OFFSET:
+                        real_return = True
+                    elif code[lasti + YIELD_FROM_OFFSET] == YIELD_FROM:
+                        real_return = False
+                    else:
+                        real_return = True
+                if real_return:
                     first = frame.f_code.co_firstlineno
                     self.cur_file_data.add((self.last_line, -first))
             # Leaving this function, pop the filename stack.
