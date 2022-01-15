@@ -307,6 +307,10 @@ class CmdLineTest(BaseCmdLineTest):
             cov = Coverage()
             cov.erase()
             """)
+        self.cmd_executes("erase -c foo.cov", """\
+            cov = Coverage(data_file="foo.cov")
+            cov.erase()
+            """)
 
     def test_version(self):
         # coverage --version

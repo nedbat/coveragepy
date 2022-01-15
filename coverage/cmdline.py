@@ -384,7 +384,7 @@ CMDS = {
     ),
 
     'erase': CmdOptionParser(
-        "erase", GLOBAL_ARGS,
+        "erase", [Opts.input_coverage] + GLOBAL_ARGS,
         description="Erase previously collected coverage data.",
     ),
 
