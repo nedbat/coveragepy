@@ -247,6 +247,11 @@ class CmdLineTest(BaseCmdLineTest):
             cov.combine(None, strict=True, keep=False)
             cov.save()
             """)
+        self.cmd_executes("combine -o foo.cov", """\
+            cov = Coverage(data_file="foo.cov")
+            cov.combine(None, strict=True, keep=False)
+            cov.save()
+            """)
 
     def test_combine_doesnt_confuse_options_with_args(self):
         # https://github.com/nedbat/coveragepy/issues/385
@@ -511,6 +516,11 @@ class CmdLineTest(BaseCmdLineTest):
             cov = Coverage()
             cov.load()
             cov.report(sort='-foo')
+            """)
+        self.cmd_executes("report -c foo.cov.2", """\
+            cov = Coverage(data_file="foo.cov.2")
+            cov.load()
+            cov.report(show_missing=None)
             """)
 
     def test_run(self):
