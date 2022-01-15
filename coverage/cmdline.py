@@ -18,6 +18,7 @@ from coverage import Coverage
 from coverage import env
 from coverage.collector import CTracer
 from coverage.config import CoverageConfig
+from coverage.control import DEFAULT_DATAFILE
 from coverage.data import combinable_files, debug_data_file
 from coverage.debug import info_formatter, info_header, short_stack
 from coverage.exceptions import _BaseCoverageException, _ExceptionDuringRun, NoSource
@@ -127,6 +128,17 @@ class Opts:
         '-o', '', action='store', dest='outfile',
         metavar="OUTFILE",
         help="Write the LCOV report to this file. Defaults to 'coverage.lcov'",
+    )
+    output_coverage = optparse.make_option(
+        '', '--data-file', action='store', dest="output_coverage",
+        metavar="OUTFILE",
+        help="Write the recorded coverage information to this file. Defaults to '.coverage'"
+    )
+    input_coverage = optparse.make_option(
+        '', '--data-file', action='store', dest="input_coverage",
+        metavar="INPUT",
+        help="Read coverage data for report generation from this file (needed if you have "
+             "specified -o previously). Defaults to '.coverage'"
     )
     json_pretty_print = optparse.make_option(
         '', '--pretty-print', action='store_true',
@@ -325,6 +337,8 @@ GLOBAL_ARGS = [
     Opts.rcfile,
     ]
 
+REPORT_ARGS = [Opts.input_coverage]
+
 CMDS = {
     'annotate': CmdOptionParser(
         "annotate",
@@ -333,7 +347,7 @@ CMDS = {
             Opts.ignore_errors,
             Opts.include,
             Opts.omit,
-            ] + GLOBAL_ARGS,
+            ] + REPORT_ARGS + GLOBAL_ARGS,
         usage="[options] [modules]",
         description=(
             "Make annotated copies of the given files, marking statements that are executed " +
@@ -347,6 +361,7 @@ CMDS = {
             Opts.append,
             Opts.keep,
             Opts.quiet,
+            Opts.output_coverage
             ] + GLOBAL_ARGS,
         usage="[options] <path1> <path2> ... <pathN>",
         description=(
@@ -374,7 +389,7 @@ CMDS = {
     ),
 
     'erase': CmdOptionParser(
-        "erase", GLOBAL_ARGS,
+        "erase", [Opts.input_coverage] + GLOBAL_ARGS,
         description="Erase previously collected coverage data.",
     ),
 
@@ -400,7 +415,7 @@ CMDS = {
             Opts.no_skip_covered,
             Opts.skip_empty,
             Opts.title,
-            ] + GLOBAL_ARGS,
+            ] + REPORT_ARGS + GLOBAL_ARGS,
         usage="[options] [modules]",
         description=(
             "Create an HTML report of the coverage of the files.  " +
@@ -421,7 +436,7 @@ CMDS = {
             Opts.json_pretty_print,
             Opts.quiet,
             Opts.show_contexts,
-            ] + GLOBAL_ARGS,
+            ] + REPORT_ARGS + GLOBAL_ARGS,
         usage="[options] [modules]",
         description="Generate a JSON report of coverage results.",
     ),
@@ -454,7 +469,7 @@ CMDS = {
             Opts.skip_covered,
             Opts.no_skip_covered,
             Opts.skip_empty,
-            ] + GLOBAL_ARGS,
+            ] + REPORT_ARGS + GLOBAL_ARGS,
         usage="[options] [modules]",
         description="Report coverage statistics on modules.",
     ),
@@ -469,6 +484,7 @@ CMDS = {
             Opts.include,
             Opts.module,
             Opts.omit,
+            Opts.output_coverage,
             Opts.pylib,
             Opts.parallel_mode,
             Opts.source,
@@ -488,7 +504,7 @@ CMDS = {
             Opts.output_xml,
             Opts.quiet,
             Opts.skip_empty,
-            ] + GLOBAL_ARGS,
+            ] + REPORT_ARGS + GLOBAL_ARGS,
         usage="[options] [modules]",
         description="Generate an XML report of coverage results.",
     ),
@@ -591,8 +607,11 @@ class CoverageScript:
         else:
             concurrency = None
 
+        data_file = getattr(options, "output_coverage", None) \
+            or getattr(options, "input_coverage", None)
         # Do something.
         self.coverage = Coverage(
+            data_file=data_file or DEFAULT_DATAFILE,
             data_suffix=options.parallel_mode,
             cover_pylib=options.pylib,
             timid=options.timid,

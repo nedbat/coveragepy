@@ -62,7 +62,8 @@ def override_config(cov, **kwargs):
         cov.config = original_config
 
 
-_DEFAULT_DATAFILE = DefaultValue("MISSING")
+DEFAULT_DATAFILE = DefaultValue("MISSING")
+_DEFAULT_DATAFILE = DEFAULT_DATAFILE  # Just in case, for backwards compatibility
 
 class Coverage:
     """Programmatic access to coverage.py.
@@ -103,7 +104,7 @@ class Coverage:
             return None
 
     def __init__(
-        self, data_file=_DEFAULT_DATAFILE, data_suffix=None, cover_pylib=None,
+        self, data_file=DEFAULT_DATAFILE, data_suffix=None, cover_pylib=None,
         auto_data=False, timid=None, branch=None, config_file=True,
         source=None, source_pkgs=None, omit=None, include=None, debug=None,
         concurrency=None, check_preimported=False, context=None,
@@ -200,7 +201,7 @@ class Coverage:
         # data_file=None means no disk file at all. data_file missing means
         # use the value from the config file.
         self._no_disk = data_file is None
-        if data_file is _DEFAULT_DATAFILE:
+        if data_file is DEFAULT_DATAFILE:
             data_file = None
 
         self.config = None

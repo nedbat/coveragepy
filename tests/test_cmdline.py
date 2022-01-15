@@ -14,6 +14,7 @@ import pytest
 import coverage
 import coverage.cmdline
 from coverage import env
+from coverage.control import DEFAULT_DATAFILE
 from coverage.config import CoverageConfig
 from coverage.exceptions import _ExceptionDuringRun
 from coverage.version import __url__
@@ -57,6 +58,7 @@ class BaseCmdLineTest(CoverageTest):
         contexts=None,
     )
     _defaults.Coverage(
+        data_file=DEFAULT_DATAFILE,
         cover_pylib=None, data_suffix=None, timid=None, branch=None,
         config_file=True, source=None, include=None, omit=None, debug=None,
         concurrency=None, check_preimported=True, context=None, messages=True,
@@ -250,6 +252,11 @@ class CmdLineTest(BaseCmdLineTest):
             cov.combine(None, strict=True, keep=False)
             cov.save()
             """)
+        self.cmd_executes("combine --data-file=foo.cov", """\
+            cov = Coverage(data_file="foo.cov")
+            cov.combine(None, strict=True, keep=False)
+            cov.save()
+            """)
 
     def test_combine_doesnt_confuse_options_with_args(self):
         # https://github.com/nedbat/coveragepy/issues/385
@@ -303,6 +310,10 @@ class CmdLineTest(BaseCmdLineTest):
         # coverage erase
         self.cmd_executes("erase", """\
             cov = Coverage()
+            cov.erase()
+            """)
+        self.cmd_executes("erase --data-file=foo.cov", """\
+            cov = Coverage(data_file="foo.cov")
             cov.erase()
             """)
 
@@ -558,6 +569,11 @@ class CmdLineTest(BaseCmdLineTest):
             cov.load()
             cov.report(sort='-foo')
             """)
+        self.cmd_executes("report --data-file=foo.cov.2", """\
+            cov = Coverage(data_file="foo.cov.2")
+            cov.load()
+            cov.report(show_missing=None)
+            """)
 
     def test_run(self):
         # coverage run [-p] [-L] [--timid] MODULE.py [ARG1 ARG2 ...]
@@ -677,6 +693,15 @@ class CmdLineTest(BaseCmdLineTest):
             """)
         self.cmd_executes("run --concurrency=gevent,thread foo.py", """\
             cov = Coverage(concurrency=['gevent', 'thread'])
+            runner = PyRunner(['foo.py'], as_module=False)
+            runner.prepare()
+            cov.start()
+            runner.run()
+            cov.stop()
+            cov.save()
+            """)
+        self.cmd_executes("run --data-file=output.coverage foo.py", """\
+            cov = Coverage(data_file="output.coverage")
             runner = PyRunner(['foo.py'], as_module=False)
             runner.prepare()
             cov.start()
