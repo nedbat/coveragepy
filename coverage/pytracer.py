@@ -10,13 +10,17 @@ import sys
 from coverage import env
 
 # We need the YIELD_VALUE opcode below, in a comparison-friendly form.
-YIELD_VALUE = dis.opmap['YIELD_VALUE']
+RESUME = dis.opmap.get('RESUME')
+RETURN_VALUE = dis.opmap['RETURN_VALUE']
+if RESUME is None:
+    YIELD_VALUE = dis.opmap['YIELD_VALUE']
+    YIELD_FROM = dis.opmap['YIELD_FROM']
+    YIELD_FROM_OFFSET = 0 if env.PYPY else 2
 
 # When running meta-coverage, this file can try to trace itself, which confuses
 # everything.  Don't trace ourselves.
 
 THIS_FILE = __file__.rstrip("co")
-
 
 class PyTracer:
     """Python implementation of the raw data tracer."""
@@ -160,7 +164,14 @@ class PyTracer:
             # function calls and re-entering generators.  The f_lasti field is
             # -1 for calls, and a real offset for generators.  Use <0 as the
             # line number for calls, and the real line number for generators.
-            if getattr(frame, 'f_lasti', -1) < 0:
+            if RESUME is not None:
+                # The current opcode is guaranteed to be RESUME. The argument
+                # determines what kind of resume it is.
+                oparg = frame.f_code.co_code[frame.f_lasti + 1]
+                true_call = (oparg == 0)
+            else:
+                true_call = (getattr(frame, 'f_lasti', -1) < 0)
+            if true_call:
                 self.last_line = -frame.f_code.co_firstlineno
             else:
                 self.last_line = frame.f_lineno
@@ -178,9 +189,18 @@ class PyTracer:
             if self.trace_arcs and self.cur_file_data:
                 # Record an arc leaving the function, but beware that a
                 # "return" event might just mean yielding from a generator.
-                # Jython seems to have an empty co_code, so just assume return.
                 code = frame.f_code.co_code
-                if (not code) or code[frame.f_lasti] != YIELD_VALUE:
+                lasti = frame.f_lasti
+                if RESUME is not None:
+                    if len(code) == lasti + 2:
+                        # A return from the end of a code object is a real return.
+                        true_return = True
+                    else:
+                        # it's a real return.
+                        true_return = (code[lasti + 2] != RESUME)
+                else:
+                    true_return = not ( (code[lasti] == YIELD_VALUE) or ((len(code) > lasti + YIELD_FROM_OFFSET) and code[lasti + YIELD_FROM_OFFSET] == YIELD_FROM) )
+                if true_return:
                     first = frame.f_code.co_firstlineno
                     self.cur_file_data.add((self.last_line, -first))
             # Leaving this function, pop the filename stack.
