@@ -1234,6 +1234,10 @@ class YieldTest(CoverageTest):
             arcz=".1 14 45 54 4.  .2 2.  -22 2-2",
         )
 
+    @pytest.mark.skipif(
+        (3, 11, 0, "alpha", 4) <= env.PYVERSION,
+        reason="avoid a 3.11 bug: https://bugs.python.org/issue46389",
+    )
     def test_bug_324(self):
         # This code is tricky: the list() call pulls all the values from gen(),
         # but each of them is a generator itself that is never iterated.  As a
@@ -1620,6 +1624,10 @@ class MiscArcTest(CoverageTest):
         self.check_coverage(code, arcs=[(-1, 1), (1, 2*n+4), (2*n+4, -1)])
         assert self.stdout() == f"{n}\n"
 
+    @pytest.mark.skipif(
+        (3, 11, 0, "alpha", 4) <= env.PYVERSION,
+        reason="avoid a 3.11 bug: https://bugs.python.org/issue46389",
+    )
     def test_partial_generators(self):
         # https://github.com/nedbat/coveragepy/issues/475
         # Line 2 is executed completely.

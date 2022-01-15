@@ -552,6 +552,10 @@ class ProcessTest(CoverageTest):
     @pytest.mark.expensive
     @pytest.mark.skipif(not env.C_TRACER, reason="fullcoverage only works with the C tracer.")
     @pytest.mark.skipif(env.METACOV, reason="Can't test fullcoverage when measuring ourselves")
+    @pytest.mark.skipif(
+        (3, 11, 0, "alpha", 4) <= env.PYVERSION,
+        reason="avoid 3.11 bug lineno==None: https://bugs.python.org/issue46389",
+    )
     def test_fullcoverage(self):
         # fullcoverage is a trick to get stdlib modules measured from
         # the very beginning of the process. Here we import os and
@@ -561,9 +565,7 @@ class ProcessTest(CoverageTest):
             print("FOOEY == %s" % os.getenv("FOOEY"))
             """)
 
-        fullcov = os.path.join(
-            os.path.dirname(coverage.__file__), "fullcoverage"
-            )
+        fullcov = os.path.join(os.path.dirname(coverage.__file__), "fullcoverage")
         self.set_environ("FOOEY", "BOO")
         self.set_environ("PYTHONPATH", fullcov)
         out = self.run_command("python -X frozen_modules=off -m coverage run -L getenv.py")
