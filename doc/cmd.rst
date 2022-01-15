@@ -1,6 +1,10 @@
 .. Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
 .. For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
 
+.. This file is meant to be processed with cog to insert the latest command
+   help into the docs. If it's out of date, the quality checks will fail.
+   Running "make prebuild" will bring it up to date.
+
 .. [[[cog
     import contextlib
     import io
