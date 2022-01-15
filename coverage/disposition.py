@@ -6,7 +6,9 @@
 
 class FileDisposition:
     """A simple value type for recording what to do with a file."""
-    pass
+
+    def __repr__(self):
+        return f"<FileDisposition {self.canonical_filename!r}: trace={self.trace}>"
 
 
 # FileDisposition "methods": FileDisposition is a pure value object, so it can
