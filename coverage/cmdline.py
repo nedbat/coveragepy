@@ -125,7 +125,7 @@ class Opts:
         help="Write the JSON report to this file. Defaults to 'coverage.json'",
     )
     output_coverage = optparse.make_option(
-        '-o', '', action='store', dest="outfile",
+        '-o', '', action='store', dest="output_coverage",
         metavar="OUTFILE",
         help="Write the recorded coverage information to this file. Defaults to '.coverage'"
     )
@@ -588,7 +588,8 @@ class CoverageScript:
         else:
             concurrency = None
 
-        data_file = options.outfile if options.action == "run" else None
+        data_file = getattr(options, "output_coverage", None) \
+            or getattr(options, "input_coverage", None)
         # Do something.
         self.coverage = Coverage(
             data_file=data_file or DEFAULT_DATAFILE,
