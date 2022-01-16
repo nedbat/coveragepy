@@ -26,14 +26,20 @@ Unreleased
 
 - Updated Python 3.11 support to 3.11.0a4, fixing `issue 1294`_.
 
+- Fix: the coverage data file is now created in a more robust way, to avoid
+  problems when multiple processes are trying to write data at once. Fixes
+  `issue 1303`_ and `issue 883`_.
+
 - Fix: a .gitignore file will only be written into the HTML report output
   directory if the directory is empty.  This should prevent certain unfortunate
   accidents of writing the file where it is not wanted.
 
 - Releases now have MacOS arm64 wheels for Apple Silicon (fixes `issue 1288`_).
 
+.. _issue 883: https://github.com/nedbat/coveragepy/issues/883
 .. _issue 1288: https://github.com/nedbat/coveragepy/issues/1288
 .. _issue 1294: https://github.com/nedbat/coveragepy/issues/1294
+.. _issue 1303: https://github.com/nedbat/coveragepy/issues/1303
 
 
 .. _changes_62:

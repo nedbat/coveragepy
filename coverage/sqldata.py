@@ -256,26 +256,6 @@ class CoverageData(SimpleReprMixin):
         self._have_used = False
         self._current_context_id = None
 
-    def _create_db(self):
-        """Create a db file that doesn't exist yet.
-
-        Initializes the schema and certain metadata.
-        """
-        if self._debug.should("dataio"):
-            self._debug.write(f"Creating data file {self._filename!r}")
-        self._dbs[threading.get_ident()] = db = SqliteDb(self._filename, self._debug)
-        with db:
-            db.executescript(SCHEMA)
-            db.execute("insert into coverage_schema (version) values (?)", (SCHEMA_VERSION,))
-            db.executemany(
-                "insert into meta (key, value) values (?, ?)",
-                [
-                    ("sys_argv", str(getattr(sys, "argv", None))),
-                    ("version", __version__),
-                    ("when", datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")),
-                ]
-            )
-
     def _open_db(self):
         """Open an existing db file, and read its metadata."""
         if self._debug.should("dataio"):
@@ -289,11 +269,14 @@ class CoverageData(SimpleReprMixin):
             try:
                 schema_version, = db.execute_one("select version from coverage_schema")
             except Exception as exc:
-                raise DataError(
-                    "Data file {!r} doesn't seem to be a coverage data file: {}".format(
-                        self._filename, exc
-                    )
-                ) from exc
+                if "no such table: coverage_schema" in str(exc):
+                    self._init_db(db)
+                else:
+                    raise DataError(
+                        "Data file {!r} doesn't seem to be a coverage data file: {}".format(
+                            self._filename, exc
+                        )
+                    ) from exc
             else:
                 if schema_version != SCHEMA_VERSION:
                     raise DataError(
@@ -309,13 +292,25 @@ class CoverageData(SimpleReprMixin):
             for path, file_id in db.execute("select path, id from file"):
                 self._file_map[path] = file_id
 
+    def _init_db(self, db):
+        """Write the initial contents of the database."""
+        if self._debug.should("dataio"):
+            self._debug.write(f"Initing data file {self._filename!r}")
+        db.executescript(SCHEMA)
+        db.execute("insert into coverage_schema (version) values (?)", (SCHEMA_VERSION,))
+        db.executemany(
+            "insert or ignore into meta (key, value) values (?, ?)",
+            [
+                ("sys_argv", str(getattr(sys, "argv", None))),
+                ("version", __version__),
+                ("when", datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")),
+            ]
+        )
+
     def _connect(self):
         """Get the SqliteDb object to use."""
         if threading.get_ident() not in self._dbs:
-            if os.path.exists(self._filename):
-                self._open_db()
-            else:
-                self._create_db()
+            self._open_db()
         return self._dbs[threading.get_ident()]
 
     def __bool__(self):
@@ -522,7 +517,7 @@ class CoverageData(SimpleReprMixin):
             self._has_arcs = arcs
             with self._connect() as con:
                 con.execute(
-                    "insert into meta (key, value) values (?, ?)",
+                    "insert or ignore into meta (key, value) values (?, ?)",
                     ("has_arcs", str(int(arcs)))
                 )
 

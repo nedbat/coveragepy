@@ -592,12 +592,6 @@ class CoverageDataInTempDirTest(CoverageTest):
             covdata.read()
         assert not covdata
 
-        self.make_file("empty.dat", "")
-        with pytest.raises(DataError, match=msg.format("empty.dat")):
-            covdata = DebugCoverageData("empty.dat")
-            covdata.read()
-        assert not covdata
-
     def test_hard_read_error(self):
         self.make_file("noperms.dat", "go away")
         os.chmod("noperms.dat", 0)
@@ -623,14 +617,6 @@ class CoverageDataInTempDirTest(CoverageTest):
         msg = r"Couldn't .* '.*[/\\]wrong_schema.db': wrong schema: 99 instead of \d+"
         with pytest.raises(DataError, match=msg):
             covdata = DebugCoverageData("wrong_schema.db")
-            covdata.read()
-        assert not covdata
-
-        with sqlite3.connect("no_schema.db") as con:
-            con.execute("create table foobar (baz text)")
-        msg = r"Couldn't .* '.*[/\\]no_schema.db': \S+"
-        with pytest.raises(DataError, match=msg):
-            covdata = DebugCoverageData("no_schema.db")
             covdata.read()
         assert not covdata
 
@@ -667,7 +653,8 @@ class CoverageDataFilesTest(CoverageTest):
 
         assert re.search(
             r"^Erasing data file '.*\.coverage'\n" +
-            r"Creating data file '.*\.coverage'\n" +
+            r"Opening data file '.*\.coverage'\n" +
+            r"Initing data file '.*\.coverage'\n" +
             r"Opening data file '.*\.coverage'\n$",
             debug.get_output()
         )
