@@ -234,7 +234,7 @@ jobs:
         py:
           # PYVERSIONS. Available versions:
           # https://github.com/actions/python-versions/blob/main/versions-manifest.json
-          - "3.11.0-alpha.2"
+          - "3.11.0-alpha.4"
       fail-fast: false
 
     steps:
