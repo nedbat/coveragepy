@@ -1,0 +1,56 @@
+# Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
+# For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
+
+name: "Python Nightly Tests"
+
+on:
+  schedule:
+    # Run at 2:22am early Saturday morning https://crontab.guru/#22_2_*_*_6
+    # so that we get tips of CPython development tested.
+    - cron: "22 2 * * 6"
+  workflow_dispatch:
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  PIP_DISABLE_PIP_VERSION_CHECK: 1
+  COVERAGE_IGOR_VERBOSE: 1
+
+jobs:
+  tests:
+    name: "Python nightly ${{ matrix.python-version }}"
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version:
+          # When changing this list, be sure to check the [gh-actions] list in
+          # tox.ini so that tox will run properly. PYVERSIONS
+          # Available versions:
+          # https://launchpad.net/~deadsnakes/+archive/ubuntu/nightly/+packages
+          - "3.9-dev"
+          - "3.10-dev"
+          - "3.11-dev"
+      fail-fast: false
+
+    steps:
+      - name: "Check out the repo"
+        uses: "actions/checkout@v2"
+
+      - name: "Install Python ${{ matrix.python-version }}"
+        uses: "deadsnakes/action@v2.1.1"
+        with:
+          python-version: "${{ matrix.python-version }}"
+
+      - name: "Install dependencies"
+        run: |
+          set -xe
+          python -VV
+          python -m site
+          python -m pip install -r requirements/tox.pip
+
+      - name: "Run tox for ${{ matrix.python-version }}"
+        run: |
+          python -m tox -- -rfsEX
