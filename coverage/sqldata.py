@@ -349,7 +349,8 @@ class CoverageData(SimpleReprMixin):
         if self._debug.should("dataio"):
             self._debug.write(f"Dumping data from data file {self._filename!r}")
         with self._connect() as con:
-            return b"z" + zlib.compress(con.dump().encode("utf-8"))
+            script = con.dump()
+            return b"z" + zlib.compress(script.encode("utf-8"))
 
     @contract(data="bytes")
     def loads(self, data):
