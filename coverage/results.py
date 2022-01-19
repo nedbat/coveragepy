@@ -136,6 +136,21 @@ class Analysis:
                 mba[l1].append(l2)
         return mba
 
+    @contract(returns='dict(int: list(int))')
+    def executed_branch_arcs(self):
+        """Return arcs that were executed from branch lines.
+
+        Returns {l1:[l2a,l2b,...], ...}
+
+        """
+        executed = self.arcs_executed()
+        branch_lines = set(self._branch_lines())
+        eba = collections.defaultdict(list)
+        for l1, l2 in executed:
+            if l1 in branch_lines:
+                eba[l1].append(l2)
+        return eba
+
     @contract(returns='dict(int: tuple(int, int))')
     def branch_stats(self):
         """Get stats about branches.

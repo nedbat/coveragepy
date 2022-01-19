@@ -26,6 +26,7 @@ from coverage.files import PathAliases, abs_file, relative_filename, set_relativ
 from coverage.html import HtmlReporter
 from coverage.inorout import InOrOut
 from coverage.jsonreport import JsonReporter
+from coverage.lcovreport import LcovReporter
 from coverage.misc import bool_or_none, join_regex, human_sorted, human_sorted_items
 from coverage.misc import DefaultValue, ensure_dir_for_file, isolate_module
 from coverage.plugin import FileReporter
@@ -1048,6 +1049,25 @@ class Coverage:
             json_show_contexts=show_contexts
         ):
             return render_report(self.config.json_output, JsonReporter(self), morfs, self._message)
+
+    def lcov_report(
+        self, morfs=None, outfile=None, ignore_errors=None,
+        omit=None, include=None, contexts=None,
+    ):
+        """Generate an LCOV report of coverage results.
+
+        Each module in 'morfs' is included in the report. 'outfile' is the
+        path to write the file to, "-" will write to stdout.
+
+        See :meth 'report' for other arguments.
+
+        .. versionadded:: 6.3
+        """
+        with override_config(self,
+            ignore_errors=ignore_errors, report_omit=omit, report_include=include,
+            lcov_output=outfile,  report_contexts=contexts,
+        ):
+            return render_report(self.config.lcov_output, LcovReporter(self), morfs, self._message)
 
     def sys_info(self):
         """Return a list of (key, value) pairs showing internal information."""
