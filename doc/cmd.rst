@@ -58,6 +58,8 @@ Coverage.py has a number of commands:
 
 * **json** -- :ref:`Produce a JSON report with coverage results <cmd_json>`.
 
+* **lcov** -- :ref:`Produce an LCOV report with coverage results <cmd_lcov>`.
+
 * **annotate** --
   :ref:`Annotate source files with coverage results <cmd_annotate>`.
 
@@ -430,8 +432,8 @@ Reporting
 ---------
 
 Coverage.py provides a few styles of reporting, with the **report**, **html**,
-**annotate**, **json**, and **xml** commands.  They share a number of common
-options.
+**annotate**, **json**, **lcov**, and **xml** commands.  They share a number
+of common options.
 
 The command-line arguments are module or file names to report on, if you'd like
 to report on a subset of the data collected.
@@ -784,6 +786,42 @@ The **json** command writes coverage data to a "coverage.json" file.
 
 You can specify the name of the output file with the ``-o`` switch.  The JSON
 can be nicely formatted by specifying the ``--pretty-print`` switch.
+
+.. _cmd_lcov:
+
+LCOV reporting: ``coverage lcov``
+---------------------------------
+
+The **json** command writes coverage data to a "coverage.lcov" file.
+
+.. [[[cog show_help("lcov") ]]]
+.. code::
+
+    $ coverage lcov --help
+    Usage: coverage lcov [options] [modules]
+
+    Generate an LCOV report of coverage results.
+
+    Options:
+      --fail-under=MIN      Exit with a status of 2 if the total coverage is less
+                            than MIN.
+      -i, --ignore-errors   Ignore errors while reading source files.
+      --include=PAT1,PAT2,...
+                            Include only files whose paths match one of these
+                            patterns. Accepts shell-style wildcards, which must be
+                            quoted.
+      -o OUTFILE            Write the LCOV report to this file. Defaults to
+                            'coverage.lcov'
+      --omit=PAT1,PAT2,...  Omit files whose paths match one of these patterns.
+                            Accepts shell-style wildcards, which must be quoted.
+      -q, --quiet           Don't print messages about what is happening.
+      --debug=OPTS          Debug options, separated by commas. [env:
+                            COVERAGE_DEBUG]
+      -h, --help            Get help on this command.
+      --rcfile=RCFILE       Specify configuration file. By default '.coveragerc',
+                            'setup.cfg', 'tox.ini', and 'pyproject.toml' are
+                            tried. [env: COVERAGE_RCFILE]
+.. [[[end]]] (checksum: 4d078e4637e5b507cbb997803a0d4758)
 
 Other common reporting options are described above in :ref:`cmd_reporting`.
 

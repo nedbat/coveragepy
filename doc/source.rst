@@ -88,7 +88,8 @@ reported.  Usually you want to see all the code that was measured, but if you
 are measuring a large project, you may want to get reports for just certain
 parts.
 
-The report commands (``report``, ``html``, ``json``, ``annotate``, and ``xml``)
+The report commands (``report``, ``html``, ``json``, ``lcov``, ``annotate``,
+and ``xml``)
 all take optional ``modules`` arguments, and ``--include`` and ``--omit``
 switches. The ``modules`` arguments specify particular modules to report on.
 The ``include`` and ``omit`` values are lists of file name patterns, just as

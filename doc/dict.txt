@@ -107,6 +107,7 @@ jquery
 json
 jython
 kwargs
+lcov
 Mako
 matcher
 matchers

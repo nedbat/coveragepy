@@ -152,7 +152,8 @@ Coverage.py can do a number of things:
 - It can tell you :ref:`what tests ran which lines <dynamic_contexts>`.
 
 - It can produce reports in a number of formats: :ref:`text <cmd_report>`,
-  :ref:`HTML <cmd_html>`, :ref:`XML <cmd_xml>`, and :ref:`JSON <cmd_json>`.
+  :ref:`HTML <cmd_html>`, :ref:`XML <cmd_xml>`, :ref:`LCOV <cmd_lcov>`,
+  and :ref:`JSON <cmd_json>`.
 
 - For advanced uses, there's an :ref:`API <api>`, and the result data is
   available in a :ref:`SQLite database <dbschema>`.

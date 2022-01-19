@@ -67,6 +67,9 @@ COMMAND OVERVIEW
 |command| **xml**
     Create an XML report of coverage results.
 
+|command| **lcov**
+    Create an LCOV report of coverage results.
+
 
 GLOBAL OPTIONS
 ==============
@@ -229,6 +232,31 @@ COMMAND REFERENCE
     \--show-contexts
         Include information about the contexts that executed each line.
 
+**lcov** [ `option` ... ] [ `MODULE` ... ]
+
+    Create an LCOV report of the coverage results.
+
+    Options:
+
+    \--fail-under `MIN`
+        Exit with a status of 2 if the total coverage is less than `MIN`.
+
+    \-i, --ignore-errors
+        Ignore errors while reading source files.
+
+    \-o `OUTFILE`
+        Write the LCOV report to `OUTFILE`. Defaults to ``coverage.lcov``.
+
+    \--include `PATTERN` [ , ... ]
+        Include only files whose paths match one of these
+        PATTERNs. Accepts shell-style wildcards, which must be quoted.
+
+    \--omit `PATTERN` [ , ... ]
+        Omit files when their file name matches one of these PATTERNs.
+        Usually needs quoting on the command line.
+
+    \-q, --quiet
+        Don't print messages about what is happening.
 
 **report** [ `option` ... ] [ `MODULE` ... ]
 
