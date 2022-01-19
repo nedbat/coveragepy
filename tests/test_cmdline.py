@@ -52,6 +52,10 @@ class BaseCmdLineTest(CoverageTest):
         ignore_errors=None, include=None, omit=None, morfs=[], outfile=None,
         contexts=None, pretty_print=None, show_contexts=None,
     )
+    _defaults.Coverage().lcov_report(
+        ignore_errors=None, include=None, omit=None, morfs=[], outfile=None,
+        contexts=None,
+    )
     _defaults.Coverage(
         cover_pylib=None, data_suffix=None, timid=None, branch=None,
         config_file=True, source=None, include=None, omit=None, debug=None,
@@ -76,6 +80,7 @@ class BaseCmdLineTest(CoverageTest):
         cov.html_report.return_value = 50.0
         cov.xml_report.return_value = 50.0
         cov.json_report.return_value = 50.0
+        cov.lcov_report.return_value = 50.0
 
         return mk
 
@@ -436,6 +441,49 @@ class CmdLineTest(BaseCmdLineTest):
             cov = Coverage(messages=False)
             cov.load()
             cov.json_report()
+            """)
+
+    def test_lcov(self):
+        # coverage lcov [-i] [--omit DIR,...] [FILE1 FILE2 ...]
+        self.cmd_executes("lcov", """\
+            cov = Coverage()
+            cov.load()
+            cov.lcov_report()
+            """)
+        self.cmd_executes("lcov -i", """\
+            cov = Coverage()
+            cov.load()
+            cov.lcov_report(ignore_errors=True)
+            """)
+        self.cmd_executes("lcov -o mylcov.foo", """\
+            cov = Coverage()
+            cov.load()
+            cov.lcov_report(outfile="mylcov.foo")
+            """)
+        self.cmd_executes("lcov -o -", """\
+            cov = Coverage()
+            cov.load()
+            cov.lcov_report(outfile="-")
+            """)
+        self.cmd_executes("lcov --omit fooey", """\
+            cov = Coverage(omit=["fooey"])
+            cov.load()
+            cov.lcov_report(omit=["fooey"])
+            """)
+        self.cmd_executes("lcov --omit fooey,booey", """\
+            cov = Coverage(omit=["fooey", "booey"])
+            cov.load()
+            cov.lcov_report(omit=["fooey", "booey"])
+            """)
+        self.cmd_executes("lcov -q", """\
+            cov = Coverage(messages=False)
+            cov.load()
+            cov.lcov_report()
+            """)
+        self.cmd_executes("lcov --quiet", """\
+            cov = Coverage(messages=False)
+            cov.load()
+            cov.lcov_report()
             """)
 
     def test_report(self):
@@ -1006,12 +1054,13 @@ class CmdMainTest(CoverageTest):
 class CoverageReportingFake:
     """A fake Coverage.coverage test double."""
     # pylint: disable=missing-function-docstring
-    def __init__(self, report_result, html_result, xml_result, json_report):
+    def __init__(self, report_result, html_result, xml_result, json_report, lcov_result):
         self.config = CoverageConfig()
         self.report_result = report_result
         self.html_result = html_result
         self.xml_result = xml_result
         self.json_result = json_report
+        self.lcov_result = lcov_result
 
     def set_option(self, optname, optvalue):
         self.config.set_option(optname, optvalue)
@@ -1034,28 +1083,34 @@ class CoverageReportingFake:
     def json_report(self, *args_unused, **kwargs_unused):
         return self.json_result
 
+    def lcov_report(self, *args_unused, **kwargs_unused):
+        return self.lcov_result
 
 @pytest.mark.parametrize("results, fail_under, cmd, ret", [
     # Command-line switch properly checks the result of reporting functions.
-    ((20, 30, 40, 50), None, "report --fail-under=19", 0),
-    ((20, 30, 40, 50), None, "report --fail-under=21", 2),
-    ((20, 30, 40, 50), None, "html --fail-under=29", 0),
-    ((20, 30, 40, 50), None, "html --fail-under=31", 2),
-    ((20, 30, 40, 50), None, "xml --fail-under=39", 0),
-    ((20, 30, 40, 50), None, "xml --fail-under=41", 2),
-    ((20, 30, 40, 50), None, "json --fail-under=49", 0),
-    ((20, 30, 40, 50), None, "json --fail-under=51", 2),
+    ((20, 30, 40, 50, 60), None, "report --fail-under=19", 0),
+    ((20, 30, 40, 50, 60), None, "report --fail-under=21", 2),
+    ((20, 30, 40, 50, 60), None, "html --fail-under=29", 0),
+    ((20, 30, 40, 50, 60), None, "html --fail-under=31", 2),
+    ((20, 30, 40, 50, 60), None, "xml --fail-under=39", 0),
+    ((20, 30, 40, 50, 60), None, "xml --fail-under=41", 2),
+    ((20, 30, 40, 50, 60), None, "json --fail-under=49", 0),
+    ((20, 30, 40, 50, 60), None, "json --fail-under=51", 2),
+    ((20, 30, 40, 50, 60), None, "lcov --fail-under=59", 0),
+    ((20, 30, 40, 50, 60), None, "lcov --fail-under=61", 2),
     # Configuration file setting properly checks the result of reporting.
-    ((20, 30, 40, 50), 19, "report", 0),
-    ((20, 30, 40, 50), 21, "report", 2),
-    ((20, 30, 40, 50), 29, "html", 0),
-    ((20, 30, 40, 50), 31, "html", 2),
-    ((20, 30, 40, 50), 39, "xml", 0),
-    ((20, 30, 40, 50), 41, "xml", 2),
-    ((20, 30, 40, 50), 49, "json", 0),
-    ((20, 30, 40, 50), 51, "json", 2),
+    ((20, 30, 40, 50, 60), 19, "report", 0),
+    ((20, 30, 40, 50, 60), 21, "report", 2),
+    ((20, 30, 40, 50, 60), 29, "html", 0),
+    ((20, 30, 40, 50, 60), 31, "html", 2),
+    ((20, 30, 40, 50, 60), 39, "xml", 0),
+    ((20, 30, 40, 50, 60), 41, "xml", 2),
+    ((20, 30, 40, 50, 60), 49, "json", 0),
+    ((20, 30, 40, 50, 60), 51, "json", 2),
+    ((20, 30, 40, 50, 60), 59, "lcov", 0),
+    ((20, 30, 40, 50, 60), 61, "lcov", 2),
     # Command-line overrides configuration.
-    ((20, 30, 40, 50), 19, "report --fail-under=21", 2),
+    ((20, 30, 40, 50, 60), 19, "report --fail-under=21", 2),
 ])
 def test_fail_under(results, fail_under, cmd, ret):
     cov = CoverageReportingFake(*results)
