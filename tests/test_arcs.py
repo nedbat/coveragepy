@@ -273,7 +273,7 @@ class WithTest(CoverageTest):
             arcz=arcz,
             )
 
-    @pytest.mark.skipif(
+    @pytest.mark.xfail(
         (3, 11) <= env.PYVERSION <= (3, 11, 0, 'alpha', 2, 0),
         reason="avoid a 3.11 bug: 45709"
     )
@@ -572,7 +572,7 @@ class LoopArcTest(CoverageTest):
         )
 
     # https://bugs.python.org/issue44672
-    @pytest.mark.skipif(env.PYVERSION < (3, 10), reason="<3.10 traced final pass incorrectly")
+    @pytest.mark.xfail(env.PYVERSION < (3, 10), reason="<3.10 traced final pass incorrectly")
     def test_incorrect_loop_exit_bug_1175(self):
         self.check_coverage("""\
             def wrong_loop(x):
@@ -589,7 +589,7 @@ class LoopArcTest(CoverageTest):
         )
 
     # https://bugs.python.org/issue44672
-    @pytest.mark.skipif(env.PYVERSION < (3, 10), reason="<3.10 traced final pass incorrectly")
+    @pytest.mark.xfail(env.PYVERSION < (3, 10), reason="<3.10 traced final pass incorrectly")
     def test_incorrect_if_bug_1175(self):
         self.check_coverage("""\
             def wrong_loop(x):
@@ -1196,7 +1196,7 @@ class YieldTest(CoverageTest):
         )
 
     # https://bugs.python.org/issue46225
-    @pytest.mark.skipif(
+    @pytest.mark.xfail(
         env.PYVERSION[:5] == (3, 11, 0, 'alpha', 3),
         reason="avoid 3.11 bug: bpo46225",
     )
@@ -1234,8 +1234,8 @@ class YieldTest(CoverageTest):
             arcz=".1 14 45 54 4.  .2 2.  -22 2-2",
         )
 
-    @pytest.mark.skipif(
-        (3, 11, 0, "alpha", 4) <= env.PYVERSION,
+    @pytest.mark.xfail(
+        ((3, 11, 0, "alpha", 4) <= env.PYVERSION) and not env.C_TRACER,
         reason="avoid a 3.11 bug: https://bugs.python.org/issue46389",
     )
     def test_bug_324(self):
@@ -1307,7 +1307,7 @@ class YieldTest(CoverageTest):
         )
 
 
-@pytest.mark.skipif(env.PYVERSION <= (3, 10, 0, 'beta', 4, 0), reason="3.10.0b4 had bugs")
+@pytest.mark.xfail(env.PYVERSION <= (3, 10, 0, 'beta', 4, 0), reason="3.10.0b4 had bugs")
 @pytest.mark.skipif(not env.PYBEHAVIOR.match_case, reason="Match-case is new in 3.10")
 class MatchCaseTest(CoverageTest):
     """Tests of match-case."""
@@ -1623,8 +1623,8 @@ class MiscArcTest(CoverageTest):
         self.check_coverage(code, arcs=[(-1, 1), (1, 2*n+4), (2*n+4, -1)])
         assert self.stdout() == f"{n}\n"
 
-    @pytest.mark.skipif(
-        (3, 11, 0, "alpha", 4) <= env.PYVERSION,
+    @pytest.mark.xfail(
+        ((3, 11, 0, "alpha", 4) <= env.PYVERSION) and not env.C_TRACER,
         reason="avoid a 3.11 bug: https://bugs.python.org/issue46389",
     )
     def test_partial_generators(self):
@@ -1831,7 +1831,7 @@ class LambdaArcTest(CoverageTest):
         )
 
 
-skip_eventlet_670 = pytest.mark.skipif(
+xfail_eventlet_670 = pytest.mark.xfail(
     env.PYVERSION[:2] == (3, 9) and env.OSX,
     reason="Avoid an eventlet bug on Mac 3.9: eventlet#670",
     # https://github.com/eventlet/eventlet/issues/670
@@ -1841,7 +1841,7 @@ skip_eventlet_670 = pytest.mark.skipif(
 class AsyncTest(CoverageTest):
     """Tests of the new async and await keywords in Python 3.5"""
 
-    @skip_eventlet_670
+    @xfail_eventlet_670
     def test_async(self):
         self.check_coverage("""\
             import asyncio
@@ -1868,7 +1868,7 @@ class AsyncTest(CoverageTest):
         )
         assert self.stdout() == "Compute 1 + 2 ...\n1 + 2 = 3\n"
 
-    @skip_eventlet_670
+    @xfail_eventlet_670
     def test_async_for(self):
         self.check_coverage("""\
             import asyncio
@@ -1942,7 +1942,7 @@ class AsyncTest(CoverageTest):
 
     # https://github.com/nedbat/coveragepy/issues/1158
     # https://bugs.python.org/issue44621
-    @pytest.mark.skipif(env.PYVERSION[:2] == (3, 9), reason="avoid a 3.9 bug: 44621")
+    @pytest.mark.xfail(env.PYVERSION[:2] == (3, 9), reason="avoid a 3.9 bug: 44621")
     @pytest.mark.skipif(env.PYVERSION < (3, 7), reason="need asyncio.run")
     def test_bug_1158(self):
         self.check_coverage("""\
@@ -1968,11 +1968,11 @@ class AsyncTest(CoverageTest):
 
     # https://github.com/nedbat/coveragepy/issues/1176
     # https://bugs.python.org/issue44622
-    @pytest.mark.skipif(
+    @pytest.mark.xfail(
         (3, 10, 0, "alpha", 0, 0) <= env.PYVERSION <= (3, 10, 0, "beta", 4, 0),
         reason="avoid a 3.10 bug fixed after beta 4: 44622"
     )
-    @skip_eventlet_670
+    @xfail_eventlet_670
     @pytest.mark.skipif(env.PYVERSION < (3, 7), reason="need asyncio.run")
     def test_bug_1176(self):
         self.check_coverage("""\
@@ -1993,7 +1993,7 @@ class AsyncTest(CoverageTest):
 
     # https://github.com/nedbat/coveragepy/issues/1205
     # https://bugs.python.org/issue44840
-    @pytest.mark.skipif(
+    @pytest.mark.xfail(
         (3, 10, 0, "alpha", 0, 0) <= env.PYVERSION <= (3, 10, 0, "candidate", 1, 0),
         reason="avoid a 3.10 bug fixed after rc1: 44840"
     )

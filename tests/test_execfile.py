@@ -149,9 +149,6 @@ class RunFileTest(CoverageTest):
         assert self.stdout() == "about to exit..\n"
         assert self.stderr() == ""
 
-    @pytest.mark.skipif(not env.CPYTHON,
-        reason="non-CPython handles excepthook exits differently, punt for now."
-    )
     def test_excepthook_exit(self):
         self.make_file("excepthook_exit.py", """\
             import sys
@@ -169,7 +166,6 @@ class RunFileTest(CoverageTest):
         cov_out = self.stdout()
         assert cov_out == "in excepthook\n"
 
-    @pytest.mark.skipif(env.PYPY, reason="PyPy handles excepthook throws differently.")
     def test_excepthook_throw(self):
         self.make_file("excepthook_throw.py", """\
             import sys

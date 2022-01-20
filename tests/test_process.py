@@ -552,7 +552,7 @@ class ProcessTest(CoverageTest):
     @pytest.mark.expensive
     @pytest.mark.skipif(not env.C_TRACER, reason="fullcoverage only works with the C tracer.")
     @pytest.mark.skipif(env.METACOV, reason="Can't test fullcoverage when measuring ourselves")
-    @pytest.mark.skipif(
+    @pytest.mark.xfail(
         (3, 11, 0, "alpha", 4) <= env.PYVERSION,
         reason="avoid 3.11 bug lineno==None: https://bugs.python.org/issue46389",
     )

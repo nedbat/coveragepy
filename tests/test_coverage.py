@@ -1213,7 +1213,7 @@ class CompoundStatementTest(CoverageTest):
             """,
             [1,10,12,13], "")
 
-    @pytest.mark.skipif(
+    @pytest.mark.xfail(
         (3, 11, 0, "alpha", 3, 0) <= env.PYVERSION < (3, 11, 0, "alpha", 4, 0),
         reason="avoid class docstring bug: bpo 46331",
         # https://bugs.python.org/issue46331
