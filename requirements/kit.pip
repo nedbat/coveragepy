@@ -4,7 +4,7 @@
 #
 #    make upgrade
 #
-auditwheel==5.0.0
+auditwheel==5.1.2
     # via -r requirements/kit.in
 bashlex==0.16
     # via cibuildwheel
@@ -16,7 +16,7 @@ certifi==2021.10.8
     # via cibuildwheel
 cibuildwheel==2.3.1
     # via -r requirements/kit.in
-importlib-metadata==4.10.0
+importlib-metadata==4.10.1
     # via
     #   auditwheel
     #   build
@@ -48,5 +48,5 @@ zipp==3.7.0
     #   pep517
 
 # The following packages are considered to be unsafe in a requirements file:
-setuptools==60.2.0
+setuptools==60.5.0
     # via -r requirements/kit.in

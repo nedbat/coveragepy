@@ -4,7 +4,7 @@
 #
 #    make upgrade
 #
-astroid==2.9.1
+astroid==2.9.3
     # via pylint
 attrs==21.4.0
     # via
@@ -21,7 +21,7 @@ build==0.7.0
     # via check-manifest
 certifi==2021.10.8
     # via requests
-charset-normalizer==2.0.9
+charset-normalizer==2.0.10
     # via requests
 check-manifest==0.47
     # via -r requirements/dev.in
@@ -29,7 +29,7 @@ cogapp==3.3.0
     # via -r requirements/dev.in
 colorama==0.4.4
     # via twine
-decorator==5.1.0
+decorator==5.1.1
     # via
     #   -r requirements/pytest.pip
     #   pycontracts
@@ -58,11 +58,11 @@ future==0.18.2
     #   pycontracts
 greenlet==1.1.2
     # via -r requirements/dev.in
-hypothesis==6.34.1
+hypothesis==6.36.0
     # via -r requirements/pytest.pip
 idna==3.3
     # via requests
-importlib-metadata==4.10.0
+importlib-metadata==4.10.1
     # via
     #   -r requirements/pip.pip
     #   -r requirements/pytest.pip
@@ -95,6 +95,7 @@ packaging==21.3
     #   -r requirements/pytest.pip
     #   bleach
     #   build
+    #   pudb
     #   pytest
     #   tox
 parso==0.8.3
@@ -113,7 +114,7 @@ pluggy==1.0.0
     #   -r requirements/pytest.pip
     #   pytest
     #   tox
-pudb==2021.2.2
+pudb==2022.1
     # via -r requirements/dev.in
 py==1.11.0
     # via
@@ -123,7 +124,7 @@ py==1.11.0
     #   tox
 pycontracts @ git+https://github.com/slorg1/contracts@collections_and_validator
     # via -r requirements/pytest.pip
-pygments==2.11.1
+pygments==2.11.2
     # via
     #   pudb
     #   readme-renderer
@@ -153,14 +154,14 @@ readme-renderer==32.0
     # via
     #   -r requirements/dev.in
     #   twine
-requests==2.26.0
+requests==2.27.1
     # via
     #   -r requirements/dev.in
     #   requests-toolbelt
     #   twine
 requests-toolbelt==0.9.1
     # via twine
-rfc3986==1.5.0
+rfc3986==2.0.0
     # via twine
 six==1.16.0
     # via
@@ -201,7 +202,7 @@ typing-extensions==4.0.1
     #   astroid
     #   importlib-metadata
     #   pylint
-urllib3==1.26.7
+urllib3==1.26.8
     # via requests
 urwid==2.1.2
     # via
@@ -227,7 +228,7 @@ zipp==3.7.0
 # The following packages are considered to be unsafe in a requirements file:
 pip==21.3.1
     # via -r requirements/pip.pip
-setuptools==60.2.0
+setuptools==60.5.0
     # via
     #   astroid
     #   check-manifest

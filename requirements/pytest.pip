@@ -10,7 +10,7 @@ attrs==21.4.0
     #   pytest
 backports.functools-lru-cache==1.6.4
     # via pycontracts
-decorator==5.1.0
+decorator==5.1.1
     # via pycontracts
 execnet==1.9.0
     # via pytest-xdist
@@ -18,9 +18,9 @@ flaky==3.7.0
     # via -r requirements/pytest.in
 future==0.18.2
     # via pycontracts
-hypothesis==6.34.1
+hypothesis==6.36.0
     # via -r requirements/pytest.in
-importlib-metadata==4.10.0
+importlib-metadata==4.10.1
     # via
     #   pluggy
     #   pytest

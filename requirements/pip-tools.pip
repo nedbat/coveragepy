@@ -6,7 +6,7 @@
 #
 click==8.0.3
     # via pip-tools
-importlib-metadata==4.10.0
+importlib-metadata==4.10.1
     # via
     #   click
     #   pep517
@@ -28,5 +28,5 @@ zipp==3.7.0
 # The following packages are considered to be unsafe in a requirements file:
 pip==21.3.1
     # via pip-tools
-setuptools==60.2.0
+setuptools==60.5.0
     # via pip-tools
