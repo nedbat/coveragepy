@@ -584,10 +584,8 @@ class CoverageDataInTempDirTest(CoverageTest):
         assert_arcs3_data(covdata2)
 
     def test_read_errors(self):
-        msg = r"Couldn't .* '.*[/\\]{}': \S+"
-
         self.make_file("xyzzy.dat", "xyzzy")
-        with pytest.raises(DataError, match=msg.format("xyzzy.dat")):
+        with pytest.raises(DataError, match=r"Couldn't .* '.*[/\\]xyzzy.dat': \S+"):
             covdata = DebugCoverageData("xyzzy.dat")
             covdata.read()
         assert not covdata
@@ -595,7 +593,7 @@ class CoverageDataInTempDirTest(CoverageTest):
     def test_hard_read_error(self):
         self.make_file("noperms.dat", "go away")
         os.chmod("noperms.dat", 0)
-        with pytest.raises(DataError, match=r"Couldn't .* '.*[/\\]noperms.dat': "):
+        with pytest.raises(DataError, match=r"Couldn't .* '.*[/\\]noperms.dat': \S+"):
             covdata = DebugCoverageData("noperms.dat")
             covdata.read()
 
@@ -610,13 +608,23 @@ class CoverageDataInTempDirTest(CoverageTest):
             sqldb.close = lambda: 1/0
             covdata.add_lines(LINES_1)
 
-    def test_read_sql_errors(self):
+    def test_wrong_schema_version(self):
         with sqlite3.connect("wrong_schema.db") as con:
             con.execute("create table coverage_schema (version integer)")
             con.execute("insert into coverage_schema (version) values (99)")
         msg = r"Couldn't .* '.*[/\\]wrong_schema.db': wrong schema: 99 instead of \d+"
         with pytest.raises(DataError, match=msg):
             covdata = DebugCoverageData("wrong_schema.db")
+            covdata.read()
+        assert not covdata
+
+    def test_wrong_schema_schema(self):
+        with sqlite3.connect("wrong_schema_schema.db") as con:
+            con.execute("create table coverage_schema (xyzzy integer)")
+            con.execute("insert into coverage_schema (xyzzy) values (99)")
+        msg = r"Data file .* doesn't seem to be a coverage data file: .* no such column"
+        with pytest.raises(DataError, match=msg):
+            covdata = DebugCoverageData("wrong_schema_schema.db")
             covdata.read()
         assert not covdata
 
