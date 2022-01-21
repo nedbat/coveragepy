@@ -38,7 +38,9 @@ Backward Incompatibilities
 - When constructing a :class:`coverage.Coverage` object, `data_file` can be
   specified as None to prevent writing any data file at all.  In previous
   versions, an explicit `data_file=None` argument would use the default of
-  ".coverage". Fixes :github:`871`.
+  ".coverage". Fixes `issue 871`_.
+
+.. _issue 871: https://github.com/nedbat/coveragepy/issues/871
 
 - The ``[run] note`` setting has been deprecated. Using it will result in a
   warning, and the note will not be written to the data file.  The
@@ -70,20 +72,20 @@ New Features
   documented (:ref:`dbschema`), but might still be in flux.
 
 - Data can now be "reported" in JSON format, for programmatic use, as requested
-  in :github:`720`.  The new ``coverage json`` command writes raw and
+  in `issue 720`_.  The new ``coverage json`` command writes raw and
   summarized data to a JSON file.  Thanks, Matt Bachmann.
 
 - Configuration can now be read from `TOML`_ files.  This requires installing
   coverage.py with the ``[toml]`` extra.  The standard "pyproject.toml" file
   will be read automatically if no other configuration file is found, with
   settings in the ``[tool.coverage.]`` namespace.  Thanks to Frazer McLean for
-  implementation and persistence.  Finishes :github:`664`.
+  implementation and persistence.  Finishes `issue 664`_.
 
 - The HTML and textual reports now have a ``--skip-empty`` option that skips
   files with no statements, notably ``__init__.py`` files.  Thanks, Reya B.
 
 - You can specify the command line to run your program with the ``[run]
-  command_line`` configuration setting, as requested in :github:`695`.
+  command_line`` configuration setting, as requested in `issue 695`_.
 
 - An experimental ``[run] relative_files`` setting tells coverage to store
   relative file names in the data file. This makes it easier to run tests in
@@ -112,31 +114,39 @@ New Features
   Coverage instance.
 
 
-.. _TOML: https://toml.io/
-.. _issue 650: https://github.com/nedbat/coveragepy/issues/650
-
-
 Bugs Fixed
 ----------
 
 - The ``coverage run`` command has always adjusted the first entry in sys.path,
   to properly emulate how Python runs your program.  Now this adjustment is
   skipped if sys.path[0] is already different than Python's default.  This
-  fixes :github:`715`.
+  fixes `issue 715`_.
 
 - Python files run with ``-m`` now have ``__spec__`` defined properly.  This
-  fixes :github:`745` (about not being able to run unittest tests that spawn
-  subprocesses), and :github:`838`, which described the problem directly.
+  fixes `issue 745`_ (about not being able to run unittest tests that spawn
+  subprocesses), and `issue 838`_, which described the problem directly.
 
 - Coverage will create directories as needed for the data file if they don't
-  exist, closing :github:`721`.
+  exist, closing `issue 721`_.
 
 - ``fail_under`` values more than 100 are reported as errors.  Thanks to Mike
-  Fiedler for closing :github:`746`.
+  Fiedler for closing `issue 746`_.
 
 - The "missing" values in the text output are now sorted by line number, so
   that missing branches are reported near the other lines they affect. The
   values used to show all missing lines, and then all missing branches.
 
 - Coverage.py no longer fails if the user program deletes its current
-  directory. Fixes :github:`806`.  Thanks, Dan Hemberger.
+  directory. Fixes `issue 806`_.  Thanks, Dan Hemberger.
+
+.. _TOML: https://toml.io/
+.. _issue 650: https://github.com/nedbat/coveragepy/issues/650
+.. _issue 664: https://github.com/nedbat/coveragepy/issues/664
+.. _issue 695: https://github.com/nedbat/coveragepy/issues/695
+.. _issue 715: https://github.com/nedbat/coveragepy/issues/715
+.. _issue 720: https://github.com/nedbat/coveragepy/issues/720
+.. _issue 721: https://github.com/nedbat/coveragepy/issues/721
+.. _issue 745: https://github.com/nedbat/coveragepy/issues/745
+.. _issue 746: https://github.com/nedbat/coveragepy/issues/746
+.. _issue 806: https://github.com/nedbat/coveragepy/issues/806
+.. _issue 838: https://github.com/nedbat/coveragepy/issues/838

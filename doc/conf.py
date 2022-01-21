@@ -39,7 +39,6 @@ extensions = [
     'sphinxcontrib.spelling',
     'sphinx.ext.intersphinx',
     'sphinxcontrib.restbuilder',
-    'sphinx.ext.extlinks',
     'sphinx.ext.napoleon',
     'sphinx_tabs.tabs',
 ]
@@ -215,11 +214,6 @@ if any("spell" in arg for arg in sys.argv):
     spelling_word_list_filename = ['dict.txt', names_file.name]
     spelling_show_suggestions = False
 
-
-extlinks = {
-    # :github:`123` becomes a link to the GitHub issue, with text "issue 123".
-    'github': ('https://github.com/nedbat/coveragepy/issues/%s', 'issue '),
-}
 
 # Regexes for URLs that linkcheck should skip.
 linkcheck_ignore = [
