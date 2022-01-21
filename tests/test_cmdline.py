@@ -247,7 +247,7 @@ class CmdLineTest(BaseCmdLineTest):
             cov.combine(None, strict=True, keep=False)
             cov.save()
             """)
-        self.cmd_executes("combine -o foo.cov", """\
+        self.cmd_executes("combine --data-file=foo.cov", """\
             cov = Coverage(data_file="foo.cov")
             cov.combine(None, strict=True, keep=False)
             cov.save()
@@ -307,7 +307,7 @@ class CmdLineTest(BaseCmdLineTest):
             cov = Coverage()
             cov.erase()
             """)
-        self.cmd_executes("erase -c foo.cov", """\
+        self.cmd_executes("erase --data-file=foo.cov", """\
             cov = Coverage(data_file="foo.cov")
             cov.erase()
             """)
@@ -521,7 +521,7 @@ class CmdLineTest(BaseCmdLineTest):
             cov.load()
             cov.report(sort='-foo')
             """)
-        self.cmd_executes("report -c foo.cov.2", """\
+        self.cmd_executes("report --data-file=foo.cov.2", """\
             cov = Coverage(data_file="foo.cov.2")
             cov.load()
             cov.report(show_missing=None)
@@ -652,7 +652,7 @@ class CmdLineTest(BaseCmdLineTest):
             cov.stop()
             cov.save()
             """)
-        self.cmd_executes("run -o output.coverage foo.py", """\
+        self.cmd_executes("run --data-file=output.coverage foo.py", """\
             cov = Coverage(data_file="output.coverage")
             runner = PyRunner(['foo.py'], as_module=False)
             runner.prepare()

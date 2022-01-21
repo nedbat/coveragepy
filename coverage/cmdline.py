@@ -125,12 +125,12 @@ class Opts:
         help="Write the JSON report to this file. Defaults to 'coverage.json'",
     )
     output_coverage = optparse.make_option(
-        '-o', '', action='store', dest="output_coverage",
+        '', '--data-file', action='store', dest="output_coverage",
         metavar="OUTFILE",
         help="Write the recorded coverage information to this file. Defaults to '.coverage'"
     )
     input_coverage = optparse.make_option(
-        '-c', '--input-coverage', action='store', dest="input_coverage",
+        '', '--data-file', action='store', dest="input_coverage",
         metavar="INPUT",
         help="Read coverage data for report generation from this file (needed if you have "
              "specified -o previously). Defaults to '.coverage'"
