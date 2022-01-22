@@ -24,6 +24,7 @@ Ben Carlsson
 Ben Finney
 Bernát Gábor
 Bill Hart
+Bradley Burns
 Brandon Rhodes
 Brett Cannon
 Bruno P. Kinoshita

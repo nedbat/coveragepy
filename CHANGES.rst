@@ -22,6 +22,9 @@ This list is detailed and covers changes in each pre-release version.
 Unreleased
 ----------
 
+- Feature: Added the `lcov` command to generate reports in LCOV format.
+  Thanks, Bradley Burns.
+
 - Dropped support for Python 3.6, which reached end-of-life on 2021-12-23.
 
 - Updated Python 3.11 support to 3.11.0a4, fixing `issue 1294`_.

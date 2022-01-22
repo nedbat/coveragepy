@@ -49,9 +49,8 @@ class LcovTest(CoverageTest):
         """,
         )
 
-    def get_lcov_report_content(self):
-        """Return the content of the LCOV report."""
-        filename = "coverage.lcov"
+    def get_lcov_report_content(self, filename="coverage.lcov"):
+        """Return the content of an LCOV report."""
         with open(filename, "r") as file:
             file_contents = file.read()
         return file_contents
@@ -96,10 +95,11 @@ class LcovTest(CoverageTest):
         and matches the output of the file below."""
         self.create_initial_files()
         self.assert_doesnt_exist(".coverage")
+        self.make_file(".coveragerc", "[lcov]\noutput = data.lcov\n")
         cov = coverage.Coverage(source=".")
         self.start_import_stop(cov, "test_file")
         cov.lcov_report()
-        self.assert_exists("coverage.lcov")
+        self.assert_exists("data.lcov")
         expected_result = """\
         TN:
         SF:main_file.py
@@ -125,7 +125,7 @@ class LcovTest(CoverageTest):
         end_of_record
         """
         expected_result = textwrap.dedent(expected_result)
-        actual_result = self.get_lcov_report_content()
+        actual_result = self.get_lcov_report_content(filename="data.lcov")
         assert expected_result == actual_result
 
     def test_branch_coverage_one_file(self):

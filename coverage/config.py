@@ -227,7 +227,7 @@ class CoverageConfig:
         self.json_pretty_print = False
         self.json_show_contexts = False
 
-        # Default output filename for lcov_reporter
+        # Defaults for [lcov]
         self.lcov_output = "coverage.lcov"
 
         # Defaults for [paths]
@@ -400,6 +400,9 @@ class CoverageConfig:
         ('json_output', 'json:output'),
         ('json_pretty_print', 'json:pretty_print', 'boolean'),
         ('json_show_contexts', 'json:show_contexts', 'boolean'),
+
+        # [lcov]
+        ('lcov_output', 'lcov:output'),
     ]
 
     def _set_attr_from_config_option(self, cp, attr, where, type_=''):

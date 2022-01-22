@@ -792,7 +792,7 @@ can be nicely formatted by specifying the ``--pretty-print`` switch.
 LCOV reporting: ``coverage lcov``
 ---------------------------------
 
-The **json** command writes coverage data to a "coverage.lcov" file.
+The **lcov** command writes coverage data to a "coverage.lcov" file.
 
 .. [[[cog show_help("lcov") ]]]
 .. code::

@@ -61,10 +61,8 @@ class LcovReporter:
             hashed = str(base64.b64encode(md5(line).digest())[:-2], encoding="utf-8")
             outfile.write(f"DA:{covered},1,{hashed}\n")
         for missed in sorted(analysis.missing):
-            if source_lines:
-                line = source_lines[missed - 1].encode("utf-8")
-            else:
-                line = b""
+            assert source_lines
+            line = source_lines[missed-1].encode("utf-8")
             hashed = str(base64.b64encode(md5(line).digest())[:-2], encoding="utf-8")
             outfile.write(f"DA:{missed},0,{hashed}\n")
         outfile.write(f"LF:{len(analysis.statements)}\n")
