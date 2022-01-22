@@ -5,9 +5,10 @@ name: "Python Nightly Tests"
 
 on:
   schedule:
-    # Run at 2:22am early Saturday morning https://crontab.guru/#22_2_*_*_6
+    # Run at 2:22am early Saturday morning Eastern time (6/7:22 UTC)
     # so that we get tips of CPython development tested.
-    - cron: "22 2 * * 6"
+    # https://crontab.guru/#22_7_*_*_6
+    - cron: "22 7 * * 6"
   workflow_dispatch:
 
 defaults:
