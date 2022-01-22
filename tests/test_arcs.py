@@ -1235,7 +1235,7 @@ class YieldTest(CoverageTest):
         )
 
     @pytest.mark.xfail(
-        ((3, 11, 0, "alpha", 4) <= env.PYVERSION) and not env.C_TRACER,
+        ((3, 11, 0, "alpha", 4, 0) == env.PYVERSION) and not env.C_TRACER,
         reason="avoid a 3.11 bug: https://bugs.python.org/issue46389",
     )
     def test_bug_324(self):
@@ -1624,7 +1624,7 @@ class MiscArcTest(CoverageTest):
         assert self.stdout() == f"{n}\n"
 
     @pytest.mark.xfail(
-        ((3, 11, 0, "alpha", 4) <= env.PYVERSION) and not env.C_TRACER,
+        ((3, 11, 0, "alpha", 4, 0) == env.PYVERSION) and not env.C_TRACER,
         reason="avoid a 3.11 bug: https://bugs.python.org/issue46389",
     )
     def test_partial_generators(self):
