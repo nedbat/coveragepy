@@ -23,7 +23,7 @@ Unreleased
 ----------
 
 - Feature: Added the `lcov` command to generate reports in LCOV format.
-  Thanks, Bradley Burns.
+  Thanks, Bradley Burns. Closes `issue 587`_ and `issue 626`_.
 
 - Dropped support for Python 3.6, which reached end-of-life on 2021-12-23.
 
@@ -39,6 +39,8 @@ Unreleased
 
 - Releases now have MacOS arm64 wheels for Apple Silicon (fixes `issue 1288`_).
 
+.. _issue 587: https://github.com/nedbat/coveragepy/issues/587
+.. _issue 626: https://github.com/nedbat/coveragepy/issues/626
 .. _issue 883: https://github.com/nedbat/coveragepy/issues/883
 .. _issue 1288: https://github.com/nedbat/coveragepy/issues/1288
 .. _issue 1294: https://github.com/nedbat/coveragepy/issues/1294

@@ -123,14 +123,14 @@ class Opts:
         metavar="OUTFILE",
         help="Write the JSON report to this file. Defaults to 'coverage.json'",
     )
+    output_lcov = optparse.make_option(
+        '-o', '', action='store', dest='outfile',
+        metavar="OUTFILE",
+        help="Write the LCOV report to this file. Defaults to 'coverage.lcov'",
+    )
     json_pretty_print = optparse.make_option(
         '', '--pretty-print', action='store_true',
         help="Format the JSON for human readers.",
-    )
-    lcov = optparse.make_option(
-        '-o', '', action='store', dest='outfile',
-        metavar="OUTFILE",
-        help="Write the LCOV report to this file. Defaults to 'coverage.lcov'"
     )
     parallel_mode = optparse.make_option(
         '-p', '--parallel-mode', action='store_true',
@@ -423,7 +423,21 @@ CMDS = {
             Opts.show_contexts,
             ] + GLOBAL_ARGS,
         usage="[options] [modules]",
-        description="Generate a JSON report of coverage results."
+        description="Generate a JSON report of coverage results.",
+    ),
+
+    'lcov': CmdOptionParser(
+        "lcov",
+        [
+            Opts.fail_under,
+            Opts.ignore_errors,
+            Opts.include,
+            Opts.output_lcov,
+            Opts.omit,
+            Opts.quiet,
+        ] + GLOBAL_ARGS,
+        usage="[options] [modules]",
+        description="Generate an LCOV report of coverage results.",
     ),
 
     'report': CmdOptionParser(
@@ -442,7 +456,7 @@ CMDS = {
             Opts.skip_empty,
             ] + GLOBAL_ARGS,
         usage="[options] [modules]",
-        description="Report coverage statistics on modules."
+        description="Report coverage statistics on modules.",
     ),
 
     'run': CmdOptionParser(
@@ -461,7 +475,7 @@ CMDS = {
             Opts.timid,
             ] + GLOBAL_ARGS,
         usage="[options] <pyfile> [program options]",
-        description="Run a Python program, measuring code execution."
+        description="Run a Python program, measuring code execution.",
     ),
 
     'xml': CmdOptionParser(
@@ -476,22 +490,8 @@ CMDS = {
             Opts.skip_empty,
             ] + GLOBAL_ARGS,
         usage="[options] [modules]",
-        description="Generate an XML report of coverage results."
+        description="Generate an XML report of coverage results.",
     ),
-
-    'lcov': CmdOptionParser(
-        "lcov",
-        [
-            Opts.fail_under,
-            Opts.ignore_errors,
-            Opts.include,
-            Opts.lcov,
-            Opts.omit,
-            Opts.quiet,
-        ] + GLOBAL_ARGS,
-        usage="[options] [modules]",
-        description="Generate an LCOV report of coverage results."
-    )
 }
 
 
@@ -681,7 +681,6 @@ class CoverageScript:
                 outfile=options.outfile,
                 **report_args
                 )
-
         else:
             # There are no other possible actions.
             raise AssertionError
@@ -876,10 +875,10 @@ HELP_TOPICS = {
             help        Get help on using coverage.py.
             html        Create an HTML report.
             json        Create a JSON report of coverage results.
+            lcov        Create an LCOV report of coverage results.
             report      Report coverage stats on modules.
             run         Run a Python program and measure code execution.
             xml         Create an XML report of coverage results.
-            lcov        Create an LCOV report of coverage results.
 
         Use "{program_name} help <command>" for detailed help on any command.
     """,
