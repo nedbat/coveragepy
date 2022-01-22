@@ -227,6 +227,9 @@ class CoverageConfig:
         self.json_pretty_print = False
         self.json_show_contexts = False
 
+        # Default output filename for lcov_reporter
+        self.lcov_output = "coverage.lcov"
+
         # Defaults for [paths]
         self.paths = collections.OrderedDict()
 

@@ -127,6 +127,11 @@ class Opts:
         '', '--pretty-print', action='store_true',
         help="Format the JSON for human readers.",
     )
+    lcov = optparse.make_option(
+        '-o', '', action='store', dest='outfile',
+        metavar="OUTFILE",
+        help="Write the LCOV report to this file. Defaults to 'coverage.lcov'"
+    )
     parallel_mode = optparse.make_option(
         '-p', '--parallel-mode', action='store_true',
         help=(
@@ -473,6 +478,20 @@ CMDS = {
         usage="[options] [modules]",
         description="Generate an XML report of coverage results."
     ),
+
+    'lcov': CmdOptionParser(
+        "lcov",
+        [
+            Opts.fail_under,
+            Opts.ignore_errors,
+            Opts.include,
+            Opts.lcov,
+            Opts.omit,
+            Opts.quiet,
+        ] + GLOBAL_ARGS,
+        usage="[options] [modules]",
+        description="Generate an LCOV report of coverage results."
+    )
 }
 
 
@@ -657,6 +676,12 @@ class CoverageScript:
                 show_contexts=options.show_contexts,
                 **report_args
                 )
+        elif options.action == "lcov":
+            total = self.coverage.lcov_report(
+                outfile=options.outfile,
+                **report_args
+                )
+
         else:
             # There are no other possible actions.
             raise AssertionError
@@ -854,6 +879,7 @@ HELP_TOPICS = {
             report      Report coverage stats on modules.
             run         Run a Python program and measure code execution.
             xml         Create an XML report of coverage results.
+            lcov        Create an LCOV report of coverage results.
 
         Use "{program_name} help <command>" for detailed help on any command.
     """,
