@@ -693,3 +693,82 @@ def test_thread_safe_save_data(tmpdir):
     finally:
         os.chdir(old_dir)
         should_run[0] = False
+
+
+@pytest.mark.skipif(env.WINDOWS, reason="SIGTERM doesn't work the same on Windows")
+class SigtermTest(CoverageTest):
+    """Tests of our handling of SIGTERM."""
+
+    def test_sigterm_saves_data(self):
+        # A terminated process should save its coverage data.
+        self.make_file("clobbered.py", """\
+            import multiprocessing
+            import time
+
+            def subproc(x):
+                if x.value == 3:
+                    print("THREE", flush=True)  # line 6, missed
+                else:
+                    print("NOT THREE", flush=True)
+                x.value = 0
+                time.sleep(60)
+
+            if __name__ == "__main__":
+                print("START", flush=True)
+                x = multiprocessing.Value("L", 1)
+                proc = multiprocessing.Process(target=subproc, args=(x,))
+                proc.start()
+                while x.value != 0:
+                    time.sleep(.05)
+                proc.terminate()
+                print("END", flush=True)
+            """)
+        self.make_file(".coveragerc", """\
+            [run]
+            parallel = True
+            concurrency = multiprocessing
+            """)
+        out = self.run_command("coverage run clobbered.py")
+        # Under the Python tracer on Linux, we get the "Trace function changed"
+        # message. Does that matter?
+        if "Trace function changed" in out:
+            lines = out.splitlines(True)
+            assert len(lines) == 5  # "trace function changed" and "self.warn("
+            out = "".join(lines[:3])
+        assert out == "START\nNOT THREE\nEND\n"
+        self.run_command("coverage combine")
+        out = self.run_command("coverage report -m")
+        assert self.squeezed_lines(out)[2] == "clobbered.py 17 1 94% 6"
+
+    def test_sigterm_still_runs(self):
+        # A terminated process still runs its own SIGTERM handler.
+        self.make_file("handler.py", """\
+            import multiprocessing
+            import signal
+            import time
+
+            def subproc(x):
+                print("START", flush=True)
+                def on_sigterm(signum, frame):
+                    print("SIGTERM", flush=True)
+
+                signal.signal(signal.SIGTERM, on_sigterm)
+                x.value = 0
+                time.sleep(.1)
+                print("END", flush=True)
+
+            if __name__ == "__main__":
+                x = multiprocessing.Value("L", 1)
+                proc = multiprocessing.Process(target=subproc, args=(x,))
+                proc.start()
+                while x.value != 0:
+                    time.sleep(.02)
+                proc.terminate()
+            """)
+        self.make_file(".coveragerc", """\
+            [run]
+            parallel = True
+            concurrency = multiprocessing
+            """)
+        out = self.run_command("coverage run handler.py")
+        assert out == "START\nSIGTERM\nEND\n"

@@ -9,6 +9,7 @@ import contextlib
 import os
 import os.path
 import platform
+import signal
 import sys
 import time
 import warnings
@@ -228,6 +229,7 @@ class Coverage:
         self._exclude_re = None
         self._debug = None
         self._file_mapper = None
+        self._old_sigterm = None
 
         # State machine variables:
         # Have we initialized everything?
@@ -526,6 +528,11 @@ class Coverage:
         self._should_write_debug = True
 
         atexit.register(self._atexit)
+        if not env.WINDOWS:
+            # The Python docs seem to imply that SIGTERM works uniformly even
+            # on Windows, but that's not my experience, and this agrees:
+            # https://stackoverflow.com/questions/35772001/x/35792192#35792192
+            self._old_sigterm = signal.signal(signal.SIGTERM, self._on_sigterm)
 
     def _init_data(self, suffix):
         """Create a data file if we don't have one yet."""
@@ -583,14 +590,22 @@ class Coverage:
             self._collector.stop()
         self._started = False
 
-    def _atexit(self):
+    def _atexit(self, event="atexit"):
         """Clean up on process shutdown."""
         if self._debug.should("process"):
-            self._debug.write(f"atexit: pid: {os.getpid()}, instance: {self!r}")
+            self._debug.write(f"{event}: pid: {os.getpid()}, instance: {self!r}")
         if self._started:
             self.stop()
         if self._auto_save:
             self.save()
+
+    def _on_sigterm(self, signum_unused, frame_unused):
+        """A handler for signal.SIGTERM."""
+        self._atexit("sigterm")
+        # Statements after here won't be seen by metacov because we just wrote
+        # the data, and are about to kill the process.
+        signal.signal(signal.SIGTERM, self._old_sigterm)    # pragma: not covered
+        os.kill(os.getpid(), signal.SIGTERM)                # pragma: not covered
 
     def erase(self):
         """Erase previously collected coverage data.

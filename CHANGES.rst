@@ -25,6 +25,12 @@ Unreleased
 - Feature: Added the `lcov` command to generate reports in LCOV format.
   Thanks, Bradley Burns. Closes `issue 587`_ and `issue 626`_.
 
+- Feature: coverage measurement data will now be written when a SIGTERM signal
+  is received by the process.  This includes
+  :meth:`Process.terminate <python:multiprocessing.Process.terminate>`,
+  and other ways to terminate a process.  Currently this is only on Linux and
+  Mac; Windows is not supported.  Fixes `issue 1307`_.
+
 - Dropped support for Python 3.6, which reached end-of-life on 2021-12-23.
 
 - Updated Python 3.11 support to 3.11.0a4, fixing `issue 1294`_.
@@ -45,6 +51,7 @@ Unreleased
 .. _issue 1288: https://github.com/nedbat/coveragepy/issues/1288
 .. _issue 1294: https://github.com/nedbat/coveragepy/issues/1294
 .. _issue 1303: https://github.com/nedbat/coveragepy/issues/1303
+.. _issue 1307: https://github.com/nedbat/coveragepy/issues/1307
 
 
 .. _changes_62:

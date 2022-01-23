@@ -132,6 +132,8 @@ option, or coverage.py will produce very wrong results.
 .. _gevent: http://www.gevent.org/
 .. _eventlet: http://eventlet.net/
 
+See :ref:subprocess: for details of multi-process measurement.
+
 Before version 4.2, this option only accepted a single string.
 
 .. versionadded:: 4.0

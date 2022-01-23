@@ -27,7 +27,7 @@ class ProcessWithCoverage(OriginalProcess):         # pylint: disable=abstract-m
         """Wrapper around _bootstrap to start coverage."""
         try:
             from coverage import Coverage       # avoid circular import
-            cov = Coverage(data_suffix=True)
+            cov = Coverage(data_suffix=True, auto_data=True)
             cov._warn_preimported_source = False
             cov.start()
             debug = cov._debug
