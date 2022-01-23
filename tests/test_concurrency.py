@@ -696,6 +696,7 @@ def test_thread_safe_save_data(tmpdir):
 
 
 @pytest.mark.skipif(env.WINDOWS, reason="SIGTERM doesn't work the same on Windows")
+@flaky(max_runs=3)          # Sometimes a test fails due to inherent randomness. Try more times.
 class SigtermTest(CoverageTest):
     """Tests of our handling of SIGTERM."""
 
