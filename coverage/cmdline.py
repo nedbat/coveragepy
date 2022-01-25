@@ -60,6 +60,27 @@ class Opts:
             "Accepts Python regexes, which must be quoted."
         ),
     )
+    combine_datafile = optparse.make_option(
+        '', '--data-file', action='store', metavar="DATAFILE",
+        help=(
+            "Base name of the data files to combine and write. " +
+            "Defaults to '.coverage'. [env: COVERAGE_FILE]"
+        ),
+    )
+    input_datafile = optparse.make_option(
+        '', '--data-file', action='store', metavar="INFILE",
+        help=(
+            "Read coverage data for report generation from this file. " +
+            "Defaults to '.coverage'. [env: COVERAGE_FILE]"
+        ),
+    )
+    output_datafile = optparse.make_option(
+        '', '--data-file', action='store', metavar="OUTFILE",
+        help=(
+            "Write the recorded coverage data to this file. " +
+            "Defaults to '.coverage'. [env: COVERAGE_FILE]"
+        ),
+    )
     debug = optparse.make_option(
         '', '--debug', action='store', metavar="OPTS",
         help="Debug options, separated by commas. [env: COVERAGE_DEBUG]",
@@ -129,17 +150,6 @@ class Opts:
         metavar="OUTFILE",
         help="Write the LCOV report to this file. Defaults to 'coverage.lcov'",
     )
-    output_coverage = optparse.make_option(
-        '', '--data-file', action='store', dest="output_coverage",
-        metavar="OUTFILE",
-        help="Write the recorded coverage information to this file. Defaults to '.coverage'"
-    )
-    input_coverage = optparse.make_option(
-        '', '--data-file', action='store', dest="input_coverage",
-        metavar="INPUT",
-        help="Read coverage data for report generation from this file (needed if you have "
-             "specified -o previously). Defaults to '.coverage'"
-    )
     json_pretty_print = optparse.make_option(
         '', '--pretty-print', action='store_true',
         help="Format the JSON for human readers.",
@@ -148,7 +158,7 @@ class Opts:
         '-p', '--parallel-mode', action='store_true',
         help=(
             "Append the machine name, process id and random number to the " +
-            ".coverage data file name to simplify collecting data from " +
+            "data file name to simplify collecting data from " +
             "many processes."
         ),
     )
@@ -232,6 +242,7 @@ class CoverageOptionParser(optparse.OptionParser):
             concurrency=None,
             context=None,
             contexts=None,
+            data_file=None,
             debug=None,
             directory=None,
             fail_under=None,
@@ -337,7 +348,7 @@ GLOBAL_ARGS = [
     Opts.rcfile,
     ]
 
-REPORT_ARGS = [Opts.input_coverage]
+REPORT_ARGS = [Opts.input_datafile]
 
 CMDS = {
     'annotate': CmdOptionParser(
@@ -361,7 +372,7 @@ CMDS = {
             Opts.append,
             Opts.keep,
             Opts.quiet,
-            Opts.output_coverage
+            Opts.combine_datafile
             ] + GLOBAL_ARGS,
         usage="[options] <path1> <path2> ... <pathN>",
         description=(
@@ -389,7 +400,7 @@ CMDS = {
     ),
 
     'erase': CmdOptionParser(
-        "erase", [Opts.input_coverage] + GLOBAL_ARGS,
+        "erase", [Opts.input_datafile] + GLOBAL_ARGS,
         description="Erase previously collected coverage data.",
     ),
 
@@ -484,7 +495,7 @@ CMDS = {
             Opts.include,
             Opts.module,
             Opts.omit,
-            Opts.output_coverage,
+            Opts.output_datafile,
             Opts.pylib,
             Opts.parallel_mode,
             Opts.source,
@@ -607,11 +618,9 @@ class CoverageScript:
         else:
             concurrency = None
 
-        data_file = getattr(options, "output_coverage", None) \
-            or getattr(options, "input_coverage", None)
         # Do something.
         self.coverage = Coverage(
-            data_file=data_file or DEFAULT_DATAFILE,
+            data_file=options.data_file or DEFAULT_DATAFILE,
             data_suffix=options.parallel_mode,
             cover_pylib=options.pylib,
             timid=options.timid,

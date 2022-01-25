@@ -25,6 +25,11 @@ Unreleased
 - Feature: Added the `lcov` command to generate reports in LCOV format.
   Thanks, Bradley Burns. Closes `issue 587`_ and `issue 626`_.
 
+- Feature: the coverage data file can now be specified on the command line with
+  the ``--data-file`` option in any command that reads or writes data.  This is
+  in addition to the existing ``COVERAGE_FILE`` environment variable.  Closes
+  `issue 624`_. Thanks, Nikita Bloshchanevich.
+
 - Feature: coverage measurement data will now be written when a SIGTERM signal
   is received by the process.  This includes
   :meth:`Process.terminate <python:multiprocessing.Process.terminate>`,
@@ -46,6 +51,7 @@ Unreleased
 - Releases now have MacOS arm64 wheels for Apple Silicon (fixes `issue 1288`_).
 
 .. _issue 587: https://github.com/nedbat/coveragepy/issues/587
+.. _issue 624: https://github.com/nedbat/coveragepy/issues/624
 .. _issue 626: https://github.com/nedbat/coveragepy/issues/626
 .. _issue 883: https://github.com/nedbat/coveragepy/issues/883
 .. _issue 1288: https://github.com/nedbat/coveragepy/issues/1288
