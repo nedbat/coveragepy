@@ -53,8 +53,7 @@ class Opts:
         help="The context label to record for this coverage run.",
     )
     contexts = optparse.make_option(
-        '', '--contexts', action='store',
-        metavar="REGEX1,REGEX2,...",
+        '', '--contexts', action='store', metavar="REGEX1,REGEX2,...",
         help=(
             "Only display data from lines covered in the given contexts. " +
             "Accepts Python regexes, which must be quoted."
@@ -102,8 +101,7 @@ class Opts:
         help="Ignore errors while reading source files.",
     )
     include = optparse.make_option(
-        '', '--include', action='store',
-        metavar="PAT1,PAT2,...",
+        '', '--include', action='store', metavar="PAT1,PAT2,...",
         help=(
             "Include only files whose paths match one of these patterns. " +
             "Accepts shell-style wildcards, which must be quoted."
@@ -128,26 +126,22 @@ class Opts:
         ),
     )
     omit = optparse.make_option(
-        '', '--omit', action='store',
-        metavar="PAT1,PAT2,...",
+        '', '--omit', action='store', metavar="PAT1,PAT2,...",
         help=(
             "Omit files whose paths match one of these patterns. " +
             "Accepts shell-style wildcards, which must be quoted."
         ),
     )
     output_xml = optparse.make_option(
-        '-o', '', action='store', dest="outfile",
-        metavar="OUTFILE",
+        '-o', '', action='store', dest="outfile", metavar="OUTFILE",
         help="Write the XML report to this file. Defaults to 'coverage.xml'",
     )
     output_json = optparse.make_option(
-        '-o', '', action='store', dest="outfile",
-        metavar="OUTFILE",
+        '-o', '', action='store', dest="outfile", metavar="OUTFILE",
         help="Write the JSON report to this file. Defaults to 'coverage.json'",
     )
     output_lcov = optparse.make_option(
-        '-o', '', action='store', dest='outfile',
-        metavar="OUTFILE",
+        '-o', '', action='store', dest='outfile', metavar="OUTFILE",
         help="Write the LCOV report to this file. Defaults to 'coverage.lcov'",
     )
     json_pretty_print = optparse.make_option(
@@ -199,8 +193,10 @@ class Opts:
     )
     sort = optparse.make_option(
         '--sort', action='store', metavar='COLUMN',
-        help="Sort the report by the named column: name, stmts, miss, branch, brpart, or cover. " +
+        help=(
+            "Sort the report by the named column: name, stmts, miss, branch, brpart, or cover. " +
              "Default is name."
+        ),
     )
     source = optparse.make_option(
         '', '--source', action='store', metavar="SRC1,SRC2,...",
