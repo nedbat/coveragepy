@@ -3,7 +3,6 @@
 
 """Command-line support for coverage.py."""
 
-
 import glob
 import optparse     # pylint: disable=deprecated-module
 import os
@@ -25,9 +24,14 @@ from coverage.exceptions import _BaseCoverageException, _ExceptionDuringRun, NoS
 from coverage.execfile import PyRunner
 from coverage.results import Numbers, should_fail_under
 
+# When adding to this file, alphabetization is important.  Look for
+# "alphabetize" comments throughout.
 
 class Opts:
     """A namespace class for individual options we'll build parsers from."""
+
+    # Keep these entries alphabetized (roughly) by the option name as it
+    # appears on the command line.
 
     append = optparse.make_option(
         '-a', '--append', action='store_true',
@@ -232,6 +236,7 @@ class CoverageOptionParser(optparse.OptionParser):
             add_help_option=False, *args, **kwargs
             )
         self.set_defaults(
+            # Keep these arguments alphabetized by their names.
             action=None,
             append=None,
             branch=None,
@@ -337,6 +342,11 @@ class CmdOptionParser(CoverageOptionParser):
         # Include the sub-command for this parser as part of the command.
         return f"{program_name} {self.cmd}"
 
+# In lists of Opts, keep them alphabetized by the option names as they appear
+# on the command line, since these lists determine the order of the options in
+# the help output.
+#
+# In COMMANDS, keep the keys (command names) alphabetized.
 
 GLOBAL_ARGS = [
     Opts.debug,
@@ -344,7 +354,7 @@ GLOBAL_ARGS = [
     Opts.rcfile,
     ]
 
-CMDS = {
+COMMANDS = {
     'annotate': CmdOptionParser(
         "annotate",
         [
@@ -595,7 +605,7 @@ class CoverageScript:
         if self.global_option:
             parser = GlobalOptionParser()
         else:
-            parser = CMDS.get(argv[0])
+            parser = COMMANDS.get(argv[0])
             if not parser:
                 show_help(f"Unknown command: {argv[0]!r}")
                 return ERR
@@ -752,7 +762,7 @@ class CoverageScript:
         if options.action == "help":
             if args:
                 for a in args:
-                    parser = CMDS.get(a)
+                    parser = COMMANDS.get(a)
                     if parser:
                         show_help(parser=parser)
                     else:
