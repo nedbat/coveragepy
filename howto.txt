@@ -7,7 +7,6 @@
         version_info = (4, 0, 2, "candidate", 1)
         version_info = (4, 0, 2, "final", 0)
 - Supported Python version numbers. Search for "PYVERSIONS".
-    - Python version number in classifiers in setup.py
 - Copyright date in NOTICE.txt
 - Update CHANGES.rst, including release date.
     - don't forget the jump target
@@ -20,7 +19,7 @@
     - Version, release, release_date and copyright date in doc/conf.py
         - Look for CHANGEME comments
     - Make sure the docs are cogged:
-        $ make cogdoc
+        $ make prebuild
     - Don't forget the man page: doc/python-coverage.1.txt
     - Check that the docs build correctly:
         $ tox -e doc

@@ -32,6 +32,7 @@ Documentation is on `Read the Docs`_.  Code repository and issue tracker are on
 
 
 **New in 6.x:** dropped support for Python 2.7, 3.5, and 3.6;
+write data on SIGTERM;
 added support for 3.10 match/case statements.
 
 

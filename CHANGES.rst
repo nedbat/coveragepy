@@ -19,8 +19,10 @@ This list is detailed and covers changes in each pre-release version.
     ..  Version 9.8.1 — 2027-07-27
     ..  --------------------------
 
-Unreleased
-----------
+.. _changes_63:
+
+Version 6.3 — 2022-01-25
+------------------------
 
 - Feature: Added the ``lcov`` command to generate reports in LCOV format.
   Thanks, `Bradley Burns <pull 1289_>`_. Closes issues `587 <issue 587_>`_
@@ -61,6 +63,7 @@ Unreleased
 .. _issue 1307: https://github.com/nedbat/coveragepy/issues/1307
 .. _pull 1289: https://github.com/nedbat/coveragepy/pull/1289
 .. _pull 1304: https://github.com/nedbat/coveragepy/pull/1304
+
 
 .. _changes_62:
 
