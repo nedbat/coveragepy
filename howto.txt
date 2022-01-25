@@ -61,6 +61,10 @@
 - Tag the tree
     $ git tag -a -m "Version 3.0.1" 3.0.1
     $ git push --follow-tags
+    - IF NOT PRE-RELEASE:
+        - update git "stable" branch to point to latest release
+            $ git branch -f stable <latest-tag>
+            $ git push origin stable
 - Update GitHub releases:
     $ make clean github_releases
 - Bump version:
@@ -77,9 +81,6 @@
             - readthedocs won't find the tag until a commit is made on master.
         - keep just the latest version of each x.y release, make the rest active but hidden.
     - IF NOT PRE-RELEASE:
-        - update git "stable" branch to point to latest release
-            $ git branch -f stable <latest-tag>
-            $ git push --all --follow-tags
         - @ https://readthedocs.org/projects/coverage/builds/
             - wait for the new tag build to finish successfully.
         - @ https://readthedocs.org/dashboard/coverage/advanced/
@@ -89,6 +90,12 @@
 - Announce:
     - twitter @coveragepy
     - nedbatchelder.com blog post?
+- things to automate:
+    - git tag command
+    - git stable branch update command
+    - comment-on-fixes.py
+    - url to link to latest changes in docs
+    - next version.py line
 
 
 * Testing
