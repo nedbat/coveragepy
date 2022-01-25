@@ -196,7 +196,8 @@ jobs:
       - name: "Install PyPy"
         uses: actions/setup-python@v2
         with:
-          python-version: "pypy3"
+          # PYVERSIONS
+          python-version: "pypy-3.7"
           cache: pip
           cache-dependency-path: 'requirements/*.pip'
 
