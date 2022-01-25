@@ -8,7 +8,7 @@ Measure Python code coverage
 
 :Author: Ned Batchelder <ned@nedbatchelder.com>
 :Author: |author|
-:Date: 2021-01-24
+:Date: 2022-01-25
 :Copyright: Apache 2.0 license, attribution and disclaimer required.
 :Manual section: 1
 :Manual group: Coverage.py
@@ -96,6 +96,10 @@ COMMAND REFERENCE
     \-d `DIR`, --directory=`DIR`
         Write the output files to DIR.
 
+    \--data-file `INFILE`
+        Read coverage data for report generation from this
+        file. Defaults to '.coverage'.
+
     \-i, --ignore-errors
         Ignore errors while reading source files.
 
@@ -123,6 +127,9 @@ COMMAND REFERENCE
         Append coverage data to .coverage, otherwise it starts clean each
         time.
 
+    \--data-file `DATAFILE`
+        Base name of the data files to operate on.  Defaults to '.coverage'.
+
     \--keep
         Keep original coverage data files.
 
@@ -145,6 +152,11 @@ COMMAND REFERENCE
 
     Erase previously collected coverage data.
 
+    Options:
+
+    \--data-file `DATAFILE`
+        Base name of the data files to operate on. Defaults to '.coverage'.
+
 **help** [ `command` ]
 
     Describe how to use coverage.py.
@@ -162,6 +174,10 @@ COMMAND REFERENCE
 
     \-d `DIR`, --directory `DIR`
         Write the output files to `DIR`.
+
+    \--data-file `INFILE`
+        Read coverage data for report generation from this file.
+        Defaults to '.coverage'.
 
     \--fail-under `MIN`
         Exit with a status of 2 if the total coverage is less than `MIN`.
@@ -206,6 +222,10 @@ COMMAND REFERENCE
     \--contexts `PAT` [ , ... ]
         Only include contexts that match one of the regex patterns.
 
+    \--data-file `INFILE`
+        Read coverage data for report generation from this file.
+        Defaults to '.coverage'.
+
     \--fail-under `MIN`
         Exit with a status of 2 if the total coverage is less than `MIN`.
 
@@ -238,6 +258,10 @@ COMMAND REFERENCE
 
     Options:
 
+    \--data-file `INFILE`
+        Read coverage data for report generation from this file.
+        Defaults to '.coverage'.
+
     \--fail-under `MIN`
         Exit with a status of 2 if the total coverage is less than `MIN`.
 
@@ -266,6 +290,10 @@ COMMAND REFERENCE
 
     \--contexts `PAT` [ , ... ]
         Only include contexts that match one of the regex patterns.
+
+    \--data-file `INFILE`
+        Read coverage data for report generation from this file.
+        Defaults to '.coverage'.
 
     \--fail-under `MIN`
         Exit with a status of 2 if the total coverage is less than `MIN`.
@@ -324,6 +352,10 @@ COMMAND REFERENCE
     \--context `CONTEXT`
         The context label to record for this coverage run.
 
+    \--data-file `OUTFILE`
+        Write the recorded coverage data to this file.
+        Defaults to '.coverage'.
+
     \--include `PATTERN` [ , ... ]
         Include only files whose paths match one of these
         PATTERNs. Accepts shell-style wildcards, which must be quoted.
@@ -356,6 +388,10 @@ COMMAND REFERENCE
     Generate an XML report of coverage results on each `MODULE`.
 
     Options:
+
+    \--data-file `INFILE`
+        Read coverage data for report generation from this file.
+        Defaults to '.coverage'.
 
     \--fail-under `MIN`
         Exit with a status of 2 if the total coverage is less than `MIN`.

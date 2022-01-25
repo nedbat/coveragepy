@@ -62,7 +62,7 @@ class Opts:
     combine_datafile = optparse.make_option(
         '', '--data-file', action='store', metavar="DATAFILE",
         help=(
-            "Base name of the data files to combine and write. " +
+            "Base name of the data files to operate on. " +
             "Defaults to '.coverage'. [env: COVERAGE_FILE]"
         ),
     )
@@ -344,17 +344,16 @@ GLOBAL_ARGS = [
     Opts.rcfile,
     ]
 
-REPORT_ARGS = [Opts.input_datafile]
-
 CMDS = {
     'annotate': CmdOptionParser(
         "annotate",
         [
             Opts.directory,
+            Opts.input_datafile,
             Opts.ignore_errors,
             Opts.include,
             Opts.omit,
-            ] + REPORT_ARGS + GLOBAL_ARGS,
+            ] + GLOBAL_ARGS,
         usage="[options] [modules]",
         description=(
             "Make annotated copies of the given files, marking statements that are executed " +
@@ -366,9 +365,9 @@ CMDS = {
         "combine",
         [
             Opts.append,
+            Opts.combine_datafile,
             Opts.keep,
             Opts.quiet,
-            Opts.combine_datafile
             ] + GLOBAL_ARGS,
         usage="[options] <path1> <path2> ... <pathN>",
         description=(
@@ -396,7 +395,10 @@ CMDS = {
     ),
 
     'erase': CmdOptionParser(
-        "erase", [Opts.input_datafile] + GLOBAL_ARGS,
+        "erase",
+        [
+            Opts.combine_datafile
+            ] + GLOBAL_ARGS,
         description="Erase previously collected coverage data.",
     ),
 
@@ -411,6 +413,7 @@ CMDS = {
         [
             Opts.contexts,
             Opts.directory,
+            Opts.input_datafile,
             Opts.fail_under,
             Opts.ignore_errors,
             Opts.include,
@@ -422,7 +425,7 @@ CMDS = {
             Opts.no_skip_covered,
             Opts.skip_empty,
             Opts.title,
-            ] + REPORT_ARGS + GLOBAL_ARGS,
+            ] + GLOBAL_ARGS,
         usage="[options] [modules]",
         description=(
             "Create an HTML report of the coverage of the files.  " +
@@ -435,6 +438,7 @@ CMDS = {
         "json",
         [
             Opts.contexts,
+            Opts.input_datafile,
             Opts.fail_under,
             Opts.ignore_errors,
             Opts.include,
@@ -443,7 +447,7 @@ CMDS = {
             Opts.json_pretty_print,
             Opts.quiet,
             Opts.show_contexts,
-            ] + REPORT_ARGS + GLOBAL_ARGS,
+            ] + GLOBAL_ARGS,
         usage="[options] [modules]",
         description="Generate a JSON report of coverage results.",
     ),
@@ -451,6 +455,7 @@ CMDS = {
     'lcov': CmdOptionParser(
         "lcov",
         [
+            Opts.input_datafile,
             Opts.fail_under,
             Opts.ignore_errors,
             Opts.include,
@@ -466,6 +471,7 @@ CMDS = {
         "report",
         [
             Opts.contexts,
+            Opts.input_datafile,
             Opts.fail_under,
             Opts.ignore_errors,
             Opts.include,
@@ -476,7 +482,7 @@ CMDS = {
             Opts.skip_covered,
             Opts.no_skip_covered,
             Opts.skip_empty,
-            ] + REPORT_ARGS + GLOBAL_ARGS,
+            ] + GLOBAL_ARGS,
         usage="[options] [modules]",
         description="Report coverage statistics on modules.",
     ),
@@ -488,10 +494,10 @@ CMDS = {
             Opts.branch,
             Opts.concurrency,
             Opts.context,
+            Opts.output_datafile,
             Opts.include,
             Opts.module,
             Opts.omit,
-            Opts.output_datafile,
             Opts.pylib,
             Opts.parallel_mode,
             Opts.source,
@@ -504,6 +510,7 @@ CMDS = {
     'xml': CmdOptionParser(
         "xml",
         [
+            Opts.input_datafile,
             Opts.fail_under,
             Opts.ignore_errors,
             Opts.include,
@@ -511,7 +518,7 @@ CMDS = {
             Opts.output_xml,
             Opts.quiet,
             Opts.skip_empty,
-            ] + REPORT_ARGS + GLOBAL_ARGS,
+            ] + GLOBAL_ARGS,
         usage="[options] [modules]",
         description="Generate an XML report of coverage results.",
     ),
