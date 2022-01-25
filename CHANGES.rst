@@ -22,13 +22,14 @@ This list is detailed and covers changes in each pre-release version.
 Unreleased
 ----------
 
-- Feature: Added the `lcov` command to generate reports in LCOV format.
-  Thanks, Bradley Burns. Closes `issue 587`_ and `issue 626`_.
+- Feature: Added the ``lcov`` command to generate reports in LCOV format.
+  Thanks, `Bradley Burns <pull 1289_>`_. Closes issues `587 <issue 587_>`_
+  and `626 <issue 626_>`_.
 
 - Feature: the coverage data file can now be specified on the command line with
   the ``--data-file`` option in any command that reads or writes data.  This is
   in addition to the existing ``COVERAGE_FILE`` environment variable.  Closes
-  `issue 624`_. Thanks, Nikita Bloshchanevich.
+  `issue 624`_. Thanks, `Nikita Bloshchanevich <pull 1304_>`_.
 
 - Feature: coverage measurement data will now be written when a SIGTERM signal
   is received by the process.  This includes
@@ -42,13 +43,13 @@ Unreleased
 
 - Fix: the coverage data file is now created in a more robust way, to avoid
   problems when multiple processes are trying to write data at once. Fixes
-  `issue 1303`_ and `issue 883`_.
+  issues `1303 <issue 1303_>`_ and `883 <issue 883_>`_.
 
 - Fix: a .gitignore file will only be written into the HTML report output
   directory if the directory is empty.  This should prevent certain unfortunate
   accidents of writing the file where it is not wanted.
 
-- Releases now have MacOS arm64 wheels for Apple Silicon (fixes `issue 1288`_).
+- Releases now have MacOS arm64 wheels for Apple Silicon, fixing `issue 1288`_.
 
 .. _issue 587: https://github.com/nedbat/coveragepy/issues/587
 .. _issue 624: https://github.com/nedbat/coveragepy/issues/624
@@ -58,7 +59,8 @@ Unreleased
 .. _issue 1294: https://github.com/nedbat/coveragepy/issues/1294
 .. _issue 1303: https://github.com/nedbat/coveragepy/issues/1303
 .. _issue 1307: https://github.com/nedbat/coveragepy/issues/1307
-
+.. _pull 1289: https://github.com/nedbat/coveragepy/pull/1289
+.. _pull 1304: https://github.com/nedbat/coveragepy/pull/1304
 
 .. _changes_62:
 
