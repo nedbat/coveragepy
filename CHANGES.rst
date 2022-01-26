@@ -22,7 +22,11 @@ This list is detailed and covers changes in each pre-release version.
 Unreleased
 ----------
 
-Nothing yet.
+- Fix: a signal handler was being set from multiple threads, causing an error:
+  ``ValueError: signal only works in main thread``.  This is now fixed, closing
+  `issue 1312`_.
+
+.. _issue 1312: https://github.com/nedbat/coveragepy/issues/1312
 
 
 .. _changes_63:

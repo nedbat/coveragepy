@@ -11,6 +11,7 @@ import os.path
 import platform
 import signal
 import sys
+import threading
 import time
 import warnings
 
@@ -528,8 +529,10 @@ class Coverage:
         # It's useful to write debug info after initing for start.
         self._should_write_debug = True
 
+        # Register our clean-up handlers.
         atexit.register(self._atexit)
-        if not env.WINDOWS:
+        is_main = (threading.current_thread() == threading.main_thread())
+        if is_main and not env.WINDOWS:
             # The Python docs seem to imply that SIGTERM works uniformly even
             # on Windows, but that's not my experience, and this agrees:
             # https://stackoverflow.com/questions/35772001/x/35792192#35792192
