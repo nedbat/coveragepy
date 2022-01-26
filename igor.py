@@ -9,6 +9,7 @@ of in shell scripts, batch files, or Makefiles.
 """
 
 import contextlib
+import datetime
 import fnmatch
 import glob
 import inspect
@@ -363,6 +364,45 @@ def do_quietly(command):
     """Run a command in a shell, and suppress all output."""
     proc = subprocess.run(command, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     return proc.returncode
+
+
+def do_cheats():
+    """Show a cheatsheet of useful things during releasing."""
+    import coverage
+    ver = coverage.__version__
+    vi = coverage.version_info
+    anchor = f"{vi[0]}{vi[1]}"
+    if vi[2]:
+        anchor += f"{vi[2]}"
+    if vi[3] != "final":
+        anchor += vi[3][0]
+        anchor += f"{vi[4]}"
+    branch = subprocess.getoutput("git rev-parse --abbrev-ref @")
+    print(f"Coverage version is {ver}")
+
+    print(f"pip install git+https://github.com/nedbat/coveragepy@{branch}")
+    print(f".. _changes_{anchor}:")
+    print()
+    head = f"Version {ver} — {datetime.datetime.now():%Y-%m-%d}"
+    print(head)
+    print("-" * len(head))
+
+    print(f'git tag -a -m "Version {ver}" {ver}')
+    print(f'git branch -f stable {ver}')
+    print(f"https://coverage.readthedocs.io/en/{ver}/changes.html#changes-{anchor}")
+
+    print("\nnext:")
+    next_vi = (vi[0], vi[1], vi[2]+1, "alpha", 0)
+    print(f"version_info = {next_vi}".replace("'", '"'))
+    print("for CHANGES.rst:")
+    print(textwrap.dedent("""\
+        Unreleased
+        ----------
+
+        Nothing yet.
+
+
+        """))
 
 
 def do_help():
