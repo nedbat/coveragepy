@@ -6,6 +6,7 @@
 import os
 import os.path
 import shutil
+import sys
 
 import pytest
 
@@ -160,7 +161,11 @@ def coverage_command_fixture(request):
 
 
 # https://bugs.python.org/issue46028
-@pytest.mark.xfail((3, 11, 0, 'alpha', 4, 0) == env.PYVERSION, reason="avoid 3.11 bug: bpo46028")
+@pytest.mark.xfail(
+    (3, 11, 0, 'alpha', 4, 0) == env.PYVERSION and
+        not os.path.exists(sys._base_executable),
+    reason="avoid 3.11 bug: bpo46028"
+)
 class VirtualenvTest(CoverageTest):
     """Tests of virtualenv considerations."""
 
