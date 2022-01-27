@@ -605,10 +605,10 @@ class Coverage:
 
     def _on_sigterm(self, signum_unused, frame_unused):
         """A handler for signal.SIGTERM."""
+        signal.signal(signal.SIGTERM, self._old_sigterm)
         self._atexit("sigterm")
         # Statements after here won't be seen by metacov because we just wrote
         # the data, and are about to kill the process.
-        signal.signal(signal.SIGTERM, self._old_sigterm)    # pragma: not covered
         os.kill(os.getpid(), signal.SIGTERM)                # pragma: not covered
 
     def erase(self):
