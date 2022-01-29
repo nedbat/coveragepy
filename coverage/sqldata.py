@@ -497,6 +497,9 @@ class CoverageData(SimpleReprMixin):
             self._set_context_id()
             for filename, arcs in arc_data.items():
                 file_id = self._file_id(filename, add=True)
+                from coverage import env
+                if env.PYVERSION == (3, 11, 0, "alpha", 4, 0):
+                    arcs = [(a, b) for a, b in arcs if a is not None and b is not None]
                 data = [(file_id, self._current_context_id, fromno, tono) for fromno, tono in arcs]
                 con.executemany(
                     "insert or ignore into arc " +

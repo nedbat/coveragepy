@@ -1234,7 +1234,7 @@ class YieldTest(CoverageTest):
             arcz=".1 14 45 54 4.  .2 2.  -22 2-2",
         )
 
-    @pytest.mark.xfail(
+    @pytest.mark.skipif(
         ((3, 11, 0, "alpha", 4, 0) == env.PYVERSION) and not env.C_TRACER,
         reason="avoid a 3.11 bug: https://bugs.python.org/issue46389",
     )
@@ -1623,7 +1623,7 @@ class MiscArcTest(CoverageTest):
         self.check_coverage(code, arcs=[(-1, 1), (1, 2*n+4), (2*n+4, -1)])
         assert self.stdout() == f"{n}\n"
 
-    @pytest.mark.xfail(
+    @pytest.mark.skipif(
         ((3, 11, 0, "alpha", 4, 0) == env.PYVERSION) and not env.C_TRACER,
         reason="avoid a 3.11 bug: https://bugs.python.org/issue46389",
     )

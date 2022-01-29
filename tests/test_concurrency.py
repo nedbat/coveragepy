@@ -496,6 +496,11 @@ class MultiprocessingTest(CoverageTest):
             last_line = self.squeezed_lines(out)[-1]
             assert re.search(r"TOTAL \d+ 0 100%", last_line)
 
+    @pytest.mark.skipif(
+        ((3, 11, 0, "alpha", 4, 0) == env.PYVERSION),
+        #((3, 11, 0, "alpha", 4, 0) == env.PYVERSION) and not env.C_TRACER and env.METACOV,
+        reason="avoid a 3.11 bug: https://bugs.python.org/issue46389",
+    )
     def test_multiprocessing_simple(self, start_method):
         nprocs = 3
         upto = 30
@@ -510,6 +515,11 @@ class MultiprocessingTest(CoverageTest):
             start_method=start_method,
         )
 
+    @pytest.mark.skipif(
+        ((3, 11, 0, "alpha", 4, 0) == env.PYVERSION),
+        #((3, 11, 0, "alpha", 4, 0) == env.PYVERSION) and not env.C_TRACER and env.METACOV,
+        reason="avoid a 3.11 bug: https://bugs.python.org/issue46389",
+    )
     def test_multiprocessing_append(self, start_method):
         nprocs = 3
         upto = 30
