@@ -926,6 +926,11 @@ class ExceptionArcTest(CoverageTest):
             arcz=".1 12 23 35 56 61 17 7.",
         )
 
+    @pytest.mark.xfail(
+        env.PYPY and env.PYVERSION >= (3, 9),
+        reason="avoid a PyPy bug: 3662"
+        # https://foss.heptapod.net/pypy/pypy/-/issues/3662
+    )
     def test_bug_212(self):
         # "except Exception as e" is crucial here.
         # Bug 212 said that the "if exc" line was incorrectly marked as only
@@ -1653,6 +1658,11 @@ class MiscArcTest(CoverageTest):
 class DecoratorArcTest(CoverageTest):
     """Tests of arcs with decorators."""
 
+    @pytest.mark.xfail(
+        env.PYPY and env.PYVERSION >= (3, 9),
+        reason="avoid a PyPy bug: 3666"
+        # https://foss.heptapod.net/pypy/pypy/-/issues/3666
+    )
     def test_function_decorator(self):
         arcz = (
             ".1 16 67 7A AE EF F. "     # main line
@@ -1681,6 +1691,11 @@ class DecoratorArcTest(CoverageTest):
             arcz=arcz,
         )
 
+    @pytest.mark.xfail(
+        env.PYPY and env.PYVERSION >= (3, 9),
+        reason="avoid a PyPy bug: 3666"
+        # https://foss.heptapod.net/pypy/pypy/-/issues/3666
+    )
     def test_class_decorator(self):
         arcz = (
             ".1 16 67 6D 7A AE E. "     # main line
@@ -1716,6 +1731,7 @@ class DecoratorArcTest(CoverageTest):
             arcz = arcz.replace("3.", "34 4.")
         if env.PYBEHAVIOR.trace_decorator_line_again:
             arcz += "43 "
+        # This example makes more sense when considered in tandem with 466b below.
         self.check_coverage("""\
             class Parser(object):
 
@@ -1832,7 +1848,7 @@ class LambdaArcTest(CoverageTest):
 
 
 xfail_eventlet_670 = pytest.mark.xfail(
-    env.PYVERSION[:2] == (3, 9) and env.OSX,
+    env.PYVERSION[:2] == (3, 9) and env.CPYTHON and env.OSX,
     reason="Avoid an eventlet bug on Mac 3.9: eventlet#670",
     # https://github.com/eventlet/eventlet/issues/670
 )

@@ -50,9 +50,11 @@ class PYBEHAVIOR:
     optimize_if_not_debug2 = (not PYPY) and (PYVERSION >= (3, 8, 0, 'beta', 1))
     if pep626:
         optimize_if_not_debug2 = False
+    if PYPY and (PYVERSION >= (3, 9)):
+        optimize_if_not_debug2 = True
 
     # Yet another way to optimize "if not __debug__"?
-    optimize_if_not_debug3 = (PYPY and PYVERSION >= (3, 8))
+    optimize_if_not_debug3 = (PYPY and (3, 8) <= PYVERSION <= (3, 9))
 
     # Can co_lnotab have negative deltas?
     negative_lnotab = not (PYPY and PYPYVERSION < (7, 2))
@@ -71,11 +73,19 @@ class PYBEHAVIOR:
     # (old behavior)?
     trace_decorated_def = (CPYTHON and PYVERSION >= (3, 8))
 
+    # Functions are no longer claimed to start at their earliest decorator even though
+    # the decorators are traced?
+    def_ast_no_decorator = (PYPY and PYVERSION >= (3, 9))
+
+    # CPython 3.11 now jumps to the decorator line again while executing
+    # the decorator.
+    trace_decorator_line_again = (CPYTHON and PYVERSION > (3, 11, 0, 'alpha', 3, 0))
+
     # Are while-true loops optimized into absolute jumps with no loop setup?
     nix_while_true = (PYVERSION >= (3, 8))
 
-    # Python 3.9a1 made sys.argv[0] and other reported files absolute paths.
-    report_absolute_files = (PYVERSION >= (3, 9))
+    # CPython 3.9a1 made sys.argv[0] and other reported files absolute paths.
+    report_absolute_files = (CPYTHON and PYVERSION >= (3, 9))
 
     # Lines after break/continue/return/raise are no longer compiled into the
     # bytecode.  They used to be marked as missing, now they aren't executable.
@@ -99,10 +109,6 @@ class PYBEHAVIOR:
 
     # Some words are keywords in some places, identifiers in other places.
     soft_keywords = (PYVERSION >= (3, 10))
-
-    # CPython 3.11 now jumps to the decorator line again while executing
-    # the decorator.
-    trace_decorator_line_again = (PYVERSION > (3, 11, 0, 'alpha', 3, 0))
 
 
 # Coverage.py specifics.

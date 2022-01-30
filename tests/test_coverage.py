@@ -1218,6 +1218,11 @@ class CompoundStatementTest(CoverageTest):
         reason="avoid class docstring bug: bpo 46331",
         # https://bugs.python.org/issue46331
     )
+    @pytest.mark.xfail(
+        env.PYPY and env.PYVERSION[:2] == (3, 9),
+        reason="avoid PyPy class docstring bug: 3665",
+        # https://foss.heptapod.net/pypy/pypy/-/issues/3665
+    )
     def test_class_def(self):
         arcz="-22 2D DE E-2  23 36 6A A-2  -68 8-6   -AB B-A"
         self.check_coverage("""\

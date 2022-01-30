@@ -692,7 +692,7 @@ class AstArcAnalyzer:
     def _line_decorated(self, node):
         """Compute first line number for things that can be decorated (classes and functions)."""
         lineno = node.lineno
-        if env.PYBEHAVIOR.trace_decorated_def:
+        if env.PYBEHAVIOR.trace_decorated_def or env.PYBEHAVIOR.def_ast_no_decorator:
             if node.decorator_list:
                 lineno = node.decorator_list[0].lineno
         return lineno
@@ -946,7 +946,7 @@ class AstArcAnalyzer:
         main_line = last = node.lineno
         decs = node.decorator_list
         if decs:
-            if env.PYBEHAVIOR.trace_decorated_def:
+            if env.PYBEHAVIOR.trace_decorated_def or env.PYBEHAVIOR.def_ast_no_decorator:
                 last = None
             for dec_node in decs:
                 dec_start = self.line_for_node(dec_node)
