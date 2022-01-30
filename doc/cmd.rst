@@ -969,6 +969,8 @@ of operation to log:
 
 * ``dataop``: log when data is added to the CoverageData object.
 
+* ``lock``: log operations acquiring locks in the data layer.
+
 * ``multiproc``: log the start and stop of multiprocessing processes.
 
 * ``pid``: annotate all warnings and debug output with the process and thread

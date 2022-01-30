@@ -215,7 +215,7 @@ class CoverageData(SimpleReprMixin):
         self._dbs = {}
         self._pid = os.getpid()
         # Synchronize the operations used during collection.
-        self._lock = threading.Lock()
+        self._lock = threading.RLock()
 
         # Are we in sync with the data file?
         self._have_used = False
@@ -231,7 +231,11 @@ class CoverageData(SimpleReprMixin):
         """A decorator for methods that should hold self._lock."""
         @functools.wraps(method)
         def _wrapped(self, *args, **kwargs):
+            if self._debug.should("lock"):
+                self._debug.write(f"Locking {self._lock!r} for {method.__name__}")
             with self._lock:
+                if self._debug.should("lock"):
+                    self._debug.write(f"Locked  {self._lock!r} for {method.__name__}")
                 # pylint: disable=not-callable
                 return method(self, *args, **kwargs)
         return _wrapped
