@@ -68,7 +68,7 @@ class PyTracer:
         atexit.register(setattr, self, 'in_atexit', True)
 
     def __repr__(self):
-        return "<PyTracer at {}: {} lines in {} files>".format(
+        return "<PyTracer at 0x{:x}: {} lines in {} files>".format(
             id(self),
             sum(len(v) for v in self.data.values()),
             len(self.data),
@@ -267,8 +267,10 @@ class PyTracer:
             # has changed to None.
             dont_warn = (env.PYPY and env.PYPYVERSION >= (5, 4) and self.in_atexit and tf is None)
             if (not dont_warn) and tf != self._trace:   # pylint: disable=comparison-with-callable
-                msg = f"Trace function changed, measurement is likely wrong: {tf!r}"
-                self.warn(msg, slug="trace-changed")
+                self.warn(
+                    f"Trace function changed, data is likely wrong: {tf!r} != {self._trace!r}",
+                    slug="trace-changed",
+                )
 
     def activity(self):
         """Has there been any activity?"""

@@ -4,6 +4,7 @@
 """Oddball cases for testing coverage.py"""
 
 import os.path
+import re
 import sys
 
 from flaky import flaky
@@ -132,7 +133,13 @@ class RecursionTest(CoverageTest):
 
         # Get a warning about the stackoverflow effect on the tracing function.
         if pytrace:                                 # pragma: no metacov
-            assert cov._warnings == ["Trace function changed, measurement is likely wrong: None"]
+            assert len(cov._warnings) == 1
+            assert re.fullmatch(
+                r"Trace function changed, data is likely wrong: None != " +
+                r"<bound method PyTracer._trace of " +
+                "<PyTracer at 0x[0-9a-fA-F]+: 5 lines in 1 files>>",
+                cov._warnings[0],
+            )
         else:
             assert not cov._warnings
 
