@@ -7,19 +7,18 @@ import pprint
 import re
 import sys
 import textwrap
-
 from unittest import mock
+
 import pytest
 
 import coverage
 import coverage.cmdline
 from coverage import env
-from coverage.control import DEFAULT_DATAFILE
 from coverage.config import CoverageConfig
+from coverage.control import DEFAULT_DATAFILE
 from coverage.exceptions import _ExceptionDuringRun
 from coverage.version import __url__
-
-from tests.coveragetest import CoverageTest, OK, ERR, command_line
+from tests.coveragetest import ERR, OK, CoverageTest, command_line
 from tests.helpers import os_sep
 
 
@@ -1136,9 +1135,13 @@ class CoverageReportingFake:
     ((20, 30, 40, 50, 60), 61, "lcov", 2),
     # Command-line overrides configuration.
     ((20, 30, 40, 50, 60), 19, "report --fail-under=21", 2),
+    # Precision defined
+    ((20, 30, 40, 50, 60), None, "report --fail-under=20.1 --precision=1", 2),
+    ((20, 30, 40, 50, 60), None, "report --fail-under=19.9 --precision=1", 0),
 ])
 def test_fail_under(results, fail_under, cmd, ret):
     cov = CoverageReportingFake(*results)
+    print(cov.report_result)
     if fail_under is not None:
         cov.set_option("report:fail_under", fail_under)
     with mock.patch("coverage.cmdline.Coverage", lambda *a,**kw: cov):

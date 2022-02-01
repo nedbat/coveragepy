@@ -4,7 +4,7 @@
 """Command-line support for coverage.py."""
 
 import glob
-import optparse     # pylint: disable=deprecated-module
+import optparse  # pylint: disable=deprecated-module
 import os
 import os.path
 import shlex
@@ -13,14 +13,13 @@ import textwrap
 import traceback
 
 import coverage
-from coverage import Coverage
-from coverage import env
+from coverage import Coverage, env
 from coverage.collector import CTracer
 from coverage.config import CoverageConfig
 from coverage.control import DEFAULT_DATAFILE
 from coverage.data import combinable_files, debug_data_file
 from coverage.debug import info_formatter, info_header, short_stack
-from coverage.exceptions import _BaseCoverageException, _ExceptionDuringRun, NoSource
+from coverage.exceptions import NoSource, _BaseCoverageException, _ExceptionDuringRun
 from coverage.execfile import PyRunner
 from coverage.results import Numbers, should_fail_under
 
@@ -731,6 +730,8 @@ class CoverageScript:
             # value, so we can get fail_under from the config file.
             if options.fail_under is not None:
                 self.coverage.set_option("report:fail_under", options.fail_under)
+            if options.precision is not None:
+                self.coverage.set_option("report:precision", options.precision)
 
             fail_under = self.coverage.get_option("report:fail_under")
             precision = self.coverage.get_option("report:precision")
@@ -969,7 +970,7 @@ def main(argv=None):
 # $set_env.py: COVERAGE_PROFILE - Set to use ox_profile.
 _profile = os.environ.get("COVERAGE_PROFILE", "")
 if _profile:                                                # pragma: debugging
-    from ox_profile.core.launchers import SimpleLauncher    # pylint: disable=import-error
+    from ox_profile.core.launchers import SimpleLauncher  # pylint: disable=import-error
     original_main = main
 
     def main(argv=None):                                    # pylint: disable=function-redefined
