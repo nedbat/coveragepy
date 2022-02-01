@@ -1141,7 +1141,6 @@ class CoverageReportingFake:
 ])
 def test_fail_under(results, fail_under, cmd, ret):
     cov = CoverageReportingFake(*results)
-    print(cov.report_result)
     if fail_under is not None:
         cov.set_option("report:fail_under", fail_under)
     with mock.patch("coverage.cmdline.Coverage", lambda *a,**kw: cov):
