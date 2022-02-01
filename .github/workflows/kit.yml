@@ -223,7 +223,9 @@ jobs:
 
   prerel:
     name: "Build pre-rel ${{ matrix.os }} ${{ matrix.py }} wheels"
-    if: ${{ true }}  # true when there are pre-rel, false when not.
+    # Our C extension uses internal fields, which are moving during the 3.11.0
+    # alpha phases. Don't pre-build wheels.
+    if: ${{ false }}  # true when there are pre-rel, false when not.
     runs-on: "${{ matrix.os }}-latest"
     strategy:
       matrix:

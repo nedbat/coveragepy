@@ -26,7 +26,11 @@ Unreleased
   ``ValueError: signal only works in main thread``.  This is now fixed, closing
   `issue 1312`_.
 
+- Fix: releases no longer provide 3.11 alpha wheels. We use internal fields
+  which are moving during the alpha phase. Fixes `issue 1316`_.
+
 .. _issue 1312: https://github.com/nedbat/coveragepy/issues/1312
+.. _issue 1316: https://github.com/nedbat/coveragepy/issues/1316
 
 
 .. _changes_63:
