@@ -7,18 +7,19 @@ import pprint
 import re
 import sys
 import textwrap
-from unittest import mock
 
+from unittest import mock
 import pytest
 
 import coverage
 import coverage.cmdline
 from coverage import env
-from coverage.config import CoverageConfig
 from coverage.control import DEFAULT_DATAFILE
+from coverage.config import CoverageConfig
 from coverage.exceptions import _ExceptionDuringRun
 from coverage.version import __url__
-from tests.coveragetest import ERR, OK, CoverageTest, command_line
+
+from tests.coveragetest import CoverageTest, OK, ERR, command_line
 from tests.helpers import os_sep
 
 
