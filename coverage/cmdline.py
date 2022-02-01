@@ -4,7 +4,7 @@
 """Command-line support for coverage.py."""
 
 import glob
-import optparse    # pylint: disable=deprecated-module
+import optparse     # pylint: disable=deprecated-module
 import os
 import os.path
 import shlex
