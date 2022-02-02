@@ -1077,9 +1077,9 @@ class CmdMainTest(CoverageTest):
 
 
 class CoverageReportingFake:
-    """A fake Coverage.coverage test double."""
+    """A fake Coverage.coverage test double for FailUnderTest methods."""
     # pylint: disable=missing-function-docstring
-    def __init__(self, report_result, html_result, xml_result, json_report, lcov_result):
+    def __init__(self, report_result, html_result=0, xml_result=0, json_report=0, lcov_result=0):
         self.config = CoverageConfig()
         self.report_result = report_result
         self.html_result = html_result
@@ -1111,39 +1111,52 @@ class CoverageReportingFake:
     def lcov_report(self, *args_unused, **kwargs_unused):
         return self.lcov_result
 
-@pytest.mark.parametrize("results, fail_under, cmd, ret", [
-    # Command-line switch properly checks the result of reporting functions.
-    ((20, 30, 40, 50, 60), None, "report --fail-under=19", 0),
-    ((20, 30, 40, 50, 60), None, "report --fail-under=21", 2),
-    ((20, 30, 40, 50, 60), None, "html --fail-under=29", 0),
-    ((20, 30, 40, 50, 60), None, "html --fail-under=31", 2),
-    ((20, 30, 40, 50, 60), None, "xml --fail-under=39", 0),
-    ((20, 30, 40, 50, 60), None, "xml --fail-under=41", 2),
-    ((20, 30, 40, 50, 60), None, "json --fail-under=49", 0),
-    ((20, 30, 40, 50, 60), None, "json --fail-under=51", 2),
-    ((20, 30, 40, 50, 60), None, "lcov --fail-under=59", 0),
-    ((20, 30, 40, 50, 60), None, "lcov --fail-under=61", 2),
-    # Configuration file setting properly checks the result of reporting.
-    ((20, 30, 40, 50, 60), 19, "report", 0),
-    ((20, 30, 40, 50, 60), 21, "report", 2),
-    ((20, 30, 40, 50, 60), 29, "html", 0),
-    ((20, 30, 40, 50, 60), 31, "html", 2),
-    ((20, 30, 40, 50, 60), 39, "xml", 0),
-    ((20, 30, 40, 50, 60), 41, "xml", 2),
-    ((20, 30, 40, 50, 60), 49, "json", 0),
-    ((20, 30, 40, 50, 60), 51, "json", 2),
-    ((20, 30, 40, 50, 60), 59, "lcov", 0),
-    ((20, 30, 40, 50, 60), 61, "lcov", 2),
-    # Command-line overrides configuration.
-    ((20, 30, 40, 50, 60), 19, "report --fail-under=21", 2),
-    # Precision defined
-    ((20, 30, 40, 50, 60), None, "report --fail-under=20.1 --precision=1", 2),
-    ((20, 30, 40, 50, 60), None, "report --fail-under=19.9 --precision=1", 0),
-])
-def test_fail_under(results, fail_under, cmd, ret):
-    cov = CoverageReportingFake(*results)
-    if fail_under is not None:
-        cov.set_option("report:fail_under", fail_under)
-    with mock.patch("coverage.cmdline.Coverage", lambda *a,**kw: cov):
-        ret_actual = command_line(cmd)
-    assert ret_actual == ret
+
+class FailUnderTest(CoverageTest):
+    """Tests of the --fail-under handling in cmdline.py."""
+
+    @pytest.mark.parametrize("results, fail_under, cmd, ret", [
+        # Command-line switch properly checks the result of reporting functions.
+        ((20, 30, 40, 50, 60), None, "report --fail-under=19", 0),
+        ((20, 30, 40, 50, 60), None, "report --fail-under=21", 2),
+        ((20, 30, 40, 50, 60), None, "html --fail-under=29", 0),
+        ((20, 30, 40, 50, 60), None, "html --fail-under=31", 2),
+        ((20, 30, 40, 50, 60), None, "xml --fail-under=39", 0),
+        ((20, 30, 40, 50, 60), None, "xml --fail-under=41", 2),
+        ((20, 30, 40, 50, 60), None, "json --fail-under=49", 0),
+        ((20, 30, 40, 50, 60), None, "json --fail-under=51", 2),
+        ((20, 30, 40, 50, 60), None, "lcov --fail-under=59", 0),
+        ((20, 30, 40, 50, 60), None, "lcov --fail-under=61", 2),
+        # Configuration file setting properly checks the result of reporting.
+        ((20, 30, 40, 50, 60), 19, "report", 0),
+        ((20, 30, 40, 50, 60), 21, "report", 2),
+        ((20, 30, 40, 50, 60), 29, "html", 0),
+        ((20, 30, 40, 50, 60), 31, "html", 2),
+        ((20, 30, 40, 50, 60), 39, "xml", 0),
+        ((20, 30, 40, 50, 60), 41, "xml", 2),
+        ((20, 30, 40, 50, 60), 49, "json", 0),
+        ((20, 30, 40, 50, 60), 51, "json", 2),
+        ((20, 30, 40, 50, 60), 59, "lcov", 0),
+        ((20, 30, 40, 50, 60), 61, "lcov", 2),
+        # Command-line overrides configuration.
+        ((20, 30, 40, 50, 60), 19, "report --fail-under=21", 2),
+    ])
+    def test_fail_under(self, results, fail_under, cmd, ret):
+        cov = CoverageReportingFake(*results)
+        if fail_under is not None:
+            cov.set_option("report:fail_under", fail_under)
+        with mock.patch("coverage.cmdline.Coverage", lambda *a,**kw: cov):
+            self.command_line(cmd, ret)
+
+    @pytest.mark.parametrize("result, cmd, ret, msg", [
+        (20.5, "report --fail-under=20.4 --precision=1", 0, ""),
+        (20.5, "report --fail-under=20.6 --precision=1", 2,
+            "Coverage failure: total of 20.5 is less than fail-under=20.6\n"),
+        (20.12345, "report --fail-under=20.1235 --precision=5", 2,
+            "Coverage failure: total of 20.12345 is less than fail-under=20.12350\n"),
+    ])
+    def test_fail_under_with_precision(self, result, cmd, ret, msg):
+        cov = CoverageReportingFake(report_result=result)
+        with mock.patch("coverage.cmdline.Coverage", lambda *a,**kw: cov):
+            self.command_line(cmd, ret)
+        assert self.stdout() == msg
