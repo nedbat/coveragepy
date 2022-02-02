@@ -9,8 +9,6 @@ These changes are listed in decreasing version number order. Note this can be
 different from a strict chronological order when there are two branches in
 development at the same time, such as 4.5.x and 5.0.
 
-This list is detailed and covers changes in each pre-release version.
-
     .. When updating the "Unreleased" header to a specific version, use this
     .. format.  Don't forget the jump target:
     ..
@@ -22,17 +20,21 @@ This list is detailed and covers changes in each pre-release version.
 Unreleased
 ----------
 
+- Fix: deadlocks could occur when terminating processes.  Some of these
+  deadlocks (described in `issue 1310`_) are now fixed.
+
 - Fix: a signal handler was being set from multiple threads, causing an error:
-  ``ValueError: signal only works in main thread``.  This is now fixed, closing
+  "ValueError: signal only works in main thread".  This is now fixed, closing
   `issue 1312`_.
 
 - Fix: ``--precision`` on the command-line was being ignored while considering
   ``--fail-under``.  This is now fixed, thanks to
   `Marcelo Trylesinski <pull 1317_>`_.
 
-- Fix: releases no longer provide 3.11 alpha wheels. We use internal fields
-  which are moving during the alpha phase. Fixes `issue 1316`_.
+- Fix: releases no longer provide 3.11.0-alpha wheels. Coverage.py uses CPython
+  internal fields which are moving during the alpha phase. Fixes `issue 1316`_.
 
+.. _issue 1310: https://github.com/nedbat/coveragepy/issues/1310
 .. _issue 1312: https://github.com/nedbat/coveragepy/issues/1312
 .. _issue 1316: https://github.com/nedbat/coveragepy/issues/1316
 .. _pull 1317: https://github.com/nedbat/coveragepy/pull/1317
