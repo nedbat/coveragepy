@@ -1136,6 +1136,9 @@ class CoverageReportingFake:
     ((20, 30, 40, 50, 60), 61, "lcov", 2),
     # Command-line overrides configuration.
     ((20, 30, 40, 50, 60), 19, "report --fail-under=21", 2),
+    # Precision defined
+    ((20, 30, 40, 50, 60), None, "report --fail-under=20.1 --precision=1", 2),
+    ((20, 30, 40, 50, 60), None, "report --fail-under=19.9 --precision=1", 0),
 ])
 def test_fail_under(results, fail_under, cmd, ret):
     cov = CoverageReportingFake(*results)

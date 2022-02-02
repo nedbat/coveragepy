@@ -731,6 +731,8 @@ class CoverageScript:
             # value, so we can get fail_under from the config file.
             if options.fail_under is not None:
                 self.coverage.set_option("report:fail_under", options.fail_under)
+            if options.precision is not None:
+                self.coverage.set_option("report:precision", options.precision)
 
             fail_under = self.coverage.get_option("report:fail_under")
             precision = self.coverage.get_option("report:precision")
