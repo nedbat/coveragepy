@@ -96,6 +96,7 @@ Leonardo Pistone
 Lex Berezhny
 Loïc Dachary
 Marc Abramowitz
+Marcelo Trylesinski
 Marcus Cobden
 Marius Gedminas
 Mark van der Wal
