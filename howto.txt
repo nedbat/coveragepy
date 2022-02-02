@@ -87,7 +87,8 @@
         - @ https://readthedocs.org/dashboard/coverage/advanced/
             - change the default version to the new version
 - Visit the fixed issues on GitHub and mention the version it was fixed in.
-    - "This is now released as part of [coverage 5.2](https://pypi.org/project/coverage/5.2)."
+    - python ci/comment_on_fixes.py
+        - "This is now released as part of [coverage 5.2](https://pypi.org/project/coverage/5.2)."
 - Announce:
     - twitter @coveragepy
     - nedbatchelder.com blog post?
