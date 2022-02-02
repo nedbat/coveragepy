@@ -8,6 +8,7 @@
         version_info = (4, 0, 2, "final", 0)
 - Supported Python version numbers. Search for "PYVERSIONS".
 - Copyright date in NOTICE.txt
+- run `python igor.py cheats` to get useful snippets for next steps.
 - Update CHANGES.rst, including release date.
     - don't forget the jump target
 - Update README.rst

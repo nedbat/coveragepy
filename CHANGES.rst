@@ -17,8 +17,10 @@ development at the same time, such as 4.5.x and 5.0.
     ..  Version 9.8.1 — 2027-07-27
     ..  --------------------------
 
-Unreleased
-----------
+.. _changes_631:
+
+Version 6.3.1 — 2022-02-01
+--------------------------
 
 - Fix: deadlocks could occur when terminating processes.  Some of these
   deadlocks (described in `issue 1310`_) are now fixed.

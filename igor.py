@@ -381,20 +381,27 @@ def do_cheats():
     print(f"Coverage version is {ver}")
 
     print(f"pip install git+https://github.com/nedbat/coveragepy@{branch}")
+
+    print("\nfor CHANGES.rst before release:")
     print(f".. _changes_{anchor}:")
     print()
     head = f"Version {ver} — {datetime.datetime.now():%Y-%m-%d}"
     print(head)
     print("-" * len(head))
 
+    print("\ngit commands:")
     print(f'git tag -a -m "Version {ver}" {ver}')
     print(f'git branch -f stable {ver}')
     print(f"https://coverage.readthedocs.io/en/{ver}/changes.html#changes-{anchor}")
 
+    print(
+        "This is now released as part of " +
+        f"[coverage {ver}](https://pypi.org/project/coverage/{ver})."
+    )
     print("\nnext:")
     next_vi = (vi[0], vi[1], vi[2]+1, "alpha", 0)
     print(f"version_info = {next_vi}".replace("'", '"'))
-    print("for CHANGES.rst:")
+    print("\nfor CHANGES.rst after release:")
     print(textwrap.dedent("""\
         Unreleased
         ----------
