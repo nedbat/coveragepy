@@ -21,7 +21,7 @@ build==0.7.0
     # via check-manifest
 certifi==2021.10.8
     # via requests
-charset-normalizer==2.0.10
+charset-normalizer==2.0.11
     # via requests
 check-manifest==0.47
     # via -r requirements/dev.in
@@ -58,7 +58,7 @@ future==0.18.2
     #   pycontracts
 greenlet==1.1.2
     # via -r requirements/dev.in
-hypothesis==6.36.0
+hypothesis==6.36.1
     # via -r requirements/pytest.pip
 idna==3.3
     # via requests
@@ -130,7 +130,7 @@ pygments==2.11.2
     #   readme-renderer
 pylint==2.12.2
     # via -r requirements/dev.in
-pyparsing==3.0.6
+pyparsing==3.0.7
     # via
     #   -r requirements/pytest.pip
     #   packaging
@@ -193,7 +193,7 @@ tqdm==4.62.3
     # via twine
 twine==3.7.1
     # via -r requirements/dev.in
-typed-ast==1.5.1
+typed-ast==1.5.2
     # via astroid
 typing-extensions==4.0.1
     # via
@@ -226,9 +226,9 @@ zipp==3.7.0
     #   pep517
 
 # The following packages are considered to be unsafe in a requirements file:
-pip==21.3.1
+pip==22.0.2
     # via -r requirements/pip.pip
-setuptools==60.5.0
+setuptools==60.7.0
     # via
     #   astroid
     #   check-manifest

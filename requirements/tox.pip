@@ -25,7 +25,7 @@ pluggy==1.0.0
     # via tox
 py==1.11.0
     # via tox
-pyparsing==3.0.6
+pyparsing==3.0.7
     # via packaging
 six==1.16.0
     # via

@@ -26,7 +26,7 @@ zipp==3.7.0
     #   pep517
 
 # The following packages are considered to be unsafe in a requirements file:
-pip==21.3.1
+pip==22.0.2
     # via pip-tools
-setuptools==60.5.0
+setuptools==60.7.0
     # via pip-tools
