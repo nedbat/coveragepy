@@ -516,8 +516,12 @@ class CoverageData(SimpleReprMixin):
         assert lines or arcs
         assert not (lines and arcs)
         if lines and self._has_arcs:
+            if self._debug.should("dataop"):
+                self._debug.write("Error: Can't add line measurements to existing branch data")
             raise DataError("Can't add line measurements to existing branch data")
         if arcs and self._has_lines:
+            if self._debug.should("dataop"):
+                self._debug.write("Error: Can't add branch measurements to existing line data")
             raise DataError("Can't add branch measurements to existing line data")
         if not self._has_arcs and not self._has_lines:
             self._has_lines = lines
