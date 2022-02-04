@@ -50,7 +50,10 @@ then you can do::
 import sys
 import textwrap
 
-fname, lineno = sys.argv[1:]
+if len(sys.argv) == 2:
+    fname, lineno = sys.argv[1].split(":")
+else:
+    fname, lineno = sys.argv[1:]
 lineno = int(lineno)
 
 with open(fname) as code_file:
