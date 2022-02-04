@@ -3,6 +3,7 @@
 
 # Version pins, for use as a constraints file.
 
-# Something in the docs reqs pinned to this version, then readme-renderer pulled
-# in a newer version, so pin this globally.
+# Sphinx pinned to 0.16, then readme-renderer pulled in a newer version, so pin
+# this globally.
+# Sphinx pin: https://github.com/sphinx-doc/sphinx/blob/master/setup.py#L25
 docutils==0.16
