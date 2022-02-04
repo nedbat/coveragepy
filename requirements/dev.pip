@@ -11,10 +11,10 @@ attrs==21.4.0
     #   -r requirements/pytest.pip
     #   hypothesis
     #   pytest
-backports.functools-lru-cache==1.6.4
-    # via
-    #   -r requirements/pytest.pip
-    #   pycontracts
+backports-functools-lru-cache==1.6.4
+    # via -r requirements/pytest.pip
+backports-functools-lru-cache==1.6.4
+    # via pycontracts
 bleach==4.1.0
     # via readme-renderer
 build==0.7.0
@@ -135,7 +135,7 @@ pyparsing==3.0.7
     #   -r requirements/pytest.pip
     #   packaging
     #   pycontracts
-pytest==6.2.5
+pytest==7.0.0
     # via
     #   -r requirements/pytest.pip
     #   pytest-forked
@@ -178,20 +178,20 @@ sortedcontainers==2.4.0
     #   hypothesis
 toml==0.10.2
     # via
-    #   -r requirements/pytest.pip
     #   check-manifest
     #   pylint
-    #   pytest
     #   tox
 tomli==2.0.0
     # via
+    #   -r requirements/pytest.pip
     #   build
     #   pep517
+    #   pytest
 tox==3.24.5
     # via -r requirements/dev.in
 tqdm==4.62.3
     # via twine
-twine==3.7.1
+twine==3.8.0
     # via -r requirements/dev.in
 typed-ast==1.5.2
     # via astroid
@@ -203,7 +203,9 @@ typing-extensions==4.0.1
     #   importlib-metadata
     #   pylint
 urllib3==1.26.8
-    # via requests
+    # via
+    #   requests
+    #   twine
 urwid==2.1.2
     # via
     #   pudb
@@ -226,9 +228,9 @@ zipp==3.7.0
     #   pep517
 
 # The following packages are considered to be unsafe in a requirements file:
-pip==22.0.2
+pip==22.0.3
     # via -r requirements/pip.pip
-setuptools==60.7.0
+setuptools==60.7.1
     # via
     #   astroid
     #   check-manifest

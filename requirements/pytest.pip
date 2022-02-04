@@ -8,7 +8,7 @@ attrs==21.4.0
     # via
     #   hypothesis
     #   pytest
-backports.functools-lru-cache==1.6.4
+backports-functools-lru-cache==1.6.4
     # via pycontracts
 decorator==5.1.1
     # via pycontracts
@@ -40,7 +40,7 @@ pyparsing==3.0.7
     # via
     #   packaging
     #   pycontracts
-pytest==6.2.5
+pytest==7.0.0
     # via
     #   -r requirements/pytest.in
     #   pytest-forked
@@ -55,7 +55,7 @@ six==1.16.0
     # via pycontracts
 sortedcontainers==2.4.0
     # via hypothesis
-toml==0.10.2
+tomli==2.0.0
     # via pytest
 typing-extensions==4.0.1
     # via importlib-metadata

@@ -27,7 +27,7 @@ packaging==21.3
     #   cibuildwheel
 pep517==0.12.0
     # via build
-pyelftools==0.27
+pyelftools==0.28
     # via auditwheel
 pyparsing==3.0.7
     # via packaging
@@ -48,5 +48,5 @@ zipp==3.7.0
     #   pep517
 
 # The following packages are considered to be unsafe in a requirements file:
-setuptools==60.7.0
+setuptools==60.7.1
     # via -r requirements/kit.in
