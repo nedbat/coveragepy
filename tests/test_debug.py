@@ -144,7 +144,7 @@ class DebugTraceTest(CoverageTest):
         assert re_lines(pid_prefix + "Not tracing ", out_lines)
 
     def test_debug_callers(self):
-        out_lines = self.f1_debug_output(["pid", "dataop", "dataio", "callers"])
+        out_lines = self.f1_debug_output(["pid", "dataop", "dataio", "callers", "lock"])
         # For every real message, there should be a stack trace with a line like
         #       "f1_debug_output : /Users/ned/coverage/tests/test_debug.py @71"
         real_messages = re_lines(r":\d+", out_lines, match=False)
