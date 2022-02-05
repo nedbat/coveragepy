@@ -329,6 +329,19 @@ class Coverage:
                     write_formatted_info(self._debug, header, info)
                 wrote_any = True
 
+            if self._debug.should('pybehave'):
+                info = [
+                    (name, value) for name, value in env.__dict__.items()
+                    if not name.startswith("_") and
+                        name != "PYBEHAVIOR" and
+                        not isinstance(value, type(os))
+                ] + [
+                    (name, value) for name, value in env.PYBEHAVIOR.__dict__.items()
+                    if not name.startswith("_")
+                ]
+                write_formatted_info(self._debug, "pybehave", sorted(info))
+                wrote_any = True
+
         if wrote_any:
             write_formatted_info(self._debug, "end", ())
 

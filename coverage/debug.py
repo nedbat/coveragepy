@@ -118,7 +118,10 @@ def info_formatter(info):
     for label, data in info:
         if data == []:
             data = "-none-"
-        if isinstance(data, (list, set, tuple)):
+        if isinstance(data, tuple) and len(repr(tuple(data))) < 30:
+            # Convert to tuple to scrub namedtuples.
+            yield "%*s: %r" % (label_len, label, tuple(data))
+        elif isinstance(data, (list, set, tuple)):
             prefix = "%*s:" % (label_len, label)
             for e in data:
                 yield "%*s %s" % (label_len+1, prefix, e)
@@ -128,7 +131,13 @@ def info_formatter(info):
 
 
 def write_formatted_info(writer, header, info):
-    """Write a sequence of (label,data) pairs nicely."""
+    """Write a sequence of (label,data) pairs nicely.
+
+    `writer` has a .write(str) method. `header` is a string to start the
+    section.  `info` is a sequence of (label, data) pairs, where label
+    is a str, and data can be a single value, or a list/set/tuple.
+
+    """
     writer.write(info_header(header))
     for line in info_formatter(info):
         writer.write(" %s" % line)

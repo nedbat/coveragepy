@@ -981,6 +981,9 @@ of operation to log:
 * ``process``: show process creation information, and changes in the current
   directory.
 
+* ``pybehave``: show the values of `internal flags <env.py_>`_ describing the
+  behavior of the current version of Python.
+
 * ``self``: annotate each debug message with the object printing the message.
 
 * ``sql``: log the SQL statements used for recording data.
@@ -990,6 +993,8 @@ of operation to log:
 
 * ``trace``: print every decision about whether to trace a file or not. For
   files not being traced, the reason is also given.
+
+.. _env.py: https://github.com/nedbat/coveragepy/blob/master/coverage/env.py
 
 Debug options can also be set with the ``COVERAGE_DEBUG`` environment variable,
 a comma-separated list of these options.
