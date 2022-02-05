@@ -1521,13 +1521,11 @@ class OptimizedIfTest(CoverageTest):
 
     def test_if_not_debug(self):
         arcz_missing = ""
-        if env.PYBEHAVIOR.pep626:
-            arcz = ".1 12 23 34 42 37 72 28 8."
-        elif env.PYBEHAVIOR.optimize_if_not_debug3:
+        if env.PYBEHAVIOR.optimize_if_not_debug == 3:
             arcz = ".1 12 23 32 37 72 28 8."
-        elif env.PYBEHAVIOR.optimize_if_not_debug2:
+        elif env.PYBEHAVIOR.optimize_if_not_debug == 2:
             arcz = ".1 12 23 35 52 37 72 28 8."
-        elif env.PYBEHAVIOR.optimize_if_not_debug:
+        elif env.PYBEHAVIOR.optimize_if_not_debug == 1:
             arcz = ".1 12 23 34 42 37 72 28 8."
         else:
             arcz = ".1 12 23 34 45 42 52 37 72 28 8."

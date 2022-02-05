@@ -39,22 +39,23 @@ class PYBEHAVIOR:
     else:
         optimize_if_debug = not pep626
 
-    # Is "if not __debug__" optimized away?
-    optimize_if_not_debug = (not PYPY) and (PYVERSION >= (3, 7, 0, 'alpha', 4))
+    # Is "if not __debug__" optimized away? The exact details have changed
+    # across versions.
+    optimize_if_not_debug = 0
     if pep626:
-        optimize_if_not_debug = False
-    if PYPY:
-        optimize_if_not_debug = True
-
-    # Is "if not __debug__" optimized away even better?
-    optimize_if_not_debug2 = (not PYPY) and (PYVERSION >= (3, 8, 0, 'beta', 1))
-    if pep626:
-        optimize_if_not_debug2 = False
-    if PYPY and (PYVERSION >= (3, 9)):
-        optimize_if_not_debug2 = True
-
-    # Yet another way to optimize "if not __debug__"?
-    optimize_if_not_debug3 = (PYPY and (3, 8) <= PYVERSION <= (3, 9))
+        optimize_if_not_debug = 1
+    elif PYPY:
+        if PYVERSION >= (3, 9):
+            optimize_if_not_debug = 2
+        elif PYVERSION[:2] == (3, 8):
+            optimize_if_not_debug = 3
+        elif PYVERSION[:2] <= (3, 7):
+            optimize_if_not_debug = 1
+    else:
+        if PYVERSION >= (3, 8, 0, 'beta', 1):
+            optimize_if_not_debug = 2
+        elif PYVERSION >= (3, 7, 0, 'alpha', 4):
+            optimize_if_not_debug = 1
 
     # Can co_lnotab have negative deltas?
     negative_lnotab = not (PYPY and PYPYVERSION < (7, 2))
