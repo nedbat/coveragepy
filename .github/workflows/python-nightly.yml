@@ -4,6 +4,9 @@
 name: "Python Nightly Tests"
 
 on:
+  push:
+    branches:
+      - "**/*nightly*"
   schedule:
     # Run at 2:22am early Saturday morning Eastern time (6/7:22 UTC)
     # so that we get tips of CPython development tested.
@@ -21,7 +24,7 @@ env:
 
 jobs:
   tests:
-    name: "Python nightly ${{ matrix.python-version }}"
+    name: "Python ${{ matrix.python-version }}"
     runs-on: ubuntu-latest
 
     strategy:
@@ -34,14 +37,25 @@ jobs:
           - "3.9-dev"
           - "3.10-dev"
           - "3.11-dev"
+          # https://github.com/actions/setup-python#available-versions-of-pypy
+          - "pypy-3.7-nightly"
+          - "pypy-3.8-nightly"
+          - "pypy-3.9-nightly"
       fail-fast: false
 
     steps:
       - name: "Check out the repo"
         uses: "actions/checkout@v2"
 
-      - name: "Install Python ${{ matrix.python-version }}"
+      - name: "Install ${{ matrix.python-version }} with deadsnakes"
         uses: "deadsnakes/action@v2.1.1"
+        if: "!startsWith(matrix.python-version, 'pypy-')"
+        with:
+          python-version: "${{ matrix.python-version }}"
+
+      - name: "Install ${{ matrix.python-version }} with setup-python"
+        uses: "actions/setup-python@v2"
+        if: "startsWith(matrix.python-version, 'pypy-')"
         with:
           python-version: "${{ matrix.python-version }}"
 
@@ -52,6 +66,6 @@ jobs:
           python -m site
           python -m pip install -r requirements/tox.pip
 
-      - name: "Run tox for ${{ matrix.python-version }}"
+      - name: "Run tox"
         run: |
           python -m tox -- -rfsEX
