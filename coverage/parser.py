@@ -644,7 +644,7 @@ class AstArcAnalyzer:
         self.missing_arc_fragments = collections.defaultdict(list)
         self.block_stack = []
 
-        # $set_env.py: COVERAGE_TRACK_ARCS - Trace every arc added while parsing code.
+        # $set_env.py: COVERAGE_TRACK_ARCS - Trace possible arcs added while parsing code.
         self.debug = bool(int(os.environ.get("COVERAGE_TRACK_ARCS", 0)))
 
     def analyze(self):
@@ -664,8 +664,8 @@ class AstArcAnalyzer:
     def add_arc(self, start, end, smsg=None, emsg=None):
         """Add an arc, including message fragments to use if it is missing."""
         if self.debug:                      # pragma: debugging
-            print(f"\nAdding arc: ({start}, {end}): {smsg!r}, {emsg!r}")
-            print(short_stack(limit=6))
+            print(f"\nAdding possible arc: ({start}, {end}): {smsg!r}, {emsg!r}")
+            print(short_stack(limit=10))
         self.arcs.add((start, end))
 
         if smsg is not None or emsg is not None:

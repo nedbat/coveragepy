@@ -82,13 +82,13 @@ class PyTracer:
                 id(self),
                 len(self.data_stack),
             ))
-            if 0:
+            if 0:   # if you want thread ids..
                 f.write(".{:x}.{:x}".format(
                     self.thread.ident,
                     self.threading.current_thread().ident,
                 ))
             f.write(" {}".format(" ".join(map(str, args))))
-            if 0:
+            if 0:   # if you want callers..
                 f.write(" | ")
                 stack = " / ".join(
                     (fname or "???").rpartition("/")[-1]
@@ -136,8 +136,7 @@ class PyTracer:
             else:
                 self.started_context = False
 
-            # Entering a new frame.  Decide if we should trace
-            # in this file.
+            # Entering a new frame.  Decide if we should trace in this file.
             self._activity = True
             self.data_stack.append(
                 (
