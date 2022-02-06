@@ -26,6 +26,7 @@ from tests.coveragetest import CoverageTest, TESTS_DIR, UsingModulesMixin
 from tests.helpers import assert_count_equal, assert_coverage_warnings
 from tests.helpers import change_dir, nice_file, os_sep
 
+BAD_SQLITE_REGEX = r"file( is encrypted or)? is not a database"
 
 class ApiTest(CoverageTest):
     """Api-oriented tests for coverage.py."""
@@ -422,7 +423,7 @@ class ApiTest(CoverageTest):
         self.make_file(".coverage.foo", """La la la, this isn't coverage data!""")
         cov = coverage.Coverage()
         warning_regex = (
-            r"Couldn't use data file '.*\.coverage\.foo': file is not a database"
+            r"Couldn't use data file '.*\.coverage\.foo': " + BAD_SQLITE_REGEX
         )
         with self.assert_warnings(cov, [warning_regex]):
             cov.combine()
@@ -1304,7 +1305,7 @@ class CombiningTest(CoverageTest):
         assert_coverage_warnings(
             warns,
             re.compile(
-                r"Couldn't use data file '.*[/\\]\.coverage\.bad': file is not a database"
+                r"Couldn't use data file '.*[/\\]\.coverage\.bad': " + BAD_SQLITE_REGEX
             ),
         )
 
@@ -1335,7 +1336,7 @@ class CombiningTest(CoverageTest):
                 cov.combine(strict=True)
 
         warn_rx = re.compile(
-            r"Couldn't use data file '.*[/\\]\.coverage\.bad[12]': file is not a database"
+            r"Couldn't use data file '.*[/\\]\.coverage\.bad[12]': " + BAD_SQLITE_REGEX
         )
         assert_coverage_warnings(warns, warn_rx, warn_rx)
 
