@@ -112,47 +112,46 @@ class DebugTraceTest(CoverageTest):
         self.start_import_stop(cov, "f1")
         cov.save()
 
-        out_lines = debug_out.getvalue()
-        return out_lines
+        return debug_out.getvalue()
 
     def test_debug_no_trace(self):
-        out_lines = self.f1_debug_output([])
+        out_text = self.f1_debug_output([])
 
         # We should have no output at all.
-        assert not out_lines
+        assert not out_text
 
     def test_debug_trace(self):
-        out_lines = self.f1_debug_output(["trace"])
+        out_text = self.f1_debug_output(["trace"])
 
         # We should have a line like "Tracing 'f1.py'", perhaps with an
         # absolute path.
-        assert re.search(r"Tracing '.*f1.py'", out_lines)
+        assert re.search(r"Tracing '.*f1.py'", out_text)
 
         # We should have lines like "Not tracing 'collector.py'..."
-        assert re_lines(r"^Not tracing .*: is part of coverage.py$", out_lines)
+        assert re_lines(r"^Not tracing .*: is part of coverage.py$", out_text)
 
     def test_debug_trace_pid(self):
-        out_lines = self.f1_debug_output(["trace", "pid"])
+        out_text = self.f1_debug_output(["trace", "pid"])
 
         # Now our lines are always prefixed with the process id.
         pid_prefix = r"^%5d\.[0-9a-f]{4}: " % os.getpid()
-        pid_lines = re_lines_text(pid_prefix, out_lines)
-        assert pid_lines == out_lines
+        pid_lines = re_lines_text(pid_prefix, out_text)
+        assert pid_lines == out_text
 
         # We still have some tracing, and some not tracing.
-        assert re_lines(pid_prefix + "Tracing ", out_lines)
-        assert re_lines(pid_prefix + "Not tracing ", out_lines)
+        assert re_lines(pid_prefix + "Tracing ", out_text)
+        assert re_lines(pid_prefix + "Not tracing ", out_text)
 
     def test_debug_callers(self):
-        out_lines = self.f1_debug_output(["pid", "dataop", "dataio", "callers", "lock"])
+        out_text = self.f1_debug_output(["pid", "dataop", "dataio", "callers", "lock"])
         # For every real message, there should be a stack trace with a line like
         #       "f1_debug_output : /Users/ned/coverage/tests/test_debug.py @71"
-        real_messages = re_lines(r":\d+", out_lines, match=False)
+        real_messages = re_lines(r":\d+", out_text, match=False)
         frame_pattern = r"\s+f1_debug_output : .*tests[/\\]test_debug.py:\d+$"
-        frames = re_lines(frame_pattern, out_lines)
+        frames = re_lines(frame_pattern, out_text)
         assert len(real_messages) == len(frames)
 
-        last_line = out_lines.splitlines()[-1]
+        last_line = out_text.splitlines()[-1]
 
         # The details of what to expect on the stack are empirical, and can change
         # as the code changes. This test is here to ensure that the debug code
@@ -161,7 +160,7 @@ class DebugTraceTest(CoverageTest):
         assert re_lines(r"\s+add_file_tracers : .*coverage[/\\]sqldata.py:\d+$", last_line)
 
     def test_debug_config(self):
-        out_lines = self.f1_debug_output(["config"])
+        out_text = self.f1_debug_output(["config"])
 
         labels = """
             attempted_config_files branch config_files_read config_file cover_pylib data_file
@@ -173,10 +172,10 @@ class DebugTraceTest(CoverageTest):
         for label in labels:
             label_pat = fr"^\s*{label}: "
             msg = f"Incorrect lines for {label!r}"
-            assert 1 == len(re_lines(label_pat, out_lines)), msg
+            assert 1 == len(re_lines(label_pat, out_text)), msg
 
     def test_debug_sys(self):
-        out_lines = self.f1_debug_output(["sys"])
+        out_text = self.f1_debug_output(["sys"])
 
         labels = """
             coverage_version coverage_module coverage_paths stdlib_paths third_party_paths
@@ -187,11 +186,11 @@ class DebugTraceTest(CoverageTest):
         for label in labels:
             label_pat = fr"^\s*{label}: "
             msg = f"Incorrect lines for {label!r}"
-            assert 1 == len(re_lines(label_pat, out_lines)), msg
+            assert 1 == len(re_lines(label_pat, out_text)), msg
 
     def test_debug_sys_ctracer(self):
-        out_lines = self.f1_debug_output(["sys"])
-        tracer_line = re_line(r"CTracer:", out_lines).strip()
+        out_text = self.f1_debug_output(["sys"])
+        tracer_line = re_line(r"CTracer:", out_text).strip()
         if env.C_TRACER:
             expected = "CTracer: available"
         else:
