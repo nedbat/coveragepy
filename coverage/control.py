@@ -29,7 +29,7 @@ from coverage.html import HtmlReporter
 from coverage.inorout import InOrOut
 from coverage.jsonreport import JsonReporter
 from coverage.lcovreport import LcovReporter
-from coverage.misc import bool_or_none, join_regex, human_sorted, human_sorted_items
+from coverage.misc import bool_or_none, join_regex, human_sorted
 from coverage.misc import DefaultValue, ensure_dir_for_file, isolate_module
 from coverage.plugin import FileReporter
 from coverage.plugin_support import Plugins
@@ -315,35 +315,25 @@ class Coverage:
         """Write out debug info at startup if needed."""
         wrote_any = False
         with self._debug.without_callers():
-            if self._debug.should('config'):
-                config_info = human_sorted_items(self.config.__dict__.items())
-                config_info = [(k, v) for k, v in config_info if not k.startswith('_')]
-                write_formatted_info(self._debug, "config", config_info)
+            if self._debug.should("config"):
+                config_info = self.config.debug_info()
+                write_formatted_info(self._debug.write, "config", config_info)
                 wrote_any = True
 
-            if self._debug.should('sys'):
-                write_formatted_info(self._debug, "sys", self.sys_info())
+            if self._debug.should("sys"):
+                write_formatted_info(self._debug.write, "sys", self.sys_info())
                 for plugin in self._plugins:
                     header = "sys: " + plugin._coverage_plugin_name
                     info = plugin.sys_info()
-                    write_formatted_info(self._debug, header, info)
+                    write_formatted_info(self._debug.write, header, info)
                 wrote_any = True
 
-            if self._debug.should('pybehave'):
-                info = [
-                    (name, value) for name, value in env.__dict__.items()
-                    if not name.startswith("_") and
-                        name != "PYBEHAVIOR" and
-                        not isinstance(value, type(os))
-                ] + [
-                    (name, value) for name, value in env.PYBEHAVIOR.__dict__.items()
-                    if not name.startswith("_")
-                ]
-                write_formatted_info(self._debug, "pybehave", sorted(info))
+            if self._debug.should("pybehave"):
+                write_formatted_info(self._debug.write, "pybehave", env.debug_info())
                 wrote_any = True
 
         if wrote_any:
-            write_formatted_info(self._debug, "end", ())
+            write_formatted_info(self._debug.write, "end", ())
 
     def _should_trace(self, filename, frame):
         """Decide whether to trace execution in `filename`.

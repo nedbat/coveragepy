@@ -11,7 +11,7 @@ import os.path
 import re
 
 from coverage.exceptions import ConfigError
-from coverage.misc import contract, isolate_module, substitute_variables
+from coverage.misc import contract, isolate_module, human_sorted_items, substitute_variables
 
 from coverage.tomlconfig import TomlConfigParser, TomlDecodeError
 
@@ -494,6 +494,12 @@ class CoverageConfig:
             (k, [self.post_process_file(f) for f in v])
             for k, v in self.paths.items()
         )
+
+    def debug_info(self):
+        """Make a list of (name, value) pairs for writing debug info."""
+        return human_sorted_items(
+            (k, v) for k, v in self.__dict__.items() if not k.startswith("_")
+            )
 
 
 def config_files_to_try(config_file):

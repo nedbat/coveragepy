@@ -922,12 +922,13 @@ command can often help::
 
     $ coverage debug sys > please_attach_to_bug_report.txt
 
-Three types of information are available:
+A few types of information are available:
 
 * ``config``: show coverage's configuration
 * ``sys``: show system configuration
 * ``data``: show a summary of the collected coverage data
 * ``premain``: show the call stack invoking coverage
+* ``pybehave``: show internal flags describing Python behavior
 
 .. [[[cog show_help("debug") ]]]
 .. code::
@@ -938,7 +939,8 @@ Three types of information are available:
     Display information about the internals of coverage.py, for diagnosing
     problems. Topics are: 'data' to show a summary of the collected data; 'sys' to
     show installation information; 'config' to show the configuration; 'premain'
-    to show what is calling coverage.
+    to show what is calling coverage; 'pybehave' to show internal flags describing
+    Python behavior.
 
     Options:
       --debug=OPTS     Debug options, separated by commas. [env: COVERAGE_DEBUG]
@@ -946,7 +948,7 @@ Three types of information are available:
       --rcfile=RCFILE  Specify configuration file. By default '.coveragerc',
                        'setup.cfg', 'tox.ini', and 'pyproject.toml' are tried.
                        [env: COVERAGE_RCFILE]
-.. [[[end]]] (checksum: 66c36bb462796800400d588fa5a71c5f)
+.. [[[end]]] (checksum: c9b8dfb644da3448830b1c99bffa6880)
 
 .. _cmd_run_debug:
 

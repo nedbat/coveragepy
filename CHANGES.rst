@@ -20,7 +20,8 @@ development at the same time, such as 4.5.x and 5.0.
 Unreleased
 ----------
 
-- Debug: added ``pybehave`` to the list of :ref:`cmd_run_debug` options.
+- Debug: added ``pybehave`` to the list of :ref:`cmd_debug` and
+  :ref:`cmd_run_debug` options.
 
 
 .. _changes_631:

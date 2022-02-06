@@ -272,7 +272,7 @@ class CmdLineTest(BaseCmdLineTest):
             """)
 
     @pytest.mark.parametrize("cmd, output", [
-        ("debug", "What information would you like: config, data, sys, premain?"),
+        ("debug", "What information would you like: config, data, sys, premain, pybehave?"),
         ("debug foo", "Don't know what you mean by 'foo'"),
         ("debug sys config", "Only one topic at a time, please"),
     ])
@@ -291,6 +291,16 @@ class CmdLineTest(BaseCmdLineTest):
         assert "cover_pylib:" in out
         assert "skip_covered:" in out
         assert "skip_empty:" in out
+
+    def test_debug_pybehave(self):
+        self.command_line("debug pybehave")
+        out = self.stdout()
+        assert " CPYTHON:" in out
+        assert " PYVERSION:" in out
+        assert " pep626:" in out
+        pyversion = next(l for l in out.splitlines() if " PYVERSION:" in l)
+        vtuple = eval(pyversion.partition(":")[-1])  # pylint: disable=eval-used
+        assert vtuple[:5] == sys.version_info
 
     def test_debug_premain(self):
         self.command_line("debug premain")

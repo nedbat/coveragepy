@@ -133,3 +133,17 @@ USE_CONTRACTS = (
     and not bool(int(os.environ.get("COVERAGE_NO_CONTRACTS", 0)))
     and (PYVERSION < (3, 11))
 )
+
+def debug_info():
+    """Return a list of (name, value) pairs for printing debug information."""
+    info = [
+        (name, value) for name, value in globals().items()
+        if not name.startswith("_") and
+            name not in {"PYBEHAVIOR", "debug_info"} and
+            not isinstance(value, type(os))
+    ]
+    info += [
+        (name, value) for name, value in PYBEHAVIOR.__dict__.items()
+        if not name.startswith("_")
+    ]
+    return sorted(info)

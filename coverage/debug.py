@@ -130,17 +130,18 @@ def info_formatter(info):
             yield "%*s: %s" % (label_len, label, data)
 
 
-def write_formatted_info(writer, header, info):
+def write_formatted_info(write, header, info):
     """Write a sequence of (label,data) pairs nicely.
 
-    `writer` has a .write(str) method. `header` is a string to start the
-    section.  `info` is a sequence of (label, data) pairs, where label
-    is a str, and data can be a single value, or a list/set/tuple.
+    `write` is a function write(str) that accepts each line of output.
+    `header` is a string to start the section.  `info` is a sequence of
+    (label, data) pairs, where label is a str, and data can be a single
+    value, or a list/set/tuple.
 
     """
-    writer.write(info_header(header))
+    write(info_header(header))
     for line in info_formatter(info):
-        writer.write(" %s" % line)
+        write(f" {line}")
 
 
 def short_stack(limit=None, skip=0):

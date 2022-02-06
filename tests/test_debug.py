@@ -6,6 +6,7 @@
 import io
 import os
 import re
+import sys
 
 import pytest
 
@@ -196,6 +197,14 @@ class DebugTraceTest(CoverageTest):
         else:
             expected = "CTracer: unavailable"
         assert expected == tracer_line
+
+    def test_debug_pybehave(self):
+        out_text = self.f1_debug_output(["pybehave"])
+        out_lines = out_text.splitlines()
+        assert 10 < len(out_lines) < 40
+        pyversion = next(l for l in out_lines if " PYVERSION:" in l)
+        vtuple = eval(pyversion.partition(":")[-1])  # pylint: disable=eval-used
+        assert vtuple[:5] == sys.version_info
 
 
 def f_one(*args, **kwargs):

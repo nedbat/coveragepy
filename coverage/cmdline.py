@@ -19,7 +19,7 @@ from coverage.collector import CTracer
 from coverage.config import CoverageConfig
 from coverage.control import DEFAULT_DATAFILE
 from coverage.data import combinable_files, debug_data_file
-from coverage.debug import info_formatter, info_header, short_stack
+from coverage.debug import info_header, short_stack, write_formatted_info
 from coverage.exceptions import _BaseCoverageException, _ExceptionDuringRun, NoSource
 from coverage.execfile import PyRunner
 from coverage.results import Numbers, should_fail_under
@@ -400,7 +400,8 @@ COMMANDS = {
                 "'data' to show a summary of the collected data; " +
                 "'sys' to show installation information; " +
                 "'config' to show the configuration; " +
-                "'premain' to show what is calling coverage."
+                "'premain' to show what is calling coverage; " +
+                "'pybehave' to show internal flags describing Python behavior."
         ),
     ),
 
@@ -843,32 +844,28 @@ class CoverageScript:
         """Implementation of 'coverage debug'."""
 
         if not args:
-            show_help("What information would you like: config, data, sys, premain?")
+            show_help("What information would you like: config, data, sys, premain, pybehave?")
             return ERR
         if args[1:]:
             show_help("Only one topic at a time, please")
             return ERR
 
-        if args[0] == 'sys':
-            sys_info = self.coverage.sys_info()
-            print(info_header("sys"))
-            for line in info_formatter(sys_info):
-                print(f" {line}")
-        elif args[0] == 'data':
+        if args[0] == "sys":
+            write_formatted_info(print, "sys", self.coverage.sys_info())
+        elif args[0] == "data":
             print(info_header("data"))
             data_file = self.coverage.config.data_file
             debug_data_file(data_file)
             for filename in combinable_files(data_file):
                 print("-----")
                 debug_data_file(filename)
-        elif args[0] == 'config':
-            print(info_header("config"))
-            config_info = sorted(self.coverage.config.__dict__.items())
-            for line in info_formatter(config_info):
-                print(f" {line}")
+        elif args[0] == "config":
+            write_formatted_info(print, "config", self.coverage.config.debug_info())
         elif args[0] == "premain":
             print(info_header("premain"))
             print(short_stack())
+        elif args[0] == "pybehave":
+            write_formatted_info(print, "pybehave", env.debug_info())
         else:
             show_help(f"Don't know what you mean by {args[0]!r}")
             return ERR
