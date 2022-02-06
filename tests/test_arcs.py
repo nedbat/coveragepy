@@ -1520,16 +1520,14 @@ class OptimizedIfTest(CoverageTest):
         )
 
     def test_if_not_debug(self):
-        arcz_missing = ""
-        if env.PYBEHAVIOR.optimize_if_not_debug == 3:
-            arcz = ".1 12 23 32 37 72 28 8."
+        if env.PYBEHAVIOR.optimize_if_not_debug == 1:
+            arcz = ".1 12 23 34 42 37 72 28 8."
         elif env.PYBEHAVIOR.optimize_if_not_debug == 2:
             arcz = ".1 12 23 35 52 37 72 28 8."
-        elif env.PYBEHAVIOR.optimize_if_not_debug == 1:
-            arcz = ".1 12 23 34 42 37 72 28 8."
         else:
-            arcz = ".1 12 23 34 45 42 52 37 72 28 8."
-            arcz_missing = "45 52"
+            assert env.PYBEHAVIOR.optimize_if_not_debug == 3
+            arcz = ".1 12 23 32 37 72 28 8."
+
         self.check_coverage("""\
             lines = set()
             for value in [True, False]:
@@ -1541,7 +1539,6 @@ class OptimizedIfTest(CoverageTest):
             assert lines == set([7])
             """,
             arcz=arcz,
-            arcz_missing=arcz_missing,
         )
 
 

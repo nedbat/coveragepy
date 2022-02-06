@@ -41,7 +41,6 @@ class PYBEHAVIOR:
 
     # Is "if not __debug__" optimized away? The exact details have changed
     # across versions.
-    optimize_if_not_debug = 0
     if pep626:
         optimize_if_not_debug = 1
     elif PYPY:
@@ -49,12 +48,12 @@ class PYBEHAVIOR:
             optimize_if_not_debug = 2
         elif PYVERSION[:2] == (3, 8):
             optimize_if_not_debug = 3
-        elif PYVERSION[:2] <= (3, 7):
+        else:
             optimize_if_not_debug = 1
     else:
         if PYVERSION >= (3, 8, 0, 'beta', 1):
             optimize_if_not_debug = 2
-        elif PYVERSION >= (3, 7, 0, 'alpha', 4):
+        else:
             optimize_if_not_debug = 1
 
     # Can co_lnotab have negative deltas?
