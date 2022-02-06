@@ -3,6 +3,7 @@
 
 """Test cmdline.py for coverage.py."""
 
+import ast
 import pprint
 import re
 import sys
@@ -20,7 +21,7 @@ from coverage.exceptions import _ExceptionDuringRun
 from coverage.version import __url__
 
 from tests.coveragetest import CoverageTest, OK, ERR, command_line
-from tests.helpers import os_sep
+from tests.helpers import os_sep, re_line
 
 
 class BaseCmdLineTest(CoverageTest):
@@ -298,8 +299,8 @@ class CmdLineTest(BaseCmdLineTest):
         assert " CPYTHON:" in out
         assert " PYVERSION:" in out
         assert " pep626:" in out
-        pyversion = next(l for l in out.splitlines() if " PYVERSION:" in l)
-        vtuple = eval(pyversion.partition(":")[-1])  # pylint: disable=eval-used
+        pyversion = re_line(r" PYVERSION:", out)
+        vtuple = ast.literal_eval(pyversion.partition(":")[-1].strip())
         assert vtuple[:5] == sys.version_info
 
     def test_debug_premain(self):

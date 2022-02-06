@@ -3,6 +3,7 @@
 
 """Tests of coverage/debug.py"""
 
+import ast
 import io
 import os
 import re
@@ -202,8 +203,8 @@ class DebugTraceTest(CoverageTest):
         out_text = self.f1_debug_output(["pybehave"])
         out_lines = out_text.splitlines()
         assert 10 < len(out_lines) < 40
-        pyversion = next(l for l in out_lines if " PYVERSION:" in l)
-        vtuple = eval(pyversion.partition(":")[-1])  # pylint: disable=eval-used
+        pyversion = re_line(r" PYVERSION:", out_text)
+        vtuple = ast.literal_eval(pyversion.partition(":")[-1].strip())
         assert vtuple[:5] == sys.version_info
 
 
