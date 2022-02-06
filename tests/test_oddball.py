@@ -83,7 +83,7 @@ class RecursionTest(CoverageTest):
     def test_long_recursion(self):
         # We can't finish a very deep recursion, but we don't crash.
         with pytest.raises(RuntimeError):
-            with swallow_warnings("Trace function changed, measurement is likely wrong: None"):
+            with swallow_warnings("Trace function changed, data is likely wrong: None"):
                 self.check_coverage("""\
                     def recur(n):
                         if n == 0:
@@ -120,7 +120,7 @@ class RecursionTest(CoverageTest):
             """)
 
         cov = coverage.Coverage()
-        with swallow_warnings("Trace function changed, measurement is likely wrong: None"):
+        with swallow_warnings("Trace function changed, data is likely wrong: None"):
             self.start_import_stop(cov, "recur")
 
         pytrace = (cov._collector.tracer_name() == "PyTracer")

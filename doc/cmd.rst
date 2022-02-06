@@ -236,8 +236,7 @@ could affect the measurement process.  The possible warnings include:
   During reporting, a file was thought to be Python, but it couldn't be parsed
   as Python.
 
-* ``Trace function changed, measurement is likely wrong: XXX (trace-changed)``
-  |br|
+* ``Trace function changed, data is likely wrong: XXX (trace-changed)`` |br|
   Coverage measurement depends on a Python setting called the trace function.
   Other Python code in your product might change that function, which will
   disrupt coverage.py's measurement.  This warning indicates that has happened.
