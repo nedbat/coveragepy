@@ -352,29 +352,21 @@ class ConcurrencyTest(CoverageTest):
         assert re.search(r"TOTAL \d+ 0 100%", last_line)
 
     def test_bad_concurrency(self):
-        self.make_file("prog.py", "a = 1")
-        msg = "Unknown concurrency choices: nothing"
-        with pytest.raises(ConfigError, match=msg):
+        with pytest.raises(ConfigError, match="Unknown concurrency choices: nothing"):
             self.command_line("run --concurrency=nothing prog.py")
 
     def test_bad_concurrency_in_config(self):
-        self.make_file("prog.py", "a = 1")
         self.make_file(".coveragerc", "[run]\nconcurrency = nothing\n")
-        msg = "Unknown concurrency choices: nothing"
-        with pytest.raises(ConfigError, match=msg):
+        with pytest.raises(ConfigError, match="Unknown concurrency choices: nothing"):
             self.command_line("run prog.py")
 
     def test_no_multiple_light_concurrency(self):
-        self.make_file("prog.py", "a = 1")
-        msg = "Conflicting concurrency settings: eventlet, gevent"
-        with pytest.raises(ConfigError, match=msg):
+        with pytest.raises(ConfigError, match="Conflicting concurrency settings: eventlet, gevent"):
             self.command_line("run --concurrency=gevent,eventlet prog.py")
 
     def test_no_multiple_light_concurrency_in_config(self):
-        self.make_file("prog.py", "a = 1")
         self.make_file(".coveragerc", "[run]\nconcurrency = gevent, eventlet\n")
-        msg = "Conflicting concurrency settings: eventlet, gevent"
-        with pytest.raises(ConfigError, match=msg):
+        with pytest.raises(ConfigError, match="Conflicting concurrency settings: eventlet, gevent"):
             self.command_line("run prog.py")
 
 
