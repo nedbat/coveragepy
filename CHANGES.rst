@@ -23,6 +23,11 @@ Unreleased
 - Debug: added ``pybehave`` to the list of :ref:`cmd_debug` and
   :ref:`cmd_run_debug` options.
 
+- Fix: show an intelligible error message if ``--concurrency=multiprocessing``
+  is used without a configuration file.  Closes `issue 1320`_.
+
+.. _issue 1320: https://github.com/nedbat/coveragepy/issues/1320
+
 
 .. _changes_631:
 

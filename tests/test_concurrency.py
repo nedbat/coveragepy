@@ -369,6 +369,10 @@ class ConcurrencyTest(CoverageTest):
         with pytest.raises(ConfigError, match="Conflicting concurrency settings: eventlet, gevent"):
             self.command_line("run prog.py")
 
+    def test_multiprocessing_needs_config_file(self):
+        with pytest.raises(ConfigError, match="multiprocessing requires a configuration file"):
+            self.command_line("run --concurrency=multiprocessing prog.py")
+
 
 class WithoutConcurrencyModuleTest(CoverageTest):
     """Tests of what happens if the requested concurrency isn't installed."""

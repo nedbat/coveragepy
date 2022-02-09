@@ -462,6 +462,8 @@ class Coverage:
                 raise ConfigError(                      # pragma: only jython
                     "multiprocessing is not supported on this Python"
                 )
+            if self.config.config_file is None:
+                raise ConfigError("multiprocessing requires a configuration file")
             patch_multiprocessing(rcfile=self.config.config_file)
 
         dycon = self.config.dynamic_context
