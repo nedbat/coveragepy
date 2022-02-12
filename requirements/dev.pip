@@ -62,7 +62,7 @@ hypothesis==6.36.1
     # via -r requirements/pytest.pip
 idna==3.3
     # via requests
-importlib-metadata==4.10.1
+importlib-metadata==4.11.0
     # via
     #   -r requirements/pip.pip
     #   -r requirements/pytest.pip
@@ -104,7 +104,7 @@ pep517==0.12.0
     # via build
 pkginfo==1.8.2
     # via twine
-platformdirs==2.4.1
+platformdirs==2.5.0
     # via
     #   -r requirements/pip.pip
     #   pylint
@@ -135,7 +135,7 @@ pyparsing==3.0.7
     #   -r requirements/pytest.pip
     #   packaging
     #   pycontracts
-pytest==7.0.0
+pytest==7.0.1
     # via
     #   -r requirements/pytest.pip
     #   pytest-forked
@@ -181,7 +181,7 @@ toml==0.10.2
     #   check-manifest
     #   pylint
     #   tox
-tomli==2.0.0
+tomli==2.0.1
     # via
     #   -r requirements/pytest.pip
     #   build
@@ -212,7 +212,7 @@ urwid==2.1.2
     #   urwid-readline
 urwid-readline==0.13
     # via pudb
-virtualenv==20.13.0
+virtualenv==20.13.1
     # via
     #   -r requirements/pip.pip
     #   tox
@@ -230,7 +230,7 @@ zipp==3.7.0
 # The following packages are considered to be unsafe in a requirements file:
 pip==22.0.3
     # via -r requirements/pip.pip
-setuptools==60.7.1
+setuptools==60.8.2
     # via
     #   astroid
     #   check-manifest

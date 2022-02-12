@@ -16,7 +16,7 @@ certifi==2021.10.8
     # via cibuildwheel
 cibuildwheel==2.3.1
     # via -r requirements/kit.in
-importlib-metadata==4.10.1
+importlib-metadata==4.11.0
     # via
     #   auditwheel
     #   build
@@ -31,7 +31,7 @@ pyelftools==0.28
     # via auditwheel
 pyparsing==3.0.7
     # via packaging
-tomli==2.0.0
+tomli==2.0.1
     # via
     #   build
     #   cibuildwheel
@@ -48,5 +48,5 @@ zipp==3.7.0
     #   pep517
 
 # The following packages are considered to be unsafe in a requirements file:
-setuptools==60.7.1
+setuptools==60.8.2
     # via -r requirements/kit.in

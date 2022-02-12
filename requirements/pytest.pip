@@ -20,7 +20,7 @@ future==0.18.2
     # via pycontracts
 hypothesis==6.36.1
     # via -r requirements/pytest.in
-importlib-metadata==4.10.1
+importlib-metadata==4.11.0
     # via
     #   pluggy
     #   pytest
@@ -40,7 +40,7 @@ pyparsing==3.0.7
     # via
     #   packaging
     #   pycontracts
-pytest==7.0.0
+pytest==7.0.1
     # via
     #   -r requirements/pytest.in
     #   pytest-forked
@@ -55,7 +55,7 @@ six==1.16.0
     # via pycontracts
 sortedcontainers==2.4.0
     # via hypothesis
-tomli==2.0.0
+tomli==2.0.1
     # via pytest
 typing-extensions==4.0.1
     # via importlib-metadata

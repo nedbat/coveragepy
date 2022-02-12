@@ -10,7 +10,7 @@ filelock==3.4.2
     # via
     #   tox
     #   virtualenv
-importlib-metadata==4.10.1
+importlib-metadata==4.11.0
     # via
     #   pluggy
     #   tox
@@ -19,7 +19,7 @@ importlib-resources==5.4.0
     # via tox-gh-actions
 packaging==21.3
     # via tox
-platformdirs==2.4.1
+platformdirs==2.5.0
     # via virtualenv
 pluggy==1.0.0
     # via tox
@@ -41,7 +41,7 @@ tox-gh-actions==2.9.1
     # via -r requirements/tox.in
 typing-extensions==4.0.1
     # via importlib-metadata
-virtualenv==20.13.0
+virtualenv==20.13.1
     # via tox
 zipp==3.7.0
     # via
