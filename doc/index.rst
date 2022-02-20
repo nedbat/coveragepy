@@ -18,7 +18,7 @@ supported on:
 
 .. PYVERSIONS
 
-* Python versions 3.7 through 3.11.0a4.
+* Python versions 3.7 through 3.11.0a5.
 
 * PyPy3 7.3.8.
 
