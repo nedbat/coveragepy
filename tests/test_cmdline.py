@@ -1047,7 +1047,7 @@ class CmdMainTest(CoverageTest):
                 try:
                     raise Exception("oh noes!")
                 except:
-                    raise _ExceptionDuringRun(*sys.exc_info())
+                    raise _ExceptionDuringRun(*sys.exc_info()) from None
             elif argv[0] == 'internalraise':
                 raise ValueError("coverage is broken")
             elif argv[0] == 'exit':
