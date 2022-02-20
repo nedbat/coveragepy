@@ -20,12 +20,12 @@ supported on:
 
 * Python versions 3.7 through 3.11.0a4.
 
-* PyPy3 7.3.7.
+* PyPy3 7.3.8.
 
 .. ifconfig:: prerelease
 
     **This is a pre-release build.  The usual warnings about possible bugs
-    apply.** The latest stable version is coverage.py 6.3.1, `described here`_.
+    apply.** The latest stable version is coverage.py 6.3.2, `described here`_.
 
 
 .. _described here: http://coverage.readthedocs.io/

@@ -24,6 +24,7 @@
     - Don't forget the man page: doc/python-coverage.1.txt
     - Check that the docs build correctly:
         $ tox -e doc
+- commit the release-prep changes
 - Generate new sample_html to get the latest, incl footer version number:
     $ make clean
     $ pip install -e .
