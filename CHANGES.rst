@@ -20,6 +20,10 @@ development at the same time, such as 4.5.x and 5.0.
 Unreleased
 ----------
 
+- Fix: adapt to pypy3.9's decorator tracing behavior.  It now traces function
+  decorators like CPython 3.8: both the @-line and the def-line are traced.
+  Fixes `issue 1326`_.
+
 - Debug: added ``pybehave`` to the list of :ref:`cmd_debug` and
   :ref:`cmd_run_debug` options.
 
@@ -27,6 +31,7 @@ Unreleased
   is used without a configuration file.  Closes `issue 1320`_.
 
 .. _issue 1320: https://github.com/nedbat/coveragepy/issues/1320
+.. _issue 1326: https://github.com/nedbat/coveragepy/issues/1326
 
 
 .. _changes_631:

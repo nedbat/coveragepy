@@ -71,7 +71,7 @@ class PYBEHAVIOR:
     # When a function is decorated, does the trace function get called for the
     # @-line and also the def-line (new behavior in 3.8)? Or just the @-line
     # (old behavior)?
-    trace_decorated_def = (CPYTHON and PYVERSION >= (3, 8))
+    trace_decorated_def = (CPYTHON and PYVERSION >= (3, 8)) or (PYPY and PYVERSION >= (3, 9))
 
     # Functions are no longer claimed to start at their earliest decorator even though
     # the decorators are traced?
