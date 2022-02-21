@@ -222,6 +222,11 @@ class Opts:
         help="Display version information and exit.",
     )
 
+    timeout = optparse.make_option(
+        '', '--timeout', action='store', metavar='N', type=int,
+        help="Set a timeout",
+    )
+
 
 class CoverageOptionParser(optparse.OptionParser):
     """Base OptionParser for coverage.py.
@@ -267,6 +272,7 @@ class CoverageOptionParser(optparse.OptionParser):
             timid=None,
             title=None,
             version=None,
+            timeout=None
             )
 
         self.disable_interspersed_args()
@@ -513,6 +519,7 @@ COMMANDS = {
             Opts.parallel_mode,
             Opts.source,
             Opts.timid,
+            Opts.timeout,
             ] + GLOBAL_ARGS,
         usage="[options] <pyfile> [program options]",
         description="Run a Python program, measuring code execution.",
@@ -828,6 +835,18 @@ class CoverageScript:
         # Run the script.
         self.coverage.start()
         code_ran = True
+
+        def startTimer(Coverage, _time) :
+            import time, os
+            time.sleep(_time)
+            Coverage.stop()
+            Coverage.save()
+            os._exit(1)
+
+        import threading
+        t1 = threading.Thread(target=startTimer, args=( self.coverage, options.timeout ))
+        t1.start()
+
         try:
             runner.run()
         except NoSource:
