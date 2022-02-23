@@ -525,16 +525,18 @@ CTracer_handle_call(CTracer *self, PyFrameObject *frame)
      */
     BOOL real_call = FALSE;
 
+    Py_ssize_t lasti = MyFrame_lasti(frame);
 #ifdef RESUME   // 3.11.0a4
     /*
      * The current opcode is guaranteed to be RESUME. The argument
      * determines what kind of resume it is.
      */
     PyObject * pCode = MyFrame_GetCode(frame)->co_code;
-    real_call = (PyBytes_AS_STRING(pCode)[MyFrame_lasti(frame) + 1] == 0);
+    assert(0 <= lasti >= 0 && (lasti + 1) < PyBytes_GET_SIZE(pCode));
+    real_call = (PyBytes_AS_STRING(pCode)[lasti + 1] == 0);
 #else
     // f_lasti is -1 for a true call, and a real byte offset for a generator re-entry.
-    real_call = (MyFrame_lasti(frame) < 0);
+    real_call = (lasti < 0);
 #endif
 
     if (real_call) {
@@ -699,11 +701,12 @@ CTracer_handle_return(CTracer *self, PyFrameObject *frame)
         if (self->tracing_arcs && self->pcur_entry->file_data) {
             BOOL real_return = FALSE;
             PyObject * pCode = MyFrame_GetCode(frame)->co_code;
-            int lasti = MyFrame_lasti(frame);
+            Py_ssize_t lasti = MyFrame_lasti(frame);
             Py_ssize_t code_size = PyBytes_GET_SIZE(pCode);
             unsigned char * code_bytes = (unsigned char *)PyBytes_AS_STRING(pCode);
 #ifdef RESUME
-            if (lasti == code_size - 2) {
+            assert(0 <= lasti);
+            if ((lasti + 2) == code_size) {
                 real_return = TRUE;
             }
             else {
@@ -718,6 +721,7 @@ CTracer_handle_return(CTracer *self, PyFrameObject *frame)
             BOOL is_yield = FALSE;
             BOOL is_yield_from = FALSE;
 
+            assert(0 <= lasti);
             if (lasti < code_size) {
                 is_yield = (code_bytes[lasti] == YIELD_VALUE);
                 if (lasti + 2 < code_size) {
