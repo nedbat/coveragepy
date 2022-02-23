@@ -289,6 +289,10 @@ collected," add this to your .coveragerc file::
     [run]
     disable_warnings = no-data-collected
 
+or pyproject.toml::
+    [tool.coverage.run]
+    disable_warnings = ['no-data-collected']
+
 
 .. _cmd_datafile:
 
