@@ -122,7 +122,7 @@ jobs:
           platforms: arm64
 
       - name: "Check out the repo"
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: "Install Python 3.8"
         uses: actions/setup-python@v3
@@ -159,7 +159,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "Check out the repo"
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: "Install Python 3.8"
         uses: actions/setup-python@v3
@@ -191,7 +191,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "Check out the repo"
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: "Install PyPy"
         uses: actions/setup-python@v3
@@ -241,7 +241,7 @@ jobs:
 
     steps:
       - name: "Check out the repo"
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: "Install Python ${{ matrix.py }}"
         uses: actions/setup-python@v3

@@ -45,7 +45,7 @@ jobs:
 
     steps:
       - name: "Check out the repo"
-        uses: "actions/checkout@v2"
+        uses: "actions/checkout@v3"
 
       - name: "Install ${{ matrix.python-version }} with deadsnakes"
         uses: "deadsnakes/action@v2.1.1"
