@@ -327,8 +327,7 @@ class Collector:
         self._collectors.append(self)
 
         # Replay all the events from fullcoverage into the new trace function.
-        for args in traces0:
-            (frame, event, arg), lineno = args
+        for (frame, event, arg), lineno in traces0:
             try:
                 fn(frame, event, arg, lineno=lineno)
             except TypeError as ex:
