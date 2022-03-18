@@ -6,21 +6,21 @@
 #
 distlib==0.3.4
     # via virtualenv
-filelock==3.4.2
+filelock==3.6.0
     # via virtualenv
-importlib-metadata==4.11.0
+importlib-metadata==4.11.3
     # via virtualenv
-platformdirs==2.5.0
+platformdirs==2.5.1
     # via virtualenv
 six==1.16.0
     # via virtualenv
-typing-extensions==4.0.1
+typing-extensions==4.1.1
     # via importlib-metadata
-virtualenv==20.13.1
+virtualenv==20.13.3
     # via -r requirements/pip.in
 zipp==3.7.0
     # via importlib-metadata
 
 # The following packages are considered to be unsafe in a requirements file:
-pip==22.0.3
+pip==22.0.4
     # via -r requirements/pip.in

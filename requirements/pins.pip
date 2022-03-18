@@ -3,7 +3,6 @@
 
 # Version pins, for use as a constraints file.
 
-# Sphinx pinned to 0.16, then readme-renderer pulled in a newer version, so pin
-# this globally.
-# Sphinx pin: https://github.com/sphinx-doc/sphinx/blob/master/setup.py#L25
-docutils==0.16
+# docutils has been going through some turmoil.  Different packages require it,
+# but have different pins.  This seems to satisfy them all:
+docutils>=0.17,<0.18

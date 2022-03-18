@@ -4,9 +4,9 @@
 #
 #    make upgrade
 #
-click==8.0.3
+click==8.0.4
     # via pip-tools
-importlib-metadata==4.11.0
+importlib-metadata==4.11.3
     # via
     #   click
     #   pep517
@@ -16,7 +16,7 @@ pip-tools==6.5.1
     # via -r requirements/pip-tools.in
 tomli==2.0.1
     # via pep517
-typing-extensions==4.0.1
+typing-extensions==4.1.1
     # via importlib-metadata
 wheel==0.37.1
     # via pip-tools
@@ -26,7 +26,7 @@ zipp==3.7.0
     #   pep517
 
 # The following packages are considered to be unsafe in a requirements file:
-pip==22.0.3
+pip==22.0.4
     # via pip-tools
-setuptools==60.8.2
+setuptools==60.10.0
     # via pip-tools

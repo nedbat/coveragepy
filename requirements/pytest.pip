@@ -18,9 +18,9 @@ flaky==3.7.0
     # via -r requirements/pytest.in
 future==0.18.2
     # via pycontracts
-hypothesis==6.36.1
+hypothesis==6.39.4
     # via -r requirements/pytest.in
-importlib-metadata==4.11.0
+importlib-metadata==4.11.3
     # via
     #   pluggy
     #   pytest
@@ -40,7 +40,7 @@ pyparsing==3.0.7
     # via
     #   packaging
     #   pycontracts
-pytest==7.0.1
+pytest==7.1.1
     # via
     #   -r requirements/pytest.in
     #   pytest-forked
@@ -57,7 +57,7 @@ sortedcontainers==2.4.0
     # via hypothesis
 tomli==2.0.1
     # via pytest
-typing-extensions==4.0.1
+typing-extensions==4.1.1
     # via importlib-metadata
 zipp==3.7.0
     # via importlib-metadata

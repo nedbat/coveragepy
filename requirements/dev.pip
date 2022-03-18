@@ -12,18 +12,18 @@ attrs==21.4.0
     #   hypothesis
     #   pytest
 backports-functools-lru-cache==1.6.4
-    # via -r requirements/pytest.pip
-backports-functools-lru-cache==1.6.4
-    # via pycontracts
+    # via
+    #   -r requirements/pytest.pip
+    #   pycontracts
 bleach==4.1.0
     # via readme-renderer
 build==0.7.0
     # via check-manifest
 certifi==2021.10.8
     # via requests
-charset-normalizer==2.0.11
+charset-normalizer==2.0.12
     # via requests
-check-manifest==0.47
+check-manifest==0.48
     # via -r requirements/dev.in
 cogapp==3.3.0
     # via -r requirements/dev.in
@@ -37,7 +37,7 @@ distlib==0.3.4
     # via
     #   -r requirements/pip.pip
     #   virtualenv
-docutils==0.16
+docutils==0.17.1
     # via
     #   -c requirements/pins.pip
     #   readme-renderer
@@ -45,7 +45,7 @@ execnet==1.9.0
     # via
     #   -r requirements/pytest.pip
     #   pytest-xdist
-filelock==3.4.2
+filelock==3.6.0
     # via
     #   -r requirements/pip.pip
     #   tox
@@ -58,11 +58,11 @@ future==0.18.2
     #   pycontracts
 greenlet==1.1.2
     # via -r requirements/dev.in
-hypothesis==6.36.1
+hypothesis==6.39.4
     # via -r requirements/pytest.pip
 idna==3.3
     # via requests
-importlib-metadata==4.11.0
+importlib-metadata==4.11.3
     # via
     #   -r requirements/pip.pip
     #   -r requirements/pytest.pip
@@ -104,7 +104,7 @@ pep517==0.12.0
     # via build
 pkginfo==1.8.2
     # via twine
-platformdirs==2.5.0
+platformdirs==2.5.1
     # via
     #   -r requirements/pip.pip
     #   pylint
@@ -114,7 +114,7 @@ pluggy==1.0.0
     #   -r requirements/pytest.pip
     #   pytest
     #   tox
-pudb==2022.1
+pudb==2022.1.1
     # via -r requirements/dev.in
 py==1.11.0
     # via
@@ -135,7 +135,7 @@ pyparsing==3.0.7
     #   -r requirements/pytest.pip
     #   packaging
     #   pycontracts
-pytest==7.0.1
+pytest==7.1.1
     # via
     #   -r requirements/pytest.pip
     #   pytest-forked
@@ -150,7 +150,7 @@ qualname==0.1.0
     # via
     #   -r requirements/pytest.pip
     #   pycontracts
-readme-renderer==32.0
+readme-renderer==34.0
     # via
     #   -r requirements/dev.in
     #   twine
@@ -178,31 +178,31 @@ sortedcontainers==2.4.0
     #   hypothesis
 toml==0.10.2
     # via
-    #   check-manifest
     #   pylint
     #   tox
 tomli==2.0.1
     # via
     #   -r requirements/pytest.pip
     #   build
+    #   check-manifest
     #   pep517
     #   pytest
 tox==3.24.5
     # via -r requirements/dev.in
-tqdm==4.62.3
+tqdm==4.63.0
     # via twine
 twine==3.8.0
     # via -r requirements/dev.in
 typed-ast==1.5.2
     # via astroid
-typing-extensions==4.0.1
+typing-extensions==4.1.1
     # via
     #   -r requirements/pip.pip
     #   -r requirements/pytest.pip
     #   astroid
     #   importlib-metadata
     #   pylint
-urllib3==1.26.8
+urllib3==1.26.9
     # via
     #   requests
     #   twine
@@ -212,7 +212,7 @@ urwid==2.1.2
     #   urwid-readline
 urwid-readline==0.13
     # via pudb
-virtualenv==20.13.1
+virtualenv==20.13.3
     # via
     #   -r requirements/pip.pip
     #   tox
@@ -228,9 +228,9 @@ zipp==3.7.0
     #   pep517
 
 # The following packages are considered to be unsafe in a requirements file:
-pip==22.0.3
+pip==22.0.4
     # via -r requirements/pip.pip
-setuptools==60.8.2
+setuptools==60.10.0
     # via
     #   astroid
     #   check-manifest
