@@ -7,6 +7,12 @@ Coverage.py
 
 Code coverage testing for Python.
 
+.. image:: https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/banner2-direct.svg
+    :target: https://vshymanskyy.github.io/StandWithUkraine
+    :alt: Stand with Ukraine
+
+-------------
+
 |  |license| |versions| |status|
 |  |test-status| |quality-status| |docs| |metacov|
 |  |kit| |downloads| |format| |repos|
