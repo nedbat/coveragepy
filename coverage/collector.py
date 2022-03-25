@@ -432,7 +432,7 @@ class Collector:
         else:
             raise runtime_err                   # pragma: cant happen
 
-        return {self.cached_mapped_file(k): v for k, v in items if v}
+        return {self.cached_mapped_file(k): v for k, v in items}
 
     def plugin_was_disabled(self, plugin):
         """Record that `plugin` was disabled during the run."""
