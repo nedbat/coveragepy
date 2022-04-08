@@ -164,9 +164,14 @@ header {
     z-index: 2;
     border-bottom: 1px solid $light-gray3;
     @include border-color-dark($dark-gray2);
+    padding: 1rem 1rem;
 
     .content {
-        padding: 1rem $left-gutter;
+        padding: 0 ($left-gutter - 1rem);
+    }
+
+    nav {
+        margin-top: 1em;
     }
 
     h2 {
@@ -208,15 +213,11 @@ main {
     z-index: 1;
 }
 
-.indexfile footer {
-    margin: 1rem $left-gutter;
-}
-
-.pyfile footer {
+footer {
     margin: 1rem 1rem;
 }
 
-footer .content {
+nav {
     padding: 0;
     color: $light-gray5;
     @include color-dark($dark-gray5);

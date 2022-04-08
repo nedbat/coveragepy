@@ -28,13 +28,15 @@ a.nav { text-decoration: none; color: inherit; }
 
 a.nav:hover { text-decoration: underline; color: inherit; }
 
-header { background: #f8f8f8; width: 100%; z-index: 2; border-bottom: 1px solid #ccc; }
+header { background: #f8f8f8; width: 100%; z-index: 2; border-bottom: 1px solid #ccc; padding: 1rem 1rem; }
 
 @media (prefers-color-scheme: dark) { header { background: black; } }
 
 @media (prefers-color-scheme: dark) { header { border-color: #333; } }
 
-header .content { padding: 1rem 3.5rem; }
+header .content { padding: 0 2.5rem; }
+
+header nav { margin-top: 1em; }
 
 header h2 { margin-top: .5em; font-size: 1em; }
 
@@ -52,13 +54,11 @@ header.sticky ~ #source { padding-top: 6.5em; }
 
 main { position: relative; z-index: 1; }
 
-.indexfile footer { margin: 1rem 3.5rem; }
+footer { margin: 1rem 1rem; }
 
-.pyfile footer { margin: 1rem 1rem; }
+nav { padding: 0; color: #666; font-style: italic; }
 
-footer .content { padding: 0; color: #666; font-style: italic; }
-
-@media (prefers-color-scheme: dark) { footer .content { color: #aaa; } }
+@media (prefers-color-scheme: dark) { nav { color: #aaa; } }
 
 #index { margin: 1rem 0 0 3.5rem; }
 
