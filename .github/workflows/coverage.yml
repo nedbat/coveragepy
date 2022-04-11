@@ -78,7 +78,7 @@ jobs:
           python -m tox
 
       - name: "Upload coverage data"
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: metacov
           path: .metacov.*
@@ -124,13 +124,13 @@ jobs:
           python -m coverage json
 
       - name: "Upload HTML report"
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: html_report
           path: htmlcov
 
       - name: "Upload JSON report"
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: json_report
           path: coverage.json

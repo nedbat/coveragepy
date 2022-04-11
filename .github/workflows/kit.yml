@@ -149,7 +149,7 @@ jobs:
           ls -al wheelhouse/
 
       - name: "Upload wheels"
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: dist
           path: wheelhouse/*.whl
@@ -181,7 +181,7 @@ jobs:
           ls -al dist/
 
       - name: "Upload sdist"
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: dist
           path: dist/*.tar.gz
@@ -216,7 +216,7 @@ jobs:
           ls -al dist/
 
       - name: "Upload wheels"
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: dist
           path: dist/*.whl
@@ -274,7 +274,7 @@ jobs:
           ls -al dist/
 
       - name: "Upload wheels"
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: dist
           path: dist/*.whl
