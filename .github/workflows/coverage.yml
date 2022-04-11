@@ -108,7 +108,7 @@ jobs:
           python igor.py zip_mods
 
       - name: "Download coverage data"
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: metacov
 
@@ -153,7 +153,7 @@ jobs:
           git checkout main
 
       - name: "Download coverage JSON report"
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: json_report
 
@@ -179,7 +179,7 @@ jobs:
           if (($PCTINT < 60)); then echo "badge_color=red"; fi >> $GITHUB_ENV
 
       - name: "Download coverage HTML report"
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: html_report
           path: reports_repo/${{ env.report_dir }}
