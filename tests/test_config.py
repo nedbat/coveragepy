@@ -4,6 +4,7 @@
 """Test the config file handling for coverage.py"""
 
 import math
+import sys
 from collections import OrderedDict
 
 from unittest import mock
@@ -706,19 +707,21 @@ class ConfigFileTest(UsingModulesMixin, CoverageTest):
 
     def test_no_toml_installed_no_toml(self):
         # Can't read a toml file that doesn't exist.
-        with without_module(coverage.tomlconfig, 'tomli'):
+        with without_module(coverage.tomlconfig, 'tomllib'):
             msg = "Couldn't read 'cov.toml' as a config file"
             with pytest.raises(ConfigError, match=msg):
                 coverage.Coverage(config_file="cov.toml")
 
+    @pytest.mark.skipif(sys.version_info >= (3, 11), reason="Python 3.11 has toml in stdlib")
     def test_no_toml_installed_explicit_toml(self):
         # Can't specify a toml config file if toml isn't installed.
         self.make_file("cov.toml", "# A toml file!")
-        with without_module(coverage.tomlconfig, 'tomli'):
+        with without_module(coverage.tomlconfig, 'tomllib'):
             msg = "Can't read 'cov.toml' without TOML support"
             with pytest.raises(ConfigError, match=msg):
                 coverage.Coverage(config_file="cov.toml")
 
+    @pytest.mark.skipif(sys.version_info >= (3, 11), reason="Python 3.11 has toml in stdlib")
     def test_no_toml_installed_pyproject_toml(self):
         # Can't have coverage config in pyproject.toml without toml installed.
         self.make_file("pyproject.toml", """\
@@ -726,7 +729,7 @@ class ConfigFileTest(UsingModulesMixin, CoverageTest):
             [tool.coverage.run]
             xyzzy = 17
             """)
-        with without_module(coverage.tomlconfig, 'tomli'):
+        with without_module(coverage.tomlconfig, 'tomllib'):
             msg = "Can't read 'pyproject.toml' without TOML support"
             with pytest.raises(ConfigError, match=msg):
                 coverage.Coverage()
@@ -738,7 +741,7 @@ class ConfigFileTest(UsingModulesMixin, CoverageTest):
             [tool.something]
             xyzzy = 17
             """)
-        with without_module(coverage.tomlconfig, 'tomli'):
+        with without_module(coverage.tomlconfig, 'tomllib'):
             cov = coverage.Coverage()
             # We get default settings:
             assert not cov.config.timid
