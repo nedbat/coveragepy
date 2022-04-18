@@ -206,7 +206,7 @@ jobs:
 
       - name: "Create badge"
         # https://gist.githubusercontent.com/nedbat/8c6980f77988a327348f9b02bbaf67f5
-        uses: schneegans/dynamic-badges-action@v1.2.0
+        uses: schneegans/dynamic-badges-action@v1.3.0
         with:
           auth: ${{ secrets.METACOV_GIST_SECRET }}
           gistID: 8c6980f77988a327348f9b02bbaf67f5
