@@ -165,6 +165,8 @@ class HtmlReporter:
         self.datagen = HtmlDataGeneration(self.coverage)
         self.totals = Numbers(precision=self.config.precision)
         self.directory_was_empty = False
+        self.first_fr = None
+        self.final_fr = None
 
         self.template_globals = {
             # Functions available in the templates.
@@ -204,9 +206,27 @@ class HtmlReporter:
         self.incr.read()
         self.incr.check_global_data(self.config, self.pyfile_html_source)
 
-        # Process all the files.
-        for fr, analysis in get_analysis_to_report(self.coverage, morfs):
-            self.html_file(fr, analysis)
+        # Process all the files. For each page we need to supply a link
+        # to the next page. Therefore in each iteration of the loop we
+        # work on the fr and analysis from the previous iteration. We
+        # also need a link to the preceding page (i.e. 2 before the
+        # current iteration).
+        analysis_to_report = get_analysis_to_report(self.coverage, morfs)
+        pluprev_fr, prev_fr = None, None
+        prev_analysis = None
+
+        for fr, analysis in analysis_to_report:
+            if prev_fr is not None:
+                self.html_file(prev_fr, prev_analysis, pluprev_fr, fr)
+            else:
+                # This is the first file processed
+                self.first_fr = fr
+            pluprev_fr, prev_fr, prev_analysis = prev_fr, fr, analysis
+
+        # One more iteration for the final file.
+        self.html_file(prev_fr, prev_analysis, pluprev_fr, None)
+        # This is the last file processed
+        self.final_fr = prev_fr
 
         if not self.all_files_nums:
             raise NoDataError("No data to report.")
@@ -236,10 +256,22 @@ class HtmlReporter:
         if self.extra_css:
             shutil.copyfile(self.config.extra_css, os.path.join(self.directory, self.extra_css))
 
-    def html_file(self, fr, analysis):
-        """Generate an HTML file for one source file."""
+    def html_file(self, fr, analysis, prev_fr=None, next_fr=None):
+        """Generate an HTML file for one source file, with links to the
+        previous and the next file, or to the index."""
         rootname = flat_rootname(fr.relative_filename())
         html_filename = rootname + ".html"
+        if prev_fr is not None:
+            prev_html = flat_rootname(prev_fr.relative_filename()) + ".html"
+        else:
+            prev_html = "index.html"
+
+        if next_fr is not None:
+            next_html = flat_rootname(next_fr.relative_filename()) + ".html"
+        else:
+            next_html = "index.html"
+
+        print(prev_html, html_filename, next_html)
         ensure_dir(self.directory)
         if not os.listdir(self.directory):
             self.directory_was_empty = True
@@ -316,7 +348,11 @@ class HtmlReporter:
                 css_classes.append(self.template_globals['category'][ldata.category])
             ldata.css_class = ' '.join(css_classes) or "pln"
 
-        html = self.source_tmpl.render(file_data.__dict__)
+        html = self.source_tmpl.render({
+            **file_data.__dict__,
+            'prev_html': prev_html,
+            'next_html': next_html,
+        })
         write_html(html_path, html)
 
         # Save this file's information for the index file.
@@ -340,11 +376,23 @@ class HtmlReporter:
             n = self.skipped_empty_count
             skipped_empty_msg = f"{n} empty file{plural(n)} skipped."
 
+        if self.first_fr is not None:
+            first_html = flat_rootname(self.first_fr.relative_filename()) + ".html"
+        else:
+            first_html = "index.html"
+
+        if self.final_fr is not None:
+            final_html = flat_rootname(self.final_fr.relative_filename()) + ".html"
+        else:
+            final_html = "index.html"
+
         html = index_tmpl.render({
             'files': self.file_summaries,
             'totals': self.totals,
             'skipped_covered_msg': skipped_covered_msg,
             'skipped_empty_msg': skipped_empty_msg,
+            'first_html': first_html,
+            'final_html': final_html,
         })
 
         index_file = os.path.join(self.directory, "index.html")

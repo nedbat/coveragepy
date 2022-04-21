@@ -40,6 +40,11 @@
                         {% endif %}
                         <kbd>c</kbd> &nbsp; change column sorting
                     </p>
+                    <p class="keyhelp">
+                        <kbd>[</kbd>
+                        <kbd>]</kbd>
+                        &nbsp; prev/next file
+                    </p>
                 </div>
             </div>
         </div>
@@ -114,6 +119,14 @@
             <a class="nav" href="{{__url__}}">coverage.py v{{__version__}}</a>,
             created at {{ time_stamp }}
         </p>
+    </div>
+    <div style="display: none;">
+        <p>
+            <a id="prevFileLink" class="nav" href="{{ final_html }}">first file</a>
+            <a id="nextFileLink" class="nav" href="{{ first_html }}">final file</a>
+        </p>
+        <button type="button" class="button_prev_file" data-shortcut="[">Previous file</button>
+        <button type="button" class="button_next_file" data-shortcut="]">Next file</button>
     </div>
 </footer>
 
