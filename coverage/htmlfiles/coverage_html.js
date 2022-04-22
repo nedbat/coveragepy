@@ -203,6 +203,8 @@ coverage.index_ready = function () {
 
     on_click(".button_prev_file", coverage.to_prev_file);
     on_click(".button_next_file", coverage.to_next_file);
+
+    on_click(".button_show_hide_help", coverage.show_hide_help);
 };
 
 // -- pyfile stuff --
@@ -232,6 +234,8 @@ coverage.pyfile_ready = function () {
     on_click(".button_prev_file", coverage.to_prev_file);
     on_click(".button_next_file", coverage.to_next_file);
     on_click(".button_to_index", coverage.to_index);
+
+    on_click(".button_show_hide_help", coverage.show_hide_help);
 
     coverage.filters = undefined;
     try {
@@ -317,6 +321,11 @@ coverage.to_next_file = function () {
 
 coverage.to_index = function () {
     location.href = document.getElementById("indexLink").href;
+}
+
+coverage.show_hide_help = function () {
+    const helpCheck = document.getElementById("help_panel_state")
+    helpCheck.checked = !helpCheck.checked;
 }
 
 // Return a string indicating what kind of chunk this line belongs to,
