@@ -57,6 +57,9 @@
                         <kbd>]</kbd>
                         &nbsp; prev/next file
                     </p>
+                    <p>
+                        <kbd>u</kbd> &nbsp; back to the index
+                    </p>
                 </div>
             </div>
         </div>
@@ -78,6 +81,7 @@
             <button type="button" class="button_first_chunk" data-shortcut="1">Goto first highlighted chunk</button>
             <button type="button" class="button_prev_file" data-shortcut="[">Previous file</button>
             <button type="button" class="button_next_file" data-shortcut="]">Next file</button>
+            <button type="button" class="button_to_index" data-shortcut="u">Back to the index</button>
         </div>
     </div>
 </header>
@@ -118,7 +122,7 @@
     <div class="content">
         <p>
             <a id="prevFileLink" class="nav" href="{{ prev_html }}">&#xab; prev file</a> &nbsp; &nbsp;
-            <a class="nav" href="index.html">&Hat; index</a> &nbsp; &nbsp;
+            <a id="indexLink" class="nav" href="index.html">&Hat; index</a> &nbsp; &nbsp;
             <a id="nextFileLink" class="nav" href="{{ next_html }}">&#xbb; next file</a>
         </p>
         <p>

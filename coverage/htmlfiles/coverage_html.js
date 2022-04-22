@@ -231,6 +231,7 @@ coverage.pyfile_ready = function () {
 
     on_click(".button_prev_file", coverage.to_prev_file);
     on_click(".button_next_file", coverage.to_next_file);
+    on_click(".button_to_index", coverage.to_index);
 
     coverage.filters = undefined;
     try {
@@ -312,6 +313,10 @@ coverage.to_prev_file = function () {
 
 coverage.to_next_file = function () {
     window.location = document.getElementById("nextFileLink").href;
+}
+
+coverage.to_index = function () {
+    location.href = document.getElementById("indexLink").href;
 }
 
 // Return a string indicating what kind of chunk this line belongs to,
