@@ -273,7 +273,6 @@ class HtmlReporter:
         else:
             next_html = "index.html"
 
-        print(prev_html, html_filename, next_html)
         ensure_dir(self.directory)
         if not os.listdir(self.directory):
             self.directory_was_empty = True
