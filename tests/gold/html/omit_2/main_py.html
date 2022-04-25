@@ -39,6 +39,17 @@
                     <p class="keyhelp">
                         <kbd>1</kbd> &nbsp; (one) first highlighted chunk
                     </p>
+                    <p class="keyhelp">
+                        <kbd>[</kbd>
+                        <kbd>]</kbd>
+                        &nbsp; prev/next file
+                    </p>
+                    <p class="keyhelp">
+                        <kbd>u</kbd> &nbsp; back to the index
+                    </p>
+                    <p class="keyhelp">
+                        <kbd>?</kbd> &nbsp; show/hide this help
+                    </p>
                 </div>
             </div>
         </div>
@@ -53,6 +64,10 @@
             <button type="button" class="button_prev_chunk" data-shortcut="k">Previous highlighted chunk</button>
             <button type="button" class="button_top_of_page" data-shortcut="0">Goto top of page</button>
             <button type="button" class="button_first_chunk" data-shortcut="1">Goto first highlighted chunk</button>
+            <button type="button" class="button_prev_file" data-shortcut="[">Previous file</button>
+            <button type="button" class="button_next_file" data-shortcut="]">Next file</button>
+            <button type="button" class="button_to_index" data-shortcut="u">Back to the index</button>
+            <button type="button" class="button_show_hide_help" data-shortcut="?">Show/hide keyboard shortcuts</button>
         </div>
     </div>
 </header>
@@ -71,8 +86,13 @@
 <footer>
     <div class="content">
         <p>
-            <a class="nav" href="index.html">&#xab; index</a> &nbsp; &nbsp; <a class="nav" href="https://coverage.readthedocs.io/en/6.1.1a0">coverage.py v6.1.1a0</a>,
-            created at 2021-10-30 16:07 -0400
+            <a id="prevFileLink" class="nav" href="m3_py.html">&#xab; prev file</a> &nbsp; &nbsp;
+            <a id="indexLink" class="nav" href="index.html">&Hat; index</a> &nbsp; &nbsp;
+            <a id="nextFileLink" class="nav" href="index.html">&#xbb; next file</a>
+        </p>
+        <p>
+            <a class="nav" href="https://coverage.readthedocs.io/en/6.3.3a0">coverage.py v6.3.3a0</a>,
+            created at 2022-04-25 21:07 +0100
         </p>
     </div>
 </footer>
