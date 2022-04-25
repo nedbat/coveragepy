@@ -223,10 +223,12 @@ class HtmlReporter:
                 self.first_fr = fr
             pluprev_fr, prev_fr, prev_analysis = prev_fr, fr, analysis
 
-        # One more iteration for the final file.
-        self.html_file(prev_fr, prev_analysis, pluprev_fr, None)
-        # This is the last file processed
-        self.final_fr = prev_fr
+        # One more iteration for the final file. (Or not, if there are
+        # no files at all.)
+        if prev_fr is not None:
+            self.html_file(prev_fr, prev_analysis, pluprev_fr, None)
+            # This is the last file processed
+            self.final_fr = prev_fr
 
         if not self.all_files_nums:
             raise NoDataError("No data to report.")
