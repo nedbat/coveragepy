@@ -30,6 +30,14 @@
                         <kbd>p</kbd>
                         <kbd>c</kbd> &nbsp; change column sorting
                     </p>
+                    <p class="keyhelp">
+                        <kbd>[</kbd>
+                        <kbd>]</kbd>
+                        &nbsp; prev/next file
+                    </p>
+                    <p class="keyhelp">
+                        <kbd>?</kbd> &nbsp; show/hide this help
+                    </p>
                 </div>
             </div>
         </div>
@@ -81,9 +89,18 @@
 <footer>
     <div class="content">
         <p>
-            <a class="nav" href="https://coverage.readthedocs.io/en/6.1a0">coverage.py v6.1a0</a>,
-            created at 2021-10-23 08:16 -0400
+            <a class="nav" href="https://coverage.readthedocs.io/en/6.3.3a0">coverage.py v6.3.3a0</a>,
+            created at 2022-04-25 21:09 +0100
         </p>
+    </div>
+    <div style="display: none;">
+        <p>
+            <a id="prevFileLink" class="nav" href="partial_py.html">first file</a>
+            <a id="nextFileLink" class="nav" href="partial_py.html">final file</a>
+        </p>
+        <button type="button" class="button_prev_file" data-shortcut="[">Previous file</button>
+        <button type="button" class="button_next_file" data-shortcut="]">Next file</button>
+            <button type="button" class="button_show_hide_help" data-shortcut="?">Show/hide keyboard shortcuts</button>
     </div>
 </footer>
 </body>
