@@ -56,7 +56,7 @@ def do_show_env():
         print(f"  {env} = {os.environ[env]!r}")
 
 
-def do_remove_extension():
+def do_remove_extension(*args):
     """Remove the compiled C extension, no matter what its name."""
 
     so_patterns = """
@@ -66,8 +66,23 @@ def do_remove_extension():
         tracer.*.pyd
         """.split()
 
+    if "--from-install" in args:
+        # Get the install location using a subprocess to avoid
+        # locking the file we are about to delete
+        import subprocess
+        root = os.path.dirname(subprocess.check_output([
+            sys.executable,
+            "-Xutf8",
+            "-c",
+            "import coverage; print(coverage.__file__)"
+        ], encoding="utf-8").strip())
+    else:
+        root = "coverage"
+
     for pattern in so_patterns:
-        pattern = os.path.join("coverage", pattern)
+        pattern = os.path.join(root, pattern.strip())
+        if VERBOSITY:
+            print(f"Searching for {pattern}")
         for filename in glob.glob(pattern):
             if os.path.exists(filename):
                 if VERBOSITY:

@@ -12,7 +12,7 @@ import pytest
 
 from coverage import env
 
-from tests.coveragetest import CoverageTest, TESTS_DIR
+from tests.coveragetest import CoverageTest, TESTS_DIR, COVERAGE_INSTALL_ARGS
 from tests.helpers import change_dir, make_file, nice_file
 from tests.helpers import re_lines, run_command
 
@@ -138,13 +138,12 @@ def venv_world_fixture(tmp_path_factory):
             """)
 
         # Install everything.
-        coverage_src = nice_file(TESTS_DIR, "..")
         run_in_venv(
             "python -m pip install --no-index " +
             "./third_pkg " +
             "-e ./another_pkg " +
             "-e ./bug888/app -e ./bug888/plugin " +
-            coverage_src
+            COVERAGE_INSTALL_ARGS
         )
         shutil.rmtree("third_pkg")
 
