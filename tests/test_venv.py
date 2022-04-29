@@ -12,8 +12,8 @@ import pytest
 
 from coverage import env
 
-from tests.coveragetest import CoverageTest, TESTS_DIR, COVERAGE_INSTALL_ARGS
-from tests.helpers import change_dir, make_file, nice_file
+from tests.coveragetest import CoverageTest, COVERAGE_INSTALL_ARGS
+from tests.helpers import change_dir, make_file
 from tests.helpers import re_lines, run_command
 
 

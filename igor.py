@@ -69,7 +69,6 @@ def do_remove_extension(*args):
     if "--from-install" in args:
         # Get the install location using a subprocess to avoid
         # locking the file we are about to delete
-        import subprocess
         root = os.path.dirname(subprocess.check_output([
             sys.executable,
             "-Xutf8",
