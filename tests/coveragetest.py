@@ -33,6 +33,11 @@ OK, ERR = 0, 1
 # The coverage/tests directory, for all sorts of finding test helping things.
 TESTS_DIR = os.path.dirname(__file__)
 
+# Install arguments to pass to pip when reinstalling ourselves.
+# Defaults to the top of the source tree, but can be overridden if we need
+# some help on certain platforms.
+COVERAGE_INSTALL_ARGS = os.getenv("COVERAGE_INSTALL_ARGS", nice_file(TESTS_DIR, ".."))
+
 
 class CoverageTest(
     StdStreamCapturingMixin,
@@ -415,7 +420,7 @@ class CoverageTest(
 
     def working_root(self):
         """Where is the root of the coverage.py working tree?"""
-        return os.path.dirname(nice_file(coverage.__file__, ".."))
+        return os.path.dirname(nice_file(__file__, ".."))
 
     def report_from_command(self, cmd):
         """Return the report from the `cmd`, with some convenience added."""

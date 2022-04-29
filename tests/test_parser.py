@@ -510,8 +510,9 @@ def test_ast_dump():
     # Run the AST_DUMP code to make sure it doesn't fail, with some light
     # assertions. Use parser.py as the test code since it is the longest file,
     # and fitting, since it's the AST_DUMP code.
+    import coverage.parser
     files = [
-        os.path.join(TESTS_DIR, "../coverage/parser.py"),
+        coverage.parser.__file__,
         os.path.join(TESTS_DIR, "stress_phystoken.tok"),
     ]
     for fname in files:
