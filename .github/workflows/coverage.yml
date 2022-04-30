@@ -147,7 +147,7 @@ jobs:
           git clone --depth=1 --no-checkout https://${{ secrets.COVERAGE_REPORTS_TOKEN }}@github.com/nedbat/coverage-reports reports_repo
           cd reports_repo
           git sparse-checkout init --cone
-          git sparse-checkout set '/*' '!/reports'
+          git sparse-checkout set --skip-checks '/*' '!/reports'
           git config user.name nedbat
           git config user.email ned@nedbatchelder.com
           git checkout main
@@ -198,7 +198,7 @@ jobs:
           echo "${{ env.sha10 }}: ${{ env.branch }}" >> commit.txt
           # Commit.
           cd ./reports_repo
-          git sparse-checkout set '/*' '${{ env.report_dir }}'
+          git sparse-checkout set --skip-checks '/*' '${{ env.report_dir }}'
           rm ${{ env.report_dir }}/.gitignore
           git add ${{ env.report_dir }} latest.html
           git commit --file=../commit.txt
