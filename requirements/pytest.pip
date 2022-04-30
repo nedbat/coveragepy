@@ -18,7 +18,7 @@ flaky==3.7.0
     # via -r requirements/pytest.in
 future==0.18.2
     # via pycontracts
-hypothesis==6.39.4
+hypothesis==6.45.3
     # via -r requirements/pytest.in
 importlib-metadata==4.11.3
     # via
@@ -36,11 +36,11 @@ py==1.11.0
     #   pytest-forked
 pycontracts @ git+https://github.com/slorg1/contracts@collections_and_validator
     # via -r requirements/pytest.in
-pyparsing==3.0.7
+pyparsing==3.0.8
     # via
     #   packaging
     #   pycontracts
-pytest==7.1.1
+pytest==7.1.2
     # via
     #   -r requirements/pytest.in
     #   pytest-forked
@@ -57,7 +57,7 @@ sortedcontainers==2.4.0
     # via hypothesis
 tomli==2.0.1
     # via pytest
-typing-extensions==4.1.1
+typing-extensions==4.2.0
     # via importlib-metadata
-zipp==3.7.0
+zipp==3.8.0
     # via importlib-metadata

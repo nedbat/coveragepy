@@ -145,6 +145,7 @@ class Collector:
             raise ConfigError(f"Conflicting concurrency settings: {show}")
         do_threading = False
 
+        tried = "nothing"  # to satisfy pylint
         try:
             if "greenlet" in concurrencies:
                 tried = "greenlet"
