@@ -212,12 +212,12 @@ class VirtualenvTest(CoverageTest):
         assert re_lines(
             r"^Not tracing .*\bexecfile.py': inside --source, but is third-party",
             debug_out,
-            )
+        )
         assert re_lines(r"^Tracing .*\bmyproduct.py", debug_out)
         assert re_lines(
             r"^Not tracing .*\bcolorsys.py': falls outside the --source spec",
             debug_out,
-            )
+        )
 
         out = run_in_venv(coverage_command + " report")
         assert "myproduct.py" in out
@@ -236,15 +236,15 @@ class VirtualenvTest(CoverageTest):
             r"^Not tracing .*\bexecfile.py': " +
             "module 'coverage.execfile' falls outside the --source spec",
             debug_out,
-            )
+        )
         assert re_lines(
             r"^Not tracing .*\bmyproduct.py': module 'myproduct' falls outside the --source spec",
             debug_out,
-            )
+        )
         assert re_lines(
             r"^Not tracing .*\bcolorsys.py': module 'colorsys' falls outside the --source spec",
             debug_out,
-            )
+        )
 
         out = run_in_venv(coverage_command + " report")
         assert "myproduct.py" not in out
@@ -300,15 +300,15 @@ class VirtualenvTest(CoverageTest):
             r"^Not tracing .*\bexecfile.py': " +
             "module 'coverage.execfile' falls outside the --source spec",
             debug_out,
-            )
+        )
         assert re_lines(
             r"^Not tracing .*\bmyproduct.py': module 'myproduct' falls outside the --source spec",
             debug_out,
-            )
+        )
         assert re_lines(
             r"^Not tracing .*\bcolorsys.py': module 'colorsys' falls outside the --source spec",
             debug_out,
-            )
+        )
 
         out = run_in_venv(coverage_command + " report")
 
@@ -330,6 +330,6 @@ class VirtualenvTest(CoverageTest):
         out = run_in_venv(
             coverage_command +
             " run --source=bug888/app,bug888/plugin bug888/app/testcov/main.py"
-            )
+        )
         # When the test fails, the output includes "Already imported a file that will be measured"
         assert out == "Plugin here\n"

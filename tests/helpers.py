@@ -45,7 +45,7 @@ def run_command(cmd):
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT
-        )
+    )
     output, _ = proc.communicate()
     status = proc.returncode
 
@@ -135,7 +135,7 @@ class CheckUniqueFilenames:
         """The replacement method.  Check that we don't have dupes."""
         assert filename not in self.filenames, (
             f"File name {filename!r} passed to {self.wrapped!r} twice"
-            )
+        )
         self.filenames.add(filename)
         ret = self.wrapped(filename, *args, **kwargs)
         return ret

@@ -13,7 +13,7 @@ version = latest["version"]
 comment = (
     f"This is now released as part of [coverage {version}]" +
     f"(https://pypi.org/project/coverage/{version})."
-    )
+)
 print(f"Comment will be: {comment}")
 
 owner = "nedbat"

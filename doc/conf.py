@@ -119,7 +119,7 @@ pygments_style = 'sphinx'
 
 intersphinx_mapping = {
     'python': ('https://docs.python.org/3', None),
-    }
+}
 
 # -- Options for HTML output ---------------------------------------------------
 

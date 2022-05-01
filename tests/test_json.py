@@ -57,8 +57,8 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
                         'missing_branches': 1,
                         'percent_covered': 60.0,
                         'percent_covered_display': '60',
-                    }
-                }
+                    },
+                },
             },
             'totals': {
                 'missing_lines': 1,
@@ -71,7 +71,7 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
                 'percent_covered_display': '60',
                 'covered_branches': 1,
                 'missing_branches': 1,
-            }
+            },
         }
         self._assert_expected_json_report(cov, expected_result)
 
@@ -95,8 +95,8 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
                         'num_statements': 3,
                         'percent_covered': 66.66666666666667,
                         'percent_covered_display': '67',
-                    }
-                }
+                    },
+                },
             },
             'totals': {
                 'excluded_lines': 0,
@@ -105,7 +105,7 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
                 'num_statements': 3,
                 'percent_covered': 66.66666666666667,
                 'percent_covered_display': '67',
-            }
+            },
         }
         self._assert_expected_json_report(cov, expected_result)
 
@@ -148,8 +148,8 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
                         'num_statements': 3,
                         'percent_covered': 66.66666666666667,
                         'percent_covered_display': '66.67',
-                    }
-                }
+                    },
+                },
             },
             'totals': {
                 'excluded_lines': 0,
@@ -158,7 +158,7 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
                 'num_statements': 3,
                 'percent_covered': 66.66666666666667,
                 'percent_covered_display': '66.67',
-            }
+            },
         }
         self._assert_expected_json_report(cov, expected_result)
 

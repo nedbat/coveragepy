@@ -128,5 +128,5 @@ class AnnotationGoldTest(CoverageTest):
             "2\n" +
             "The annotate command will be removed in a future version.\n" +
             "Get in touch if you still use it: ned@nedbatchelder.com\n"
-            )
+        )
         compare(gold_path("annotate/mae"), ".", "*,cover")

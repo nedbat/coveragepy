@@ -232,9 +232,7 @@ class CoverageOptionParser(optparse.OptionParser):
     """
 
     def __init__(self, *args, **kwargs):
-        super().__init__(
-            add_help_option=False, *args, **kwargs
-            )
+        super().__init__(add_help_option=False, *args, **kwargs)
         self.set_defaults(
             # Keep these arguments alphabetized by their names.
             action=None,
@@ -267,7 +265,7 @@ class CoverageOptionParser(optparse.OptionParser):
             timid=None,
             title=None,
             version=None,
-            )
+        )
 
         self.disable_interspersed_args()
 
@@ -352,7 +350,7 @@ GLOBAL_ARGS = [
     Opts.debug,
     Opts.help,
     Opts.rcfile,
-    ]
+]
 
 COMMANDS = {
     'annotate': CmdOptionParser(
@@ -473,7 +471,7 @@ COMMANDS = {
             Opts.output_lcov,
             Opts.omit,
             Opts.quiet,
-        ] + GLOBAL_ARGS,
+            ] + GLOBAL_ARGS,
         usage="[options] [modules]",
         description="Generate an LCOV report of coverage results.",
     ),
@@ -648,7 +646,7 @@ class CoverageScript:
             check_preimported=True,
             context=options.context,
             messages=not options.quiet,
-            )
+        )
 
         if options.action == "debug":
             return self.do_debug(args)
@@ -675,7 +673,7 @@ class CoverageScript:
             omit=omit,
             include=include,
             contexts=contexts,
-            )
+        )
 
         # We need to be able to import from the current directory, because
         # plugins may try to, for example, to read Django settings.
@@ -692,7 +690,7 @@ class CoverageScript:
                 skip_empty=options.skip_empty,
                 sort=options.sort,
                 **report_args
-                )
+            )
         elif options.action == "annotate":
             self.coverage.annotate(directory=options.directory, **report_args)
         elif options.action == "html":
@@ -704,25 +702,25 @@ class CoverageScript:
                 show_contexts=options.show_contexts,
                 title=options.title,
                 **report_args
-                )
+            )
         elif options.action == "xml":
             total = self.coverage.xml_report(
                 outfile=options.outfile,
                 skip_empty=options.skip_empty,
                 **report_args
-                )
+            )
         elif options.action == "json":
             total = self.coverage.json_report(
                 outfile=options.outfile,
                 pretty_print=options.pretty_print,
                 show_contexts=options.show_contexts,
                 **report_args
-                )
+            )
         elif options.action == "lcov":
             total = self.coverage.lcov_report(
                 outfile=options.outfile,
                 **report_args
-                )
+            )
         else:
             # There are no other possible actions.
             raise AssertionError

@@ -597,7 +597,7 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         assert_coverage_warnings(
             warns,
             re.compile(r"Couldn't parse Python file '.*[/\\]mycode.py' \(couldnt-parse\)"),
-            )
+        )
 
     def test_dothtml_not_python(self):
         # We run a .html file, and when reporting, we can't parse it as

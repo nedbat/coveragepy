@@ -188,7 +188,7 @@ class HtmlReporter:
                 'mis': 'mis show_mis',
                 'par': 'par run show_par',
                 'run': 'run',
-            }
+            },
         }
         self.pyfile_html_source = read_data("pyfile.html")
         self.source_tmpl = Templite(self.pyfile_html_source, self.template_globals)
@@ -292,7 +292,7 @@ class HtmlReporter:
                 ldata.annotate = ",&nbsp;&nbsp; ".join(
                     f"{ldata.number}&#x202F;&#x219B;&#x202F;{d}"
                     for d in ldata.short_annotations
-                    )
+                )
             else:
                 ldata.annotate = None
 
@@ -306,7 +306,7 @@ class HtmlReporter:
                         ", ".join(
                             f"{num:d}) {ann_long}"
                             for num, ann_long in enumerate(longs, start=1)
-                            ),
+                        ),
                     )
             else:
                 ldata.annotate_long = None

@@ -40,7 +40,7 @@ def total_for_files(data, files):
             n_branches=sel_summ.get("num_branches", 0),
             n_partial_branches=sel_summ.get("num_partial_branches", 0),
             n_missing_branches=sel_summ.get("missing_branches", 0),
-            )
+        )
 
     return total
 

@@ -152,7 +152,7 @@ class XmlReportTest(XmlTestHelpers, CoverageTest):
         assert_coverage_warnings(
             warns,
             re.compile(r"Couldn't parse '.*innocuous.py'. \(couldnt-parse\)"),
-            )
+        )
         self.assert_exists("coverage.xml")
 
     def test_filename_format_showing_everything(self):
@@ -235,7 +235,7 @@ class XmlReportTest(XmlTestHelpers, CoverageTest):
         assert_coverage_warnings(
             warns,
             "Module not/really was never imported. (module-not-imported)",
-            )
+        )
         dom = ElementTree.parse("coverage.xml")
 
         self.assert_source(dom, "src/main")
@@ -351,7 +351,7 @@ class XmlPackageStructureTest(XmlTestHelpers, CoverageTest):
             ('package', {'name': "d0.d0"}),
             ('class', {'filename': "d0/d0/__init__.py", 'name': "__init__.py"}),
             ('class', {'filename': "d0/d0/f0.py", 'name': "f0.py"}),
-            ])
+        ])
 
     def test_package_depth_1(self):
         self.make_tree(width=1, depth=4)
@@ -372,7 +372,7 @@ class XmlPackageStructureTest(XmlTestHelpers, CoverageTest):
             ('class', {'filename': "d0/d0/d0/f0.py", 'name': "d0/d0/f0.py"}),
             ('class', {'filename': "d0/d0/f0.py", 'name': "d0/f0.py"}),
             ('class', {'filename': "d0/f0.py", 'name': "f0.py"}),
-            ])
+        ])
 
     def test_package_depth_2(self):
         self.make_tree(width=1, depth=4)
@@ -394,7 +394,7 @@ class XmlPackageStructureTest(XmlTestHelpers, CoverageTest):
             ('class', {'filename': "d0/d0/d0/__init__.py", 'name': "d0/__init__.py"}),
             ('class', {'filename': "d0/d0/d0/f0.py", 'name': "d0/f0.py"}),
             ('class', {'filename': "d0/d0/f0.py", 'name': "f0.py"}),
-            ])
+        ])
 
     def test_package_depth_3(self):
         self.make_tree(width=1, depth=4)
@@ -417,7 +417,7 @@ class XmlPackageStructureTest(XmlTestHelpers, CoverageTest):
             ('package', {'name': "d0.d0.d0"}),
             ('class', {'filename': "d0/d0/d0/__init__.py", 'name': "__init__.py"}),
             ('class', {'filename': "d0/d0/d0/f0.py", 'name': "f0.py"}),
-            ])
+        ])
 
     def test_source_prefix(self):
         # https://github.com/nedbat/coveragepy/issues/465
@@ -429,7 +429,7 @@ class XmlPackageStructureTest(XmlTestHelpers, CoverageTest):
         self.assert_package_and_class_tags(cov, [
             ('package', {'name': "."}),
             ('class', {'filename': "mod.py", 'name': "mod.py"}),
-            ])
+        ])
         dom = ElementTree.parse("coverage.xml")
         self.assert_source(dom, "src")
 

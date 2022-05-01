@@ -23,7 +23,7 @@ class SetupPyTest(CoverageTest):
     def test_metadata(self):
         status, output = self.run_command_status(
             "python setup.py --description --version --url --author"
-            )
+        )
         assert status == 0
         out = output.splitlines()
         assert "measurement" in out[0]

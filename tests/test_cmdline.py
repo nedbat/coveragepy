@@ -107,7 +107,7 @@ class BaseCmdLineTest(CoverageTest):
         patchers = [
             mock.patch("coverage.cmdline."+name, getattr(mk, name))
             for name in self.MOCK_GLOBALS
-            ]
+        ]
         for patcher in patchers:
             patcher.start()
         try:
@@ -797,7 +797,7 @@ class CmdLineTest(BaseCmdLineTest):
             cov.save()
             """,
             options=options,
-            )
+        )
 
     def test_run_module_from_config(self):
         self.cmd_executes("run", """\
@@ -810,7 +810,7 @@ class CmdLineTest(BaseCmdLineTest):
             cov.save()
             """,
             options={"run:command_line": "-m mymodule thing1 thing2"},
-            )
+        )
 
     def test_run_from_config_but_empty(self):
         self.cmd_executes("run", """\
@@ -819,7 +819,7 @@ class CmdLineTest(BaseCmdLineTest):
             """,
             ret=ERR,
             options={"run:command_line": ""},
-            )
+        )
 
     def test_run_dashm_only(self):
         self.cmd_executes("run -m", """\
@@ -827,14 +827,14 @@ class CmdLineTest(BaseCmdLineTest):
             show_help('No module specified for -m')
             """,
             ret=ERR,
-            )
+        )
         self.cmd_executes("run -m", """\
             cov = Coverage()
             show_help('No module specified for -m')
             """,
             ret=ERR,
             options={"run:command_line": "myprog.py"}
-            )
+        )
 
     def test_cant_append_parallel(self):
         self.command_line("run --append --parallel-mode foo.py", ret=ERR)

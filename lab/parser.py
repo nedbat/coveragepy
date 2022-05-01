@@ -28,19 +28,19 @@ class ParserMain:
         parser.add_option(
             "-d", action="store_true", dest="dis",
             help="Disassemble"
-            )
+        )
         parser.add_option(
             "-R", action="store_true", dest="recursive",
             help="Recurse to find source files"
-            )
+        )
         parser.add_option(
             "-s", action="store_true", dest="source",
             help="Show analyzed source"
-            )
+        )
         parser.add_option(
             "-t", action="store_true", dest="tokens",
             help="Show tokens"
-            )
+        )
 
         options, args = parser.parse_args()
         if options.recursive:

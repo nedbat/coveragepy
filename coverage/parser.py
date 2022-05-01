@@ -1231,15 +1231,15 @@ class AstArcAnalyzer:
             if with_block.break_from:
                 self.process_break_exits(
                     self._combine_finally_starts(with_block.break_from, with_exit)
-                    )
+                )
             if with_block.continue_from:
                 self.process_continue_exits(
                     self._combine_finally_starts(with_block.continue_from, with_exit)
-                    )
+                )
             if with_block.return_from:
                 self.process_return_exits(
                     self._combine_finally_starts(with_block.return_from, with_exit)
-                    )
+                )
         return exits
 
     _handle__AsyncWith = _handle__With

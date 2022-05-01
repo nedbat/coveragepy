@@ -43,12 +43,12 @@ def set_warnings():
         "ignore",
         category=DeprecationWarning,
         message=r".*imp module is deprecated in favour of importlib",
-        )
+    )
 
     warnings.filterwarnings(
         "ignore",
         category=pytest.PytestRemovedIn8Warning,
-        )
+    )
 
     if env.PYPY:
         # pypy3 warns about unclosed files a lot.

@@ -499,7 +499,7 @@ class CoverageConfig:
         """Make a list of (name, value) pairs for writing debug info."""
         return human_sorted_items(
             (k, v) for k, v in self.__dict__.items() if not k.startswith("_")
-            )
+        )
 
 
 def config_files_to_try(config_file):

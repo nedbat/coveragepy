@@ -211,7 +211,7 @@ class SimpleReprMixin:
             klass=self.__class__.__name__,
             id=id(self),
             attrs=" ".join(f"{k}={v!r}" for k, v in show_attrs),
-            )
+        )
 
 
 def simplify(v):                                            # pragma: debugging

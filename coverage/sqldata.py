@@ -643,7 +643,7 @@ class CoverageData(SimpleReprMixin):
                 "from line_bits " +
                 "inner join file on file.id = line_bits.file_id " +
                 "inner join context on context.id = line_bits.context_id"
-                )
+            )
             lines = {(files[path], context): numbits for (path, context, numbits) in cur}
             cur.close()
 
@@ -720,7 +720,7 @@ class CoverageData(SimpleReprMixin):
                 "from line_bits " +
                 "inner join file on file.id = line_bits.file_id " +
                 "inner join context on context.id = line_bits.context_id"
-                )
+            )
             for path, context, numbits in cur:
                 key = (aliases.map(path), context)
                 if key in lines:
@@ -977,7 +977,7 @@ class CoverageData(SimpleReprMixin):
                     "select l.numbits, c.context from line_bits l, context c " +
                     "where l.context_id = c.id " +
                     "and file_id = ?"
-                    )
+                )
                 data = [file_id]
                 if self._query_context_ids is not None:
                     ids_array = ", ".join("?" * len(self._query_context_ids))

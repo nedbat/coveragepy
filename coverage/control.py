@@ -250,7 +250,7 @@ class Coverage:
             source=source, source_pkgs=source_pkgs, run_omit=omit, run_include=include, debug=debug,
             report_omit=omit, report_include=include,
             concurrency=concurrency, context=context,
-            )
+        )
 
         # If we have sub-process measurement happening automatically, then we
         # want any explicit creation of a Coverage object to mean, this process
@@ -489,7 +489,7 @@ class Coverage:
             branch=self.config.branch,
             warn=self._warn,
             concurrency=concurrency,
-            )
+        )
 
         suffix = self._data_suffix_specified
         if suffix:
@@ -515,10 +515,10 @@ class Coverage:
                     ", ".join(
                         plugin._coverage_plugin_name
                             for plugin in self._plugins.file_tracers
-                        ),
+                    ),
                     self._collector.tracer_name(),
-                    )
                 )
+            )
             for plugin in self._plugins.file_tracers:
                 plugin._coverage_enabled = False
 
@@ -835,7 +835,7 @@ class Coverage:
             sorted(analysis.excluded),
             sorted(analysis.missing),
             analysis.missing_formatted(),
-            )
+        )
 
     def _analyze(self, it):
         """Analyze a single morf or code unit.
@@ -1146,7 +1146,7 @@ class Coverage:
                 )
             )),
             ('command_line', " ".join(getattr(sys, 'argv', ['-none-']))),
-            ]
+        ]
 
         if self._inorout:
             info.extend(self._inorout.sys_info())

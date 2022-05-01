@@ -22,14 +22,14 @@ class TestCoverageTest(CoverageTest):
             b = 2
             """,
             [1,2]
-            )
+        )
         # You can provide a list of possible statement matches.
         self.check_coverage("""\
             a = 1
             b = 2
             """,
             ([100], [1,2], [1723,47]),
-            )
+        )
         # You can specify missing lines.
         self.check_coverage("""\
             a = 1
@@ -38,7 +38,7 @@ class TestCoverageTest(CoverageTest):
             """,
             [1,2,3],
             missing="3",
-            )
+        )
         # You can specify a list of possible missing lines.
         self.check_coverage("""\
             a = 1
@@ -47,7 +47,7 @@ class TestCoverageTest(CoverageTest):
             """,
             [1,2,3],
             missing=("47-49", "3", "100,102")
-            )
+        )
 
     def test_failed_coverage(self):
         # If the lines are wrong, the message shows right and wrong.
@@ -96,7 +96,7 @@ class TestCoverageTest(CoverageTest):
                 a = 1
                 assert a == 99, "This is bad"
                 """
-                )
+            )
         # Other exceptions too.
         with pytest.raises(ZeroDivisionError, match="division"):
             self.check_coverage("""\
@@ -104,7 +104,7 @@ class TestCoverageTest(CoverageTest):
                 assert a == 1, "This is good"
                 a/0
                 """
-                )
+            )
 
 
 class BasicCoverageTest(CoverageTest):
@@ -1256,7 +1256,7 @@ class ExcludeTest(CoverageTest):
             g = 7
             """,
             [1,3,5,7]
-            )
+        )
 
     def test_simple(self):
         self.check_coverage("""\

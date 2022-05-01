@@ -70,7 +70,7 @@ class JsonReporter:
         json.dump(
             self.report_data,
             outfile,
-            indent=4 if self.config.json_pretty_print else None
+            indent=(4 if self.config.json_pretty_print else None),
         )
 
         return self.total.n_statements and self.total.pc_covered

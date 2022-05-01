@@ -135,7 +135,7 @@ class SimpleArcTest(CoverageTest):
             assert foo() == 3 # 7
             """,
             arcz=".1 17 7.  .2 23 36 25 56 6.", arcz_missing="25 56"
-            )
+        )
         self.check_coverage("""\
             def foo():
                 if foo:
@@ -145,7 +145,7 @@ class SimpleArcTest(CoverageTest):
             foo() # 6
             """,
             arcz=".1 16 6.  .2 23 3. 25 5.", arcz_missing="25 5."
-            )
+        )
 
     def test_what_is_the_sound_of_no_lines_clapping(self):
         if env.JYTHON:
@@ -176,7 +176,7 @@ class SimpleArcTest(CoverageTest):
             """,
             arcz=".1 19 9-1  .2 23 27 34 47 56 67 7-1  9A A9",
             arcz_unpredicted="45",
-            )
+        )
 
 
 class WithTest(CoverageTest):
@@ -195,7 +195,7 @@ class WithTest(CoverageTest):
             example()
             """,
             arcz=arcz,
-            )
+        )
 
     def test_with_return(self):
         arcz = ".1 .2 23 34 4. 16 6."
@@ -210,7 +210,7 @@ class WithTest(CoverageTest):
             example()
             """,
             arcz=arcz,
-            )
+        )
 
     def test_bug_146(self):
         # https://github.com/nedbat/coveragepy/issues/146
@@ -225,7 +225,7 @@ class WithTest(CoverageTest):
             print(5)
             """,
             arcz=arcz,
-            )
+        )
 
     def test_nested_with_return(self):
         arcz = ".1 .2 23 34 45 56 6. 18 8."
@@ -242,7 +242,7 @@ class WithTest(CoverageTest):
             example(8)
             """,
             arcz=arcz,
-            )
+        )
 
     def test_break_through_with(self):
         arcz = ".1 12 23 34 45 15 5."
@@ -257,7 +257,7 @@ class WithTest(CoverageTest):
             """,
             arcz=arcz,
             arcz_missing="15",
-            )
+        )
 
     def test_continue_through_with(self):
         arcz = ".1 12 23 34 41 15 5."
@@ -271,7 +271,7 @@ class WithTest(CoverageTest):
             print(5)
             """,
             arcz=arcz,
-            )
+        )
 
     @pytest.mark.xfail(
         (3, 11) <= env.PYVERSION <= (3, 11, 0, 'alpha', 2, 0),
@@ -302,7 +302,7 @@ class WithTest(CoverageTest):
             arcz=arcz,
             arcz_missing=arcz_missing,
             arcz_unpredicted=arcz_unpredicted,
-            )
+        )
         expected = "line 3 didn't jump to the function exit"
         assert self.get_missing_arc_description(cov, 3, -2) == expected
 
@@ -328,7 +328,7 @@ class WithTest(CoverageTest):
             """,
             arcz=arcz,
             arcz_missing=arcz_missing,
-            )
+        )
         expected = "line 3 didn't jump to the function exit"
         assert self.get_missing_arc_description(cov, 3, -2) == expected
 
@@ -428,7 +428,7 @@ class LoopArcTest(CoverageTest):
             assert a == 4 and i == 3
             """,
             arcz=arcz,
-            )
+        )
 
     def test_while_true(self):
         # With "while True", 2.x thinks it's computation,
@@ -492,7 +492,7 @@ class LoopArcTest(CoverageTest):
                 break
             """,
             arcz=arcz
-            )
+        )
 
     def test_for_if_else_for(self):
         self.check_coverage("""\
@@ -519,7 +519,7 @@ class LoopArcTest(CoverageTest):
                 ".2 23 34 43 26 3. 6. " +
                 "-89 9A 9-8 AB BC CB B9 AE E9",
             arcz_missing="26 6."
-            )
+        )
 
     def test_for_else(self):
         self.check_coverage("""\
@@ -534,7 +534,7 @@ class LoopArcTest(CoverageTest):
             forelse([1,6])
             """,
             arcz=".1 .2 23 32 34 47 26 67 7. 18 89 9."
-            )
+        )
 
     def test_while_else(self):
         self.check_coverage("""\
@@ -1777,7 +1777,7 @@ class LambdaArcTest(CoverageTest):
             b = 3
             """,
             arcz=".1 12 -22 2-2 23 3.", arcz_missing="-22 2-2",
-            )
+        )
 
     def test_raise_with_lambda_looks_like_partial_branch(self):
         self.check_coverage("""\

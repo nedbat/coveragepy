@@ -826,7 +826,7 @@ class EnvironmentTest(CoverageTest):
             sys.path[0:0] = [
                 r'{abc}',
                 '/Users/somebody/temp/something/eggs/something-4.5.1-py2.7-xxx-10.13-x86_64.egg',
-                ]
+            ]
 
             import coverage.cmdline
 
@@ -1076,7 +1076,7 @@ class FailUnderTest(CoverageTest):
             "b = 2\n" * 2000 +
             "if a > 3:\n" +
             "    c = 4\n"
-            )
+        )
         self.make_data_file(lines={abs_file("ninety_nine_plus.py"): range(1, 2002)})
         st, out = self.run_command_status("coverage report --fail-under=100")
         assert st == 2

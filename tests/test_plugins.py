@@ -196,7 +196,7 @@ class PluginTest(CoverageTest):
         cov.set_option("run:plugins", ["plugin_sys_info"])
         with swallow_warnings(
             r"Plugin file tracers \(plugin_sys_info.Plugin\) aren't supported with PyTracer"
-            ):
+        ):
             cov.start()
         cov.stop()      # pragma: nested
 
@@ -210,7 +210,7 @@ class PluginTest(CoverageTest):
             "-- sys: plugin_sys_info.Plugin -------------------------------",
             "hello: world",
             "-- end -------------------------------------------------------",
-            ]
+        ]
         assert expected_end == out_lines[-len(expected_end):]
 
     def test_plugin_with_no_sys_info(self):
@@ -236,7 +236,7 @@ class PluginTest(CoverageTest):
         expected_end = [
             "-- sys: plugin_no_sys_info.Plugin ----------------------------",
             "-- end -------------------------------------------------------",
-            ]
+        ]
         assert expected_end == out_lines[-len(expected_end):]
 
     def test_local_files_are_importable(self):
@@ -426,7 +426,7 @@ class GoodFileTracerTest(FileTracerTest):
             'foo_7.html       7      5      0      0    29%   1-3, 6-7',
             '--------------------------------------------------------',
             'TOTAL           11      7      0      0    36%',
-            ]
+        ]
         assert expected == report
         assert math.isclose(total, 4 / 11 * 100)
 
@@ -525,7 +525,7 @@ class GoodFileTracerTest(FileTracerTest):
             'unsuspecting.py       6      3    50%   2, 4, 6',
             '-----------------------------------------------',
             'TOTAL                 6      3    50%',
-            ]
+        ]
         assert expected == report
         assert total == 50
 

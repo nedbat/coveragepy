@@ -591,7 +591,7 @@ class InOrOut:
             'source_match', 'source_pkgs_match',
             'include_match', 'omit_match',
             'cover_match', 'pylib_match', 'third_match',
-            ]
+        ]
 
         for matcher_name in matcher_names:
             matcher = getattr(self, matcher_name)

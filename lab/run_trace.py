@@ -20,7 +20,7 @@ def trace(frame, event, arg):
         os.path.basename(frame.f_code.co_filename),
         frame.f_lineno,
         frame.f_lasti,
-        ))
+    ))
 
     if event == 'call':
         nest += 1

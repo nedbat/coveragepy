@@ -170,7 +170,7 @@ class MatcherTest(CoverageTest):
             files.canonical_filename("sub3/file4.py"),
             files.canonical_filename("sub4/file5.py"),
             files.canonical_filename("SUB5/file6.py"),
-            ]
+        ]
         tm = TreeMatcher(trees)
         assert tm.info() == sorted(trees)
         for filepath, matches in matches_to_try:
@@ -418,7 +418,7 @@ class FindPythonFilesTest(CoverageTest):
             "sub/a.py", "sub/b.py",
             "sub/ssub/__init__.py", "sub/ssub/s.py",
             "sub/windows.pyw",
-            ])
+        ])
 
 
 @pytest.mark.skipif(not env.WINDOWS, reason="Only need to run Windows tests on Windows.")

@@ -202,8 +202,8 @@ class PythonFileReporter(FileReporter):
     def no_branch_lines(self):
         no_branch = self.parser.lines_matching(
             join_regex(self.coverage.config.partial_list),
-            join_regex(self.coverage.config.partial_always_list)
-            )
+            join_regex(self.coverage.config.partial_always_list),
+        )
         return no_branch
 
     @expensive

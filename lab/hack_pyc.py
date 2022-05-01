@@ -71,7 +71,7 @@ def hack_line_numbers(code):
         code.co_argcount, code.co_nlocals, code.co_stacksize, code.co_flags,
         code.co_code, tuple(new_consts), code.co_names, code.co_varnames,
         code.co_filename, code.co_name, new_firstlineno, new_lnotab
-        )
+    )
 
     return new_code
 

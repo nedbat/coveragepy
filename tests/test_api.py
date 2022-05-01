@@ -540,7 +540,7 @@ class ApiTest(CoverageTest):
             "Module xyzzy was never imported. (module-not-imported)",
             "Module quux was never imported. (module-not-imported)",
             "No data was collected. (no-data-collected)",
-            )
+        )
 
     def test_warnings_suppressed(self):
         self.make_file("hello.py", """\
@@ -1225,7 +1225,7 @@ class RelativePathTest(CoverageTest):
             config_file=".coveragerc",
             concurrency="multiprocessing",
             data_suffix=False,
-            )
+        )
         cov.start()
         cov.stop()
         # The warning isn't the point of this test, but suppress it.

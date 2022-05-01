@@ -272,7 +272,7 @@ def _needs_to_implement(that, func_name):
 
     raise NotImplementedError(
         f"{thing} {name!r} needs to implement {func_name}()"
-        )
+    )
 
 
 class DefaultValue:

@@ -13,7 +13,7 @@ from coverage import env
 from coverage.numbits import (
     nums_to_numbits, numbits_to_nums, numbits_union, numbits_intersection,
     numbits_any_intersection, num_in_numbits, register_sqlite_functions,
-    )
+)
 
 from tests.coveragetest import CoverageTest
 

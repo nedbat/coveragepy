@@ -44,7 +44,7 @@ class PythonParserTest(CoverageTest):
             """)
         assert parser.exit_counts() == {
             2:2, 3:1, 4:2, 5:1, 7:1, 9:2, 10:1
-            }
+        }
 
     def test_generator_exit_counts(self):
         # https://github.com/nedbat/coveragepy/issues/324
@@ -76,7 +76,7 @@ class PythonParserTest(CoverageTest):
             """)
         assert parser.exit_counts() == {
             1: 1, 2:1, 3:2, 4:1, 5:2, 6:1, 7:1, 8:1, 9:1
-            }
+        }
 
     def test_excluded_classes(self):
         parser = self.parse_source("""\
@@ -90,7 +90,7 @@ class PythonParserTest(CoverageTest):
             """)
         assert parser.exit_counts() == {
             1:1, 2:1, 3:1
-            }
+        }
 
     def test_missing_branch_to_excluded_code(self):
         parser = self.parse_source("""\
@@ -433,10 +433,10 @@ class ParserMissingArcDescriptionTest(CoverageTest):
             """)
         assert parser.missing_arc_description(3, 4) == (
             "line 3 didn't jump to line 4, because the pattern on line 3 never matched"
-            )
+        )
         assert parser.missing_arc_description(3, 5) == (
             "line 3 didn't jump to line 5, because the pattern on line 3 always matched"
-            )
+        )
 
 
 class ParserFileTest(CoverageTest):

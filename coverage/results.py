@@ -271,10 +271,10 @@ class Numbers(SimpleReprMixin):
         nums.n_branches = self.n_branches + other.n_branches
         nums.n_partial_branches = (
             self.n_partial_branches + other.n_partial_branches
-            )
+        )
         nums.n_missing_branches = (
             self.n_missing_branches + other.n_missing_branches
-            )
+        )
         return nums
 
     def __radd__(self, other):

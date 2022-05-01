@@ -363,7 +363,7 @@ class HtmlWithUnparsableFilesTest(HtmlTestHelpers, CoverageTest):
         assert_coverage_warnings(
             warns,
             re.compile(r"Couldn't parse Python file '.*innocuous.py' \(couldnt-parse\)"),
-            )
+        )
         self.assert_exists("htmlcov/index.html")
         # This would be better as a glob, if the HTML layout changes:
         self.assert_doesnt_exist("htmlcov/innocuous.html")
@@ -868,8 +868,8 @@ assert len(math) == 18
             gold_path("html/other"), "out/other",
             extra_scrubs=[
                 (r'href="d_[0-9a-z]{16}_', 'href="_TEST_TMPDIR_othersrc_'),
-                ],
-            )
+            ],
+        )
         contains(
             'out/other/index.html',
             '<a href="here_py.html">here.py</a>',
@@ -1096,7 +1096,7 @@ class HtmlWithContextsTest(HtmlTestHelpers, CoverageTest):
             assert b == (14-4)
             helper(
                 16
-                )
+            )
 
         test_one()
         x = 20

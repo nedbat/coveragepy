@@ -127,11 +127,11 @@ class SummaryReporter:
         if self.config.skip_covered and self.skipped_count:
             self.writeout(
                 fmt_skip_covered % (self.skipped_count, 's' if self.skipped_count > 1 else '')
-                )
+            )
         if self.config.skip_empty and self.empty_count:
             self.writeout(
                 fmt_skip_empty % (self.empty_count, 's' if self.empty_count > 1 else '')
-                )
+            )
 
         return self.total.n_statements and self.total.pc_covered
 

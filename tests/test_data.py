@@ -888,6 +888,6 @@ class DumpsLoadsTest(CoverageTest):
         msg = r"Unrecognized serialization: {} \(head of {} bytes\)".format(
             re.escape(repr(bad_data[:40])),
             len(bad_data),
-            )
+        )
         with pytest.raises(DataError, match=msg):
             covdata.loads(bad_data)

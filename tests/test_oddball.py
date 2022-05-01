@@ -94,7 +94,7 @@ class RecursionTest(CoverageTest):
                     recur(100000)  # This is definitely too many frames.
                     """,
                     [1, 2, 3, 5, 7], ""
-                    )
+                )
 
     def test_long_recursion_recovery(self):
         # Test the core of bug 93: https://github.com/nedbat/coveragepy/issues/93
@@ -346,25 +346,25 @@ class ExceptionTest(CoverageTest):
                 'doit.py': [302, 303, 304, 305],
                 'fly.py': [102, 103],
                 'oops.py': [2, 3],
-                }),
+            }),
             ("doit catch oops", {
                 'doit.py': [302, 303],
                 'catch.py': [202, 203, 204, 206, 207],
                 'oops.py': [2, 3],
-                }),
+            }),
             ("doit fly catch oops", {
                 'doit.py': [302, 303],
                 'fly.py': [102, 103, 104],
                 'catch.py': [202, 203, 204, 206, 207],
                 'oops.py': [2, 3],
-                }),
+            }),
             ("doit catch fly oops", {
                 'doit.py': [302, 303],
                 'catch.py': [202, 203, 204, 206, 207],
                 'fly.py': [102, 103],
                 'oops.py': [2, 3],
-                }),
-            ]
+            }),
+        ]
 
         for callnames, lines_expected in runs:
 
