@@ -137,6 +137,7 @@ Stan Hu
 Stefan Behnel
 Stephan Richter
 Stephen Finucane
+Steve Dower
 Steve Leonard
 Steve Peak
 S. Y. Lee
