@@ -258,9 +258,8 @@ class HtmlReporter:
         if self.extra_css:
             shutil.copyfile(self.config.extra_css, os.path.join(self.directory, self.extra_css))
 
-    def html_file(self, fr, analysis, prev_fr=None, next_fr=None):
-        """Generate an HTML file for one source file, with links to the
-        previous and the next file, or to the index."""
+    def html_file(self, fr, analysis, prev_fr, next_fr):
+        """Generate an HTML file for one source file."""
         rootname = flat_rootname(fr.relative_filename())
         html_filename = rootname + ".html"
         if prev_fr is not None:
