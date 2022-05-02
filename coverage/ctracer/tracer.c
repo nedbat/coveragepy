@@ -307,6 +307,9 @@ CTracer_handle_call(CTracer *self, PyFrameObject *frame)
     PyObject * plugin = NULL;
     PyObject * plugin_name = NULL;
     PyObject * next_tracename = NULL;
+#ifdef RESUME
+    PyObject * pCode = NULL;
+#endif
 
     /* Borrowed references. */
     PyObject * filename = NULL;
@@ -526,16 +529,16 @@ CTracer_handle_call(CTracer *self, PyFrameObject *frame)
      */
     BOOL real_call = FALSE;
 
-#ifdef RESUME   // 3.11.0a4
+#ifdef RESUME
     /*
      * The current opcode is guaranteed to be RESUME. The argument
      * determines what kind of resume it is.
      */
-    PyObject * pCode = MyFrame_GetCode(frame)->co_code;
-    real_call = (PyBytes_AS_STRING(pCode)[MyFrame_lasti(frame) + 1] == 0);
+    pCode = MyCode_GetCode(MyFrame_GetCode(frame));
+    real_call = (PyBytes_AS_STRING(pCode)[MyFrame_GetLasti(frame) + 1] == 0);
 #else
     // f_lasti is -1 for a true call, and a real byte offset for a generator re-entry.
-    real_call = (MyFrame_lasti(frame) < 0);
+    real_call = (MyFrame_GetLasti(frame) < 0);
 #endif
 
     if (real_call) {
@@ -549,6 +552,9 @@ ok:
     ret = RET_OK;
 
 error:
+#ifdef RESUME
+    MyCode_FreeCode(pCode);
+#endif
     Py_XDECREF(next_tracename);
     Py_XDECREF(disposition);
     Py_XDECREF(plugin);
@@ -689,6 +695,8 @@ CTracer_handle_return(CTracer *self, PyFrameObject *frame)
 {
     int ret = RET_ERROR;
 
+    PyObject * pCode = NULL;
+
     STATS( self->stats.returns++; )
     /* A near-copy of this code is above in the missing-return handler. */
     if (CTracer_set_pdata_stack(self) < 0) {
@@ -699,8 +707,8 @@ CTracer_handle_return(CTracer *self, PyFrameObject *frame)
     if (self->pdata_stack->depth >= 0) {
         if (self->tracing_arcs && self->pcur_entry->file_data) {
             BOOL real_return = FALSE;
-            PyObject * pCode = MyFrame_GetCode(frame)->co_code;
-            int lasti = MyFrame_lasti(frame);
+            pCode = MyCode_GetCode(MyFrame_GetCode(frame));
+            int lasti = MyFrame_GetLasti(frame);
             Py_ssize_t code_size = PyBytes_GET_SIZE(pCode);
             unsigned char * code_bytes = (unsigned char *)PyBytes_AS_STRING(pCode);
 #ifdef RESUME
@@ -760,6 +768,7 @@ CTracer_handle_return(CTracer *self, PyFrameObject *frame)
 
 error:
 
+    MyCode_FreeCode(pCode);
     return ret;
 }
 

@@ -17,13 +17,17 @@
 // to make this work, but it's all I've got until https://bugs.python.org/issue40421
 // is resolved.
 #include <internal/pycore_frame.h>
-#define MyFrame_lasti(f)    ((f)->f_frame->f_lasti * 2)
+#if PY_VERSION_HEX >= 0x030B00A7
+#define MyFrame_GetLasti(f)     (PyFrame_GetLasti(f))
+#else
+#define MyFrame_GetLasti(f)     ((f)->f_frame->f_lasti * 2)
+#endif
 #elif PY_VERSION_HEX >= 0x030A00A7
 // The f_lasti field changed meaning in 3.10.0a7. It had been bytes, but
 // now is instructions, so we need to adjust it to use it as a byte index.
-#define MyFrame_lasti(f)    ((f)->f_lasti * 2)
+#define MyFrame_GetLasti(f)     ((f)->f_lasti * 2)
 #else
-#define MyFrame_lasti(f)    ((f)->f_lasti)
+#define MyFrame_GetLasti(f)     ((f)->f_lasti)
 #endif
 
 // Access f_code should be done through a helper starting in 3.9.
@@ -31,6 +35,14 @@
 #define MyFrame_GetCode(f)      (PyFrame_GetCode(f))
 #else
 #define MyFrame_GetCode(f)      ((f)->f_code)
+#endif
+
+#if PY_VERSION_HEX >= 0x030B00A7
+#define MyCode_GetCode(co)      (PyObject_GetAttrString((PyObject *)(co), "co_code"))
+#define MyCode_FreeCode(code)   Py_XDECREF(code)
+#else
+#define MyCode_GetCode(co)      ((co)->co_code)
+#define MyCode_FreeCode(code)
 #endif
 
 /* The values returned to indicate ok or error. */

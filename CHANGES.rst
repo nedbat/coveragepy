@@ -20,7 +20,10 @@ development at the same time, such as 4.5.x and 5.0.
 Unreleased
 ----------
 
-Nothing yet.
+- Fix: Coverage.py now builds successfully on CPython 3.11 (3.11.0b1) again.
+  Closes `issue 1367`_.  Some results for generators may have changed.
+
+.. _issue 1367: https://github.com/nedbat/coveragepy/issues/1367
 
 
 .. _changes_632:
