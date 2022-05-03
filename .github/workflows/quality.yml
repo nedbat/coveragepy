@@ -18,6 +18,9 @@ defaults:
 env:
   PIP_DISABLE_PIP_VERSION_CHECK: 1
 
+permissions:
+  contents: read
+
 jobs:
   lint:
     name: "Pylint etc"
