@@ -32,6 +32,9 @@ defaults:
 env:
   PIP_DISABLE_PIP_VERSION_CHECK: 1
 
+permissions:
+  contents: read
+
 jobs:
   wheels:
     name: "Build ${{ matrix.os }} ${{ matrix.py }} ${{ matrix.arch }} wheels"
