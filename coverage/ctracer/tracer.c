@@ -119,6 +119,10 @@ CTracer_dealloc(CTracer *self)
 }
 
 #if TRACE_LOG
+/* Set debugging constants: a file substring and line number to start logging. */
+static const char * start_file = "badasync.py";
+static int start_line = 1;
+
 static const char *
 indent(int n)
 {
@@ -132,9 +136,6 @@ indent(int n)
 }
 
 static BOOL logging = FALSE;
-/* Set these constants to be a file substring and line number to start logging. */
-static const char * start_file = "nested.py";
-static int start_line = 1;
 
 static void
 CTracer_showlog(CTracer * self, int lineno, PyObject * filename, const char * msg)
@@ -787,11 +788,13 @@ CTracer_trace(CTracer *self, PyFrameObject *frame, int what, PyObject *arg_unuse
     #endif
 
     #if WHAT_LOG
+    const char * w = "XXX ";
     if (what <= (int)(sizeof(what_sym)/sizeof(const char *))) {
-        ascii = PyUnicode_AsASCIIString(MyFrame_GetCode(frame)->co_filename);
-        printf("%x trace: f:%x %s @ %s %d\n", (int)self, (int)frame, what_sym[what], PyBytes_AS_STRING(ascii), PyFrame_GetLineNumber(frame));
-        Py_DECREF(ascii);
+        w = what_sym[what];
     }
+    ascii = PyUnicode_AsASCIIString(MyFrame_GetCode(frame)->co_filename);
+    printf("%x trace: f:%x %s @ %s %d\n", (int)self, (int)frame, what_sym[what], PyBytes_AS_STRING(ascii), PyFrame_GetLineNumber(frame));
+    Py_DECREF(ascii);
     #endif
 
     #if TRACE_LOG
