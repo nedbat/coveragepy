@@ -15,6 +15,9 @@
 #   $ piprepo build /tmp/pypi
 #   $ python -m pip install -v coverage --index-url=file:///tmp/pypi/simple
 #
+# Note that cibuildwheel recommends not shipping wheels for pre-release versions
+# of Python: https://cibuildwheel.readthedocs.io/en/stable/options/#prerelease-pythons
+# So we don't.
 
 name: "Kits"
 
@@ -213,64 +216,6 @@ jobs:
           # One wheel works for all PyPy versions.
           # yes, this is weird syntax: https://github.com/pypa/build/issues/202
           pypy3 -m build -w -C="--global-option=--python-tag" -C="--global-option=pp36.pp37.pp38"
-
-      - name: "List wheels"
-        run: |
-          ls -al dist/
-
-      - name: "Upload wheels"
-        uses: actions/upload-artifact@v3
-        with:
-          name: dist
-          path: dist/*.whl
-
-  prerel:
-    name: "Build pre-rel ${{ matrix.os }} ${{ matrix.py }} wheels"
-    # Our C extension uses internal fields, which are moving during the 3.11.0
-    # alpha phases. Don't pre-build wheels.
-    if: ${{ false }}  # true when there are pre-rel, false when not.
-    runs-on: "${{ matrix.os }}-latest"
-    strategy:
-      matrix:
-        os:
-          - ubuntu
-          - windows
-          - macos
-        py:
-          # PYVERSIONS. Available versions:
-          # https://github.com/actions/python-versions/blob/main/versions-manifest.json
-          - "3.11.0-beta.1"
-      fail-fast: false
-
-    steps:
-      - name: "Check out the repo"
-        uses: actions/checkout@v3
-
-      - name: "Install Python ${{ matrix.py }}"
-        uses: actions/setup-python@v3
-        with:
-          python-version: ${{ matrix.py }}
-          cache: pip
-          cache-dependency-path: 'requirements/*.pip'
-
-      - name: "Install wheel tools"
-        run: |
-          python -m pip install -r requirements/kit.pip
-
-      - name: "Build wheel"
-        run: |
-          python -m build
-
-      - name: "Convert to manylinux wheel"
-        if: runner.os == 'Linux'
-        run: |
-          ls -la dist/
-          auditwheel show dist/*.whl
-          auditwheel repair dist/*.whl
-          ls -la wheelhouse/
-          auditwheel show wheelhouse/*.whl
-          rm dist/*.whl
-          mv wheelhouse/*.whl dist/
 
       - name: "List wheels"
         run: |
