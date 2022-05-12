@@ -33,7 +33,7 @@ platformdirs==2.5.2
     # via cibuildwheel
 pyelftools==0.28
     # via auditwheel
-pyparsing==3.0.8
+pyparsing==3.0.9
     # via packaging
 tomli==2.0.1
     # via
@@ -52,5 +52,5 @@ zipp==3.8.0
     #   pep517
 
 # The following packages are considered to be unsafe in a requirements file:
-setuptools==62.1.0
+setuptools==62.2.0
     # via -r requirements/kit.in

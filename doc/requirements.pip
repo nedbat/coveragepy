@@ -43,7 +43,7 @@ markupsafe==2.1.1
     # via jinja2
 packaging==21.3
     # via sphinx
-pbr==5.8.1
+pbr==5.9.0
     # via stevedore
 pyenchant==3.2.2
     # via
@@ -54,7 +54,7 @@ pygments==2.12.0
     #   doc8
     #   sphinx
     #   sphinx-tabs
-pyparsing==3.0.8
+pyparsing==3.0.9
     # via packaging
 pytz==2022.1
     # via babel
@@ -94,7 +94,7 @@ sphinxcontrib-restbuilder==0.3
     # via -r doc/requirements.in
 sphinxcontrib-serializinghtml==1.1.5
     # via sphinx
-sphinxcontrib-spelling==7.3.2
+sphinxcontrib-spelling==7.3.3
     # via -r doc/requirements.in
 stevedore==3.5.0
     # via doc8

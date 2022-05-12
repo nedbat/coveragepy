@@ -18,7 +18,7 @@ flaky==3.7.0
     # via -r requirements/pytest.in
 future==0.18.2
     # via pycontracts
-hypothesis==6.45.3
+hypothesis==6.46.3
     # via -r requirements/pytest.in
 importlib-metadata==4.11.3
     # via
@@ -36,7 +36,7 @@ py==1.11.0
     #   pytest-forked
 pycontracts @ git+https://github.com/slorg1/contracts@collections_and_validator
     # via -r requirements/pytest.in
-pyparsing==3.0.8
+pyparsing==3.0.9
     # via
     #   packaging
     #   pycontracts

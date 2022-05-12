@@ -4,7 +4,7 @@
 #
 #    make upgrade
 #
-astroid==2.11.3
+astroid==2.11.5
     # via pylint
 attrs==21.4.0
     # via
@@ -60,7 +60,7 @@ future==0.18.2
     #   pycontracts
 greenlet==1.1.2
     # via -r requirements/dev.in
-hypothesis==6.45.3
+hypothesis==6.46.3
     # via -r requirements/pytest.pip
 idna==3.3
     # via requests
@@ -129,9 +129,9 @@ pygments==2.12.0
     #   pudb
     #   readme-renderer
     #   rich
-pylint==2.13.7
+pylint==2.13.8
     # via -r requirements/dev.in
-pyparsing==3.0.8
+pyparsing==3.0.9
     # via
     #   -r requirements/pytest.pip
     #   packaging
@@ -164,7 +164,7 @@ requests-toolbelt==0.9.1
     # via twine
 rfc3986==2.0.0
     # via twine
-rich==12.3.0
+rich==12.4.1
     # via twine
 six==1.16.0
     # via
@@ -218,7 +218,7 @@ virtualenv==20.14.1
     #   tox
 webencodings==0.5.1
     # via bleach
-wrapt==1.14.0
+wrapt==1.14.1
     # via astroid
 zipp==3.8.0
     # via
@@ -228,8 +228,10 @@ zipp==3.8.0
 
 # The following packages are considered to be unsafe in a requirements file:
 pip==22.0.4
-    # via -r requirements/pip.pip
-setuptools==62.1.0
+    # via
+    #   -c requirements/pins.pip
+    #   -r requirements/pip.pip
+setuptools==62.2.0
     # via
     #   astroid
     #   check-manifest
