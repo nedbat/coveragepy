@@ -17,8 +17,10 @@ development at the same time, such as 4.5.x and 5.0.
     ..  Version 9.8.1 — 2027-07-27
     ..  --------------------------
 
-Unreleased
-----------
+.. _changes_633:
+
+Version 6.3.3 — 2022-05-12
+--------------------------
 
 - Fix: Coverage.py now builds successfully on CPython 3.11 (3.11.0b1) again.
   Closes `issue 1367`_.  Some results for generators may have changed.
