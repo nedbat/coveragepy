@@ -13,6 +13,12 @@ from coverage import env
 from coverage.files import abs_file
 
 
+skip_cpython_92236 = pytest.mark.skipif(
+    env.PYVERSION >= (3, 11, 0, "beta"),
+    reason="Avoid a CPython bug: https://github.com/python/cpython/issues/92236",
+    # #92236 is fixed in https://github.com/python/cpython/pull/92722
+)
+
 class SimpleArcTest(CoverageTest):
     """Tests for coverage.py's arc measurement."""
 
@@ -605,6 +611,7 @@ class LoopArcTest(CoverageTest):
             arcz_missing="26 3. 6.",
         )
 
+    @skip_cpython_92236
     def test_generator_expression(self):
         # Generator expression:
         self.check_coverage("""\
@@ -617,6 +624,7 @@ class LoopArcTest(CoverageTest):
             arcz=".1 -22 2-2 12 23 34 45 53 3.",
         )
 
+    @skip_cpython_92236
     def test_generator_expression_another_way(self):
         # https://bugs.python.org/issue44450
         # Generator expression:
@@ -1169,6 +1177,7 @@ class ExceptionArcTest(CoverageTest):
 class YieldTest(CoverageTest):
     """Arc tests for generators."""
 
+    @skip_cpython_92236
     def test_yield_in_loop(self):
         self.check_coverage("""\
             def gen(inp):
@@ -1180,6 +1189,7 @@ class YieldTest(CoverageTest):
             arcz=".1 .2 23 2. 32 15 5.",
         )
 
+    @skip_cpython_92236
     def test_padded_yield_in_loop(self):
         self.check_coverage("""\
             def gen(inp):
@@ -1200,6 +1210,7 @@ class YieldTest(CoverageTest):
         env.PYVERSION[:5] == (3, 11, 0, 'alpha', 3),
         reason="avoid 3.11 bug: bpo46225",
     )
+    @skip_cpython_92236
     def test_bug_308(self):
         self.check_coverage("""\
             def run():
@@ -1234,6 +1245,7 @@ class YieldTest(CoverageTest):
             arcz=".1 14 45 54 4.  .2 2.  -22 2-2",
         )
 
+    @skip_cpython_92236
     def test_bug_324(self):
         # This code is tricky: the list() call pulls all the values from gen(),
         # but each of them is a generator itself that is never iterated.  As a
@@ -1252,6 +1264,7 @@ class YieldTest(CoverageTest):
             arcz_missing="-33 3-3",
         )
 
+    @skip_cpython_92236
     def test_coroutines(self):
         self.check_coverage("""\
             def double_inputs():
@@ -1271,6 +1284,7 @@ class YieldTest(CoverageTest):
         )
         assert self.stdout() == "20\n12\n"
 
+    @skip_cpython_92236
     def test_yield_from(self):
         self.check_coverage("""\
             def gen(inp):
@@ -1286,6 +1300,7 @@ class YieldTest(CoverageTest):
             arcz=".1 19 9.  .2 23 34 45 56 63 37 7.",
         )
 
+    @skip_cpython_92236
     def test_abandoned_yield(self):
         # https://github.com/nedbat/coveragepy/issues/440
         self.check_coverage("""\
@@ -1614,6 +1629,7 @@ class MiscArcTest(CoverageTest):
         self.check_coverage(code, arcs=[(-1, 1), (1, 2*n+4), (2*n+4, -1)])
         assert self.stdout() == f"{n}\n"
 
+    @skip_cpython_92236
     def test_partial_generators(self):
         # https://github.com/nedbat/coveragepy/issues/475
         # Line 2 is executed completely.
@@ -1830,6 +1846,7 @@ class AsyncTest(CoverageTest):
     """Tests of the new async and await keywords in Python 3.5"""
 
     @xfail_eventlet_670
+    @skip_cpython_92236
     def test_async(self):
         self.check_coverage("""\
             import asyncio
@@ -1857,6 +1874,7 @@ class AsyncTest(CoverageTest):
         assert self.stdout() == "Compute 1 + 2 ...\n1 + 2 = 3\n"
 
     @xfail_eventlet_670
+    @skip_cpython_92236
     def test_async_for(self):
         self.check_coverage("""\
             import asyncio
@@ -1932,6 +1950,7 @@ class AsyncTest(CoverageTest):
     # https://bugs.python.org/issue44621
     @pytest.mark.skipif(env.PYVERSION[:2] == (3, 9), reason="avoid a 3.9 bug: 44621")
     @pytest.mark.skipif(env.PYVERSION < (3, 7), reason="need asyncio.run")
+    @skip_cpython_92236
     def test_bug_1158(self):
         self.check_coverage("""\
             import asyncio
@@ -1962,6 +1981,7 @@ class AsyncTest(CoverageTest):
     )
     @xfail_eventlet_670
     @pytest.mark.skipif(env.PYVERSION < (3, 7), reason="need asyncio.run")
+    @skip_cpython_92236
     def test_bug_1176(self):
         self.check_coverage("""\
             import asyncio
