@@ -214,3 +214,8 @@ jobs:
           label: Coverage
           message: ${{ env.total }}%
           color: ${{ env.badge_color }}
+
+      - name: "Create summary"
+        run: |
+          echo '### Total coverage: ${{ env.total }}%' >> $GITHUB_STEP_SUMMARY
+          echo '[${{ env.url }}](${{ env.url }})' >> $GITHUB_STEP_SUMMARY
