@@ -14,9 +14,10 @@ from coverage.files import abs_file
 
 
 skip_cpython_92236 = pytest.mark.skipif(
-    env.PYVERSION >= (3, 11, 0, "beta"),
+    env.PYVERSION == (3, 11, 0, "beta", 1, 0),
     reason="Avoid a CPython bug: https://github.com/python/cpython/issues/92236",
     # #92236 is fixed in https://github.com/python/cpython/pull/92722
+    # and in https://github.com/python/cpython/pull/92772
 )
 
 class SimpleArcTest(CoverageTest):
