@@ -11,10 +11,6 @@ contents of the string.
 
 If tests/test_arcs.py has this (partial) content::
 
-    1626	    @pytest.mark.skipif(
-    1627	        (3, 11, 0, "alpha", 4) <= env.PYVERSION,
-    1628	        reason="avoid a 3.11 bug: https://bugs.python.org/issue46389",
-    1629	    )
     1630	    def test_partial_generators(self):
     1631	        # https://github.com/nedbat/coveragepy/issues/475
     1632	        # Line 2 is executed completely.

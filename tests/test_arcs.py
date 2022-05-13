@@ -280,10 +280,6 @@ class WithTest(CoverageTest):
             arcz=arcz,
         )
 
-    @pytest.mark.xfail(
-        (3, 11) <= env.PYVERSION <= (3, 11, 0, 'alpha', 2, 0),
-        reason="avoid a 3.11 bug: 45709"
-    )
     # https://github.com/nedbat/coveragepy/issues/1270
     def test_raise_through_with(self):
         if env.PYBEHAVIOR.exit_through_with:
@@ -1206,11 +1202,6 @@ class YieldTest(CoverageTest):
             arcz=".1 19 9.  .2 23 34 45 56 63 37 7.",
         )
 
-    # https://bugs.python.org/issue46225
-    @pytest.mark.xfail(
-        env.PYVERSION[:5] == (3, 11, 0, 'alpha', 3),
-        reason="avoid 3.11 bug: bpo46225",
-    )
     @skip_cpython_92236
     def test_bug_308(self):
         self.check_coverage("""\
@@ -1319,7 +1310,6 @@ class YieldTest(CoverageTest):
         )
 
 
-@pytest.mark.xfail(env.PYVERSION <= (3, 10, 0, 'beta', 4, 0), reason="3.10.0b4 had bugs")
 @pytest.mark.skipif(not env.PYBEHAVIOR.match_case, reason="Match-case is new in 3.10")
 class MatchCaseTest(CoverageTest):
     """Tests of match-case."""
@@ -1950,7 +1940,6 @@ class AsyncTest(CoverageTest):
     # https://github.com/nedbat/coveragepy/issues/1158
     # https://bugs.python.org/issue44621
     @pytest.mark.skipif(env.PYVERSION[:2] == (3, 9), reason="avoid a 3.9 bug: 44621")
-    @pytest.mark.skipif(env.PYVERSION < (3, 7), reason="need asyncio.run")
     @skip_cpython_92236
     def test_bug_1158(self):
         self.check_coverage("""\
@@ -1976,12 +1965,7 @@ class AsyncTest(CoverageTest):
 
     # https://github.com/nedbat/coveragepy/issues/1176
     # https://bugs.python.org/issue44622
-    @pytest.mark.xfail(
-        (3, 10, 0, "alpha", 0, 0) <= env.PYVERSION <= (3, 10, 0, "beta", 4, 0),
-        reason="avoid a 3.10 bug fixed after beta 4: 44622"
-    )
     @xfail_eventlet_670
-    @pytest.mark.skipif(env.PYVERSION < (3, 7), reason="need asyncio.run")
     @skip_cpython_92236
     def test_bug_1176(self):
         self.check_coverage("""\
@@ -2001,11 +1985,6 @@ class AsyncTest(CoverageTest):
         assert self.stdout() == "12\n"
 
     # https://github.com/nedbat/coveragepy/issues/1205
-    # https://bugs.python.org/issue44840
-    @pytest.mark.xfail(
-        (3, 10, 0, "alpha", 0, 0) <= env.PYVERSION <= (3, 10, 0, "candidate", 1, 0),
-        reason="avoid a 3.10 bug fixed after rc1: 44840"
-    )
     def test_bug_1205(self):
         self.check_coverage("""\
             def func():
