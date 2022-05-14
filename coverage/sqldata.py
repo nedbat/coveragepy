@@ -17,6 +17,7 @@ import re
 import socket
 import sqlite3
 import sys
+import textwrap
 import threading
 import zlib
 
@@ -996,9 +997,7 @@ class CoverageData(SimpleReprMixin):
         with SqliteDb(":memory:", debug=NoDebugging()) as db:
             temp_store = [row[0] for row in db.execute("pragma temp_store")]
             copts = [row[0] for row in db.execute("pragma compile_options")]
-            # Yes, this is overkill. I don't like the long list of options
-            # at the end of "debug sys", but I don't want to omit information.
-            copts = ["; ".join(copts[i:i + 3]) for i in range(0, len(copts), 3)]
+            copts = textwrap.wrap(", ".join(copts), width=75)
 
         return [
             ("sqlite3_version", sqlite3.version),
