@@ -6,20 +6,21 @@
 import configparser
 import os
 import re
-import sys
 
+from coverage import env
 from coverage.exceptions import ConfigError
 from coverage.misc import import_third_party, substitute_variables
 
-if sys.version_info >= (3, 11):
-    import tomllib
+
+if env.PYVERSION >= (3, 11):
+    import tomllib      # pylint: disable=import-error
 else:
     # TOML support on Python 3.10 and below is an install-time extra option.
     # (Import typing is here because import_third_party will unload any module
     # that wasn't already imported. tomli imports typing, and if we unload it,
     # later it's imported again, and on Python 3.6, this causes infinite
     # recursion.)
-    import typing   # pylint: disable=unused-import, wrong-import-order
+    import typing   # pylint: disable=unused-import
     tomllib = import_third_party("tomli")
 
 

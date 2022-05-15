@@ -20,7 +20,10 @@ development at the same time, such as 4.5.x and 5.0.
 Unreleased
 ----------
 
-Nothing yet.
+- On Python 3.11, the ``[toml]`` extra no longer installs tomli, instead using
+  tomllib from the standard library.  Thanks `Shantanu <pull 1359_>`_.
+
+.. _pull 1359: https://github.com/nedbat/coveragepy/pull/1359
 
 
 .. _changes_633:
