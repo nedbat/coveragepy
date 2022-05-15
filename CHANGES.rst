@@ -20,7 +20,8 @@ development at the same time, such as 4.5.x and 5.0.
 Unreleased
 ----------
 
-Nothing yet.
+- The ``toml`` extra no longer installs ``tomli`` on Python 3.11 (``tomllib``
+  is used instead)
 
 
 .. _changes_633:

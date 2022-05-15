@@ -6,6 +6,7 @@
 import configparser
 import os
 import re
+import sys
 
 from coverage.exceptions import ConfigError
 from coverage.misc import import_third_party, substitute_variables
@@ -14,8 +15,11 @@ from coverage.misc import import_third_party, substitute_variables
 # import_third_party will unload any module that wasn't already imported.
 # tomli imports typing, and if we unload it, later it's imported again, and on
 # Python 3.6, this causes infinite recursion.)
-import typing   # pylint: disable=unused-import, wrong-import-order
-tomli = import_third_party("tomli")
+if sys.version_info >= (3, 11):
+    import tomllib as tomli
+else:
+    import typing   # pylint: disable=unused-import, wrong-import-order
+    tomli = import_third_party("tomli")
 
 
 class TomlDecodeError(Exception):
