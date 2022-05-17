@@ -19,6 +19,13 @@ img.tideliftlogo {
     margin-bottom: 12px;
 }
 
+.rst-content h3, .rst-content h4, .rst-content h5, .rst-content h6 {
+    /* This makes config.rst look a little better, but the paras are still too
+     * spaced out.
+     */
+    margin-bottom: 12px;
+}
+
 /* Tabs */
 
 .ui.menu {

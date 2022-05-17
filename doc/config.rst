@@ -108,12 +108,18 @@ to more than one command.
 
 .. _config_run_branch:
 
-``branch`` (boolean, default False): whether to measure
+[run] branch
+............
+
+(boolean, default False) Whether to measure
 :ref:`branch coverage <branch>` in addition to statement coverage.
 
 .. _config_run_command_line:
 
-``command_line`` (string): the command-line to run your program.  This will be
+[run] command_line
+..................
+
+(string) The command-line to run your program.  This will be
 used if you run ``coverage run`` with no further arguments.  Coverage.py
 options cannot be specified here, other than ``-m`` to indicate the module to
 run.
@@ -122,7 +128,10 @@ run.
 
 .. _config_run_concurrency:
 
-``concurrency`` (multi-string, default "thread"): the name concurrency
+[run] concurrency
+.................
+
+(multi-string, default "thread") The concurrency
 libraries in use by the product code.  If your program uses `multiprocessing`_,
 `gevent`_, `greenlet`_, or `eventlet`_, you must name that library in this
 option, or coverage.py will produce very wrong results.
@@ -132,7 +141,7 @@ option, or coverage.py will produce very wrong results.
 .. _gevent: http://www.gevent.org/
 .. _eventlet: http://eventlet.net/
 
-See :ref:subprocess: for details of multi-process measurement.
+See :ref:`subprocess` for details of multi-process measurement.
 
 Before version 4.2, this option only accepted a single string.
 
@@ -140,67 +149,102 @@ Before version 4.2, this option only accepted a single string.
 
 .. _config_run_context:
 
-``context`` (string): the static context to record for this coverage run. See
+[run] context
+.............
+
+(string) The static context to record for this coverage run. See
 :ref:`contexts` for more information
 
 .. versionadded:: 5.0
 
 .. _config_run_cover_pylib:
 
-``cover_pylib`` (boolean, default False): whether to measure the Python
-standard library.
+[run] cover_pylib
+.................
+
+(boolean, default False) Whether to measure the Python standard library.
 
 .. _config_run_data_file:
 
-``data_file`` (string, default ".coverage"): the name of the data file to use
+[run] data_file
+...............
+
+(string, default ".coverage") The name of the data file to use
 for storing or reporting coverage. This value can include a path to another
 directory.
 
 .. _config_run_disable_warnings:
 
-``disable_warnings`` (multi-string): a list of warnings to disable.  Warnings
+[run] disable_warnings
+......................
+
+(multi-string) A list of warnings to disable.  Warnings
 that can be disabled include a short string at the end, the name of the
 warning. See :ref:`cmd_warnings` for specific warnings.
 
 .. _config_run_debug:
 
-``debug`` (multi-string): a list of debug options.  See :ref:`the run
+[run] debug
+...........
+
+(multi-string) A list of debug options.  See :ref:`the run
 --debug option <cmd_run_debug>` for details.
 
 .. _config_run_dynamic_context:
 
-``dynamic_context`` (string): the name of a strategy for setting the dynamic
+[run] dynamic_context
+.....................
+
+(string) The name of a strategy for setting the dynamic
 context during execution.  See :ref:`dynamic_contexts` for details.
 
 .. _config_run_include:
 
-``include`` (multi-string): a list of file name patterns, the files to include
+[run] include
+.............
+
+(multi-string) A list of file name patterns, the files to include
 in measurement or reporting.  Ignored if ``source`` is set.  See :ref:`source`
 for details.
 
 .. _config_run_note:
 
-``note`` (string): this is now obsolete.
+[run] note
+..........
+
+(string) This is now obsolete.
 
 .. _config_run_omit:
 
-``omit`` (multi-string): a list of file name patterns, the files to leave out
+[run] omit
+..........
+
+(multi-string) A list of file name patterns, the files to leave out
 of measurement or reporting.  See :ref:`source` for details.
 
 .. _config_run_parallel:
 
-``parallel`` (boolean, default False): append the machine name, process
+[run] parallel
+..............
+
+(boolean, default False) Append the machine name, process
 id and random number to the data file name to simplify collecting data from
 many processes.  See :ref:`cmd_combine` for more information.
 
 .. _config_run_plugins:
 
-``plugins`` (multi-string): a list of plugin package names. See :ref:`plugins`
+[run] plugins
+.............
+
+(multi-string) A list of plugin package names. See :ref:`plugins`
 for more information.
 
 .. _config_run_relative_files:
 
-``relative_files`` (boolean, default False): *Experimental*: store relative
+[run] relative_files
+....................
+
+(*experimental*, boolean, default False) store relative
 file paths in the data file.  This makes it easier to measure code in one (or
 multiple) environments, and then report in another. See :ref:`cmd_combine`
 for details.
@@ -213,13 +257,19 @@ need to know the source origin.
 
 .. _config_run_source:
 
-``source`` (multi-string): a list of packages or directories, the source to
+[run] source
+............
+
+(multi-string) A list of packages or directories, the source to
 measure during execution.  If set, ``include`` is ignored. See :ref:`source`
 for details.
 
 .. _config_run_source_pkgs:
 
-``source_pkgs`` (multi-string): a list of packages, the source to measure
+[run] source_pkgs
+.................
+
+(multi-string) A list of packages, the source to measure
 during execution.  Operates the same as ``source``, but only names packages,
 for resolving ambiguities between packages and directories.
 
@@ -227,7 +277,10 @@ for resolving ambiguities between packages and directories.
 
 .. _config_run_timid:
 
-``timid`` (boolean, default False): use a simpler but slower trace method.
+[run] timid
+...........
+
+(boolean, default False) Use a simpler but slower trace method.
 This uses PyTracer instead of CTracer, and is only needed in very unusual
 circumstances.  Try this if you get seemingly impossible results.
 
@@ -275,12 +328,14 @@ Values common to many kinds of reporting.
 
 .. _config_report_exclude_lines:
 
-``exclude_lines`` (multi-string): a list of regular expressions.  Any line of
-your source code containing a match for  one of these regexes is excluded from
-being
-reported as missing.  More details are in :ref:`excluding`.  If you use this
-option, you are replacing all the exclude regexes, so you'll need to also
-supply the "pragma: no cover" regex if you still want to use it.
+[report] exclude_lines
+......................
+
+(multi-string) A list of regular expressions.  Any line of your source code
+containing a match for  one of these regexes is excluded from being reported as
+missing.  More details are in :ref:`excluding`.  If you use this option, you
+are replacing all the exclude regexes, so you'll need to also supply the
+"pragma: no cover" regex if you still want to use it.
 
 You can exclude lines introducing blocks, and the entire block is excluded. If
 you exclude a ``def`` line or decorator line, the entire function is excluded.
@@ -292,7 +347,10 @@ you'll exclude any line with three or more of any character. If you write
 
 .. _config_report_fail_under:
 
-``fail_under`` (float): a target coverage percentage. If the total coverage
+[report] fail_under
+...................
+
+(float) A target coverage percentage. If the total coverage
 measurement is under this value, then exit with a status code of 2.  If you
 specify a non-integral value, you must also set ``[report] precision`` properly
 to make use of the decimal places.  A setting of 100 will fail any value under
@@ -300,22 +358,34 @@ to make use of the decimal places.  A setting of 100 will fail any value under
 
 .. _config_report_ignore_errors:
 
-``ignore_errors`` (boolean, default False): ignore source code that can't be
-found, emitting a warning instead of an exception.
+[report] ignore_errors
+......................
+
+(boolean, default False) Ignore source code that can't be found, emitting a
+warning instead of an exception.
 
 .. _config_report_include:
 
-``include`` (multi-string): a list of file name patterns, the files to include
+[report] include
+................
+
+(multi-string) A list of file name patterns, the files to include
 in reporting.  See :ref:`source` for details.
 
 .. _config_report_omit:
 
-``omit`` (multi-string): a list of file name patterns, the files to leave out
+[report] omit
+.............
+
+(multi-string) A list of file name patterns, the files to leave out
 of reporting.  See :ref:`source` for details.
 
 .. _config_report_partial_branches:
 
-``partial_branches`` (multi-string): a list of regular expressions.  Any line
+[report] partial_branches
+.........................
+
+(multi-string) A list of regular expressions.  Any line
 of code that matches one of these regexes is excused from being reported as
 a partial branch.  More details are in :ref:`branch`.  If you use this option,
 you are replacing all the partial branch regexes so you'll need to also
@@ -323,29 +393,44 @@ supply the "pragma: no branch" regex if you still want to use it.
 
 .. _config_report_precision:
 
-``precision`` (integer): the number of digits after the decimal point to
+[report] precision
+..................
+
+(integer) The number of digits after the decimal point to
 display for reported coverage percentages.  The default is 0, displaying for
 example "87%".  A value of 2 will display percentages like "87.32%".  This
 setting also affects the interpretation of the ``fail_under`` setting.
 
 .. _config_report_show_missing:
 
-``show_missing`` (boolean, default False): when running a summary report, show
+[report] show_missing
+.....................
+
+(boolean, default False) When running a summary report, show
 missing lines.  See :ref:`cmd_report` for more information.
 
 .. _config_report_skip_covered:
 
-``skip_covered`` (boolean, default False): don't report files that are 100%
+[report] skip_covered
+.....................
+
+(boolean, default False) Don't report files that are 100%
 covered.  This helps you focus on files that need attention.
 
 .. _config_report_skip_empty:
 
-``skip_empty`` (boolean, default False): don't report files that have no
+[report] skip_empty
+...................
+
+(boolean, default False) Don't report files that have no
 executable code (such as ``__init__.py`` files).
 
 .. _config_report_sort:
 
-``sort`` (string, default "Name"): Sort the text report by the named column.
+[report] sort
+.............
+
+(string, default "Name") Sort the text report by the named column.
 Allowed values are "Name", "Stmts", "Miss", "Branch", "BrPart", or "Cover".
 Prefix with ``-`` for descending sort (for example, "-cover").
 
@@ -360,25 +445,36 @@ also apply to HTML output, where appropriate.
 
 .. _config_html_directory:
 
-``directory`` (string, default "htmlcov"): where to write the HTML report
-files.
+[html] directory
+................
+
+(string, default "htmlcov") Where to write the HTML report files.
 
 .. _config_html_extra_css:
 
-``extra_css`` (string): the path to a file of CSS to apply to the HTML report.
+[html] extra_css
+................
+
+(string) The path to a file of CSS to apply to the HTML report.
 The file will be copied into the HTML output directory.  Don't name it
 "style.css".  This CSS is in addition to the CSS normally used, though you can
 overwrite as many of the rules as you like.
 
 .. _config_html_show_context:
 
-``show_contexts`` (boolean): should the HTML report include an indication on
+[html] show_contexts
+....................
+
+(boolean) Should the HTML report include an indication on
 each line of which contexts executed the line.  See :ref:`dynamic_contexts` for
 details.
 
 .. _config_html_skip_covered:
 
-``skip_covered`` (boolean, defaulted from ``[report] skip_covered``): Don't
+[html] skip_covered
+...................
+
+(boolean, defaulted from ``[report] skip_covered``) Don't
 include files in the report that are 100% covered files. See :ref:`cmd_report`
 for more information.
 
@@ -386,7 +482,10 @@ for more information.
 
 .. _config_html_skip_empty:
 
-``skip_empty`` (boolean, defaulted from ``[report] skip_empty``): Don't include
+[html] skip_empty
+.................
+
+(boolean, defaulted from ``[report] skip_empty``) Don't include
 empty files (those that have 0 statements) in the report. See :ref:`cmd_report`
 for more information.
 
@@ -394,7 +493,10 @@ for more information.
 
 .. _config_html_title:
 
-``title`` (string, default "Coverage report"): the title to use for the report.
+[html] title
+............
+
+(string, default "Coverage report") The title to use for the report.
 Note this is text, not HTML.
 
 
@@ -408,11 +510,17 @@ also apply to XML output, where appropriate.
 
 .. _config_xml_output:
 
-``output`` (string, default "coverage.xml"): where to write the XML report.
+[xml] output
+............
+
+(string, default "coverage.xml") Where to write the XML report.
 
 .. _config_xml_package_depth:
 
-``package_depth`` (integer, default 99): controls which directories are
+[xml] package_depth
+...................
+
+(integer, default 99) Controls which directories are
 identified as packages in the report.  Directories deeper than this depth are
 not reported as packages.  The default is that all directories are reported as
 packages.
@@ -430,16 +538,25 @@ also apply to JSON output, where appropriate.
 
 .. _config_json_output:
 
-``output`` (string, default "coverage.json"): where to write the JSON file.
+[json] output
+.............
+
+(string, default "coverage.json") Where to write the JSON file.
 
 .. _config_json_pretty_print:
 
-``pretty_print`` (boolean, default false): controls if the JSON is outputted
+[json] pretty_print
+...................
+
+(boolean, default false) Controls if the JSON is outputted
 with whitespace formatted for human consumption (True) or for minimum file size
 (False).
 
 .. _config_json_show_contexts:
 
-``show_contexts`` (boolean, default false): should the JSON report include an
+[json] show_contexts
+....................
+
+(boolean, default false) Should the JSON report include an
 indication of which contexts executed each line.  See :ref:`dynamic_contexts`
 for details.
