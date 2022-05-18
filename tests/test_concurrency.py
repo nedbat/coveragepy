@@ -696,7 +696,8 @@ def test_thread_safe_save_data(tmpdir):
 class SigtermTest(CoverageTest):
     """Tests of our handling of SIGTERM."""
 
-    def test_sigterm_saves_data(self):
+    @pytest.mark.parametrize("sigterm", [False, True])
+    def test_sigterm_saves_data(self, sigterm):
         # A terminated process should save its coverage data.
         self.make_file("clobbered.py", """\
             import multiprocessing
@@ -724,7 +725,8 @@ class SigtermTest(CoverageTest):
             [run]
             parallel = True
             concurrency = multiprocessing
-            """)
+            """ + ("sigterm = true" if sigterm else "")
+            )
         out = self.run_command("coverage run clobbered.py")
         # Under the Python tracer on Linux, we get the "Trace function changed"
         # message. Does that matter?
@@ -735,7 +737,11 @@ class SigtermTest(CoverageTest):
         assert out == "START\nNOT THREE\nEND\n"
         self.run_command("coverage combine")
         out = self.run_command("coverage report -m")
-        assert self.squeezed_lines(out)[2] == "clobbered.py 17 1 94% 6"
+        if sigterm:
+            expected = "clobbered.py 17 1 94% 6"
+        else:
+            expected = "clobbered.py 17 5 71% 5-10"
+        assert self.squeezed_lines(out)[2] == expected
 
     def test_sigterm_still_runs(self):
         # A terminated process still runs its own SIGTERM handler.
@@ -766,6 +772,7 @@ class SigtermTest(CoverageTest):
             [run]
             parallel = True
             concurrency = multiprocessing
+            sigterm = True
             """)
         out = self.run_command("coverage run handler.py")
         assert out == "START\nSIGTERM\nEND\n"

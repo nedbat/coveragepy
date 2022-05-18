@@ -20,9 +20,16 @@ development at the same time, such as 4.5.x and 5.0.
 Unreleased
 ----------
 
+- A new setting, :ref:`config_run_sigterm`, controls whether a SIGTERM signal
+  handler is used.  In 6.3, the signal handler was always installed, to capture
+  data at unusual process ends.  Unfortunately, this introduced other problems
+  (see `issue 1310`_).  Now the signal handler is only used if you opt-in by
+  setting ``[run] sigterm = true``.
+
 - On Python 3.11, the ``[toml]`` extra no longer installs tomli, instead using
   tomllib from the standard library.  Thanks `Shantanu <pull 1359_>`_.
 
+.. _issue 1310: https://github.com/nedbat/coveragepy/issues/1310
 .. _pull 1359: https://github.com/nedbat/coveragepy/pull/1359
 
 

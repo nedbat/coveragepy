@@ -190,6 +190,7 @@ class CoverageConfig:
         self.relative_files = False
         self.run_include = None
         self.run_omit = None
+        self.sigterm = False
         self.source = None
         self.source_pkgs = []
         self.timid = False
@@ -364,6 +365,7 @@ class CoverageConfig:
         ('relative_files', 'run:relative_files', 'boolean'),
         ('run_include', 'run:include', 'list'),
         ('run_omit', 'run:omit', 'list'),
+        ('sigterm', 'run:sigterm', 'boolean'),
         ('source', 'run:source', 'list'),
         ('source_pkgs', 'run:source_pkgs', 'list'),
         ('timid', 'run:timid', 'boolean'),

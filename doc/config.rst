@@ -268,6 +268,24 @@ need to know the source origin.
 .. versionadded:: 5.0
 
 
+.. _config_run_sigterm:
+
+[run] sigterm
+.............
+
+(boolean, default False) if true, register a SIGTERM signal handler to capture
+data when the process ends due to a SIGTERM signal.  This includes
+:meth:`Process.terminate <python:multiprocessing.Process.terminate>`, and other
+ways to terminate a process.  This can help when collecting data in usual
+situations, but can also introduce problems (see `issue 1310`_).
+
+Only on Linux and Mac.
+
+.. _issue 1310: https://github.com/nedbat/coveragepy/issues/1310
+
+.. versionadded:: 6.4 (in 6.3 this was always enabled)
+
+
 .. _config_run_source:
 
 [run] source

@@ -536,12 +536,13 @@ class Coverage:
 
         # Register our clean-up handlers.
         atexit.register(self._atexit)
-        is_main = (threading.current_thread() == threading.main_thread())
-        if is_main and not env.WINDOWS:
-            # The Python docs seem to imply that SIGTERM works uniformly even
-            # on Windows, but that's not my experience, and this agrees:
-            # https://stackoverflow.com/questions/35772001/x/35792192#35792192
-            self._old_sigterm = signal.signal(signal.SIGTERM, self._on_sigterm)
+        if self.config.sigterm:
+            is_main = (threading.current_thread() == threading.main_thread())
+            if is_main and not env.WINDOWS:
+                # The Python docs seem to imply that SIGTERM works uniformly even
+                # on Windows, but that's not my experience, and this agrees:
+                # https://stackoverflow.com/questions/35772001/x/35792192#35792192
+                self._old_sigterm = signal.signal(signal.SIGTERM, self._on_sigterm)
 
     def _init_data(self, suffix):
         """Create a data file if we don't have one yet."""
