@@ -62,7 +62,7 @@ control what happens if the variable isn't defined in the environment:
 - Otherwise, missing environment variables will result in empty strings with no
   error.
 
-Many sections and values correspond roughly to commands and options in
+Many sections and settings correspond roughly to commands and options in
 the :ref:`command-line interface <cmd>`.
 
 Here's a sample configuration file::
@@ -103,7 +103,7 @@ Here's a sample configuration file::
 [run]
 -----
 
-These values are generally used when running product code, though some apply
+These settings are generally used when running product code, though some apply
 to more than one command.
 
 
@@ -338,7 +338,7 @@ See :ref:`cmd_combine` for more information.
 [report]
 --------
 
-Values common to many kinds of reporting.
+Settings common to many kinds of reporting.
 
 
 .. _config_report_exclude_lines:
@@ -465,8 +465,8 @@ with ``-`` for descending sort (for example, "-cover").
 [html]
 ------
 
-Values particular to HTML reporting.  The values in the ``[report]`` section
-also apply to HTML output, where appropriate.
+Settings particular to HTML reporting.  The settings in the ``[report]``
+section also apply to HTML output, where appropriate.
 
 
 .. _config_html_directory:
@@ -534,7 +534,7 @@ Note this is text, not HTML.
 [xml]
 -----
 
-Values particular to XML reporting.  The values in the ``[report]`` section
+Settings particular to XML reporting.  The settings in the ``[report]`` section
 also apply to XML output, where appropriate.
 
 
@@ -561,8 +561,8 @@ The default is that all directories are reported as packages.
 [json]
 ------
 
-Values particular to JSON reporting.  The values in the ``[report]`` section
-also apply to JSON output, where appropriate.
+Settings particular to JSON reporting.  The settings in the ``[report]``
+section also apply to JSON output, where appropriate.
 
 .. versionadded:: 5.0
 
@@ -591,3 +591,18 @@ formatted for human consumption (True) or for minimum file size (False).
 
 (boolean, default false) Should the JSON report include an indication of which
 contexts executed each line.  See :ref:`dynamic_contexts` for details.
+
+
+.. _config_lcov:
+
+[lcov]
+------
+
+Settings particular to LCOV reporting (see :ref:`cmd_lcov`).
+
+.. versionadded:: 6.3
+
+[lcov] output
+.............
+
+(string, default "coverage.lcov") Where to write the LCOV file.

@@ -223,6 +223,9 @@ Coverage.py sets an environment variable, ``COVERAGE_RUN`` to indicate that
 your code is running under coverage measurement.  The value is not relevant,
 and may change in the future.
 
+These options can also be set in the :ref:`config_run` section of your
+.coveragerc file.
+
 
 .. _cmd_warnings:
 
@@ -465,6 +468,9 @@ code of 2, indicating that the total coverage was less than your target.  This
 can be used as part of a pass/fail condition, for example in a continuous
 integration server.  This option isn't available for **annotate**.
 
+These options can also be set in your .coveragerc file. See
+:ref:`Configuration: [report] <config_report>`.
+
 
 .. _cmd_report:
 
@@ -577,14 +583,16 @@ decimal point in coverage percentages, defaulting to none.
 The ``--sort`` option is the name of a column to sort the report by.
 
 Other common reporting options are described above in :ref:`cmd_reporting`.
+These options can also be set in your .coveragerc file. See
+:ref:`Configuration: [report] <config_report>`.
 
 
 .. _cmd_html:
 
-HTML annotation: ``coverage html``
-----------------------------------
+HTML reporting: ``coverage html``
+---------------------------------
 
-Coverage.py can annotate your source code for which lines were executed
+Coverage.py can annotate your source code to show which lines were executed
 and which were not.  The **html** command creates an HTML report similar to the
 **report** summary, but as an HTML file.  Each module name links to the source
 file decorated to show the status of each line.
@@ -649,7 +657,7 @@ the command line.
 
 If you prefer a different style for your HTML report, you can provide your
 own CSS file to apply, by specifying a CSS file in the ``[html]`` section of
-the configuration file.  See :ref:`config_html` for details.
+the configuration file.  See :ref:`config_html_extra_css` for details.
 
 The ``-d`` argument specifies an output directory, defaulting to "htmlcov"::
 
@@ -673,6 +681,9 @@ If you have :ref:`recorded contexts <contexts>`, the ``--contexts`` option lets
 you choose which contexts to report on, and the ``--show-contexts`` option will
 annotate lines with the contexts that ran them.  See :ref:`context_reporting`
 for details.
+
+These options can also be set in your .coveragerc file. See
+:ref:`Configuration: [html] <config_html>`.
 
 
 .. _cmd_xml:
@@ -758,6 +769,8 @@ which may result in
     <class filename="hello.py">
     <class filename="baz/hello.py">
 
+These options can also be set in your .coveragerc file. See
+:ref:`Configuration: [xml] <config_xml>`.
 
 
 .. _cmd_json:
@@ -807,6 +820,11 @@ The **json** command writes coverage data to a "coverage.json" file.
 You can specify the name of the output file with the ``-o`` switch.  The JSON
 can be nicely formatted by specifying the ``--pretty-print`` switch.
 
+Other common reporting options are described above in :ref:`cmd_reporting`.
+These options can also be set in your .coveragerc file. See
+:ref:`Configuration: [json] <config_json>`.
+
+
 .. _cmd_lcov:
 
 LCOV reporting: ``coverage lcov``
@@ -845,7 +863,10 @@ The **lcov** command writes coverage data to a "coverage.lcov" file.
                             tried. [env: COVERAGE_RCFILE]
 .. [[[end]]] (checksum: 16acfbae8011d2e3b620695c5fe13746)
 
-Other common reporting options are described above in :ref:`cmd_reporting`.
+Common reporting options are described above in :ref:`cmd_reporting`.
+Also see :ref:`Configuration: [lcov] <config_lcov>`.
+
+.. versionadded:: 6.3
 
 
 .. _cmd_annotate:
@@ -1002,7 +1023,8 @@ of operation to log:
 .. _env.py: https://github.com/nedbat/coveragepy/blob/master/coverage/env.py
 
 Debug options can also be set with the ``COVERAGE_DEBUG`` environment variable,
-a comma-separated list of these options.
+a comma-separated list of these options, or in the :ref:`config_run_debug`
+section of the .coveragerc file.
 
 The debug output goes to stderr, unless the ``COVERAGE_DEBUG_FILE`` environment
 variable names a different file, which will be appended to.
