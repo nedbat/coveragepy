@@ -3,6 +3,7 @@
 
 """Tests that HTML generation is awesome."""
 
+import collections
 import datetime
 import glob
 import json
@@ -52,7 +53,9 @@ class HtmlTestHelpers(CoverageTest):
         self.clean_local_file_imports()
         cov = coverage.Coverage(**(covargs or {}))
         self.start_import_stop(cov, "main_file")
-        return cov.html_report(**(htmlargs or {}))
+        ret = cov.html_report(**(htmlargs or {}))
+        self.assert_valid_hrefs()
+        return ret
 
     def get_html_report_content(self, module):
         """Return the content of the HTML report for `module`."""
@@ -94,6 +97,27 @@ class HtmlTestHelpers(CoverageTest):
             seconds=120,
             msg=f"Timestamp is wrong: {timestamp}",
         )
+
+    def assert_valid_hrefs(self):
+        """Assert that the hrefs in htmlcov/*.html to see the references are valid.
+
+        Doesn't check external links (those with a protocol).
+        """
+        hrefs = collections.defaultdict(set)
+        for fname in glob.glob("htmlcov/*.html"):
+            with open(fname) as fhtml:
+                html = fhtml.read()
+            for href in re.findall(r""" href=['"]([^'"]*)['"]""", html):
+                if href.startswith("#"):
+                    assert re.search(rf""" id=['"]{href[1:]}['"]""", html)
+                    continue
+                if "://" in href:
+                    continue
+                hrefs[href].add(fname)
+        for href, sources in hrefs.items():
+            assert os.path.exists(f"htmlcov/{href}"), (
+                f"These files link to {href!r}, which doesn't exist: {', '.join(sources)}"
+            )
 
 
 class FileWriteTracker:
