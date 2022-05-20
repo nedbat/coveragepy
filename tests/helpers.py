@@ -5,7 +5,6 @@
 
 import collections
 import contextlib
-import glob
 import os
 import os.path
 import re
