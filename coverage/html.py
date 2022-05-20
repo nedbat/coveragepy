@@ -122,6 +122,15 @@ class HtmlDataGeneration:
         return file_data
 
 
+class FileToReport:
+    """A file we're considering reporting."""
+    def __init__(self, fr, analysis):
+        self.fr = fr
+        self.analysis = analysis
+        self.rootname = flat_rootname(fr.relative_filename())
+        self.html_filename = self.rootname + ".html"
+
+
 class HtmlReporter:
     """HTML reporting."""
 
@@ -207,28 +216,27 @@ class HtmlReporter:
         self.incr.check_global_data(self.config, self.pyfile_html_source)
 
         # Process all the files. For each page we need to supply a link
-        # to the next page. Therefore in each iteration of the loop we
-        # work on the fr and analysis from the previous iteration. We
-        # also need a link to the preceding page (i.e. 2 before the
-        # current iteration).
-        analysis_to_report = get_analysis_to_report(self.coverage, morfs)
-        pluprev_fr, prev_fr = None, None
-        prev_analysis = None
+        # to the next and previous page.
+        files_to_report = []
 
-        for fr, analysis in analysis_to_report:
-            if prev_fr is not None:
-                self.html_file(prev_fr, prev_analysis, pluprev_fr, fr)
+        for fr, analysis in get_analysis_to_report(self.coverage, morfs):
+            ftr = FileToReport(fr, analysis)
+            should = self.should_report_file(ftr)
+            if should:
+                files_to_report.append(ftr)
             else:
-                # This is the first file processed
-                self.first_fr = fr
-            pluprev_fr, prev_fr, prev_analysis = prev_fr, fr, analysis
+                file_be_gone(os.path.join(self.directory, ftr.html_filename))
 
-        # One more iteration for the final file. (Or not, if there are
-        # no files at all.)
-        if prev_fr is not None:
-            self.html_file(prev_fr, prev_analysis, pluprev_fr, None)
-            # This is the last file processed
-            self.final_fr = prev_fr
+        for i, ftr in enumerate(files_to_report):
+            if i == 0:
+                prev_html = "index.html"
+            else:
+                prev_html = files_to_report[i - 1].html_filename
+            if i == len(files_to_report) - 1:
+                next_html = "index.html"
+            else:
+                next_html = files_to_report[i + 1].html_filename
+            self.write_html_file(ftr, prev_html, next_html)
 
         if not self.all_files_nums:
             raise NoDataError("No data to report.")
@@ -236,10 +244,21 @@ class HtmlReporter:
         self.totals = sum(self.all_files_nums)
 
         # Write the index file.
-        self.index_file()
+        if files_to_report:
+            first_html = files_to_report[0].html_filename
+            final_html = files_to_report[-1].html_filename
+        else:
+            first_html = final_html = "index.html"
+        self.index_file(first_html, final_html)
 
         self.make_local_static_report_files()
         return self.totals.n_statements and self.totals.pc_covered
+
+    def make_directory(self):
+        """Make sure our htmlcov directory exists."""
+        ensure_dir(self.directory)
+        if not os.listdir(self.directory):
+            self.directory_was_empty = True
 
     def make_local_static_report_files(self):
         """Make local instances of static files for HTML report."""
@@ -258,27 +277,10 @@ class HtmlReporter:
         if self.extra_css:
             shutil.copyfile(self.config.extra_css, os.path.join(self.directory, self.extra_css))
 
-    def html_file(self, fr, analysis, prev_fr, next_fr):
-        """Generate an HTML file for one source file."""
-        rootname = flat_rootname(fr.relative_filename())
-        html_filename = rootname + ".html"
-        if prev_fr is not None:
-            prev_html = flat_rootname(prev_fr.relative_filename()) + ".html"
-        else:
-            prev_html = "index.html"
-
-        if next_fr is not None:
-            next_html = flat_rootname(next_fr.relative_filename()) + ".html"
-        else:
-            next_html = "index.html"
-
-        ensure_dir(self.directory)
-        if not os.listdir(self.directory):
-            self.directory_was_empty = True
-        html_path = os.path.join(self.directory, html_filename)
-
+    def should_report_file(self, ftr):
+        """Determine if we'll report this file."""
         # Get the numbers for this file.
-        nums = analysis.numbers
+        nums = ftr.analysis.numbers
         self.all_files_nums.append(nums)
 
         if self.skip_covered:
@@ -287,24 +289,28 @@ class HtmlReporter:
             no_missing_branches = (nums.n_partial_branches == 0)
             if no_missing_lines and no_missing_branches:
                 # If there's an existing file, remove it.
-                file_be_gone(html_path)
                 self.skipped_covered_count += 1
-                return
+                return False
 
         if self.skip_empty:
             # Don't report on empty files.
             if nums.n_statements == 0:
-                file_be_gone(html_path)
                 self.skipped_empty_count += 1
-                return
+                return False
+
+        return True
+
+    def write_html_file(self, ftr, prev_html, next_html):
+        """Generate an HTML file for one source file."""
+        self.make_directory()
 
         # Find out if the file on disk is already correct.
-        if self.incr.can_skip_file(self.data, fr, rootname):
-            self.file_summaries.append(self.incr.index_info(rootname))
+        if self.incr.can_skip_file(self.data, ftr.fr, ftr.rootname):
+            self.file_summaries.append(self.incr.index_info(ftr.rootname))
             return
 
         # Write the HTML page for this file.
-        file_data = self.datagen.data_for_file(fr, analysis)
+        file_data = self.datagen.data_for_file(ftr.fr, ftr.analysis)
         for ldata in file_data.lines:
             # Build the HTML for the line.
             html = []
@@ -348,6 +354,7 @@ class HtmlReporter:
                 css_classes.append(self.template_globals['category'][ldata.category])
             ldata.css_class = ' '.join(css_classes) or "pln"
 
+        html_path = os.path.join(self.directory, ftr.html_filename)
         html = self.source_tmpl.render({
             **file_data.__dict__,
             'prev_html': prev_html,
@@ -357,15 +364,16 @@ class HtmlReporter:
 
         # Save this file's information for the index file.
         index_info = {
-            'nums': nums,
-            'html_filename': html_filename,
-            'relative_filename': fr.relative_filename(),
+            'nums': ftr.analysis.numbers,
+            'html_filename': ftr.html_filename,
+            'relative_filename': ftr.fr.relative_filename(),
         }
         self.file_summaries.append(index_info)
-        self.incr.set_index_info(rootname, index_info)
+        self.incr.set_index_info(ftr.rootname, index_info)
 
-    def index_file(self):
+    def index_file(self, first_html, final_html):
         """Write the index.html file for this report."""
+        self.make_directory()
         index_tmpl = Templite(read_data("index.html"), self.template_globals)
 
         skipped_covered_msg = skipped_empty_msg = ""
@@ -375,16 +383,6 @@ class HtmlReporter:
         if self.skipped_empty_count:
             n = self.skipped_empty_count
             skipped_empty_msg = f"{n} empty file{plural(n)} skipped."
-
-        if self.first_fr is not None:
-            first_html = flat_rootname(self.first_fr.relative_filename()) + ".html"
-        else:
-            first_html = "index.html"
-
-        if self.final_fr is not None:
-            final_html = flat_rootname(self.final_fr.relative_filename()) + ".html"
-        else:
-            final_html = "index.html"
 
         html = index_tmpl.render({
             'files': self.file_summaries,
