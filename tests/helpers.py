@@ -170,12 +170,6 @@ def re_line(pat, text):
     return lines[0]
 
 
-def remove_files(*patterns):
-    """Remove all files that match any of the patterns."""
-    for pattern in patterns:
-        for fname in glob.glob(pattern):
-            os.remove(fname)
-
 def remove_tree(dirname):
     """Remove a directory tree.
 

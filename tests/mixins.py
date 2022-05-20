@@ -15,7 +15,7 @@ import sys
 import pytest
 
 from coverage.misc import SysModuleSaver
-from tests.helpers import change_dir, make_file, remove_files, remove_tree
+from tests.helpers import change_dir, make_file, remove_tree
 
 
 class PytestBase:
@@ -99,10 +99,9 @@ class RestoreModulesMixin:
         # So that we can re-import files, clean them out first.
         self._sys_module_saver.restore()
 
-        # Also have to clean out the .pyc file, since the timestamp
+        # Also have to clean out the .pyc files, since the timestamp
         # resolution is only one second, a changed file might not be
         # picked up.
-        remove_files("*.pyc", "*$py.class")
         remove_tree("__pycache__")
         importlib.invalidate_caches()
 
