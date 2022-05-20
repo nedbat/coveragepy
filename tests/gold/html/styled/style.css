@@ -38,9 +38,13 @@ header .content { padding: 1rem 3.5rem; }
 
 header h2 { margin-top: .5em; font-size: 1em; }
 
+header p { margin: .5em 0 -.5em; color: #666; font-style: italic; }
+
+@media (prefers-color-scheme: dark) { header p { color: #aaa; } }
+
 header.sticky { position: fixed; left: 0; right: 0; height: 2.5em; }
 
-header.sticky .text { display: none; }
+header.sticky p, header.sticky .text { display: none; }
 
 header.sticky h1, header.sticky h2 { font-size: 1em; margin-top: 0; display: inline-block; }
 
@@ -52,9 +56,7 @@ header.sticky ~ #source { padding-top: 6.5em; }
 
 main { position: relative; z-index: 1; }
 
-.indexfile footer { margin: 1rem 3.5rem; }
-
-.pyfile footer { margin: 1rem 1rem; }
+footer { margin: 1rem 3.5rem; }
 
 footer .content { padding: 0; color: #666; font-style: italic; }
 

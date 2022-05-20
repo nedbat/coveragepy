@@ -174,13 +174,20 @@ header {
         font-size: 1em;
     }
 
+    p {
+        margin: .5em 0 -.5em;
+        color: $light-gray5;
+        @include color-dark($dark-gray5);
+        font-style: italic;
+    }
+
     &.sticky {
         position: fixed;
         left: 0;
         right: 0;
         height: 2.5em;
 
-        .text {
+        p, .text {
             display: none;
         }
 
@@ -208,19 +215,15 @@ main {
     z-index: 1;
 }
 
-.indexfile footer {
+footer {
     margin: 1rem $left-gutter;
-}
 
-.pyfile footer {
-    margin: 1rem 1rem;
-}
-
-footer .content {
-    padding: 0;
-    color: $light-gray5;
-    @include color-dark($dark-gray5);
-    font-style: italic;
+    .content {
+        padding: 0;
+        color: $light-gray5;
+        @include color-dark($dark-gray5);
+        font-style: italic;
+    }
 }
 
 #index {
