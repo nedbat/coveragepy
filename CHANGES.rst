@@ -26,14 +26,22 @@ Unreleased
   (see `issue 1310`_).  Now the signal handler is only used if you opt-in by
   setting ``[run] sigterm = true``.
 
-- Added more keyboard shortcuts in the HTML report: ``[`` and ``]`` for next
-  file and previous file; ``u`` for up to the index; and ``?`` to open/close
-  the help panel. Thanks, `J. M. F. Tsang <pull 1364_>`_.
+- Small changes to the HTML report:
+
+  - Added links to next and previous file, and more keyboard shortcuts: ``[``
+    and ``]`` for next file and previous file; ``u`` for up to the index; and
+    ``?`` to open/close the help panel.  Thanks, `J. M. F. Tsang
+    <pull 1364_>`_.
+
+  - The timestamp and version are displayed at the top of the report.  Thanks,
+    `Ammar Askar <pull 1354_>`_. Closes `issue 1351`_.
 
 - On Python 3.11, the ``[toml]`` extra no longer installs tomli, instead using
   tomllib from the standard library.  Thanks `Shantanu <pull 1359_>`_.
 
 .. _issue 1310: https://github.com/nedbat/coveragepy/issues/1310
+.. _issue 1351: https://github.com/nedbat/coveragepy/issues/1351
+.. _pull 1354: https://github.com/nedbat/coveragepy/pull/1354
 .. _pull 1359: https://github.com/nedbat/coveragepy/pull/1359
 .. _pull 1364: https://github.com/nedbat/coveragepy/pull/1364
 
