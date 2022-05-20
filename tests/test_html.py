@@ -109,7 +109,9 @@ class HtmlTestHelpers(CoverageTest):
                 html = fhtml.read()
             for href in re.findall(r""" href=['"]([^'"]*)['"]""", html):
                 if href.startswith("#"):
-                    assert re.search(rf""" id=['"]{href[1:]}['"]""", html)
+                    assert re.search(rf""" id=['"]{href[1:]}['"]""", html), (
+                        f"Fragment {href!r} in {fname} has no anchor"
+                    )
                     continue
                 if "://" in href:
                     continue
@@ -1188,3 +1190,21 @@ class HtmlWithContextsTest(HtmlTestHelpers, CoverageTest):
                 if label == ld.contexts_label or label in (ld.contexts or ())
             ]
             assert sorted(expected) == sorted(actual)
+
+
+class HtmlHelpersTest(HtmlTestHelpers, CoverageTest):
+    """Tests of the helpers in HtmlTestHelpers."""
+
+    def test_bad_link(self):
+        # Does assert_valid_hrefs detect links to non-existent files?
+        self.make_file("htmlcov/index.html", "<a href='nothing.html'>Nothing</a>")
+        msg = "These files link to 'nothing.html', which doesn't exist: htmlcov.index.html"
+        with pytest.raises(AssertionError, match=msg):
+            self.assert_valid_hrefs()
+
+    def test_bad_anchor(self):
+        # Does assert_valid_hrefs detect fragments that go nowhere?
+        self.make_file("htmlcov/index.html", "<a href='#nothing'>Nothing</a>")
+        msg = "Fragment '#nothing' in htmlcov.index.html has no anchor"
+        with pytest.raises(AssertionError, match=msg):
+            self.assert_valid_hrefs()
