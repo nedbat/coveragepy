@@ -15,6 +15,9 @@ import warnings
 
 from unittest import mock
 
+import pytest
+
+from coverage import env
 from coverage.exceptions import CoverageWarning
 from coverage.misc import output_encoding
 
@@ -313,3 +316,9 @@ def swallow_warnings(message=r".", category=CoverageWarning):
     with warnings.catch_warnings():
         warnings.filterwarnings("ignore", category=category, message=message)
         yield
+
+
+xfail_pypy_3749 = pytest.mark.xfail(
+    env.PYVERSION[:2] == (3, 8) and env.PYPY and env.PYPYVERSION >= (7, 3, 10),
+    reason="Avoid a PyPy bug: https://foss.heptapod.net/pypy/pypy/-/issues/3749"
+)

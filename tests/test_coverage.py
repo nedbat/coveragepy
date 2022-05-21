@@ -10,6 +10,7 @@ from coverage import env
 from coverage.exceptions import NoDataError
 
 from tests.coveragetest import CoverageTest
+from tests.helpers import xfail_pypy_3749
 
 
 class TestCoverageTest(CoverageTest):
@@ -1617,6 +1618,7 @@ class ExcludeTest(CoverageTest):
 class Py24Test(CoverageTest):
     """Tests of new syntax in Python 2.4."""
 
+    @xfail_pypy_3749
     def test_function_decorators(self):
         lines = [1, 2, 3, 4, 6, 8, 10, 12]
         if env.PYBEHAVIOR.trace_decorated_def:
@@ -1637,6 +1639,7 @@ class Py24Test(CoverageTest):
             """,
             lines, "")
 
+    @xfail_pypy_3749
     def test_function_decorators_with_args(self):
         lines = [1, 2, 3, 4, 5, 6, 8, 10, 12]
         if env.PYBEHAVIOR.trace_decorated_def:
@@ -1657,6 +1660,7 @@ class Py24Test(CoverageTest):
             """,
             lines, "")
 
+    @xfail_pypy_3749
     def test_double_function_decorators(self):
         lines = [1, 2, 3, 4, 5, 7, 8, 9, 10, 11, 12, 14, 15, 17, 19, 21, 22, 24, 26]
         if env.PYBEHAVIOR.trace_decorated_def:
