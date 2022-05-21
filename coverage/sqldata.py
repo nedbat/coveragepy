@@ -294,7 +294,7 @@ class CoverageData(SimpleReprMixin):
                 self._has_arcs = bool(int(row[0]))
                 self._has_lines = not self._has_arcs
 
-            for path, file_id in db.execute("select path, id from file"):
+            for file_id, path in db.execute("select id, path from file"):
                 self._file_map[path] = file_id
 
     def _init_db(self, db):
@@ -614,19 +614,19 @@ class CoverageData(SimpleReprMixin):
 
         # Collector for all arcs, lines and tracers
         other_data.read()
-        with other_data._connect() as conn:
+        with other_data._connect() as con:
             # Get files data.
-            cur = conn.execute("select path from file")
+            cur = con.execute("select path from file")
             files = {path: aliases.map(path) for (path,) in cur}
             cur.close()
 
             # Get contexts data.
-            cur = conn.execute("select context from context")
+            cur = con.execute("select context from context")
             contexts = [context for (context,) in cur]
             cur.close()
 
             # Get arc data.
-            cur = conn.execute(
+            cur = con.execute(
                 "select file.path, context.context, arc.fromno, arc.tono " +
                 "from arc " +
                 "inner join file on file.id = arc.file_id " +
@@ -636,7 +636,7 @@ class CoverageData(SimpleReprMixin):
             cur.close()
 
             # Get line data.
-            cur = conn.execute(
+            cur = con.execute(
                 "select file.path, context.context, line_bits.numbits " +
                 "from line_bits " +
                 "inner join file on file.id = line_bits.file_id " +
@@ -646,7 +646,7 @@ class CoverageData(SimpleReprMixin):
             cur.close()
 
             # Get tracer data.
-            cur = conn.execute(
+            cur = con.execute(
                 "select file.path, tracer " +
                 "from tracer " +
                 "inner join file on file.id = tracer.file_id"
@@ -654,39 +654,39 @@ class CoverageData(SimpleReprMixin):
             tracers = {files[path]: tracer for (path, tracer) in cur}
             cur.close()
 
-        with self._connect() as conn:
-            conn.con.isolation_level = "IMMEDIATE"
+        with self._connect() as con:
+            con.con.isolation_level = "IMMEDIATE"
 
             # Get all tracers in the DB. Files not in the tracers are assumed
             # to have an empty string tracer. Since Sqlite does not support
             # full outer joins, we have to make two queries to fill the
             # dictionary.
-            this_tracers = {path: "" for path, in conn.execute("select path from file")}
+            this_tracers = {path: "" for path, in con.execute("select path from file")}
             this_tracers.update({
                 aliases.map(path): tracer
-                for path, tracer in conn.execute(
+                for path, tracer in con.execute(
                     "select file.path, tracer from tracer " +
                     "inner join file on file.id = tracer.file_id"
                 )
             })
 
             # Create all file and context rows in the DB.
-            conn.executemany(
+            con.executemany(
                 "insert or ignore into file (path) values (?)",
                 ((file,) for file in files.values())
             )
             file_ids = {
                 path: id
-                for id, path in conn.execute("select id, path from file")
+                for id, path in con.execute("select id, path from file")
             }
             self._file_map.update(file_ids)
-            conn.executemany(
+            con.executemany(
                 "insert or ignore into context (context) values (?)",
                 ((context,) for context in contexts)
             )
             context_ids = {
                 context: id
-                for id, context in conn.execute("select id, context from context")
+                for id, context in con.execute("select id, context from context")
             }
 
             # Prepare tracers and fail, if a conflict is found.
@@ -714,7 +714,7 @@ class CoverageData(SimpleReprMixin):
             )
 
             # Get line data.
-            cur = conn.execute(
+            cur = con.execute(
                 "select file.path, context.context, line_bits.numbits " +
                 "from line_bits " +
                 "inner join file on file.id = line_bits.file_id " +
@@ -731,7 +731,7 @@ class CoverageData(SimpleReprMixin):
                 self._choose_lines_or_arcs(arcs=True)
 
                 # Write the combined data.
-                conn.executemany(
+                con.executemany(
                     "insert or ignore into arc " +
                     "(file_id, context_id, fromno, tono) values (?, ?, ?, ?)",
                     arc_rows
@@ -739,8 +739,8 @@ class CoverageData(SimpleReprMixin):
 
             if lines:
                 self._choose_lines_or_arcs(lines=True)
-                conn.execute("delete from line_bits")
-                conn.executemany(
+                con.execute("delete from line_bits")
+                con.executemany(
                     "insert into line_bits " +
                     "(file_id, context_id, numbits) values (?, ?, ?)",
                     [
@@ -748,7 +748,7 @@ class CoverageData(SimpleReprMixin):
                         for (file, context), numbits in lines.items()
                     ]
                 )
-            conn.executemany(
+            con.executemany(
                 "insert or ignore into tracer (file_id, tracer) values (?, ?)",
                 ((file_ids[filename], tracer) for filename, tracer in tracer_map.items())
             )
