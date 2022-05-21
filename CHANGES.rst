@@ -39,7 +39,10 @@ Unreleased
 - On Python 3.11, the ``[toml]`` extra no longer installs tomli, instead using
   tomllib from the standard library.  Thanks `Shantanu <pull 1359_>`_.
 
+- In-memory CoverageData objects now properly update(), closing `issue 1323`_.
+
 .. _issue 1310: https://github.com/nedbat/coveragepy/issues/1310
+.. _issue 1323: https://github.com/nedbat/coveragepy/issues/1323
 .. _issue 1351: https://github.com/nedbat/coveragepy/issues/1351
 .. _pull 1354: https://github.com/nedbat/coveragepy/pull/1354
 .. _pull 1359: https://github.com/nedbat/coveragepy/pull/1359

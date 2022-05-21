@@ -253,10 +253,10 @@ class CoverageData(SimpleReprMixin):
 
     def _reset(self):
         """Reset our attributes."""
-        if self._dbs:
+        if not self._no_disk:
             for db in self._dbs.values():
                 db.close()
-        self._dbs = {}
+            self._dbs = {}
         self._file_map = {}
         self._have_used = False
         self._current_context_id = None
@@ -679,6 +679,7 @@ class CoverageData(SimpleReprMixin):
                 path: id
                 for id, path in conn.execute("select id, path from file")
             }
+            self._file_map.update(file_ids)
             conn.executemany(
                 "insert or ignore into context (context) values (?)",
                 ((context,) for context in contexts)
@@ -752,9 +753,10 @@ class CoverageData(SimpleReprMixin):
                 ((file_ids[filename], tracer) for filename, tracer in tracer_map.items())
             )
 
-        # Update all internal cache data.
-        self._reset()
-        self.read()
+        if not self._no_disk:
+            # Update all internal cache data.
+            self._reset()
+            self.read()
 
     def erase(self, parallel=False):
         """Erase the data in this object.

@@ -891,3 +891,19 @@ class DumpsLoadsTest(CoverageTest):
         )
         with pytest.raises(DataError, match=msg):
             covdata.loads(bad_data)
+
+
+class NoDiskTest(CoverageTest):
+    """Tests of in-memory CoverageData."""
+
+    run_in_temp_dir = False
+
+    def test_updating(self):
+        # https://github.com/nedbat/coveragepy/issues/1323
+        a = CoverageData(no_disk=True)
+        a.add_lines({'foo.py': [10, 20, 30]})
+        assert a.measured_files() == {'foo.py'}
+
+        b = CoverageData(no_disk=True)
+        b.update(a)
+        assert b.measured_files() == {'foo.py'}
