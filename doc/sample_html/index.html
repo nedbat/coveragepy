@@ -13,29 +13,42 @@
         <h1>Cog coverage:
             <span class="pc_cov">41.39%</span>
         </h1>
-        <div id="help_panel_wrapper">
+        <aside id="help_panel_wrapper">
             <input id="help_panel_state" type="checkbox">
             <label for="help_panel_state">
                 <img id="keyboard_icon" src="keybd_closed.png" alt="Show/hide keyboard shortcuts" />
             </label>
             <div id="help_panel">
                 <p class="legend">Shortcuts on this page</p>
-                <div>
-                    <p class="keyhelp">
+                <div class="keyhelp">
+                    <p>
                         <kbd>n</kbd>
                         <kbd>s</kbd>
                         <kbd>m</kbd>
                         <kbd>x</kbd>
                         <kbd>b</kbd>
                         <kbd>p</kbd>
-                        <kbd>c</kbd> &nbsp; change column sorting
+                        <kbd>c</kbd>
+                        &nbsp; change column sorting
+                    </p>
+                    <p>
+                        <kbd>[</kbd>
+                        <kbd>]</kbd>
+                        &nbsp; prev/next file
+                    </p>
+                    <p>
+                        <kbd>?</kbd> &nbsp; show/hide this help
                     </p>
                 </div>
             </div>
-        </div>
+        </aside>
         <form id="filter_container">
             <input id="filter" type="text" value="" placeholder="filter..." />
         </form>
+        <p class="text">
+            <a class="nav" href="https://coverage.readthedocs.io">coverage.py v6.4</a>,
+            created at 2022-05-22 18:22 -0400
+        </p>
     </div>
 </header>
 <main id="index">
@@ -153,10 +166,17 @@
 <footer>
     <div class="content">
         <p>
-            <a class="nav" href="https://coverage.readthedocs.io">coverage.py v6.3.3</a>,
-            created at 2022-05-12 19:35 -0400
+            <a class="nav" href="https://coverage.readthedocs.io">coverage.py v6.4</a>,
+            created at 2022-05-22 18:22 -0400
         </p>
     </div>
+    <aside class="hidden">
+        <a id="prevFileLink" class="nav" href="d_7b071bdc2a35fa80_whiteutils_py.html"/>
+        <a id="nextFileLink" class="nav" href="d_7b071bdc2a35fa80___init___py.html"/>
+        <button type="button" class="button_prev_file" data-shortcut="["/>
+        <button type="button" class="button_next_file" data-shortcut="]"/>
+        <button type="button" class="button_show_hide_help" data-shortcut="?"/>
+    </aside>
 </footer>
 </body>
 </html>

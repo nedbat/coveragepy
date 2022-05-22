@@ -28,6 +28,8 @@ a.nav { text-decoration: none; color: inherit; }
 
 a.nav:hover { text-decoration: underline; color: inherit; }
 
+.hidden { display: none; }
+
 header { background: #f8f8f8; width: 100%; z-index: 2; border-bottom: 1px solid #ccc; }
 
 @media (prefers-color-scheme: dark) { header { background: black; } }
@@ -37,6 +39,10 @@ header { background: #f8f8f8; width: 100%; z-index: 2; border-bottom: 1px solid 
 header .content { padding: 1rem 3.5rem; }
 
 header h2 { margin-top: .5em; font-size: 1em; }
+
+header p.text { margin: .5em 0 -.5em; color: #666; font-style: italic; }
+
+@media (prefers-color-scheme: dark) { header p.text { color: #aaa; } }
 
 header.sticky { position: fixed; left: 0; right: 0; height: 2.5em; }
 
@@ -52,9 +58,7 @@ header.sticky ~ #source { padding-top: 6.5em; }
 
 main { position: relative; z-index: 1; }
 
-.indexfile footer { margin: 1rem 3.5rem; }
-
-.pyfile footer { margin: 1rem 1rem; }
+footer { margin: 1rem 3.5rem; }
 
 footer .content { padding: 0; color: #666; font-style: italic; }
 
@@ -124,7 +128,9 @@ header button.par.show_par { background: #ffa; border: 2px solid #bbbb00; margin
 
 #help_panel_state { display: none; }
 
-#help_panel { top: 25px; right: 0; padding: .75em; border: 1px solid #883; }
+#help_panel { top: 25px; right: 0; padding: .75em; border: 1px solid #883; color: #333; }
+
+#help_panel .keyhelp p { margin-top: .75em; }
 
 #help_panel .legend { font-style: italic; margin-bottom: 1em; }
 
@@ -133,8 +139,6 @@ header button.par.show_par { background: #ffa; border: 2px solid #bbbb00; margin
 .pyfile #help_panel { width: 18em; }
 
 #help_panel_state:checked ~ #help_panel { display: block; }
-
-.keyhelp { margin-top: .75em; }
 
 kbd { border: 1px solid black; border-color: #888 #333 #333 #888; padding: .1em .35em; font-family: SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-weight: bold; background: #eee; border-radius: 3px; }
 
