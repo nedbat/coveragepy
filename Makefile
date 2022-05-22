@@ -144,7 +144,7 @@ update_stable:				## Set the stable branch to the latest release.
 	git push origin stable
 
 comment_on_fixes:			## Add a comment to issues that were fixed.
-	python ci/commend_on_fixes.py
+	python ci/comment_on_fixes.py
 
 
 ##@ Documentation
