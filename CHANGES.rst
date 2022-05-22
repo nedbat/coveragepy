@@ -17,8 +17,10 @@ development at the same time, such as 4.5.x and 5.0.
     ..  Version 9.8.1 — 2027-07-27
     ..  --------------------------
 
-Unreleased
-----------
+.. _changes_64:
+
+Version 6.4 — 2022-05-22
+------------------------
 
 - A new setting, :ref:`config_run_sigterm`, controls whether a SIGTERM signal
   handler is used.  In 6.3, the signal handler was always installed, to capture
