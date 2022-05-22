@@ -1014,6 +1014,9 @@ of operation to log:
 
 * ``sql``: log the SQL statements used for recording data.
 
+* ``sqldata``: when used with ``debug=sql``, also log the full data being used
+  in SQL statements.
+
 * ``sys``: before starting, dump all the system and environment information,
   as with :ref:`coverage debug sys <cmd_debug>`.
 

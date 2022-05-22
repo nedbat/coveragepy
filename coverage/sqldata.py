@@ -1,10 +1,7 @@
 # Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
 # For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
 
-"""Sqlite coverage data."""
-
-# TODO: factor out dataop debugging to a wrapper class?
-# TODO: make sure all dataop debugging is in place somehow
+"""SQLite coverage data."""
 
 import collections
 import datetime
@@ -31,7 +28,7 @@ from coverage.version import __version__
 os = isolate_module(os)
 
 # If you change the schema, increment the SCHEMA_VERSION, and update the
-# docs in docs/dbschema.rst also.
+# docs in docs/dbschema.rst by running "make cogdoc".
 
 SCHEMA_VERSION = 7
 
@@ -390,8 +387,10 @@ class CoverageData(SimpleReprMixin):
         if filename not in self._file_map:
             if add:
                 with self._connect() as con:
-                    cur = con.execute("insert or replace into file (path) values (?)", (filename,))
-                    self._file_map[filename] = cur.lastrowid
+                    self._file_map[filename] = con.execute_for_rowid(
+                        "insert or replace into file (path) values (?)",
+                        (filename,)
+                    )
         return self._file_map.get(filename)
 
     def _context_id(self, context):
@@ -428,8 +427,10 @@ class CoverageData(SimpleReprMixin):
             self._current_context_id = context_id
         else:
             with self._connect() as con:
-                cur = con.execute("insert into context (context) values (?)", (context,))
-                self._current_context_id = cur.lastrowid
+                self._current_context_id = con.execute_for_rowid(
+                    "insert into context (context) values (?)",
+                    (context,)
+                )
 
     def base_filename(self):
         """The base filename for storing data.
@@ -1126,6 +1127,14 @@ class SqliteDb(SimpleReprMixin):
                 self.debug.write(f"EXCEPTION from execute: {msg}")
             raise DataError(f"Couldn't use data file {self.filename!r}: {msg}") from exc
 
+    def execute_for_rowid(self, sql, parameters=()):
+        """Like execute, but returns the lastrowid."""
+        con = self.execute(sql, parameters)
+        rowid = con.lastrowid
+        if self.debug.should("sqldata"):
+            self.debug.write(f"Row id result: {rowid!r}")
+        return rowid
+
     def execute_one(self, sql, parameters=()):
         """Execute a statement and return the one row that results.
 
@@ -1147,7 +1156,11 @@ class SqliteDb(SimpleReprMixin):
         """Same as :meth:`python:sqlite3.Connection.executemany`."""
         if self.debug.should("sql"):
             data = list(data)
-            self.debug.write(f"Executing many {sql!r} with {len(data)} rows")
+            final = ":" if self.debug.should("sqldata") else ""
+            self.debug.write(f"Executing many {sql!r} with {len(data)} rows{final}")
+            if self.debug.should("sqldata"):
+                for i, row in enumerate(data):
+                    self.debug.write(f"{i:4d}: {row!r}")
         try:
             return self.con.executemany(sql, data)
         except Exception:   # pragma: cant happen

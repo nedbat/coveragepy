@@ -36,6 +36,9 @@ Unreleased
   - The timestamp and version are displayed at the top of the report.  Thanks,
     `Ammar Askar <pull 1354_>`_. Closes `issue 1351`_.
 
+- A new debug option ``debug=sqldata`` adds more detail to ``debug=sql``,
+  logging all the data being written to the database.
+
 - On Python 3.11, the ``[toml]`` extra no longer installs tomli, instead using
   tomllib from the standard library.  Thanks `Shantanu <pull 1359_>`_.
 

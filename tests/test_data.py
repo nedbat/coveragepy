@@ -67,7 +67,12 @@ def DebugCoverageData(*args, **kwargs):
     lines in our coverage reports.
     """
     assert "debug" not in kwargs
-    debug = DebugControlString(options=["dataio", "dataop", "sql"])
+    options = ["dataio", "dataop", "sql"]
+    if kwargs:
+        # There's no reason kwargs should imply sqldata debugging.
+        # This is a way to get a mix of debug options across the tests.
+        options.extend(["sqldata"])
+    debug = DebugControlString(options=options)
     return CoverageData(*args, debug=debug, **kwargs)
 
 
@@ -160,15 +165,17 @@ class CoverageDataTest(CoverageTest):
         assert_line_counts(covdata, SUMMARY_3_4)
         assert_measured_files(covdata, MEASURED_FILES_3_4)
 
-    def test_cant_add_arcs_with_lines(self):
-        covdata = DebugCoverageData()
+    @pytest.mark.parametrize("klass", [CoverageData, DebugCoverageData])
+    def test_cant_add_arcs_with_lines(self, klass):
+        covdata = klass()
         covdata.add_lines(LINES_1)
         msg = "Can't add branch measurements to existing line data"
         with pytest.raises(DataError, match=msg):
             covdata.add_arcs(ARCS_3)
 
-    def test_cant_add_lines_with_arcs(self):
-        covdata = DebugCoverageData()
+    @pytest.mark.parametrize("klass", [CoverageData, DebugCoverageData])
+    def test_cant_add_lines_with_arcs(self, klass):
+        covdata = klass()
         covdata.add_arcs(ARCS_3)
         msg = "Can't add line measurements to existing branch data"
         with pytest.raises(DataError, match=msg):
