@@ -260,6 +260,9 @@ No data was collected (no-data-collected)
   This could be because you asked to measure only modules that never ran,
   or for other reasons.
 
+  To debug this problem, try using ``run --debug=trace`` to see the tracing
+  decision made for each file.
+
 Module XXX was previously imported, but not measured (module-not-measured)
   You asked coverage.py to measure module XXX, but it had already been imported
   when coverage started.  This meant coverage.py couldn't monitor its
