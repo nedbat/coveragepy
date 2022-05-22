@@ -235,51 +235,48 @@ Warnings
 During execution, coverage.py may warn you about conditions it detects that
 could affect the measurement process.  The possible warnings include:
 
-* ``Couldn't parse Python file XXX (couldnt-parse)`` |br|
+Couldn't parse Python file XXX (couldnt-parse)
   During reporting, a file was thought to be Python, but it couldn't be parsed
   as Python.
 
-* ``Trace function changed, data is likely wrong: XXX (trace-changed)`` |br|
+Trace function changed, data is likely wrong: XXX (trace-changed)
   Coverage measurement depends on a Python setting called the trace function.
   Other Python code in your product might change that function, which will
   disrupt coverage.py's measurement.  This warning indicates that has happened.
   The XXX in the message is the new trace function value, which might provide
   a clue to the cause.
 
-* ``Module XXX has no Python source (module-not-python)`` |br|
+Module XXX has no Python source (module-not-python)
   You asked coverage.py to measure module XXX, but once it was imported, it
   turned out not to have a corresponding .py file.  Without a .py file,
   coverage.py can't report on missing lines.
 
-* ``Module XXX was never imported (module-not-imported)`` |br|
+Module XXX was never imported (module-not-imported)
   You asked coverage.py to measure module XXX, but it was never imported by
   your program.
 
-* ``No data was collected (no-data-collected)`` |br|
+No data was collected (no-data-collected)
   Coverage.py ran your program, but didn't measure any lines as executed.
   This could be because you asked to measure only modules that never ran,
   or for other reasons.
 
-* ``Module XXX was previously imported, but not measured
-  (module-not-measured)``
-  |br|
+Module XXX was previously imported, but not measured (module-not-measured)
   You asked coverage.py to measure module XXX, but it had already been imported
   when coverage started.  This meant coverage.py couldn't monitor its
   execution.
 
-* ``Already imported a file that will be measured: XXX (already-imported)``
-  |br|
+Already imported a file that will be measured: XXX (already-imported)
   File XXX had already been imported when coverage.py started measurement. Your
   setting for ``--source`` or ``--include`` indicates that you wanted to
   measure that file.  Lines will be missing from the coverage report since the
   execution during import hadn't been measured.
 
-* ``--include is ignored because --source is set (include-ignored)`` |br|
+\-\-include is ignored because \-\-source is set (include-ignored)
   Both ``--include`` and ``--source`` were specified while running code.  Both
   are meant to focus measurement on a particular part of your source code, so
   ``--include`` is ignored in favor of ``--source``.
 
-* ``Conflicting dynamic contexts (dynamic-conflict)`` |br|
+Conflicting dynamic contexts (dynamic-conflict)
   The ``[run] dynamic_context`` option is set in the configuration file, but
   something (probably a test runner plugin) is also calling the
   :meth:`.Coverage.switch_context` function to change the context. Only one of
@@ -293,6 +290,7 @@ collected," add this to your .coveragerc file::
     disable_warnings = no-data-collected
 
 or pyproject.toml::
+
     [tool.coverage.run]
     disable_warnings = ['no-data-collected']
 
