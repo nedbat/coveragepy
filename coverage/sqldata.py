@@ -1040,7 +1040,7 @@ class SqliteDb(SimpleReprMixin):
 
     """
     def __init__(self, filename, debug):
-        self.debug = debug if debug.should("sql") else None
+        self.debug = debug
         self.filename = filename
         self.nest = 0
         self.con = None
@@ -1055,7 +1055,7 @@ class SqliteDb(SimpleReprMixin):
         # effectively causing a nested context. However, given the idempotent
         # nature of the tracer operations, sharing a connection among threads
         # is not a problem.
-        if self.debug:
+        if self.debug.should("sql"):
             self.debug.write(f"Connecting to {self.filename!r}")
         try:
             self.con = sqlite3.connect(self.filename, check_same_thread=False)
@@ -1091,13 +1091,13 @@ class SqliteDb(SimpleReprMixin):
                 self.con.__exit__(exc_type, exc_value, traceback)
                 self.close()
             except Exception as exc:
-                if self.debug:
+                if self.debug.should("sql"):
                     self.debug.write(f"EXCEPTION from __exit__: {exc}")
                 raise DataError(f"Couldn't end data file {self.filename!r}: {exc}") from exc
 
     def execute(self, sql, parameters=()):
         """Same as :meth:`python:sqlite3.Connection.execute`."""
-        if self.debug:
+        if self.debug.should("sql"):
             tail = f" with {parameters!r}" if parameters else ""
             self.debug.write(f"Executing {sql!r}{tail}")
         try:
@@ -1122,7 +1122,7 @@ class SqliteDb(SimpleReprMixin):
                         )
             except Exception:   # pragma: cant happen
                 pass
-            if self.debug:
+            if self.debug.should("sql"):
                 self.debug.write(f"EXCEPTION from execute: {msg}")
             raise DataError(f"Couldn't use data file {self.filename!r}: {msg}") from exc
 
@@ -1145,7 +1145,7 @@ class SqliteDb(SimpleReprMixin):
 
     def executemany(self, sql, data):
         """Same as :meth:`python:sqlite3.Connection.executemany`."""
-        if self.debug:
+        if self.debug.should("sql"):
             data = list(data)
             self.debug.write(f"Executing many {sql!r} with {len(data)} rows")
         try:
@@ -1158,7 +1158,7 @@ class SqliteDb(SimpleReprMixin):
 
     def executescript(self, script):
         """Same as :meth:`python:sqlite3.Connection.executescript`."""
-        if self.debug:
+        if self.debug.should("sql"):
             self.debug.write("Executing script with {} chars: {}".format(
                 len(script), clipped_repr(script, 100),
             ))
