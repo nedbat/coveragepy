@@ -108,7 +108,8 @@ prebuild: css workflows cogdoc		## One command for all source prep.
 
 ##@ Kitting: making releases
 
-.PHONY: kit kit_upload test_upload kit_local download_kits check_kits
+.PHONY: kit kit_upload test_upload kit_local download_kits check_kits tag
+.PHONY: update_stable comment_on_fixes
 
 kit:					## Make the source distribution.
 	python -m build
@@ -133,6 +134,17 @@ download_kits:				## Download the built kits from GitHub.
 
 check_kits:				## Check that dist/* are well-formed.
 	python -m twine check dist/*
+
+tag:					## Make a git tag with the version number.
+	git tag -a -m "Version $$(python setup.py --version)" $$(python setup.py --version)
+	git push --follow-tags
+
+update_stable:				## Set the stable branch to the latest release.
+	git branch -f stable $$(python setup.py --version)
+	git push origin stable
+
+comment_on_fixes:			## Add a comment to issues that were fixed.
+	python ci/commend_on_fixes.py
 
 
 ##@ Documentation

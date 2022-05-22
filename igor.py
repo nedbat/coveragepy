@@ -403,9 +403,6 @@ def do_cheats():
     print(head)
     print("-" * len(head))
 
-    print("\ngit commands:")
-    print(f'git tag -a -m "Version {ver}" {ver}; git push --follow-tags')
-    print(f'git branch -f stable {ver}; git push origin stable')
     print(f"https://coverage.readthedocs.io/en/{ver}/changes.html#changes-{anchor}")
 
     print(

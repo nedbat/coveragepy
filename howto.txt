@@ -61,12 +61,10 @@
     - upload kits:
         $ make kit_upload
 - Tag the tree
-    $ git tag -a -m "Version 3.0.1" 3.0.1
-    $ git push --follow-tags
+    $ make tag
     - IF NOT PRE-RELEASE:
         - update git "stable" branch to point to latest release
-            $ git branch -f stable <latest-tag>
-            $ git push origin stable
+            $ make update_stable
 - Update GitHub releases:
     $ make clean github_releases
 - Bump version:
@@ -88,15 +86,12 @@
         - @ https://readthedocs.org/dashboard/coverage/advanced/
             - change the default version to the new version
 - Visit the fixed issues on GitHub and mention the version it was fixed in.
-    - python ci/comment_on_fixes.py
+    $ make comment_on_fixes
         - "This is now released as part of [coverage 5.2](https://pypi.org/project/coverage/5.2)."
 - Announce:
     - twitter @coveragepy
     - nedbatchelder.com blog post?
 - things to automate:
-    - git tag command
-    - git stable branch update command
-    - comment-on-fixes.py
     - url to link to latest changes in docs
     - next version.py line
 
