@@ -41,6 +41,10 @@ Version 6.4 — 2022-05-22
 - A new debug option ``debug=sqldata`` adds more detail to ``debug=sql``,
   logging all the data being written to the database.
 
+- Previously, running ``coverage report`` (or any of the reporting commands) in
+  an empty directory would create a .coverage data file.  Now they do not,
+  fixing `issue 1328`_.
+
 - On Python 3.11, the ``[toml]`` extra no longer installs tomli, instead using
   tomllib from the standard library.  Thanks `Shantanu <pull 1359_>`_.
 
@@ -48,6 +52,7 @@ Version 6.4 — 2022-05-22
 
 .. _issue 1310: https://github.com/nedbat/coveragepy/issues/1310
 .. _issue 1323: https://github.com/nedbat/coveragepy/issues/1323
+.. _issue 1328: https://github.com/nedbat/coveragepy/issues/1328
 .. _issue 1351: https://github.com/nedbat/coveragepy/issues/1351
 .. _pull 1354: https://github.com/nedbat/coveragepy/pull/1354
 .. _pull 1359: https://github.com/nedbat/coveragepy/pull/1359

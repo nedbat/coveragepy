@@ -450,6 +450,7 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         cov.load()
         with pytest.raises(NoDataError, match="No data to report."):
             self.get_report(cov, skip_covered=True)
+        self.assert_doesnt_exist(".coverage")
 
     def test_report_skip_empty(self):
         self.make_file("main.py", """

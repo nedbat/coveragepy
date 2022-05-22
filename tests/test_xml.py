@@ -139,6 +139,7 @@ class XmlReportTest(XmlTestHelpers, CoverageTest):
         with pytest.raises(NoDataError, match="No data to report."):
             self.run_xml_report()
         self.assert_doesnt_exist("coverage.xml")
+        self.assert_doesnt_exist(".coverage")
 
     def test_no_source(self):
         # Written while investigating a bug, might as well keep it.

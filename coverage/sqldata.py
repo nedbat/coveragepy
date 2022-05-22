@@ -783,8 +783,9 @@ class CoverageData(SimpleReprMixin):
 
     def read(self):
         """Start using an existing data file."""
-        with self._connect():       # TODO: doesn't look right
-            self._have_used = True
+        if os.path.exists(self._filename):
+            with self._connect():
+                self._have_used = True
 
     def write(self):
         """Ensure the data is written to the data file."""

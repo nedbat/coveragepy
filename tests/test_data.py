@@ -118,6 +118,13 @@ class CoverageDataTest(CoverageTest):
     def test_empty_data_is_false(self):
         covdata = DebugCoverageData()
         assert not covdata
+        self.assert_doesnt_exist(".coverage")
+
+    def test_empty_data_is_false_when_read(self):
+        covdata = DebugCoverageData()
+        covdata.read()
+        assert not covdata
+        self.assert_doesnt_exist(".coverage")
 
     def test_line_data_is_true(self):
         covdata = DebugCoverageData()
