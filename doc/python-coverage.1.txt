@@ -146,7 +146,8 @@ COMMAND REFERENCE
         ``data`` to show a summary of the collected data;
         ``sys`` to show installation information;
         ``config`` to show the configuration;
-        ``premain`` to show what is calling coverage.
+        ``premain`` to show what is calling coverage;
+        ``pybehave`` to show internal flags describing Python behavior.
 
 **erase**
 
