@@ -118,7 +118,7 @@ kit_upload:				## Upload the built distributions to PyPI.
 	twine upload --verbose dist/*
 
 test_upload:				## Upload the distributions to PyPI's testing server.
-	twine upload --verbose --repository testpypi dist/*
+	twine upload --verbose --repository testpypi --password $$TWINE_TEST_PASSWORD dist/*
 
 kit_local:
 	# pip.conf looks like this:
