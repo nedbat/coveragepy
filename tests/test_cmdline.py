@@ -1027,6 +1027,12 @@ class CmdLineStdoutTest(BaseCmdLineTest):
         assert "fooey" in err
         assert "help" in err
 
+    def test_option_error(self):
+        self.command_line("run --fooey", ret=ERR)
+        err = self.stderr()
+        assert "fooey" in err
+        assert "help" in err
+
     def test_doc_url(self):
         assert __url__.startswith("https://coverage.readthedocs.io")
 
