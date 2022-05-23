@@ -84,6 +84,14 @@ def refind(regex, text):
     else:
         return None
 
+
+def fix_ref_links(text, version):
+    """Find links to .rst files, and make them full RTFD links."""
+    def new_link(m):
+        return f"](https://coverage.readthedocs.io/en/{version}/{m[1]}.html{m[2]})"
+    return re.sub(r"\]\((\w+)\.rst(#.*?)\)", new_link, text)
+
+
 def relnotes(mdlines):
     r"""Yield (version, text) pairs from markdown lines.
 
@@ -97,6 +105,7 @@ def relnotes(mdlines):
         if version:
             prerelease = any(c in version for c in "abc")
             when = refind(r"\d+-\d+-\d+", htext)
+            text = fix_ref_links(text, version)
             yield {
                 "version": version,
                 "text": text,
