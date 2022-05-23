@@ -85,8 +85,8 @@ Version 6.3.2 — 2022-02-20
   decorators like CPython 3.8: both the @-line and the def-line are traced.
   Fixes `issue 1326`_.
 
-- Debug: added ``pybehave`` to the list of :ref:`cmd_debug` and
-  :ref:`cmd_run_debug` options.
+- Debug: added ``pybehave`` to the list of :ref:`coverage debug <cmd_debug>`
+  and :ref:`cmd_run_debug` options.
 
 - Fix: show an intelligible error message if ``--concurrency=multiprocessing``
   is used without a configuration file.  Closes `issue 1320`_.
