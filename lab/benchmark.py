@@ -153,8 +153,13 @@ class ToxProject(ProjectToTest):
     def run_no_coverage(self, env):
         return self.run_tox(env, env.pyver.toxenv, "--skip-pkg-install")
 
+    def run_with_coverage(self, env, pip_args, cov_options):
+        self.run_tox(env, env.pyver.toxenv, "--notest")
+        env.shell.run_command(f".tox/{env.pyver.toxenv}/bin/python -m pip install {pip_args}")
+        return self.run_tox(env, env.pyver.toxenv, "--skip-pkg-install")
 
-class PytestHtml(ToxProject):
+
+class ProjectPytestHtml(ToxProject):
     """pytest-dev/pytest-html"""
 
     git_url = "https://github.com/pytest-dev/pytest-html"
@@ -171,6 +176,22 @@ class PytestHtml(ToxProject):
             env.shell.run_command("cat .coveragerc")
             env.shell.run_command(f".tox/{covenv}/bin/python -m coverage debug sys")
             return self.run_tox(env, covenv, "--skip-pkg-install")
+
+class ProjectDateutil(ToxProject):
+    """dateutil/dateutil"""
+
+    git_url = "https://github.com/dateutil/dateutil"
+
+    def prep_environment(self, env):
+        super().prep_environment(env)
+        env.shell.run_command(f"{env.python} updatezinfo.py")
+
+    def run_no_coverage(self, env):
+        env.shell.run_command("echo No option to run without coverage")
+        return 0
+
+class ProjectAttrs(ToxProject):
+    git_url = "https://github.com/python-attrs/attrs"
 
 
 class PyVersion:
@@ -213,6 +234,7 @@ def run_experiments(
 ):
     """Run test suites under different conditions."""
 
+    results = []
     for proj in projects:
         print(f"Testing with {proj.git_url}")
         with ShellSession(f"output_{proj.slug}.log") as shell:
@@ -242,9 +264,13 @@ def run_experiments(
                             print(f"Tests took {dur:.3f}s")
                             durations.append(dur)
                         med = statistics.median(durations)
-                        print(
-                            f"## Median for {pyver.command}, cov={cov_slug}: {med:.3f}s"
-                        )
+                        result = f"Median for {proj.slug}, {pyver.command}, cov={cov_slug}: {med:.3f}s"
+                        print(f"## {result}")
+                        results.append(result)
+
+    print("# Results")
+    for result in results:
+        print(result)
 
 
 PERF_DIR = Path("/tmp/covperf")
@@ -261,12 +287,13 @@ with change_dir(PERF_DIR):
             Python(3, 10),
         ],
         cov_versions=[
-            ("none", None, None),
+            #("none", None, None),
             ("6.4", "coverage==6.4", ""),
             ("tip", "-e ~/coverage/trunk", ""),
         ],
         projects=[
-            PytestHtml(),
+            ProjectPytestHtml(),
+            ProjectAttrs(),
         ],
         num_runs=5,
     )
@@ -285,7 +312,7 @@ with change_dir(PERF_DIR):
     #         ),
     #     ],
     #     projects=[
-    #         PytestHtml(),
+    #         ProjectPytestHtml(),
     #     ],
     #     num_runs=3,
     # )
