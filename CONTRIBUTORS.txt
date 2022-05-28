@@ -31,6 +31,7 @@ Brett Cannon
 Bruno P. Kinoshita
 Buck Evan
 Calen Pennington
+Carl Friedrich Bolz-Tereick
 Carl Gieringer
 Catherine Proulx
 Chris Adams
