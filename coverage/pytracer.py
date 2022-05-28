@@ -161,6 +161,7 @@ class PyTracer:
                 self.cur_file_data = self.data[tracename]
             else:
                 frame.f_trace_lines = False
+
             # The call event is really a "start frame" event, and happens for
             # function calls and re-entering generators.  The f_lasti field is
             # -1 for calls, and a real offset for generators.  Use <0 as the
@@ -176,6 +177,7 @@ class PyTracer:
                 self.last_line = -frame.f_code.co_firstlineno
             else:
                 self.last_line = frame.f_lineno
+
         elif event == 'line':
             # Record an executed line.
             if self.cur_file_data is not None:
@@ -186,6 +188,7 @@ class PyTracer:
                 else:
                     self.cur_file_data.add(lineno)
                 self.last_line = lineno
+
         elif event == 'return':
             if self.trace_arcs and self.cur_file_data:
                 # Record an arc leaving the function, but beware that a
@@ -213,6 +216,7 @@ class PyTracer:
                 if real_return:
                     first = frame.f_code.co_firstlineno
                     self.cur_file_data.add((self.last_line, -first))
+
             # Leaving this function, pop the filename stack.
             self.cur_file_data, self.cur_file_name, self.last_line, self.started_context = (
                 self.data_stack.pop()

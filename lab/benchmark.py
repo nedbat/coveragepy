@@ -257,44 +257,35 @@ with change_dir(PERF_DIR):
 
     run_experiments(
         py_versions=[
+            Python(3, 7),
             Python(3, 10),
         ],
         cov_versions=[
             ("none", None, None),
             ("6.4", "coverage==6.4", ""),
-            ("6.4 timid", "coverage==6.4", "timid=True"),
-            (
-                "PR 1381",
-                "git+https://github.com/cfbolz/coveragepy.git@f_trace_lines",
-                "",
-            ),
-            (
-                "PR 1381 timid",
-                "git+https://github.com/cfbolz/coveragepy.git@f_trace_lines",
-                "timid=True",
-            ),
+            ("tip", "-e ~/coverage/trunk", ""),
         ],
         projects=[
             PytestHtml(),
         ],
-        num_runs=3,
+        num_runs=5,
     )
 
-    run_experiments(
-        py_versions=[
-            PyPy(3, 9),
-        ],
-        cov_versions=[
-            ("none", None, None),
-            ("6.4", "coverage==6.4", ""),
-            (
-                "PR 1381",
-                "git+https://github.com/cfbolz/coveragepy.git@f_trace_lines",
-                "",
-            ),
-        ],
-        projects=[
-            PytestHtml(),
-        ],
-        num_runs=3,
-    )
+    # run_experiments(
+    #     py_versions=[
+    #         PyPy(3, 9),
+    #     ],
+    #     cov_versions=[
+    #         ("none", None, None),
+    #         ("6.4", "coverage==6.4", ""),
+    #         (
+    #             "PR 1381",
+    #             "git+https://github.com/cfbolz/coveragepy.git@f_trace_lines",
+    #             "",
+    #         ),
+    #     ],
+    #     projects=[
+    #         PytestHtml(),
+    #     ],
+    #     num_runs=3,
+    # )
