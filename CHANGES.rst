@@ -20,9 +20,10 @@ development at the same time, such as 4.5.x and 5.0.
 Unreleased
 ----------
 
-- Improved performance on PyPy, and other environments that need the pure
-  Python trace function.  Thanks, `Carl Friedrich Bolz-Tereick
-  <pull 1381_>`_.
+- Greatly improved performance on PyPy, and other environments that need the
+  pure Python trace function.  Thanks, `Carl Friedrich Bolz-Tereick
+  <pull 1381_>`_.  Slightly improved performance when using the C trace
+  function, as most environments do.
 
 .. _pull 1381: https://github.com/nedbat/coveragepy/pull/1381
 
