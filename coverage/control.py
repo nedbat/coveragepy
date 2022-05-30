@@ -109,7 +109,7 @@ class Coverage:
         auto_data=False, timid=None, branch=None, config_file=True,
         source=None, source_pkgs=None, omit=None, include=None, debug=None,
         concurrency=None, check_preimported=False, context=None,
-        messages=False
+        messages=False,
     ):  # pylint: disable=too-many-arguments
         """
         Many of these arguments duplicate and override values that can be
@@ -182,7 +182,6 @@ class Coverage:
 
         If `messages` is true, some messages will be printed to stdout
         indicating what is happening.
-
 
         .. versionadded:: 4.0
             The `concurrency` parameter.
