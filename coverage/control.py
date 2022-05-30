@@ -109,7 +109,7 @@ class Coverage:
         auto_data=False, timid=None, branch=None, config_file=True,
         source=None, source_pkgs=None, omit=None, include=None, debug=None,
         concurrency=None, check_preimported=False, context=None,
-        messages=False,
+        messages=False, include_namespace_packages=False
     ):  # pylint: disable=too-many-arguments
         """
         Many of these arguments duplicate and override values that can be
@@ -183,6 +183,10 @@ class Coverage:
         If `messages` is true, some messages will be printed to stdout
         indicating what is happening.
 
+        If `include_namespace_packages` is true folders without an
+        __init__.py file will be included in the coverage
+
+
         .. versionadded:: 4.0
             The `concurrency` parameter.
 
@@ -198,6 +202,9 @@ class Coverage:
         .. versionadded:: 6.0
             The `messages` parameter.
 
+        .. versionadded:: 6.4
+            The `include_namespace_packages` parameter.
+
         """
         # data_file=None means no disk file at all. data_file missing means
         # use the value from the config file.
@@ -212,6 +219,7 @@ class Coverage:
 
         self._auto_load = self._auto_save = auto_data
         self._data_suffix_specified = data_suffix
+        self._include_namespace_packages = include_namespace_packages
 
         # Is it ok for no data to be collected?
         self._warn_no_data = True
@@ -526,6 +534,7 @@ class Coverage:
         self._inorout = InOrOut(
             warn=self._warn,
             debug=(self._debug if self._debug.should('trace') else None),
+            include_namespace_packages=self._include_namespace_packages
         )
         self._inorout.configure(self.config)
         self._inorout.plugins = self._plugins

@@ -111,6 +111,10 @@ class Opts:
             "Accepts shell-style wildcards, which must be quoted."
         ),
     )
+    include_namespace_packages = optparse.make_option(
+        '', '--include_namespace_packages', action='store_true',
+        help="Include folders without and __init__.py in the Coverage.",
+    )
     pylib = optparse.make_option(
         '-L', '--pylib', action='store_true',
         help=(
@@ -223,6 +227,9 @@ class Opts:
     )
 
 
+
+
+
 class CoverageOptionParser(optparse.OptionParser):
     """Base OptionParser for coverage.py.
 
@@ -248,6 +255,7 @@ class CoverageOptionParser(optparse.OptionParser):
             help=None,
             ignore_errors=None,
             include=None,
+            include_namespace_packages=False,
             keep=None,
             module=None,
             omit=None,
@@ -360,6 +368,7 @@ COMMANDS = {
             Opts.input_datafile,
             Opts.ignore_errors,
             Opts.include,
+            Opts.include_namespace_packages,
             Opts.omit,
             ] + GLOBAL_ARGS,
         usage="[options] [modules]",
@@ -426,6 +435,7 @@ COMMANDS = {
             Opts.fail_under,
             Opts.ignore_errors,
             Opts.include,
+            Opts.include_namespace_packages,
             Opts.omit,
             Opts.precision,
             Opts.quiet,
@@ -451,6 +461,7 @@ COMMANDS = {
             Opts.fail_under,
             Opts.ignore_errors,
             Opts.include,
+            Opts.include_namespace_packages,
             Opts.omit,
             Opts.output_json,
             Opts.json_pretty_print,
@@ -468,6 +479,7 @@ COMMANDS = {
             Opts.fail_under,
             Opts.ignore_errors,
             Opts.include,
+            Opts.include_namespace_packages,
             Opts.output_lcov,
             Opts.omit,
             Opts.quiet,
@@ -484,6 +496,7 @@ COMMANDS = {
             Opts.fail_under,
             Opts.ignore_errors,
             Opts.include,
+            Opts.include_namespace_packages,
             Opts.omit,
             Opts.precision,
             Opts.sort,
@@ -505,6 +518,7 @@ COMMANDS = {
             Opts.context,
             Opts.output_datafile,
             Opts.include,
+            Opts.include_namespace_packages,
             Opts.module,
             Opts.omit,
             Opts.pylib,
@@ -523,6 +537,7 @@ COMMANDS = {
             Opts.fail_under,
             Opts.ignore_errors,
             Opts.include,
+            Opts.include_namespace_packages,
             Opts.omit,
             Opts.output_xml,
             Opts.quiet,
@@ -641,6 +656,7 @@ class CoverageScript:
             source=source,
             omit=omit,
             include=include,
+            include_namespace_packages=options.include_namespace_packages,
             debug=debug,
             concurrency=concurrency,
             check_preimported=True,
