@@ -11,9 +11,7 @@ version_info = (6, 4, 1, "alpha", 0)
 def _make_version(major, minor, micro, releaselevel, serial):
     """Create a readable version string from version_info tuple components."""
     assert releaselevel in ['alpha', 'beta', 'candidate', 'final']
-    version = "%d.%d" % (major, minor)
-    if micro:
-        version += ".%d" % (micro,)
+    version = "%d.%d.%d" % (major, minor, micro)
     if releaselevel != 'final':
         short = {'alpha': 'a', 'beta': 'b', 'candidate': 'rc'}[releaselevel]
         version += f"{short}{serial}"

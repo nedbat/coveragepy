@@ -28,7 +28,6 @@ Unreleased
 .. _pull 1381: https://github.com/nedbat/coveragepy/pull/1381
 
 
-
 .. _changes_64:
 
 Version 6.4 — 2022-05-22

@@ -21,9 +21,10 @@ class VersionTest(CoverageTest):
         assert coverage.version_info[3] in ['alpha', 'beta', 'candidate', 'final']
 
     def test_make_version(self):
-        assert _make_version(4, 0, 0, 'alpha', 0) == "4.0a0"
-        assert _make_version(4, 0, 0, 'alpha', 1) == "4.0a1"
-        assert _make_version(4, 0, 0, 'final', 0) == "4.0"
+        assert _make_version(4, 0, 0, 'alpha', 0) == "4.0.0a0"
+        assert _make_version(4, 0, 0, 'alpha', 1) == "4.0.0a1"
+        assert _make_version(4, 0, 0, 'final', 0) == "4.0.0"
+        assert _make_version(4, 1, 0, 'final', 0) == "4.1.0"
         assert _make_version(4, 1, 2, 'beta', 3) == "4.1.2b3"
         assert _make_version(4, 1, 2, 'final', 0) == "4.1.2"
         assert _make_version(5, 10, 2, 'candidate', 7) == "5.10.2rc7"

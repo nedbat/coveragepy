@@ -385,12 +385,9 @@ def do_cheats():
     import coverage
     ver = coverage.__version__
     vi = coverage.version_info
-    anchor = f"{vi[0]}{vi[1]}"
-    if vi[2]:
-        anchor += f"{vi[2]}"
+    anchor = f"{vi[0]}-{vi[1]}-{vi[2]}"
     if vi[3] != "final":
-        anchor += vi[3][0]
-        anchor += f"{vi[4]}"
+        anchor += f"{vi[3][0]}{vi[4]}"
     branch = subprocess.getoutput("git rev-parse --abbrev-ref @")
     print(f"Coverage version is {ver}")
 
