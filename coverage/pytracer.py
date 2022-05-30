@@ -134,12 +134,13 @@ class PyTracer:
                 context_maybe = self.should_start_context(frame)
                 if context_maybe is not None:
                     self.context = context_maybe
-                    self.started_context = True
+                    started_context = True
                     self.switch_context(self.context)
                 else:
-                    self.started_context = False
+                    started_context = False
             else:
-                self.started_context = False
+                started_context = False
+            self.started_context = started_context
 
             # Entering a new frame.  Decide if we should trace in this file.
             self._activity = True
@@ -148,17 +149,18 @@ class PyTracer:
                     self.cur_file_data,
                     self.cur_file_name,
                     self.last_line,
-                    self.started_context,
+                    started_context,
                 )
             )
 
-            # improve tracing performance: when calling a function, both caller
+            # Improve tracing performance: when calling a function, both caller
             # and callee are often within the same file. if that's the case, we
             # don't have to re-check whether to trace the corresponding
             # function (which is a little bit espensive since it involves
-            # dictionary lookups)
+            # dictionary lookups). This optimization is only correct if we
+            # didn't start a context.
             filename = frame.f_code.co_filename
-            if filename != self.cur_file_name:
+            if filename != self.cur_file_name or started_context:
                 self.cur_file_name = filename
                 disp = self.should_trace_cache.get(filename)
                 if disp is None:
