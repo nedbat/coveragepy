@@ -202,7 +202,7 @@ class Coverage:
         .. versionadded:: 6.0
             The `messages` parameter.
 
-        .. versionadded:: 6.4
+        .. versionadded:: 6.5
             The `include_namespace_packages` parameter.
 
         """
