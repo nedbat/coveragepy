@@ -21,11 +21,12 @@ Unreleased
 ----------
 
 - Greatly improved performance on PyPy, and other environments that need the
-  pure Python trace function.  Thanks, `Carl Friedrich Bolz-Tereick
-  <pull 1381_>`_.  Slightly improved performance when using the C trace
-  function, as most environments do.
+  pure Python trace function.  Thanks, Carl Friedrich Bolz-Tereick (`pull
+  1381`_ and `pull 1388`_).  Slightly improved performance when using the C
+  trace function, as most environments do.
 
 .. _pull 1381: https://github.com/nedbat/coveragepy/pull/1381
+.. _pull 1388: https://github.com/nedbat/coveragepy/pull/1388
 
 
 .. _changes_64:

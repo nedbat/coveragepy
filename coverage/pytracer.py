@@ -67,10 +67,9 @@ class PyTracer:
         # On exit, self.in_atexit = True
         atexit.register(setattr, self, 'in_atexit', True)
 
-        # cache a bound method on the instance, so that we don't have to
-        # re-create a bound method object all the time
+        # Cache a bound method on the instance, so that we don't have to
+        # re-create a bound method object all the time.
         self._cached_bound_method_trace = self._trace
-
 
     def __repr__(self):
         return "<PyTracer at 0x{:x}: {} lines in {} files>".format(
@@ -289,7 +288,7 @@ class PyTracer:
             dont_warn = (env.PYPY and env.PYPYVERSION >= (5, 4) and self.in_atexit and tf is None)
             if (not dont_warn) and tf != self._cached_bound_method_trace:   # pylint: disable=comparison-with-callable
                 self.warn(
-                    f"Trace function changed, data is likely wrong: "
+                    "Trace function changed, data is likely wrong: " +
                     f"{tf!r} != {self._cached_bound_method_trace!r}",
                     slug="trace-changed",
                 )
