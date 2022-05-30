@@ -9,7 +9,7 @@ import subprocess
 import time
 from pathlib import Path
 
-from typing import Iterator, List, Optional, Tuple, Union
+from typing import Iterator, List, Optional, Tuple
 
 
 class ShellSession:
@@ -21,6 +21,7 @@ class ShellSession:
     def __init__(self, output_filename: str):
         self.output_filename = output_filename
         self.last_duration: float = 0
+        self.foutput = None
 
     def __enter__(self):
         self.foutput = open(self.output_filename, "a", encoding="utf-8")
@@ -31,6 +32,7 @@ class ShellSession:
         self.foutput.close()
 
     def print(self, *args, **kwargs):
+        """Print a message to this shell's log."""
         print(*args, **kwargs, file=self.foutput)
 
     def run_command(self, cmd: str) -> str:
@@ -114,8 +116,9 @@ class ProjectToTest:
     git_url: Optional[str] = None
 
     def __init__(self):
-        self.slug = self.git_url.split("/")[-1]
-        self.dir = Path(self.slug)
+        if self.git_url:
+            self.slug = self.git_url.split("/")[-1]
+            self.dir = Path(self.slug)
 
     def get_source(self, shell):
         """Get the source of the project."""
@@ -147,6 +150,7 @@ class ToxProject(ProjectToTest):
         self.run_tox(env, env.pyver.toxenv, "--notest")
 
     def run_tox(self, env, toxenv, toxargs=""):
+        """Run a tox command. Return the duration."""
         env.shell.run_command(f"{env.python} -m tox -e {toxenv} {toxargs}")
         return env.shell.last_duration
 
@@ -155,7 +159,9 @@ class ToxProject(ProjectToTest):
 
     def run_with_coverage(self, env, pip_args, cov_options):
         self.run_tox(env, env.pyver.toxenv, "--notest")
-        env.shell.run_command(f".tox/{env.pyver.toxenv}/bin/python -m pip install {pip_args}")
+        env.shell.run_command(
+            f".tox/{env.pyver.toxenv}/bin/python -m pip install {pip_args}"
+        )
         return self.run_tox(env, env.pyver.toxenv, "--skip-pkg-install")
 
 
@@ -177,6 +183,7 @@ class ProjectPytestHtml(ToxProject):
             env.shell.run_command(f".tox/{covenv}/bin/python -m coverage debug sys")
             return self.run_tox(env, covenv, "--skip-pkg-install")
 
+
 class ProjectDateutil(ToxProject):
     """dateutil/dateutil"""
 
@@ -190,11 +197,45 @@ class ProjectDateutil(ToxProject):
         env.shell.run_command("echo No option to run without coverage")
         return 0
 
+
 class ProjectAttrs(ToxProject):
+    """python-attrs/attrs"""
+
     git_url = "https://github.com/python-attrs/attrs"
 
 
+class AdHocProject(ProjectToTest):
+    """A standalone program to run locally."""
+
+    def __init__(self, python_file, pip_args=None):
+        super().__init__()
+        self.python_file = Path(python_file)
+        self.pip_args = pip_args
+        self.slug = self.python_file.name
+
+    def get_source(self, shell):
+        pass
+
+    def prep_environment(self, env):
+        env.shell.run_command(f"{env.python} -m pip install {self.pip_args}")
+
+    def run_no_coverage(self, env):
+        with change_dir(self.python_file.parent):
+            env.shell.run_command(f"{env.python} {self.python_file.name}")
+        return env.shell.last_duration
+
+    def run_with_coverage(self, env, pip_args, cov_options):
+        env.shell.run_command(f"{env.python} -m pip install {pip_args}")
+        with change_dir(self.python_file.parent):
+            env.shell.run_command(
+                f"{env.python} -m coverage run {self.python_file.name}"
+            )
+        return env.shell.last_duration
+
+
 class PyVersion:
+    """A version of Python to use."""
+
     # The command to run this Python
     command: str
     # The tox environment to run this Python
@@ -236,7 +277,7 @@ def run_experiments(
 
     results = []
     for proj in projects:
-        print(f"Testing with {proj.git_url}")
+        print(f"Testing with {proj.slug}")
         with ShellSession(f"output_{proj.slug}.log") as shell:
             proj.get_source(shell)
 
@@ -264,7 +305,10 @@ def run_experiments(
                             print(f"Tests took {dur:.3f}s")
                             durations.append(dur)
                         med = statistics.median(durations)
-                        result = f"Median for {proj.slug}, {pyver.command}, cov={cov_slug}: {med:.3f}s"
+                        result = (
+                            f"Median for {proj.slug}, {pyver.command}, "
+                            + f"cov={cov_slug}: {med:.3f}s"
+                        )
                         print(f"## {result}")
                         results.append(result)
 
@@ -281,38 +325,60 @@ rmrf(PERF_DIR)
 
 with change_dir(PERF_DIR):
 
-    run_experiments(
-        py_versions=[
-            Python(3, 7),
-            Python(3, 10),
-        ],
-        cov_versions=[
-            #("none", None, None),
-            ("6.4 timid", "coverage==6.4", "timid=True"),
-            ("tip timid", "git+https://github.com/nedbat/coveragepy.git@master", "timid=True"),
-        ],
-        projects=[
-            ProjectPytestHtml(),
-            ProjectAttrs(),
-        ],
-        num_runs=3,
-    )
+    if 1:
+        run_experiments(
+            py_versions=[
+                Python(3, 7),
+                Python(3, 10),
+            ],
+            cov_versions=[
+                # ("none", None, None),
+                ("6.4 timid", "coverage==6.4", "timid=True"),
+                (
+                    "tip timid",
+                    "git+https://github.com/nedbat/coveragepy.git@master",
+                    "timid=True",
+                ),
+            ],
+            projects=[
+                ProjectPytestHtml(),
+                ProjectAttrs(),
+            ],
+            num_runs=3,
+        )
 
-    # run_experiments(
-    #     py_versions=[
-    #         PyPy(3, 9),
-    #     ],
-    #     cov_versions=[
-    #         ("none", None, None),
-    #         ("6.4", "coverage==6.4", ""),
-    #         (
-    #             "PR 1381",
-    #             "git+https://github.com/cfbolz/coveragepy.git@f_trace_lines",
-    #             "",
-    #         ),
-    #     ],
-    #     projects=[
-    #         ProjectPytestHtml(),
-    #     ],
-    #     num_runs=3,
-    # )
+    if 0:
+        run_experiments(
+            py_versions=[
+                PyPy(3, 9),
+            ],
+            cov_versions=[
+                ("none", None, None),
+                ("6.4", "coverage==6.4", ""),
+                (
+                    "PR 1381",
+                    "git+https://github.com/cfbolz/coveragepy.git@f_trace_lines",
+                    "",
+                ),
+            ],
+            projects=[
+                ProjectPytestHtml(),
+            ],
+            num_runs=3,
+        )
+
+    if 0:
+        run_experiments(
+            py_versions=[
+                PyPy(3, 9),
+            ],
+            cov_versions=[
+                ("none", None, None),
+                ("6.4", "coverage", ""),
+                ("tip", "git+https://github.com/nedbat/coveragepy.git@master", ""),
+            ],
+            projects=[
+                AdHocProject("/src/bugs/bug1339/bug1339.py"),
+            ],
+            num_runs=7,
+        )
