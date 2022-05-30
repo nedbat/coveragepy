@@ -852,7 +852,7 @@ class Coverage:
         if not isinstance(it, FileReporter):
             it = self._get_file_reporter(it)
 
-        return Analysis(data, self.config.precision, it, self._file_mapper)
+        return Analysis(data, self.config.precision, it, self._file_mapper, self.config.ignore_contextless)
 
     def _get_file_reporter(self, morf):
         """Get a FileReporter for a module or file name."""
@@ -903,7 +903,8 @@ class Coverage:
     def report(
         self, morfs=None, show_missing=None, ignore_errors=None,
         file=None, omit=None, include=None, skip_covered=None,
-        contexts=None, skip_empty=None, precision=None, sort=None
+        contexts=None, skip_empty=None, precision=None, sort=None,
+        ignore_contextless=None,
     ):
         """Write a textual summary report to `file`.
 
@@ -930,6 +931,9 @@ class Coverage:
         :ref:`dynamic contexts <dynamic_contexts>` that match one of those
         expressions (using :func:`re.search <python:re.search>`) will be
         included in the report.
+        
+        `ignore_contextless` excludes lines without context from consideration
+        in the reporting process, including during coverage ratio calculations.
 
         `precision` is the number of digits to display after the decimal
         point for percentages.
@@ -954,7 +958,7 @@ class Coverage:
             ignore_errors=ignore_errors, report_omit=omit, report_include=include,
             show_missing=show_missing, skip_covered=skip_covered,
             report_contexts=contexts, skip_empty=skip_empty, precision=precision,
-            sort=sort
+            sort=sort, ignore_contextless=ignore_contextless
         ):
             reporter = SummaryReporter(self)
             return reporter.report(morfs, outfile=file)

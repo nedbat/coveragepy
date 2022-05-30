@@ -13,7 +13,7 @@ from coverage.misc import contract, nice_pair
 class Analysis:
     """The results of analyzing a FileReporter."""
 
-    def __init__(self, data, precision, file_reporter, file_mapper):
+    def __init__(self, data, precision, file_reporter, file_mapper, ignore_contextless):
         self.data = data
         self.file_reporter = file_reporter
         self.filename = file_mapper(self.file_reporter.filename)
@@ -25,6 +25,13 @@ class Analysis:
         executed = self.file_reporter.translate_lines(executed)
         self.executed = executed
         self.missing = self.statements - self.executed
+
+        # Optionally ignore statements that have no context
+        self.ignored = set(
+            line
+            for line, contexts in self.data.contexts_by_lineno(self.filename).items()
+            if not any(contexts)
+        ) if ignore_contextless else set()
 
         if self.data.has_arcs():
             self._arc_possibilities = sorted(self.file_reporter.arcs())
@@ -43,9 +50,9 @@ class Analysis:
         self.numbers = Numbers(
             precision=precision,
             n_files=1,
-            n_statements=len(self.statements),
-            n_excluded=len(self.excluded),
-            n_missing=len(self.missing),
+            n_statements=len(self.statements - self.ignored),
+            n_excluded=len(self.excluded - self.ignored),
+            n_missing=len(self.missing - self.ignored),
             n_branches=n_branches,
             n_partial_branches=n_partial_branches,
             n_missing_branches=n_missing_branches,

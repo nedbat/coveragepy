@@ -200,6 +200,7 @@ class CoverageConfig:
         self.exclude_list = DEFAULT_EXCLUDE[:]
         self.fail_under = 0.0
         self.ignore_errors = False
+        self.ignore_contextless = False
         self.report_include = None
         self.report_omit = None
         self.partial_always_list = DEFAULT_PARTIAL_ALWAYS[:]
@@ -375,6 +376,7 @@ class CoverageConfig:
         ('exclude_list', 'report:exclude_lines', 'regexlist'),
         ('fail_under', 'report:fail_under', 'float'),
         ('ignore_errors', 'report:ignore_errors', 'boolean'),
+        ('ignore_contextless', 'report:ignore_contextless', 'boolean'),
         ('partial_always_list', 'report:partial_branches_always', 'regexlist'),
         ('partial_list', 'report:partial_branches', 'regexlist'),
         ('precision', 'report:precision', 'int'),

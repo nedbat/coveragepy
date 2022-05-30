@@ -104,6 +104,10 @@ class Opts:
         '-i', '--ignore-errors', action='store_true',
         help="Ignore errors while reading source files.",
     )
+    ignore_contextless = optparse.make_option(
+        '', '--ignore-contextless', action='store_true',
+        help="Ignore lines without context when reporting.",
+    )
     include = optparse.make_option(
         '', '--include', action='store', metavar="PAT1,PAT2,...",
         help=(
@@ -425,6 +429,7 @@ COMMANDS = {
             Opts.input_datafile,
             Opts.fail_under,
             Opts.ignore_errors,
+            Opts.ignore_contextless,
             Opts.include,
             Opts.omit,
             Opts.precision,
@@ -450,6 +455,7 @@ COMMANDS = {
             Opts.input_datafile,
             Opts.fail_under,
             Opts.ignore_errors,
+            Opts.ignore_contextless,
             Opts.include,
             Opts.omit,
             Opts.output_json,
@@ -467,6 +473,7 @@ COMMANDS = {
             Opts.input_datafile,
             Opts.fail_under,
             Opts.ignore_errors,
+            Opts.ignore_contextless,
             Opts.include,
             Opts.output_lcov,
             Opts.omit,
@@ -483,6 +490,7 @@ COMMANDS = {
             Opts.input_datafile,
             Opts.fail_under,
             Opts.ignore_errors,
+            Opts.ignore_contextless,
             Opts.include,
             Opts.omit,
             Opts.precision,
@@ -522,6 +530,7 @@ COMMANDS = {
             Opts.input_datafile,
             Opts.fail_under,
             Opts.ignore_errors,
+            Opts.ignore_contextless,
             Opts.include,
             Opts.omit,
             Opts.output_xml,
