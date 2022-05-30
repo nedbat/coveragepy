@@ -113,7 +113,7 @@ class Opts:
     )
     include_namespace_packages = optparse.make_option(
         '', '--include_namespace_packages', action='store_true',
-        help="Include folders without and __init__.py in the Coverage.",
+        help="Include folders without an __init__.py in the Coverage.",
     )
     pylib = optparse.make_option(
         '-L', '--pylib', action='store_true',
@@ -225,9 +225,6 @@ class Opts:
         '', '--version', action='store_true',
         help="Display version information and exit.",
     )
-
-
-
 
 
 class CoverageOptionParser(optparse.OptionParser):
