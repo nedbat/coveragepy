@@ -288,14 +288,14 @@ with change_dir(PERF_DIR):
         ],
         cov_versions=[
             #("none", None, None),
-            ("6.4", "coverage==6.4", ""),
-            ("tip", "-e ~/coverage/trunk", ""),
+            ("6.4 timid", "coverage==6.4", "timid=True"),
+            ("tip timid", "git+https://github.com/nedbat/coveragepy.git@master", "timid=True"),
         ],
         projects=[
             ProjectPytestHtml(),
             ProjectAttrs(),
         ],
-        num_runs=5,
+        num_runs=3,
     )
 
     # run_experiments(
