@@ -67,6 +67,11 @@ class PyTracer:
         # On exit, self.in_atexit = True
         atexit.register(setattr, self, 'in_atexit', True)
 
+        # cache a bound method on the instance, so that we don't have to
+        # re-create a bound method object all the time
+        self._cached_bound_method_trace = self._trace
+
+
     def __repr__(self):
         return "<PyTracer at 0x{:x}: {} lines in {} files>".format(
             id(self),
@@ -105,7 +110,7 @@ class PyTracer:
 
         #self.log(":", frame.f_code.co_filename, frame.f_lineno, frame.f_code.co_name + "()", event)
 
-        if (self.stopped and sys.gettrace() == self._trace):    # pylint: disable=comparison-with-callable
+        if (self.stopped and sys.gettrace() == self._cached_bound_method_trace):    # pylint: disable=comparison-with-callable
             # The PyTrace.stop() method has been called, possibly by another
             # thread, let's deactivate ourselves now.
             if 0:
@@ -225,7 +230,7 @@ class PyTracer:
             if self.started_context:
                 self.context = None
                 self.switch_context(None)
-        return self._trace
+        return self._cached_bound_method_trace
 
     def start(self):
         """Start this Tracer.
@@ -243,10 +248,10 @@ class PyTracer:
                     # function, but we are marked as running again, so maybe it
                     # will be ok?
                     #self.log("~", "starting on different threads")
-                    return self._trace
+                    return self._cached_bound_method_trace
 
-        sys.settrace(self._trace)
-        return self._trace
+        sys.settrace(self._cached_bound_method_trace)
+        return self._cached_bound_method_trace
 
     def stop(self):
         """Stop this Tracer."""
@@ -271,9 +276,9 @@ class PyTracer:
             # so don't warn if we are in atexit on PyPy and the trace function
             # has changed to None.
             dont_warn = (env.PYPY and env.PYPYVERSION >= (5, 4) and self.in_atexit and tf is None)
-            if (not dont_warn) and tf != self._trace:   # pylint: disable=comparison-with-callable
+            if (not dont_warn) and tf != self._cached_bound_method_trace:   # pylint: disable=comparison-with-callable
                 self.warn(
-                    f"Trace function changed, data is likely wrong: {tf!r} != {self._trace!r}",
+                    f"Trace function changed, data is likely wrong: {tf!r} != {self._cached_bound_method_trace!r}",
                     slug="trace-changed",
                 )
 
