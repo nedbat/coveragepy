@@ -140,6 +140,9 @@ There are many options:
                             Include only files whose paths match one of these
                             patterns. Accepts shell-style wildcards, which must be
                             quoted.
+      --include_namespace_packages
+                            Include folders without an __init__.py in the
+                            Coverage.
       -m, --module          <pyfile> is an importable Python module, not a script
                             path, to be run as 'python -m' would run it.
       --omit=PAT1,PAT2,...  Omit files whose paths match one of these patterns.
@@ -160,7 +163,7 @@ There are many options:
       --rcfile=RCFILE       Specify configuration file. By default '.coveragerc',
                             'setup.cfg', 'tox.ini', and 'pyproject.toml' are
                             tried. [env: COVERAGE_RCFILE]
-.. [[[end]]] (checksum: 05d15818e42e6f989c42894fb2b3c753)
+.. [[[end]]] (checksum: 2c92816941a91a9c2c0ae8e23dd02102)
 
 If you want :ref:`branch coverage <branch>` measurement, use the ``--branch``
 flag.  Otherwise only statement coverage is measured.
@@ -515,6 +518,9 @@ as a percentage.
                             Include only files whose paths match one of these
                             patterns. Accepts shell-style wildcards, which must be
                             quoted.
+      --include_namespace_packages
+                            Include folders without an __init__.py in the
+                            Coverage.
       --omit=PAT1,PAT2,...  Omit files whose paths match one of these patterns.
                             Accepts shell-style wildcards, which must be quoted.
       --precision=N         Number of digits after the decimal point to display
@@ -532,7 +538,7 @@ as a percentage.
       --rcfile=RCFILE       Specify configuration file. By default '.coveragerc',
                             'setup.cfg', 'tox.ini', and 'pyproject.toml' are
                             tried. [env: COVERAGE_RCFILE]
-.. [[[end]]] (checksum: 2f8dde61bab2f44fbfe837aeae87dfd2)
+.. [[[end]]] (checksum: a831cc0bdc5e14ec46e300f0cf8b5d27)
 
 The ``-m`` flag also shows the line numbers of missing statements::
 
@@ -634,6 +640,9 @@ Click the keyboard icon in the upper right to see the complete list.
                             Include only files whose paths match one of these
                             patterns. Accepts shell-style wildcards, which must be
                             quoted.
+      --include_namespace_packages
+                            Include folders without an __init__.py in the
+                            Coverage.
       --omit=PAT1,PAT2,...  Omit files whose paths match one of these patterns.
                             Accepts shell-style wildcards, which must be quoted.
       --precision=N         Number of digits after the decimal point to display
@@ -650,7 +659,7 @@ Click the keyboard icon in the upper right to see the complete list.
       --rcfile=RCFILE       Specify configuration file. By default '.coveragerc',
                             'setup.cfg', 'tox.ini', and 'pyproject.toml' are
                             tried. [env: COVERAGE_RCFILE]
-.. [[[end]]] (checksum: e3a1a6e24ad9b303ba06d42880ed0219)
+.. [[[end]]] (checksum: 2fe1c0beaeb4fbdccbd1e69833233143)
 
 The title of the report can be set with the ``title`` setting in the
 ``[html]`` section of the configuration file, or the ``--title`` switch on
@@ -715,6 +724,9 @@ compatible with `Cobertura`_.
                             Include only files whose paths match one of these
                             patterns. Accepts shell-style wildcards, which must be
                             quoted.
+      --include_namespace_packages
+                            Include folders without an __init__.py in the
+                            Coverage.
       --omit=PAT1,PAT2,...  Omit files whose paths match one of these patterns.
                             Accepts shell-style wildcards, which must be quoted.
       -o OUTFILE            Write the XML report to this file. Defaults to
@@ -727,7 +739,7 @@ compatible with `Cobertura`_.
       --rcfile=RCFILE       Specify configuration file. By default '.coveragerc',
                             'setup.cfg', 'tox.ini', and 'pyproject.toml' are
                             tried. [env: COVERAGE_RCFILE]
-.. [[[end]]] (checksum: 8b239d89534be0b2c69489e10b1352a9)
+.. [[[end]]] (checksum: 042eddbe0fc48894c1326645a936a39b)
 
 You can specify the name of the output file with the ``-o`` switch.
 
@@ -803,6 +815,9 @@ The **json** command writes coverage data to a "coverage.json" file.
                             Include only files whose paths match one of these
                             patterns. Accepts shell-style wildcards, which must be
                             quoted.
+      --include_namespace_packages
+                            Include folders without an __init__.py in the
+                            Coverage.
       --omit=PAT1,PAT2,...  Omit files whose paths match one of these patterns.
                             Accepts shell-style wildcards, which must be quoted.
       -o OUTFILE            Write the JSON report to this file. Defaults to
@@ -816,7 +831,7 @@ The **json** command writes coverage data to a "coverage.json" file.
       --rcfile=RCFILE       Specify configuration file. By default '.coveragerc',
                             'setup.cfg', 'tox.ini', and 'pyproject.toml' are
                             tried. [env: COVERAGE_RCFILE]
-.. [[[end]]] (checksum: e53e60cb65d971c35d1db1c08324b72e)
+.. [[[end]]] (checksum: a49de4d114bf990dc8422f2ae130d1fc)
 
 You can specify the name of the output file with the ``-o`` switch.  The JSON
 can be nicely formatted by specifying the ``--pretty-print`` switch.
@@ -851,6 +866,9 @@ The **lcov** command writes coverage data to a "coverage.lcov" file.
                             Include only files whose paths match one of these
                             patterns. Accepts shell-style wildcards, which must be
                             quoted.
+      --include_namespace_packages
+                            Include folders without an __init__.py in the
+                            Coverage.
       -o OUTFILE            Write the LCOV report to this file. Defaults to
                             'coverage.lcov'
       --omit=PAT1,PAT2,...  Omit files whose paths match one of these patterns.
@@ -862,7 +880,7 @@ The **lcov** command writes coverage data to a "coverage.lcov" file.
       --rcfile=RCFILE       Specify configuration file. By default '.coveragerc',
                             'setup.cfg', 'tox.ini', and 'pyproject.toml' are
                             tried. [env: COVERAGE_RCFILE]
-.. [[[end]]] (checksum: 16acfbae8011d2e3b620695c5fe13746)
+.. [[[end]]] (checksum: 646ab6eca5ae5953a461ae3ac434470f)
 
 Common reporting options are described above in :ref:`cmd_reporting`.
 Also see :ref:`Configuration: [lcov] <config_lcov>`.
@@ -924,6 +942,9 @@ For example::
                             Include only files whose paths match one of these
                             patterns. Accepts shell-style wildcards, which must be
                             quoted.
+      --include_namespace_packages
+                            Include folders without an __init__.py in the
+                            Coverage.
       --omit=PAT1,PAT2,...  Omit files whose paths match one of these patterns.
                             Accepts shell-style wildcards, which must be quoted.
       --debug=OPTS          Debug options, separated by commas. [env:
@@ -932,7 +953,7 @@ For example::
       --rcfile=RCFILE       Specify configuration file. By default '.coveragerc',
                             'setup.cfg', 'tox.ini', and 'pyproject.toml' are
                             tried. [env: COVERAGE_RCFILE]
-.. [[[end]]] (checksum: fd7d8fbd2dd6e24d37f868b389c2ad6d)
+.. [[[end]]] (checksum: 5e7c1705047e4f289d8ba701ee2ae185)
 
 Other common reporting options are described above in :ref:`cmd_reporting`.
 
