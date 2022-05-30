@@ -567,7 +567,7 @@ class InOrOut:
 
         """
         py_files = (
-            (py_file, None) for py_file in 
+            (py_file, None) for py_file in
             find_python_files(src_dir, self.include_namespace_packages)
         )
         plugin_files = self._find_plugin_files(src_dir)

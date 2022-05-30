@@ -406,7 +406,7 @@ def find_python_files(dirname, include_namespace_packages):
 
     """
     for i, (dirpath, dirnames, filenames) in enumerate(os.walk(dirname)):
-        if (i > 0 and '__init__.py' not in filenames 
+        if (i > 0 and '__init__.py' not in filenames
             and not include_namespace_packages):
             # If a directory doesn't have __init__.py, then it isn't
             # importable and neither are its files
