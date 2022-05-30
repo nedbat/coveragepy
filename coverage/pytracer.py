@@ -151,20 +151,29 @@ class PyTracer:
                     self.started_context,
                 )
             )
-            filename = frame.f_code.co_filename
-            self.cur_file_name = filename
-            disp = self.should_trace_cache.get(filename)
-            if disp is None:
-                disp = self.should_trace(filename, frame)
-                self.should_trace_cache[filename] = disp
 
-            self.cur_file_data = None
-            if disp.trace:
-                tracename = disp.source_filename
-                if tracename not in self.data:
-                    self.data[tracename] = set()
-                self.cur_file_data = self.data[tracename]
-            else:
+            # improve tracing performance: when calling a function, both caller
+            # and callee are often within the same file. if that's the case, we
+            # don't have to re-check whether to trace the corresponding
+            # function (which is a little bit espensive since it involves
+            # dictionary lookups)
+            filename = frame.f_code.co_filename
+            if filename != self.cur_file_name:
+                self.cur_file_name = filename
+                disp = self.should_trace_cache.get(filename)
+                if disp is None:
+                    disp = self.should_trace(filename, frame)
+                    self.should_trace_cache[filename] = disp
+
+                self.cur_file_data = None
+                if disp.trace:
+                    tracename = disp.source_filename
+                    if tracename not in self.data:
+                        self.data[tracename] = set()
+                    self.cur_file_data = self.data[tracename]
+                else:
+                    frame.f_trace_lines = False
+            elif not self.cur_file_data:
                 frame.f_trace_lines = False
 
             # The call event is really a "start frame" event, and happens for
