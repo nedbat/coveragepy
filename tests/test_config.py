@@ -456,6 +456,7 @@ class ConfigFileTest(UsingModulesMixin, CoverageTest):
             plugins.another
         debug = callers, pids  ,     dataio
         disable_warnings =     abcd  ,  efgh
+        include_namespace_packages = TRUE
 
         [{section}report]
         ; these settings affect reporting.
@@ -577,6 +578,7 @@ class ConfigFileTest(UsingModulesMixin, CoverageTest):
         assert cov.config.get_plugin_options("plugins.another") == {}
         assert cov.config.json_show_contexts is True
         assert cov.config.json_pretty_print is True
+        assert cov.config.include_namespace_packages is True
 
     def test_config_file_settings(self):
         self.make_file(".coveragerc", self.LOTSA_SETTINGS.format(section=""))

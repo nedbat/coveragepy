@@ -61,9 +61,8 @@ class BaseCmdLineTest(CoverageTest):
     _defaults.Coverage(
         data_file=DEFAULT_DATAFILE,
         cover_pylib=None, data_suffix=None, timid=None, branch=None,
-        config_file=True, source=None, include=None, include_namespace_packages=False,
-        omit=None, debug=None, concurrency=None, check_preimported=True, context=None,
-        messages=True,
+        config_file=True, source=None, include=None, omit=None, debug=None,
+        concurrency=None, check_preimported=True, context=None, messages=True,
     )
 
     DEFAULT_KWARGS = {name: kw for name, _, kw in _defaults.mock_calls}
