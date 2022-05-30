@@ -289,7 +289,8 @@ class PyTracer:
             dont_warn = (env.PYPY and env.PYPYVERSION >= (5, 4) and self.in_atexit and tf is None)
             if (not dont_warn) and tf != self._cached_bound_method_trace:   # pylint: disable=comparison-with-callable
                 self.warn(
-                    f"Trace function changed, data is likely wrong: {tf!r} != {self._cached_bound_method_trace!r}",
+                    f"Trace function changed, data is likely wrong: "
+                    f"{tf!r} != {self._cached_bound_method_trace!r}",
                     slug="trace-changed",
                 )
 
