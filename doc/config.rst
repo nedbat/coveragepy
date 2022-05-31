@@ -216,14 +216,6 @@ measurement or reporting.  Ignored if ``source`` is set.  See :ref:`source` for
 details.
 
 
-.. _config_include_namespace_packages:
-
-[run] include_namespace_packages
-................................
-
-(boolean, default False) Include folders without an ``__init__.py`` in the
-Coverage.
-
 .. _config_run_note:
 
 [run] note
@@ -416,6 +408,14 @@ warning instead of an exception.
 (multi-string) A list of file name patterns, the files to include in reporting.
 See :ref:`source` for details.
 
+
+.. _config_include_namespace_packages:
+
+[report] include_namespace_packages
+...................................
+
+(boolean, default False) Include folders without an ``__init__.py`` in the
+coverage.
 
 .. _config_report_omit:
 

@@ -456,7 +456,6 @@ class ConfigFileTest(UsingModulesMixin, CoverageTest):
             plugins.another
         debug = callers, pids  ,     dataio
         disable_warnings =     abcd  ,  efgh
-        include_namespace_packages = TRUE
 
         [{section}report]
         ; these settings affect reporting.
@@ -482,6 +481,8 @@ class ConfigFileTest(UsingModulesMixin, CoverageTest):
         show_missing= TruE
         skip_covered = TruE
         skip_empty  =TruE
+
+        include_namespace_packages = TRUE
 
         [{section}html]
 
