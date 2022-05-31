@@ -18,9 +18,9 @@ flaky==3.7.0
     # via -r requirements/pytest.in
 future==0.18.2
     # via pycontracts
-hypothesis==6.46.3
+hypothesis==6.46.9
     # via -r requirements/pytest.in
-importlib-metadata==4.11.3
+importlib-metadata==4.11.4
     # via
     #   pluggy
     #   pytest

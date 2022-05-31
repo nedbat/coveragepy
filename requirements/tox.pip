@@ -6,11 +6,11 @@
 #
 distlib==0.3.4
     # via virtualenv
-filelock==3.6.0
+filelock==3.7.0
     # via
     #   tox
     #   virtualenv
-importlib-metadata==4.11.3
+importlib-metadata==4.11.4
     # via
     #   pluggy
     #   tox

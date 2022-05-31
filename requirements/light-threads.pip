@@ -6,7 +6,7 @@
 #
 dnspython==2.2.1
     # via eventlet
-eventlet==0.33.0
+eventlet==0.33.1
     # via -r requirements/light-threads.in
 gevent==21.12.0
     # via -r requirements/light-threads.in
@@ -23,5 +23,5 @@ zope-interface==5.4.0
     # via gevent
 
 # The following packages are considered to be unsafe in a requirements file:
-setuptools==62.2.0
+setuptools==62.3.2
     # via gevent
