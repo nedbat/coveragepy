@@ -8,17 +8,17 @@ auditwheel==5.1.2
     # via -r requirements/kit.in
 bashlex==0.16
     # via cibuildwheel
-bracex==2.2.1
+bracex==2.3.post1
     # via cibuildwheel
-build==0.7.0
+build==0.8.0
     # via -r requirements/kit.in
-certifi==2021.10.8
+certifi==2022.5.18.1
     # via cibuildwheel
-cibuildwheel==2.5.0
+cibuildwheel==2.6.0
     # via -r requirements/kit.in
-filelock==3.6.0
+filelock==3.7.0
     # via cibuildwheel
-importlib-metadata==4.11.3
+importlib-metadata==4.11.4
     # via
     #   auditwheel
     #   build
@@ -52,5 +52,5 @@ zipp==3.8.0
     #   pep517
 
 # The following packages are considered to be unsafe in a requirements file:
-setuptools==62.2.0
+setuptools==62.3.2
     # via -r requirements/kit.in
