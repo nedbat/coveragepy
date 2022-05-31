@@ -931,7 +931,7 @@ class Coverage:
         :ref:`dynamic contexts <dynamic_contexts>` that match one of those
         expressions (using :func:`re.search <python:re.search>`) will be
         included in the report.
-        
+
         `ignore_contextless` excludes lines without context from consideration
         in the reporting process, including during coverage ratio calculations.
 
