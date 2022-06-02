@@ -106,6 +106,29 @@ workflows:				## Run cog on the workflows to keep them up-to-date.
 prebuild: css workflows cogdoc		## One command for all source prep.
 
 
+##@ Sample HTML reports
+
+.PHONY: _sample_cog_html sample_html sample_html_beta
+
+_sample_cog_html: clean
+	python -m pip install -e .
+	cd ~/cog/trunk; \
+		rm -rf htmlcov; \
+		PYTEST_ADDOPTS= coverage run --branch --source=cogapp -m pytest -k CogTestsInMemory; \
+		coverage combine; \
+		coverage html
+
+sample_html: _sample_cog_html		## Generate sample HTML report.
+	rm -f doc/sample_html/*.*
+	cp -r ~/cog/trunk/htmlcov/ doc/sample_html/
+	rm doc/sample_html/.gitignore
+
+sample_html_beta: _sample_cog_html	## Generate sample HTML report for a beta release.
+	rm -f doc/sample_html_beta/*.*
+	cp -r ~/cog/trunk/htmlcov/ doc/sample_html_beta/
+	rm doc/sample_html_beta/.gitignore
+
+
 ##@ Kitting: making releases
 
 .PHONY: kit kit_upload test_upload kit_local download_kits check_kits tag

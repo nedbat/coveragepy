@@ -27,21 +27,10 @@
         $ tox -e doc
 - commit the release-prep changes
 - Generate new sample_html to get the latest, incl footer version number:
-    $ make clean
-    $ pip install -e .
-    $ cd ~/cog/trunk
-    $ rm -rf htmlcov
-    $ PYTEST_ADDOPTS= coverage run --branch --source=cogapp -m pytest -k CogTestsInMemory; coverage combine; coverage html
     - IF PRE-RELEASE:
-        $ rm -f ~/coverage/trunk/doc/sample_html_beta/*.*
-        $ cp -r htmlcov/ ~/coverage/trunk/doc/sample_html_beta/
-        $ rm ~/coverage/trunk/doc/sample_html_beta/.gitignore
+        $ make sample_html_beta
     - IF NOT PRE-RELEASE:
-        $ rm -f ~/coverage/trunk/doc/sample_html/*.*
-        $ cp -r htmlcov/ ~/coverage/trunk/doc/sample_html/
-        $ rm ~/coverage/trunk/doc/sample_html/.gitignore
-    $ cd ~/coverage/trunk
-    - IF NOT PRE-RELEASE:
+        $ make sample_html
         check in the new sample html
 - Done with changes to source files, check them in.
     $ git push
