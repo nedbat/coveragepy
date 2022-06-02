@@ -23,12 +23,13 @@ Unreleased
 - Greatly improved performance on PyPy, and other environments that need the
   pure Python trace function.  Thanks, Carl Friedrich Bolz-Tereick (`pull
   1381`_ and `pull 1388`_).  Slightly improved performance when using the C
-  trace function, as most environments do.
+  trace function, as most environments do.  Closes `issue 1339`_.
 
 - The conditions for using tomllib from the standard library have been made
   more precise, so that 3.11 alphas will continue to work. Closes `issue
   1390`_.
 
+.. _issue 1339: https://github.com/nedbat/coveragepy/issues/1339
 .. _pull 1381: https://github.com/nedbat/coveragepy/pull/1381
 .. _pull 1388: https://github.com/nedbat/coveragepy/pull/1388
 .. _issue 1390: https://github.com/nedbat/coveragepy/issues/1390
