@@ -16,7 +16,7 @@ certifi==2022.5.18.1
     # via cibuildwheel
 cibuildwheel==2.6.0
     # via -r requirements/kit.in
-filelock==3.7.0
+filelock==3.7.1
     # via cibuildwheel
 importlib-metadata==4.11.4
     # via

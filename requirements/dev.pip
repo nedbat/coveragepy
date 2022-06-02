@@ -47,7 +47,7 @@ execnet==1.9.0
     # via
     #   -r requirements/pytest.pip
     #   pytest-xdist
-filelock==3.7.0
+filelock==3.7.1
     # via
     #   -r requirements/pip.pip
     #   tox
@@ -60,7 +60,7 @@ future==0.18.2
     #   pycontracts
 greenlet==1.1.2
     # via -r requirements/dev.in
-hypothesis==6.46.9
+hypothesis==6.46.11
     # via -r requirements/pytest.pip
 idna==3.3
     # via requests
@@ -129,7 +129,7 @@ pygments==2.12.0
     #   pudb
     #   readme-renderer
     #   rich
-pylint==2.13.9
+pylint==2.14.0
     # via -r requirements/dev.in
 pyparsing==3.0.9
     # via
@@ -188,9 +188,11 @@ tomli==2.0.1
     #   check-manifest
     #   pylint
     #   pytest
+tomlkit==0.11.0
+    # via pylint
 tox==3.25.0
     # via -r requirements/dev.in
-twine==4.0.0
+twine==4.0.1
     # via -r requirements/dev.in
 typed-ast==1.5.4
     # via astroid
