@@ -131,7 +131,7 @@ sample_html_beta: _sample_cog_html	## Generate sample HTML report for a beta rel
 
 ##@ Kitting: making releases
 
-.PHONY: kit kit_upload test_upload kit_local download_kits check_kits tag
+.PHONY: kit kit_upload test_upload kit_local build_kits download_kits check_kits tag
 .PHONY: update_stable comment_on_fixes
 
 kit:					## Make the source distribution.
@@ -151,6 +151,9 @@ kit_local:
 	# pip caches wheels of things it has installed. Clean them out so we
 	# don't go crazy trying to figure out why our new code isn't installing.
 	find ~/Library/Caches/pip/wheels -name 'coverage-*' -delete
+
+build_kits:				## Trigger GitHub to build kits
+	python ci/trigger_build_kits.py nedbat/coveragepy
 
 download_kits:				## Download the built kits from GitHub.
 	python ci/download_gha_artifacts.py nedbat/coveragepy
