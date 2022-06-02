@@ -134,6 +134,8 @@ sample_html_beta: _sample_cog_html	## Generate sample HTML report for a beta rel
 .PHONY: kit kit_upload test_upload kit_local build_kits download_kits check_kits tag
 .PHONY: update_stable comment_on_fixes
 
+REPO_OWNER = nedbat/coveragepy
+
 kit:					## Make the source distribution.
 	python -m build
 
@@ -153,10 +155,10 @@ kit_local:
 	find ~/Library/Caches/pip/wheels -name 'coverage-*' -delete
 
 build_kits:				## Trigger GitHub to build kits
-	python ci/trigger_build_kits.py nedbat/coveragepy
+	python ci/trigger_build_kits.py $(REPO_OWNER)
 
 download_kits:				## Download the built kits from GitHub.
-	python ci/download_gha_artifacts.py nedbat/coveragepy
+	python ci/download_gha_artifacts.py $(REPO_OWNER)
 
 check_kits:				## Check that dist/* are well-formed.
 	python -m twine check dist/*
@@ -168,9 +170,6 @@ tag:					## Make a git tag with the version number.
 update_stable:				## Set the stable branch to the latest release.
 	git branch -f stable $$(python setup.py --version)
 	git push origin stable
-
-comment_on_fixes:			## Add a comment to issues that were fixed.
-	python ci/comment_on_fixes.py
 
 
 ##@ Documentation
@@ -227,4 +226,7 @@ $(RELNOTES_JSON): $(CHANGES_MD)
 	$(DOCBIN)/python ci/parse_relnotes.py tmp/rst_rst/changes.md $(RELNOTES_JSON)
 
 github_releases: $(RELNOTES_JSON)	## Update GitHub releases.
-	$(DOCBIN)/python ci/github_releases.py $(RELNOTES_JSON) nedbat/coveragepy
+	$(DOCBIN)/python ci/github_releases.py $(RELNOTES_JSON) $(REPO_OWNER)
+
+comment_on_fixes: $(RELNOTES_JSON)	## Add a comment to issues that were fixed.
+	python ci/comment_on_fixes.py $(REPO_OWNER)
