@@ -27,6 +27,9 @@ on:
       # Don't build kits all the time, but do if the branch is about kits.
       - "**/*kit*"
   workflow_dispatch:
+  repository_dispatch:
+    types:
+      - build-kits
 
 defaults:
   run:
