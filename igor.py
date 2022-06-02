@@ -385,31 +385,43 @@ def do_cheats():
     import coverage
     ver = coverage.__version__
     vi = coverage.version_info
-    anchor = f"{vi[0]}-{vi[1]}-{vi[2]}"
+    shortver = f"{vi[0]}.{vi[1]}.{vi[2]}"
+    anchor = shortver.replace(".", "-")
     if vi[3] != "final":
         anchor += f"{vi[3][0]}{vi[4]}"
+    now = datetime.datetime.now()
     branch = subprocess.getoutput("git rev-parse --abbrev-ref @")
     print(f"Coverage version is {ver}")
 
     print(f"pip install git+https://github.com/nedbat/coveragepy@{branch}")
+    print(f"https://coverage.readthedocs.io/en/{ver}/changes.html#changes-{anchor}")
 
-    print("\nfor CHANGES.rst before release:")
+    print("\n## for CHANGES.rst before release:")
     print(f".. _changes_{anchor}:")
     print()
-    head = f"Version {ver} — {datetime.datetime.now():%Y-%m-%d}"
+    head = f"Version {ver} — {now:%Y-%m-%d}"
     print(head)
     print("-" * len(head))
 
-    print(f"https://coverage.readthedocs.io/en/{ver}/changes.html#changes-{anchor}")
+    print("\n## For doc/conf.py before release:")
+    print("\n".join([
+        '# The short X.Y.Z version.                                 # CHANGEME',
+        f'version = "{shortver}"',
+        '# The full version, including alpha/beta/rc tags.          # CHANGEME',
+        f'release = "{ver}"',
+        '# The date of release, in "monthname day, year" format.    # CHANGEME',
+        f'release_date = "{now:%B %-d, %Y}"',
+    ]))
 
     print(
+        "\n## For GitHub commenting:\n" +
         "This is now released as part of " +
         f"[coverage {ver}](https://pypi.org/project/coverage/{ver})."
     )
-    print("\nnext:")
+    print("\n## For version.py next:")
     next_vi = (vi[0], vi[1], vi[2]+1, "alpha", 0)
     print(f"version_info = {next_vi}".replace("'", '"'))
-    print("\nfor CHANGES.rst after release:")
+    print("\n## For CHANGES.rst after release:")
     print(textwrap.dedent("""\
         Unreleased
         ----------
