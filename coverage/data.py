@@ -30,6 +30,7 @@ def line_counts(data, fullpath=False):
     """
     summ = {}
     if fullpath:
+        # pylint: disable=unnecessary-lambda-assignment
         filename_fn = lambda f: f
     else:
         filename_fn = os.path.basename

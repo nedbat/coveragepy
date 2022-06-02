@@ -25,9 +25,6 @@ ignore=
 # Pickle collected data for later comparisons.
 persistent=no
 
-# Set the cache size for astng objects.
-cache-size=500
-
 # List of plugins (as comma separated values of python modules names) to load,
 # usually to register additional checkers.
 load-plugins=
@@ -61,15 +58,11 @@ disable=
 # Messages that are just silly:
     locally-disabled,
     exec-used,
-    no-init,
-    bad-whitespace,
     global-statement,
     broad-except,
     no-else-return,
-    misplaced-comparison-constant,
     subprocess-run-check,
 # Messages that may be silly:
-    no-self-use,
     no-member,
     using-constant-test,
     too-many-nested-blocks,
@@ -83,7 +76,6 @@ disable=
     consider-using-with,
 # Formatting stuff
     superfluous-parens,
-    bad-continuation,
 # Messages that are noisy for now, eventually maybe we'll turn them on:
     invalid-name,
     protected-access,
@@ -99,11 +91,6 @@ msg-template={path}:{line} {C}: {msg} ({symbol})
 # set the output format. Available formats are text, parseable, colorized, msvs
 # (visual studio) and html
 output-format=text
-
-# Put messages in a separate file for each module / package specified on the
-# command line instead of printing them on stdout. Reports (if any) will be
-# written in a file name "pylint_global.[txt|html]".
-files-output=no
 
 # Tells whether to display a full report or only the messages
 reports=no
@@ -180,9 +167,6 @@ good-names=i,j,k,ex,Run,_
 # Bad variable names which should always be refused, separated by a comma
 bad-names=foo,bar,baz,toto,tutu,tata
 
-# List of builtins function names that should not be used, separated by a comma
-bad-functions=
-
 
 # try to find bugs in the code using type inference
 #
@@ -195,10 +179,6 @@ ignore-mixin-members=yes
 # List of classes names for which member attributes should not be checked
 # (useful for classes with attributes dynamically set).
 ignored-classes=SQLObject
-
-# List of members which are usually get through zope's acquisition mechanism and
-# so shouldn't trigger E0201 when accessed (need zope=yes to be considered).
-acquired-members=REQUEST,acl_users,aq_parent
 
 
 # checks for
