@@ -12,13 +12,15 @@ development at the same time, such as 4.5.x and 5.0.
     .. When updating the "Unreleased" header to a specific version, use this
     .. format.  Don't forget the jump target:
     ..
-    ..  .. _changes_981:
+    ..  .. _changes_9-8-1:
     ..
     ..  Version 9.8.1 — 2027-07-27
     ..  --------------------------
 
-Unreleased
-----------
+.. _changes_6-4-1:
+
+Version 6.4.1 — 2022-06-02
+--------------------------
 
 - Greatly improved performance on PyPy, and other environments that need the
   pure Python trace function.  Thanks, Carl Friedrich Bolz-Tereick (`pull

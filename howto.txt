@@ -16,7 +16,8 @@
     - Python versions supported
 - Update docs
     - Python versions in doc/index.rst
-    - Version of latest stable release in doc/index.rst
+    - IF PRE-RELEASE:
+        - Version of latest stable release in doc/index.rst
     - Version, release, release_date and copyright date in doc/conf.py
         - Look for CHANGEME comments
     - Make sure the docs are cogged:
