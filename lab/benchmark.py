@@ -207,9 +207,14 @@ class ProjectAttrs(ToxProject):
 class AdHocProject(ProjectToTest):
     """A standalone program to run locally."""
 
-    def __init__(self, python_file, pip_args=None):
+    def __init__(self, python_file, cur_dir=None, pip_args=None):
         super().__init__()
         self.python_file = Path(python_file)
+        if not self.python_file.exists():
+            raise ValueError(f"Couldn't find {self.python_file} to run ad-hoc.")
+        self.cur_dir = Path(cur_dir or self.python_file.parent)
+        if not self.cur_dir.exists():
+            raise ValueError(f"Couldn't find {self.cur_dir} to run in.")
         self.pip_args = pip_args
         self.slug = self.python_file.name
 
@@ -220,18 +225,32 @@ class AdHocProject(ProjectToTest):
         env.shell.run_command(f"{env.python} -m pip install {self.pip_args}")
 
     def run_no_coverage(self, env):
-        with change_dir(self.python_file.parent):
-            env.shell.run_command(f"{env.python} {self.python_file.name}")
+        with change_dir(self.cur_dir):
+            env.shell.run_command(f"{env.python} {self.python_file}")
         return env.shell.last_duration
 
     def run_with_coverage(self, env, pip_args, cov_options):
         env.shell.run_command(f"{env.python} -m pip install {pip_args}")
-        with change_dir(self.python_file.parent):
+        with change_dir(self.cur_dir):
             env.shell.run_command(
-                f"{env.python} -m coverage run {self.python_file.name}"
+                f"{env.python} -m coverage run {self.python_file}"
             )
         return env.shell.last_duration
 
+
+class SlipcoverBenchmark(AdHocProject):
+    """
+    For running code from the Slipcover benchmarks.
+
+    Clone https://github.com/plasma-umass/slipcover to /src/slipcover
+
+    """
+    def __init__(self, python_file):
+        super().__init__(
+            python_file=f"/src/slipcover/benchmarks/{python_file}",
+            cur_dir="/src/slipcover",
+            pip_args="six pyperf",
+        )
 
 class PyVersion:
     """A version of Python to use."""
@@ -328,21 +347,24 @@ with change_dir(PERF_DIR):
     if 1:
         run_experiments(
             py_versions=[
-                Python(3, 7),
                 Python(3, 10),
+                Python(3, 11),
             ],
             cov_versions=[
-                # ("none", None, None),
-                ("6.4 timid", "coverage==6.4", "timid=True"),
-                (
-                    "tip timid",
-                    "git+https://github.com/nedbat/coveragepy.git@master",
-                    "timid=True",
-                ),
+                ("none", None, None),
+                ("6.4.1", "coverage==6.4.1", ""),
+                # (
+                #     "tip timid",
+                #     "git+https://github.com/nedbat/coveragepy.git@master",
+                #     "timid=True",
+                # ),
             ],
             projects=[
-                ProjectPytestHtml(),
-                ProjectAttrs(),
+                # ProjectPytestHtml(),
+                #ProjectAttrs(),
+                AdHocProject("/src/bugs/bug1339/bug1339.py"),
+                SlipcoverBenchmark("bm_sudoku.py"),
+                SlipcoverBenchmark("bm_spectral_norm.py"),
             ],
             num_runs=3,
         )
