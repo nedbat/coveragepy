@@ -2,6 +2,7 @@
 
 import contextlib
 import dataclasses
+import itertools
 import os
 import shutil
 import statistics
@@ -9,7 +10,7 @@ import subprocess
 import time
 from pathlib import Path
 
-from typing import Iterator, List, Optional, Tuple
+from typing import Dict, Iterable, Iterator, List, Optional, Tuple
 
 
 class ShellSession:
@@ -257,6 +258,8 @@ class PyVersion:
 
     # The command to run this Python
     command: str
+    # Short word for messages, directories, etc
+    slug: str
     # The tox environment to run this Python
     toxenv: str
 
@@ -265,7 +268,7 @@ class Python(PyVersion):
     """A version of CPython to use."""
 
     def __init__(self, major, minor):
-        self.command = f"python{major}.{minor}"
+        self.command = self.slug = f"python{major}.{minor}"
         self.toxenv = f"py{major}{minor}"
 
 
@@ -273,8 +276,15 @@ class PyPy(PyVersion):
     """A version of PyPy to use."""
 
     def __init__(self, major, minor):
-        self.command = f"pypy{major}.{minor}"
+        self.command = self.slug = f"pypy{major}.{minor}"
         self.toxenv = f"pypy{major}{minor}"
+
+class AdHocPython(PyVersion):
+    """A custom build of Python to use."""
+    def __init__(self, path, slug):
+        self.command = f"{path}/bin/python3"
+        self.slug = slug
+        self.toxenv = None
 
 
 @dataclasses.dataclass
@@ -286,14 +296,18 @@ class Env:
     shell: ShellSession
 
 
-def run_experiments(
+def run_experiment(
     py_versions: List[PyVersion],
     cov_versions: List[Tuple[str, Optional[str], Optional[str]]],
     projects: List[ProjectToTest],
-    num_runs=3,
+    num_runs: int = 3,
+    rows: Optional[List[str]] = None,
+    column: Optional[str] = None,
+    ratios: Iterable[Tuple[str, str, str]] = (),
 ):
     """Run test suites under different conditions."""
 
+    result_data: Dict[Tuple[str, str, str], float] = {}
     results = []
     for proj in projects:
         print(f"Testing with {proj.slug}")
@@ -301,15 +315,15 @@ def run_experiments(
             proj.get_source(shell)
 
             for pyver in py_versions:
-                print(f"Making venv for {proj.slug} {pyver.command}")
-                venv_dir = f"venv_{proj.slug}_{pyver.command}"
+                print(f"Making venv for {proj.slug} {pyver.slug}")
+                venv_dir = f"venv_{proj.slug}_{pyver.slug}"
                 shell.run_command(f"{pyver.command} -m venv {venv_dir}")
                 python = Path.cwd() / f"{venv_dir}/bin/python"
                 shell.run_command(f"{python} -V")
                 env = Env(pyver, python, shell)
 
                 with change_dir(Path(proj.slug)):
-                    print(f"Prepping for {proj.slug} {pyver.command}")
+                    print(f"Prepping for {proj.slug} {pyver.slug}")
                     proj.prep_environment(env)
                     for cov_slug, cov_pip, cov_options in cov_versions:
                         durations = []
@@ -325,15 +339,55 @@ def run_experiments(
                             durations.append(dur)
                         med = statistics.median(durations)
                         result = (
-                            f"Median for {proj.slug}, {pyver.command}, "
+                            f"Median for {proj.slug}, {pyver.slug}, "
                             + f"cov={cov_slug}: {med:.3f}s"
                         )
                         print(f"## {result}")
                         results.append(result)
+                        result_key = (proj.slug, pyver.slug, cov_slug)
+                        result_data[result_key] = med
 
     print("# Results")
     for result in results:
         print(result)
+
+    if rows:
+        assert column
+        dimensions = {
+            "cov": [cov_slug for cov_slug, _, _ in cov_versions],
+            "pyver": [pyver.slug for pyver in py_versions],
+            "proj": [proj.slug for proj in projects],
+        }
+
+        table_axes = [dimensions[rowname] for rowname in rows]
+        data_order = [*rows, column]
+        remap = [data_order.index(datum) for datum in ["proj", "pyver", "cov"]]
+
+        def as_table_row(vals):
+            return "| " + " | ".join(vals) + " |"
+
+        header = []
+        header.extend(rows)
+        header.extend(dimensions[column])
+        header.extend(slug for slug, _, _ in ratios)
+
+        print()
+        print(as_table_row(header))
+        print("|----" * len(header) + "|")
+        for tup in itertools.product(*table_axes):
+            row = []
+            row.extend(tup)
+            col_data = {}
+            for col in dimensions[column]:
+                key = (*tup, col)
+                key = tuple(key[i] for i in remap)
+                result_time = result_data[key]
+                row.append(f"{result_time:.3f} s")
+                col_data[col] = result_time
+            for _, num, denom in ratios:
+                ratio = col_data[num] / col_data[denom]
+                row.append(f"{ratio:.3f}")
+            print(as_table_row(row))
 
 
 PERF_DIR = Path("/tmp/covperf")
@@ -345,10 +399,11 @@ rmrf(PERF_DIR)
 with change_dir(PERF_DIR):
 
     if 1:
-        run_experiments(
+        run_experiment(
             py_versions=[
                 Python(3, 10),
                 Python(3, 11),
+                AdHocPython("/usr/local/cpython", "gh93493"),
             ],
             cov_versions=[
                 ("none", None, None),
@@ -367,10 +422,16 @@ with change_dir(PERF_DIR):
                 SlipcoverBenchmark("bm_spectral_norm.py"),
             ],
             num_runs=3,
+            rows=["cov", "proj"],
+            column="pyver",
+            ratios=[
+                ("3.11 vs 3.10", "python3.11", "python3.10"),
+                ("fix vs 3.10", "gh93493", "python3.10"),
+            ],
         )
 
     if 0:
-        run_experiments(
+        run_experiment(
             py_versions=[
                 PyPy(3, 9),
             ],
@@ -390,7 +451,7 @@ with change_dir(PERF_DIR):
         )
 
     if 0:
-        run_experiments(
+        run_experiment(
             py_versions=[
                 PyPy(3, 9),
             ],
