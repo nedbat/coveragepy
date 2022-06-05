@@ -159,6 +159,7 @@ class ToxProject(ProjectToTest):
         return self.run_tox(env, env.pyver.toxenv, "--skip-pkg-install")
 
     def run_with_coverage(self, env, pip_args, cov_options):
+        assert not cov_options, f"ToxProject.run_with_coverage can't take cov_options={cov_options!r}"
         self.run_tox(env, env.pyver.toxenv, "--notest")
         env.shell.run_command(
             f".tox/{env.pyver.toxenv}/bin/python -m pip install {pip_args}"
@@ -286,6 +287,16 @@ class AdHocPython(PyVersion):
         self.slug = slug
         self.toxenv = None
 
+@dataclasses.dataclass
+class Coverage:
+    """A version of coverage.py to use, maybe None."""
+    # Short word for messages, directories, etc
+    slug: str
+    # Arguments for "pip install ..."
+    pip_args: Optional[str] = None
+    # Tweaks to the .coveragerc file
+    options: Optional[str] = None
+
 
 @dataclasses.dataclass
 class Env:
@@ -296,67 +307,78 @@ class Env:
     shell: ShellSession
 
 
-def run_experiment(
-    py_versions: List[PyVersion],
-    cov_versions: List[Tuple[str, Optional[str], Optional[str]]],
-    projects: List[ProjectToTest],
-    num_runs: int = 3,
-    rows: Optional[List[str]] = None,
-    column: Optional[str] = None,
-    ratios: Iterable[Tuple[str, str, str]] = (),
-):
-    """Run test suites under different conditions."""
+ResultData = Dict[Tuple[str, str, str], float]
 
-    result_data: Dict[Tuple[str, str, str], float] = {}
-    results = []
-    for proj in projects:
-        print(f"Testing with {proj.slug}")
-        with ShellSession(f"output_{proj.slug}.log") as shell:
-            proj.get_source(shell)
+class Experiment:
+    """A particular time experiment to run."""
 
-            for pyver in py_versions:
-                print(f"Making venv for {proj.slug} {pyver.slug}")
-                venv_dir = f"venv_{proj.slug}_{pyver.slug}"
-                shell.run_command(f"{pyver.command} -m venv {venv_dir}")
-                python = Path.cwd() / f"{venv_dir}/bin/python"
-                shell.run_command(f"{python} -V")
-                env = Env(pyver, python, shell)
+    def __init__(
+        self,
+        py_versions: List[PyVersion],
+        cov_versions: List[Coverage],
+        projects: List[ProjectToTest],
+    ):
+        self.py_versions = py_versions
+        self.cov_versions = cov_versions
+        self.projects = projects
+        self.result_data: ResultData = {}
 
-                with change_dir(Path(proj.slug)):
-                    print(f"Prepping for {proj.slug} {pyver.slug}")
-                    proj.prep_environment(env)
-                    for cov_slug, cov_pip, cov_options in cov_versions:
-                        durations = []
-                        for run_num in range(num_runs):
-                            print(
-                                f"Running tests, cov={cov_slug}, {run_num+1} of {num_runs}"
+    def run(self, num_runs: int = 3) -> None:
+        results = []
+        for proj in self.projects:
+            print(f"Testing with {proj.slug}")
+            with ShellSession(f"output_{proj.slug}.log") as shell:
+                proj.get_source(shell)
+
+                for pyver in self.py_versions:
+                    print(f"Making venv for {proj.slug} {pyver.slug}")
+                    venv_dir = f"venv_{proj.slug}_{pyver.slug}"
+                    shell.run_command(f"{pyver.command} -m venv {venv_dir}")
+                    python = Path.cwd() / f"{venv_dir}/bin/python"
+                    shell.run_command(f"{python} -V")
+                    env = Env(pyver, python, shell)
+
+                    with change_dir(Path(proj.slug)):
+                        print(f"Prepping for {proj.slug} {pyver.slug}")
+                        proj.prep_environment(env)
+                        for cov_ver in self.cov_versions:
+                            durations = []
+                            for run_num in range(num_runs):
+                                print(
+                                    f"Running tests, cov={cov_ver.slug}, {run_num+1} of {num_runs}"
+                                )
+                                if cov_ver.pip_args is None:
+                                    dur = proj.run_no_coverage(env)
+                                else:
+                                    dur = proj.run_with_coverage(
+                                        env, cov_ver.pip_args, cov_ver.options,
+                                    )
+                                print(f"Tests took {dur:.3f}s")
+                                durations.append(dur)
+                            med = statistics.median(durations)
+                            result = (
+                                f"Median for {proj.slug}, {pyver.slug}, "
+                                + f"cov={cov_ver.slug}: {med:.3f}s"
                             )
-                            if cov_pip is None:
-                                dur = proj.run_no_coverage(env)
-                            else:
-                                dur = proj.run_with_coverage(env, cov_pip, cov_options)
-                            print(f"Tests took {dur:.3f}s")
-                            durations.append(dur)
-                        med = statistics.median(durations)
-                        result = (
-                            f"Median for {proj.slug}, {pyver.slug}, "
-                            + f"cov={cov_slug}: {med:.3f}s"
-                        )
-                        print(f"## {result}")
-                        results.append(result)
-                        result_key = (proj.slug, pyver.slug, cov_slug)
-                        result_data[result_key] = med
+                            print(f"## {result}")
+                            results.append(result)
+                            result_key = (proj.slug, pyver.slug, cov_ver.slug)
+                            self.result_data[result_key] = med
 
-    print("# Results")
-    for result in results:
-        print(result)
+        print("# Results")
+        for result in results:
+            print(result)
 
-    if rows:
-        assert column
+    def show_results(
+        self,
+        rows: List[str],
+        column: str,
+        ratios: Iterable[Tuple[str, str, str]] = (),
+    ) -> None:
         dimensions = {
-            "cov": [cov_slug for cov_slug, _, _ in cov_versions],
-            "pyver": [pyver.slug for pyver in py_versions],
-            "proj": [proj.slug for proj in projects],
+            "cov": [cov_ver.slug for cov_ver in self.cov_versions],
+            "pyver": [pyver.slug for pyver in self.py_versions],
+            "proj": [proj.slug for proj in self.projects],
         }
 
         table_axes = [dimensions[rowname] for rowname in rows]
@@ -381,12 +403,12 @@ def run_experiment(
             for col in dimensions[column]:
                 key = (*tup, col)
                 key = tuple(key[i] for i in remap)
-                result_time = result_data[key]
+                result_time = self.result_data[key]     # type: ignore
                 row.append(f"{result_time:.3f} s")
                 col_data[col] = result_time
             for _, num, denom in ratios:
                 ratio = col_data[num] / col_data[denom]
-                row.append(f"{ratio:.3f}")
+                row.append(f"{int(ratio * 100):d}%")
             print(as_table_row(row))
 
 
@@ -399,16 +421,16 @@ rmrf(PERF_DIR)
 with change_dir(PERF_DIR):
 
     if 1:
-        run_experiment(
+        exp = Experiment(
             py_versions=[
                 Python(3, 10),
                 Python(3, 11),
-                AdHocPython("/usr/local/cpython", "gh93493"),
+                #AdHocPython("/usr/local/cpython", "gh93493"),
             ],
             cov_versions=[
-                ("none", None, None),
-                ("6.4.1", "coverage==6.4.1", ""),
-                # (
+                Coverage("none"),
+                Coverage("6.4.1", "coverage==6.4.1"),
+                # Coverage(
                 #     "tip timid",
                 #     "git+https://github.com/nedbat/coveragepy.git@master",
                 #     "timid=True",
@@ -421,24 +443,26 @@ with change_dir(PERF_DIR):
                 SlipcoverBenchmark("bm_sudoku.py"),
                 SlipcoverBenchmark("bm_spectral_norm.py"),
             ],
-            num_runs=3,
+        )
+        exp.run(num_runs=3)
+        exp.show_results(
             rows=["cov", "proj"],
             column="pyver",
             ratios=[
                 ("3.11 vs 3.10", "python3.11", "python3.10"),
-                ("fix vs 3.10", "gh93493", "python3.10"),
+                #("fix vs 3.10", "gh93493", "python3.10"),
             ],
         )
 
     if 0:
-        run_experiment(
+        exp = Experiment(
             py_versions=[
                 PyPy(3, 9),
             ],
             cov_versions=[
-                ("none", None, None),
-                ("6.4", "coverage==6.4", ""),
-                (
+                Coverage("none", None, None),
+                Coverage("6.4", "coverage==6.4", ""),
+                Coverage(
                     "PR 1381",
                     "git+https://github.com/cfbolz/coveragepy.git@f_trace_lines",
                     "",
@@ -447,21 +471,21 @@ with change_dir(PERF_DIR):
             projects=[
                 ProjectPytestHtml(),
             ],
-            num_runs=3,
         )
+        exp.run(num_runs=3)
 
     if 0:
-        run_experiment(
+        exp = Experiment(
             py_versions=[
                 PyPy(3, 9),
             ],
             cov_versions=[
-                ("none", None, None),
-                ("6.4", "coverage", ""),
-                ("tip", "git+https://github.com/nedbat/coveragepy.git@master", ""),
+                Coverage("none", None, None),
+                Coverage("6.4", "coverage", ""),
+                Coverage("tip", "git+https://github.com/nedbat/coveragepy.git@master", ""),
             ],
             projects=[
                 AdHocProject("/src/bugs/bug1339/bug1339.py"),
             ],
-            num_runs=7,
         )
+        exp.run(num_runs=7)
