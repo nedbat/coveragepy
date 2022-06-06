@@ -37,7 +37,10 @@
 #define MyFrame_GetCode(f)      ((f)->f_code)
 #endif
 
-#if PY_VERSION_HEX >= 0x030B00A7
+#if PY_VERSION_HEX >= 0x030B00B1
+#define MyCode_GetCode(co)      (PyCode_GetCode(co))
+#define MyCode_FreeCode(code)   Py_XDECREF(code)
+#elif PY_VERSION_HEX >= 0x030B00A7
 #define MyCode_GetCode(co)      (PyObject_GetAttrString((PyObject *)(co), "co_code"))
 #define MyCode_FreeCode(code)   Py_XDECREF(code)
 #else
