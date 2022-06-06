@@ -297,6 +297,14 @@ class Coverage:
     # Tweaks to the .coveragerc file
     options: Optional[str] = None
 
+class CoveragePR(Coverage):
+    """A version of coverage.py from a pull request."""
+    def __init__(self, number, options=None):
+        super().__init__(
+            slug=f"#{number}",
+            pip_args=f"git+https://github.com/nedbat/coveragepy.git@refs/pull/{number}/merge",
+            options=options,
+        )
 
 @dataclasses.dataclass
 class Env:
@@ -421,6 +429,29 @@ rmrf(PERF_DIR)
 with change_dir(PERF_DIR):
 
     if 1:
+        exp = Experiment(
+            py_versions=[
+                Python(3, 11),
+            ],
+            cov_versions=[
+                Coverage("6.4.1", "coverage==6.4.1"),
+                CoveragePR(1394),
+            ],
+            projects=[
+                AdHocProject("/src/bugs/bug1339/bug1339.py"),
+                SlipcoverBenchmark("bm_sudoku.py"),
+                SlipcoverBenchmark("bm_spectral_norm.py"),
+            ],
+        )
+        exp.run(num_runs=5)
+        exp.show_results(
+            rows=["pyver", "proj"],
+            column="cov",
+            ratios=[
+                ("#1394 vs 6.4.1", "#1394", "6.4.1"),
+            ],
+        )
+    if 0:
         exp = Experiment(
             py_versions=[
                 Python(3, 10),
