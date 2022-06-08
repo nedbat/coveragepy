@@ -60,7 +60,7 @@ future==0.18.2
     #   pycontracts
 greenlet==1.1.2
     # via -r requirements/dev.in
-hypothesis==6.46.11
+hypothesis==6.47.0
     # via -r requirements/pytest.pip
 idna==3.3
     # via requests
@@ -129,7 +129,7 @@ pygments==2.12.0
     #   pudb
     #   readme-renderer
     #   rich
-pylint==2.14.0
+pylint==2.14.1
     # via -r requirements/dev.in
 pyparsing==3.0.9
     # via
@@ -233,7 +233,7 @@ pip==22.0.4
     # via
     #   -c requirements/pins.pip
     #   -r requirements/pip.pip
-setuptools==62.3.2
+setuptools==62.3.3
     # via
     #   astroid
     #   check-manifest

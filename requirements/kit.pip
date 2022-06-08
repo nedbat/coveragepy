@@ -14,7 +14,7 @@ build==0.8.0
     # via -r requirements/kit.in
 certifi==2022.5.18.1
     # via cibuildwheel
-cibuildwheel==2.6.0
+cibuildwheel==2.6.1
     # via -r requirements/kit.in
 filelock==3.7.1
     # via cibuildwheel
@@ -52,5 +52,5 @@ zipp==3.8.0
     #   pep517
 
 # The following packages are considered to be unsafe in a requirements file:
-setuptools==62.3.2
+setuptools==62.3.3
     # via -r requirements/kit.in

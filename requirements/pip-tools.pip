@@ -30,5 +30,5 @@ pip==22.0.4
     # via
     #   -c requirements/pins.pip
     #   pip-tools
-setuptools==62.3.2
+setuptools==62.3.3
     # via pip-tools
