@@ -1064,7 +1064,7 @@ class SqliteDb(SimpleReprMixin):
         except sqlite3.Error as exc:
             raise DataError(f"Couldn't use data file {self.filename!r}: {exc}") from exc
 
-        self.con.create_function("REGEXP", 2, _regexp)
+        self.con.create_function("REGEXP", 2, lambda txt, pat: re.search(txt, pat) is not None)
 
         # This pragma makes writing faster. It disables rollbacks, but we never need them.
         # PyPy needs the .close() calls here, or sqlite gets twisted up:
@@ -1181,8 +1181,3 @@ class SqliteDb(SimpleReprMixin):
     def dump(self):
         """Return a multi-line string, the SQL dump of the database."""
         return "\n".join(self.con.iterdump())
-
-
-def _regexp(text, pattern):
-    """A regexp function for SQLite."""
-    return re.search(text, pattern) is not None
