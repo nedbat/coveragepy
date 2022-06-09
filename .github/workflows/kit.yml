@@ -134,7 +134,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: "Install Python 3.8"
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v4
         with:
           python-version: "3.8"
           cache: pip
@@ -171,7 +171,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: "Install Python 3.8"
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v4
         with:
           python-version: "3.8"
           cache: pip
@@ -203,7 +203,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: "Install PyPy"
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v4
         with:
           # PYVERSIONS
           python-version: "pypy-3.7"
