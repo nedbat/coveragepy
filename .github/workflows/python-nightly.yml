@@ -54,7 +54,7 @@ jobs:
           python-version: "${{ matrix.python-version }}"
 
       - name: "Install ${{ matrix.python-version }} with setup-python"
-        uses: "actions/setup-python@v3"
+        uses: "actions/setup-python@v4"
         if: "startsWith(matrix.python-version, 'pypy-')"
         with:
           python-version: "${{ matrix.python-version }}"
