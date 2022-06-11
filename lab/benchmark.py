@@ -306,6 +306,25 @@ class CoveragePR(Coverage):
             options=options,
         )
 
+class CoverageCommit(Coverage):
+    """A version of coverage.py from a specific commit."""
+    def __init__(self, sha, options=None):
+        super().__init__(
+            slug=sha,
+            pip_args=f"git+https://github.com/nedbat/coveragepy.git@{sha}",
+            options=options,
+        )
+
+class CoverageSource(Coverage):
+    """The coverage.py in a working tree."""
+    def __init__(self, directory, options=None):
+        super().__init__(
+            slug="source",
+            pip_args=directory,
+            options=options,
+        )
+
+
 @dataclasses.dataclass
 class Env:
     """An environment to run a test suite in."""
@@ -416,7 +435,7 @@ class Experiment:
                 col_data[col] = result_time
             for _, num, denom in ratios:
                 ratio = col_data[num] / col_data[denom]
-                row.append(f"{int(ratio * 100):d}%")
+                row.append(f"{ratio * 100:.2f}%")
             print(as_table_row(row))
 
 
@@ -429,6 +448,29 @@ rmrf(PERF_DIR)
 with change_dir(PERF_DIR):
 
     if 1:
+        exp = Experiment(
+            py_versions=[
+                Python(3, 11),
+            ],
+            cov_versions=[
+                CoverageCommit("0b749007"),
+                CoverageSource("~/coverage/trunk"),
+            ],
+            projects=[
+                AdHocProject("/src/bugs/bug1339/bug1339.py"),
+                SlipcoverBenchmark("bm_sudoku.py"),
+                SlipcoverBenchmark("bm_spectral_norm.py"),
+            ],
+        )
+        exp.run(num_runs=31)
+        exp.show_results(
+            rows=["pyver", "proj"],
+            column="cov",
+            ratios=[
+                ("compare", "source", "0b749007"),
+            ],
+        )
+    if 0:
         exp = Experiment(
             py_versions=[
                 Python(3, 11),
