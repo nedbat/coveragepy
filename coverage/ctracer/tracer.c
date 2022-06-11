@@ -363,8 +363,17 @@ CTracer_handle_call(CTracer *self, PyFrameObject *frame)
     }
 
     /* Check if we should trace this line. */
+    static PyObject * filename_cache = NULL;
+    static PyObject * disposition_cache = NULL;
+
     filename = MyFrame_GetCode(frame)->co_filename;
-    disposition = PyDict_GetItem(self->should_trace_cache, filename);
+    if (filename == filename_cache) {
+        STATS( self->stats.filename_cache_hits++; )
+        disposition = disposition_cache;
+    }
+    else {
+        disposition = PyDict_GetItem(self->should_trace_cache, filename);
+    }
     if (disposition == NULL) {
         if (PyErr_Occurred()) {
             goto error;
@@ -385,6 +394,12 @@ CTracer_handle_call(CTracer *self, PyFrameObject *frame)
     }
     else {
         Py_INCREF(disposition);
+        Py_XDECREF(filename_cache);
+        filename_cache = filename;
+        Py_INCREF(filename_cache);
+        Py_XDECREF(disposition_cache);
+        disposition_cache = disposition;
+        Py_INCREF(disposition_cache);
     }
 
     if (disposition == Py_None) {
@@ -1013,7 +1028,7 @@ CTracer_get_stats(CTracer *self, PyObject *args_unused)
 {
 #if COLLECT_STATS
     return Py_BuildValue(
-        "{sI,sI,sI,sI,sI,sI,si,sI,sI,sI}",
+        "{sI,sI,sI,sI,sI,sI,si,sI,sI,sI,sI}",
         "calls", self->stats.calls,
         "lines", self->stats.lines,
         "returns", self->stats.returns,
@@ -1023,6 +1038,7 @@ CTracer_get_stats(CTracer *self, PyObject *args_unused)
         "stack_alloc", self->pdata_stack->alloc,
         "errors", self->stats.errors,
         "pycalls", self->stats.pycalls,
+        "filename_cache_hits", self->stats.filename_cache_hits,
         "start_context_calls", self->stats.start_context_calls
         );
 #else
