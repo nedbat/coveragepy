@@ -20,7 +20,11 @@ development at the same time, such as 4.5.x and 5.0.
 Unreleased
 ----------
 
-Nothing yet.
+- Internal debugging data added to sys.modules is now an actual module, to
+  avoid confusing code that examines everything in sys.modules.  Thanks,
+  Yilei Yang (`pull 1399`_).
+
+.. _pull 1399: https://github.com/nedbat/coveragepy/pull/1399
 
 
 .. _changes_6-4-1:
