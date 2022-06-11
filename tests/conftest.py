@@ -47,6 +47,12 @@ def set_warnings():
 
     warnings.filterwarnings(
         "ignore",
+        category=DeprecationWarning,
+        message=r"module 'sre_constants' is deprecated",
+    )
+
+    warnings.filterwarnings(
+        "ignore",
         category=pytest.PytestRemovedIn8Warning,
     )
 
