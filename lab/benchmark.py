@@ -412,8 +412,9 @@ class Experiment:
         data_order = [*rows, column]
         remap = [data_order.index(datum) for datum in ["proj", "pyver", "cov"]]
 
+        WIDTH = 20
         def as_table_row(vals):
-            return "| " + " | ".join(vals) + " |"
+            return "| " + " | ".join(v.ljust(WIDTH) for v in vals) + " |"
 
         header = []
         header.extend(rows)
@@ -422,7 +423,8 @@ class Experiment:
 
         print()
         print(as_table_row(header))
-        print("|----" * len(header) + "|")
+        dashes = [":---"] * len(rows) + ["---:"] * (len(header) - len(rows))
+        print(as_table_row(dashes))
         for tup in itertools.product(*table_axes):
             row = []
             row.extend(tup)
