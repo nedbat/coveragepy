@@ -453,6 +453,29 @@ with change_dir(PERF_DIR):
         exp = Experiment(
             py_versions=[
                 Python(3, 11),
+                AdHocPython("/usr/local/cpython", "gh93818"),
+            ],
+            cov_versions=[
+                Coverage("6.4.1", "coverage==6.4.1"),
+            ],
+            projects=[
+                AdHocProject("/src/bugs/bug1339/bug1339.py"),
+                SlipcoverBenchmark("bm_sudoku.py"),
+                SlipcoverBenchmark("bm_spectral_norm.py"),
+            ],
+        )
+        exp.run(num_runs=3)
+        exp.show_results(
+            rows=["cov", "proj"],
+            column="pyver",
+            ratios=[
+                ("93818 vs 3.11", "gh93818", "python3.11"),
+            ],
+        )
+    if 0:
+        exp = Experiment(
+            py_versions=[
+                Python(3, 11),
             ],
             cov_versions=[
                 CoverageCommit("0b749007"),
