@@ -26,7 +26,7 @@ def set_relative_directory():
 
     # The current directory
     abs_curdir = abs_file(os.curdir)
-    if abs_curdir != os.sep:
+    if not abs_curdir.endswith(os.sep):
         # Suffix with separator only if not at the system root
         abs_curdir = abs_curdir + os.sep
 
