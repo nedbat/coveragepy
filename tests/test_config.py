@@ -28,6 +28,14 @@ class ConfigTest(CoverageTest):
         assert not cov.config.branch
         assert cov.config.data_file == ".coverage"
 
+    def test_bad_glob_arguments(self):
+        # Arguments to the constructor are applied to the configuration.
+        cov = coverage.Coverage(timid=True, data_file="badglob[b-a].dat", concurrency="multiprocessing")
+        assert cov.config.timid
+        assert not cov.config.branch
+        assert cov.config.data_file == "fooey.dat"
+        assert cov.config.concurrency == ["multiprocessing"]
+
     def test_arguments(self):
         # Arguments to the constructor are applied to the configuration.
         cov = coverage.Coverage(timid=True, data_file="fooey.dat", concurrency="multiprocessing")
