@@ -428,4 +428,4 @@ class WindowsFileTest(CoverageTest):
     run_in_temp_dir = False
 
     def test_actual_path(self):
-        assert actual_path(r'c:\Windows') == actual_path(r'C:\wINDOWS')
+        assert actual_path(r'c:/Windows') == actual_path(r'C:\wINDOWS')
