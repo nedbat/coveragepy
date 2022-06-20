@@ -133,6 +133,7 @@ if env.WINDOWS:
                     tail = f
                     break
             actpath = os.path.join(head, tail)
+        actpath.replace("\\", "/")
         _ACTUAL_PATH_CACHE[path] = actpath
         return actpath
 
