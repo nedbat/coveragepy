@@ -343,6 +343,7 @@ class PathAliases:
         match an entire tree, and not just its root.
 
         """
+        pattern = pattern.replace("\\", "/")
         pattern_sep = sep(pattern)
 
         if len(pattern) > 1:
