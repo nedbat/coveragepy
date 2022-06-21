@@ -384,6 +384,7 @@ class CoverageData(SimpleReprMixin):
         If filename is not in the database yet, add it if `add` is True.
         If `add` is not True, return None.
         """
+        filename = filename.replace("\\", "/")
         if filename not in self._file_map:
             if add:
                 with self._connect() as con:
