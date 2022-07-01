@@ -389,7 +389,7 @@ class CoverageConfig:
 
         # [html]
         ('extra_css', 'html:extra_css'),
-        ('dark_theme', 'html:dark_theme'),
+        ('dark_theme', 'html:dark_theme', 'boolean'),
         ('html_dir', 'html:directory'),
         ('html_skip_covered', 'html:skip_covered', 'boolean'),
         ('html_skip_empty', 'html:skip_empty', 'boolean'),
