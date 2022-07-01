@@ -8,6 +8,9 @@
     <title>Coverage for {{relative_filename|escape}}: {{nums.pc_covered_str}}%</title>
     <link rel="icon" sizes="32x32" href="favicon_32.png">
     <link rel="stylesheet" href="style.css" type="text/css">
+    {% if dark_theme %}
+        <link rel="stylesheet" href="dark.css" type="text/css">
+    {% endif %}
     {% if extra_css %}
         <link rel="stylesheet" href="{{ extra_css }}" type="text/css">
     {% endif %}
