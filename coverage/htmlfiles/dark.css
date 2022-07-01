@@ -49,6 +49,8 @@ body {
 	--line-grey-border: #7683904d;
 	--line-grey-hover: #76839098;
 
+	--line-blue:  #4184e426;
+
 	--outline: #539bf5;
 
 	--overlay: #2d333b;
@@ -303,4 +305,11 @@ body.indexfile #filter_container {
 a:active, a:focus {
 	outline: 2px solid var(--outline);
 	outline-offset: -2px;
+}
+
+#source p .ctxs,
+#source p input:checked ~ .r label.ctx,
+#source p input ~ .r label.ctx:hover {
+	background-color: var(--line-blue);
+	color: var(--color);
 }
