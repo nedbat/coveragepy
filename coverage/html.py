@@ -164,6 +164,8 @@ class HtmlReporter:
             self.extra_css = os.path.basename(self.config.extra_css)
         else:
             self.extra_css = None
+        
+        self.dark_theme = self.config.dark_theme
 
         self.data = self.coverage.get_data()
         self.has_arcs = self.data.has_arcs()
@@ -189,6 +191,7 @@ class HtmlReporter:
             'title': title,
             'time_stamp': format_local_datetime(datetime.datetime.now()),
             'extra_css': self.extra_css,
+            'dark_theme': self.dark_theme,
             'has_arcs': self.has_arcs,
             'show_contexts': self.config.show_contexts,
 
@@ -265,6 +268,10 @@ class HtmlReporter:
         # The files we provide must always be copied.
         for static in self.STATIC_FILES:
             shutil.copyfile(data_filename(static), os.path.join(self.directory, static))
+        
+        # If dark theme is on, copy the corresponding css file
+        if self.config.dark_theme:
+            shutil.copyfile(data_filename("dark.css"), os.path.join(self.directory, "dark.css"))
 
         # Only write the .gitignore file if the directory was originally empty.
         # .gitignore can't be copied from the source tree because it would
