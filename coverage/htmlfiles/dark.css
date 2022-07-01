@@ -292,6 +292,10 @@ body.indexfile header .content .text {
     flex-basis: 100%;
 }
 
+header p.text {
+    color: var(--color);
+}
+
 body.indexfile #help_panel_wrapper {
 	float: initial;
 	order: 1;
