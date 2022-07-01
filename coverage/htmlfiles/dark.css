@@ -1,0 +1,299 @@
+:root {
+	color-scheme: dark;
+}
+
+body {
+	--bg: #22272e;
+	--bg2: #2d333b;
+	--border: #444c56;
+	--color: #adbac7;
+	--comment: #768390;
+	--string: #96d0ff;
+	--keyword: #f47067;
+
+	--variable: #f69d50;
+
+	--green: #57ab5a;
+	--yellow: #c69026;
+	--red: #c93c37;
+	--grey: #373e47;
+
+	--green-active: #8ddb8c;
+	--yellow-active: #eac55f;
+	--red-active: #f47067;
+	--grey-active: #545d68;
+
+	--btn-border: #cdd9e51a;
+
+	--green-txt: #ffffff;
+	--yellow-txt: #444;
+	--red-txt: #222;
+	--grey-txt: #adbac7;
+
+	--footer: #768390;
+	--hover: #ae7c1426;
+
+	--line-green: #57ab5a26;
+	--line-green-border: #57ab5a4d;
+	--line-green-hover: #57ab5a98;
+
+	--line-yellow: #ae7c1426;
+	--line-yellow-border: #ae7c144d;
+	--line-yellow-hover: #ae7c1498;
+
+	--line-red: #e5534b26;
+	--line-red-border: #e5534b4d;
+	--line-red-hover: #e5534b98;
+
+	--line-grey: #76839026;
+	--line-grey-border: #7683904d;
+	--line-grey-hover: #76839098;
+
+	--outline: #539bf5;
+
+	--overlay: #2d333b;
+	--border-kbd: #636e7b66;
+
+	--highlight: #ffd54f52;
+}
+
+body {
+	background-color: var(--bg);
+	color: var(--color);
+	font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji";
+}
+html > body {
+	font-size: 12px;
+}
+
+html > body.indexfile {
+	font-size: 16px;
+}
+
+p {
+	font-size: inherit;
+	line-height: 20px;
+}
+
+#source {
+	font-family: SFMono-Regular,SF Mono,Menlo,Consolas,Liberation Mono,monospace;
+}
+
+#scroll_marker {
+	background-color: var(--bg);
+	border-color: var(--border);
+}
+
+#scroll_marker .marker {
+	background-color: var(--border);
+}
+
+header {
+	background-color: var(--bg2);
+	border-bottom-color: var(--border);
+}
+
+header.sticky {
+	height: unset;
+}
+
+#source p .t .com {
+	color: var(--comment);
+}
+
+#source p .t .key {
+	color: var(--keyword);
+	font-weight: normal;
+}
+
+#source p .t .str {
+	color: var(--string);
+}
+
+header button {
+	padding: 5px 16px;
+	font-size: 14px;
+	font-weight: 500;
+	line-height: 20px;
+	vertical-align: middle;
+	border: 1px solid;
+	border-radius: 6px;
+	appearance: none;
+}
+
+header button.run {
+	background-color: var(--green);
+	color: var(--green-txt);
+	border-color: var(--btn-border);
+}
+
+header button.mis {
+	background-color: var(--red);
+	color: var(--red-txt);
+	border-color: var(--btn-border);
+}
+
+header button.exc {
+	background-color: var(--grey);
+	color: var(--grey-txt);
+	border-color: var(--btn-border);
+}
+
+header button.par {
+	background-color: var(--yellow);
+	color: var(--yellow-txt);
+	border-color: var(--btn-border);
+}
+
+header button.run.show_run {
+	background-color: var(--green-active);
+	border-color: var(--btn-border);
+}
+
+header button.mis.show_mis {
+	background-color: var(--red-active);
+	border-color: var(--btn-border);
+}
+
+header button.exc.show_exc {
+	background-color: var(--grey-active);
+	border-color: var(--btn-border);
+}
+
+header button.par.show_par {
+	background-color: var(--yellow-active);
+	border-color: var(--btn-border);
+}
+
+header button:active, header button:focus {
+	outline: 2px solid var(--outline);
+	outline-offset: -2px;
+}
+
+footer .content {
+	color: var(--footer);
+}
+
+#source p .t:hover {
+	background-color: var(--hover);
+}
+
+#source p .t { border-left-color: var(--border); }
+#source p.run .t { border-left-color: var(--line-green-border); }
+#source p.mis .t { border-left-color: var(--line-red-border); }
+#source p.exc .t { border-left-color: var(--line-grey-border); }
+#source p.par .t { border-left-color: var(--line-yellow-border); }
+
+#source p.run.show_run .t { background-color: var(--line-green); }
+#source p.mis.show_mis .t { background-color: var(--line-red); }
+#source p.exc.show_exc .t { background-color: var(--line-grey); }
+#source p.par.show_par .t { background-color: var(--line-yellow); }
+
+#source p.run.show_run .t:hover { background-color: var(--line-green-hover); }
+#source p.mis.show_mis .t:hover { background-color: var(--line-red-hover); }
+#source p.exc.show_exc .t:hover { background-color: var(--line-grey-hover); }
+#source p.par.show_par .t:hover { background-color: var(--line-yellow-hover); }
+
+#help_panel, #source p .annotate.long {
+	background-color: var(--overlay);
+	border-radius: 6px;
+	border-color: var(--border);
+	color: var(--color);
+	padding: 8px 16px;
+}
+
+#help_panel_state + label {
+	cursor: pointer;
+}
+
+kbd {
+	color: var(--color);
+    background-color: var(--bg2);
+	display: inline-block;
+    padding: 3px 5px;
+    font: 11px ui-monospace,SFMono-Regular,SF Mono,Menlo,Consolas,Liberation Mono,monospace;
+    line-height: 10px;
+    vertical-align: middle;
+    border: 1px solid var(--border-kbd);
+    border-radius: 6px;
+    box-shadow: inset 0 -1px 0 var(--border-kbd);
+}
+
+#help_panel .legend {
+	font-size: 12px;
+	font-weight: 600;
+}
+
+#source p .n.highlight {
+	background-color: var(--highlight);
+}
+
+
+#index th {
+	color: var(--color);
+}
+
+#filter_container input {
+	width: 10em;
+	font-size: 14px;
+	line-height: 20px;
+	padding: 5px 12px;
+	color: var(--color);
+	border: 2px solid var(--border);
+	background-color: var(--bg);
+	border-radius: 6px;
+	vertical-align: middle;
+	transition: 80ms cubic-bezier(0.33, 1, 0.68, 1);
+    transition-property: color,background-color,box-shadow,border-color;
+}
+
+#filter_container input:focus:not(:focus-visible) {
+	border-color: var(--outline);
+	outline: none;
+	box-shadow: inset 0 0 0 1px transparent;
+}
+
+#filter_container input:focus-visible {
+	border-color: var(--outline);
+	outline: none;
+	box-shadow: inset 0 0 0 1px var(--outline);
+}
+
+#index th:hover, #index tr.file:hover {
+	background-color: var(--bg2);
+}
+
+#index th[aria-sort="ascending"], #index th[aria-sort="descending"] {
+	background-color: var(--bg2);
+}
+
+#index td, #index th {
+	border-bottom-color: var(--border);
+	padding: 8px;
+}
+
+body.indexfile header .content {
+	display: flex;
+	align-items: center;
+	padding: 16px;
+	gap: 16px;
+}
+
+body.indexfile header .content h1 {
+	flex-grow: 1;
+}
+
+body.indexfile #help_panel_wrapper {
+	float: initial;
+	order: 1;
+}
+
+body.indexfile #filter_container {
+	float: initial;
+	margin: 0;
+}
+
+a:active, a:focus {
+	outline: 2px solid var(--outline);
+	outline-offset: -2px;
+}
