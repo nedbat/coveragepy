@@ -277,10 +277,17 @@ body.indexfile header .content {
 	align-items: center;
 	padding: 16px;
 	gap: 16px;
+    flex-wrap: wrap;
 }
 
 body.indexfile header .content h1 {
 	flex-grow: 1;
+}
+
+body.indexfile header .content .text {
+    margin: 0;
+    order: 2;
+    flex-basis: 100%;
 }
 
 body.indexfile #help_panel_wrapper {
