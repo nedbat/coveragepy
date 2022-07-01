@@ -218,6 +218,7 @@ class CoverageConfig:
         self.html_skip_empty = None
         self.html_title = "Coverage report"
         self.show_contexts = False
+        self.dark_theme = False
 
         # Defaults for [xml]
         self.xml_output = "coverage.xml"
