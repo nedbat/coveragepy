@@ -164,7 +164,7 @@ class HtmlReporter:
             self.extra_css = os.path.basename(self.config.extra_css)
         else:
             self.extra_css = None
-        
+
         self.dark_theme = self.config.dark_theme
 
         self.data = self.coverage.get_data()
@@ -268,7 +268,7 @@ class HtmlReporter:
         # The files we provide must always be copied.
         for static in self.STATIC_FILES:
             shutil.copyfile(data_filename(static), os.path.join(self.directory, static))
-        
+
         # If dark theme is on, copy the corresponding css file
         if self.config.dark_theme:
             shutil.copyfile(data_filename("dark.css"), os.path.join(self.directory, "dark.css"))
