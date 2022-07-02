@@ -336,6 +336,7 @@ def do_check_eol():
     check_files("coverage", ["*.py"])
     check_files("coverage/ctracer", ["*.c", "*.h"])
     check_files("coverage/htmlfiles", ["*.html", "*.scss", "*.css", "*.js"])
+    check_files("coverage/htmlfiles/themes", ["*.scss", "*.css"])
     check_files("tests", ["*.py"])
     check_files("tests", ["*,cover"], trail_white=False)
     check_files("tests/js", ["*.js", "*.html"])
