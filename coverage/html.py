@@ -282,7 +282,9 @@ class HtmlReporter:
 
         # If a theme is set, copy the corresponding css file
         if self.theme:
-            shutil.copyfile(data_filename(os.path.join("themes", self.theme)), os.path.join(self.directory, self.theme))
+            shutil.copyfile(
+                data_filename(os.path.join("themes", self.theme)),
+                os.path.join(self.directory, self.theme))
 
         # Only write the .gitignore file if the directory was originally empty.
         # .gitignore can't be copied from the source tree because it would
