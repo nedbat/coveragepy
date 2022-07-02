@@ -218,7 +218,7 @@ class CoverageConfig:
         self.html_skip_empty = None
         self.html_title = "Coverage report"
         self.show_contexts = False
-        self.dark_theme = False
+        self.theme = None
 
         # Defaults for [xml]
         self.xml_output = "coverage.xml"
@@ -389,7 +389,7 @@ class CoverageConfig:
 
         # [html]
         ('extra_css', 'html:extra_css'),
-        ('dark_theme', 'html:dark_theme', 'boolean'),
+        ('theme', 'html:theme'),
         ('html_dir', 'html:directory'),
         ('html_skip_covered', 'html:skip_covered', 'boolean'),
         ('html_skip_empty', 'html:skip_empty', 'boolean'),

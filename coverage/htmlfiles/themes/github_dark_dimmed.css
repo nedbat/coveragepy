@@ -1,0 +1,86 @@
+/* Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0 */
+/* For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt */
+/* Don't edit this .css file. Edit the .scss file instead! */
+:root { color-scheme: dark; }
+
+body { background-color: #22272e; color: #adbac7; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji"; }
+
+html > body { font-size: 12px; }
+
+html > body.indexfile { font-size: 16px; }
+
+p { font-size: inherit; line-height: 20px; }
+
+a:active, a:focus { outline: 2px solid #539bf5; outline-offset: -2px; }
+
+body.indexfile header h1 { flex-grow: 1; }
+body.indexfile header .content { display: flex; align-items: center; padding: 16px; gap: 16px; flex-wrap: wrap; }
+body.indexfile header .content .text { margin: 0; order: 2; flex-basis: 100%; }
+
+header { background-color: #2d333b; border-bottom-color: #444c56; }
+header p.text { color: #adbac7; }
+header.sticky { height: unset; }
+header.sticky .text { display: none; }
+
+footer .content { color: #768390; }
+
+body.indexfile #filter_container { float: initial; margin: 0; }
+
+#filter_container input { width: 10em; font-size: 14px; line-height: 20px; padding: 5px 12px; color: #adbac7; border: 2px solid #444c56; background-color: #22272e; border-radius: 6px; vertical-align: middle; transition: 80ms cubic-bezier(0.33, 1, 0.68, 1); transition-property: color,background-color,box-shadow,border-color; }
+#filter_container input:focus:not(:focus-visible) { outline: none; box-shadow: inset 0 0 0 1px transparent; }
+#filter_container input:focus-visible { outline: none; box-shadow: inset 0 0 0 1px #539bf5; }
+
+header button { padding: 5px 16px; font-size: 14px; font-weight: 500; line-height: 20px; vertical-align: middle; border: 1px solid; border-radius: 6px; border-color: rgba(205, 217, 229, 0.1); appearance: none; }
+header button:active, header button:focus { outline: 2px solid #539bf5; outline-offset: -2px; }
+header button.run { background-color: #57ab5a; color: #ffffff; }
+header button.run.show_run { background-color: #8ddb8c; border-color: rgba(205, 217, 229, 0.1); }
+header button.mis { background-color: #c93c37; color: #222; }
+header button.mis.show_mis { background-color: #f47067; border-color: rgba(205, 217, 229, 0.1); }
+header button.exc { background-color: #373e47; color: #adbac7; }
+header button.exc.show_exc { background-color: #545d68; border-color: rgba(205, 217, 229, 0.1); }
+header button.par { background-color: #c69026; color: #444; }
+header button.par.show_par { background-color: #eac55f; border-color: rgba(205, 217, 229, 0.1); }
+
+#help_panel { background-color: #2d333b; border-radius: 6px; border-color: #444c56; color: #adbac7; padding: 8px 16px; }
+
+#help_panel_wrapper { float: initial; order: 1; }
+#help_panel_wrapper label { cursor: pointer; }
+
+#help_panel .legend { font-size: 12px; font-weight: 600; }
+
+kbd { color: #adbac7; background-color: #2d333b; display: inline-block; padding: 3px 5px; font: 11px ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace; line-height: 10px; vertical-align: middle; border: 1px solid rgba(99, 110, 123, 0.4); border-radius: 6px; box-shadow: inset 0 -1px 0 rgba(99, 110, 123, 0.4); }
+
+#source { font-family: SFMono-Regular, SF Mono, Menlo, Consolas, "Liberation Mono", monospace; }
+#source p .n.highlight { background-color: rgba(255, 213, 79, 0.3); }
+#source p .t { border-left-color: #444c56; }
+#source p .t:hover { background-color: rgba(174, 124, 20, 0.15); }
+#source p .t .com { color: #768390; }
+#source p .t .key { color: #f47067; font-weight: normal; }
+#source p .t .str { color: #96d0ff; }
+#source p.mis .t { border-left-color: rgba(229, 83, 75, 0.3); }
+#source p.mis.show_mis .t { background-color: rgba(229, 83, 75, 0.15); }
+#source p.mis.show_mis .t:hover { background-color: rgba(229, 83, 75, 0.6); }
+#source p.run .t { border-left-color: rgba(87, 171, 90, 0.3); }
+#source p.run.show_run .t { background-color: rgba(87, 171, 90, 0.15); }
+#source p.run.show_run .t:hover { background-color: rgba(87, 171, 90, 0.6); }
+#source p.exc .t { border-left-color: rgba(118, 131, 144, 0.3); }
+#source p.exc.show_exc .t { background-color: rgba(118, 131, 144, 0.15); }
+#source p.exc.show_exc .t:hover { background-color: rgba(118, 131, 144, 0.6); }
+#source p.par .t { border-left-color: rgba(174, 124, 20, 0.3); }
+#source p.par.show_par .t { background-color: rgba(174, 124, 20, 0.15); }
+#source p.par.show_par .t:hover { background-color: rgba(174, 124, 20, 0.6); }
+#source p .annotate { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji"; color: #adbac7; }
+#source p input ~ .r label.ctx:hover { background-color: rgba(65, 132, 228, 0.15); color: #adbac7; }
+#source p input:checked ~ .r label.ctx { background-color: rgba(65, 132, 228, 0.15); color: #adbac7; }
+#source p label.ctxt { color: #adbac7; }
+#source p .ctxs { background-color: rgba(65, 132, 228, 0.15); color: #adbac7; }
+
+#index { font-family: SFMono-Regular, SF Mono, Menlo, Consolas, "Liberation Mono", monospace; }
+#index td, #index th { border-bottom-color: #444c56; padding: 8px; }
+#index th { color: #adbac7; }
+#index th:hover, #index th[aria-sort="ascending"], #index th[aria-sort="descending"] { background-color: #2d333b; }
+#index tr.total td, #index tr.total_dynamic td { border-top-color: #444c56; }
+#index tr.file:hover { background-color: #2d333b; }
+
+#scroll_marker { background-color: #22272e; border-color: #444c56; }
+#scroll_marker .marker { background-color: #444c56; }
