@@ -255,10 +255,12 @@ header button {
 }
 
 // Help panel
-#help_panel_wrapper {
+body.indexfile #help_panel_wrapper {
     float: initial;
     order: 1;
+}
 
+#help_panel_wrapper {
     label {
         cursor: pointer;
     }

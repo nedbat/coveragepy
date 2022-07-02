@@ -43,7 +43,8 @@ header button.par.show_par { background-color: #eac55f; border-color: rgba(205, 
 
 #help_panel { background-color: #2d333b; border-radius: 6px; border-color: #444c56; color: #adbac7; padding: 8px 16px; }
 
-#help_panel_wrapper { float: initial; order: 1; }
+body.indexfile #help_panel_wrapper { float: initial; order: 1; }
+
 #help_panel_wrapper label { cursor: pointer; }
 
 #help_panel .legend { font-size: 12px; font-weight: 600; }
