@@ -7,6 +7,7 @@ import os
 import shutil
 import statistics
 import subprocess
+import sys
 import time
 from pathlib import Path
 
@@ -443,147 +444,48 @@ class Experiment:
 
 PERF_DIR = Path("/tmp/covperf")
 
+def run_experiment(
+    py_versions: List[PyVersion], cov_versions: List[Coverage], projects: List[ProjectToTest],
+    rows: List[str], column: str, ratios: Iterable[Tuple[str, str, str]] = (),
+):
+    slugs = [v.slug for v in py_versions + cov_versions + projects]
+    if len(set(slugs)) != len(slugs):
+        raise Exception(f"Slugs must be unique: {slugs}")
+    if any(" " in slug for slug in slugs):
+        raise Exception(f"No spaces in slugs please: {slugs}")
+    ratio_slugs = [rslug for ratio in ratios for rslug in ratio[1:]]
+    if any(rslug not in slugs for rslug in ratio_slugs):
+        raise Exception(f"Ratio slug doesn't match a slug: {ratio_slugs}, {slugs}")
 
-print(f"Removing and re-making {PERF_DIR}")
-rmrf(PERF_DIR)
+    print(f"Removing and re-making {PERF_DIR}")
+    rmrf(PERF_DIR)
 
-with change_dir(PERF_DIR):
+    with change_dir(PERF_DIR):
+        exp = Experiment(py_versions=py_versions, cov_versions=cov_versions, projects=projects)
+        exp.run(num_runs=int(sys.argv[1]))
+        exp.show_results(rows=rows, column=column, ratios=ratios)
 
-    if 1:
-        exp = Experiment(
-            py_versions=[
-                Python(3, 11),
-                AdHocPython("/usr/local/cpython", "gh93818"),
-            ],
-            cov_versions=[
-                Coverage("6.4.1", "coverage==6.4.1"),
-            ],
-            projects=[
-                AdHocProject("/src/bugs/bug1339/bug1339.py"),
-                SlipcoverBenchmark("bm_sudoku.py"),
-                SlipcoverBenchmark("bm_spectral_norm.py"),
-            ],
-        )
-        exp.run(num_runs=3)
-        exp.show_results(
-            rows=["cov", "proj"],
-            column="pyver",
-            ratios=[
-                ("93818 vs 3.11", "gh93818", "python3.11"),
-            ],
-        )
-    if 0:
-        exp = Experiment(
-            py_versions=[
-                Python(3, 11),
-            ],
-            cov_versions=[
-                CoverageCommit("0b749007"),
-                CoverageSource("~/coverage/trunk"),
-            ],
-            projects=[
-                AdHocProject("/src/bugs/bug1339/bug1339.py"),
-                SlipcoverBenchmark("bm_sudoku.py"),
-                SlipcoverBenchmark("bm_spectral_norm.py"),
-            ],
-        )
-        exp.run(num_runs=31)
-        exp.show_results(
-            rows=["pyver", "proj"],
-            column="cov",
-            ratios=[
-                ("compare", "source", "0b749007"),
-            ],
-        )
-    if 0:
-        exp = Experiment(
-            py_versions=[
-                Python(3, 11),
-            ],
-            cov_versions=[
-                Coverage("6.4.1", "coverage==6.4.1"),
-                CoveragePR(1394),
-            ],
-            projects=[
-                AdHocProject("/src/bugs/bug1339/bug1339.py"),
-                SlipcoverBenchmark("bm_sudoku.py"),
-                SlipcoverBenchmark("bm_spectral_norm.py"),
-            ],
-        )
-        exp.run(num_runs=5)
-        exp.show_results(
-            rows=["pyver", "proj"],
-            column="cov",
-            ratios=[
-                ("#1394 vs 6.4.1", "#1394", "6.4.1"),
-            ],
-        )
-    if 0:
-        exp = Experiment(
-            py_versions=[
-                Python(3, 10),
-                Python(3, 11),
-                #AdHocPython("/usr/local/cpython", "gh93493"),
-            ],
-            cov_versions=[
-                Coverage("none"),
-                Coverage("6.4.1", "coverage==6.4.1"),
-                # Coverage(
-                #     "tip timid",
-                #     "git+https://github.com/nedbat/coveragepy.git@master",
-                #     "timid=True",
-                # ),
-            ],
-            projects=[
-                # ProjectPytestHtml(),
-                #ProjectAttrs(),
-                AdHocProject("/src/bugs/bug1339/bug1339.py"),
-                SlipcoverBenchmark("bm_sudoku.py"),
-                SlipcoverBenchmark("bm_spectral_norm.py"),
-            ],
-        )
-        exp.run(num_runs=3)
-        exp.show_results(
-            rows=["cov", "proj"],
-            column="pyver",
-            ratios=[
-                ("3.11 vs 3.10", "python3.11", "python3.10"),
-                #("fix vs 3.10", "gh93493", "python3.10"),
-            ],
-        )
 
-    if 0:
-        exp = Experiment(
-            py_versions=[
-                PyPy(3, 9),
-            ],
-            cov_versions=[
-                Coverage("none", None, None),
-                Coverage("6.4", "coverage==6.4", ""),
-                Coverage(
-                    "PR 1381",
-                    "git+https://github.com/cfbolz/coveragepy.git@f_trace_lines",
-                    "",
-                ),
-            ],
-            projects=[
-                ProjectPytestHtml(),
-            ],
-        )
-        exp.run(num_runs=3)
-
-    if 0:
-        exp = Experiment(
-            py_versions=[
-                PyPy(3, 9),
-            ],
-            cov_versions=[
-                Coverage("none", None, None),
-                Coverage("6.4", "coverage", ""),
-                Coverage("tip", "git+https://github.com/nedbat/coveragepy.git@master", ""),
-            ],
-            projects=[
-                AdHocProject("/src/bugs/bug1339/bug1339.py"),
-            ],
-        )
-        exp.run(num_runs=7)
+if 1:
+    run_experiment(
+        py_versions=[
+            #Python(3, 11),
+            AdHocPython("/usr/local/cpython/v3.10.5", "v3.10.5"),
+            AdHocPython("/usr/local/cpython/v3.11.0b3", "v3.11.0b3"),
+            AdHocPython("/usr/local/cpython/94231", "94231"),
+        ],
+        cov_versions=[
+            Coverage("6.4.1", "coverage==6.4.1"),
+        ],
+        projects=[
+            AdHocProject("/src/bugs/bug1339/bug1339.py"),
+            SlipcoverBenchmark("bm_sudoku.py"),
+            SlipcoverBenchmark("bm_spectral_norm.py"),
+        ],
+        rows=["cov", "proj"],
+        column="pyver",
+        ratios=[
+            ("3.11b3 vs 3.10", "v3.11.0b3", "v3.10.5"),
+            ("94231 vs 3.10", "94231", "v3.10.5"),
+        ],
+    )
