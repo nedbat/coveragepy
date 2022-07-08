@@ -270,7 +270,7 @@ def sep(s):
     """Find the path separator used in this string, or os.sep if none."""
     sep_match = re.search(r"[\\/]", s)
     if sep_match:
-        the_sep = sep_match.group(0)
+        the_sep = sep_match[0]
     else:
         the_sep = os.sep
     return the_sep
@@ -387,7 +387,7 @@ class PathAliases:
         for regex, result in self.aliases:
             m = regex.match(path)
             if m:
-                new = path.replace(m.group(0), result)
+                new = path.replace(m[0], result)
                 new = new.replace(sep(path), sep(result))
                 if not self.relative:
                     new = canonical_filename(new)
