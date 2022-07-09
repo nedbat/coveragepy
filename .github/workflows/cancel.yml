@@ -22,4 +22,4 @@ jobs:
         uses: styfle/cancel-workflow-action@0.10.0
         with:
           access_token: ${{ github.token }}
-          workflow_id: coverage.yml, kit.yml, quality.yml, testsuite.yml
+          workflow_id: all
