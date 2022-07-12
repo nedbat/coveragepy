@@ -86,7 +86,6 @@
 - things to automate:
     - url to link to latest changes in docs
     - next version.py line
-    - curl to start the kit actions going
     - readthedocs api to do the readthedocs changes
 
 
