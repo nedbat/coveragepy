@@ -20,11 +20,18 @@ development at the same time, such as 4.5.x and 5.0.
 Unreleased
 ----------
 
+- Updated for a small change in Python 3.11.0 beta 4: modules now start with a
+  line with line number 0, which is ignored.  This line cannnot be executed, so
+  coverage totals were thrown off.  This line is now ignored by coverage.py,
+  but this also means that truly empty modules (like ``__init__.py``) have no
+  lines in them, rather than one phantom line.  Fixes `issue 1419`_.
+
 - Internal debugging data added to sys.modules is now an actual module, to
   avoid confusing code that examines everything in sys.modules.  Thanks,
   Yilei Yang (`pull 1399`_).
 
 .. _pull 1399: https://github.com/nedbat/coveragepy/pull/1399
+.. _issue 1419: https://github.com/nedbat/coveragepy/issues/1419
 
 
 .. _changes_6-4-1:

@@ -110,6 +110,9 @@ class PYBEHAVIOR:
     # Some words are keywords in some places, identifiers in other places.
     soft_keywords = (PYVERSION >= (3, 10))
 
+    # Modules start with a line numbered zero. This means empty modules have
+    # only a 0-number line, which is ignored, giving a truly empty module.
+    empty_is_empty = (PYVERSION >= (3, 11, 0, 'beta', 4))
 
 # Coverage.py specifics.
 

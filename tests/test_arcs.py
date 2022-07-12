@@ -158,6 +158,8 @@ class SimpleArcTest(CoverageTest):
         if env.JYTHON:
             # Jython reports no lines for an empty file.
             arcz_missing=".1 1."                    # pragma: only jython
+        elif env.PYBEHAVIOR.empty_is_empty:
+            arcz_missing=".1 1."
         else:
             # Other Pythons report one line.
             arcz_missing=""

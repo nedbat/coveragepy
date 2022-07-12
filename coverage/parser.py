@@ -377,7 +377,7 @@ class ByteParser:
         """
         if hasattr(self.code, "co_lines"):
             for _, _, line in self.code.co_lines():
-                if line is not None:
+                if line:
                     yield line
         else:
             # Adapted from dis.py in the standard library.
