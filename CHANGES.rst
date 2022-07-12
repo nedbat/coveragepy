@@ -17,8 +17,10 @@ development at the same time, such as 4.5.x and 5.0.
     ..  Version 9.8.1 — 2027-07-27
     ..  --------------------------
 
-Unreleased
-----------
+.. _changes_6-4-2:
+
+Version 6.4.2 — 2022-07-12
+--------------------------
 
 - Updated for a small change in Python 3.11.0 beta 4: modules now start with a
   line with line number 0, which is ignored.  This line cannnot be executed, so
