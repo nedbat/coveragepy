@@ -8,10 +8,10 @@ on:
     branches:
       - "**/*nightly*"
   schedule:
-    # Run at 2:22am early Saturday morning Eastern time (6/7:22 UTC)
+    # Run at 2:22am early every morning Eastern time (6/7:22 UTC)
     # so that we get tips of CPython development tested.
-    # https://crontab.guru/#22_7_*_*_6
-    - cron: "22 7 * * 6"
+    # https://crontab.guru/#22_7_%2a_%2a_%2a
+    - cron: "22 7 * * *"
   workflow_dispatch:
 
 defaults:
