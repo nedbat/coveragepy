@@ -185,6 +185,8 @@ jobs:
           path: reports_repo/${{ env.report_dir }}
 
       - name: "Push to report repo"
+        env:
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
         run: |
           set -xe
           # Make the redirect to the latest report.
@@ -192,7 +194,7 @@ jobs:
           echo "<meta http-equiv='refresh' content='0;url=${{ env.url }}' />" >> reports_repo/latest.html
           echo "<body>Coverage report redirect..." >> reports_repo/latest.html
           # Make the commit message.
-          echo "${{ env.total }}% - ${{ github.event.head_commit.message }}" > commit.txt
+          echo "${{ env.total }}% - $COMMIT_MESSAGE" > commit.txt
           echo "" >> commit.txt
           echo "${{ env.url }}" >> commit.txt
           echo "${{ env.sha10 }}: ${{ env.branch }}" >> commit.txt
