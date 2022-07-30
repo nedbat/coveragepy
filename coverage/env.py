@@ -85,7 +85,7 @@ class PYBEHAVIOR:
     nix_while_true = (PYVERSION >= (3, 8))
 
     # CPython 3.9a1 made sys.argv[0] and other reported files absolute paths.
-    report_absolute_files = (CPYTHON and PYVERSION >= (3, 9))
+    report_absolute_files = ((CPYTHON or (PYPYVERSION >= (7, 3, 10))) and PYVERSION >= (3, 9))
 
     # Lines after break/continue/return/raise are no longer compiled into the
     # bytecode.  They used to be marked as missing, now they aren't executable.
