@@ -774,8 +774,8 @@ class CoverageData(SimpleReprMixin):
         file_be_gone(self._filename)
         if parallel:
             data_dir, local = os.path.split(self._filename)
-            localdot = glob.escape(local) + ".*"
-            pattern = os.path.join(os.path.abspath(data_dir), localdot)
+            local_abs_path = os.path.join(os.path.abspath(data_dir), local)
+            pattern = glob.escape(local_abs_path) + ".*"
             for filename in glob.glob(pattern):
                 if self._debug.should("dataio"):
                     self._debug.write(f"Erasing parallel data file {filename!r}")
