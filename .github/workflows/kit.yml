@@ -41,6 +41,10 @@ env:
 permissions:
   contents: read
 
+concurrency:
+  group: "${{ github.workflow }}-${{ github.ref }}"
+  cancel-in-progress: true
+
 jobs:
   wheels:
     name: "Build ${{ matrix.os }} ${{ matrix.py }} ${{ matrix.arch }} wheels"
