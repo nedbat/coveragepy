@@ -19,6 +19,9 @@ defaults:
 env:
   PIP_DISABLE_PIP_VERSION_CHECK: 1
 
+permissions:
+  contents: read
+
 jobs:
   coverage:
     name: "Python ${{ matrix.python-version }} on ${{ matrix.os }}"
