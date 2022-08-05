@@ -19,6 +19,13 @@ defaults:
 env:
   PIP_DISABLE_PIP_VERSION_CHECK: 1
 
+permissions:
+  contents: read
+
+concurrency:
+  group: "${{ github.workflow }}-${{ github.ref }}"
+  cancel-in-progress: true
+
 jobs:
   coverage:
     name: "Python ${{ matrix.python-version }} on ${{ matrix.os }}"
