@@ -166,7 +166,7 @@ coverage.wire_up_filter = function () {
 
     // Trigger change event on setup, to force filter on page refresh
     // (filter value may still be present).
-    document.getElementById("filter").dispatchEvent(new Event("change"));
+    document.getElementById("filter").dispatchEvent(new Event("input"));
 };
 
 coverage.INDEX_SORT_STORAGE = "COVERAGE_INDEX_SORT_2";
