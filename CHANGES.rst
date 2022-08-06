@@ -24,11 +24,15 @@ Unreleased
   drive than the current directory. (`pull 1430`_, fixing `issue 1428`_).
   Thanks, Lorenzo Micò.
 
+- Filtering in the HTML report wouldn't work when reloading the index page.
+  This is now fixed (`pull 1413`_).  Thanks, Marc Legendre.
+
 - Fix a problem with Cython code measurement (`pull 1347`_, fixing `issue
   972`_).  Thanks, Matus Valo.
 
 .. _issue 972: https://github.com/nedbat/coveragepy/issues/972
 .. _pull 1347: https://github.com/nedbat/coveragepy/pull/1347
+.. _pull 1413: https://github.com/nedbat/coveragepy/issues/1413
 .. _pull 1428: https://github.com/nedbat/coveragepy/issues/1428
 .. _pull 1430: https://github.com/nedbat/coveragepy/pull/1430
 
