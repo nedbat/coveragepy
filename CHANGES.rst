@@ -17,8 +17,10 @@ development at the same time, such as 4.5.x and 5.0.
     ..  Version 9.8.1 — 2027-07-27
     ..  --------------------------
 
-Unreleased
-----------
+.. _changes_6-4-3:
+
+Version 6.4.3 — 2022-08-06
+--------------------------
 
 - Fix a failure when combining data files if the file names contained
   glob-like patterns (`pull 1405`_).  Thanks, Michael Krebs and Benjamin
