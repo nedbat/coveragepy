@@ -28,6 +28,9 @@ Unreleased
   drive than the current directory. (`pull 1430`_, fixing `issue 1428`_).
   Thanks, Lorenzo Micò.
 
+- Fix path calculations when running in the root directory, as you might do in
+  a Docker container: `pull 1403`_, thanks Arthur Rio.
+
 - Filtering in the HTML report wouldn't work when reloading the index page.
   This is now fixed (`pull 1413`_).  Thanks, Marc Legendre.
 
@@ -36,6 +39,7 @@ Unreleased
 
 .. _issue 972: https://github.com/nedbat/coveragepy/issues/972
 .. _pull 1347: https://github.com/nedbat/coveragepy/pull/1347
+.. _pull 1403: https://github.com/nedbat/coveragepy/issues/1403
 .. _pull 1405: https://github.com/nedbat/coveragepy/issues/1405
 .. _pull 1413: https://github.com/nedbat/coveragepy/issues/1413
 .. _pull 1428: https://github.com/nedbat/coveragepy/issues/1428

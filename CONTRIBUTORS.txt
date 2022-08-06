@@ -21,6 +21,7 @@ Arcadiy Ivanov
 Aron Griffis
 Artem Dayneko
 Arthur Deygin
+Arthur Rio
 Ben Carlsson
 Ben Finney
 Benjamin Schubert

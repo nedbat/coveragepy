@@ -11,8 +11,10 @@ import pytest
 
 from coverage import env, files
 from coverage.exceptions import ConfigError
-from coverage.files import (FnmatchMatcher, ModuleMatcher, PathAliases, TreeMatcher, abs_file,
-                            actual_path, find_python_files, flat_rootname, fnmatches_to_regex)
+from coverage.files import (
+    FnmatchMatcher, ModuleMatcher, PathAliases, TreeMatcher, abs_file,
+    actual_path, find_python_files, flat_rootname, fnmatches_to_regex,
+)
 from tests.coveragetest import CoverageTest
 
 
