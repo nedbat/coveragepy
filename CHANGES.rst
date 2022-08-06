@@ -20,7 +20,7 @@ development at the same time, such as 4.5.x and 5.0.
 Unreleased
 ----------
 
-- Fix a failure when combining data files due to file names containing
+- Fix a failure when combining data files if the file names contained
   glob-like patterns (`pull 1405`_).  Thanks, Michael Krebs and Benjamin
   Schubert.
 
