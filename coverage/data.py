@@ -70,7 +70,7 @@ def combinable_files(data_file, data_paths=None):
         if os.path.isfile(p):
             files_to_combine.append(os.path.abspath(p))
         elif os.path.isdir(p):
-            pattern = os.path.join(os.path.abspath(p), f"{local}.*")
+            pattern = glob.escape(os.path.join(os.path.abspath(p), local)) +".*"
             files_to_combine.extend(glob.glob(pattern))
         else:
             raise NoDataError(f"Couldn't combine from non-existent path '{p}'")
