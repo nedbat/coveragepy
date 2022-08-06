@@ -42,7 +42,7 @@ Unreleased
 .. _pull 1403: https://github.com/nedbat/coveragepy/issues/1403
 .. _pull 1405: https://github.com/nedbat/coveragepy/issues/1405
 .. _pull 1413: https://github.com/nedbat/coveragepy/issues/1413
-.. _pull 1428: https://github.com/nedbat/coveragepy/issues/1428
+.. _issue 1428: https://github.com/nedbat/coveragepy/issues/1428
 .. _pull 1430: https://github.com/nedbat/coveragepy/pull/1430
 
 
