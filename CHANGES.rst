@@ -20,7 +20,11 @@ development at the same time, such as 4.5.x and 5.0.
 Unreleased
 ----------
 
-Nothing yet.
+- Fix a problem with Cython code measurement (`pull 1347`_, fixing `issue
+  972`_).  Thanks, Matus Valo.
+
+.. _pull 1347: https://github.com/nedbat/coveragepy/pull/1347
+.. _issue 972: https://github.com/nedbat/coveragepy/issues/972
 
 
 .. _changes_6-4-2:

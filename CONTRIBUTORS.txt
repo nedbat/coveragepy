@@ -107,6 +107,7 @@ Martin Fuzzey
 Matt Bachmann
 Matthew Boehm
 Matthew Desmarais
+Matus Valo
 Max Linke
 Michał Bultrowicz
 Mickie Betz
