@@ -5,17 +5,14 @@
 
 import os
 import os.path
+from unittest import mock
 
 import pytest
 
-from coverage import env
-from coverage import files
+from coverage import env, files
 from coverage.exceptions import ConfigError
-from coverage.files import (
-    TreeMatcher, FnmatchMatcher, ModuleMatcher, PathAliases,
-    find_python_files, abs_file, actual_path, flat_rootname, fnmatches_to_regex,
-)
-
+from coverage.files import (FnmatchMatcher, ModuleMatcher, PathAliases, TreeMatcher, abs_file,
+                            actual_path, find_python_files, flat_rootname, fnmatches_to_regex)
 from tests.coveragetest import CoverageTest
 
 
@@ -66,6 +63,19 @@ class FilesTest(CoverageTest):
         # After the filename has been converted, it should be in the cache.
         assert 'sub/proj1/file1.py' in files.CANONICAL_FILENAME_CACHE
         assert files.canonical_filename('sub/proj1/file1.py') == self.abs_path('file1.py')
+
+    @pytest.mark.parametrize(
+        ["curdir", "sep"], [
+            ("/", "/"),
+            ("X:\\", "\\"),
+        ]
+    )
+    def test_relative_dir_for_root(self, curdir, sep):
+        with mock.patch.object(files.os, 'curdir', new=curdir):
+            with mock.patch.object(files.os, 'sep', new=sep):
+                with mock.patch('coverage.files.os.path.normcase', return_value=curdir):
+                    files.set_relative_directory()
+                    assert files.relative_directory() == curdir
 
 
 @pytest.mark.parametrize("original, flat", [

@@ -24,8 +24,14 @@ def set_relative_directory():
     """Set the directory that `relative_filename` will be relative to."""
     global RELATIVE_DIR, CANONICAL_FILENAME_CACHE
 
+    # The current directory
+    abs_curdir = abs_file(os.curdir)
+    if not abs_curdir.endswith(os.sep):
+        # Suffix with separator only if not at the system root
+        abs_curdir = abs_curdir + os.sep
+
     # The absolute path to our current directory.
-    RELATIVE_DIR = os.path.normcase(abs_file(os.curdir) + os.sep)
+    RELATIVE_DIR = os.path.normcase(abs_curdir)
 
     # Cache of results of calling the canonical_filename() method, to
     # avoid duplicating work.
