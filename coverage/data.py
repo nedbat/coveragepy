@@ -132,7 +132,13 @@ def combine_parallel_data(
             data.update(new_data, aliases=aliases)
             files_combined += 1
             if message:
-                message(f"Combined data file {os.path.relpath(f)}")
+                try:
+                    message(f"Combined data file {os.path.relpath(f)}")
+                except ValueError:
+                    # ValueError can be raised under Windows when os.getcwd() returns a
+                    # folder from a different drive than the drive of f, in which case
+                    # we print the original value of f instead of its relative path
+                    message(f"Combined data file {f!r}")
             if not keep:
                 if data._debug.should('dataio'):
                     data._debug.write(f"Deleting combined data file {f!r}")
