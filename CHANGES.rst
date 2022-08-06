@@ -20,11 +20,17 @@ development at the same time, such as 4.5.x and 5.0.
 Unreleased
 ----------
 
+- Fix a messaging failure when combining Windows data files on a different
+  drive than the current directory. (`pull 1430`_, fixing `issue 1428`_).
+  Thanks, Lorenzo Micò.
+
 - Fix a problem with Cython code measurement (`pull 1347`_, fixing `issue
   972`_).  Thanks, Matus Valo.
 
-.. _pull 1347: https://github.com/nedbat/coveragepy/pull/1347
 .. _issue 972: https://github.com/nedbat/coveragepy/issues/972
+.. _pull 1347: https://github.com/nedbat/coveragepy/pull/1347
+.. _pull 1428: https://github.com/nedbat/coveragepy/issues/1428
+.. _pull 1430: https://github.com/nedbat/coveragepy/pull/1430
 
 
 .. _changes_6-4-2:
