@@ -23,6 +23,7 @@ Artem Dayneko
 Arthur Deygin
 Ben Carlsson
 Ben Finney
+Benjamin Schubert
 Bernát Gábor
 Bill Hart
 Bradley Burns
@@ -111,6 +112,7 @@ Matthew Boehm
 Matthew Desmarais
 Matus Valo
 Max Linke
+Michael Krebs
 Michał Bultrowicz
 Mickie Betz
 Mike Fiedler
