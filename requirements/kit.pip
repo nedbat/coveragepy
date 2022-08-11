@@ -4,89 +4,53 @@
 #
 #    make upgrade
 #
-auditwheel==5.1.2 \
-    --hash=sha256:3ee5830014931ea84af5cd065c637b6614efa03d9b88bd8fbfc924e7ed01d6ba \
-    --hash=sha256:4d06aea3ab59a2b8aa733798ac221556a3f5c021fddc42e5de5bcef20201c031
+auditwheel==5.1.2
     # via -r requirements/kit.in
-bashlex==0.16 \
-    --hash=sha256:dc6f017e49ce2d0fe30ad9f5206da9cd13ded073d365688c9fda525354e8c373 \
-    --hash=sha256:ff89fc743ccdef978792784d74d698a9236a862939bb4af471c0c3faf92c21bb
+bashlex==0.16
     # via cibuildwheel
-bracex==2.3.post1 \
-    --hash=sha256:351b7f20d56fb9ea91f9b9e9e7664db466eb234188c175fd943f8f755c807e73 \
-    --hash=sha256:e7b23fc8b2cd06d3dec0692baabecb249dda94e06a617901ff03a6c56fd71693
+bracex==2.3.post1
     # via cibuildwheel
-build==0.8.0 \
-    --hash=sha256:19b0ed489f92ace6947698c3ca8436cb0556a66e2aa2d34cd70e2a5d27cd0437 \
-    --hash=sha256:887a6d471c901b1a6e6574ebaeeebb45e5269a79d095fe9a8f88d6614ed2e5f0
+build==0.8.0
     # via -r requirements/kit.in
-certifi==2022.6.15 \
-    --hash=sha256:84c85a9078b11105f04f3036a9482ae10e4621616db313fe045dd24743a0820d \
-    --hash=sha256:fe86415d55e84719d75f8b69414f6438ac3547d2078ab91b67e779ef69378412
+certifi==2022.5.18.1
     # via cibuildwheel
-cibuildwheel==2.8.1 \
-    --hash=sha256:128e89355eb77385b3583c168e4fa907ecdeb15094fd430383f0a2f70401cf92 \
-    --hash=sha256:d80ca685f55ed65e23fdfb4210b9bf614c59e96e2a716870b3b4c05a2e1ef17a
+cibuildwheel==2.6.1
     # via -r requirements/kit.in
-filelock==3.8.0 \
-    --hash=sha256:55447caa666f2198c5b6b13a26d2084d26fa5b115c00d065664b2124680c4edc \
-    --hash=sha256:617eb4e5eedc82fc5f47b6d61e4d11cb837c56cb4544e39081099fa17ad109d4
+filelock==3.7.1
     # via cibuildwheel
-importlib-metadata==4.12.0 \
-    --hash=sha256:637245b8bab2b6502fcbc752cc4b7a6f6243bb02b31c5c26156ad103d3d45670 \
-    --hash=sha256:7401a975809ea1fdc658c3aa4f78cc2195a0e019c5cbc4c06122884e9ae80c23
+importlib-metadata==4.11.4
     # via
     #   auditwheel
     #   build
     #   pep517
-packaging==21.3 \
-    --hash=sha256:dd47c42927d89ab911e606518907cc2d3a1f38bbd026385970643f9c5b8ecfeb \
-    --hash=sha256:ef103e05f519cdc783ae24ea4e2e0f508a9c99b2d4969652eed6a2e1ea5bd522
+packaging==21.3
     # via
     #   build
     #   cibuildwheel
-pep517==0.13.0 \
-    --hash=sha256:4ba4446d80aed5b5eac6509ade100bff3e7943a8489de249654a5ae9b33ee35b \
-    --hash=sha256:ae69927c5c172be1add9203726d4b84cf3ebad1edcd5f71fcdc746e66e829f59
+pep517==0.12.0
     # via build
-platformdirs==2.5.2 \
-    --hash=sha256:027d8e83a2d7de06bbac4e5ef7e023c02b863d7ea5d079477e722bb41ab25788 \
-    --hash=sha256:58c8abb07dcb441e6ee4b11d8df0ac856038f944ab98b7be6b27b2a3c7feef19
+platformdirs==2.5.2
     # via cibuildwheel
-pyelftools==0.28 \
-    --hash=sha256:1509d30756a14a8c9a6670778144fb9a04b311751ddac019dcc0c2f28da03ccc \
-    --hash=sha256:53e5609cac016471d40bd88dc410cd90755942c25e58a61021cfdf7abdfeacff
+pyelftools==0.28
     # via auditwheel
-pyparsing==3.0.9 \
-    --hash=sha256:2b020ecf7d21b687f219b71ecad3631f644a47f01403fa1d1036b0c6416d70fb \
-    --hash=sha256:5026bae9a10eeaefb61dab2f09052b9f4307d44aee4eda64b309723d8d206bbc
+pyparsing==3.0.9
     # via packaging
-tomli==2.0.1 \
-    --hash=sha256:939de3e7a6161af0c887ef91b7d41a53e7c5a1ca976325f429cb46ea9bc30ecc \
-    --hash=sha256:de526c12914f0c550d15924c62d72abc48d6fe7364aa87328337a31007fe8a4f
+tomli==2.0.1
     # via
     #   build
     #   cibuildwheel
     #   pep517
-typing-extensions==4.3.0 \
-    --hash=sha256:25642c956049920a5aa49edcdd6ab1e06d7e5d467fc00e0506c44ac86fbfca02 \
-    --hash=sha256:e6d2677a32f47fc7eb2795db1dd15c1f34eff616bcaf2cfb5e997f854fa1c4a6
+typing-extensions==4.2.0
     # via
     #   cibuildwheel
     #   importlib-metadata
-wheel==0.37.1 \
-    --hash=sha256:4bdcd7d840138086126cd09254dc6195fb4fc6f01c050a1d7236f2630db1d22a \
-    --hash=sha256:e9a504e793efbca1b8e0e9cb979a249cf4a0a7b5b8c9e8b65a5e39d49529c1c4
+wheel==0.37.1
     # via -r requirements/kit.in
-zipp==3.8.1 \
-    --hash=sha256:05b45f1ee8f807d0cc928485ca40a07cb491cf092ff587c0df9cb1fd154848d2 \
-    --hash=sha256:47c40d7fe183a6f21403a199b3e4192cca5774656965b0a4988ad2f8feb5f009
+zipp==3.8.0
     # via
     #   importlib-metadata
     #   pep517
 
 # The following packages are considered to be unsafe in a requirements file:
-setuptools==63.4.3 \
-    --hash=sha256:521c833d1e5e1ef0869940e7f486a83de7773b9f029010ad0c2fe35453a9dad9 \
-    --hash=sha256:7f61f7e82647f77d4118eeaf43d64cbcd4d87e38af9611694d4866eb070cd10d
+setuptools==62.3.3
     # via -r requirements/kit.in
