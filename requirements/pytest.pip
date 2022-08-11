@@ -4,60 +4,107 @@
 #
 #    make upgrade
 #
-attrs==21.4.0
+attrs==22.1.0 \
+    --hash=sha256:29adc2665447e5191d0e7c568fde78b21f9672d344281d0c6e1ab085429b22b6 \
+    --hash=sha256:86efa402f67bf2df34f51a335487cf46b1ec130d02b8d39fd248abfd30da551c
     # via
     #   hypothesis
     #   pytest
-backports-functools-lru-cache==1.6.4
+backports-functools-lru-cache==1.6.4 \
+    --hash=sha256:d5ed2169378b67d3c545e5600d363a923b09c456dab1593914935a68ad478271 \
+    --hash=sha256:dbead04b9daa817909ec64e8d2855fb78feafe0b901d4568758e3a60559d8978
     # via pycontracts
-decorator==5.1.1
+decorator==5.1.1 \
+    --hash=sha256:637996211036b6385ef91435e4fae22989472f9d571faba8927ba8253acbc330 \
+    --hash=sha256:b8c3f85900b9dc423225913c5aace94729fe1fa9763b38939a95226f02d37186
     # via pycontracts
-execnet==1.9.0
+exceptiongroup==1.0.0rc8 \
+    --hash=sha256:6990c24f06b8d33c8065cfe43e5e8a4bfa384e0358be036af9cc60b6321bd11a \
+    --hash=sha256:ab0a968e1ef769e55d9a596f4a89f7be9ffedbc9fdefdb77cc68cf5c33ce1035
+    # via hypothesis
+execnet==1.9.0 \
+    --hash=sha256:8f694f3ba9cc92cab508b152dcfe322153975c29bda272e2fd7f3f00f36e47c5 \
+    --hash=sha256:a295f7cc774947aac58dde7fdc85f4aa00c42adf5d8f5468fc630c1acf30a142
     # via pytest-xdist
-flaky==3.7.0
+flaky==3.7.0 \
+    --hash=sha256:3ad100780721a1911f57a165809b7ea265a7863305acb66708220820caf8aa0d \
+    --hash=sha256:d6eda73cab5ae7364504b7c44670f70abed9e75f77dd116352f662817592ec9c
     # via -r requirements/pytest.in
-future==0.18.2
+future==0.18.2 \
+    --hash=sha256:b1bead90b70cf6ec3f0710ae53a525360fa360d306a86583adc6bf83a4db537d
     # via pycontracts
-hypothesis==6.47.0
+hypothesis==6.54.2 \
+    --hash=sha256:7c3211d2557f8947fbd9f6cded93c2b793e5b756d4433dc52a93d9f8d0bdc46d \
+    --hash=sha256:db40e3f296ab940e59e5bbb1794e5b2f9682b601c559b3f68fc294518ba6cff7
     # via -r requirements/pytest.in
-importlib-metadata==4.11.4
+importlib-metadata==4.12.0 \
+    --hash=sha256:637245b8bab2b6502fcbc752cc4b7a6f6243bb02b31c5c26156ad103d3d45670 \
+    --hash=sha256:7401a975809ea1fdc658c3aa4f78cc2195a0e019c5cbc4c06122884e9ae80c23
     # via
     #   pluggy
     #   pytest
-iniconfig==1.1.1
+iniconfig==1.1.1 \
+    --hash=sha256:011e24c64b7f47f6ebd835bb12a743f2fbe9a26d4cecaa7f53bc4f35ee9da8b3 \
+    --hash=sha256:bc3af051d7d14b2ee5ef9969666def0cd1a000e121eaea580d4a313df4b37f32
     # via pytest
-packaging==21.3
+packaging==21.3 \
+    --hash=sha256:dd47c42927d89ab911e606518907cc2d3a1f38bbd026385970643f9c5b8ecfeb \
+    --hash=sha256:ef103e05f519cdc783ae24ea4e2e0f508a9c99b2d4969652eed6a2e1ea5bd522
     # via pytest
-pluggy==1.0.0
+pluggy==1.0.0 \
+    --hash=sha256:4224373bacce55f955a878bf9cfa763c1e360858e330072059e10bad68531159 \
+    --hash=sha256:74134bbf457f031a36d68416e1509f34bd5ccc019f0bcc952c7b909d06b37bd3
     # via pytest
-py==1.11.0
+py==1.11.0 \
+    --hash=sha256:51c75c4126074b472f746a24399ad32f6053d1b34b68d2fa41e558e6f4a98719 \
+    --hash=sha256:607c53218732647dff4acdfcd50cb62615cedf612e72d1724fb1a0cc6405b378
     # via
     #   pytest
     #   pytest-forked
-pycontracts @ git+https://github.com/slorg1/contracts@collections_and_validator
+pycontracts @ https://github.com/slorg1/contracts/archive/c5a6da27d4dc9985f68e574d20d86000880919c3.zip \
+    --hash=sha256:2b889cbfb03b43dc811b5879248ac5c7e209ece78f03be9633de76a6b21a5a89
     # via -r requirements/pytest.in
-pyparsing==3.0.9
+pyparsing==3.0.9 \
+    --hash=sha256:2b020ecf7d21b687f219b71ecad3631f644a47f01403fa1d1036b0c6416d70fb \
+    --hash=sha256:5026bae9a10eeaefb61dab2f09052b9f4307d44aee4eda64b309723d8d206bbc
     # via
     #   packaging
     #   pycontracts
-pytest==7.1.2
+pytest==7.1.2 \
+    --hash=sha256:13d0e3ccfc2b6e26be000cb6568c832ba67ba32e719443bfe725814d3c42433c \
+    --hash=sha256:a06a0425453864a270bc45e71f783330a7428defb4230fb5e6a731fde06ecd45
     # via
     #   -r requirements/pytest.in
     #   pytest-forked
     #   pytest-xdist
-pytest-forked==1.4.0
+pytest-forked==1.4.0 \
+    --hash=sha256:8b67587c8f98cbbadfdd804539ed5455b6ed03802203485dd2f53c1422d7440e \
+    --hash=sha256:bbbb6717efc886b9d64537b41fb1497cfaf3c9601276be8da2cccfea5a3c8ad8
     # via pytest-xdist
-pytest-xdist==2.5.0
+pytest-xdist==2.5.0 \
+    --hash=sha256:4580deca3ff04ddb2ac53eba39d76cb5dd5edeac050cb6fbc768b0dd712b4edf \
+    --hash=sha256:6fe5c74fec98906deb8f2d2b616b5c782022744978e7bd4695d39c8f42d0ce65
     # via -r requirements/pytest.in
-qualname==0.1.0
+qualname==0.1.0 \
+    --hash=sha256:277cf6aa4b2ad36beed1153cfa7bf521b210d54fbecb3d8eea0c5679cecc9ed8
     # via pycontracts
-six==1.16.0
+six==1.16.0 \
+    --hash=sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926 \
+    --hash=sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254
     # via pycontracts
-sortedcontainers==2.4.0
+sortedcontainers==2.4.0 \
+    --hash=sha256:25caa5a06cc30b6b83d11423433f65d1f9d76c4c6a0c90e3379eaa43b9bfdb88 \
+    --hash=sha256:a163dcaede0f1c021485e957a39245190e74249897e2ae4b2aa38595db237ee0
     # via hypothesis
-tomli==2.0.1
+tomli==2.0.1 \
+    --hash=sha256:939de3e7a6161af0c887ef91b7d41a53e7c5a1ca976325f429cb46ea9bc30ecc \
+    --hash=sha256:de526c12914f0c550d15924c62d72abc48d6fe7364aa87328337a31007fe8a4f
     # via pytest
-typing-extensions==4.2.0
+typing-extensions==4.3.0 \
+    --hash=sha256:25642c956049920a5aa49edcdd6ab1e06d7e5d467fc00e0506c44ac86fbfca02 \
+    --hash=sha256:e6d2677a32f47fc7eb2795db1dd15c1f34eff616bcaf2cfb5e997f854fa1c4a6
     # via importlib-metadata
-zipp==3.8.0
+zipp==3.8.1 \
+    --hash=sha256:05b45f1ee8f807d0cc928485ca40a07cb491cf092ff587c0df9cb1fd154848d2 \
+    --hash=sha256:47c40d7fe183a6f21403a199b3e4192cca5774656965b0a4988ad2f8feb5f009
     # via importlib-metadata
