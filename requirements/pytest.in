@@ -12,4 +12,17 @@ pytest
 pytest-xdist
 # Use a fork of PyContracts that supports Python 3.9
 #PyContracts==1.8.12
-git+https://github.com/slorg1/contracts@collections_and_validator
+# git+https://github.com/slorg1/contracts@collections_and_validator
+https://github.com/slorg1/contracts/archive/c5a6da27d4dc9985f68e574d20d86000880919c3.zip
+
+# Pytest has a windows-only dependency on colorama:
+# https://github.com/pytest-dev/pytest/blob/main/setup.cfg#L49
+#   colorama;sys_platform=="win32"
+# We copy it here so it can get pinned.
+colorama
+
+# Pytest has a windows-only dependency on atomicwrites:
+# https://github.com/pytest-dev/pytest/blob/7.1.2/setup.cfg#L50
+#   atomicwrites>=1.0;sys_platform=="win32"
+# though it's been removed on main.
+atomicwrites>=1.0

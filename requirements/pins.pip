@@ -9,3 +9,8 @@
 
 # https://github.com/jazzband/pip-tools/issues/1617
 pip<22.1
+
+# requests gets different versions in dev.pip and doc/requirements.pip, not
+# sure why, and they then ask for different versions of certifi, and we can't
+# install, so pin certifi.
+certifi==2022.5.18.1
