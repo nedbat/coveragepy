@@ -72,6 +72,15 @@ metasmoke:
 
 ##@ Requirements management
 
+# When updating requirements, a few rules to follow:
+#
+# 1) Don't install more than one .pip file at once. Always use pip-compile to
+# combine .in files onto a single .pip file that can be installed where needed.
+#
+# 2) Check manual pins before `make upgrade` to see if they can be removed. Look
+# in requirements/pins.pip, and search for "windows" in .in files to find pins
+# and extra requirements that have been needed, but might be obsolete.
+
 .PHONY: upgrade
 
 PIP_COMPILE = pip-compile --upgrade --allow-unsafe --generate-hashes
