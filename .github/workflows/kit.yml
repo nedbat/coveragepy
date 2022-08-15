@@ -77,7 +77,7 @@ jobs:
           #   }
           #   # PYVERSIONS. Available versions:
           #   # https://github.com/actions/python-versions/blob/main/versions-manifest.json
-          #   pys = ["cp37", "cp38", "cp39", "cp310"]
+          #   pys = ["cp37", "cp38", "cp39", "cp310", "cp311"]
           #
           #   # Some OS/arch combinations need overrides for the Python versions:
           #   os_arch_pys = {
@@ -101,14 +101,17 @@ jobs:
           - {"os": "ubuntu", "py": "cp38", "arch": "x86_64"}
           - {"os": "ubuntu", "py": "cp39", "arch": "x86_64"}
           - {"os": "ubuntu", "py": "cp310", "arch": "x86_64"}
+          - {"os": "ubuntu", "py": "cp311", "arch": "x86_64"}
           - {"os": "ubuntu", "py": "cp37", "arch": "i686"}
           - {"os": "ubuntu", "py": "cp38", "arch": "i686"}
           - {"os": "ubuntu", "py": "cp39", "arch": "i686"}
           - {"os": "ubuntu", "py": "cp310", "arch": "i686"}
+          - {"os": "ubuntu", "py": "cp311", "arch": "i686"}
           - {"os": "ubuntu", "py": "cp37", "arch": "aarch64"}
           - {"os": "ubuntu", "py": "cp38", "arch": "aarch64"}
           - {"os": "ubuntu", "py": "cp39", "arch": "aarch64"}
           - {"os": "ubuntu", "py": "cp310", "arch": "aarch64"}
+          - {"os": "ubuntu", "py": "cp311", "arch": "aarch64"}
           - {"os": "macos", "py": "cp38", "arch": "arm64"}
           - {"os": "macos", "py": "cp39", "arch": "arm64"}
           - {"os": "macos", "py": "cp310", "arch": "arm64"}
@@ -116,15 +119,18 @@ jobs:
           - {"os": "macos", "py": "cp38", "arch": "x86_64"}
           - {"os": "macos", "py": "cp39", "arch": "x86_64"}
           - {"os": "macos", "py": "cp310", "arch": "x86_64"}
+          - {"os": "macos", "py": "cp311", "arch": "x86_64"}
           - {"os": "windows", "py": "cp37", "arch": "x86"}
           - {"os": "windows", "py": "cp38", "arch": "x86"}
           - {"os": "windows", "py": "cp39", "arch": "x86"}
           - {"os": "windows", "py": "cp310", "arch": "x86"}
+          - {"os": "windows", "py": "cp311", "arch": "x86"}
           - {"os": "windows", "py": "cp37", "arch": "AMD64"}
           - {"os": "windows", "py": "cp38", "arch": "AMD64"}
           - {"os": "windows", "py": "cp39", "arch": "AMD64"}
           - {"os": "windows", "py": "cp310", "arch": "AMD64"}
-        # [[[end]]] (checksum: 4b02126e18e2b3798783d3cc6f303552)
+          - {"os": "windows", "py": "cp311", "arch": "AMD64"}
+        # [[[end]]] (checksum: 428e5138336453464dde968cc3149f4f)
       fail-fast: false
 
     steps:
