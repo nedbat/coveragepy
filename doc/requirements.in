@@ -10,7 +10,7 @@ cogapp
 doc8
 pyenchant
 sphinx
-sphinx-autobuild
+#sphinx-autobuild
 sphinx_rtd_theme
 sphinx-tabs
 sphinxcontrib-restbuilder
