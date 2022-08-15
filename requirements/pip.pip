@@ -4,21 +4,19 @@
 #
 #    make upgrade
 #
-distlib==0.3.4
+distlib==0.3.5
     # via virtualenv
-filelock==3.7.1
+filelock==3.8.0
     # via virtualenv
-importlib-metadata==4.11.4
+importlib-metadata==4.12.0
     # via virtualenv
 platformdirs==2.5.2
     # via virtualenv
-six==1.16.0
-    # via virtualenv
-typing-extensions==4.2.0
+typing-extensions==4.3.0
     # via importlib-metadata
-virtualenv==20.14.1
+virtualenv==20.16.3
     # via -r requirements/pip.in
-zipp==3.8.0
+zipp==3.8.1
     # via importlib-metadata
 
 # The following packages are considered to be unsafe in a requirements file:

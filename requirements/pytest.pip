@@ -4,7 +4,7 @@
 #
 #    make upgrade
 #
-attrs==21.4.0
+attrs==22.1.0
     # via
     #   hypothesis
     #   pytest
@@ -12,15 +12,17 @@ backports-functools-lru-cache==1.6.4
     # via pycontracts
 decorator==5.1.1
     # via pycontracts
+exceptiongroup==1.0.0rc8
+    # via hypothesis
 execnet==1.9.0
     # via pytest-xdist
 flaky==3.7.0
     # via -r requirements/pytest.in
 future==0.18.2
     # via pycontracts
-hypothesis==6.47.0
+hypothesis==6.54.3
     # via -r requirements/pytest.in
-importlib-metadata==4.11.4
+importlib-metadata==4.12.0
     # via
     #   pluggy
     #   pytest
@@ -57,7 +59,7 @@ sortedcontainers==2.4.0
     # via hypothesis
 tomli==2.0.1
     # via pytest
-typing-extensions==4.2.0
+typing-extensions==4.3.0
     # via importlib-metadata
-zipp==3.8.0
+zipp==3.8.1
     # via importlib-metadata

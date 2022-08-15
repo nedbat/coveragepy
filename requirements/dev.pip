@@ -4,9 +4,9 @@
 #
 #    make upgrade
 #
-astroid==2.11.5
+astroid==2.11.7
     # via pylint
-attrs==21.4.0
+attrs==22.1.0
     # via
     #   -r requirements/pytest.pip
     #   hypothesis
@@ -15,13 +15,13 @@ backports-functools-lru-cache==1.6.4
     # via
     #   -r requirements/pytest.pip
     #   pycontracts
-bleach==5.0.0
+bleach==5.0.1
     # via readme-renderer
 build==0.8.0
     # via check-manifest
-certifi==2022.5.18.1
+certifi==2022.6.15
     # via requests
-charset-normalizer==2.0.12
+charset-normalizer==2.1.0
     # via requests
 check-manifest==0.48
     # via -r requirements/dev.in
@@ -35,19 +35,21 @@ decorator==5.1.1
     #   pycontracts
 dill==0.3.5.1
     # via pylint
-distlib==0.3.4
+distlib==0.3.5
     # via
     #   -r requirements/pip.pip
     #   virtualenv
-docutils==0.17.1
+docutils==0.19
+    # via readme-renderer
+exceptiongroup==1.0.0rc8
     # via
-    #   -c requirements/pins.pip
-    #   readme-renderer
+    #   -r requirements/pytest.pip
+    #   hypothesis
 execnet==1.9.0
     # via
     #   -r requirements/pytest.pip
     #   pytest-xdist
-filelock==3.7.1
+filelock==3.8.0
     # via
     #   -r requirements/pip.pip
     #   tox
@@ -60,11 +62,11 @@ future==0.18.2
     #   pycontracts
 greenlet==1.1.2
     # via -r requirements/dev.in
-hypothesis==6.47.0
+hypothesis==6.54.3
     # via -r requirements/pytest.pip
 idna==3.3
     # via requests
-importlib-metadata==4.11.4
+importlib-metadata==4.12.0
     # via
     #   -r requirements/pip.pip
     #   -r requirements/pytest.pip
@@ -83,7 +85,7 @@ isort==5.10.1
     # via pylint
 jedi==0.18.1
     # via pudb
-keyring==23.5.1
+keyring==23.8.2
     # via twine
 lazy-object-proxy==1.7.1
     # via astroid
@@ -100,9 +102,9 @@ packaging==21.3
     #   tox
 parso==0.8.3
     # via jedi
-pep517==0.12.0
+pep517==0.13.0
     # via build
-pkginfo==1.8.2
+pkginfo==1.8.3
     # via twine
 platformdirs==2.5.2
     # via
@@ -114,7 +116,7 @@ pluggy==1.0.0
     #   -r requirements/pytest.pip
     #   pytest
     #   tox
-pudb==2022.1.1
+pudb==2022.1.2
     # via -r requirements/dev.in
 py==1.11.0
     # via
@@ -129,7 +131,7 @@ pygments==2.12.0
     #   pudb
     #   readme-renderer
     #   rich
-pylint==2.14.1
+pylint==2.14.5
     # via -r requirements/dev.in
 pyparsing==3.0.9
     # via
@@ -151,11 +153,11 @@ qualname==0.1.0
     # via
     #   -r requirements/pytest.pip
     #   pycontracts
-readme-renderer==35.0
+readme-renderer==36.0
     # via
     #   -r requirements/dev.in
     #   twine
-requests==2.27.1
+requests==2.28.1
     # via
     #   -r requirements/dev.in
     #   requests-toolbelt
@@ -164,17 +166,15 @@ requests-toolbelt==0.9.1
     # via twine
 rfc3986==2.0.0
     # via twine
-rich==12.4.4
+rich==12.5.1
     # via twine
 six==1.16.0
     # via
-    #   -r requirements/pip.pip
     #   -r requirements/pytest.pip
     #   bleach
     #   libsass
     #   pycontracts
     #   tox
-    #   virtualenv
 sortedcontainers==2.4.0
     # via
     #   -r requirements/pytest.pip
@@ -188,15 +188,15 @@ tomli==2.0.1
     #   check-manifest
     #   pylint
     #   pytest
-tomlkit==0.11.0
+tomlkit==0.11.4
     # via pylint
-tox==3.25.0
+tox==3.25.1
     # via -r requirements/dev.in
 twine==4.0.1
     # via -r requirements/dev.in
 typed-ast==1.5.4
     # via astroid
-typing-extensions==4.2.0
+typing-extensions==4.3.0
     # via
     #   -r requirements/pip.pip
     #   -r requirements/pytest.pip
@@ -204,7 +204,7 @@ typing-extensions==4.2.0
     #   importlib-metadata
     #   pylint
     #   rich
-urllib3==1.26.9
+urllib3==1.26.11
     # via
     #   requests
     #   twine
@@ -214,7 +214,7 @@ urwid==2.1.2
     #   urwid-readline
 urwid-readline==0.13
     # via pudb
-virtualenv==20.14.1
+virtualenv==20.16.3
     # via
     #   -r requirements/pip.pip
     #   tox
@@ -222,7 +222,7 @@ webencodings==0.5.1
     # via bleach
 wrapt==1.14.1
     # via astroid
-zipp==3.8.0
+zipp==3.8.1
     # via
     #   -r requirements/pip.pip
     #   -r requirements/pytest.pip
@@ -233,7 +233,7 @@ pip==22.0.4
     # via
     #   -c requirements/pins.pip
     #   -r requirements/pip.pip
-setuptools==62.3.3
+setuptools==65.0.0
     # via
     #   astroid
     #   check-manifest

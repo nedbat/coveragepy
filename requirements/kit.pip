@@ -12,13 +12,13 @@ bracex==2.3.post1
     # via cibuildwheel
 build==0.8.0
     # via -r requirements/kit.in
-certifi==2022.5.18.1
+certifi==2022.6.15
     # via cibuildwheel
-cibuildwheel==2.6.1
+cibuildwheel==2.9.0
     # via -r requirements/kit.in
-filelock==3.7.1
+filelock==3.8.0
     # via cibuildwheel
-importlib-metadata==4.11.4
+importlib-metadata==4.12.0
     # via
     #   auditwheel
     #   build
@@ -27,11 +27,11 @@ packaging==21.3
     # via
     #   build
     #   cibuildwheel
-pep517==0.12.0
+pep517==0.13.0
     # via build
 platformdirs==2.5.2
     # via cibuildwheel
-pyelftools==0.28
+pyelftools==0.29
     # via auditwheel
 pyparsing==3.0.9
     # via packaging
@@ -40,17 +40,17 @@ tomli==2.0.1
     #   build
     #   cibuildwheel
     #   pep517
-typing-extensions==4.2.0
+typing-extensions==4.3.0
     # via
     #   cibuildwheel
     #   importlib-metadata
 wheel==0.37.1
     # via -r requirements/kit.in
-zipp==3.8.0
+zipp==3.8.1
     # via
     #   importlib-metadata
     #   pep517
 
 # The following packages are considered to be unsafe in a requirements file:
-setuptools==62.3.3
+setuptools==65.0.0
     # via -r requirements/kit.in
