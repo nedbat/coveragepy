@@ -86,6 +86,7 @@ upgrade: 				## Update the *.pip files with the latest packages satisfying *.in 
 	$(PIP_COMPILE) -o requirements/dev.pip requirements/dev.in
 	$(PIP_COMPILE) -o requirements/light-threads.pip requirements/light-threads.in
 	$(PIP_COMPILE) -o doc/requirements.pip doc/requirements.in
+	$(PIP_COMPILE) -o requirements/lint.pip doc/requirements.in requirements/dev.in
 
 
 ##@ Pre-builds for prepping the code
