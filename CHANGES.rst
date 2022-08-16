@@ -17,10 +17,12 @@ development at the same time, such as 4.5.x and 5.0.
     ..  Version 9.8.1 — 2027-07-27
     ..  --------------------------
 
-Unreleased
-----------
+.. _changes_6-4-4:
 
-Nothing yet.
+Version 6.4.4 — 2022-08-16
+--------------------------
+
+- Wheels are now provided for Python 3.11.
 
 
 .. _changes_6-4-3:
