@@ -50,6 +50,18 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
                     'executed_lines': [1, 2, 4, 5],
                     'missing_lines': [3, 7],
                     'excluded_lines': [],
+                    'branch_details': {
+                        '2': {
+                            'executed_branches': [4],
+                            'missing_branches': [3],
+                            'percent_covered': 50.0,
+                        },
+                        '4': {
+                            'executed_branches': [5],
+                            'missing_branches': [7],
+                            'percent_covered': 50.0,
+                        },
+                    },
                     'summary': {
                         'missing_lines': 2,
                         'covered_lines': 4,

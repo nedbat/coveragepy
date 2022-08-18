@@ -102,4 +102,22 @@ class JsonReporter:
                 'covered_branches': nums.n_executed_branches,
                 'missing_branches': nums.n_missing_branches,
             })
+            reported_file['branch_details'] = _report_branch_details(analysis)
         return reported_file
+
+
+def _report_branch_details(analysis):
+    """Extract branch details for a single file."""
+    executed_arcs = analysis.executed_branch_arcs()
+    missing_arcs = analysis.missing_branch_arcs()
+    details = {}
+    for source_lineno in executed_arcs.keys() | missing_arcs.keys():
+        target_linenos_executed = executed_arcs.get(source_lineno, [])
+        target_linenos_missing = missing_arcs.get(source_lineno, [])
+        n_target_linenos = len(target_linenos_executed) + len(target_linenos_missing)
+        details[source_lineno] = {
+            'executed_branches': target_linenos_executed,
+            'missing_branches': target_linenos_missing,
+            'percent_covered': len(target_linenos_executed) / n_target_linenos * 100,
+        }
+    return details
