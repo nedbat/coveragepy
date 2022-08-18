@@ -21,6 +21,10 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
             a = {'b': 1}
             if a.get('a'):
                 b = 1
+            elif a.get('b'):
+                b = 2
+            else:
+                b = 3
             """)
         a = self.start_import_stop(cov, "a")
         output_path = os.path.join(self.temp_dir, "a.json")
@@ -43,34 +47,34 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
             },
             'files': {
                 'a.py': {
-                    'executed_lines': [1, 2],
-                    'missing_lines': [3],
+                    'executed_lines': [1, 2, 4, 5],
+                    'missing_lines': [3, 7],
                     'excluded_lines': [],
                     'summary': {
-                        'missing_lines': 1,
-                        'covered_lines': 2,
-                        'num_statements': 3,
-                        'num_branches': 2,
+                        'missing_lines': 2,
+                        'covered_lines': 4,
+                        'num_statements': 6,
+                        'num_branches': 4,
                         'excluded_lines': 0,
-                        'num_partial_branches': 1,
-                        'covered_branches': 1,
-                        'missing_branches': 1,
+                        'num_partial_branches': 2,
+                        'covered_branches': 2,
+                        'missing_branches': 2,
                         'percent_covered': 60.0,
                         'percent_covered_display': '60',
                     },
                 },
             },
             'totals': {
-                'missing_lines': 1,
-                'covered_lines': 2,
-                'num_statements': 3,
-                'num_branches': 2,
+                'missing_lines': 2,
+                'covered_lines': 4,
+                'num_statements': 6,
+                'num_branches': 4,
                 'excluded_lines': 0,
-                'num_partial_branches': 1,
+                'num_partial_branches': 2,
                 'percent_covered': 60.0,
                 'percent_covered_display': '60',
-                'covered_branches': 1,
-                'missing_branches': 1,
+                'covered_branches': 2,
+                'missing_branches': 2,
             },
         }
         self._assert_expected_json_report(cov, expected_result)
@@ -85,14 +89,14 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
             },
             'files': {
                 'a.py': {
-                    'executed_lines': [1, 2],
-                    'missing_lines': [3],
+                    'executed_lines': [1, 2, 4 ,5],
+                    'missing_lines': [3, 7],
                     'excluded_lines': [],
                     'summary': {
                         'excluded_lines': 0,
-                        'missing_lines': 1,
-                        'covered_lines': 2,
-                        'num_statements': 3,
+                        'missing_lines': 2,
+                        'covered_lines': 4,
+                        'num_statements': 6,
                         'percent_covered': 66.66666666666667,
                         'percent_covered_display': '67',
                     },
@@ -100,9 +104,9 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
             },
             'totals': {
                 'excluded_lines': 0,
-                'missing_lines': 1,
-                'covered_lines': 2,
-                'num_statements': 3,
+                'missing_lines': 2,
+                'covered_lines': 4,
+                'num_statements': 6,
                 'percent_covered': 66.66666666666667,
                 'percent_covered_display': '67',
             },
@@ -130,8 +134,8 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
             },
             'files': {
                 'a.py': {
-                    'executed_lines': [1, 2],
-                    'missing_lines': [3],
+                    'executed_lines': [1, 2, 4, 5],
+                    'missing_lines': [3, 7],
                     'excluded_lines': [],
                     "contexts": {
                         "1": [
@@ -139,13 +143,19 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
                         ],
                         "2": [
                             "cool_test"
-                        ]
+                        ],
+                        "4": [
+                            "cool_test"
+                        ],
+                        "5": [
+                            "cool_test"
+                        ],
                     },
                     'summary': {
                         'excluded_lines': 0,
-                        'missing_lines': 1,
-                        'covered_lines': 2,
-                        'num_statements': 3,
+                        'missing_lines': 2,
+                        'covered_lines': 4,
+                        'num_statements': 6,
                         'percent_covered': 66.66666666666667,
                         'percent_covered_display': '66.67',
                     },
@@ -153,9 +163,9 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
             },
             'totals': {
                 'excluded_lines': 0,
-                'missing_lines': 1,
-                'covered_lines': 2,
-                'num_statements': 3,
+                'missing_lines': 2,
+                'covered_lines': 4,
+                'num_statements': 6,
                 'percent_covered': 66.66666666666667,
                 'percent_covered_display': '66.67',
             },
