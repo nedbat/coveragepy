@@ -21,6 +21,12 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
             a = {'b': 1}
             if a.get('a'):
                 b = 1
+            elif a.get('b'):
+                b = 2
+            else:
+                b = 3
+            if not a:
+                b = 4
             """)
         a = self.start_import_stop(cov, "a")
         output_path = os.path.join(self.temp_dir, "a.json")
@@ -43,34 +49,44 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
             },
             'files': {
                 'a.py': {
-                    'executed_lines': [1, 2],
-                    'missing_lines': [3],
+                    'executed_lines': [1, 2, 4, 5, 8],
+                    'missing_lines': [3, 7, 9],
                     'excluded_lines': [],
+                    'executed_branches': [
+                        [2, 4],
+                        [4, 5],
+                        [8, 0],
+                    ],
+                    'missing_branches': [
+                        [2, 3],
+                        [4, 7],
+                        [8, 9],
+                    ],
                     'summary': {
-                        'missing_lines': 1,
-                        'covered_lines': 2,
-                        'num_statements': 3,
-                        'num_branches': 2,
+                        'missing_lines': 3,
+                        'covered_lines': 5,
+                        'num_statements': 8,
+                        'num_branches': 6,
                         'excluded_lines': 0,
-                        'num_partial_branches': 1,
-                        'covered_branches': 1,
-                        'missing_branches': 1,
-                        'percent_covered': 60.0,
-                        'percent_covered_display': '60',
+                        'num_partial_branches': 3,
+                        'covered_branches': 3,
+                        'missing_branches': 3,
+                        'percent_covered': 57.142857142857146,
+                        'percent_covered_display': '57',
                     },
                 },
             },
             'totals': {
-                'missing_lines': 1,
-                'covered_lines': 2,
-                'num_statements': 3,
-                'num_branches': 2,
+                'missing_lines': 3,
+                'covered_lines': 5,
+                'num_statements': 8,
+                'num_branches': 6,
                 'excluded_lines': 0,
-                'num_partial_branches': 1,
-                'percent_covered': 60.0,
-                'percent_covered_display': '60',
-                'covered_branches': 1,
-                'missing_branches': 1,
+                'num_partial_branches': 3,
+                'percent_covered': 57.142857142857146,
+                'percent_covered_display': '57',
+                'covered_branches': 3,
+                'missing_branches': 3,
             },
         }
         self._assert_expected_json_report(cov, expected_result)
@@ -85,26 +101,26 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
             },
             'files': {
                 'a.py': {
-                    'executed_lines': [1, 2],
-                    'missing_lines': [3],
+                    'executed_lines': [1, 2, 4, 5, 8],
+                    'missing_lines': [3, 7, 9],
                     'excluded_lines': [],
                     'summary': {
                         'excluded_lines': 0,
-                        'missing_lines': 1,
-                        'covered_lines': 2,
-                        'num_statements': 3,
-                        'percent_covered': 66.66666666666667,
-                        'percent_covered_display': '67',
+                        'missing_lines': 3,
+                        'covered_lines': 5,
+                        'num_statements': 8,
+                        'percent_covered': 62.5,
+                        'percent_covered_display': '62',
                     },
                 },
             },
             'totals': {
                 'excluded_lines': 0,
-                'missing_lines': 1,
-                'covered_lines': 2,
-                'num_statements': 3,
-                'percent_covered': 66.66666666666667,
-                'percent_covered_display': '67',
+                'missing_lines': 3,
+                'covered_lines': 5,
+                'num_statements': 8,
+                'percent_covered': 62.5,
+                'percent_covered_display': '62',
             },
         }
         self._assert_expected_json_report(cov, expected_result)
@@ -130,8 +146,8 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
             },
             'files': {
                 'a.py': {
-                    'executed_lines': [1, 2],
-                    'missing_lines': [3],
+                    'executed_lines': [1, 2, 4, 5, 8],
+                    'missing_lines': [3, 7, 9],
                     'excluded_lines': [],
                     "contexts": {
                         "1": [
@@ -139,25 +155,34 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
                         ],
                         "2": [
                             "cool_test"
-                        ]
+                        ],
+                        "4": [
+                            "cool_test"
+                        ],
+                        "5": [
+                            "cool_test"
+                        ],
+                        "8": [
+                            "cool_test"
+                        ],
                     },
                     'summary': {
                         'excluded_lines': 0,
-                        'missing_lines': 1,
-                        'covered_lines': 2,
-                        'num_statements': 3,
-                        'percent_covered': 66.66666666666667,
-                        'percent_covered_display': '66.67',
+                        'missing_lines': 3,
+                        'covered_lines': 5,
+                        'num_statements': 8,
+                        'percent_covered': 62.5,
+                        'percent_covered_display': '62.50',
                     },
                 },
             },
             'totals': {
                 'excluded_lines': 0,
-                'missing_lines': 1,
-                'covered_lines': 2,
-                'num_statements': 3,
-                'percent_covered': 66.66666666666667,
-                'percent_covered_display': '66.67',
+                'missing_lines': 3,
+                'covered_lines': 5,
+                'num_statements': 8,
+                'percent_covered': 62.5,
+                'percent_covered_display': '62.50',
             },
         }
         self._assert_expected_json_report(cov, expected_result)
