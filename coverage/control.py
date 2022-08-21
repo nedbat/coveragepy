@@ -424,11 +424,15 @@ class Coverage:
         appropriate Python value.  For example, use True for booleans, not the
         string ``"True"``.
 
-        As an example, calling::
+        As an example, calling:
+
+        .. code-block:: python
 
             cov.set_option("run:branch", True)
 
-        has the same effect as this configuration file::
+        has the same effect as this configuration file:
+
+        .. code-block:: ini
 
             [run]
             branch = True

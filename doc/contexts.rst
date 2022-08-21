@@ -60,6 +60,8 @@ There are three ways to enable dynamic contexts:
 
 .. _pytest-cov: https://pypi.org/project/pytest-cov/
 
+.. highlight:: ini
+
 The ``[run] dynamic_context`` setting has only one option now.  Set it to
 ``test_function`` to start a new dynamic context for every test function::
 

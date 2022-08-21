@@ -49,11 +49,11 @@ This is the database schema:
 .. [[[cog
     import textwrap
     from coverage.sqldata import SCHEMA
-    print(".. code::")
+    print(".. code-block:: sql")
     print()
     print(textwrap.indent(SCHEMA, "    "))
 .. ]]]
-.. code::
+.. code-block:: sql
 
     CREATE TABLE coverage_schema (
         -- One row, to record the version of the schema in this db.
@@ -115,7 +115,7 @@ This is the database schema:
         foreign key (file_id) references file (id)
     );
 
-.. [[[end]]] (checksum: 207fbab355481686e0dce0a9d99d173c)
+.. [[[end]]] (checksum: cfce1df016afbb43a5ff94306db56657)
 
 
 .. _numbits:

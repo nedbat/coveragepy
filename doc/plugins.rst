@@ -25,21 +25,27 @@ To use a coverage.py plug-in, you install it and configure it.  For this
 example, let's say there's a Python package called ``something`` that provides
 a coverage.py plug-in called ``something.plugin``.
 
-#. Install the plug-in's package as you would any other Python package::
+#. Install the plug-in's package as you would any other Python package:
 
-    pip install something
+   .. code-block:: sh
+
+    $ pip install something
 
 #. Configure coverage.py to use the plug-in.  You do this by editing (or
    creating) your .coveragerc file, as described in :ref:`config`.  The
    ``plugins`` setting indicates your plug-in.  It's a list of importable
-   module names of plug-ins::
+   module names of plug-ins:
+
+   .. code-block:: ini
 
     [run]
     plugins =
         something.plugin
 
 #. If the plug-in needs its own configuration, you can add those settings in
-   the .coveragerc file in a section named for the plug-in::
+   the .coveragerc file in a section named for the plug-in:
+
+   .. code-block:: ini
 
     [something.plugin]
     option1 = True

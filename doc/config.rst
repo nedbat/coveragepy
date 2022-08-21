@@ -7,6 +7,8 @@
 Configuration reference
 =======================
 
+.. highlight:: ini
+
 Coverage.py options can be specified in a configuration file.  This makes it
 easier to re-run coverage.py with consistent settings, and also allows for
 specification of options that are otherwise only available in the
