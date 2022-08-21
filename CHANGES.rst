@@ -21,7 +21,7 @@ Unreleased
 ----------
 
 - Fix an internal problem with caching of invalid Python parsing. Found by
-  OSS-Fuzz, fixing `bug 50381`_
+  OSS-Fuzz, fixing their `bug 50381`_.
 
 .. _bug 50381: https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=50381
 
