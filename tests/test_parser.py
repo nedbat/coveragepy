@@ -247,6 +247,15 @@ class PythonParserTest(CoverageTest):
         assert expected_arcs == parser.arcs()
         assert expected_exits == parser.exit_counts()
 
+    def test_fuzzed_double_parse(self):
+        # https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=50381
+        # The second parse used to raise `TypeError: 'NoneType' object is not iterable`
+        msg = "EOF in multi-line statement"
+        with pytest.raises(NotPython, match=msg):
+            self.parse_source("]")
+        with pytest.raises(NotPython, match=msg):
+            self.parse_source("]")
+
 
 class ParserMissingArcDescriptionTest(CoverageTest):
     """Tests for PythonParser.missing_arc_description."""

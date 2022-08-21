@@ -20,7 +20,10 @@ development at the same time, such as 4.5.x and 5.0.
 Unreleased
 ----------
 
-Nothing yet.
+- Fix an internal problem with caching of invalid Python parsing. Found by
+  OSS-Fuzz, fixing `bug 50381`_
+
+.. _bug 50381: https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=50381
 
 
 .. _changes_6-4-4:
