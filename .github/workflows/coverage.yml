@@ -74,7 +74,7 @@ jobs:
           set -xe
           python -VV
           python -m site
-          python -m pip install -r requirements/tox.pip
+          python -m pip install --require-hashes -r requirements/tox.pip
 
       - name: "Run tox coverage for ${{ matrix.python-version }}"
         env:
