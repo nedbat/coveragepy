@@ -283,7 +283,6 @@ class ProcessTest(CoverageTest):
         assert "rror" not in out
         assert status == 1
 
-    @xfail_pypy_3792    # Because the file names aren't yet absolute.
     def test_code_throws(self):
         self.make_file("throw.py", """\
             class MyException(Exception):
