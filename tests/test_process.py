@@ -19,7 +19,7 @@ from coverage.data import line_counts
 from coverage.files import abs_file, python_reported_file
 
 from tests.coveragetest import CoverageTest, TESTS_DIR
-from tests.helpers import re_lines_text, xfail_pypy_3792
+from tests.helpers import re_lines_text
 
 
 class ProcessTest(CoverageTest):
@@ -695,7 +695,6 @@ class EnvironmentTest(CoverageTest):
         actual = self.run_command("coverage run -m process_test.try_execfile")
         self.assert_tryexecfile_output(expected, actual)
 
-    @xfail_pypy_3792    # Because the sys.path[0] isn't yet absolute.
     def test_coverage_run_dir_is_like_python_dir(self):
         with open(TRY_EXECFILE) as f:
             self.make_file("with_main/__main__.py", f.read())
