@@ -3,6 +3,7 @@
 
 """Determine facts about the environment."""
 
+from __future__ import annotations
 import os
 import platform
 import sys
@@ -23,7 +24,7 @@ IRONPYTHON = (platform.python_implementation() == "IronPython")
 PYVERSION = sys.version_info + (int(platform.python_version()[-1] == "+"),)
 
 if PYPY:
-    PYPYVERSION = sys.pypy_version_info
+    PYPYVERSION = sys.pypy_version_info  # type: ignore[attr-defined]
 
 # Python behavior.
 class PYBEHAVIOR:
@@ -139,7 +140,7 @@ USE_CONTRACTS = (
     and (PYVERSION < (3, 11))
 )
 
-def debug_info():
+def debug_info() -> list[tuple[str, object]]:
     """Return a list of (name, value) pairs for printing debug information."""
     info = [
         (name, value) for name, value in globals().items()

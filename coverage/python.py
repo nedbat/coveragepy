@@ -19,7 +19,7 @@ os = isolate_module(os)
 
 
 @contract(returns='bytes')
-def read_python_source(filename):
+def read_python_source(filename) -> None:
     """Read the Python source text from `filename`.
 
     Returns bytes.
@@ -36,7 +36,7 @@ def read_python_source(filename):
 
 
 @contract(returns='unicode')
-def get_python_source(filename):
+def get_python_source(filename) -> None:
     """Return the source code, as unicode."""
     base, ext = os.path.splitext(filename)
     if ext == ".py" and env.WINDOWS:
@@ -71,7 +71,7 @@ def get_python_source(filename):
 
 
 @contract(returns='bytes|None')
-def get_zip_bytes(filename):
+def get_zip_bytes(filename) -> None:
     """Get data from `filename` if it is a zip file path.
 
     Returns the bytestring data read from the zip file, or None if no zip file
@@ -95,7 +95,7 @@ def get_zip_bytes(filename):
     return None
 
 
-def source_for_file(filename):
+def source_for_file(filename) -> None:
     """Return the source filename for `filename`.
 
     Given a file name being traced, return the best guess as to the source
@@ -128,7 +128,7 @@ def source_for_file(filename):
     return filename
 
 
-def source_for_morf(morf):
+def source_for_morf(morf) -> None:
     """Get the source filename for the module-or-file `morf`."""
     if hasattr(morf, '__file__') and morf.__file__:
         filename = morf.__file__
@@ -173,15 +173,15 @@ class PythonFileReporter(FileReporter):
         self._parser = None
         self._excluded = None
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<PythonFileReporter {self.filename!r}>"
 
     @contract(returns='unicode')
-    def relative_filename(self):
+    def relative_filename(self) -> None:
         return self.relname
 
     @property
-    def parser(self):
+    def parser(self) -> None:
         """Lazily create a :class:`PythonParser`."""
         if self._parser is None:
             self._parser = PythonParser(
@@ -191,22 +191,22 @@ class PythonFileReporter(FileReporter):
             self._parser.parse_source()
         return self._parser
 
-    def lines(self):
+    def lines(self) -> None:
         """Return the line numbers of statements in the file."""
         return self.parser.statements
 
-    def excluded_lines(self):
+    def excluded_lines(self) -> None:
         """Return the line numbers of statements in the file."""
         return self.parser.excluded
 
-    def translate_lines(self, lines):
+    def translate_lines(self, lines) -> None:
         return self.parser.translate_lines(lines)
 
-    def translate_arcs(self, arcs):
+    def translate_arcs(self, arcs) -> None:
         return self.parser.translate_arcs(arcs)
 
     @expensive
-    def no_branch_lines(self):
+    def no_branch_lines(self) -> None:
         no_branch = self.parser.lines_matching(
             join_regex(self.coverage.config.partial_list),
             join_regex(self.coverage.config.partial_always_list),
@@ -214,23 +214,23 @@ class PythonFileReporter(FileReporter):
         return no_branch
 
     @expensive
-    def arcs(self):
+    def arcs(self) -> None:
         return self.parser.arcs()
 
     @expensive
-    def exit_counts(self):
+    def exit_counts(self) -> None:
         return self.parser.exit_counts()
 
-    def missing_arc_description(self, start, end, executed_arcs=None):
+    def missing_arc_description(self, start, end, executed_arcs=None) -> None:
         return self.parser.missing_arc_description(start, end, executed_arcs)
 
     @contract(returns='unicode')
-    def source(self):
+    def source(self) -> None:
         if self._source is None:
             self._source = get_python_source(self.filename)
         return self._source
 
-    def should_be_python(self):
+    def should_be_python(self) -> None:
         """Does it seem like this file should contain Python?
 
         This is used to decide if a file reported as part of the execution of
@@ -250,5 +250,5 @@ class PythonFileReporter(FileReporter):
         # Everything else is probably not Python.
         return False
 
-    def source_token_lines(self):
+    def source_token_lines(self) -> None:
         return source_token_lines(self.source())

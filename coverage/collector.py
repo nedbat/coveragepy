@@ -2,9 +2,12 @@
 # For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
 
 """Raw data collector for coverage.py."""
+from __future__ import annotations
 
 import os
 import sys
+from types import FrameType
+from typing import Callable
 
 from coverage import env
 from coverage.config import CoverageConfig
@@ -13,13 +16,14 @@ from coverage.disposition import FileDisposition
 from coverage.exceptions import ConfigError
 from coverage.misc import human_sorted_items, isolate_module
 from coverage.pytracer import PyTracer
+from coverage.typing import WarnCallable
 
 os = isolate_module(os)
 
 
 try:
     # Use the C extension code when we can, for speed.
-    from coverage.tracer import CTracer, CFileDisposition
+    from coverage.tracer import CTracer as CTracer, CFileDisposition  # type: ignore[import]
 except ImportError:
     # Couldn't import the C extension, maybe it isn't built.
     if os.getenv('COVERAGE_TEST_TRACER') == 'c':        # pragma: part covered
@@ -59,8 +63,12 @@ class Collector:
     LIGHT_THREADS = {"greenlet", "eventlet", "gevent"}
 
     def __init__(
-        self, should_trace, check_include, should_start_context, file_mapper,
-        timid, branch, warn, concurrency,
+        self,
+        should_trace: Callable[[str, FrameType], FileDisposition],
+        check_include: Callable[[str, FrameType], bool],
+        should_start_context: Callable[[FrameType], str | None],
+        file_mapper: Callable[[str], str],
+        timid: bool, branch: bool, warn: WarnCallable, concurrency: list[str],
     ):
         """Create a collector.
 
@@ -149,15 +157,15 @@ class Collector:
         try:
             if "greenlet" in concurrencies:
                 tried = "greenlet"
-                import greenlet
+                import greenlet  # type: ignore[import]
                 self.concur_id_func = greenlet.getcurrent
             elif "eventlet" in concurrencies:
                 tried = "eventlet"
-                import eventlet.greenthread     # pylint: disable=import-error,useless-suppression
+                import eventlet.greenthread    # type: ignore[import]   # pylint: disable=import-error,useless-suppression
                 self.concur_id_func = eventlet.greenthread.getcurrent
             elif "gevent" in concurrencies:
                 tried = "gevent"
-                import gevent                   # pylint: disable=import-error,useless-suppression
+                import gevent      # type: ignore[import]               # pylint: disable=import-error,useless-suppression
                 self.concur_id_func = gevent.getcurrent
 
             if "thread" in concurrencies:
@@ -182,20 +190,20 @@ class Collector:
 
         self.reset()
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<Collector at 0x{id(self):x}: {self.tracer_name()}>"
 
-    def use_data(self, covdata, context):
+    def use_data(self, covdata, context) -> None:
         """Use `covdata` for recording data."""
         self.covdata = covdata
         self.static_context = context
         self.covdata.set_context(self.static_context)
 
-    def tracer_name(self):
+    def tracer_name(self) -> str:
         """Return the class name of the tracer we're using."""
         return self._trace_class.__name__
 
-    def _clear_data(self):
+    def _clear_data(self) -> None:
         """Clear out existing data, but stay ready for more collection."""
         # We used to used self.data.clear(), but that would remove filename
         # keys and data values that were still in use higher up the stack
@@ -206,7 +214,7 @@ class Collector:
         for tracer in self.tracers:
             tracer.reset_activity()
 
-    def reset(self):
+    def reset(self) -> None:
         """Clear collected data, and prepare to collect more."""
         # A dictionary mapping file names to dicts with line number keys (if not
         # branch coverage), or mapping file names to dicts with line number
@@ -228,7 +236,7 @@ class Collector:
         # being excluded by the inclusion rules, in which case the
         # FileDisposition will be replaced by None in the cache.
         if env.PYPY:
-            import __pypy__                     # pylint: disable=import-error
+            import __pypy__  # type: ignore[import]  # pylint: disable=import-error
             # Alex Gaynor said:
             # should_trace_cache is a strictly growing key: once a key is in
             # it, it never changes.  Further, the keys used to access it are
@@ -252,7 +260,7 @@ class Collector:
 
         self._clear_data()
 
-    def _start_tracer(self):
+    def _start_tracer(self) -> None:
         """Start a new Tracer object, and store it in self.tracers."""
         tracer = self._trace_class()
         tracer.data = self.data
@@ -288,7 +296,7 @@ class Collector:
     #
     # New in 3.12: threading.settrace_all_threads: https://github.com/python/cpython/pull/96681
 
-    def _installation_trace(self, frame, event, arg):
+    def _installation_trace(self, frame, event, arg) -> None:
         """Called on new threads, installs the real tracer."""
         # Remove ourselves as the trace function.
         sys.settrace(None)
@@ -301,7 +309,7 @@ class Collector:
         # Return the new trace function to continue tracing in this scope.
         return fn
 
-    def start(self):
+    def start(self) -> None:
         """Start collecting trace information."""
         if self._collectors:
             self._collectors[-1].pause()
@@ -341,7 +349,7 @@ class Collector:
         if self.threading:
             self.threading.settrace(self._installation_trace)
 
-    def stop(self):
+    def stop(self) -> None:
         """Stop collecting trace information."""
         assert self._collectors
         if self._collectors[-1] is not self:
@@ -360,7 +368,7 @@ class Collector:
         if self._collectors:
             self._collectors[-1].resume()
 
-    def pause(self):
+    def pause(self) -> None:
         """Pause tracing, but be prepared to `resume`."""
         for tracer in self.tracers:
             tracer.stop()
@@ -372,7 +380,7 @@ class Collector:
         if self.threading:
             self.threading.settrace(None)
 
-    def resume(self):
+    def resume(self) -> None:
         """Resume tracing after a `pause`."""
         for tracer in self.tracers:
             tracer.start()
@@ -381,7 +389,7 @@ class Collector:
         else:
             self._start_tracer()
 
-    def _activity(self):
+    def _activity(self) -> None:
         """Has any activity been traced?
 
         Returns a boolean, True if any trace function was invoked.
@@ -389,7 +397,7 @@ class Collector:
         """
         return any(tracer.activity() for tracer in self.tracers)
 
-    def switch_context(self, new_context):
+    def switch_context(self, new_context) -> None:
         """Switch to a new dynamic context."""
         self.flush_data()
         if self.static_context:
@@ -400,7 +408,7 @@ class Collector:
             context = new_context
         self.covdata.set_context(context)
 
-    def disable_plugin(self, disposition):
+    def disable_plugin(self, disposition) -> None:
         """Disable the plugin mentioned in `disposition`."""
         file_tracer = disposition.file_tracer
         plugin = file_tracer._coverage_plugin
@@ -409,7 +417,7 @@ class Collector:
         plugin._coverage_enabled = False
         disposition.trace = False
 
-    def cached_mapped_file(self, filename):
+    def cached_mapped_file(self, filename) -> None:
         """A locally cached version of file names mapped through file_mapper."""
         key = (type(filename), filename)
         try:
@@ -417,7 +425,7 @@ class Collector:
         except KeyError:
             return self.mapped_file_cache.setdefault(key, self.file_mapper(filename))
 
-    def mapped_file_dict(self, d):
+    def mapped_file_dict(self, d) -> None:
         """Return a dict like d, but with keys modified by file_mapper."""
         # The call to list(items()) ensures that the GIL protects the dictionary
         # iterator against concurrent modifications by tracers running
@@ -436,11 +444,11 @@ class Collector:
 
         return {self.cached_mapped_file(k): v for k, v in items}
 
-    def plugin_was_disabled(self, plugin):
+    def plugin_was_disabled(self, plugin) -> None:
         """Record that `plugin` was disabled during the run."""
         self.disabled_plugins.add(plugin._coverage_plugin_name)
 
-    def flush_data(self):
+    def flush_data(self) -> None:
         """Save the collected data to our associated `CoverageData`.
 
         Data may have also been saved along the way. This forces the

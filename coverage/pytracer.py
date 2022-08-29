@@ -2,12 +2,19 @@
 # For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
 
 """Raw data collector for coverage.py."""
-
+from __future__ import annotations
 import atexit
 import dis
 import sys
+from threading import Thread
+from types import FrameType, TracebackType
+from typing import Callable, Any, cast, Iterable, Sized
+
+from typing_extensions import Protocol
 
 from coverage import env
+from coverage.disposition import FileDisposition
+from coverage.typing import WarnCallable
 
 # We need the YIELD_VALUE opcode below, in a comparison-friendly form.
 RESUME = dis.opmap.get('RESUME')
@@ -41,44 +48,46 @@ class PyTracer:
     # PyTracer to get accurate results.  The command-line --timid argument is
     # used to force the use of this tracer.
 
-    def __init__(self):
+    def __init__(self) -> None:
         # Attributes set from the collector:
-        self.data = None
+        self.data: dict[str, set[object]] = None  # type: ignore[assignment]
         self.trace_arcs = False
-        self.should_trace = None
-        self.should_trace_cache = None
-        self.should_start_context = None
-        self.warn = None
+        self.should_trace: Callable[[str, FrameType], FileDisposition] = None  # type: ignore[assignment]
+        self.should_trace_cache: dict[str, FileDisposition] = None  # type: ignore[assignment]
+        self.should_start_context: Callable[[str | FrameType], bool | None] | None = None
+        self.warn: WarnCallable | None = None
         # The threading module to use, if any.
-        self.threading = None
+        self.threading: Any = None  # can't use a module as a type
 
-        self.cur_file_data = None
+        self.cur_file_data: set[object] = None  # type: ignore[assignment]
         self.last_line = 0          # int, but uninitialized.
-        self.cur_file_name = None
-        self.context = None
+        self.cur_file_name: object = None
+        self.context: object = None
         self.started_context = False
 
-        self.data_stack = []
-        self.thread = None
+        self.data_stack: list[tuple[set[object], object, int, bool]] = []
+        self.thread: Thread | None = None
         self.stopped = False
         self._activity = False
 
         self.in_atexit = False
         # On exit, self.in_atexit = True
+
+        self.switch_context: Callable[[bool | None], None]
         atexit.register(setattr, self, 'in_atexit', True)
 
         # Cache a bound method on the instance, so that we don't have to
         # re-create a bound method object all the time.
         self._cached_bound_method_trace = self._trace
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return "<PyTracer at 0x{:x}: {} lines in {} files>".format(
             id(self),
             sum(len(v) for v in self.data.values()),
             len(self.data),
         )
 
-    def log(self, marker, *args):
+    def log(self, marker: object, *args: object) -> None:
         """For hard-core logging of what this tracer is doing."""
         with open("/tmp/debug_trace.txt", "a") as f:
             f.write("{} {}[{}]".format(
@@ -87,13 +96,13 @@ class PyTracer:
                 len(self.data_stack),
             ))
             if 0:   # if you want thread ids..
-                f.write(".{:x}.{:x}".format(
+                f.write(".{:x}.{:x}".format(  # type: ignore[unreachable]
                     self.thread.ident,
                     self.threading.current_thread().ident,
                 ))
             f.write(" {}".format(" ".join(map(str, args))))
             if 0:   # if you want callers..
-                f.write(" | ")
+                f.write(" | ")  # type: ignore[unreachable]
                 stack = " / ".join(
                     (fname or "???").rpartition("/")[-1]
                     for _, fname, _, _ in self.data_stack
@@ -101,7 +110,7 @@ class PyTracer:
                 f.write(stack)
             f.write("\n")
 
-    def _trace(self, frame, event, arg_unused):
+    def _trace(self, frame: FrameType, event: str, arg_unused: object) -> Callable[[FrameType, str, Any], Any | None] | None:
         """The trace function passed to sys.settrace."""
 
         if THIS_FILE in frame.f_code.co_filename:
@@ -113,7 +122,7 @@ class PyTracer:
             # The PyTrace.stop() method has been called, possibly by another
             # thread, let's deactivate ourselves now.
             if 0:
-                self.log("---\nX", frame.f_code.co_filename, frame.f_lineno)
+                self.log("---\nX", frame.f_code.co_filename, frame.f_lineno)  # type: ignore[unreachable]
                 f = frame
                 while f:
                     self.log(">", f.f_code.co_filename, f.f_lineno, f.f_code.co_name, f.f_trace)
@@ -242,7 +251,7 @@ class PyTracer:
                 self.switch_context(None)
         return self._cached_bound_method_trace
 
-    def start(self):
+    def start(self) -> object:
         """Start this Tracer.
 
         Return a Python function suitable for use with sys.settrace().
@@ -263,7 +272,7 @@ class PyTracer:
         sys.settrace(self._cached_bound_method_trace)
         return self._cached_bound_method_trace
 
-    def stop(self):
+    def stop(self) -> None:
         """Stop this Tracer."""
         # Get the active tracer callback before setting the stop flag to be
         # able to detect if the tracer was changed prior to stopping it.
@@ -274,7 +283,7 @@ class PyTracer:
         # right thread.
         self.stopped = True
 
-        if self.threading and self.thread.ident != self.threading.current_thread().ident:
+        if self.threading and cast(Thread, self.thread).ident != self.threading.current_thread().ident:
             # Called on a different thread than started us: we can't unhook
             # ourselves, but we've set the flag that we should stop, so we
             # won't do any more tracing.
@@ -293,14 +302,14 @@ class PyTracer:
                     slug="trace-changed",
                 )
 
-    def activity(self):
+    def activity(self) -> object:
         """Has there been any activity?"""
         return self._activity
 
-    def reset_activity(self):
+    def reset_activity(self) -> None:
         """Reset the activity() flag."""
         self._activity = False
 
-    def get_stats(self):
+    def get_stats(self) -> dict[object, object] | None:
         """Return a dictionary of statistics, or None."""
         return None

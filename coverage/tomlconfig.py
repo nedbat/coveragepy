@@ -2,14 +2,17 @@
 # For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
 
 """TOML configuration support for coverage.py"""
+from __future__ import annotations
 
 import os
 import re
+from typing import TypeVar
 
 from coverage import env
 from coverage.exceptions import ConfigError
 from coverage.misc import import_third_party, substitute_variables
 
+T = TypeVar("T")
 
 if env.PYVERSION >= (3, 11, 0, "alpha", 7):
     import tomllib      # pylint: disable=import-error
@@ -35,11 +38,11 @@ class TomlConfigParser:
     # need for docstrings.
     # pylint: disable=missing-function-docstring
 
-    def __init__(self, our_file):
+    def __init__(self, our_file: str):
         self.our_file = our_file
         self.data = None
 
-    def read(self, filenames):
+    def read(self, filenames: bytes | str | os.PathLike) -> list[str]:
         # RawConfigParser takes a filename or list of filenames, but we only
         # ever call this with a single filename.
         assert isinstance(filenames, (bytes, str, os.PathLike))
@@ -64,7 +67,7 @@ class TomlConfigParser:
                 raise ConfigError(msg.format(filename))
             return []
 
-    def _get_section(self, section):
+    def _get_section(self, section: str) -> tuple[str | None, dict[str, object] | None]:
         """Get a section from the data.
 
         Arguments:
@@ -91,7 +94,7 @@ class TomlConfigParser:
             return None, None
         return real_section, data
 
-    def _get(self, section, option):
+    def _get(self, section: str, option: str) -> tuple[str, object]:
         """Like .get, but returns the real section name and the value."""
         name, data = self._get_section(section)
         if data is None:
@@ -113,31 +116,31 @@ class TomlConfigParser:
             value = substitute_variables(value, os.environ)
         return name, value
 
-    def has_option(self, section, option):
+    def has_option(self, section: str, option: str) -> object:
         _, data = self._get_section(section)
         if data is None:
             return False
         return option in data
 
-    def has_section(self, section):
+    def has_section(self, section: str) -> object:
         name, _ = self._get_section(section)
         return name
 
-    def options(self, section):
+    def options(self, section: str) -> list[object]:
         _, data = self._get_section(section)
         if data is None:
             raise ConfigError(f"No section: {section!r}")
         return list(data.keys())
 
-    def get_section(self, section):
+    def get_section(self, section: str) -> object:
         _, data = self._get_section(section)
         return data
 
-    def get(self, section, option):
+    def get(self, section: str, option: str) -> object:
         _, value = self._get_single(section, option)
         return value
 
-    def _check_type(self, section, option, value, type_, converter, type_desc):
+    def _check_type(self, section: str, option: str, value: T, type_: type[T], converter, type_desc: str) -> object:
         """Check that `value` has the type we want, converting if needed.
 
         Returns the resulting value of the desired type.
@@ -155,12 +158,12 @@ class TomlConfigParser:
             f"Option [{section}]{option} is not {type_desc}: {value!r}"
         )
 
-    def getboolean(self, section, option):
+    def getboolean(self, section: str, option: str) -> bool:
         name, value = self._get_single(section, option)
         bool_strings = {"true": True, "false": False}
         return self._check_type(name, option, value, bool, bool_strings.__getitem__, "a boolean")
 
-    def _get_list(self, section, option):
+    def _get_list(self, section: str, option: str) -> list[object]:
         """Get a list of strings, substituting environment variables in the elements."""
         name, values = self._get(section, option)
         values = self._check_type(name, option, values, list, None, "a list")
@@ -171,7 +174,7 @@ class TomlConfigParser:
         _, values = self._get_list(section, option)
         return values
 
-    def getregexlist(self, section, option):
+    def getregexlist(self, section: str, option: str) -> list[str]:
         name, values = self._get_list(section, option)
         for value in values:
             value = value.strip()
@@ -181,11 +184,11 @@ class TomlConfigParser:
                 raise ConfigError(f"Invalid [{name}].{option} value {value!r}: {e}") from e
         return values
 
-    def getint(self, section, option):
+    def getint(self, section: str, option: str) -> int:
         name, value = self._get_single(section, option)
         return self._check_type(name, option, value, int, int, "an integer")
 
-    def getfloat(self, section, option):
+    def getfloat(self, section: str, option: str) -> float:
         name, value = self._get_single(section, option)
         if isinstance(value, int):
             value = float(value)

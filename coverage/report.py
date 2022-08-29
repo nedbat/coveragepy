@@ -5,12 +5,13 @@
 
 import sys
 
+from coverage import Coverage
 from coverage.exceptions import CoverageException, NoDataError, NotPython
 from coverage.files import prep_patterns, GlobMatcher
 from coverage.misc import ensure_dir_for_file, file_be_gone
 
 
-def render_report(output_path, reporter, morfs, msgfn):
+def render_report(output_path, reporter, morfs, msgfn) -> None:
     """Run a one-file report generator, managing the output file.
 
     This function ensures the output file is ready to be written to. Then writes
@@ -45,7 +46,7 @@ def render_report(output_path, reporter, morfs, msgfn):
                 msgfn(f"Wrote {reporter.report_type} to {output_path}")
 
 
-def get_analysis_to_report(coverage, morfs):
+def get_analysis_to_report(coverage: Coverage, morfs) -> None:
     """Get the files to report on.
 
     For each morf in `morfs`, if it should be reported on (based on the omit

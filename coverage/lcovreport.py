@@ -19,7 +19,7 @@ class LcovReporter:
         self.coverage = coverage
         self.config = self.coverage.config
 
-    def report(self, morfs, outfile=None):
+    def report(self, morfs, outfile=None) -> None:
         """Renders the full lcov report.
 
         'morfs' is a list of modules or filenames
@@ -33,7 +33,7 @@ class LcovReporter:
         for fr, analysis in get_analysis_to_report(self.coverage, morfs):
             self.get_lcov(fr, analysis, outfile)
 
-    def get_lcov(self, fr, analysis, outfile=None):
+    def get_lcov(self, fr, analysis, outfile=None) -> None:
         """Produces the lcov data for a single file.
 
         This currently supports both line and branch coverage,

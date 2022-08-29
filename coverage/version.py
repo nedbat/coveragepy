@@ -8,7 +8,7 @@
 version_info = (6, 6, 0, "beta", 2)
 
 
-def _make_version(major, minor, micro, releaselevel, serial):
+def _make_version(major: int, minor: int, micro: int, releaselevel: str, serial: int) -> str:
     """Create a readable version string from version_info tuple components."""
     assert releaselevel in ['alpha', 'beta', 'candidate', 'final']
     version = "%d.%d.%d" % (major, minor, micro)
@@ -18,7 +18,7 @@ def _make_version(major, minor, micro, releaselevel, serial):
     return version
 
 
-def _make_url(major, minor, micro, releaselevel, serial):
+def _make_url(major: int, minor: int, micro: int, releaselevel: str, serial: int) -> str:
     """Make the URL people should start at for this version of coverage.py."""
     url = "https://coverage.readthedocs.io"
     if releaselevel != 'final':

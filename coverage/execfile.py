@@ -3,6 +3,7 @@
 
 """Execute files of Python code."""
 
+from __future__ import annotations
 import importlib.machinery
 import importlib.util
 import inspect
@@ -28,11 +29,11 @@ class DummyLoader:
 
     Currently only implements the .fullname attribute
     """
-    def __init__(self, fullname, *_args):
+    def __init__(self, fullname: str, *_args: object):
         self.fullname = fullname
 
 
-def find_module(modulename):
+def find_module(modulename: str) -> tuple[str, str, importlib.machinery.ModuleSpec]:
     """Find the module named `modulename`.
 
     Returns the file path of the module, the name of the enclosing
@@ -73,7 +74,7 @@ class PyRunner:
         self.arg0 = args[0]
         self.package = self.modulename = self.pathname = self.loader = self.spec = None
 
-    def prepare(self):
+    def prepare(self) -> None:
         """Set sys.path properly.
 
         This needs to happen before any importing, and without importing anything.
@@ -111,7 +112,7 @@ class PyRunner:
         if path0 is not None:
             sys.path[0] = python_reported_file(path0)
 
-    def _prepare2(self):
+    def _prepare2(self) -> None:
         """Do more preparation to run Python code.
 
         Includes finding the module to run and adjusting sys.argv[0].
@@ -153,7 +154,7 @@ class PyRunner:
 
         self.arg0 = python_reported_file(self.arg0)
 
-    def run(self):
+    def run(self) -> None:
         """Run the Python code!"""
 
         self._prepare2()
@@ -236,7 +237,7 @@ class PyRunner:
             os.chdir(cwd)
 
 
-def run_python_module(args):
+def run_python_module(args) -> None:
     """Run a Python module, as though with ``python -m name args...``.
 
     `args` is the argument array to present as sys.argv, including the first
@@ -250,7 +251,7 @@ def run_python_module(args):
     runner.run()
 
 
-def run_python_file(args):
+def run_python_file(args) -> None:
     """Run a Python file as if it were the main program on the command line.
 
     `args` is the argument array to present as sys.argv, including the first
@@ -265,7 +266,7 @@ def run_python_file(args):
     runner.run()
 
 
-def make_code_from_py(filename):
+def make_code_from_py(filename) -> None:
     """Get source from `filename` and make a code object of it."""
     # Open the source file.
     try:
@@ -276,7 +277,7 @@ def make_code_from_py(filename):
     return compile(source, filename, "exec")
 
 
-def make_code_from_pyc(filename):
+def make_code_from_pyc(filename) -> None:
     """Get a code object from a .pyc file."""
     try:
         fpyc = open(filename, "rb")

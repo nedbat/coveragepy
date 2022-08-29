@@ -9,17 +9,20 @@ CoverageData is now defined in sqldata.py, and imported here to keep the
 imports working.
 
 """
+from __future__ import annotations
 
 import glob
 import hashlib
 import os.path
 
 from coverage.exceptions import CoverageException, NoDataError
+from coverage.files import PathAliases
 from coverage.misc import file_be_gone, human_sorted, plural
-from coverage.sqldata import CoverageData
+from coverage.sqldata import CoverageData as CoverageData
+from coverage.typing import WarnCallable
 
 
-def line_counts(data, fullpath=False):
+def line_counts(data, fullpath=False) -> None:
     """Return a dict summarizing the line coverage data.
 
     Keys are based on the file names, and values are the number of executed
@@ -40,7 +43,7 @@ def line_counts(data, fullpath=False):
     return summ
 
 
-def add_data_to_hash(data, filename, hasher):
+def add_data_to_hash(data, filename, hasher) -> None:
     """Contribute `filename`'s data to the `hasher`.
 
     `hasher` is a `coverage.misc.Hasher` instance to be updated with
@@ -55,7 +58,7 @@ def add_data_to_hash(data, filename, hasher):
     hasher.update(data.file_tracer(filename))
 
 
-def combinable_files(data_file, data_paths=None):
+def combinable_files(data_file, data_paths=None) -> None:
     """Make a list of data files to be combined.
 
     `data_file` is a path to a data file.  `data_paths` is a list of files or
@@ -79,7 +82,12 @@ def combinable_files(data_file, data_paths=None):
 
 
 def combine_parallel_data(
-    data, aliases=None, data_paths=None, strict=False, keep=False, message=None,
+    data: CoverageData,
+    aliases: PathAliases = None,
+    data_paths: list[str] = None,
+    strict=False,
+    keep=False,
+    message: WarnCallable | None = None,
 ):
     """Combine a number of data files together.
 
@@ -168,7 +176,7 @@ def combine_parallel_data(
         raise NoDataError("No usable data files")
 
 
-def debug_data_file(filename):
+def debug_data_file(filename) -> None:
     """Implementation of 'coverage debug data'."""
     data = CoverageData(filename)
     filename = data.data_filename()

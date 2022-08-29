@@ -3,8 +3,13 @@
 
 """Determine contexts for coverage.py"""
 
+from __future__ import annotations
 
-def combine_context_switchers(context_switchers):
+from types import FrameType
+from typing import Callable
+
+
+def combine_context_switchers(context_switchers: list[Callable[[FrameType], str]]) -> Callable[[FrameType], str] | None:
     """Create a single context switcher from multiple switchers.
 
     `context_switchers` is a list of functions that take a frame as an
@@ -23,7 +28,7 @@ def combine_context_switchers(context_switchers):
     if len(context_switchers) == 1:
         return context_switchers[0]
 
-    def should_start_context(frame):
+    def should_start_context(frame) -> None:
         """The combiner for multiple context switchers."""
         for switcher in context_switchers:
             new_context = switcher(frame)
@@ -34,7 +39,7 @@ def combine_context_switchers(context_switchers):
     return should_start_context
 
 
-def should_start_context_test_function(frame):
+def should_start_context_test_function(frame: FrameType) -> str | None:
     """Is this frame calling a test_* function?"""
     co_name = frame.f_code.co_name
     if co_name.startswith("test") or co_name == "runTest":
@@ -42,7 +47,7 @@ def should_start_context_test_function(frame):
     return None
 
 
-def qualname_from_frame(frame):
+def qualname_from_frame(frame: FrameType) -> str | None:
     """Get a qualified name for the code running in `frame`."""
     co = frame.f_code
     fname = co.co_name

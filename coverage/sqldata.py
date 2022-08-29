@@ -2,6 +2,7 @@
 # For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
 
 """SQLite coverage data."""
+from __future__ import annotations
 
 import collections
 import functools
@@ -16,12 +17,17 @@ import sys
 import textwrap
 import threading
 import zlib
+from sqlite3 import Cursor, Connection
+from types import TracebackType
+from typing import Callable, Collection, Iterable, Any, Sequence, Sized
+from typing_extensions import Final, Concatenate, Literal
 
-from coverage.debug import NoDebugging, SimpleReprMixin, clipped_repr
+from coverage.debug import NoDebugging, SimpleReprMixin, clipped_repr, DebugControl
 from coverage.exceptions import CoverageException, DataError
 from coverage.files import PathAliases
 from coverage.misc import contract, file_be_gone, isolate_module
 from coverage.numbits import numbits_to_nums, numbits_union, nums_to_numbits
+from coverage.typing import WarnCallable, P, R, T
 from coverage.version import __version__
 
 os = isolate_module(os)
@@ -184,7 +190,14 @@ class CoverageData(SimpleReprMixin):
 
     """
 
-    def __init__(self, basename=None, suffix=None, no_disk=False, warn=None, debug=None):
+    def __init__(
+        self,
+        basename: str | None = None,
+        suffix: str | None = None,
+        no_disk=False,
+        warn: WarnCallable | None = None,
+        debug: DebugControl | None = None
+    ):
         """Create a :class:`CoverageData` object to hold coverage-measured data.
 
         Arguments:
@@ -203,12 +216,12 @@ class CoverageData(SimpleReprMixin):
         self._basename = os.path.abspath(basename or ".coverage")
         self._suffix = suffix
         self._warn = warn
-        self._debug = debug or NoDebugging()
+        self._debug: Final = debug or NoDebugging()
 
         self._choose_filename()
-        self._file_map = {}
+        self._file_map: dict[str, int] = {}
         # Maps thread ids to SqliteDb objects.
-        self._dbs = {}
+        self._dbs: dict[object, SqliteDb] = {}
         self._pid = os.getpid()
         # Synchronize the operations used during collection.
         self._lock = threading.RLock()
@@ -219,14 +232,14 @@ class CoverageData(SimpleReprMixin):
         self._has_lines = False
         self._has_arcs = False
 
-        self._current_context = None
-        self._current_context_id = None
-        self._query_context_ids = None
+        self._current_context: str | None = None
+        self._current_context_id: int | None = None
+        self._query_context_ids: Collection[int] | None = None
 
-    def _locked(method):            # pylint: disable=no-self-argument
+    def _locked(method: Callable[Concatenate[CoverageData, P], R]) -> Callable[Concatenate[CoverageData, P], R]:  # type: ignore[misc]  # pylint: disable=no-self-argument
         """A decorator for methods that should hold self._lock."""
         @functools.wraps(method)
-        def _wrapped(self, *args, **kwargs):
+        def _wrapped(self: CoverageData, *args: P.args, **kwargs: P.kwargs) -> R:
             if self._debug.should("lock"):
                 self._debug.write(f"Locking {self._lock!r} for {method.__name__}")
             with self._lock:
@@ -236,7 +249,7 @@ class CoverageData(SimpleReprMixin):
                 return method(self, *args, **kwargs)
         return _wrapped
 
-    def _choose_filename(self):
+    def _choose_filename(self) -> None:
         """Set self._filename based on inited attributes."""
         if self._no_disk:
             self._filename = ":memory:"
@@ -246,7 +259,7 @@ class CoverageData(SimpleReprMixin):
             if suffix:
                 self._filename += "." + suffix
 
-    def _reset(self):
+    def _reset(self) -> None:
         """Reset our attributes."""
         if not self._no_disk:
             for db in self._dbs.values():
@@ -256,14 +269,14 @@ class CoverageData(SimpleReprMixin):
         self._have_used = False
         self._current_context_id = None
 
-    def _open_db(self):
+    def _open_db(self) -> None:
         """Open an existing db file, and read its metadata."""
         if self._debug.should("dataio"):
             self._debug.write(f"Opening data file {self._filename!r}")
         self._dbs[threading.get_ident()] = SqliteDb(self._filename, self._debug)
         self._read_db()
 
-    def _read_db(self):
+    def _read_db(self) -> None:
         """Read the metadata from a database so that we are ready to use it."""
         with self._dbs[threading.get_ident()] as db:
             try:
@@ -292,7 +305,7 @@ class CoverageData(SimpleReprMixin):
             for file_id, path in db.execute("select id, path from file"):
                 self._file_map[path] = file_id
 
-    def _init_db(self, db):
+    def _init_db(self, db: SqliteDb) -> None:
         """Write the initial contents of the database."""
         if self._debug.should("dataio"):
             self._debug.write(f"Initing data file {self._filename!r}")
@@ -306,13 +319,13 @@ class CoverageData(SimpleReprMixin):
             ]
         )
 
-    def _connect(self):
+    def _connect(self) -> SqliteDb:
         """Get the SqliteDb object to use."""
         if threading.get_ident() not in self._dbs:
             self._open_db()
         return self._dbs[threading.get_ident()]
 
-    def __bool__(self):
+    def __bool__(self) -> bool:
         if (threading.get_ident() not in self._dbs and not os.path.exists(self._filename)):
             return False
         try:
@@ -323,7 +336,7 @@ class CoverageData(SimpleReprMixin):
             return False
 
     @contract(returns="bytes")
-    def dumps(self):
+    def dumps(self) -> bytes:
         """Serialize the current data to a byte string.
 
         The format of the serialized data is not documented. It is only
@@ -347,7 +360,7 @@ class CoverageData(SimpleReprMixin):
             return b"z" + zlib.compress(script.encode("utf-8"))
 
     @contract(data="bytes")
-    def loads(self, data):
+    def loads(self, data: bytes) -> None:
         """Deserialize data from :meth:`dumps`.
 
         Use with a newly-created empty :class:`CoverageData` object.  It's
@@ -375,7 +388,7 @@ class CoverageData(SimpleReprMixin):
         self._read_db()
         self._have_used = True
 
-    def _file_id(self, filename, add=False):
+    def _file_id(self, filename: str, add=False) -> int | None:
         """Get the file id for `filename`.
 
         If filename is not in the database yet, add it if `add` is True.
@@ -390,7 +403,7 @@ class CoverageData(SimpleReprMixin):
                     )
         return self._file_map.get(filename)
 
-    def _context_id(self, context):
+    def _context_id(self, context: str | None) -> int | None:
         """Get the id for a context."""
         assert context is not None
         self._start_using()
@@ -402,7 +415,7 @@ class CoverageData(SimpleReprMixin):
                 return None
 
     @_locked
-    def set_context(self, context):
+    def set_context(self, context: str) -> None:
         """Set the current context for future :meth:`add_lines` etc.
 
         `context` is a str, the name of the context to use for the next data
@@ -416,7 +429,7 @@ class CoverageData(SimpleReprMixin):
         self._current_context = context
         self._current_context_id = None
 
-    def _set_context_id(self):
+    def _set_context_id(self) -> None:
         """Use the _current_context to set _current_context_id."""
         context = self._current_context or ""
         context_id = self._context_id(context)
@@ -429,7 +442,7 @@ class CoverageData(SimpleReprMixin):
                     (context,)
                 )
 
-    def base_filename(self):
+    def base_filename(self) -> str:
         """The base filename for storing data.
 
         .. versionadded:: 5.0
@@ -437,7 +450,7 @@ class CoverageData(SimpleReprMixin):
         """
         return self._basename
 
-    def data_filename(self):
+    def data_filename(self) -> str:
         """Where is the data stored?
 
         .. versionadded:: 5.0
@@ -446,7 +459,7 @@ class CoverageData(SimpleReprMixin):
         return self._filename
 
     @_locked
-    def add_lines(self, line_data):
+    def add_lines(self, line_data: dict[str, Collection[int]]) -> None:
         """Add measured line data.
 
         `line_data` is a dictionary mapping file names to iterables of ints::
@@ -479,7 +492,7 @@ class CoverageData(SimpleReprMixin):
                 )
 
     @_locked
-    def add_arcs(self, arc_data):
+    def add_arcs(self, arc_data: dict[str, Collection[tuple[int, int]]]) -> None:
         """Add measured arc data.
 
         `arc_data` is a dictionary mapping file names to iterables of pairs of
@@ -507,7 +520,7 @@ class CoverageData(SimpleReprMixin):
                     data,
                 )
 
-    def _choose_lines_or_arcs(self, lines=False, arcs=False):
+    def _choose_lines_or_arcs(self, lines=False, arcs=False) -> None:
         """Force the data file to choose between lines and arcs."""
         assert lines or arcs
         assert not (lines and arcs)
@@ -529,7 +542,7 @@ class CoverageData(SimpleReprMixin):
                 )
 
     @_locked
-    def add_file_tracers(self, file_tracers):
+    def add_file_tracers(self, file_tracers: dict[str, str]) -> None:
         """Add per-file plugin information.
 
         `file_tracers` is { filename: plugin_name, ... }
@@ -562,7 +575,7 @@ class CoverageData(SimpleReprMixin):
                         (file_id, plugin_name)
                     )
 
-    def touch_file(self, filename, plugin_name=""):
+    def touch_file(self, filename: str, plugin_name="") -> None:
         """Ensure that `filename` appears in the data, empty if needed.
 
         `plugin_name` is the name of the plugin responsible for this file. It is used
@@ -570,7 +583,7 @@ class CoverageData(SimpleReprMixin):
         """
         self.touch_files([filename], plugin_name)
 
-    def touch_files(self, filenames, plugin_name=""):
+    def touch_files(self, filenames: Iterable[str], plugin_name="") -> None:
         """Ensure that `filenames` appear in the data, empty if needed.
 
         `plugin_name` is the name of the plugin responsible for these files. It is used
@@ -589,7 +602,7 @@ class CoverageData(SimpleReprMixin):
                     # Set the tracer for this file
                     self.add_file_tracers({filename: plugin_name})
 
-    def update(self, other_data, aliases=None):
+    def update(self, other_data: CoverageData, aliases: PathAliases | None = None) -> None:
         """Update this data with data from several other :class:`CoverageData` instances.
 
         If `aliases` is provided, it's a `PathAliases` object that is used to
@@ -757,7 +770,7 @@ class CoverageData(SimpleReprMixin):
             self._reset()
             self.read()
 
-    def erase(self, parallel=False):
+    def erase(self, parallel=False) -> None:
         """Erase the data in this object.
 
         If `parallel` is true, then also deletes data files created from the
@@ -779,17 +792,17 @@ class CoverageData(SimpleReprMixin):
                     self._debug.write(f"Erasing parallel data file {filename!r}")
                 file_be_gone(filename)
 
-    def read(self):
+    def read(self) -> None:
         """Start using an existing data file."""
         if os.path.exists(self._filename):
             with self._connect():
                 self._have_used = True
 
-    def write(self):
+    def write(self) -> None:
         """Ensure the data is written to the data file."""
         pass
 
-    def _start_using(self):
+    def _start_using(self) -> None:
         """Call this before using the database at all."""
         if self._pid != os.getpid():
             # Looks like we forked! Have to start a new data file.
@@ -800,15 +813,15 @@ class CoverageData(SimpleReprMixin):
             self.erase()
         self._have_used = True
 
-    def has_arcs(self):
+    def has_arcs(self) -> bool:
         """Does the database have arcs (True) or lines (False)."""
         return bool(self._has_arcs)
 
-    def measured_files(self):
+    def measured_files(self) -> set[str]:
         """A set of all files that had been measured."""
         return set(self._file_map)
 
-    def measured_contexts(self):
+    def measured_contexts(self) -> set[object]:
         """A set of all contexts that have been measured.
 
         .. versionadded:: 5.0
@@ -819,7 +832,7 @@ class CoverageData(SimpleReprMixin):
             contexts = {row[0] for row in con.execute("select distinct(context) from context")}
         return contexts
 
-    def file_tracer(self, filename):
+    def file_tracer(self, filename: str) -> str | None:
         """Get the plugin name of the file tracer for a file.
 
         Returns the name of the plugin that handles this file.  If the file was
@@ -837,7 +850,7 @@ class CoverageData(SimpleReprMixin):
                 return row[0] or ""
             return ""   # File was measured, but no tracer associated.
 
-    def set_query_context(self, context):
+    def set_query_context(self, context: str) -> None:
         """Set a context for subsequent querying.
 
         The next :meth:`lines`, :meth:`arcs`, or :meth:`contexts_by_lineno`
@@ -853,7 +866,7 @@ class CoverageData(SimpleReprMixin):
             cur = con.execute("select id from context where context = ?", (context,))
             self._query_context_ids = [row[0] for row in cur.fetchall()]
 
-    def set_query_contexts(self, contexts):
+    def set_query_contexts(self, contexts: Sequence[str]) -> None:
         """Set a number of contexts for subsequent querying.
 
         The next :meth:`lines`, :meth:`arcs`, or :meth:`contexts_by_lineno`
@@ -874,7 +887,7 @@ class CoverageData(SimpleReprMixin):
         else:
             self._query_context_ids = None
 
-    def lines(self, filename):
+    def lines(self, filename: str) -> list[int] | None:
         """Get the list of lines executed for a source file.
 
         If the file was not measured, returns None.  A file might be measured,
@@ -888,7 +901,7 @@ class CoverageData(SimpleReprMixin):
         if self.has_arcs():
             arcs = self.arcs(filename)
             if arcs is not None:
-                all_lines = itertools.chain.from_iterable(arcs)
+                all_lines: Iterable[int] = itertools.chain.from_iterable(arcs)
                 return list({l for l in all_lines if l > 0})
 
         with self._connect() as con:
@@ -908,7 +921,7 @@ class CoverageData(SimpleReprMixin):
                     nums.update(numbits_to_nums(row[0]))
                 return list(nums)
 
-    def arcs(self, filename):
+    def arcs(self, filename: str) -> list[tuple[int, int]] | None:
         """Get the list of arcs executed for a file.
 
         If the file was not measured, returns None.  A file might be measured,
@@ -940,7 +953,7 @@ class CoverageData(SimpleReprMixin):
                 arcs = con.execute(query, data)
                 return list(arcs)
 
-    def contexts_by_lineno(self, filename):
+    def contexts_by_lineno(self, filename: str) -> dict[int, list[str]]:
         """Get the contexts for each line in a file.
 
         Returns:
@@ -990,7 +1003,7 @@ class CoverageData(SimpleReprMixin):
         return {lineno: list(contexts) for lineno, contexts in lineno_contexts_map.items()}
 
     @classmethod
-    def sys_info(cls):
+    def sys_info(cls) -> list[tuple[str, object]]:
         """Our information for `Coverage.sys_info`.
 
         Returns a list of (key, value) pairs.
@@ -1008,7 +1021,7 @@ class CoverageData(SimpleReprMixin):
         ]
 
 
-def filename_suffix(suffix):
+def filename_suffix(suffix: str | Literal[True] | None) -> str | None:
     """Compute a filename suffix for a data file.
 
     If `suffix` is a string or None, simply return it. If `suffix` is True,
@@ -1038,13 +1051,13 @@ class SqliteDb(SimpleReprMixin):
             db.execute("insert into schema (version) values (?)", (SCHEMA_VERSION,))
 
     """
-    def __init__(self, filename, debug):
+    def __init__(self, filename: str, debug: DebugControl | NoDebugging):
         self.debug = debug
         self.filename = filename
         self.nest = 0
-        self.con = None
+        self.con: Connection | None = None
 
-    def _connect(self):
+    def _connect(self) -> None:
         """Connect to the db and do universal initialization."""
         if self.con is not None:
             return
@@ -1070,20 +1083,20 @@ class SqliteDb(SimpleReprMixin):
         # This pragma makes writing faster.
         self.execute("pragma synchronous=off").close()
 
-    def close(self):
+    def close(self) -> None:
         """If needed, close the connection."""
         if self.con is not None and self.filename != ":memory:":
             self.con.close()
             self.con = None
 
-    def __enter__(self):
+    def __enter__(self) -> SqliteDb:
         if self.nest == 0:
             self._connect()
             self.con.__enter__()
         self.nest += 1
         return self
 
-    def __exit__(self, exc_type, exc_value, traceback):
+    def __exit__(self, exc_type: type[BaseException], exc_value: BaseException, traceback: TracebackType) -> None:
         self.nest -= 1
         if self.nest == 0:
             try:
@@ -1094,7 +1107,7 @@ class SqliteDb(SimpleReprMixin):
                     self.debug.write(f"EXCEPTION from __exit__: {exc}")
                 raise DataError(f"Couldn't end data file {self.filename!r}: {exc}") from exc
 
-    def execute(self, sql, parameters=()):
+    def execute(self, sql: str, parameters: Iterable[object] = ()) -> Cursor:
         """Same as :meth:`python:sqlite3.Connection.execute`."""
         if self.debug.should("sql"):
             tail = f" with {parameters!r}" if parameters else ""
@@ -1125,7 +1138,7 @@ class SqliteDb(SimpleReprMixin):
                 self.debug.write(f"EXCEPTION from execute: {msg}")
             raise DataError(f"Couldn't use data file {self.filename!r}: {msg}") from exc
 
-    def execute_for_rowid(self, sql, parameters=()):
+    def execute_for_rowid(self, sql: str, parameters: Iterable[object] = ()) -> int | None:
         """Like execute, but returns the lastrowid."""
         con = self.execute(sql, parameters)
         rowid = con.lastrowid
@@ -1133,7 +1146,7 @@ class SqliteDb(SimpleReprMixin):
             self.debug.write(f"Row id result: {rowid!r}")
         return rowid
 
-    def execute_one(self, sql, parameters=()):
+    def execute_one(self, sql: str, parameters: Iterable[object] = ()) -> Any | None:
         """Execute a statement and return the one row that results.
 
         This is like execute(sql, parameters).fetchone(), except it is
@@ -1150,7 +1163,7 @@ class SqliteDb(SimpleReprMixin):
         else:
             raise AssertionError(f"SQL {sql!r} shouldn't return {len(rows)} rows")
 
-    def executemany(self, sql, data):
+    def executemany(self, sql: str, data: Iterable[object]) -> object:
         """Same as :meth:`python:sqlite3.Connection.executemany`."""
         if self.debug.should("sql"):
             data = list(data)
@@ -1167,7 +1180,7 @@ class SqliteDb(SimpleReprMixin):
             # https://github.com/nedbat/coveragepy/issues/1010
             return self.con.executemany(sql, data)
 
-    def executescript(self, script):
+    def executescript(self, script: str) -> None:
         """Same as :meth:`python:sqlite3.Connection.executescript`."""
         if self.debug.should("sql"):
             self.debug.write("Executing script with {} chars: {}".format(
@@ -1175,6 +1188,6 @@ class SqliteDb(SimpleReprMixin):
             ))
         self.con.executescript(script)
 
-    def dump(self):
+    def dump(self) -> str:
         """Return a multi-line string, the SQL dump of the database."""
         return "\n".join(self.con.iterdump())

@@ -27,7 +27,7 @@ class SummaryReporter:
         self.empty_count = 0
         self.total = Numbers(precision=self.config.precision)
 
-    def write(self, line):
+    def write(self, line) -> None:
         """Write a line to the output, adding a newline."""
         self.outfile.write(line.rstrip())
         self.outfile.write("\n")
@@ -147,7 +147,7 @@ class SummaryReporter:
         for end_line in end_lines:
             self.write(end_line)
 
-    def report(self, morfs, outfile=None):
+    def report(self, morfs, outfile=None) -> None:
         """Writes a report summarizing coverage statistics per module.
 
         `outfile` is a text-mode file object to write the summary to.
@@ -239,7 +239,7 @@ class SummaryReporter:
             formatter = self._report_text
         formatter(header, lines_values, total_line, end_lines)
 
-    def report_one_file(self, fr, analysis):
+    def report_one_file(self, fr, analysis) -> None:
         """Report on just one file, the callback from report()."""
         nums = analysis.numbers
         self.total += nums

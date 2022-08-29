@@ -3,8 +3,11 @@
 
 """Results of coverage measurement."""
 
+from __future__ import annotations
 import collections
+from typing import Iterable
 
+from coverage import CoverageData
 from coverage.debug import SimpleReprMixin
 from coverage.exceptions import ConfigError
 from coverage.misc import contract, nice_pair
@@ -13,7 +16,7 @@ from coverage.misc import contract, nice_pair
 class Analysis:
     """The results of analyzing a FileReporter."""
 
-    def __init__(self, data, precision, file_reporter, file_mapper):
+    def __init__(self, data: CoverageData, precision, file_reporter, file_mapper):
         self.data = data
         self.file_reporter = file_reporter
         self.filename = file_mapper(self.file_reporter.filename)
@@ -51,7 +54,7 @@ class Analysis:
             n_missing_branches=n_missing_branches,
         )
 
-    def missing_formatted(self, branches=False):
+    def missing_formatted(self, branches=False) -> str:
         """The missing line numbers, formatted nicely.
 
         Returns a string like "1-2, 5-11, 13-14".
@@ -66,24 +69,24 @@ class Analysis:
 
         return format_lines(self.statements, self.missing, arcs=arcs)
 
-    def has_arcs(self):
+    def has_arcs(self) -> bool:
         """Were arcs measured in this result?"""
         return self.data.has_arcs()
 
     @contract(returns='list(tuple(int, int))')
-    def arc_possibilities(self):
+    def arc_possibilities(self) -> list[tuple[int, int]]:
         """Returns a sorted list of the arcs in the code."""
         return self._arc_possibilities
 
     @contract(returns='list(tuple(int, int))')
-    def arcs_executed(self):
+    def arcs_executed(self) -> list[tuple[int, int]]:
         """Returns a sorted list of the arcs actually executed in the code."""
         executed = self.data.arcs(self.filename) or []
         executed = self.file_reporter.translate_arcs(executed)
         return sorted(executed)
 
     @contract(returns='list(tuple(int, int))')
-    def arcs_missing(self):
+    def arcs_missing(self) -> list[tuple[int, int]]:
         """Returns a sorted list of the unexecuted arcs in the code."""
         possible = self.arc_possibilities()
         executed = self.arcs_executed()
@@ -96,7 +99,7 @@ class Analysis:
         return sorted(missing)
 
     @contract(returns='list(tuple(int, int))')
-    def arcs_unpredicted(self):
+    def arcs_unpredicted(self) -> list[tuple[int, int]]:
         """Returns a sorted list of the executed arcs missing from the code."""
         possible = self.arc_possibilities()
         executed = self.arcs_executed()
@@ -113,16 +116,16 @@ class Analysis:
         )
         return sorted(unpredicted)
 
-    def _branch_lines(self):
+    def _branch_lines(self) -> list[int]:
         """Returns a list of line numbers that have more than one exit."""
         return [l1 for l1,count in self.exit_counts.items() if count > 1]
 
-    def _total_branches(self):
+    def _total_branches(self) -> int:
         """How many total branches are there?"""
         return sum(count for count in self.exit_counts.values() if count > 1)
 
     @contract(returns='dict(int: list(int))')
-    def missing_branch_arcs(self):
+    def missing_branch_arcs(self) -> dict[int, list[int]]:
         """Return arcs that weren't executed from branch lines.
 
         Returns {l1:[l2a,l2b,...], ...}
@@ -137,7 +140,7 @@ class Analysis:
         return mba
 
     @contract(returns='dict(int: list(int))')
-    def executed_branch_arcs(self):
+    def executed_branch_arcs(self) -> dict[int, list[int]]:
         """Return arcs that were executed from branch lines.
 
         Returns {l1:[l2a,l2b,...], ...}
@@ -152,7 +155,7 @@ class Analysis:
         return eba
 
     @contract(returns='dict(int: tuple(int, int))')
-    def branch_stats(self):
+    def branch_stats(self) -> dict[int, tuple[int, int]]:
         """Get stats about branches.
 
         Returns a dict mapping line numbers to a tuple:
@@ -193,7 +196,7 @@ class Numbers(SimpleReprMixin):
         self.n_partial_branches = n_partial_branches
         self.n_missing_branches = n_missing_branches
 
-    def init_args(self):
+    def init_args(self) -> list[object]:
         """Return a list for __init__(*args) to recreate this object."""
         return [
             self._precision,
@@ -202,17 +205,17 @@ class Numbers(SimpleReprMixin):
         ]
 
     @property
-    def n_executed(self):
+    def n_executed(self) -> int:
         """Returns the number of executed statements."""
         return self.n_statements - self.n_missing
 
     @property
-    def n_executed_branches(self):
+    def n_executed_branches(self) -> int:
         """Returns the number of executed branches."""
         return self.n_branches - self.n_missing_branches
 
     @property
-    def pc_covered(self):
+    def pc_covered(self) -> float:
         """Returns a single percentage value for coverage."""
         if self.n_statements > 0:
             numerator, denominator = self.ratio_covered
@@ -222,7 +225,7 @@ class Numbers(SimpleReprMixin):
         return pc_cov
 
     @property
-    def pc_covered_str(self):
+    def pc_covered_str(self) -> str:
         """Returns the percent covered, as a string, without a percent sign.
 
         Note that "0" is only returned when the value is truly zero, and "100"
@@ -232,7 +235,7 @@ class Numbers(SimpleReprMixin):
         """
         return self.display_covered(self.pc_covered)
 
-    def display_covered(self, pc):
+    def display_covered(self, pc: float) -> str:
         """Return a displayable total percentage, as a string.
 
         Note that "0" is only returned when the value is truly zero, and "100"
@@ -248,7 +251,7 @@ class Numbers(SimpleReprMixin):
             pc = round(pc, self._precision)
         return "%.*f" % (self._precision, pc)
 
-    def pc_str_width(self):
+    def pc_str_width(self) -> int:
         """How many characters wide can pc_covered_str be?"""
         width = 3   # "100"
         if self._precision > 0:
@@ -256,13 +259,13 @@ class Numbers(SimpleReprMixin):
         return width
 
     @property
-    def ratio_covered(self):
+    def ratio_covered(self) -> tuple[int, int]:
         """Return a numerator and denominator for the coverage ratio."""
         numerator = self.n_executed + self.n_executed_branches
         denominator = self.n_statements + self.n_branches
         return numerator, denominator
 
-    def __add__(self, other):
+    def __add__(self, other: Numbers) -> Numbers:
         nums = Numbers(precision=self._precision)
         nums.n_files = self.n_files + other.n_files
         nums.n_statements = self.n_statements + other.n_statements
@@ -277,13 +280,13 @@ class Numbers(SimpleReprMixin):
         )
         return nums
 
-    def __radd__(self, other):
+    def __radd__(self, other: int) -> Numbers:
         # Implementing 0+Numbers allows us to sum() a list of Numbers.
         assert other == 0   # we only ever call it this way.
         return self
 
 
-def _line_ranges(statements, lines):
+def _line_ranges(statements: Iterable[int], lines: Iterable[int]) -> list[tuple[int, int]]:
     """Produce a list of ranges for `format_lines`."""
     statements = sorted(statements)
     lines = sorted(lines)
@@ -307,7 +310,7 @@ def _line_ranges(statements, lines):
     return pairs
 
 
-def format_lines(statements, lines, arcs=None):
+def format_lines(statements: Iterable[int], lines: Iterable[int], arcs=None) -> str:
     """Nicely format a list of line numbers.
 
     Format a list of line numbers for printing by coalescing groups of lines as
@@ -339,7 +342,7 @@ def format_lines(statements, lines, arcs=None):
 
 
 @contract(total='number', fail_under='number', precision=int, returns=bool)
-def should_fail_under(total, fail_under, precision):
+def should_fail_under(total: float, fail_under: float, precision: int) -> bool:
     """Determine if a total should fail due to fail-under.
 
     `total` is a float, the coverage measurement total. `fail_under` is the

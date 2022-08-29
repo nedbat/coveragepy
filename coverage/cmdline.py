@@ -278,7 +278,7 @@ class CoverageOptionParser(optparse.OptionParser):
         """Used to stop the optparse error handler ending the process."""
         pass
 
-    def parse_args_ok(self, args=None, options=None):
+    def parse_args_ok(self, args=None, options=None) -> None:
         """Call optparse.parse_args, but return a triple:
 
         (ok, options, args)
@@ -290,7 +290,7 @@ class CoverageOptionParser(optparse.OptionParser):
             return False, None, None
         return True, options, args
 
-    def error(self, msg):
+    def error(self, msg) -> None:
         """Override optparse.error so sys.exit doesn't get called."""
         show_help(msg)
         raise self.OptionParserError
@@ -299,7 +299,7 @@ class CoverageOptionParser(optparse.OptionParser):
 class GlobalOptionParser(CoverageOptionParser):
     """Command-line parser for coverage.py global option arguments."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
 
         self.add_options([
@@ -331,14 +331,14 @@ class CmdOptionParser(CoverageOptionParser):
         self.add_options(options)
         self.cmd = action
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> None:
         # A convenience equality, so that I can put strings in unit test
         # results, and they will compare equal to objects.
         return (other == f"<CmdOptionParser:{self.cmd}>")
 
     __hash__ = None     # This object doesn't need to be hashed.
 
-    def get_prog_name(self):
+    def get_prog_name(self) -> None:
         """Override of an undocumented function in optparse.OptionParser."""
         program_name = super().get_prog_name()
 
@@ -540,7 +540,7 @@ COMMANDS = {
 }
 
 
-def show_help(error=None, topic=None, parser=None):
+def show_help(error=None, topic=None, parser=None) -> None:
     """Display an error message, or the named topic."""
     assert error or topic or parser
 
@@ -587,11 +587,11 @@ OK, ERR, FAIL_UNDER = 0, 1, 2
 class CoverageScript:
     """The command-line interface to coverage.py."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.global_option = False
         self.coverage = None
 
-    def command_line(self, argv):
+    def command_line(self, argv) -> None:
         """The bulk of the command line interface to coverage.py.
 
         `argv` is the argument list to process.
@@ -753,7 +753,7 @@ class CoverageScript:
 
         return OK
 
-    def do_help(self, options, args, parser):
+    def do_help(self, options, args, parser) -> None:
         """Deal with help requests.
 
         Return True if it handled the request, False if not.
@@ -786,7 +786,7 @@ class CoverageScript:
 
         return False
 
-    def do_run(self, options, args):
+    def do_run(self, options, args) -> None:
         """Implementation of 'coverage run'."""
 
         if not args:
@@ -845,7 +845,7 @@ class CoverageScript:
 
         return OK
 
-    def do_debug(self, args):
+    def do_debug(self, args) -> None:
         """Implementation of 'coverage debug'."""
 
         if not args:
@@ -878,7 +878,7 @@ class CoverageScript:
         return OK
 
 
-def unshell_list(s):
+def unshell_list(s) -> None:
     """Turn a command-line argument into a list."""
     if not s:
         return None
@@ -892,7 +892,7 @@ def unshell_list(s):
     return s.split(',')
 
 
-def unglob_args(args):
+def unglob_args(args) -> None:
     """Interpret shell wildcards for platforms that need it."""
     if env.WINDOWS:
         globbed = []
@@ -938,7 +938,7 @@ HELP_TOPICS = {
 }
 
 
-def main(argv=None):
+def main(argv=None) -> None:
     """The main entry point to coverage.py.
 
     This is installed as the script entry point.
@@ -973,10 +973,10 @@ def main(argv=None):
 # $set_env.py: COVERAGE_PROFILE - Set to use ox_profile.
 _profile = os.environ.get("COVERAGE_PROFILE", "")
 if _profile:                                                # pragma: debugging
-    from ox_profile.core.launchers import SimpleLauncher    # pylint: disable=import-error
+    from ox_profile.core.launchers import SimpleLauncher  # type: ignore[import]  # pylint: disable=import-error
     original_main = main
 
-    def main(argv=None):                                    # pylint: disable=function-redefined
+    def main(argv=None) -> None:                                    # pylint: disable=function-redefined
         """A wrapper around main that profiles."""
         profiler = SimpleLauncher.launch()
         try:

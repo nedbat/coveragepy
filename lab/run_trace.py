@@ -3,11 +3,20 @@
 
 """Run a simple trace function on a file of Python code."""
 
+from __future__ import annotations
 import os, sys
+from types import FrameType
+from typing_extensions import Protocol
 
-nest = 0
+nest: int | None = 0
 
-def trace(frame, event, arg):
+
+class _TraceType(Protocol):
+    def __call__(self, frame: FrameType, event: str, arg: object) -> _TraceType | None:
+        ...
+
+
+def trace(frame: FrameType, event: str, arg: object) -> _TraceType | None:
     global nest
 
     if nest is None:

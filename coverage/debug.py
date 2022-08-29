@@ -3,6 +3,7 @@
 
 """Control of and utilities for debugging."""
 
+from __future__ import annotations
 import contextlib
 import functools
 import inspect
@@ -14,8 +15,10 @@ import reprlib
 import sys
 import types
 import _thread
+from typing import Callable, Iterable, Generator, IO, AnyStr, Container
 
 from coverage.misc import isolate_module
+from coverage.typing import Fn
 
 os = isolate_module(os)
 
@@ -23,7 +26,7 @@ os = isolate_module(os)
 # When debugging, it can be helpful to force some options, especially when
 # debugging the configuration mechanisms you usually use to control debugging!
 # This is a list of forced debugging options.
-FORCED_DEBUG = []
+FORCED_DEBUG: list[str] = []
 FORCED_DEBUG_FILE = None
 
 
@@ -32,7 +35,7 @@ class DebugControl:
 
     show_repr_attr = False      # For SimpleReprMixin
 
-    def __init__(self, options, output):
+    def __init__(self, options: Iterable[object], output: object):
         """Configure the options and output file for debugging."""
         self.options = list(options) + FORCED_DEBUG
         self.suppress_callers = False
@@ -47,17 +50,17 @@ class DebugControl:
         )
         self.raw_output = self.output.outfile
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<DebugControl options={self.options!r} raw_output={self.raw_output!r}>"
 
-    def should(self, option):
+    def should(self, option: object) -> bool:
         """Decide whether to output debug information in category `option`."""
         if option == "callers" and self.suppress_callers:
             return False
         return (option in self.options)
 
     @contextlib.contextmanager
-    def without_callers(self):
+    def without_callers(self) -> Generator[None, None, None]:
         """A context manager to prevent call stacks from being logged."""
         old = self.suppress_callers
         self.suppress_callers = True
@@ -66,7 +69,7 @@ class DebugControl:
         finally:
             self.suppress_callers = old
 
-    def write(self, msg):
+    def write(self, msg: str) -> None:
         """Write a line of debug output.
 
         `msg` is the line to write. A newline will be appended.
@@ -84,27 +87,30 @@ class DebugControl:
 
 class DebugControlString(DebugControl):
     """A `DebugControl` that writes to a StringIO, for testing."""
-    def __init__(self, options):
+    def __init__(self, options: object):
         super().__init__(options, io.StringIO())
 
-    def get_output(self):
+    def get_output(self) -> object:
         """Get the output text from the `DebugControl`."""
         return self.raw_output.getvalue()
 
 
 class NoDebugging:
     """A replacement for DebugControl that will never try to do anything."""
-    def should(self, option):               # pylint: disable=unused-argument
+    def should(self, option: object) -> False:               # pylint: disable=unused-argument
         """Should we write debug messages?  Never."""
         return False
 
+    def write(self, msg: str) -> None:
+        raise NotImplementedError("NoDebugging should never write")
 
-def info_header(label):
+
+def info_header(label: str) -> str:
     """Make a nice header string."""
     return "--{:-<60s}".format(" "+label+" ")
 
 
-def info_formatter(info):
+def info_formatter(info: Iterable[tuple[str, object]]) -> Generator[str, None, None]:
     """Produce a sequence of formatted lines from info.
 
     `info` is a sequence of pairs (label, data).  The produced lines are
@@ -131,7 +137,7 @@ def info_formatter(info):
             yield "%*s: %s" % (label_len, label, data)
 
 
-def write_formatted_info(write, header, info):
+def write_formatted_info(write: Callable[[str], None], header: str, info: Iterable[tuple[str, object]]) -> None:
     """Write a sequence of (label,data) pairs nicely.
 
     `write` is a function write(str) that accepts each line of output.
@@ -145,7 +151,7 @@ def write_formatted_info(write, header, info):
         write(f" {line}")
 
 
-def short_stack(limit=None, skip=0):
+def short_stack(limit: int | None=None, skip=0) -> str:
     """Return a string summarizing the call stack.
 
     The string is multi-line, with one line per stack frame. Each line shows
@@ -167,21 +173,21 @@ def short_stack(limit=None, skip=0):
     return "\n".join("%30s : %s:%d" % (t[3], t[1], t[2]) for t in stack)
 
 
-def dump_stack_frames(limit=None, out=None, skip=0):
+def dump_stack_frames(limit: int | None=None, out: IO[str] | None = None, skip=0) -> None:
     """Print a summary of the stack to stdout, or someplace else."""
     out = out or sys.stdout
     out.write(short_stack(limit=limit, skip=skip+1))
     out.write("\n")
 
 
-def clipped_repr(text, numchars=50):
+def clipped_repr(text: str, numchars=50) -> str:
     """`repr(text)`, but limited to `numchars`."""
     r = reprlib.Repr()
     r.maxstring = numchars
     return r.repr(text)
 
 
-def short_id(id64):
+def short_id(id64: int) -> int:
     """Given a 64-bit id, make a shorter 16-bit one."""
     id16 = 0
     for offset in range(0, 64, 16):
@@ -189,7 +195,7 @@ def short_id(id64):
     return id16 & 0xFFFF
 
 
-def add_pid_and_tid(text):
+def add_pid_and_tid(text: str) -> str:
     """A filter to add pid and tid to debug messages."""
     # Thread ids are useful, but too long. Make a shorter one.
     tid = f"{short_id(_thread.get_ident()):04x}"
@@ -201,7 +207,7 @@ class SimpleReprMixin:
     """A mixin implementing a simple __repr__."""
     simple_repr_ignore = ['simple_repr_ignore', '$coverage.object_id']
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         show_attrs = (
             (k, v) for k, v in self.__dict__.items()
             if getattr(v, "show_repr_attr", True)
@@ -215,7 +221,7 @@ class SimpleReprMixin:
         )
 
 
-def simplify(v):                                            # pragma: debugging
+def simplify(v: object) -> object:                                            # pragma: debugging
     """Turn things which are nearly dict/list/etc into dict/list/etc."""
     if isinstance(v, dict):
         return {k:simplify(vv) for k, vv in v.items()}
@@ -227,13 +233,13 @@ def simplify(v):                                            # pragma: debugging
         return v
 
 
-def pp(v):                                                  # pragma: debugging
+def pp(v: object) -> None:                                                  # pragma: debugging
     """Debug helper to pretty-print data, including SimpleNamespace objects."""
     # Might not be needed in 3.9+
     pprint.pprint(simplify(v))
 
 
-def filter_text(text, filters):
+def filter_text(text: str, filters: Iterable[object]) -> str:
     """Run `text` through a series of filters.
 
     `filters` is a list of functions. Each takes a string and returns a
@@ -256,10 +262,10 @@ def filter_text(text, filters):
 
 class CwdTracker:                                   # pragma: debugging
     """A class to add cwd info to debug messages."""
-    def __init__(self):
+    def __init__(self) -> None:
         self.cwd = None
 
-    def filter(self, text):
+    def filter(self, text: str) -> str:
         """Add a cwd message for each new cwd."""
         cwd = os.getcwd()
         if cwd != self.cwd:
@@ -270,7 +276,7 @@ class CwdTracker:                                   # pragma: debugging
 
 class DebugOutputFile:                              # pragma: debugging
     """A file-like object that includes pid and cwd information."""
-    def __init__(self, outfile, show_process, filters):
+    def __init__(self, outfile: IO[str], show_process, filters):
         self.outfile = outfile
         self.show_process = show_process
         self.filters = list(filters)
@@ -286,7 +292,13 @@ class DebugOutputFile:                              # pragma: debugging
     SINGLETON_ATTR = 'the_one_and_is_interim'
 
     @classmethod
-    def get_one(cls, fileobj=None, show_process=True, filters=(), interim=False):
+    def get_one(
+        cls,
+        fileobj: IO[str] | None = None,
+        show_process=True,
+        filters=(),
+        interim=False
+    ) -> DebugOutputFile:
         """Get a DebugOutputFile.
 
         If `fileobj` is provided, then a new DebugOutputFile is made with it.
@@ -329,17 +341,17 @@ class DebugOutputFile:                              # pragma: debugging
             sys.modules[cls.SYS_MOD_NAME] = singleton_module
         return the_one
 
-    def write(self, text):
+    def write(self, text: str) -> None:
         """Just like file.write, but filter through all our filters."""
         self.outfile.write(filter_text(text, self.filters))
         self.outfile.flush()
 
-    def flush(self):
+    def flush(self) -> None:
         """Flush our file."""
         self.outfile.flush()
 
 
-def log(msg, stack=False):                                  # pragma: debugging
+def log(msg, stack=False) -> None:                                  # pragma: debugging
     """Write a log message as forcefully as possible."""
     out = DebugOutputFile.get_one(interim=True)
     out.write(msg+"\n")
@@ -347,7 +359,7 @@ def log(msg, stack=False):                                  # pragma: debugging
         dump_stack_frames(out=out, skip=1)
 
 
-def decorate_methods(decorator, butnot=(), private=False):  # pragma: debugging
+def decorate_methods(decorator: Callable[[Callable[..., object]], object], butnot: Container[str] = (), private=False) -> Callable[[type], object]:  # pragma: debugging
     """A class decorator to apply a decorator to methods."""
     def _decorator(cls):
         for name, meth in inspect.getmembers(cls, inspect.isroutine):
@@ -363,10 +375,10 @@ def decorate_methods(decorator, butnot=(), private=False):  # pragma: debugging
     return _decorator
 
 
-def break_in_pudb(func):                                    # pragma: debugging
+def break_in_pudb(func: Fn) -> Fn:                                    # pragma: debugging
     """A function decorator to stop in the debugger for each call."""
     @functools.wraps(func)
-    def _wrapper(*args, **kwargs):
+    def _wrapper(*args, **kwargs) -> object:
         import pudb
         sys.stdout = sys.__stdout__
         pudb.set_trace()
@@ -378,11 +390,11 @@ OBJ_IDS = itertools.count()
 CALLS = itertools.count()
 OBJ_ID_ATTR = "$coverage.object_id"
 
-def show_calls(show_args=True, show_stack=False, show_return=False):    # pragma: debugging
+def show_calls(show_args=True, show_stack=False, show_return=False) -> Callable[..., object]:    # pragma: debugging
     """A method decorator to debug-log each call to the function."""
-    def _decorator(func):
+    def _decorator(func) -> object:
         @functools.wraps(func)
-        def _wrapper(self, *args, **kwargs):
+        def _wrapper(self, *args, **kwargs) -> object:
             oid = getattr(self, OBJ_ID_ATTR, None)
             if oid is None:
                 oid = f"{os.getpid():08d} {next(OBJ_IDS):04d}"
@@ -412,7 +424,7 @@ def show_calls(show_args=True, show_stack=False, show_return=False):    # pragma
     return _decorator
 
 
-def _clean_stack_line(s):                                   # pragma: debugging
+def _clean_stack_line(s: str) -> str:                                   # pragma: debugging
     """Simplify some paths in a stack trace, for compactness."""
     s = s.strip()
     s = s.replace(os.path.dirname(__file__) + '/', '')

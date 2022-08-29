@@ -4,9 +4,11 @@
 """Bytecode manipulation for coverage.py"""
 
 import types
+from types import CodeType
+from typing import Generator
 
 
-def code_objects(code):
+def code_objects(code: CodeType) -> Generator[CodeType, None, None]:
     """Iterate over all the code objects in `code`."""
     stack = [code]
     while stack:

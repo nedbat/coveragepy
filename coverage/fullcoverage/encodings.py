@@ -15,11 +15,18 @@ a problem with coverage.py - that it starts too late to trace the coverage of
 many of the most fundamental modules in the Standard Library.
 
 """
-
+from __future__ import annotations
 import sys
+from types import TracebackType, FrameType
+from typing import Callable, Protocol
+
+
+class Fullcoverage_traceType(Protocol):
+    def __call__(self, *args: tuple[FrameType]) -> Fullcoverage_traceType: ...
+
 
 class FullCoverageTracer:
-    def __init__(self):
+    def __init__(self) -> None:
         # `traces` is a list of trace events.  Frames are tricky: the same
         # frame object is used for a whole scope, with new line numbers
         # written into it.  So in one scope, all the frame objects are the
@@ -31,9 +38,9 @@ class FullCoverageTracer:
         #       ((frame, event, arg), lineno), ...
         #       ]
         #
-        self.traces = []
+        self.traces: list[TracebackType] = []
 
-    def fullcoverage_trace(self, *args):
+    def fullcoverage_trace(self, *args: tuple[FrameType]) -> Fullcoverage_traceType:
         frame, event, arg = args
         if frame.f_lineno is not None:
             # https://bugs.python.org/issue46911

@@ -29,17 +29,17 @@ from coverage.python import source_for_file, source_for_morf
 _structseq = _pypy_irc_topic = None
 if env.PYPY:
     try:
-        import _structseq
+        import _structseq  # type: ignore[import, no-redef]
     except ImportError:
         pass
 
     try:
-        import _pypy_irc_topic
+        import _pypy_irc_topic  # type: ignore[import, no-redef]
     except ImportError:
         pass
 
 
-def canonical_path(morf, directory=False):
+def canonical_path(morf, directory=False) -> None:
     """Return the canonical path of the module or file `morf`.
 
     If the module is a package, then return its directory. If it is a
@@ -53,7 +53,7 @@ def canonical_path(morf, directory=False):
     return morf_path
 
 
-def name_for_module(filename, frame):
+def name_for_module(filename, frame) -> None:
     """Get the name of the module for a filename and frame.
 
     For configurability's sake, we allow __main__ modules to be matched by
@@ -95,12 +95,12 @@ def name_for_module(filename, frame):
         return dunder_name
 
 
-def module_is_namespace(mod):
+def module_is_namespace(mod) -> None:
     """Is the module object `mod` a PEP420 namespace module?"""
     return hasattr(mod, '__path__') and getattr(mod, '__file__', None) is None
 
 
-def module_has_file(mod):
+def module_has_file(mod) -> None:
     """Does the module object `mod` have an existing __file__ ?"""
     mod__file__ = getattr(mod, '__file__', None)
     if mod__file__ is None:
@@ -108,7 +108,7 @@ def module_has_file(mod):
     return os.path.exists(mod__file__)
 
 
-def file_and_path_for_module(modulename):
+def file_and_path_for_module(modulename) -> None:
     """Find the file and search path for `modulename`.
 
     Returns:
@@ -129,7 +129,7 @@ def file_and_path_for_module(modulename):
     return filename, path
 
 
-def add_stdlib_paths(paths):
+def add_stdlib_paths(paths) -> None:
     """Add paths where the stdlib can be found to the set `paths`."""
     # Look at where some standard modules are located. That's the
     # indication for "installed with the interpreter". In some
@@ -154,7 +154,7 @@ def add_stdlib_paths(paths):
             paths.add(canonical_path(structseq_file))
 
 
-def add_third_party_paths(paths):
+def add_third_party_paths(paths) -> None:
     """Add locations for third-party packages to the set `paths`."""
     # Get the paths that sysconfig knows about.
     scheme_names = set(sysconfig.get_scheme_names())
@@ -168,7 +168,7 @@ def add_third_party_paths(paths):
                 paths.add(config_paths[path_name])
 
 
-def add_coverage_paths(paths):
+def add_coverage_paths(paths) -> None:
     """Add paths where coverage.py code can be found to the set `paths`."""
     cover_path = canonical_path(__file__, directory=True)
     paths.add(cover_path)
@@ -180,7 +180,7 @@ def add_coverage_paths(paths):
         # part of coverage.py, and it uses six. Exclude those directories
         # just as we exclude ourselves.
         if env.USE_CONTRACTS:
-            import contracts
+            import contracts  # type: ignore[import]
             import six
             for mod in [contracts, six]:
                 paths.add(canonical_path(mod))
@@ -211,7 +211,7 @@ class InOrOut:
         # Is the source inside a third-party area?
         self.source_in_third = False
 
-    def configure(self, config):
+    def configure(self, config) -> None:
         """Apply the configuration to get ready for decision-time."""
         self.source_pkgs.extend(config.source_pkgs)
         for src in config.source or []:
@@ -238,7 +238,7 @@ class InOrOut:
         self.third_paths = set()
         add_third_party_paths(self.third_paths)
 
-        def debug(msg):
+        def debug(msg) -> None:
             if self.debug:
                 self.debug.write(msg)
 
@@ -302,7 +302,7 @@ class InOrOut:
                 debug(f"Source is in third-party because of source directory {src!r}")
                 self.source_in_third = True
 
-    def should_trace(self, filename, frame=None):
+    def should_trace(self, filename, frame=None) -> None:
         """Decide whether to trace execution in `filename`, with a reason.
 
         This function is called from the trace function.  As each new file name
@@ -314,7 +314,7 @@ class InOrOut:
         original_filename = filename
         disp = disposition_init(self.disp_class, filename)
 
-        def nope(disp, reason):
+        def nope(disp, reason) -> None:
             """Simple helper to make it easy to return NO."""
             disp.trace = False
             disp.reason = reason
@@ -403,7 +403,7 @@ class InOrOut:
 
         return disp
 
-    def check_include_omit_etc(self, filename, frame):
+    def check_include_omit_etc(self, filename, frame) -> None:
         """Check a file name against the include, omit, etc, rules.
 
         Returns a string or None.  String means, don't trace, and is the reason
@@ -465,13 +465,13 @@ class InOrOut:
         # No reason found to skip this file.
         return None
 
-    def warn_conflicting_settings(self):
+    def warn_conflicting_settings(self) -> None:
         """Warn if there are settings that conflict."""
         if self.include:
             if self.source or self.source_pkgs:
                 self.warn("--include is ignored because --source is set", slug="include-ignored")
 
-    def warn_already_imported_files(self):
+    def warn_already_imported_files(self) -> None:
         """Warn if files have already been imported that we will be measuring."""
         if self.include or self.source or self.source_pkgs:
             warned = set()
@@ -503,12 +503,12 @@ class InOrOut:
                         )
                     )
 
-    def warn_unimported_source(self):
+    def warn_unimported_source(self) -> None:
         """Warn about source packages that were of interest, but never traced."""
         for pkg in self.source_pkgs_unmatched:
             self._warn_about_unmeasured_code(pkg)
 
-    def _warn_about_unmeasured_code(self, pkg):
+    def _warn_about_unmeasured_code(self, pkg) -> None:
         """Warn about a package or module that we never traced.
 
         `pkg` is a string, the name of the package or module.
@@ -534,7 +534,7 @@ class InOrOut:
         msg = f"Module {pkg} was previously imported, but not measured"
         self.warn(msg, slug="module-not-measured")
 
-    def find_possibly_unexecuted_files(self):
+    def find_possibly_unexecuted_files(self) -> None:
         """Find files in the areas of interest that might be untraced.
 
         Yields pairs: file path, and responsible plug-in name.
@@ -549,13 +549,13 @@ class InOrOut:
         for src in self.source:
             yield from self._find_executable_files(src)
 
-    def _find_plugin_files(self, src_dir):
+    def _find_plugin_files(self, src_dir) -> None:
         """Get executable files from the plugins."""
         for plugin in self.plugins.file_tracers:
             for x_file in plugin.find_executable_files(src_dir):
                 yield x_file, plugin._coverage_plugin_name
 
-    def _find_executable_files(self, src_dir):
+    def _find_executable_files(self, src_dir) -> None:
         """Find executable files in `src_dir`.
 
         Search for files in `src_dir` that can be executed because they
@@ -576,7 +576,7 @@ class InOrOut:
                 continue
             yield file_path, plugin_name
 
-    def sys_info(self):
+    def sys_info(self) -> None:
         """Our information for Coverage.sys_info.
 
         Returns a list of (key, value) pairs.

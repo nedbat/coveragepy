@@ -34,11 +34,11 @@ class HandyConfigParser(configparser.ConfigParser):
         if our_file:
             self.section_prefixes.append("")
 
-    def read(self, filenames, encoding_unused=None):
+    def read(self, filenames, encoding_unused=None) -> None:
         """Read a file name as UTF-8 configuration data."""
         return super().read(filenames, encoding="utf-8")
 
-    def has_option(self, section, option):
+    def has_option(self, section, option) -> None:
         for section_prefix in self.section_prefixes:
             real_section = section_prefix + section
             has = super().has_option(real_section, option)
@@ -46,7 +46,7 @@ class HandyConfigParser(configparser.ConfigParser):
                 return has
         return False
 
-    def has_section(self, section):
+    def has_section(self, section) -> None:
         for section_prefix in self.section_prefixes:
             real_section = section_prefix + section
             has = super().has_section(real_section)
@@ -54,21 +54,21 @@ class HandyConfigParser(configparser.ConfigParser):
                 return real_section
         return False
 
-    def options(self, section):
+    def options(self, section) -> None:
         for section_prefix in self.section_prefixes:
             real_section = section_prefix + section
             if super().has_section(real_section):
                 return super().options(real_section)
         raise ConfigError(f"No section: {section!r}")
 
-    def get_section(self, section):
+    def get_section(self, section) -> None:
         """Get the contents of a section, as a dictionary."""
         d = {}
         for opt in self.options(section):
             d[opt] = self.get(section, opt)
         return d
 
-    def get(self, section, option, *args, **kwargs):
+    def get(self, section, option, *args, **kwargs) -> None:
         """Get a value, replacing environment variables also.
 
         The arguments are the same as `ConfigParser.get`, but in the found
@@ -89,7 +89,7 @@ class HandyConfigParser(configparser.ConfigParser):
         v = substitute_variables(v, os.environ)
         return v
 
-    def getlist(self, section, option):
+    def getlist(self, section, option) -> None:
         """Read a list of strings.
 
         The value of `section` and `option` is treated as a comma- and newline-
@@ -107,7 +107,7 @@ class HandyConfigParser(configparser.ConfigParser):
                     values.append(value)
         return values
 
-    def getregexlist(self, section, option):
+    def getregexlist(self, section, option) -> None:
         """Read a list of full-line regexes.
 
         The value of `section` and `option` is treated as a newline-separated
@@ -243,7 +243,7 @@ class CoverageConfig:
         "run_omit", "run_include",
     }
 
-    def from_args(self, **kwargs):
+    def from_args(self, **kwargs) -> None:
         """Read config values from `kwargs`."""
         for k, v in kwargs.items():
             if v is not None:
@@ -252,7 +252,7 @@ class CoverageConfig:
                 setattr(self, k, v)
 
     @contract(filename=str)
-    def from_file(self, filename, warn, our_file):
+    def from_file(self, filename, warn, our_file) -> None:
         """Read configuration from a .rc file.
 
         `filename` is a file name to read.
@@ -334,7 +334,7 @@ class CoverageConfig:
 
         return used
 
-    def copy(self):
+    def copy(self) -> None:
         """Return a copy of the configuration."""
         return copy.deepcopy(self)
 
@@ -407,7 +407,7 @@ class CoverageConfig:
         ('lcov_output', 'lcov:output'),
     ]
 
-    def _set_attr_from_config_option(self, cp, attr, where, type_=''):
+    def _set_attr_from_config_option(self, cp, attr, where, type_='') -> None:
         """Set an attribute on self if it exists in the ConfigParser.
 
         Returns True if the attribute was set.
@@ -420,11 +420,11 @@ class CoverageConfig:
             return True
         return False
 
-    def get_plugin_options(self, plugin):
+    def get_plugin_options(self, plugin) -> None:
         """Get a dictionary of options for the plugin named `plugin`."""
         return self.plugin_options.get(plugin, {})
 
-    def set_option(self, option_name, value):
+    def set_option(self, option_name, value) -> None:
         """Set an option in the configuration.
 
         `option_name` is a colon-separated string indicating the section and
@@ -455,7 +455,7 @@ class CoverageConfig:
         # If we get here, we didn't find the option.
         raise ConfigError(f"No such option: {option_name!r}")
 
-    def get_option(self, option_name):
+    def get_option(self, option_name) -> None:
         """Get an option from the configuration.
 
         `option_name` is a colon-separated string indicating the section and
@@ -483,11 +483,11 @@ class CoverageConfig:
         # If we get here, we didn't find the option.
         raise ConfigError(f"No such option: {option_name!r}")
 
-    def post_process_file(self, path):
+    def post_process_file(self, path) -> None:
         """Make final adjustments to a file path to make it usable."""
         return os.path.expanduser(path)
 
-    def post_process(self):
+    def post_process(self) -> None:
         """Make final adjustments to settings to make them usable."""
         self.data_file = self.post_process_file(self.data_file)
         self.html_dir = self.post_process_file(self.html_dir)
@@ -497,14 +497,14 @@ class CoverageConfig:
             for k, v in self.paths.items()
         )
 
-    def debug_info(self):
+    def debug_info(self) -> None:
         """Make a list of (name, value) pairs for writing debug info."""
         return human_sorted_items(
             (k, v) for k, v in self.__dict__.items() if not k.startswith("_")
         )
 
 
-def config_files_to_try(config_file):
+def config_files_to_try(config_file) -> None:
     """What config files should we try to read?
 
     Returns a list of tuples:
@@ -533,7 +533,7 @@ def config_files_to_try(config_file):
     return files_to_try
 
 
-def read_coverage_config(config_file, warn, **kwargs):
+def read_coverage_config(config_file, warn, **kwargs) -> None:
     """Read the coverage.py configuration.
 
     Arguments:

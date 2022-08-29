@@ -10,13 +10,13 @@ https://nedbatchelder.com/code/coverage
 
 import sys
 
-from coverage.version import __version__, __url__, version_info
+from coverage.version import __version__ as __version__, __url__ as __url__, version_info as version_info
 
-from coverage.control import Coverage, process_startup
-from coverage.data import CoverageData
-from coverage.exceptions import CoverageException
-from coverage.plugin import CoveragePlugin, FileTracer, FileReporter
-from coverage.pytracer import PyTracer
+from coverage.control import Coverage as Coverage, process_startup as process_startup
+from coverage.data import CoverageData as CoverageData
+from coverage.exceptions import CoverageException as CoverageException
+from coverage.plugin import CoveragePlugin as CoveragePlugin, FileTracer as FileTracer, FileReporter as FileReporter
+from coverage.pytracer import PyTracer as PyTracer
 
 # Backward compatibility.
 coverage = Coverage

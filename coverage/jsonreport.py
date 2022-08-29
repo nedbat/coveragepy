@@ -23,7 +23,7 @@ class JsonReporter:
         self.total = Numbers(self.config.precision)
         self.report_data = {}
 
-    def report(self, morfs, outfile=None):
+    def report(self, morfs, outfile=None) -> None:
         """Generate a json report for `morfs`.
 
         `morfs` is a list of modules or file names.
@@ -75,7 +75,7 @@ class JsonReporter:
 
         return self.total.n_statements and self.total.pc_covered
 
-    def report_one_file(self, coverage_data, analysis):
+    def report_one_file(self, coverage_data, analysis) -> None:
         """Extract the relevant report data for a single file."""
         nums = analysis.numbers
         self.total += nums

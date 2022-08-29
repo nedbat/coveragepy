@@ -3,17 +3,21 @@
 
 """Better tokenizing for coverage.py."""
 
+from __future__ import annotations
 import ast
 import keyword
 import re
 import token
 import tokenize
+from typing import Generator, Iterable, cast, Any
+from typing_extensions import TypeAlias
 
 from coverage import env
 from coverage.misc import contract
 
+TokenType: TypeAlias = tuple[int, str, str, tuple[int, int], tuple[int, int], str]
 
-def phys_tokens(toks):
+def phys_tokens(toks: Iterable[TokenType]) -> Generator[TokenType, None, None]:
     """Return all physical tokens, even line continuations.
 
     tokenize.generate_tokens() doesn't return a token for the backslash that
@@ -44,7 +48,7 @@ def phys_tokens(toks):
                 #
                 # so we need to figure out if the backslash is already in the
                 # string token or not.
-                inject_backslash = True
+                inject_backslash = True  # type: ignore[unreachable]
                 if last_ttext.endswith("\\"):
                     inject_backslash = False
                 elif ttype == token.STRING:
@@ -70,12 +74,12 @@ def phys_tokens(toks):
 
 class MatchCaseFinder(ast.NodeVisitor):
     """Helper for finding match/case lines."""
-    def __init__(self, source):
+    def __init__(self, source: str):
         # This will be the set of line numbers that start match or case statements.
-        self.match_case_lines = set()
+        self.match_case_lines: set[int] = set()
         self.visit(ast.parse(source))
 
-    def visit_Match(self, node):
+    def visit_Match(self, node: ast.Match) -> None:
         """Invoked by ast.NodeVisitor.visit"""
         self.match_case_lines.add(node.lineno)
         for case in node.cases:
@@ -84,7 +88,7 @@ class MatchCaseFinder(ast.NodeVisitor):
 
 
 @contract(source='unicode')
-def source_token_lines(source):
+def source_token_lines(source: str) -> Generator[str, None, None]:
     """Generate a series of lines, one for each line in `source`.
 
     Each line is a list of pairs, each pair is a token::
@@ -165,10 +169,10 @@ class CachedTokenizer:
     """
     def __init__(self):
         self.last_text = None
-        self.last_tokens = None
+        self.last_tokens: list[TokenType] | None= None
 
     @contract(text='unicode')
-    def generate_tokens(self, text):
+    def generate_tokens(self, text: str) -> Iterable[TokenType]:
         """A stand-in for `tokenize.generate_tokens`."""
         if text != self.last_text:
             self.last_text = text
@@ -178,14 +182,14 @@ class CachedTokenizer:
             except:
                 self.last_text = None
                 raise
-        return self.last_tokens
+        return cast(list[TokenType], self.last_tokens)
 
 # Create our generate_tokens cache as a callable replacement function.
 generate_tokens = CachedTokenizer().generate_tokens
 
 
 @contract(source='bytes')
-def source_encoding(source):
+def source_encoding(source: bytes) -> object:
     """Determine the encoding for `source`, according to PEP 263.
 
     `source` is a byte string: the text of the program.

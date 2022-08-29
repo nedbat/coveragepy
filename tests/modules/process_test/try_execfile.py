@@ -30,7 +30,7 @@ import sys
 # removes duplicate entries from sys.path.  So we do that too, since the extra
 # entries don't affect the running of the program.
 
-def same_file(p1, p2):
+def same_file(p1: str, p2: str) -> bool:
     """Determine if `p1` and `p2` refer to the same existing file."""
     if not p1:
         return not p2
@@ -45,7 +45,7 @@ def same_file(p1, p2):
         norm2 = os.path.normcase(os.path.normpath(p2))
         return norm1 == norm2
 
-def without_same_files(filenames):
+def without_same_files(filenames: list[str]) -> list[str]:
     """Return the list `filenames` with duplicates (by same_file) removed."""
     reduced = []
     for filename in filenames:

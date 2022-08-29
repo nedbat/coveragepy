@@ -23,7 +23,7 @@ from coverage.templite import Templite
 os = isolate_module(os)
 
 
-def data_filename(fname):
+def data_filename(fname) -> None:
     """Return the path to an "htmlfiles" data file of ours.
     """
     static_dir = os.path.join(os.path.dirname(__file__), "htmlfiles")
@@ -31,7 +31,7 @@ def data_filename(fname):
     return static_filename
 
 
-def read_data(fname):
+def read_data(fname) -> None:
     """Return the contents of a data file of ours."""
     with open(data_filename(fname)) as data_file:
         return data_file.read()
@@ -59,7 +59,7 @@ class HtmlDataGeneration:
                 self.coverage._warn("No contexts were measured")
         data.set_query_contexts(self.config.report_contexts)
 
-    def data_for_file(self, fr, analysis):
+    def data_for_file(self, fr, analysis) -> None:
         """Produce the data needed for one file's report."""
         if self.has_arcs:
             missing_branch_arcs = analysis.missing_branch_arcs()
@@ -204,7 +204,7 @@ class HtmlReporter:
         self.pyfile_html_source = read_data("pyfile.html")
         self.source_tmpl = Templite(self.pyfile_html_source, self.template_globals)
 
-    def report(self, morfs):
+    def report(self, morfs) -> None:
         """Generate an HTML report for `morfs`.
 
         `morfs` is a list of modules or file names.
@@ -254,13 +254,13 @@ class HtmlReporter:
         self.make_local_static_report_files()
         return self.totals.n_statements and self.totals.pc_covered
 
-    def make_directory(self):
+    def make_directory(self) -> None:
         """Make sure our htmlcov directory exists."""
         ensure_dir(self.directory)
         if not os.listdir(self.directory):
             self.directory_was_empty = True
 
-    def make_local_static_report_files(self):
+    def make_local_static_report_files(self) -> None:
         """Make local instances of static files for HTML report."""
         # The files we provide must always be copied.
         for static in self.STATIC_FILES:
@@ -277,7 +277,7 @@ class HtmlReporter:
         if self.extra_css:
             shutil.copyfile(self.config.extra_css, os.path.join(self.directory, self.extra_css))
 
-    def should_report_file(self, ftr):
+    def should_report_file(self, ftr) -> None:
         """Determine if we'll report this file."""
         # Get the numbers for this file.
         nums = ftr.analysis.numbers
@@ -371,7 +371,7 @@ class HtmlReporter:
         self.file_summaries.append(index_info)
         self.incr.set_index_info(ftr.rootname, index_info)
 
-    def index_file(self, first_html, final_html):
+    def index_file(self, first_html, final_html) -> None:
         """Write the index.html file for this report."""
         self.make_directory()
         index_tmpl = Templite(read_data("index.html"), self.template_globals)
@@ -439,12 +439,12 @@ class IncrementalChecker:
         self.directory = directory
         self.reset()
 
-    def reset(self):
+    def reset(self) -> None:
         """Initialize to empty. Causes all files to be reported."""
         self.globals = ''
         self.files = {}
 
-    def read(self):
+    def read(self) -> None:
         """Read the information we stored last time."""
         usable = False
         try:
@@ -486,7 +486,7 @@ class IncrementalChecker:
         with open(status_file, "w") as fout:
             json.dump(status, fout, separators=(',', ':'))
 
-    def check_global_data(self, *data):
+    def check_global_data(self, *data) -> None:
         """Check the global data that can affect incremental reporting."""
         m = Hasher()
         for d in data:
@@ -496,7 +496,7 @@ class IncrementalChecker:
             self.reset()
             self.globals = these_globals
 
-    def can_skip_file(self, data, fr, rootname):
+    def can_skip_file(self, data, fr, rootname) -> None:
         """Can we skip reporting this file?
 
         `data` is a CoverageData object, `fr` is a `FileReporter`, and
@@ -516,26 +516,26 @@ class IncrementalChecker:
             self.set_file_hash(rootname, this_hash)
             return False
 
-    def file_hash(self, fname):
+    def file_hash(self, fname) -> None:
         """Get the hash of `fname`'s contents."""
         return self.files.get(fname, {}).get('hash', '')
 
-    def set_file_hash(self, fname, val):
+    def set_file_hash(self, fname, val) -> None:
         """Set the hash of `fname`'s contents."""
         self.files.setdefault(fname, {})['hash'] = val
 
-    def index_info(self, fname):
+    def index_info(self, fname) -> None:
         """Get the information for index.html for `fname`."""
         return self.files.get(fname, {}).get('index', {})
 
-    def set_index_info(self, fname, info):
+    def set_index_info(self, fname, info) -> None:
         """Set the information for index.html for `fname`."""
         self.files.setdefault(fname, {})['index'] = info
 
 
 # Helpers for templates and generating HTML
 
-def escape(t):
+def escape(t) -> None:
     """HTML-escape the text in `t`.
 
     This is only suitable for HTML text, not attributes.

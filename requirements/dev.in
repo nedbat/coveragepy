@@ -12,6 +12,7 @@ tox
 -r pytest.pip
 
 # for linting.
+mypy==0.990
 cogapp
 greenlet
 pylint

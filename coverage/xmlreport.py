@@ -19,7 +19,7 @@ os = isolate_module(os)
 DTD_URL = 'https://raw.githubusercontent.com/cobertura/web/master/htdocs/xml/coverage-04.dtd'
 
 
-def rate(hit, num):
+def rate(hit, num) -> None:
     """Return the fraction of `hit`/`num`, as a string."""
     if num == 0:
         return "1"
@@ -46,7 +46,7 @@ class XmlReporter:
         self.packages = {}
         self.xml_out = None
 
-    def report(self, morfs, outfile=None):
+    def report(self, morfs, outfile=None) -> None:
         """Generate a Cobertura-compatible XML report for `morfs`.
 
         `morfs` is a list of modules or file names.
@@ -138,7 +138,7 @@ class XmlReporter:
             pct = 100.0 * (lhits_tot + bhits_tot) / denom
         return pct
 
-    def xml_file(self, fr, analysis, has_arcs):
+    def xml_file(self, fr, analysis, has_arcs) -> None:
         """Add to the XML report for a single file."""
 
         if self.config.skip_empty:
@@ -226,6 +226,6 @@ class XmlReporter:
         package[4] += class_branches
 
 
-def serialize_xml(dom):
+def serialize_xml(dom) -> None:
     """Serialize a minidom node to XML."""
     return dom.toprettyxml()

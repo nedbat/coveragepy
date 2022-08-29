@@ -3,6 +3,7 @@
 
 """Core control stuff for coverage.py."""
 
+from __future__ import annotations
 import atexit
 import collections
 import contextlib
@@ -48,7 +49,7 @@ except ImportError:                                         # pragma: only jytho
 os = isolate_module(os)
 
 @contextlib.contextmanager
-def override_config(cov, **kwargs):
+def override_config(cov, **kwargs) -> None:
     """Temporarily tweak the configuration of `cov`.
 
     The arguments are applied to `cov.config` with the `from_args` method.
@@ -91,7 +92,7 @@ class Coverage:
     _instances = []
 
     @classmethod
-    def current(cls):
+    def current(cls) -> None:
         """Get the latest started `Coverage` instance, if any.
 
         Returns: a `Coverage` instance, or None.
@@ -224,7 +225,8 @@ class Coverage:
         self._warnings = []
 
         # Other instance attributes, set later.
-        self._data = self._collector = None
+        self._data: CoverageData | None = None
+        self._collector = None
         self._plugins = None
         self._inorout = None
         self._data_suffix = self._run_suffix = None
@@ -260,7 +262,7 @@ class Coverage:
         if not env.METACOV:
             _prevent_sub_process_measurement()
 
-    def _init(self):
+    def _init(self) -> None:
         """Set all the initial state.
 
         This is called by the public methods to initialize state. This lets us
@@ -300,7 +302,7 @@ class Coverage:
             # this is a bit childish. :)
             plugin.configure([self, self.config][int(time.time()) % 2])
 
-    def _post_init(self):
+    def _post_init(self) -> None:
         """Stuff to do after everything is initialized."""
         if self._should_write_debug:
             self._should_write_debug = False
@@ -311,7 +313,7 @@ class Coverage:
         if self.config._crash and self.config._crash in short_stack(limit=4):
             raise Exception(f"Crashing because called by {self.config._crash}")
 
-    def _write_startup_debug(self):
+    def _write_startup_debug(self) -> None:
         """Write out debug info at startup if needed."""
         wrote_any = False
         with self._debug.without_callers():
@@ -335,7 +337,7 @@ class Coverage:
         if wrote_any:
             write_formatted_info(self._debug.write, "end", ())
 
-    def _should_trace(self, filename, frame):
+    def _should_trace(self, filename, frame) -> None:
         """Decide whether to trace execution in `filename`.
 
         Calls `_should_trace_internal`, and returns the FileDisposition.
@@ -346,7 +348,7 @@ class Coverage:
             self._debug.write(disposition_debug_msg(disp))
         return disp
 
-    def _check_include_omit_etc(self, filename, frame):
+    def _check_include_omit_etc(self, filename, frame) -> None:
         """Check a file name against the include/omit/etc, rules, verbosely.
 
         Returns a boolean: True if the file should be traced, False if not.
@@ -362,7 +364,7 @@ class Coverage:
 
         return not reason
 
-    def _warn(self, msg, slug=None, once=False):
+    def _warn(self, msg, slug=None, once=False) -> None:
         """Use `msg` as a warning.
 
         For warning suppression, use `slug` as the shorthand.
@@ -390,12 +392,12 @@ class Coverage:
         if once:
             self._no_warn_slugs.append(slug)
 
-    def _message(self, msg):
+    def _message(self, msg) -> None:
         """Write a message to the user, if configured to do so."""
         if self._messages:
             print(msg)
 
-    def get_option(self, option_name):
+    def get_option(self, option_name) -> None:
         """Get an option from the configuration.
 
         `option_name` is a colon-separated string indicating the section and
@@ -413,7 +415,7 @@ class Coverage:
         """
         return self.config.get_option(option_name)
 
-    def set_option(self, option_name, value):
+    def set_option(self, option_name, value) -> None:
         """Set an option in the configuration.
 
         `option_name` is a colon-separated string indicating the section and
@@ -445,7 +447,7 @@ class Coverage:
         """
         self.config.set_option(option_name, value)
 
-    def load(self):
+    def load(self) -> None:
         """Load previously-collected coverage data from the data file."""
         self._init()
         if self._collector:
@@ -457,7 +459,7 @@ class Coverage:
         if not should_skip:
             self._data.read()
 
-    def _init_for_start(self):
+    def _init_for_start(self) -> None:
         """Initialization for start()"""
         # Construct the collector.
         concurrency = self.config.concurrency or []
@@ -548,7 +550,7 @@ class Coverage:
                 # https://stackoverflow.com/questions/35772001/x/35792192#35792192
                 self._old_sigterm = signal.signal(signal.SIGTERM, self._on_sigterm)
 
-    def _init_data(self, suffix):
+    def _init_data(self, suffix) -> None:
         """Create a data file if we don't have one yet."""
         if self._data is None:
             # Create the data file.  We do this at construction time so that the
@@ -563,7 +565,7 @@ class Coverage:
                 no_disk=self._no_disk,
             )
 
-    def start(self):
+    def start(self) -> None:
         """Start measuring code coverage.
 
         Coverage measurement only occurs in functions called after
@@ -595,7 +597,7 @@ class Coverage:
         self._started = True
         self._instances.append(self)
 
-    def stop(self):
+    def stop(self) -> None:
         """Stop measuring code coverage."""
         if self._instances:
             if self._instances[-1] is self:
@@ -604,7 +606,7 @@ class Coverage:
             self._collector.stop()
         self._started = False
 
-    def _atexit(self, event="atexit"):
+    def _atexit(self, event="atexit") -> None:
         """Clean up on process shutdown."""
         if self._debug.should("process"):
             self._debug.write(f"{event}: pid: {os.getpid()}, instance: {self!r}")
@@ -613,7 +615,7 @@ class Coverage:
         if self._auto_save:
             self.save()
 
-    def _on_sigterm(self, signum_unused, frame_unused):
+    def _on_sigterm(self, signum_unused, frame_unused) -> None:
         """A handler for signal.SIGTERM."""
         self._atexit("sigterm")
         # Statements after here won't be seen by metacov because we just wrote
@@ -621,7 +623,7 @@ class Coverage:
         signal.signal(signal.SIGTERM, self._old_sigterm)    # pragma: not covered
         os.kill(os.getpid(), signal.SIGTERM)                # pragma: not covered
 
-    def erase(self):
+    def erase(self) -> None:
         """Erase previously collected coverage data.
 
         This removes the in-memory data collected in this session as well as
@@ -637,7 +639,7 @@ class Coverage:
         self._data = None
         self._inited_for_start = False
 
-    def switch_context(self, new_context):
+    def switch_context(self, new_context) -> None:
         """Switch to a new dynamic context.
 
         `new_context` is a string to use as the :ref:`dynamic context
@@ -658,13 +660,13 @@ class Coverage:
 
         self._collector.switch_context(new_context)
 
-    def clear_exclude(self, which='exclude'):
+    def clear_exclude(self, which='exclude') -> None:
         """Clear the exclude list."""
         self._init()
         setattr(self.config, which + "_list", [])
         self._exclude_regex_stale()
 
-    def exclude(self, regex, which='exclude'):
+    def exclude(self, regex, which='exclude') -> None:
         """Exclude source lines from execution consideration.
 
         A number of lists of regular expressions are maintained.  Each list
@@ -684,18 +686,18 @@ class Coverage:
         excl_list.append(regex)
         self._exclude_regex_stale()
 
-    def _exclude_regex_stale(self):
+    def _exclude_regex_stale(self) -> None:
         """Drop all the compiled exclusion regexes, a list was modified."""
         self._exclude_re.clear()
 
-    def _exclude_regex(self, which):
+    def _exclude_regex(self, which) -> None:
         """Return a compiled regex for the given exclusion list."""
         if which not in self._exclude_re:
             excl_list = getattr(self.config, which + "_list")
             self._exclude_re[which] = join_regex(excl_list)
         return self._exclude_re[which]
 
-    def get_exclude_list(self, which='exclude'):
+    def get_exclude_list(self, which='exclude') -> None:
         """Return a list of excluded regex patterns.
 
         `which` indicates which list is desired.  See :meth:`exclude` for the
@@ -705,12 +707,12 @@ class Coverage:
         self._init()
         return getattr(self.config, which + "_list")
 
-    def save(self):
+    def save(self) -> None:
         """Save the collected coverage data to the data file."""
         data = self.get_data()
         data.write()
 
-    def combine(self, data_paths=None, strict=False, keep=False):
+    def combine(self, data_paths=None, strict=False, keep=False) -> None:
         """Combine together a number of similarly-named coverage data files.
 
         All coverage data files whose name starts with `data_file` (from the
@@ -759,7 +761,7 @@ class Coverage:
             message=self._message,
         )
 
-    def get_data(self):
+    def get_data(self) -> None:
         """Get the collected data.
 
         Also warn about various problems collecting data.
@@ -782,7 +784,7 @@ class Coverage:
 
         return self._data
 
-    def _post_save_work(self):
+    def _post_save_work(self) -> None:
         """After saving data, look for warnings, post-work, etc.
 
         Warn about things that should have happened but didn't.
@@ -809,12 +811,12 @@ class Coverage:
                 self._data.touch_files(paths, plugin_name)
 
     # Backward compatibility with version 1.
-    def analysis(self, morf):
+    def analysis(self, morf) -> None:
         """Like `analysis2` but doesn't return excluded line numbers."""
         f, s, _, m, mf = self.analysis2(morf)
         return f, s, m, mf
 
-    def analysis2(self, morf):
+    def analysis2(self, morf) -> None:
         """Analyze a module.
 
         `morf` is a module or a file name.  It will be analyzed to determine
@@ -1103,7 +1105,7 @@ class Coverage:
         ):
             return render_report(self.config.lcov_output, LcovReporter(self), morfs, self._message)
 
-    def sys_info(self):
+    def sys_info(self) -> None:
         """Return a list of (key, value) pairs showing internal information."""
 
         import coverage as covmod
@@ -1111,7 +1113,7 @@ class Coverage:
         self._init()
         self._post_init()
 
-        def plugin_info(plugins):
+        def plugin_info(plugins) -> None:
             """Make an entry for the sys_info from a list of plug-ins."""
             entries = []
             for plugin in plugins:
@@ -1171,10 +1173,10 @@ class Coverage:
 if int(os.environ.get("COVERAGE_DEBUG_CALLS", 0)):              # pragma: debugging
     from coverage.debug import decorate_methods, show_calls
 
-    Coverage = decorate_methods(show_calls(show_args=True), butnot=['get_data'])(Coverage)
+    Coverage = decorate_methods(show_calls(show_args=True), butnot=['get_data'])(Coverage)  # type: ignore[assignment, misc]
 
 
-def process_startup():
+def process_startup() -> None:
     """Call this at Python start-up to perhaps measure coverage.
 
     If the environment variable COVERAGE_PROCESS_START is defined, coverage

@@ -6,6 +6,7 @@
 import os
 import re
 
+from coverage import Coverage
 from coverage.files import flat_rootname
 from coverage.misc import ensure_dir, isolate_module
 from coverage.report import get_analysis_to_report
@@ -35,7 +36,7 @@ class AnnotateReporter:
 
     """
 
-    def __init__(self, coverage):
+    def __init__(self, coverage: Coverage):
         self.coverage = coverage
         self.config = self.coverage.config
         self.directory = None
@@ -43,7 +44,7 @@ class AnnotateReporter:
     blank_re = re.compile(r"\s*(#|$)")
     else_re = re.compile(r"\s*else\s*:\s*(#|$)")
 
-    def report(self, morfs, directory=None):
+    def report(self, morfs, directory=None) -> None:
         """Run the report.
 
         See `coverage.report()` for arguments.
@@ -54,7 +55,7 @@ class AnnotateReporter:
         for fr, analysis in get_analysis_to_report(self.coverage, morfs):
             self.annotate_file(fr, analysis)
 
-    def annotate_file(self, fr, analysis):
+    def annotate_file(self, fr, analysis) -> None:
         """Annotate a single file.
 
         `fr` is the FileReporter for the file to annotate.
