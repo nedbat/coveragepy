@@ -39,8 +39,7 @@ these steps:
 
 .. minimum of PYVERSIONS:
 
-#.  (Optional, but recommended) Create a Python 3.7 virtualenv to work in,
-    and activate it.
+#.  Create a Python 3.7 virtualenv to work in, and activate it.
 
 #.  Clone the repository::
 
@@ -118,18 +117,20 @@ respectively.
 You can also affect the test runs with environment variables. Define any of
 these as 1 to use them:
 
-- COVERAGE_NO_PYTRACER: disables the Python tracer if you only want to run the
-  CTracer tests.
+- ``COVERAGE_NO_PYTRACER=1`` disables the Python tracer if you only want to
+  run the CTracer tests.
 
-- COVERAGE_NO_CTRACER: disables the C tracer if you only want to run the
+- ``COVERAGE_NO_CTRACER=1`` disables the C tracer if you only want to run the
   PyTracer tests.
 
-- COVERAGE_ONE_TRACER: only use one tracer for each Python version.  This will
-  use the C tracer if it is available, or the Python tracer if not.
+- ``COVERAGE_ONE_TRACER=1`` will use only one tracer for each Python version.
+  This will use the C tracer if it is available, or the Python tracer if not.
 
-- COVERAGE_AST_DUMP: will dump the AST tree as it is being used during code
-  parsing.
+- ``COVERAGE_AST_DUMP=1`` will dump the AST tree as it is being used during
+  code parsing.
 
+There are other environment variables that affect tests.  I use `set_env.py`_
+as a simple terminal interface to see and set them.
 
 Of course, run all the tests on every version of Python you have, before
 submitting a change.
@@ -140,13 +141,10 @@ submitting a change.
 Lint, etc
 ---------
 
-I try to keep the coverage.py as clean as possible.  I use pylint to alert me
-to possible problems::
+I try to keep the coverage.py source as clean as possible.  I use pylint to
+alert me to possible problems::
 
     $ make lint
-    pylint coverage setup.py tests
-    python -m tabnanny coverage setup.py tests
-    python igor.py check_eol
 
 The source is pylint-clean, even if it's because there are pragmas quieting
 some warnings.  Please try to keep it that way, but don't let pylint warnings
@@ -158,6 +156,39 @@ Lines should be kept to a 100-character maximum length.  I recommend an
 Other style questions are best answered by looking at the existing code.
 Formatting of docstrings, comments, long lines, and so on, should match the
 code that already exists.
+
+Many people love `black`_, but I would prefer not to run it on coverage.py.
+
+
+Continuous integration
+----------------------
+
+When you make a pull request, `GitHub actions`__ will run all of the tests and
+quality checks on your changes.  If any fail, either fix them or ask for help.
+
+__ https://github.com/nedbat/coveragepy/actions
+
+
+Dependencies
+------------
+
+Coverage.py has no direct runtime dependencies, and I would like to keep it
+that way.
+
+It has many development dependencies.  These are specified generically in the
+``requirements/*.in`` files.  The .in files should have no versions specified
+in them.  The specific versions to use are pinned in ``requirements/*.pip``
+files.  These are created by running ``make upgrade``.
+
+.. minimum of PYVERSIONS:
+
+It's important to use Python 3.7 to run ``make upgrade`` so that the pinned
+versions will work on all of the Python versions currently supported by
+coverage.py.
+
+If for some reason we need to constrain a version of a dependency, the
+constraint should be specified in the ``requirements/pins.pip`` file, with a
+detailed reason for the pin.
 
 
 Coverage testing coverage.py
@@ -183,3 +214,5 @@ patch works too.
 
 .. _editorconfig.org: http://editorconfig.org
 .. _tox: https://tox.readthedocs.io/
+.. _black: https://pypi.org/project/black/
+.. _set_env.py: https://nedbatchelder.com/blog/201907/set_envpy.html
