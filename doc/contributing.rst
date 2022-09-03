@@ -211,6 +211,9 @@ When you are ready to contribute a change, any way you can get it to me is
 probably fine.  A pull request on GitHub is great, but a simple diff or
 patch works too.
 
+All contributions are expected to include tests for new functionality and
+fixes.  If you need help writing tests, please ask.
+
 
 .. _editorconfig.org: http://editorconfig.org
 .. _tox: https://tox.readthedocs.io/
