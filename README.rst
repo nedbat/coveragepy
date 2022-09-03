@@ -78,6 +78,16 @@ The complete history of changes is on the `change history page`_.
 .. _change history page: https://coverage.readthedocs.io/en/latest/changes.html
 
 
+Code of Conduct
+---------------
+
+Everyone participating in the coverage.py project is expected to treat other
+people with respect and to follow the guidelines articulated in the `Python
+Community Code of Conduct`_.
+
+.. _Python Community Code of Conduct: https://www.python.org/psf/codeofconduct/
+
+
 Contributing
 ------------
 
