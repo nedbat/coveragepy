@@ -17,7 +17,7 @@ Code coverage testing for Python.
 |  |test-status| |quality-status| |docs| |metacov|
 |  |kit| |downloads| |format| |repos|
 |  |stars| |forks| |contributors|
-|  |tidelift| |core-infrastructure|
+|  |tidelift| |core-infrastructure| |open-ssf|
 |  |sponsor| |twitter-coveragepy| |twitter-nedbat|
 
 Coverage.py measures code coverage, typically during test execution. It uses
@@ -171,3 +171,6 @@ Licensed under the `Apache 2.0 License`_.  For details, see `NOTICE.txt`_.
 .. |core-infrastructure| image:: https://bestpractices.coreinfrastructure.org/projects/6412/badge
     :target: https://bestpractices.coreinfrastructure.org/projects/6412
     :alt: Core Infrastructure Initiative: passing
+.. |open-ssf| image:: https://api.securityscorecards.dev/projects/github.com/nedbat/coveragepy/badge
+    :target: https://deps.dev/pypi/coverage
+    :alt: OpenSSF Scorecard
