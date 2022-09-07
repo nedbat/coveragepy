@@ -25,9 +25,9 @@ decorator==5.1.1 \
     --hash=sha256:637996211036b6385ef91435e4fae22989472f9d571faba8927ba8253acbc330 \
     --hash=sha256:b8c3f85900b9dc423225913c5aace94729fe1fa9763b38939a95226f02d37186
     # via pycontracts
-exceptiongroup==1.0.0rc8 \
-    --hash=sha256:6990c24f06b8d33c8065cfe43e5e8a4bfa384e0358be036af9cc60b6321bd11a \
-    --hash=sha256:ab0a968e1ef769e55d9a596f4a89f7be9ffedbc9fdefdb77cc68cf5c33ce1035
+exceptiongroup==1.0.0rc9 \
+    --hash=sha256:2e3c3fc1538a094aab74fad52d6c33fc94de3dfee3ee01f187c0e0c72aec5337 \
+    --hash=sha256:9086a4a21ef9b31c72181c77c040a074ba0889ee56a7b289ff0afb0d97655f96
     # via hypothesis
 execnet==1.9.0 \
     --hash=sha256:8f694f3ba9cc92cab508b152dcfe322153975c29bda272e2fd7f3f00f36e47c5 \
@@ -40,9 +40,9 @@ flaky==3.7.0 \
 future==0.18.2 \
     --hash=sha256:b1bead90b70cf6ec3f0710ae53a525360fa360d306a86583adc6bf83a4db537d
     # via pycontracts
-hypothesis==6.54.3 \
-    --hash=sha256:03749f5e2cb982e54e2a11abcb367b9a260ef8e279387d437145354c080a6bdc \
-    --hash=sha256:f1a2f0031ec2c3ff17c1d97bb363ce74bf3e9e5d6c6f0f5a6474702e6ca1ee81
+hypothesis==6.54.5 \
+    --hash=sha256:8a9056825695f415bfad4e808ae719fc01383a9ab659775319724365afcc7ec7 \
+    --hash=sha256:d8d2e18139be18e5c95593f1e2d87dbcd21534a32022a1db6e8ac2d458ee1d1a
     # via -r requirements/pytest.in
 importlib-metadata==4.12.0 \
     --hash=sha256:637245b8bab2b6502fcbc752cc4b7a6f6243bb02b31c5c26156ad103d3d45670 \
@@ -77,9 +77,9 @@ pyparsing==3.0.9 \
     # via
     #   packaging
     #   pycontracts
-pytest==7.1.2 \
-    --hash=sha256:13d0e3ccfc2b6e26be000cb6568c832ba67ba32e719443bfe725814d3c42433c \
-    --hash=sha256:a06a0425453864a270bc45e71f783330a7428defb4230fb5e6a731fde06ecd45
+pytest==7.1.3 \
+    --hash=sha256:1377bda3466d70b55e3f5cecfa55bb7cfcf219c7964629b967c37cf0bda818b7 \
+    --hash=sha256:4f365fec2dff9c1162f834d9f18af1ba13062db0c708bf7b946f8a5c76180c39
     # via
     #   -r requirements/pytest.in
     #   pytest-forked
