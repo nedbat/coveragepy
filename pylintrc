@@ -74,6 +74,7 @@ disable=
     import-outside-toplevel,
     self-assigning-variable,
     consider-using-with,
+    missing-timeout,
 # Formatting stuff
     superfluous-parens,
 # Messages that are noisy for now, eventually maybe we'll turn them on:

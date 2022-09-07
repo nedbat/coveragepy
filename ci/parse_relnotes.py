@@ -123,4 +123,4 @@ def parse(md_filename, json_filename):
         json.dump(list(relnotes(markdown.splitlines(True))), jf, indent=4)
 
 if __name__ == "__main__":
-    parse(*sys.argv[1:])       # pylint: disable=no-value-for-parameter
+    parse(*sys.argv[1:3])
