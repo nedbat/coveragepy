@@ -8,9 +8,9 @@ colorama==0.4.5 \
     --hash=sha256:854bf444933e37f5824ae7bfc1e98d5bce2ebe4160d46b5edf346a89358e99da \
     --hash=sha256:e6c6b4334fc50988a639d9b98aa429a0b57da6e17b9a44f0451f930b6967b7a4
     # via -r requirements/tox.in
-distlib==0.3.5 \
-    --hash=sha256:a7f75737c70be3b25e2bee06288cec4e4c221de18455b2dd037fe2a795cab2fe \
-    --hash=sha256:b710088c59f06338ca514800ad795a132da19fda270e3ce4affc74abf955a26c
+distlib==0.3.6 \
+    --hash=sha256:14bad2d9b04d3a36127ac97f30b12a19268f211063d8f8ee4f47108896e11b46 \
+    --hash=sha256:f35c4b692542ca110de7ef0bea44d73981caeb34ca0b9b6b2e6d7790dda8f80e
     # via virtualenv
 filelock==3.8.0 \
     --hash=sha256:55447caa666f2198c5b6b13a26d2084d26fa5b115c00d065664b2124680c4edc \
@@ -71,9 +71,9 @@ typing-extensions==4.3.0 \
     --hash=sha256:25642c956049920a5aa49edcdd6ab1e06d7e5d467fc00e0506c44ac86fbfca02 \
     --hash=sha256:e6d2677a32f47fc7eb2795db1dd15c1f34eff616bcaf2cfb5e997f854fa1c4a6
     # via importlib-metadata
-virtualenv==20.16.3 \
-    --hash=sha256:4193b7bc8a6cd23e4eb251ac64f29b4398ab2c233531e66e40b19a6b7b0d30c1 \
-    --hash=sha256:d86ea0bb50e06252d79e6c241507cb904fcd66090c3271381372d6221a3970f9
+virtualenv==20.16.4 \
+    --hash=sha256:014f766e4134d0008dcaa1f95bafa0fb0f575795d07cae50b1bee514185d6782 \
+    --hash=sha256:035ed57acce4ac35c82c9d8802202b0e71adac011a511ff650cbcf9635006a22
     # via tox
 zipp==3.8.1 \
     --hash=sha256:05b45f1ee8f807d0cc928485ca40a07cb491cf092ff587c0df9cb1fd154848d2 \
