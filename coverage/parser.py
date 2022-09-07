@@ -1287,7 +1287,6 @@ class AstArcAnalyzer:
             self.add_arc(start, -start, None, f"didn't finish the {noun} on line {start}")
         return _code_object__expression_callable
 
-    # pylint: disable=too-many-function-args
     _code_object__Lambda = _make_expression_code_method("lambda")
     _code_object__GeneratorExp = _make_expression_code_method("generator expression")
     _code_object__DictComp = _make_expression_code_method("dictionary comprehension")

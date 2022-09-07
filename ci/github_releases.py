@@ -135,4 +135,4 @@ def update_github_releases(json_filename, repo):
                 update_release(gh_session, url, relnote)
 
 if __name__ == "__main__":
-    update_github_releases(*sys.argv[1:])   # pylint: disable=no-value-for-parameter
+    update_github_releases(*sys.argv[1:3])
