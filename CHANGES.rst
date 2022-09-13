@@ -20,10 +20,13 @@ development at the same time, such as 4.5.x and 5.0.
 Unreleased
 ----------
 
+- Packaging is now compliant with `PEP 517`_.
+
 - Fix an internal problem with caching of invalid Python parsing. Found by
   OSS-Fuzz, fixing their `bug 50381`_.
 
 .. _bug 50381: https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=50381
+.. _PEP 517: https://peps.python.org/pep-0517/
 
 
 .. _changes_6-4-4:
