@@ -3,8 +3,8 @@
 
 """File wrangling."""
 
-import hashlib
 import fnmatch
+import hashlib
 import ntpath
 import os
 import os.path
@@ -326,15 +326,17 @@ class PathAliases:
     map a path through those aliases to produce a unified path.
 
     """
-    def __init__(self, relative=False):
-        self.aliases = []
+    def __init__(self, debugfn=None, relative=False):
+        self.aliases = []   # A list of (original_pattern, regex, result)
+        self.debugfn = debugfn or (lambda msg: 0)
         self.relative = relative
+        self.pprinted = False
 
-    def pprint(self):       # pragma: debugging
+    def pprint(self):
         """Dump the important parts of the PathAliases, for debugging."""
-        print(f"Aliases (relative={self.relative}):")
-        for regex, result in self.aliases:
-            print(f"{regex.pattern!r} --> {result!r}")
+        self.debugfn(f"Aliases (relative={self.relative}):")
+        for original_pattern, regex, result in self.aliases:
+            self.debugfn(f" Rule: {original_pattern!r} -> {result!r} using regex {regex.pattern!r}")
 
     def add(self, pattern, result):
         """Add the `pattern`/`result` pair to the list of aliases.
@@ -349,6 +351,7 @@ class PathAliases:
         match an entire tree, and not just its root.
 
         """
+        original_pattern = pattern
         pattern_sep = sep(pattern)
 
         if len(pattern) > 1:
@@ -360,8 +363,7 @@ class PathAliases:
 
         # The pattern is meant to match a filepath.  Let's make it absolute
         # unless it already is, or is meant to match any prefix.
-        if not pattern.startswith('*') and not isabs_anywhere(pattern +
-                                                              pattern_sep):
+        if not pattern.startswith('*') and not isabs_anywhere(pattern + pattern_sep):
             pattern = abs_file(pattern)
         if not pattern.endswith(pattern_sep):
             pattern += pattern_sep
@@ -372,7 +374,7 @@ class PathAliases:
         # Normalize the result: it must end with a path separator.
         result_sep = sep(result)
         result = result.rstrip(r"\/") + result_sep
-        self.aliases.append((regex, result))
+        self.aliases.append((original_pattern, regex, result))
 
     def map(self, path):
         """Map `path` through the aliases.
@@ -390,14 +392,23 @@ class PathAliases:
         of `path` unchanged.
 
         """
-        for regex, result in self.aliases:
+        if not self.pprinted:
+            self.pprint()
+            self.pprinted = True
+
+        for original_pattern, regex, result in self.aliases:
             m = regex.match(path)
             if m:
                 new = path.replace(m[0], result)
                 new = new.replace(sep(path), sep(result))
                 if not self.relative:
                     new = canonical_filename(new)
+                self.debugfn(
+                    f"Matched path {path!r} to rule {original_pattern!r} -> {result!r}, " +
+                    f"producing {new!r}"
+                )
                 return new
+        self.debugfn(f"No rules match, path {path!r} is unchanged")
         return path
 
 
