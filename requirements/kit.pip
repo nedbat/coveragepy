@@ -26,9 +26,9 @@ certifi==2022.5.18.1 \
     # via
     #   -c requirements/pins.pip
     #   cibuildwheel
-cibuildwheel==2.9.0 \
-    --hash=sha256:13b4cf3c5076ae176e8438723d6c635a1806ed3df70bca74151518dccac4bbb5 \
-    --hash=sha256:227d588e56784243fbd9d40ec0950901f65530604a9dda7c2cfb0be9a540e9b1
+cibuildwheel==2.10.0 \
+    --hash=sha256:3375f1f0cfb24a5b20941fc46059a7bdc983c28d725f7e0a255746544a8a4e44 \
+    --hash=sha256:8946086aaac43b7885ebbf11166acdafb5275612f20428e99488fef594b0ed6e
     # via -r requirements/kit.in
 colorama==0.4.5 \
     --hash=sha256:854bf444933e37f5824ae7bfc1e98d5bce2ebe4160d46b5edf346a89358e99da \

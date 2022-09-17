@@ -182,9 +182,9 @@ hypothesis==6.54.5 \
     --hash=sha256:8a9056825695f415bfad4e808ae719fc01383a9ab659775319724365afcc7ec7 \
     --hash=sha256:d8d2e18139be18e5c95593f1e2d87dbcd21534a32022a1db6e8ac2d458ee1d1a
     # via -r requirements/pytest.pip
-idna==3.3 \
-    --hash=sha256:84d9dd047ffa80596e0f246e2eab0b391788b0503584e8945f2368256d2735ff \
-    --hash=sha256:9d643ff0a55b762d5cdb124b8eaa99c66322e2157b69160bc32796e824360e6d
+idna==3.4 \
+    --hash=sha256:814f528e8dead7d329833b91c5faa87d60bf71824cd12a7530b5526063d02cb4 \
+    --hash=sha256:90b77e79eaa3eba6de819a0c442c0b4ceefc341a7a2ab77d7562bf49f425c5c2
     # via requests
 imagesize==1.4.1 \
     --hash=sha256:0d8d18d08f840c19d0ee7ca1fd82490fdc3729b7ac93f49870406ddde8ef8d8b \
@@ -534,10 +534,6 @@ sphinxcontrib-spelling==7.6.0 \
     --hash=sha256:292cd7e1f73a763451693b4d48c9bded151084f6a91e5337733e9fa8715d20ec \
     --hash=sha256:6c1313618412511109f7b76029fbd60df5aa4acf67a2dc9cd1b1016d15e882ff
     # via -r doc/requirements.in
-toml==0.10.2 \
-    --hash=sha256:806143ae5bfb6a3c6e736a764057db0e6a0e05e338b5630894a5f779cabb4f9b \
-    --hash=sha256:b3bda1d108d5dd99f4a20d24d9c348e91c4db7ab1b749200bded2f839ccbe68f
-    # via tox
 tomli==2.0.1 \
     --hash=sha256:939de3e7a6161af0c887ef91b7d41a53e7c5a1ca976325f429cb46ea9bc30ecc \
     --hash=sha256:de526c12914f0c550d15924c62d72abc48d6fe7364aa87328337a31007fe8a4f
@@ -548,6 +544,7 @@ tomli==2.0.1 \
     #   pep517
     #   pylint
     #   pytest
+    #   tox
 tomlkit==0.11.4 \
     --hash=sha256:25d4e2e446c453be6360c67ddfb88838cfc42026322770ba13d1fbd403a93a5c \
     --hash=sha256:3235a9010fae54323e727c3ac06fb720752fe6635b3426e379daec60fbd44a83
@@ -565,9 +562,9 @@ tornado==6.2 \
     --hash=sha256:d3a2f5999215a3a06a4fc218026cd84c61b8b2b40ac5296a6db1f1451ef04c1e \
     --hash=sha256:e5f923aa6a47e133d1cf87d60700889d7eae68988704e20c75fb2d65677a8e4b
     # via livereload
-tox==3.25.1 \
-    --hash=sha256:c138327815f53bc6da4fe56baec5f25f00622ae69ef3fe4e1e385720e22486f9 \
-    --hash=sha256:c38e15f4733683a9cc0129fba078633e07eb0961f550a010ada879e95fb32632
+tox==3.26.0 \
+    --hash=sha256:44f3c347c68c2c68799d7d44f1808f9d396fc8a1a500cbc624253375c7ae107e \
+    --hash=sha256:bf037662d7c740d15c9924ba23bb3e587df20598697bb985ac2b49bdc2d847f6
     # via -r requirements/dev.in
 twine==4.0.1 \
     --hash=sha256:42026c18e394eac3e06693ee52010baa5313e4811d5a11050e7d48436cf41b9e \
@@ -623,9 +620,9 @@ urwid==2.1.2 \
 urwid-readline==0.13 \
     --hash=sha256:018020cbc864bb5ed87be17dc26b069eae2755cb29f3a9c569aac3bded1efaf4
     # via pudb
-virtualenv==20.16.4 \
-    --hash=sha256:014f766e4134d0008dcaa1f95bafa0fb0f575795d07cae50b1bee514185d6782 \
-    --hash=sha256:035ed57acce4ac35c82c9d8802202b0e71adac011a511ff650cbcf9635006a22
+virtualenv==20.16.5 \
+    --hash=sha256:227ea1b9994fdc5ea31977ba3383ef296d7472ea85be9d6732e42a91c04e80da \
+    --hash=sha256:d07dfc5df5e4e0dbc92862350ad87a36ed505b978f6c39609dc489eadd5b0d27
     # via
     #   -r requirements/pip.pip
     #   tox
