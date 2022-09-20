@@ -28,30 +28,28 @@ concurrency:
 
 jobs:
   tests:
-    name: "Python ${{ matrix.python-version }} on ${{ matrix.os }}"
-    runs-on: "${{ matrix.os }}"
+    name: "${{ matrix.python-version }} on ${{ matrix.os }}"
+    runs-on: "${{ matrix.os }}-latest"
 
     strategy:
       matrix:
         os:
-          - ubuntu-latest
-          - macos-latest
-          - windows-latest
+          - ubuntu
+          - macos
+          - windows
         python-version:
           # When changing this list, be sure to check the [gh-actions] list in
           # tox.ini so that tox will run properly. PYVERSIONS
           # Available versions:
           # https://github.com/actions/python-versions/blob/main/versions-manifest.json
+          # https://github.com/actions/setup-python/blob/main/docs/advanced-usage.md#available-versions-of-python-and-pypy
           - "3.7"
           - "3.8"
           - "3.9"
           - "3.10"
           - "3.11.0-rc.2"
           - "pypy-3.7"
-        exclude:
-          # Windows PyPy doesn't seem to work?
-          - os: windows-latest
-            python-version: "pypy-3.7"
+          - "pypy-3.9"
       fail-fast: false
 
     steps:
@@ -62,7 +60,6 @@ jobs:
         uses: "actions/setup-python@v4"
         with:
           python-version: "${{ matrix.python-version }}"
-          # Can we start using the pip cache again?
           cache: pip
           cache-dependency-path: 'requirements/*.pip'
 
