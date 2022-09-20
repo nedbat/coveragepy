@@ -134,9 +134,10 @@ jobs:
       fail-fast: false
 
     steps:
-      - name: Setup QEMU
+      - name: "Setup QEMU"
         if: matrix.os == 'ubuntu'
-        uses: docker/setup-qemu-action@v2
+        # uses: docker/setup-qemu-action@v2
+        uses: docker/setup-qemu-action@8b122486cedac8393e77aa9734c3528886e4a1a8
         with:
           platforms: arm64
 
@@ -152,7 +153,7 @@ jobs:
 
       - name: "Install tools"
         run: |
-          python -m pip install -r requirements/kit.pip
+          python -m pip install --require-hashes -r requirements/kit.pip
 
       - name: "Build wheels"
         env:
@@ -189,7 +190,7 @@ jobs:
 
       - name: "Install tools"
         run: |
-          python -m pip install -r requirements/kit.pip
+          python -m pip install --require-hashes -r requirements/kit.pip
 
       - name: "Build sdist"
         run: |

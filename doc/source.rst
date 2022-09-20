@@ -57,6 +57,8 @@ file name patterns, specifying files not to measure.  If both ``include`` and
 match the include patterns, then any files that match the omit pattern are
 removed from the set.
 
+.. highlight:: ini
+
 The ``include`` and ``omit`` file name patterns follow typical shell syntax:
 ``*`` matches any number of characters and ``?`` matches a single character.
 Patterns that start with a wildcard character are used as-is, other patterns

@@ -20,7 +20,17 @@ development at the same time, such as 4.5.x and 5.0.
 Unreleased
 ----------
 
-Nothing yet.
+- Packaging is now compliant with `PEP 517`_, closing `issue 1395`_.
+
+- A new debug option ``--debug=pathmap`` shows details of the remapping of
+  paths that happens during combine due to the ``[paths]`` setting.
+
+- Fix an internal problem with caching of invalid Python parsing. Found by
+  OSS-Fuzz, fixing their `bug 50381`_.
+
+.. _bug 50381: https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=50381
+.. _PEP 517: https://peps.python.org/pep-0517/
+.. _issue 1395: https://github.com/nedbat/coveragepy/issues/1395
 
 
 .. _changes_6-4-4:

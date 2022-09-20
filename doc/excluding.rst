@@ -7,6 +7,8 @@
 Excluding code from coverage.py
 ===============================
 
+.. highlight:: python
+
 You may have code in your project that you know won't be executed, and you want
 to tell coverage.py to ignore it.  For example, you may have debugging-only
 code that won't be executed during your unit tests. You can tell coverage.py to
@@ -70,6 +72,8 @@ exclude them all at once without littering your code with exclusion pragmas.
 If the matched line introduces a block, the entire block is excluded from
 reporting.  Matching a ``def`` line or decorator line will exclude an entire
 function.
+
+.. highlight:: ini
 
 For example, you might decide that __repr__ functions are usually only used in
 debugging code, and are uninteresting to test themselves.  You could exclude

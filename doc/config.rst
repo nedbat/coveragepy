@@ -7,6 +7,8 @@
 Configuration reference
 =======================
 
+.. highlight:: ini
+
 Coverage.py options can be specified in a configuration file.  This makes it
 easier to re-run coverage.py with consistent settings, and also allows for
 specification of options that are otherwise only available in the
@@ -347,6 +349,9 @@ against the source file found at "src/module.py".
 
 If you specify more than one list of paths, they will be considered in order.
 The first list that has a match will be used.
+
+The ``--debug=pathmap`` option can be used to log details of the re-mapping of
+paths.  See :ref:`the --debug option <cmd_run_debug>`.
 
 See :ref:`cmd_combine` for more information.
 

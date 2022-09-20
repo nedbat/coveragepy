@@ -139,7 +139,7 @@ def venv_world_fixture(tmp_path_factory):
 
         # Install everything.
         run_in_venv(
-            "python -m pip install --no-index " +
+            "python -m pip install " +
             "./third_pkg " +
             "-e ./another_pkg " +
             "-e ./bug888/app -e ./bug888/plugin " +

@@ -289,11 +289,37 @@ class PathAliasesTest(CoverageTest):
         self.assert_unchanged(aliases, '/home/foo/srcetc')
 
     def test_multiple_patterns(self, rel_yn):
-        aliases = PathAliases(relative=rel_yn)
+        # also test the debugfn...
+        msgs = []
+        aliases = PathAliases(debugfn=msgs.append, relative=rel_yn)
         aliases.add('/home/*/src', './mysrc')
         aliases.add('/lib/*/libsrc', './mylib')
         self.assert_mapped(aliases, '/home/foo/src/a.py', './mysrc/a.py', relative=rel_yn)
         self.assert_mapped(aliases, '/lib/foo/libsrc/a.py', './mylib/a.py', relative=rel_yn)
+        if rel_yn:
+            assert msgs == [
+                "Aliases (relative=True):",
+                " Rule: '/home/*/src' -> './mysrc/' using regex " +
+                    "'(?:(?s:[\\\\\\\\/]home[\\\\\\\\/].*[\\\\\\\\/]src[\\\\\\\\/]))'",
+                " Rule: '/lib/*/libsrc' -> './mylib/' using regex " +
+                    "'(?:(?s:[\\\\\\\\/]lib[\\\\\\\\/].*[\\\\\\\\/]libsrc[\\\\\\\\/]))'",
+                "Matched path '/home/foo/src/a.py' to rule '/home/*/src' -> './mysrc/', " +
+                    "producing './mysrc/a.py'",
+                "Matched path '/lib/foo/libsrc/a.py' to rule '/lib/*/libsrc' -> './mylib/', " +
+                    "producing './mylib/a.py'",
+            ]
+        else:
+            assert msgs == [
+                "Aliases (relative=False):",
+                " Rule: '/home/*/src' -> './mysrc/' using regex " +
+                    "'(?:(?s:[\\\\\\\\/]home[\\\\\\\\/].*[\\\\\\\\/]src[\\\\\\\\/]))'",
+                " Rule: '/lib/*/libsrc' -> './mylib/' using regex " +
+                    "'(?:(?s:[\\\\\\\\/]lib[\\\\\\\\/].*[\\\\\\\\/]libsrc[\\\\\\\\/]))'",
+                "Matched path '/home/foo/src/a.py' to rule '/home/*/src' -> './mysrc/', " +
+                    f"producing {files.canonical_filename('./mysrc/a.py')!r}",
+                "Matched path '/lib/foo/libsrc/a.py' to rule '/lib/*/libsrc' -> './mylib/', " +
+                    f"producing {files.canonical_filename('./mylib/a.py')!r}",
+            ]
 
     @pytest.mark.parametrize("badpat", [
         "/ned/home/*",

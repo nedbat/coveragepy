@@ -19,7 +19,7 @@ from coverage.data import line_counts
 from coverage.files import abs_file, python_reported_file
 
 from tests.coveragetest import CoverageTest, TESTS_DIR
-from tests.helpers import re_lines_text, xfail_pypy_3792
+from tests.helpers import re_lines_text
 
 
 class ProcessTest(CoverageTest):
@@ -283,7 +283,6 @@ class ProcessTest(CoverageTest):
         assert "rror" not in out
         assert status == 1
 
-    @xfail_pypy_3792    # Because the file names aren't yet absolute.
     def test_code_throws(self):
         self.make_file("throw.py", """\
             class MyException(Exception):
@@ -696,21 +695,12 @@ class EnvironmentTest(CoverageTest):
         actual = self.run_command("coverage run -m process_test.try_execfile")
         self.assert_tryexecfile_output(expected, actual)
 
-    @xfail_pypy_3792    # Because the sys.path[0] isn't yet absolute.
     def test_coverage_run_dir_is_like_python_dir(self):
         with open(TRY_EXECFILE) as f:
             self.make_file("with_main/__main__.py", f.read())
 
         expected = self.run_command("python with_main")
         actual = self.run_command("coverage run with_main")
-
-        # PyPy includes the current directory in the path when running a
-        # directory, while CPython and coverage.py do not.  Exclude that from
-        # the comparison also...
-        if env.PYPY:
-            ignored = re.escape(os.getcwd())
-            expected = re_lines_text(ignored, expected, match=False)
-            actual = re_lines_text(ignored, actual, match=False)
         self.assert_tryexecfile_output(expected, actual)
 
     def test_coverage_run_dashm_dir_no_init_is_like_python(self):

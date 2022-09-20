@@ -609,8 +609,7 @@ class CoverageData(SimpleReprMixin):
 
         aliases = aliases or PathAliases()
 
-        # Force the database we're writing to to exist before we start nesting
-        # contexts.
+        # Force the database we're writing to to exist before we start nesting contexts.
         self._start_using()
 
         # Collector for all arcs, lines and tracers

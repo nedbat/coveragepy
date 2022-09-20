@@ -173,7 +173,11 @@ class CachedTokenizer:
         if text != self.last_text:
             self.last_text = text
             readline = iter(text.splitlines(True)).__next__
-            self.last_tokens = list(tokenize.generate_tokens(readline))
+            try:
+                self.last_tokens = list(tokenize.generate_tokens(readline))
+            except:
+                self.last_text = None
+                raise
         return self.last_tokens
 
 # Create our generate_tokens cache as a callable replacement function.
