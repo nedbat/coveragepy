@@ -424,11 +424,15 @@ class Coverage:
         appropriate Python value.  For example, use True for booleans, not the
         string ``"True"``.
 
-        As an example, calling::
+        As an example, calling:
+
+        .. code-block:: python
 
             cov.set_option("run:branch", True)
 
-        has the same effect as this configuration file::
+        has the same effect as this configuration file:
+
+        .. code-block:: ini
 
             [run]
             branch = True
@@ -739,7 +743,10 @@ class Coverage:
 
         aliases = None
         if self.config.paths:
-            aliases = PathAliases(relative=self.config.relative_files)
+            aliases = PathAliases(
+                debugfn=(self._debug.write if self._debug.should("pathmap") else None),
+                relative=self.config.relative_files,
+            )
             for paths in self.config.paths.values():
                 result = paths[0]
                 for pattern in paths[1:]:

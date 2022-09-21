@@ -866,7 +866,11 @@ class SourceIncludeOmitTest(IncludeOmitTestsMixin, CoverageTest):
         # Since we need to import from there, we also add it to the beginning
         # of sys.path.
 
-        shutil.copytree(nice_file(TESTS_DIR, "modules"), "tests_dir_modules")
+        shutil.copytree(
+            nice_file(TESTS_DIR, "modules"),
+            "tests_dir_modules",
+            ignore=shutil.ignore_patterns("__pycache__"),
+        )
         sys.path.insert(0, abs_file("tests_dir_modules"))
 
     def coverage_usepkgs(self, **kwargs):

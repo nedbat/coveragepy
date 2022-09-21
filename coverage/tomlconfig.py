@@ -12,7 +12,7 @@ from coverage.exceptions import ConfigError
 from coverage.misc import import_third_party, substitute_variables
 
 
-if env.PYVERSION >= (3, 11):
+if env.PYVERSION >= (3, 11, 0, "alpha", 7):
     import tomllib      # pylint: disable=import-error
 else:
     # TOML support on Python 3.10 and below is an install-time extra option.

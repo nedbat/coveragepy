@@ -878,6 +878,33 @@ class CoverageDataFilesTest(CoverageTest):
         # "no such table: meta"
         covdata2.add_lines(LINES_1)
 
+    @pytest.mark.parametrize(
+        "dpart, fpart",
+        [
+            ("", "[b-a]"),
+            ("[3-1]", ""),
+            ("[3-1]", "[b-a]"),
+        ],
+    )
+    def test_combining_with_crazy_filename(self, dpart, fpart):
+        dirname = f"py{dpart}"
+        basename = f"{dirname}/.coverage{fpart}"
+        os.makedirs(dirname)
+
+        covdata1 = CoverageData(basename=basename, suffix="1")
+        covdata1.add_lines(LINES_1)
+        covdata1.write()
+
+        covdata2 = CoverageData(basename=basename, suffix="2")
+        covdata2.add_lines(LINES_2)
+        covdata2.write()
+
+        covdata3 = CoverageData(basename=basename)
+        combine_parallel_data(covdata3)
+        assert_line_counts(covdata3, SUMMARY_1_2)
+        assert_measured_files(covdata3, MEASURED_FILES_1_2)
+        self.assert_file_count(glob.escape(basename) + ".*", 0)
+
 
 class DumpsLoadsTest(CoverageTest):
     """Tests of CoverageData.dumps and loads."""

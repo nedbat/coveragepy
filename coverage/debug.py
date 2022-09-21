@@ -12,6 +12,7 @@ import os
 import pprint
 import reprlib
 import sys
+import types
 import _thread
 
 from coverage.misc import isolate_module
@@ -282,6 +283,7 @@ class DebugOutputFile:                              # pragma: debugging
                 self.write(f"New process: pid: {os.getpid()!r}, parent pid: {os.getppid()!r}\n")
 
     SYS_MOD_NAME = '$coverage.debug.DebugOutputFile.the_one'
+    SINGLETON_ATTR = 'the_one_and_is_interim'
 
     @classmethod
     def get_one(cls, fileobj=None, show_process=True, filters=(), interim=False):
@@ -310,7 +312,8 @@ class DebugOutputFile:                              # pragma: debugging
         # this class can be defined more than once. But we really want
         # a process-wide singleton. So stash it in sys.modules instead of
         # on a class attribute. Yes, this is aggressively gross.
-        the_one, is_interim = sys.modules.get(cls.SYS_MOD_NAME, (None, True))
+        singleton_module = sys.modules.get(cls.SYS_MOD_NAME)
+        the_one, is_interim = getattr(singleton_module, cls.SINGLETON_ATTR, (None, True))
         if the_one is None or is_interim:
             if fileobj is None:
                 debug_file_name = os.environ.get("COVERAGE_DEBUG_FILE", FORCED_DEBUG_FILE)
@@ -321,7 +324,9 @@ class DebugOutputFile:                              # pragma: debugging
                 else:
                     fileobj = sys.stderr
             the_one = cls(fileobj, show_process, filters)
-            sys.modules[cls.SYS_MOD_NAME] = (the_one, interim)
+            singleton_module = types.ModuleType(cls.SYS_MOD_NAME)
+            setattr(singleton_module, cls.SINGLETON_ATTR, (the_one, interim))
+            sys.modules[cls.SYS_MOD_NAME] = singleton_module
         return the_one
 
     def write(self, text):

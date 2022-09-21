@@ -302,7 +302,7 @@ class ProcessTest(CoverageTest):
         status, out = self.run_command_status("coverage run throw.py")
         out2 = self.run_command("python throw.py")
         if env.PYPY:
-            # Pypy has an extra frame in the traceback for some reason
+            # PyPy has an extra frame in the traceback for some reason
             out2 = re_lines_text("toplevel", out2, match=False)
         assert out == out2
 
@@ -701,14 +701,6 @@ class EnvironmentTest(CoverageTest):
 
         expected = self.run_command("python with_main")
         actual = self.run_command("coverage run with_main")
-
-        # PyPy includes the current directory in the path when running a
-        # directory, while CPython and coverage.py do not.  Exclude that from
-        # the comparison also...
-        if env.PYPY:
-            ignored = re.escape(os.getcwd())
-            expected = re_lines_text(ignored, expected, match=False)
-            actual = re_lines_text(ignored, actual, match=False)
         self.assert_tryexecfile_output(expected, actual)
 
     def test_coverage_run_dashm_dir_no_init_is_like_python(self):

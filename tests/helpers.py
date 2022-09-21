@@ -320,5 +320,5 @@ def swallow_warnings(message=r".", category=CoverageWarning):
 
 xfail_pypy_3749 = pytest.mark.xfail(
     env.PYVERSION[:2] == (3, 8) and env.PYPY and env.PYPYVERSION >= (7, 3, 10),
-    reason="Avoid a PyPy bug: https://foss.heptapod.net/pypy/pypy/-/issues/3749"
+    reason="Avoid a PyPy bug: https://foss.heptapod.net/pypy/pypy/-/issues/3749",
 )

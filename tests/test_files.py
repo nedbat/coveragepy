@@ -5,17 +5,16 @@
 
 import os
 import os.path
+from unittest import mock
 
 import pytest
 
-from coverage import env
-from coverage import files
+from coverage import env, files
 from coverage.exceptions import ConfigError
 from coverage.files import (
-    TreeMatcher, FnmatchMatcher, ModuleMatcher, PathAliases,
-    find_python_files, abs_file, actual_path, flat_rootname, fnmatches_to_regex,
+    FnmatchMatcher, ModuleMatcher, PathAliases, TreeMatcher, abs_file,
+    actual_path, find_python_files, flat_rootname, fnmatches_to_regex,
 )
-
 from tests.coveragetest import CoverageTest
 
 
@@ -66,6 +65,19 @@ class FilesTest(CoverageTest):
         # After the filename has been converted, it should be in the cache.
         assert 'sub/proj1/file1.py' in files.CANONICAL_FILENAME_CACHE
         assert files.canonical_filename('sub/proj1/file1.py') == self.abs_path('file1.py')
+
+    @pytest.mark.parametrize(
+        ["curdir", "sep"], [
+            ("/", "/"),
+            ("X:\\", "\\"),
+        ]
+    )
+    def test_relative_dir_for_root(self, curdir, sep):
+        with mock.patch.object(files.os, 'curdir', new=curdir):
+            with mock.patch.object(files.os, 'sep', new=sep):
+                with mock.patch('coverage.files.os.path.normcase', return_value=curdir):
+                    files.set_relative_directory()
+                    assert files.relative_directory() == curdir
 
 
 @pytest.mark.parametrize("original, flat", [
@@ -277,11 +289,37 @@ class PathAliasesTest(CoverageTest):
         self.assert_unchanged(aliases, '/home/foo/srcetc')
 
     def test_multiple_patterns(self, rel_yn):
-        aliases = PathAliases(relative=rel_yn)
+        # also test the debugfn...
+        msgs = []
+        aliases = PathAliases(debugfn=msgs.append, relative=rel_yn)
         aliases.add('/home/*/src', './mysrc')
         aliases.add('/lib/*/libsrc', './mylib')
         self.assert_mapped(aliases, '/home/foo/src/a.py', './mysrc/a.py', relative=rel_yn)
         self.assert_mapped(aliases, '/lib/foo/libsrc/a.py', './mylib/a.py', relative=rel_yn)
+        if rel_yn:
+            assert msgs == [
+                "Aliases (relative=True):",
+                " Rule: '/home/*/src' -> './mysrc/' using regex " +
+                    "'(?:(?s:[\\\\\\\\/]home[\\\\\\\\/].*[\\\\\\\\/]src[\\\\\\\\/]))'",
+                " Rule: '/lib/*/libsrc' -> './mylib/' using regex " +
+                    "'(?:(?s:[\\\\\\\\/]lib[\\\\\\\\/].*[\\\\\\\\/]libsrc[\\\\\\\\/]))'",
+                "Matched path '/home/foo/src/a.py' to rule '/home/*/src' -> './mysrc/', " +
+                    "producing './mysrc/a.py'",
+                "Matched path '/lib/foo/libsrc/a.py' to rule '/lib/*/libsrc' -> './mylib/', " +
+                    "producing './mylib/a.py'",
+            ]
+        else:
+            assert msgs == [
+                "Aliases (relative=False):",
+                " Rule: '/home/*/src' -> './mysrc/' using regex " +
+                    "'(?:(?s:[\\\\\\\\/]home[\\\\\\\\/].*[\\\\\\\\/]src[\\\\\\\\/]))'",
+                " Rule: '/lib/*/libsrc' -> './mylib/' using regex " +
+                    "'(?:(?s:[\\\\\\\\/]lib[\\\\\\\\/].*[\\\\\\\\/]libsrc[\\\\\\\\/]))'",
+                "Matched path '/home/foo/src/a.py' to rule '/home/*/src' -> './mysrc/', " +
+                    f"producing {files.canonical_filename('./mysrc/a.py')!r}",
+                "Matched path '/lib/foo/libsrc/a.py' to rule '/lib/*/libsrc' -> './mylib/', " +
+                    f"producing {files.canonical_filename('./mylib/a.py')!r}",
+            ]
 
     @pytest.mark.parametrize("badpat", [
         "/ned/home/*",

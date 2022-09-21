@@ -324,17 +324,17 @@ def substitute_variables(text, variables):
 
     def dollar_replace(match):
         """Called for each $replacement."""
-        # Only one of the groups will have matched, just get its text.
+        # Only one of the dollar_groups will have matched, just get its text.
         word = next(g for g in match.group(*dollar_groups) if g)    # pragma: always breaks
         if word == "$":
             return "$"
         elif word in variables:
             return variables[word]
-        elif match.group('strict'):
+        elif match['strict']:
             msg = f"Variable {word} is undefined: {text!r}"
             raise CoverageException(msg)
         else:
-            return match.group('defval')
+            return match['defval']
 
     text = re.sub(dollar_pattern, dollar_replace, text)
     return text

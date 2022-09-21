@@ -54,7 +54,9 @@ Q: Can I find out which tests ran which lines?
 ..............................................
 
 Yes! Coverage.py has a feature called :ref:`dynamic_contexts` which can collect
-this information.  Add this to your .coveragerc file::
+this information.  Add this to your .coveragerc file:
+
+.. code-block:: ini
 
     [run]
     dynamic_context = test_function

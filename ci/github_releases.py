@@ -1,7 +1,7 @@
-#!/usr/bin/env python3
-"""
-Upload release notes into GitHub releases.
-"""
+# Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
+# For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
+
+"""Upload release notes into GitHub releases."""
 
 import json
 import shlex
@@ -135,4 +135,4 @@ def update_github_releases(json_filename, repo):
                 update_release(gh_session, url, relnote)
 
 if __name__ == "__main__":
-    update_github_releases(*sys.argv[1:])   # pylint: disable=no-value-for-parameter
+    update_github_releases(*sys.argv[1:3])

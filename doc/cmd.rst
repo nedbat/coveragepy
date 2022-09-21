@@ -1000,6 +1000,9 @@ of operation to log:
 
 * ``multiproc``: log the start and stop of multiprocessing processes.
 
+* ``pathmap``: log the remapping of paths that happens during ``coverage
+  combine`` due to the ``[paths]`` setting. See :ref:`config_paths`.
+
 * ``pid``: annotate all warnings and debug output with the process and thread
   ids.
 

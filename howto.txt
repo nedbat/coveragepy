@@ -16,7 +16,8 @@
     - Python versions supported
 - Update docs
     - Python versions in doc/index.rst
-    - Version of latest stable release in doc/index.rst
+    - IF PRE-RELEASE:
+        - Version of latest stable release in doc/index.rst
     - Version, release, release_date and copyright date in doc/conf.py
         - Look for CHANGEME comments
     - Make sure the docs are cogged:
@@ -26,21 +27,10 @@
         $ tox -e doc
 - commit the release-prep changes
 - Generate new sample_html to get the latest, incl footer version number:
-    $ make clean
-    $ pip install -e .
-    $ cd ~/cog/trunk
-    $ rm -rf htmlcov
-    $ PYTEST_ADDOPTS= coverage run --branch --source=cogapp -m pytest -k CogTestsInMemory; coverage combine; coverage html
     - IF PRE-RELEASE:
-        $ rm -f ~/coverage/trunk/doc/sample_html_beta/*.*
-        $ cp -r htmlcov/ ~/coverage/trunk/doc/sample_html_beta/
-        $ rm ~/coverage/trunk/doc/sample_html_beta/.gitignore
+        $ make sample_html_beta
     - IF NOT PRE-RELEASE:
-        $ rm -f ~/coverage/trunk/doc/sample_html/*.*
-        $ cp -r htmlcov/ ~/coverage/trunk/doc/sample_html/
-        $ rm ~/coverage/trunk/doc/sample_html/.gitignore
-    $ cd ~/coverage/trunk
-    - IF NOT PRE-RELEASE:
+        $ make sample_html
         check in the new sample html
 - Done with changes to source files, check them in.
     $ git push
@@ -50,8 +40,10 @@
     - ELSE:
         $ make publish
 - Kits:
-    - Manually trigger the kit GitHub Action
-        - https://github.com/nedbat/coveragepy/actions/workflows/kit.yml
+    - Trigger the kit GitHub Action
+        $ make build_kits
+        - wait for it to finish:
+            - https://github.com/nedbat/coveragepy/actions/workflows/kit.yml
     - Download and check built kits from GitHub Actions:
         $ make clean download_kits check_kits
     - examine the dist directory, and remove anything that looks malformed.
@@ -94,7 +86,6 @@
 - things to automate:
     - url to link to latest changes in docs
     - next version.py line
-    - curl to start the kit actions going
     - readthedocs api to do the readthedocs changes
 
 

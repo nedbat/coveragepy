@@ -166,7 +166,7 @@ coverage.wire_up_filter = function () {
 
     // Trigger change event on setup, to force filter on page refresh
     // (filter value may still be present).
-    document.getElementById("filter").dispatchEvent(new Event("change"));
+    document.getElementById("filter").dispatchEvent(new Event("input"));
 };
 
 coverage.INDEX_SORT_STORAGE = "COVERAGE_INDEX_SORT_2";
@@ -553,7 +553,7 @@ coverage.build_scroll_markers = function () {
         'p.show_run, p.show_mis, p.show_exc, p.show_exc, p.show_par'
     ).forEach(element => {
         const line_top = Math.floor(element.offsetTop * marker_scale);
-        const line_number = parseInt(element.id.substr(1));
+        const line_number = parseInt(element.querySelector(".n a").id.substr(1));
 
         if (line_number === previous_line + 1) {
             // If this solid missed block just make previous mark higher.
