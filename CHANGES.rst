@@ -20,6 +20,9 @@ development at the same time, such as 4.5.x and 5.0.
 Unreleased
 ----------
 
+- Starting with coverage.py 6.2, ``class`` statements were marked as a branch.
+  This wasn't right, and has been reverted, fixing `issue 1449`_.
+
 - Packaging is now compliant with `PEP 517`_, closing `issue 1395`_.
 
 - A new debug option ``--debug=pathmap`` shows details of the remapping of
@@ -31,6 +34,7 @@ Unreleased
 .. _bug 50381: https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=50381
 .. _PEP 517: https://peps.python.org/pep-0517/
 .. _issue 1395: https://github.com/nedbat/coveragepy/issues/1395
+.. _issue 1449: https://github.com/nedbat/coveragepy/issues/1449
 
 
 .. _changes_6-4-4:

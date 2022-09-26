@@ -203,10 +203,8 @@ class LcovTest(CoverageTest):
             DA:9,0,FPTWzd68bDx76HN7VHu1wA
             LF:6
             LH:4
-            BRDA:0,0,0,1
-            BRDA:7,0,1,1
-            BRF:2
-            BRH:2
+            BRF:0
+            BRH:0
             end_of_record
             """)
         actual_result = self.get_lcov_report_content()

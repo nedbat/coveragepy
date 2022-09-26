@@ -67,6 +67,9 @@ class PythonParser:
         # The raw line numbers of excluded lines of code, as marked by pragmas.
         self.raw_excluded = set()
 
+        # The line numbers of class definitions.
+        self.raw_classdefs = set()
+
         # The line numbers of docstring lines.
         self.raw_docstrings = set()
 
@@ -130,6 +133,12 @@ class PythonParser:
                 indent += 1
             elif toktype == token.DEDENT:
                 indent -= 1
+            elif toktype == token.NAME:
+                if ttext == 'class':
+                    # Class definitions look like branches in the bytecode, so
+                    # we need to exclude them.  The simplest way is to note the
+                    # lines with the 'class' keyword.
+                    self.raw_classdefs.add(slineno)
             elif toktype == token.OP:
                 if ttext == ':' and nesting == 0:
                     should_exclude = (elineno in self.raw_excluded) or excluding_decorators
@@ -291,6 +300,12 @@ class PythonParser:
                 # Arcs to excluded lines shouldn't count.
                 continue
             exit_counts[l1] += 1
+
+        # Class definitions have one extra exit, so remove one for each:
+        for l in self.raw_classdefs:
+            # Ensure key is there: class definitions can include excluded lines.
+            if l in exit_counts:
+                exit_counts[l] -= 1
 
         return exit_counts
 
