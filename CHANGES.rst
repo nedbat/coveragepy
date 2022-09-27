@@ -21,7 +21,9 @@ Unreleased
 ----------
 
 - Starting with coverage.py 6.2, ``class`` statements were marked as a branch.
-  This wasn't right, and has been reverted, fixing `issue 1449`_.
+  This wasn't right, and has been reverted, fixing `issue 1449`_. Note this
+  will very slightly reduce your coverage total if you are measuring branch
+  coverage.
 
 - Packaging is now compliant with `PEP 517`_, closing `issue 1395`_.
 
