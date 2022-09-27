@@ -169,7 +169,6 @@ jobs:
         run: |
           set -xe
           export TOTAL=$(python -c "import json;print(json.load(open('coverage.json'))['totals']['percent_covered_display'])")
-          export PCTINT=$(echo $TOTAL | cut -f1 -d.)
           export SHA10=$(echo ${{ github.sha }} | cut -c 1-10)
           export SLUG=$(date +'%Y%m%d')_$SHA10
           export REPORT_DIR=reports/$SLUG/htmlcov
@@ -180,10 +179,6 @@ jobs:
           echo "report_dir=$REPORT_DIR" >> $GITHUB_ENV
           echo "url=https://nedbat.github.io/coverage-reports/$REPORT_DIR" >> $GITHUB_ENV
           echo "branch=${REF#refs/heads/}" >> $GITHUB_ENV
-          if (($PCTINT >= 85)); then echo "badge_color=green"; fi >> $GITHUB_ENV
-          if (($PCTINT < 85)); then echo "badge_color=yellow"; fi >> $GITHUB_ENV
-          if (($PCTINT < 70)); then echo "badge_color=orange"; fi >> $GITHUB_ENV
-          if (($PCTINT < 60)); then echo "badge_color=red"; fi >> $GITHUB_ENV
 
       - name: "Download coverage HTML report"
         uses: actions/download-artifact@v3
@@ -223,7 +218,9 @@ jobs:
           filename: metacov.json
           label: Coverage
           message: ${{ env.total }}%
-          color: ${{ env.badge_color }}
+          minColorRange: 60
+          maxColorRange: 95
+          valColorRange: ${{ env.total }}
 
       - name: "Create summary"
         run: |
