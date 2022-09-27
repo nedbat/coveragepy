@@ -63,9 +63,9 @@ tox==3.26.0 \
     # via
     #   -r requirements/tox.in
     #   tox-gh-actions
-tox-gh-actions==2.9.1 \
-    --hash=sha256:2bbb681eccd3fd3573231a05f7acf228caae1e3f12397b5517b404417ab90aba \
-    --hash=sha256:90306a6a04a203e47f861b35dca215fc1f6b7ae80de942a050ace61e2eb2b4ea
+tox-gh-actions==2.10.0 \
+    --hash=sha256:4a21e70d799736016cf75c3415f5991008cf81fa6ee1c047d1be24900cec31bb \
+    --hash=sha256:acb64641f09022581040d92c28d6c06d261a829c008575892fd458e23e638971
     # via -r requirements/tox.in
 typing-extensions==4.3.0 \
     --hash=sha256:25642c956049920a5aa49edcdd6ab1e06d7e5d467fc00e0506c44ac86fbfca02 \

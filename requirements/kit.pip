@@ -26,9 +26,9 @@ certifi==2022.5.18.1 \
     # via
     #   -c requirements/pins.pip
     #   cibuildwheel
-cibuildwheel==2.10.0 \
-    --hash=sha256:3375f1f0cfb24a5b20941fc46059a7bdc983c28d725f7e0a255746544a8a4e44 \
-    --hash=sha256:8946086aaac43b7885ebbf11166acdafb5275612f20428e99488fef594b0ed6e
+cibuildwheel==2.10.2 \
+    --hash=sha256:63ff185b4bc1ec62a87309411cc4bc297e6cfab051a3953ab1c7f0d6394b8da3 \
+    --hash=sha256:d333005672c58f86b54c944983b495a91138f30cdbcaee47699ad9a29abc345d
     # via -r requirements/kit.in
 colorama==0.4.5 \
     --hash=sha256:854bf444933e37f5824ae7bfc1e98d5bce2ebe4160d46b5edf346a89358e99da \
@@ -92,7 +92,7 @@ zipp==3.8.1 \
     #   pep517
 
 # The following packages are considered to be unsafe in a requirements file:
-setuptools==65.3.0 \
-    --hash=sha256:2e24e0bec025f035a2e72cdd1961119f557d78ad331bb00ff82efb2ab8da8e82 \
-    --hash=sha256:7732871f4f7fa58fb6bdcaeadb0161b2bd046c85905dbaa066bdcbcc81953b57
+setuptools==65.4.0 \
+    --hash=sha256:a8f6e213b4b0661f590ccf40de95d28a177cd747d098624ad3f69c40287297e9 \
+    --hash=sha256:c2d2709550f15aab6c9110196ea312f468f41cd546bceb24127a1be6fdcaeeb1
     # via -r requirements/kit.in
