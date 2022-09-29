@@ -115,4 +115,4 @@ def _convert_branch_arcs(branch_arcs):
     """Convert branch arcs to a list of two-element tuples."""
     for source, targets in branch_arcs.items():
         for target in targets:
-            yield source, target if target != -1 else 0
+            yield source, target

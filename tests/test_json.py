@@ -55,7 +55,7 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
                     'executed_branches': [
                         [2, 4],
                         [4, 5],
-                        [8, 0],
+                        [8, -1],
                     ],
                     'missing_branches': [
                         [2, 3],
