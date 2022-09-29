@@ -17,8 +17,10 @@ development at the same time, such as 4.5.x and 5.0.
     ..  Version 9.8.1 — 2027-07-27
     ..  --------------------------
 
-Unreleased
-----------
+.. _changes_6-5-0:
+
+Version 6.5.0 — 2022-09-29
+--------------------------
 
 - The JSON report now includes details of which branches were taken, and which
   are missing for each file. Thanks, Christoph Blessing (`pull 1438`_). Closes
