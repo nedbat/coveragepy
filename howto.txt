@@ -59,6 +59,9 @@
             $ make update_stable
 - Update GitHub releases:
     $ make clean github_releases
+- Visit the fixed issues on GitHub and mention the version it was fixed in.
+    $ make comment_on_fixes
+        - "This is now released as part of [coverage 5.2](https://pypi.org/project/coverage/5.2)."
 - Bump version:
     - coverage/version.py
         - increment version number
@@ -77,9 +80,6 @@
             - wait for the new tag build to finish successfully.
         - @ https://readthedocs.org/dashboard/coverage/advanced/
             - change the default version to the new version
-- Visit the fixed issues on GitHub and mention the version it was fixed in.
-    $ make comment_on_fixes
-        - "This is now released as part of [coverage 5.2](https://pypi.org/project/coverage/5.2)."
 - Announce:
     - twitter @coveragepy
     - nedbatchelder.com blog post?
