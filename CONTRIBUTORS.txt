@@ -42,6 +42,7 @@ Chris Rose
 Chris Warrick
 Christian Heimes
 Christine Lytwynec
+Christoph Blessing
 Christoph Zwerschke
 Clément Pit-Claudel
 Conrad Ho

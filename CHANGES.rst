@@ -20,6 +20,10 @@ development at the same time, such as 4.5.x and 5.0.
 Unreleased
 ----------
 
+- The JSON report now includes details of which branches were taken, and which
+  are missing for each file. Thanks, Christoph Blessing (`pull 1438`_). Closes
+  `issue 1425`_.
+
 - Starting with coverage.py 6.2, ``class`` statements were marked as a branch.
   This wasn't right, and has been reverted, fixing `issue 1449`_. Note this
   will very slightly reduce your coverage total if you are measuring branch
@@ -36,6 +40,8 @@ Unreleased
 .. _bug 50381: https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=50381
 .. _PEP 517: https://peps.python.org/pep-0517/
 .. _issue 1395: https://github.com/nedbat/coveragepy/issues/1395
+.. _issue 1425: https://github.com/nedbat/coveragepy/issues/1425
+.. _pull 1438: https://github.com/nedbat/coveragepy/pull/1438
 .. _issue 1449: https://github.com/nedbat/coveragepy/issues/1449
 
 
