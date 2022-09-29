@@ -142,8 +142,8 @@ def register_sqlite_functions(connection):
         conn = sqlite3.connect('example.db')
         register_sqlite_functions(conn)
         c = conn.cursor()
-        # Kind of a nonsense query: find all the files and contexts that
-        # executed line 47 in any file:
+        # Kind of a nonsense query:
+        # Find all the files and contexts that executed line 47 in any file:
         c.execute(
             "select file_id, context_id from line_bits where num_in_numbits(?, numbits)",
             (47,)

@@ -19,8 +19,9 @@ be preferred to accessing the database directly.  Only advanced uses will need
 to use the database.
 
 The schema can change without changing the major version of coverage.py, so be
-careful when accessing the database directly.  The `coverage_schema` table has
-the schema number of the database.  The schema described here corresponds to:
+careful when accessing the database directly.  The ``coverage_schema`` table
+has the schema number of the database.  The schema described here corresponds
+to:
 
 .. [[[cog
     from coverage.sqldata import SCHEMA_VERSION
