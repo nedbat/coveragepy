@@ -7,10 +7,10 @@
         version_info = (4, 0, 2, "candidate", 1)
         version_info = (4, 0, 2, "final", 0)
 - Supported Python version numbers. Search for "PYVERSIONS".
-- Copyright date in NOTICE.txt
+- Update source files with release facts:
+    $ make edit_for_release
 - run `python igor.py cheats` to get useful snippets for next steps.
-- Update CHANGES.rst, including release date.
-    - don't forget the jump target
+- Look over CHANGES.rst
 - Update README.rst
     - "New in x.y:"
     - Python versions supported
@@ -18,8 +18,6 @@
     - Python versions in doc/index.rst
     - IF PRE-RELEASE:
         - Version of latest stable release in doc/index.rst
-    - Version, release, release_date and copyright date in doc/conf.py
-        - Look for CHANGEME comments
     - Make sure the docs are cogged:
         $ make prebuild
     - Don't forget the man page: doc/python-coverage.1.txt
@@ -61,14 +59,8 @@
     $ make clean github_releases
 - Visit the fixed issues on GitHub and mention the version it was fixed in.
     $ make comment_on_fixes
-        - "This is now released as part of [coverage 5.2](https://pypi.org/project/coverage/5.2)."
 - Bump version:
-    - coverage/version.py
-        - increment version number
-        - IF NOT PRE-RELEASE:
-            - set to alpha-0 if just released.
-    - CHANGES.rst
-        - add an "Unreleased" section to the top.
+    $ make bump_version
     $ git push
 - Update readthedocs
     - @ https://readthedocs.org/projects/coverage/versions/

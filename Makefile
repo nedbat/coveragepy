@@ -146,6 +146,9 @@ sample_html_beta: _sample_cog_html	## Generate sample HTML report for a beta rel
 
 REPO_OWNER = nedbat/coveragepy
 
+edit_for_release:			## Edit sources to insert release facts.
+	python igor.py edit_for_release
+
 kit:					## Make the source distribution.
 	python -m build
 
@@ -180,6 +183,9 @@ tag:					## Make a git tag with the version number.
 update_stable:				## Set the stable branch to the latest release.
 	git branch -f stable $$(python setup.py --version)
 	git push origin stable
+
+bump_version:				## Edit sources to bump the version after a release.
+	python igor.py bump_version
 
 
 ##@ Documentation

@@ -57,18 +57,20 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'Coverage.py'
-copyright = '2009\N{EN DASH}2022, Ned Batchelder'       # CHANGEME  # pylint: disable=redefined-builtin
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
 # built documents.
-#
-# The short X.Y.Z version.                                 # CHANGEME
+
+# @@@ editable
+copyright = "2009–2022, Ned Batchelder" # pylint: disable=redefined-builtin
+# The short X.Y.Z version.
 version = "6.5.0"
-# The full version, including alpha/beta/rc tags.          # CHANGEME
+# The full version, including alpha/beta/rc tags.
 release = "6.5.0"
-# The date of release, in "monthname day, year" format.    # CHANGEME
+# The date of release, in "monthname day, year" format.
 release_date = "September 29, 2022"
+# @@@ end
 
 rst_epilog = """
 .. |release_date| replace:: {release_date}
