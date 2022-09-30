@@ -74,15 +74,29 @@ def get_releases(session, repo):
     releases = { r['tag_name']: r for r in github_paginated(session, url) }
     return releases
 
+RELEASE_BODY_FMT = """
+{relnote_text}
+
+---
+PyPI page: [coverage {version}](https://pypi.org/project/coverage/{version})
+
+To install:
+```
+$ python3 -m pip install coverage=={version}
+```
+"""
+
 def release_for_relnote(relnote):
     """
     Turn a release note dict into the data needed by GitHub for a release.
     """
-    tag = relnote['version']
+    relnote_text = relnote["text"]
+    tag = version = relnote["version"]
+    body = RELEASE_BODY_FMT.format(relnote_text=relnote_text, version=version)
     return {
         "tag_name": tag,
-        "name": tag,
-        "body": relnote["text"],
+        "name": version,
+        "body": body,
         "draft": False,
         "prerelease": relnote["prerelease"],
     }
