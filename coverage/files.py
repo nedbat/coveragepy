@@ -296,9 +296,8 @@ def fnmatches_to_regex(patterns, case_insensitive=False, partial=False):
 
     """
     regexes = (fnmatch.translate(pattern) for pattern in patterns)
-    # Python3.7 fnmatch translates "/" as "/". Before that, it translates as "\/",
-    # so we have to deal with maybe a backslash.
-    regexes = (re.sub(r"\\?/", r"[\\\\/]", regex) for regex in regexes)
+    # Be agnostic: / can mean backslash or slash.
+    regexes = (re.sub(r"/", r"[\\\\/]", regex) for regex in regexes)
 
     if partial:
         # fnmatch always adds a \Z to match the whole string, which we don't
