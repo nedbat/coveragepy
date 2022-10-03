@@ -309,9 +309,9 @@ class PathAliasesTest(CoverageTest):
             assert msgs == [
                 "Aliases (relative=True):",
                 " Rule: '/home/*/src' -> './mysrc/' using regex " +
-                    "'(?:(?s:[\\\\\\\\/]home[\\\\\\\\/].*[\\\\\\\\/]src[\\\\\\\\/]))'",
+                    "'(?s:[\\\\\\\\/]home[\\\\\\\\/].*[\\\\\\\\/]src[\\\\\\\\/])'",
                 " Rule: '/lib/*/libsrc' -> './mylib/' using regex " +
-                    "'(?:(?s:[\\\\\\\\/]lib[\\\\\\\\/].*[\\\\\\\\/]libsrc[\\\\\\\\/]))'",
+                    "'(?s:[\\\\\\\\/]lib[\\\\\\\\/].*[\\\\\\\\/]libsrc[\\\\\\\\/])'",
                 "Matched path '/home/foo/src/a.py' to rule '/home/*/src' -> './mysrc/', " +
                     "producing './mysrc/a.py'",
                 "Matched path '/lib/foo/libsrc/a.py' to rule '/lib/*/libsrc' -> './mylib/', " +
@@ -321,9 +321,9 @@ class PathAliasesTest(CoverageTest):
             assert msgs == [
                 "Aliases (relative=False):",
                 " Rule: '/home/*/src' -> './mysrc/' using regex " +
-                    "'(?:(?s:[\\\\\\\\/]home[\\\\\\\\/].*[\\\\\\\\/]src[\\\\\\\\/]))'",
+                    "'(?s:[\\\\\\\\/]home[\\\\\\\\/].*[\\\\\\\\/]src[\\\\\\\\/])'",
                 " Rule: '/lib/*/libsrc' -> './mylib/' using regex " +
-                    "'(?:(?s:[\\\\\\\\/]lib[\\\\\\\\/].*[\\\\\\\\/]libsrc[\\\\\\\\/]))'",
+                    "'(?s:[\\\\\\\\/]lib[\\\\\\\\/].*[\\\\\\\\/]libsrc[\\\\\\\\/])'",
                 "Matched path '/home/foo/src/a.py' to rule '/home/*/src' -> './mysrc/', " +
                     f"producing {files.canonical_filename('./mysrc/a.py')!r}",
                 "Matched path '/lib/foo/libsrc/a.py' to rule '/lib/*/libsrc' -> './mylib/', " +
