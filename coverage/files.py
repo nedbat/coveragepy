@@ -296,6 +296,8 @@ def fnmatches_to_regex(patterns, case_insensitive=False, partial=False):
 
     """
     regexes = (fnmatch.translate(pattern) for pattern in patterns)
+    # */ at the start should also match nothing.
+    regexes = (re.sub(r"^\(\?s:\.\*(\\\\|/)", r"(?s:^(.*\1)?", regex) for regex in regexes)
     # Be agnostic: / can mean backslash or slash.
     regexes = (re.sub(r"/", r"[\\\\/]", regex) for regex in regexes)
 

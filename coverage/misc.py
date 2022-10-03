@@ -181,7 +181,7 @@ def bool_or_none(b):
 
 
 def join_regex(regexes):
-    """Combine a list of regexes into one that matches any of them."""
+    """Combine a series of regexes into one that matches any of them."""
     return "|".join(f"(?:{r})" for r in regexes)
 
 

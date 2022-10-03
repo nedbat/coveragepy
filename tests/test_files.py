@@ -144,6 +144,12 @@ def test_flat_rootname(original, flat):
             ["abc/foo/hi.py", "ABC/foo/bar/hi.py", r"ABC\foo/bar/hi.py"],
             ["abcd/foo.py", "xabc/hi.py"],
     ),
+    (
+        ["*/foo"], False, True,
+            ["abc/foo/hi.py", "foo/hi.py"],
+            ["abc/xfoo/hi.py"],
+    ),
+
 ])
 def test_fnmatches_to_regex(patterns, case_insensitive, partial, matches, nomatches):
     regex = fnmatches_to_regex(patterns, case_insensitive=case_insensitive, partial=partial)
@@ -384,6 +390,30 @@ class PathAliasesTest(CoverageTest):
             aliases,
             "C:/a/path/somewhere/coveragepy_test/project/module/tests/file.py",
             "project\\module\\tests\\file.py",
+        )
+
+    @pytest.mark.parametrize("paths", lin_win_paths)
+    def test_relative_windows_on_linux(self, paths):
+        # https://github.com/nedbat/coveragepy/issues/991
+        aliases = PathAliases(relative=True)
+        for path in paths:
+            aliases.add(path, "project/module")
+        self.assert_mapped(
+            aliases,
+            r"project\module\tests\file.py",
+            r"project/module/tests/file.py",
+        )
+
+    @pytest.mark.parametrize("paths", lin_win_paths)
+    def test_relative_linux_on_windows(self, paths):
+        # https://github.com/nedbat/coveragepy/issues/991
+        aliases = PathAliases(relative=True)
+        for path in paths:
+            aliases.add(path, r"project\module")
+        self.assert_mapped(
+            aliases,
+            r"project/module/tests/file.py",
+            r"project\module\tests\file.py",
         )
 
     def test_multiple_wildcard(self, rel_yn):
