@@ -357,37 +357,34 @@ class PathAliasesTest(CoverageTest):
             r'.\mysrc\sub\a.py',
         )
 
-    def test_windows_on_linux(self, rel_yn):
+    # Try the paths in both orders.
+    lin = "*/project/module/"
+    win = "*\\project\\module\\"
+    lin_win_paths = [[lin, win], [win, lin]]
+
+    @pytest.mark.parametrize("paths", lin_win_paths)
+    def test_windows_on_linux(self, paths, rel_yn):
         # https://github.com/nedbat/coveragepy/issues/618
-        lin = "*/project/module/"
-        win = "*\\project\\module\\"
+        aliases = PathAliases(relative=rel_yn)
+        for path in paths:
+            aliases.add(path, "project/module")
+        self.assert_mapped(
+            aliases,
+            "C:\\a\\path\\somewhere\\coveragepy_test\\project\\module\\tests\\file.py",
+            "project/module/tests/file.py",
+        )
 
-        # Try the paths in both orders.
-        for paths in [[lin, win], [win, lin]]:
-            aliases = PathAliases(relative=rel_yn)
-            for path in paths:
-                aliases.add(path, "project/module")
-            self.assert_mapped(
-                aliases,
-                "C:\\a\\path\\somewhere\\coveragepy_test\\project\\module\\tests\\file.py",
-                "project/module/tests/file.py",
-            )
-
-    def test_linux_on_windows(self, rel_yn):
+    @pytest.mark.parametrize("paths", lin_win_paths)
+    def test_linux_on_windows(self, paths, rel_yn):
         # https://github.com/nedbat/coveragepy/issues/618
-        lin = "*/project/module/"
-        win = "*\\project\\module\\"
-
-        # Try the paths in both orders.
-        for paths in [[lin, win], [win, lin]]:
-            aliases = PathAliases(relative=rel_yn)
-            for path in paths:
-                aliases.add(path, "project\\module")
-            self.assert_mapped(
-                aliases,
-                "C:/a/path/somewhere/coveragepy_test/project/module/tests/file.py",
-                "project\\module\\tests\\file.py",
-            )
+        aliases = PathAliases(relative=rel_yn)
+        for path in paths:
+            aliases.add(path, "project\\module")
+        self.assert_mapped(
+            aliases,
+            "C:/a/path/somewhere/coveragepy_test/project/module/tests/file.py",
+            "project\\module\\tests\\file.py",
+        )
 
     def test_multiple_wildcard(self, rel_yn):
         aliases = PathAliases(relative=rel_yn)
