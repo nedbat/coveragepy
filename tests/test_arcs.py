@@ -594,7 +594,7 @@ class LoopArcTest(CoverageTest):
         )
 
     # https://bugs.python.org/issue44672
-    @pytest.mark.xfail(env.PYVERSION < (3, 10), reason="<3.10 traced final pass incorrectly")
+    #@pytest.mark.xfail(env.PYVERSION < (3, 10), reason="<3.10 traced final pass incorrectly")
     def test_incorrect_if_bug_1175(self):
         self.check_coverage("""\
             def wrong_loop(x):
