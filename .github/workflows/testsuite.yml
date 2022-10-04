@@ -91,13 +91,19 @@ jobs:
              exit 1
           fi
 
-  # A final step to give a simple name for required status checks.
-  # https://github.com/orgs/community/discussions/33579
-  success:
-    needs: tests
-    runs-on: ubuntu-latest
+  # https://github.com/marketplace/actions/alls-green#why
+  success:  # This job does nothing and is only used for the branch protection
     name: Tests successful
+
+    if: always()
+
+    needs:
+    - tests
+
+    runs-on: ubuntu-latest
+
     steps:
-      - name: "Success"
-        run: |
-          echo Tests successful
+    - name: Decide whether the needed jobs succeeded or failed
+      uses: re-actors/alls-green@release/v1
+      with:
+        jobs: ${{ toJSON(needs) }}
