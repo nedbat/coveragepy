@@ -3,6 +3,7 @@
 
 """Core control stuff for coverage.py."""
 
+import colorsys
 import atexit
 import collections
 import contextlib
