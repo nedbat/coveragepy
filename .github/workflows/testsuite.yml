@@ -35,7 +35,7 @@ jobs:
       matrix:
         os:
           - ubuntu
-          - macos
+          #- macos
           - windows
         python-version:
           # When changing this list, be sure to check the [gh-actions] list in
@@ -48,8 +48,8 @@ jobs:
           - "3.9"
           - "3.10"
           - "3.11.0-rc.2"
-          - "pypy-3.7"
-          - "pypy-3.9"
+          #- "pypy-3.7"
+          #- "pypy-3.9"
       fail-fast: false
 
     steps:
