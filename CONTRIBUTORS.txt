@@ -116,6 +116,7 @@ Matus Valo
 Max Linke
 Michael Krebs
 Michał Bultrowicz
+Michał Górny
 Mickie Betz
 Mike Fiedler
 Naveen Yadav
@@ -150,6 +151,7 @@ Stephen Finucane
 Steve Dower
 Steve Leonard
 Steve Peak
+Sviatoslav Sydorenko
 S. Y. Lee
 Teake Nutma
 Ted Wexler
