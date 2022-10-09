@@ -416,6 +416,26 @@ class PathAliasesTest(CoverageTest):
             r"project\module\tests\file.py",
         )
 
+    @pytest.mark.skipif(env.WINDOWS, reason="This test assumes Unix file system")
+    def test_implicit_relative_windows_on_linux(self):
+        # https://github.com/nedbat/coveragepy/issues/991
+        aliases = PathAliases(relative=True)
+        self.assert_mapped(
+            aliases,
+            r"project\module\tests\file.py",
+            r"project/module/tests/file.py",
+        )
+
+    @pytest.mark.skipif(not env.WINDOWS, reason="This test assumes Windows file system")
+    def test_implicit_relative_linux_on_windows(self):
+        # https://github.com/nedbat/coveragepy/issues/991
+        aliases = PathAliases(relative=True)
+        self.assert_mapped(
+            aliases,
+            r"project/module/tests/file.py",
+            r"project\module\tests\file.py",
+        )
+
     def test_multiple_wildcard(self, rel_yn):
         aliases = PathAliases(relative=rel_yn)
         aliases.add('/home/jenkins/*/a/*/b/*/django', './django')
