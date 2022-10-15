@@ -24,10 +24,13 @@ Unreleased
   :ref:`config_run_relative_files` setting:
 
   - During ``coverage combine``, relative file paths are implicitly combined
-    without needing a ``[paths]`` configuration setting.
+    without needing a ``[paths]`` configuration setting.  This also fixed
+    `issue 991`_.
 
   - A ``[paths]`` setting like ``*/foo`` will now match ``foo/bar.py`` so that
     relative file paths can be combined more easily.
+
+.. _issue 991: https://github.com/nedbat/coveragepy/issues/991
 
 
 .. _changes_6-5-0:
