@@ -596,7 +596,9 @@ class CoverageData(SimpleReprMixin):
         """Update this data with data from several other :class:`CoverageData` instances.
 
         If `aliases` is provided, it's a `PathAliases` object that is used to
-        re-map paths to match the local machine's.
+        re-map paths to match the local machine's.  Note: `aliases` is None
+        only when called directly from the test suite.
+
         """
         if self._debug.should("dataop"):
             self._debug.write("Updating with data from {!r}".format(

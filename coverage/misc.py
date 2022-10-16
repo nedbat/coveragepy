@@ -181,8 +181,12 @@ def bool_or_none(b):
 
 
 def join_regex(regexes):
-    """Combine a list of regexes into one that matches any of them."""
-    return "|".join(f"(?:{r})" for r in regexes)
+    """Combine a series of regexes into one that matches any of them."""
+    regexes = list(regexes)
+    if len(regexes) == 1:
+        return regexes[0]
+    else:
+        return "|".join(f"(?:{r})" for r in regexes)
 
 
 def file_be_gone(path):

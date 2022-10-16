@@ -377,6 +377,9 @@ It might be more convenient to use the ``[run] relative_files``
 setting to store relative file paths (see :ref:`relative_files
 <config_run_relative_files>`).
 
+If data isn't combining properly, you can see details about the inner workings
+with ``--debug=pathmap``.
+
 If any of the data files can't be read, coverage.py will print a warning
 indicating the file and the problem.
 
@@ -389,11 +392,10 @@ want to keep those files, use the ``--keep`` command-line option.
     $ coverage combine --help
     Usage: coverage combine [options] <path1> <path2> ... <pathN>
 
-    Combine data from multiple coverage files collected with 'run -p'.  The
-    combined results are written to a single file representing the union of the
-    data. The positional arguments are data files or directories containing data
-    files. If no paths are provided, data files in the default data file's
-    directory are combined.
+    Combine data from multiple coverage files. The combined results are written to
+    a single file representing the union of the data. The positional arguments are
+    data files or directories containing data files. If no paths are provided,
+    data files in the default data file's directory are combined.
 
     Options:
       -a, --append          Append coverage data to .coverage, otherwise it starts
@@ -409,7 +411,7 @@ want to keep those files, use the ``--keep`` command-line option.
       --rcfile=RCFILE       Specify configuration file. By default '.coveragerc',
                             'setup.cfg', 'tox.ini', and 'pyproject.toml' are
                             tried. [env: COVERAGE_RCFILE]
-.. [[[end]]] (checksum: 0ac91b0781d7146b87953f09090dab92)
+.. [[[end]]] (checksum: 0bdd83f647ee76363c955bedd9ddf749)
 
 
 .. _cmd_erase:
@@ -1001,7 +1003,7 @@ of operation to log:
 * ``multiproc``: log the start and stop of multiprocessing processes.
 
 * ``pathmap``: log the remapping of paths that happens during ``coverage
-  combine`` due to the ``[paths]`` setting. See :ref:`config_paths`.
+  combine``. See :ref:`config_paths`.
 
 * ``pid``: annotate all warnings and debug output with the process and thread
   ids.

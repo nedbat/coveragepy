@@ -741,16 +741,14 @@ class Coverage:
         self._post_init()
         self.get_data()
 
-        aliases = None
-        if self.config.paths:
-            aliases = PathAliases(
-                debugfn=(self._debug.write if self._debug.should("pathmap") else None),
-                relative=self.config.relative_files,
-            )
-            for paths in self.config.paths.values():
-                result = paths[0]
-                for pattern in paths[1:]:
-                    aliases.add(pattern, result)
+        aliases = PathAliases(
+            debugfn=(self._debug.write if self._debug.should("pathmap") else None),
+            relative=self.config.relative_files,
+        )
+        for paths in self.config.paths.values():
+            result = paths[0]
+            for pattern in paths[1:]:
+                aliases.add(pattern, result)
 
         combine_parallel_data(
             self._data,
