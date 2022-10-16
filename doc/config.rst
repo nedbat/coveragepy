@@ -259,9 +259,9 @@ information.
 [run] relative_files
 ....................
 
-(*experimental*, boolean, default False) store relative file paths in the data
-file.  This makes it easier to measure code in one (or multiple) environments,
-and then report in another. See :ref:`cmd_combine` for details.
+(boolean, default False) store relative file paths in the data file.  This
+makes it easier to measure code in one (or multiple) environments, and then
+report in another. See :ref:`cmd_combine` for details.
 
 Note that setting ``source`` has to be done in the configuration file rather
 than the command line for this option to work, since the reporting commands

@@ -296,6 +296,8 @@ def fnmatches_to_regex(patterns, case_insensitive=False, partial=False):
 
     """
     regexes = (fnmatch.translate(pattern) for pattern in patterns)
+    # */ at the start should also match nothing.
+    regexes = (re.sub(r"^\(\?s:\.\*(\\\\|/)", r"(?s:^(.*\1)?", regex) for regex in regexes)
     # Be agnostic: / can mean backslash or slash.
     regexes = (re.sub(r"/", r"[\\\\/]", regex) for regex in regexes)
 
@@ -407,6 +409,20 @@ class PathAliases:
                     f"producing {new!r}"
                 )
                 return new
+
+        # If we get here, no pattern matched.
+
+        if self.relative and not isabs_anywhere(path):
+            parts = re.split(r"[/\\]", path)
+            if len(parts) > 1:
+                dir1 = parts[0]
+                pattern = f"*/{dir1}"
+                regex = rf"^(.*[\\/])?{re.escape(dir1)}[\\/]"
+                result = f"{dir1}{os.sep}"
+                self.debugfn(f"Generating rule: {pattern!r} -> {result!r} using regex {regex!r}")
+                self.aliases.append((pattern, re.compile(regex), result))
+                return self.map(path)
+
         self.debugfn(f"No rules match, path {path!r} is unchanged")
         return path
 

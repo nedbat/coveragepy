@@ -379,8 +379,8 @@ COMMANDS = {
             ] + GLOBAL_ARGS,
         usage="[options] <path1> <path2> ... <pathN>",
         description=(
-            "Combine data from multiple coverage files collected " +
-            "with 'run -p'.  The combined results are written to a single " +
+            "Combine data from multiple coverage files. " +
+            "The combined results are written to a single " +
             "file representing the union of the data. The positional " +
             "arguments are data files or directories containing data files. " +
             "If no paths are provided, data files in the default data file's " +
