@@ -86,25 +86,35 @@ def reset_filesdotpy_globals():
 
 WORKER = os.environ.get("PYTEST_XDIST_WORKER", "none")
 
+
+def DEBUG(text):
+    with open("/tmp/coverage_pth_files.txt", "a") as debugf:
+        print(text, file=debugf)
+        debugf.flush()
+
 def pytest_sessionstart():
     """Run once at the start of the test session."""
     # Only in the main process...
     if WORKER == "none":
+        DEBUG("pytest_sessionstart start")
         # Create a .pth file for measuring subprocess coverage.
         pth_dir = find_writable_pth_directory()
         assert pth_dir
         (pth_dir / "subcover.pth").write_text("import coverage; coverage.process_startup()\n")
         # subcover.pth is deleted by pytest_sessionfinish below.
+        DEBUG("pytest_sessionstart end")
 
 
 def pytest_sessionfinish():
     """Hook the end of a test session, to clean up."""
     # This is called by each of the workers and by the main process.
     if WORKER == "none":
+        DEBUG("pytest_sessionfinish start")
         for pth_dir in possible_pth_dirs():             # pragma: part covered
             pth_file = pth_dir / "subcover.pth"
             if pth_file.exists():
                 pth_file.unlink()
+        DEBUG("pytest_sessionfinish end")
 
 @pytest.hookimpl(hookwrapper=True)
 def pytest_runtest_call(item):
@@ -119,26 +129,35 @@ def possible_pth_dirs():
     """Produce a sequence of directories for trying to write .pth files."""
     # First look through sys.path, and if we find a .pth file, then it's a good
     # place to put ours.
+    DEBUG("\n\npossible_pth_dirs:")
     for pth_dir in map(Path, sys.path):             # pragma: part covered
         pth_files = list(pth_dir.glob("*.pth"))
+        DEBUG(f"pth files in {pth_dir=}: {pth_files}")
         if pth_files:
             yield pth_dir
 
     # If we're still looking, then try the Python library directory.
     # https://github.com/nedbat/coveragepy/issues/339
+    DEBUG(f"Last chance: {sysconfig.get_path('purelib')=}")
     yield Path(sysconfig.get_path("purelib"))       # pragma: cant happen
 
 
 def find_writable_pth_directory():
     """Find a place to write a .pth file."""
+    DEBUG(f"Looking for a pth directory in pid {os.getpid()}")
     for pth_dir in possible_pth_dirs():             # pragma: part covered
+        DEBUG(f"Trying {pth_dir=}")
+        DEBUG(f"pth_dir contains {os.listdir(pth_dir)}")
         try_it = pth_dir / f"touch_{WORKER}.it"
         try:
             try_it.write_text("foo")
-        except OSError:                             # pragma: cant happen
+        except OSError as exc:                      # pragma: cant happen
+            DEBUG(f"Couldn't use {pth_dir=}, {exc=}")
             continue
 
         os.remove(try_it)
+        DEBUG(f"Returning {pth_dir=}")
         return pth_dir
 
+    DEBUG(f"Couldn't find a pth directory to use")
     return None                                     # pragma: cant happen
