@@ -30,7 +30,11 @@ Unreleased
   - A ``[paths]`` setting like ``*/foo`` will now match ``foo/bar.py`` so that
     relative file paths can be combined more easily.
 
+- Fix internal logic that prevented coverage.py from running on implementations
+  other than CPython or PyPy (`issue 1474`_).
+
 .. _issue 991: https://github.com/nedbat/coveragepy/issues/991
+.. _issue 1474: https://github.com/nedbat/coveragepy/issues/1474
 
 
 .. _changes_6-5-0:
