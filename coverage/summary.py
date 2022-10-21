@@ -30,74 +30,39 @@ class SummaryReporter:
         self.outfile.write(line.rstrip())
         self.outfile.write("\n")
 
-    def report(self, morfs, outfile=None):
-        """Writes a report summarizing coverage statistics per module.
-
-        `outfile` is a file object to write the summary to. It must be opened
-        for native strings (bytes on Python 2, Unicode on Python 3).
-
-        """
-        self.outfile = outfile or sys.stdout
-
-        self.coverage.get_data().set_query_contexts(self.config.report_contexts)
-        for fr, analysis in get_analysis_to_report(self.coverage, morfs):
-            self.report_one_file(fr, analysis)
-
+    def report_text(self, header, lines_values, sort_option, reverse,
+            total_line):
         # Prepare the formatting strings, header, and column sorting.
-        max_name = max([len(fr.relative_filename()) for (fr, analysis) in self.fr_analysis] + [5])
-        fmt_name = "%%- %ds  " % max_name
-        fmt_skip_covered = "\n%s file%s skipped due to complete coverage."
-        fmt_skip_empty = "\n%s empty file%s skipped."
+        max_name = max([len(fr.relative_filename()) for (fr, analysis) in \
+            self.fr_analysis] + [5])
 
-        header = (fmt_name % "Name") + " Stmts   Miss"
-        fmt_coverage = fmt_name + "%6d %6d"
-        if self.branches:
-            header += " Branch BrPart"
-            fmt_coverage += " %6d %6d"
-        width100 = Numbers(precision=self.config.precision).pc_str_width()
-        header += "%*s" % (width100+4, "Cover")
-        fmt_coverage += "%%%ds%%%%" % (width100+3,)
-        if self.config.show_missing:
-            header += "   Missing"
-            fmt_coverage += "   %s"
-        rule = "-" * len(header)
+        header_row_format ="{:{name_len}}" + "{:>7}" * (len(header)- 2) + " "
+        header_row_format += "{:>9}" if self.config.show_missing else "{:>7}"
+        header_str = header_row_format.format(*header, name_len=max_name)
+        rule = "-" * len(header_str)
+
+        # Write the header
+        self.writeout(header_str)
+        self.writeout(rule)
 
         column_order = dict(name=0, stmts=1, miss=2, cover=-1)
         if self.branches:
             column_order.update(dict(branch=3, brpart=4))
 
-        # Write the header
-        self.writeout(header)
-        self.writeout(rule)
-
         # `lines` is a list of pairs, (line text, line values).  The line text
         # is a string that will be printed, and line values is a tuple of
         # sortable values.
+        line_row_format = "{:{name_len}}" + "{:>7}" * (len(header)- 3)
+        line_row_format += "{:>6}% "
+        line_row_format += " {}" if self.config.show_missing else "{:>7}"
         lines = []
 
-        for (fr, analysis) in self.fr_analysis:
-            nums = analysis.numbers
-
-            args = (fr.relative_filename(), nums.n_statements, nums.n_missing)
-            if self.branches:
-                args += (nums.n_branches, nums.n_partial_branches)
-            args += (nums.pc_covered_str,)
-            if self.config.show_missing:
-                args += (analysis.missing_formatted(branches=True),)
-            text = fmt_coverage % args
-            # Add numeric percent coverage so that sorting makes sense.
-            args += (nums.pc_covered,)
-            lines.append((text, args))
+        for values in lines_values:
+            # build string with line values
+            text = line_row_format.format(*values, name_len=max_name)
+            lines.append((text, values))
 
         # Sort the lines and write them out.
-        sort_option = (self.config.sort or "name").lower()
-        reverse = False
-        if sort_option[0] == '-':
-            reverse = True
-            sort_option = sort_option[1:]
-        elif sort_option[0] == '+':
-            sort_option = sort_option[1:]
-
         if sort_option == "name":
             lines = human_sorted_items(lines, reverse=reverse)
         else:
@@ -112,23 +77,93 @@ class SummaryReporter:
         # Write a TOTAL line if we had at least one file.
         if self.total.n_files > 0:
             self.writeout(rule)
-            args = ("TOTAL", self.total.n_statements, self.total.n_missing)
+            self.writeout(line_row_format.format(*total_line, name_len=max_name))
+
+        return self.total.n_statements and self.total.pc_covered
+
+    def report_markdown(self, header, lines_values, sort_option, reverse,
+        total_line):
+        pass
+
+
+    def report(self, morfs, outfile=None):
+        """Writes a report summarizing coverage statistics per module.
+
+        `outfile` is a file object to write the summary to. It must be opened
+        for native strings (bytes on Python 2, Unicode on Python 3).
+
+        """
+        self.outfile = outfile or sys.stdout
+
+        self.coverage.get_data().set_query_contexts(self.config.report_contexts)
+        for fr, analysis in get_analysis_to_report(self.coverage, morfs):
+            self.report_one_file(fr, analysis)
+
+        # Prepare the formatting strings, header, and column sorting.
+        header = ("Name", "Stmts", "Miss",)
+        if self.branches:
+            header += ("Branch", "BrPart",)
+        header += ("Cover",)
+        if self.config.show_missing:
+            header += ("Missing",)
+
+        column_order = dict(name=0, stmts=1, miss=2, cover=-1)
+        if self.branches:
+            column_order.update(dict(branch=3, brpart=4))
+
+        # `lines_values` is list of tuples of sortable values.
+        lines_values = []
+
+        for (fr, analysis) in self.fr_analysis:
+            nums = analysis.numbers
+
+            args = (fr.relative_filename(), nums.n_statements, nums.n_missing)
             if self.branches:
-                args += (self.total.n_branches, self.total.n_partial_branches)
-            args += (self.total.pc_covered_str,)
+                args += (nums.n_branches, nums.n_partial_branches)
+            args += (nums.pc_covered_str,)
             if self.config.show_missing:
-                args += ("",)
-            self.writeout(fmt_coverage % args)
+                args += (analysis.missing_formatted(branches=True),)
+            args += (nums.pc_covered,)
+            lines_values.append(args)
+
+        # line-sorting.
+        sort_option = (self.config.sort or "name").lower()
+        reverse = False
+        if sort_option[0] == '-':
+            reverse = True
+            sort_option = sort_option[1:]
+        elif sort_option[0] == '+':
+            sort_option = sort_option[1:]
+
+        # calculate total if we had at least one file.
+        total_line = ()
+        if self.total.n_files > 0:
+            total_line = ("TOTAL", self.total.n_statements, self.total.n_missing)
+            if self.branches:
+                total_line += (self.total.n_branches, self.total.n_partial_branches)
+            total_line += (self.total.pc_covered_str,)
+            if self.config.show_missing:
+                total_line += ("",)
+
+        text_format = self.config.format_text or 'text'
+        if text_format.lower() == 'markdown':
+            self.report_markdown(header, lines_values, sort_option, reverse,
+                total_line)
+        else:
+            self.report_text(header, lines_values, sort_option, reverse,
+                total_line)
 
         # Write other final lines.
         if not self.total.n_files and not self.skipped_count:
             raise NoDataError("No data to report.")
 
         if self.config.skip_covered and self.skipped_count:
+            fmt_skip_covered = "\n%s file%s skipped due to complete coverage."
             self.writeout(
                 fmt_skip_covered % (self.skipped_count, 's' if self.skipped_count > 1 else '')
             )
         if self.config.skip_empty and self.empty_count:
+            fmt_skip_empty = "\n%s empty file%s skipped."
             self.writeout(
                 fmt_skip_empty % (self.empty_count, 's' if self.empty_count > 1 else '')
             )
