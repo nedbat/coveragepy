@@ -36,10 +36,13 @@ class SummaryReporter:
         # Prepare the formatting strings, header, and column sorting.
         max_name = max([len(fr.relative_filename()) for (fr, analysis) in \
             self.fr_analysis] + [5]) + 2
-
-        header_row_format ="{:{name_len}}" + "{:>7}" * (len(header)- 2) + " "
-        header_row_format += "{:>9}" if self.config.show_missing else "{:>7}"
-        header_str = header_row_format.format(*header, name_len=max_name)
+        h_form = dict(
+            Name="{:{name_len}}", Stmts="{:>7}", Miss="{:>7}",
+            Branch="{:>7}", BrPart="{:>7}", Cover="{:>7}",
+            Missing="{:>9}")
+        header_items = [
+            h_form[item].format(item, name_len=max_name) for item in header]
+        header_str = "".join(header_items)
         rule = "-" * len(header_str)
 
         # Write the header
@@ -53,14 +56,15 @@ class SummaryReporter:
         # `lines` is a list of pairs, (line text, line values).  The line text
         # is a string that will be printed, and line values is a tuple of
         # sortable values.
-        line_row_format = "{:{name_len}}" + "{:>7}" * (len(header)- 3)
-        line_row_format += "{:>6}% "
-        line_row_format += " {}" if self.config.show_missing else "{:>7}"
         lines = []
 
         for values in lines_values:
             # build string with line values
-            text = line_row_format.format(*values, name_len=max_name)
+            h_form.update(dict(Cover="{:>6}%"), Missing=" {:9}")
+            line_items = [
+                h_form[item].format(str(value),
+                name_len=max_name) for item, value in zip(header, values)]
+            text = "".join(line_items)
             lines.append((text, values))
 
         # Sort the lines and write them out.
@@ -78,8 +82,11 @@ class SummaryReporter:
         # Write a TOTAL line if we had at least one file.
         if self.total.n_files > 0:
             self.writeout(rule)
-            self.writeout(
-                line_row_format.format(*total_line, name_len=max_name))
+            line_items = [
+                h_form[item].format(str(value),
+                name_len=max_name) for item, value in zip(header, total_line)]
+            text = "".join(line_items)
+            self.writeout(text)
 
         return self.total.n_statements and self.total.pc_covered
 
@@ -110,13 +117,6 @@ class SummaryReporter:
         # `lines` is a list of pairs, (line text, line values).  The line text
         # is a string that will be printed, and line values is a tuple of
         # sortable values.
-
-        if self.config.show_missing:
-            line_row_format = "| {:{name_len}}|" + "{:>7} |" * (len(header)-3)
-        else:
-            line_row_format = "| {:{name_len}}|" + "{:>7} |" * (len(header)-2)
-        line_row_format += "{:>7}% |"
-        line_row_format += " {:<9} |" if self.config.show_missing else ""
         lines = []
 
         for values in lines_values:
@@ -126,7 +126,6 @@ class SummaryReporter:
                 h_form[item].format(str(value).replace("_", r"\_"),
                 name_len=max_name) for item, value in zip(header, values)]
             text = "".join(line_items)
-            # text = line_row_format.format(*values, name_len=max_name)
             lines.append((text, values))
 
         # Sort the lines and write them out.
