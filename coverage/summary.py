@@ -104,7 +104,7 @@ class SummaryReporter:
             Branch="{:>7} |", BrPart="{:>7} |", Cover="{:>{n}} |",
             Missing="{:>9} |")
         n = self.config.precision
-        max_n = max(n+6, 7)
+        max_n = max(n+6, 7) + 4
         header_items = [
             h_form[item].format(item, name_len=max_name, n=max_n) for item in header]
         header_str = "".join(header_items)
@@ -162,7 +162,7 @@ class SummaryReporter:
                         insert, name_len=max_name-3)
                 else:
                     total_line_items += total_form[item].format(\
-                        "**"+str(value), name_len=max_name-3, n=max_n-4)
+                        "**"+str(value), name_len=max_name-3, n=max_n-3)
             total_row_str = "".join(total_line_items)
             self.writeout(total_row_str)
 
