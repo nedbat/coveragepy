@@ -30,11 +30,12 @@ class SummaryReporter:
         self.outfile.write(line.rstrip())
         self.outfile.write("\n")
 
-    def report_text(self, header, lines_values, sort_option, reverse,
+    def _report_text(self, header, lines_values, sort_option, reverse,
             total_line):
+        "internal method to print report data in text format"
         # Prepare the formatting strings, header, and column sorting.
         max_name = max([len(fr.relative_filename()) for (fr, analysis) in \
-            self.fr_analysis] + [5])
+            self.fr_analysis] + [5]) + 2
 
         header_row_format ="{:{name_len}}" + "{:>7}" * (len(header)- 2) + " "
         header_row_format += "{:>9}" if self.config.show_missing else "{:>7}"
@@ -77,13 +78,91 @@ class SummaryReporter:
         # Write a TOTAL line if we had at least one file.
         if self.total.n_files > 0:
             self.writeout(rule)
-            self.writeout(line_row_format.format(*total_line, name_len=max_name))
+            self.writeout(
+                line_row_format.format(*total_line, name_len=max_name))
 
         return self.total.n_statements and self.total.pc_covered
 
-    def report_markdown(self, header, lines_values, sort_option, reverse,
+    def _report_markdown(self, header, lines_values, sort_option, reverse,
         total_line):
-        pass
+        "internal method to print report data in markdown format"
+        # Prepare the formatting strings, header, and column sorting.
+        max_name = max([len(fr.relative_filename().replace("_",r"\_")) for (fr, analysis) in \
+            self.fr_analysis] + [5]) + 1
+        h_form = dict(
+            Name="| {:{name_len}}|", Stmts="{:>7} |", Miss="{:>7} |",
+            Branch="{:>7} |", BrPart="{:>7} |", Cover="{:>7} |",
+            Missing="{:>9} |")
+        header_items = [
+            h_form[item].format(item, name_len=max_name) for item in header]
+        header_str = "".join(header_items)
+        rule_str = "|" + " ".join(["- |".rjust(len(header_items[0])-1, '-')] + 
+            ["-: |".rjust(len(item)-1, '-') for item in header_items[1:]])
+
+        # Write the header
+        self.writeout(header_str)
+        self.writeout(rule_str)
+
+        column_order = dict(name=0, stmts=1, miss=2, cover=-1)
+        if self.branches:
+            column_order.update(dict(branch=3, brpart=4))
+
+        # `lines` is a list of pairs, (line text, line values).  The line text
+        # is a string that will be printed, and line values is a tuple of
+        # sortable values.
+
+        if self.config.show_missing:
+            line_row_format = "| {:{name_len}}|" + "{:>7} |" * (len(header)-3)
+        else:
+            line_row_format = "| {:{name_len}}|" + "{:>7} |" * (len(header)-2)
+        line_row_format += "{:>7}% |"
+        line_row_format += " {:<9} |" if self.config.show_missing else ""
+        lines = []
+
+        for values in lines_values:
+            # build string with line values
+            h_form.update(dict(Cover="{:>6}% |"))
+            line_items = [
+                h_form[item].format(str(value).replace("_", r"\_"),
+                name_len=max_name) for item, value in zip(header, values)]
+            text = "".join(line_items)
+            # text = line_row_format.format(*values, name_len=max_name)
+            lines.append((text, values))
+
+        # Sort the lines and write them out.
+        if sort_option == "name":
+            lines = human_sorted_items(lines, reverse=reverse)
+        else:
+            position = column_order.get(sort_option)
+            if position is None:
+                raise ConfigError(f"Invalid sorting option: {self.config.sort!r}")
+            lines.sort(key=lambda l: (l[1][position], l[0]), reverse=reverse)
+
+        for line in lines:
+            self.writeout(line[0])
+
+        # Write a TOTAL line if we had at least one file.
+        if self.total.n_files > 0:
+            total_form = dict(
+                Name="| {:>{name_len_1}}** |", Stmts="{:>5}** |", Miss="{:>5}** |",
+                Branch="{:>5}** |", BrPart="{:>5}** |", Cover="{:>4}%** |",
+                Missing="{:>9} |")
+            total_line_items = []
+            for item, value in zip(header, total_line):
+                if item == "Missing":
+                    if value == '':
+                        insert = value
+                    else:
+                        insert = "**" + value + "**"
+                    total_line_items += total_form[item].format(\
+                        insert, name_len_1=max_name-3)
+                else:
+                    total_line_items += total_form[item].format(\
+                        "**"+str(value), name_len_1=max_name-3)
+            total_row_str = "".join(total_line_items)
+            self.writeout(total_row_str)
+
+        return self.total.n_statements and self.total.pc_covered
 
 
     def report(self, morfs, outfile=None):
@@ -147,10 +226,10 @@ class SummaryReporter:
 
         text_format = self.config.format_text or 'text'
         if text_format.lower() == 'markdown':
-            self.report_markdown(header, lines_values, sort_option, reverse,
+            self._report_markdown(header, lines_values, sort_option, reverse,
                 total_line)
         else:
-            self.report_text(header, lines_values, sort_option, reverse,
+            self._report_text(header, lines_values, sort_option, reverse,
                 total_line)
 
         # Write other final lines.
