@@ -36,12 +36,15 @@ class SummaryReporter:
         # Prepare the formatting strings, header, and column sorting.
         max_name = max([len(fr.relative_filename()) for (fr, analysis) in \
             self.fr_analysis] + [5]) + 2
+        n = self.config.precision
+        max_n = max(n+6, 7)
         h_form = dict(
             Name="{:{name_len}}", Stmts="{:>7}", Miss="{:>7}",
-            Branch="{:>7}", BrPart="{:>7}", Cover="{:>7}",
+            Branch="{:>7}", BrPart="{:>7}", Cover="{:>{n}}",
             Missing="{:>9}")
         header_items = [
-            h_form[item].format(item, name_len=max_name) for item in header]
+            h_form[item].format(item, name_len=max_name, n=max_n) 
+            for item in header]
         header_str = "".join(header_items)
         rule = "-" * len(header_str)
 
@@ -60,10 +63,10 @@ class SummaryReporter:
 
         for values in lines_values:
             # build string with line values
-            h_form.update(dict(Cover="{:>6}%"), Missing=" {:9}")
+            h_form.update(dict(Cover="{:>{n}}%"), Missing=" {:9}")
             line_items = [
                 h_form[item].format(str(value),
-                name_len=max_name) for item, value in zip(header, values)]
+                name_len=max_name, n=max_n-1) for item, value in zip(header, values)]
             text = "".join(line_items)
             lines.append((text, values))
 
@@ -84,7 +87,7 @@ class SummaryReporter:
             self.writeout(rule)
             line_items = [
                 h_form[item].format(str(value),
-                name_len=max_name) for item, value in zip(header, total_line)]
+                name_len=max_name, n=max_n) for item, value in zip(header, total_line)]
             text = "".join(line_items)
             self.writeout(text)
 
@@ -98,10 +101,12 @@ class SummaryReporter:
             (fr, analysis) in self.fr_analysis] + [5]) + 1
         h_form = dict(
             Name="| {:{name_len}}|", Stmts="{:>7} |", Miss="{:>7} |",
-            Branch="{:>7} |", BrPart="{:>7} |", Cover="{:>7} |",
+            Branch="{:>7} |", BrPart="{:>7} |", Cover="{:>{n}} |",
             Missing="{:>9} |")
+        n = self.config.precision
+        max_n = max(n+6, 7)
         header_items = [
-            h_form[item].format(item, name_len=max_name) for item in header]
+            h_form[item].format(item, name_len=max_name, n=max_n) for item in header]
         header_str = "".join(header_items)
         rule_str = "|" + " ".join(["- |".rjust(len(header_items[0])-1, '-')] +
             ["-: |".rjust(len(item)-1, '-') for item in header_items[1:]])
@@ -121,10 +126,10 @@ class SummaryReporter:
 
         for values in lines_values:
             # build string with line values
-            h_form.update(dict(Cover="{:>6}% |"))
+            h_form.update(dict(Cover="{:>{n}}% |"))
             line_items = [
                 h_form[item].format(str(value).replace("_", r"\_"),
-                name_len=max_name) for item, value in zip(header, values)]
+                name_len=max_name, n=max_n-1) for item, value in zip(header, values)]
             text = "".join(line_items)
             lines.append((text, values))
 
@@ -143,8 +148,8 @@ class SummaryReporter:
         # Write a TOTAL line if we had at least one file.
         if self.total.n_files > 0:
             total_form = dict(
-                Name="| {:>{name_len_1}}** |", Stmts="{:>5}** |", Miss="{:>5}** |",
-                Branch="{:>5}** |", BrPart="{:>5}** |", Cover="{:>4}%** |",
+                Name="| {:>{name_len}}** |", Stmts="{:>5}** |", Miss="{:>5}** |",
+                Branch="{:>5}** |", BrPart="{:>5}** |", Cover="{:>{n}}%** |",
                 Missing="{:>9} |")
             total_line_items = []
             for item, value in zip(header, total_line):
@@ -154,10 +159,10 @@ class SummaryReporter:
                     else:
                         insert = "**" + value + "**"
                     total_line_items += total_form[item].format(\
-                        insert, name_len_1=max_name-3)
+                        insert, name_len=max_name-3)
                 else:
                     total_line_items += total_form[item].format(\
-                        "**"+str(value), name_len_1=max_name-3)
+                        "**"+str(value), name_len=max_name-3, n=max_n-4)
             total_row_str = "".join(total_line_items)
             self.writeout(total_row_str)
 
