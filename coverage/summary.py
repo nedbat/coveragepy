@@ -87,8 +87,8 @@ class SummaryReporter:
         total_line):
         "internal method to print report data in markdown format"
         # Prepare the formatting strings, header, and column sorting.
-        max_name = max([len(fr.relative_filename().replace("_",r"\_")) for (fr, analysis) in \
-            self.fr_analysis] + [5]) + 1
+        max_name = max([len(fr.relative_filename().replace("_",r"\_")) for\
+            (fr, analysis) in self.fr_analysis] + [5]) + 1
         h_form = dict(
             Name="| {:{name_len}}|", Stmts="{:>7} |", Miss="{:>7} |",
             Branch="{:>7} |", BrPart="{:>7} |", Cover="{:>7} |",
@@ -96,7 +96,7 @@ class SummaryReporter:
         header_items = [
             h_form[item].format(item, name_len=max_name) for item in header]
         header_str = "".join(header_items)
-        rule_str = "|" + " ".join(["- |".rjust(len(header_items[0])-1, '-')] + 
+        rule_str = "|" + " ".join(["- |".rjust(len(header_items[0])-1, '-')] +
             ["-: |".rjust(len(item)-1, '-') for item in header_items[1:]])
 
         # Write the header
