@@ -671,9 +671,6 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
             "| **TOTAL** |  **0** |  **0** |   **100%** |"
         assert report.split("\n")[4] == "1 empty file skipped."
 
-        
-
-
     def test_report_precision(self):
         self.make_file(".coveragerc", """\
             [report]
@@ -926,7 +923,7 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         report = self.get_report(cov, squeeze=False, format_text="markdown")
         print(report)
         assert report.split("\n")[4] == \
-            "| **TOTAL** |  **2** |  **0** |   **100%** |" 
+            "| **TOTAL** |  **2** |  **0** |   **100%** |"
 
     def test_missing_py_file_during_run(self):
         # Create two Python files.

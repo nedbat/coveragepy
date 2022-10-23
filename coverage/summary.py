@@ -43,7 +43,7 @@ class SummaryReporter:
             Branch="{:>7}", BrPart="{:>7}", Cover="{:>{n}}",
             Missing="{:>9}")
         header_items = [
-            h_form[item].format(item, name_len=max_name, n=max_n) 
+            h_form[item].format(item, name_len=max_name, n=max_n)
             for item in header]
         header_str = "".join(header_items)
         rule = "-" * len(header_str)

@@ -199,7 +199,7 @@ class CoverageConfig:
         # Defaults for [report]
         self.exclude_list = DEFAULT_EXCLUDE[:]
         self.fail_under = 0.0
-        self.format_text = None      
+        self.format_text = None
         self.ignore_errors = False
         self.report_include = None
         self.report_omit = None
