@@ -68,9 +68,10 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         assert "/tests/modules/covmod1.py " in report
         assert "/tests/zipmods.zip/covmodzip1.py " in report
         assert "mycode.py " in report
-        assert report.split("\n")[5] == "|                                   "\
-            "                                         **TOTAL** |  **8** |"\
-                "  **0** |   **100%** |"
+        assert "**TOTAL**" in report.split("\n")[5]
+        assert "**8**" in report.split("\n")[5]
+        assert "**0**" in report.split("\n")[5]
+        assert "**100%**" in report.split("\n")[5]
 
     def test_report_just_one(self):
         # Try reporting just one module
@@ -968,10 +969,11 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         report = self.get_report(cov, squeeze=False, format_text="markdown")
         # get_report() escapes backslash so we expect forward slash escaped
         # underscore
-        assert "tests/modules/pkg1//_/_init/_/_.py              |      1 |   "\
-            "   0 |      0 |      0 |       100% |" in report
-        assert "tests/modules/pkg2//_/_init/_/_.py              |      0 |   "\
-            "   0 |      0 |      0 |       100% |" in report
+        print(report)
+        assert "tests/modules/pkg1//_/_init/_/_.py " in report
+        assert "|      1 |      0 |      0 |      0 |       100% |" in report
+        assert "tests/modules/pkg2//_/_init/_/_.py " in report
+        assert "|      0 |      0 |      0 |      0 |       100% |" in report
 
 
 class ReportingReturnValueTest(CoverageTest):
