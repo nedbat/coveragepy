@@ -40,13 +40,13 @@ flaky==3.7.0 \
 future==0.18.2 \
     --hash=sha256:b1bead90b70cf6ec3f0710ae53a525360fa360d306a86583adc6bf83a4db537d
     # via pycontracts
-hypothesis==6.54.6 \
-    --hash=sha256:2d5e2d5ccd0efce4e0968a6164f4e4853f808e33f4d91490c975c98beec0c7c3 \
-    --hash=sha256:e44833325f9a55f795596ceefd7ede7d626cfe45836025d2647cccaff7070e10
+hypothesis==6.56.3 \
+    --hash=sha256:15dae5d993339aefa57e00f5cb5a5817ff300eeb661d96d1c9d094eb62b04c9a \
+    --hash=sha256:802d236d03dbd54e0e1c55c0daa2ec41aeaadc87a4dcbb41421b78bf3f7a7789
     # via -r requirements/pytest.in
-importlib-metadata==4.12.0 \
-    --hash=sha256:637245b8bab2b6502fcbc752cc4b7a6f6243bb02b31c5c26156ad103d3d45670 \
-    --hash=sha256:7401a975809ea1fdc658c3aa4f78cc2195a0e019c5cbc4c06122884e9ae80c23
+importlib-metadata==5.0.0 \
+    --hash=sha256:da31db32b304314d044d3c12c79bd59e307889b287ad12ff387b3500835fc2ab \
+    --hash=sha256:ddb0e35065e8938f867ed4928d0ae5bf2a53b7773871bfe6bcc7e4fcdc7dea43
     # via
     #   pluggy
     #   pytest
@@ -107,11 +107,11 @@ tomli==2.0.1 \
     --hash=sha256:939de3e7a6161af0c887ef91b7d41a53e7c5a1ca976325f429cb46ea9bc30ecc \
     --hash=sha256:de526c12914f0c550d15924c62d72abc48d6fe7364aa87328337a31007fe8a4f
     # via pytest
-typing-extensions==4.3.0 \
-    --hash=sha256:25642c956049920a5aa49edcdd6ab1e06d7e5d467fc00e0506c44ac86fbfca02 \
-    --hash=sha256:e6d2677a32f47fc7eb2795db1dd15c1f34eff616bcaf2cfb5e997f854fa1c4a6
+typing-extensions==4.4.0 \
+    --hash=sha256:1511434bb92bf8dd198c12b1cc812e800d4181cfcb867674e0f8279cc93087aa \
+    --hash=sha256:16fa4864408f655d35ec496218b85f79b3437c829e93320c7c9215ccfd92489e
     # via importlib-metadata
-zipp==3.8.1 \
-    --hash=sha256:05b45f1ee8f807d0cc928485ca40a07cb491cf092ff587c0df9cb1fd154848d2 \
-    --hash=sha256:47c40d7fe183a6f21403a199b3e4192cca5774656965b0a4988ad2f8feb5f009
+zipp==3.9.0 \
+    --hash=sha256:3a7af91c3db40ec72dd9d154ae18e008c69efe8ca88dde4f9a731bb82fe2f9eb \
+    --hash=sha256:972cfa31bc2fedd3fa838a51e9bc7e64b7fb725a8c00e7431554311f180e9980
     # via importlib-metadata
