@@ -20,6 +20,10 @@ development at the same time, such as 4.5.x and 5.0.
 Unreleased
 ----------
 
+- Fixes to file pattern matching, fixing `issue 1407`_. Previously, `*` would
+  incorrectly match directory separators, making precise matching difficult.
+  This is now fixed.
+
 - Improvements to combining data files when using the
   :ref:`config_run_relative_files` setting:
 
@@ -39,6 +43,7 @@ Unreleased
   implementations other than CPython or PyPy (`issue 1474`_).
 
 .. _issue 991: https://github.com/nedbat/coveragepy/issues/991
+.. _issue 1407: https://github.com/nedbat/coveragepy/issues/1407
 .. _issue 1474: https://github.com/nedbat/coveragepy/issues/1474
 .. _issue 1481: https://github.com/nedbat/coveragepy/issues/1481
 

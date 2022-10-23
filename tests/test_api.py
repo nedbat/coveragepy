@@ -71,7 +71,6 @@ class ApiTest(CoverageTest):
         assert missing == [1]
 
     def test_filenames(self):
-
         self.make_file("mymain.py", """\
             import mymod
             a = 1

@@ -3,8 +3,10 @@
 
 """Tests for files.py"""
 
+import itertools
 import os
 import os.path
+import re
 from unittest import mock
 
 import pytest
@@ -12,8 +14,8 @@ import pytest
 from coverage import env, files
 from coverage.exceptions import ConfigError
 from coverage.files import (
-    FnmatchMatcher, ModuleMatcher, PathAliases, TreeMatcher, abs_file,
-    actual_path, find_python_files, flat_rootname, fnmatches_to_regex,
+    GlobMatcher, ModuleMatcher, PathAliases, TreeMatcher, abs_file,
+    actual_path, find_python_files, flat_rootname, globs_to_regex,
 )
 from tests.coveragetest import CoverageTest
 
@@ -104,59 +106,138 @@ def test_flat_rootname(original, flat):
     assert flat_rootname(original) == flat
 
 
-@pytest.mark.parametrize(
-        "patterns, case_insensitive, partial," +
-            "matches," +
-            "nomatches",
-[
-    (
-        ["abc", "xyz"], False, False,
-            ["abc", "xyz"],
-            ["ABC", "xYz", "abcx", "xabc", "axyz", "xyza"],
-    ),
-    (
-        ["abc", "xyz"], True, False,
-            ["abc", "xyz", "Abc", "XYZ", "AbC"],
-            ["abcx", "xabc", "axyz", "xyza"],
-    ),
-    (
-        ["abc/hi.py"], True, False,
-            ["abc/hi.py", "ABC/hi.py", r"ABC\hi.py"],
-            ["abc_hi.py", "abc/hi.pyc"],
-    ),
-    (
-        [r"abc\hi.py"], True, False,
-            [r"abc\hi.py", r"ABC\hi.py"],
-            ["abc/hi.py", "ABC/hi.py", "abc_hi.py", "abc/hi.pyc"],
-    ),
-    (
-        ["abc/*/hi.py"], True, False,
-            ["abc/foo/hi.py", "ABC/foo/bar/hi.py", r"ABC\foo/bar/hi.py"],
-            ["abc/hi.py", "abc/hi.pyc"],
-    ),
-    (
-        ["abc/[a-f]*/hi.py"], True, False,
-            ["abc/foo/hi.py", "ABC/foo/bar/hi.py", r"ABC\foo/bar/hi.py"],
-            ["abc/zoo/hi.py", "abc/hi.py", "abc/hi.pyc"],
-    ),
-    (
-        ["abc/"], True, True,
-            ["abc/foo/hi.py", "ABC/foo/bar/hi.py", r"ABC\foo/bar/hi.py"],
-            ["abcd/foo.py", "xabc/hi.py"],
-    ),
-    (
-        ["*/foo"], False, True,
-            ["abc/foo/hi.py", "foo/hi.py"],
-            ["abc/xfoo/hi.py"],
-    ),
+def globs_to_regex_params(
+    patterns, case_insensitive=False, partial=False, matches=(), nomatches=(),
+):
+    """Generate parameters for `test_globs_to_regex`.
 
+    `patterns`, `case_insensitive`, and `partial` are arguments for
+    `globs_to_regex`.  `matches` is a list of strings that should match, and
+    `nomatches` is a list of strings that should not match.
+
+    Everything is yielded so that `test_globs_to_regex` can call
+    `globs_to_regex` once and check one result.
+    """
+    pat_id = "|".join(patterns)
+    for text in matches:
+        yield pytest.param(
+            patterns, case_insensitive, partial, text, True,
+            id=f"{pat_id}:ci{case_insensitive}:par{partial}:{text}:match",
+        )
+    for text in nomatches:
+        yield pytest.param(
+            patterns, case_insensitive, partial, text, False,
+            id=f"{pat_id}:ci{case_insensitive}:par{partial}:{text}:nomatch",
+        )
+
+@pytest.mark.parametrize(
+    "patterns, case_insensitive, partial, text, result",
+    list(itertools.chain.from_iterable([
+        globs_to_regex_params(
+            ["abc", "xyz"],
+            matches=["abc", "xyz", "sub/mod/abc"],
+            nomatches=[
+                "ABC", "xYz", "abcx", "xabc", "axyz", "xyza", "sub/mod/abcd", "sub/abc/more",
+            ],
+        ),
+        globs_to_regex_params(
+            ["abc", "xyz"], case_insensitive=True,
+            matches=["abc", "xyz", "Abc", "XYZ", "AbC"],
+            nomatches=["abcx", "xabc", "axyz", "xyza"],
+        ),
+        globs_to_regex_params(
+            ["a*c", "x*z"],
+            matches=["abc", "xyz", "xYz", "azc", "xaz", "axyzc"],
+            nomatches=["ABC", "abcx", "xabc", "axyz", "xyza", "a/c"],
+        ),
+        globs_to_regex_params(
+            ["a?c", "x?z"],
+            matches=["abc", "xyz", "xYz", "azc", "xaz"],
+            nomatches=["ABC", "abcx", "xabc", "axyz", "xyza", "a/c"],
+        ),
+        globs_to_regex_params(
+            ["a??d"],
+            matches=["abcd", "azcd", "a12d"],
+            nomatches=["ABCD", "abcx", "axyz", "abcde"],
+        ),
+        globs_to_regex_params(
+            ["abc/hi.py"], case_insensitive=True,
+            matches=["abc/hi.py", "ABC/hi.py", r"ABC\hi.py"],
+            nomatches=["abc_hi.py", "abc/hi.pyc"],
+        ),
+        globs_to_regex_params(
+            [r"abc\hi.py"], case_insensitive=True,
+            matches=[r"abc\hi.py", r"ABC\hi.py", "abc/hi.py", "ABC/hi.py"],
+            nomatches=["abc_hi.py", "abc/hi.pyc"],
+        ),
+        globs_to_regex_params(
+            ["abc/*/hi.py"], case_insensitive=True,
+            matches=["abc/foo/hi.py", r"ABC\foo/hi.py"],
+            nomatches=["abc/hi.py", "abc/hi.pyc", "ABC/foo/bar/hi.py", r"ABC\foo/bar/hi.py"],
+        ),
+        globs_to_regex_params(
+            ["abc/**/hi.py"], case_insensitive=True,
+            matches=[
+                "abc/foo/hi.py", r"ABC\foo/hi.py", "abc/hi.py", "ABC/foo/bar/hi.py",
+                r"ABC\foo/bar/hi.py",
+            ],
+            nomatches=["abc/hi.pyc"],
+        ),
+        globs_to_regex_params(
+            ["abc/[a-f]*/hi.py"], case_insensitive=True,
+            matches=["abc/foo/hi.py", r"ABC\boo/hi.py"],
+            nomatches=[
+                "abc/zoo/hi.py", "abc/hi.py", "abc/hi.pyc", "abc/foo/bar/hi.py",
+                r"abc\foo/bar/hi.py",
+            ],
+        ),
+        globs_to_regex_params(
+            ["abc/[a-f]/hi.py"], case_insensitive=True,
+            matches=["abc/f/hi.py", r"ABC\b/hi.py"],
+            nomatches=[
+                "abc/foo/hi.py", "abc/zoo/hi.py", "abc/hi.py", "abc/hi.pyc", "abc/foo/bar/hi.py",
+                r"abc\foo/bar/hi.py",
+            ],
+        ),
+        globs_to_regex_params(
+            ["abc/"], case_insensitive=True, partial=True,
+            matches=["abc/foo/hi.py", "ABC/foo/bar/hi.py", r"ABC\foo/bar/hi.py"],
+            nomatches=["abcd/foo.py", "xabc/hi.py"],
+        ),
+        globs_to_regex_params(
+            ["*/foo"], case_insensitive=False, partial=True,
+            matches=["abc/foo/hi.py", "foo/hi.py"],
+            nomatches=["abc/xfoo/hi.py"],
+        ),
+        globs_to_regex_params(
+            ["**/foo"],
+            matches=["foo", "hello/foo", "hi/there/foo"],
+            nomatches=["foob", "hello/foob", "hello/Foo"],
+        ),
+    ]))
+)
+def test_globs_to_regex(patterns, case_insensitive, partial, text, result):
+    regex = globs_to_regex(patterns, case_insensitive=case_insensitive, partial=partial)
+    assert bool(regex.match(text)) == result
+
+
+@pytest.mark.parametrize("pattern, bad_word", [
+    ("***/foo.py", "***"),
+    ("bar/***/foo.py", "***"),
+    ("*****/foo.py", "*****"),
+    ("Hello]there", "]"),
+    ("Hello[there", "["),
+    ("Hello+there", "+"),
+    ("{a,b}c", "{"),
+    ("x/a**/b.py", "a**"),
+    ("x/abcd**/b.py", "abcd**"),
+    ("x/**a/b.py", "**a"),
+    ("x/**/**/b.py", "**/**"),
 ])
-def test_fnmatches_to_regex(patterns, case_insensitive, partial, matches, nomatches):
-    regex = fnmatches_to_regex(patterns, case_insensitive=case_insensitive, partial=partial)
-    for s in matches:
-        assert regex.match(s)
-    for s in nomatches:
-        assert not regex.match(s)
+def test_invalid_globs(pattern, bad_word):
+    msg = f"File pattern can't include {bad_word!r}"
+    with pytest.raises(ConfigError, match=re.escape(msg)):
+        globs_to_regex([pattern])
 
 
 class MatcherTest(CoverageTest):
@@ -217,7 +298,7 @@ class MatcherTest(CoverageTest):
         for modulename, matches in matches_to_try:
             assert mm.match(modulename) == matches, modulename
 
-    def test_fnmatch_matcher(self):
+    def test_glob_matcher(self):
         matches_to_try = [
             (self.make_file("sub/file1.py"), True),
             (self.make_file("sub/file2.c"), False),
@@ -225,23 +306,25 @@ class MatcherTest(CoverageTest):
             (self.make_file("sub3/file4.py"), True),
             (self.make_file("sub3/file5.c"), False),
         ]
-        fnm = FnmatchMatcher(["*.py", "*/sub2/*"])
+        fnm = GlobMatcher(["*.py", "*/sub2/*"])
         assert fnm.info() == ["*.py", "*/sub2/*"]
         for filepath, matches in matches_to_try:
             self.assertMatches(fnm, filepath, matches)
 
-    def test_fnmatch_matcher_overload(self):
-        fnm = FnmatchMatcher(["*x%03d*.txt" % i for i in range(500)])
+    def test_glob_matcher_overload(self):
+        fnm = GlobMatcher(["*x%03d*.txt" % i for i in range(500)])
         self.assertMatches(fnm, "x007foo.txt", True)
         self.assertMatches(fnm, "x123foo.txt", True)
         self.assertMatches(fnm, "x798bar.txt", False)
+        self.assertMatches(fnm, "x499.txt", True)
+        self.assertMatches(fnm, "x500.txt", False)
 
-    def test_fnmatch_windows_paths(self):
+    def test_glob_windows_paths(self):
         # We should be able to match Windows paths even if we are running on
         # a non-Windows OS.
-        fnm = FnmatchMatcher(["*/foo.py"])
+        fnm = GlobMatcher(["*/foo.py"])
         self.assertMatches(fnm, r"dir\foo.py", True)
-        fnm = FnmatchMatcher([r"*\foo.py"])
+        fnm = GlobMatcher([r"*\foo.py"])
         self.assertMatches(fnm, r"dir\foo.py", True)
 
 
@@ -309,9 +392,9 @@ class PathAliasesTest(CoverageTest):
             assert msgs == [
                 "Aliases (relative=True):",
                 " Rule: '/home/*/src' -> './mysrc/' using regex " +
-                    "'(?s:[\\\\\\\\/]home[\\\\\\\\/].*[\\\\\\\\/]src[\\\\\\\\/])'",
+                    "'[/\\\\\\\\]home[/\\\\\\\\][^/\\\\\\\\]*[/\\\\\\\\]src[/\\\\\\\\]'",
                 " Rule: '/lib/*/libsrc' -> './mylib/' using regex " +
-                    "'(?s:[\\\\\\\\/]lib[\\\\\\\\/].*[\\\\\\\\/]libsrc[\\\\\\\\/])'",
+                    "'[/\\\\\\\\]lib[/\\\\\\\\][^/\\\\\\\\]*[/\\\\\\\\]libsrc[/\\\\\\\\]'",
                 "Matched path '/home/foo/src/a.py' to rule '/home/*/src' -> './mysrc/', " +
                     "producing './mysrc/a.py'",
                 "Matched path '/lib/foo/libsrc/a.py' to rule '/lib/*/libsrc' -> './mylib/', " +
@@ -321,9 +404,9 @@ class PathAliasesTest(CoverageTest):
             assert msgs == [
                 "Aliases (relative=False):",
                 " Rule: '/home/*/src' -> './mysrc/' using regex " +
-                    "'(?s:[\\\\\\\\/]home[\\\\\\\\/].*[\\\\\\\\/]src[\\\\\\\\/])'",
+                    "'[/\\\\\\\\]home[/\\\\\\\\][^/\\\\\\\\]*[/\\\\\\\\]src[/\\\\\\\\]'",
                 " Rule: '/lib/*/libsrc' -> './mylib/' using regex " +
-                    "'(?s:[\\\\\\\\/]lib[\\\\\\\\/].*[\\\\\\\\/]libsrc[\\\\\\\\/])'",
+                    "'[/\\\\\\\\]lib[/\\\\\\\\][^/\\\\\\\\]*[/\\\\\\\\]libsrc[/\\\\\\\\]'",
                 "Matched path '/home/foo/src/a.py' to rule '/home/*/src' -> './mysrc/', " +
                     f"producing {files.canonical_filename('./mysrc/a.py')!r}",
                 "Matched path '/lib/foo/libsrc/a.py' to rule '/lib/*/libsrc' -> './mylib/', " +

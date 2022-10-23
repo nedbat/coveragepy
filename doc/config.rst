@@ -357,7 +357,7 @@ The first list that has a match will be used.
 The ``--debug=pathmap`` option can be used to log details of the re-mapping of
 paths.  See :ref:`the --debug option <cmd_run_debug>`.
 
-See :ref:`cmd_combine` for more information.
+See :ref:`cmd_combine_remapping` and :ref:`source_glob` for more information.
 
 
 .. _config_report:

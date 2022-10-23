@@ -342,7 +342,7 @@ single directory, and use the **combine** command to combine them into one
 
     $ coverage combine
 
-You can also name directories or files on the command line::
+You can also name directories or files to be combined on the command line::
 
     $ coverage combine data1.dat windows_data_files/
 
@@ -363,22 +363,6 @@ An existing combined data file is ignored and re-written. If you want to use
 **combine** to accumulate results into the .coverage data file over a number of
 runs, use the ``--append`` switch on the **combine** command.  This behavior
 was the default before version 4.2.
-
-To combine data for a source file, coverage has to find its data in each of the
-data files.  Different test runs may run the same source file from different
-locations. For example, different operating systems will use different paths
-for the same file, or perhaps each Python version is run from a different
-subdirectory.  Coverage needs to know that different file paths are actually
-the same source file for reporting purposes.
-
-You can tell coverage.py how different source locations relate with a
-``[paths]`` section in your configuration file (see :ref:`config_paths`).
-It might be more convenient to use the ``[run] relative_files``
-setting to store relative file paths (see :ref:`relative_files
-<config_run_relative_files>`).
-
-If data isn't combining properly, you can see details about the inner workings
-with ``--debug=pathmap``.
 
 If any of the data files can't be read, coverage.py will print a warning
 indicating the file and the problem.
@@ -412,6 +396,28 @@ want to keep those files, use the ``--keep`` command-line option.
                             'setup.cfg', 'tox.ini', and 'pyproject.toml' are
                             tried. [env: COVERAGE_RCFILE]
 .. [[[end]]] (checksum: 0bdd83f647ee76363c955bedd9ddf749)
+
+
+.. _cmd_combine_remapping:
+
+Re-mapping paths
+................
+
+To combine data for a source file, coverage has to find its data in each of the
+data files.  Different test runs may run the same source file from different
+locations. For example, different operating systems will use different paths
+for the same file, or perhaps each Python version is run from a different
+subdirectory.  Coverage needs to know that different file paths are actually
+the same source file for reporting purposes.
+
+You can tell coverage.py how different source locations relate with a
+``[paths]`` section in your configuration file (see :ref:`config_paths`).
+It might be more convenient to use the ``[run] relative_files``
+setting to store relative file paths (see :ref:`relative_files
+<config_run_relative_files>`).
+
+If data isn't combining properly, you can see details about the inner workings
+with ``--debug=pathmap``.
 
 
 .. _cmd_erase:
