@@ -58,7 +58,6 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         assert "mycode.py " in report
         assert self.last_line_squeezed(report) == "TOTAL 8 0 100%"
         report = self.get_report(cov, format_text="markdown", squeeze=False)
-        print(report)
         # | Name                                    |  Stmts |   Miss |      Cover |
         # |---------------------------------------- | -----: | -----: | ---------: |
         # | foo/bar/tests/modules/covmod1.py        |      2 |      0 |       100% |

@@ -174,12 +174,13 @@ class ProcessTest(CoverageTest):
 
         # Reporting should still work even with the .rc file
         out = self.run_command("coverage report")
+        print(out)
         assert out == textwrap.dedent("""\
-            Name        Stmts   Miss  Cover
-            -------------------------------
-            b_or_c.py       8      0   100%
-            -------------------------------
-            TOTAL           8      0   100%
+            Name         Stmts   Miss  Cover
+            --------------------------------
+            b_or_c.py        8      0   100%
+            --------------------------------
+            TOTAL            8      0   100%
             """)
 
     def test_combine_with_aliases(self):

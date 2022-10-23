@@ -590,15 +590,15 @@ class ApiTest(CoverageTest):
         cov.load()
         # There should be no exception. At one point, report() threw:
         # CoverageException: --include and --source are mutually exclusive
-        cov.report()
+        report = self.get_report(cov, squeeze=False)
         expected = textwrap.dedent("""\
-            Name    Stmts   Miss  Cover
-            ---------------------------
-            b.py        1      0   100%
-            ---------------------------
-            TOTAL       1      0   100%
+            Name     Stmts   Miss  Cover
+            ----------------------------
+            b.py         1      0   100%
+            ----------------------------
+            TOTAL        1      0   100%
             """)
-        assert expected == self.stdout()
+        assert expected == report
 
     def make_test_files(self):
         """Create a simple file representing a method with two tests.
@@ -1054,13 +1054,17 @@ class TestRunnerPluginTest(CoverageTest):
             os.chdir("sub")
         cov.combine()
         cov.save()
-        cov.report(["no_biggie.py"], show_missing=True)
-        assert self.stdout() == textwrap.dedent("""\
-            Name           Stmts   Miss  Cover   Missing
-            --------------------------------------------
-            no_biggie.py       4      1    75%   4
-            --------------------------------------------
-            TOTAL              4      1    75%
+        cov.load()
+        report = self.get_report(cov, squeeze=False)
+
+        print(report)
+        # cov.report(["no_biggie.py"], show_missing=True)
+        assert report == textwrap.dedent("""\
+            Name            Stmts   Miss  Cover
+            -----------------------------------
+            no_biggie.py        4      1    75%
+            -----------------------------------
+            TOTAL               4      1    75%
             """)
         if cd:
             os.chdir("..")
@@ -1097,15 +1101,19 @@ class TestRunnerPluginTest(CoverageTest):
         self.start_import_stop(cov, "prog")
         cov.combine()
         cov.save()
-        report = io.StringIO()
-        cov.report(show_missing=None, ignore_errors=True, file=report, skip_covered=None,
-                   skip_empty=None)
-        assert report.getvalue() == textwrap.dedent("""\
-            Name      Stmts   Miss  Cover
-            -----------------------------
-            prog.py       4      1    75%
-            -----------------------------
-            TOTAL         4      1    75%
+        cov.load()
+        # report = io.StringIO()
+        report = self.get_report(cov, show_missing=None, ignore_errors=True,
+            skip_covered=None, skip_empty=None, squeeze=False)
+        print(report)
+        # cov.report(show_missing=None, ignore_errors=True, file=report, skip_covered=None,
+        #            skip_empty=None)
+        assert report == textwrap.dedent("""\
+            Name       Stmts   Miss  Cover
+            ------------------------------
+            prog.py        4      1    75%
+            ------------------------------
+            TOTAL          4      1    75%
             """)
         self.assert_file_count(".coverage", 0)
         self.assert_file_count(".coverage.*", 1)
