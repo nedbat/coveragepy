@@ -61,9 +61,9 @@ class SummaryReporter:
         # sortable values.
         lines = []
 
+        h_form.update(dict(Cover="{:>{n}}%"), Missing=" {:9}")
         for values in lines_values:
             # build string with line values
-            h_form.update(dict(Cover="{:>{n}}%"), Missing=" {:9}")
             line_items = [
                 h_form[item].format(str(value),
                 name_len=max_name, n=max_n-1) for item, value in zip(header, values)]
@@ -87,7 +87,7 @@ class SummaryReporter:
             self.writeout(rule)
             line_items = [
                 h_form[item].format(str(value),
-                name_len=max_name, n=max_n) for item, value in zip(header, total_line)]
+                name_len=max_name, n=max_n-1) for item, value in zip(header, total_line)]
             text = "".join(line_items)
             self.writeout(text)
 
@@ -97,8 +97,8 @@ class SummaryReporter:
         total_line):
         "internal method to print report data in markdown format"
         # Prepare the formatting strings, header, and column sorting.
-        max_name = max([len(fr.relative_filename().replace("_",r"\_")) for\
-            (fr, analysis) in self.fr_analysis] + [5]) + 1
+        max_name = max([len(fr.relative_filename().replace("_","\\_")) for\
+            (fr, analysis) in self.fr_analysis] + [9]) + 1
         h_form = dict(
             Name="| {:{name_len}}|", Stmts="{:>7} |", Miss="{:>7} |",
             Branch="{:>7} |", BrPart="{:>7} |", Cover="{:>{n}} |",
@@ -128,7 +128,7 @@ class SummaryReporter:
             # build string with line values
             h_form.update(dict(Cover="{:>{n}}% |"))
             line_items = [
-                h_form[item].format(str(value).replace("_", r"\_"),
+                h_form[item].format(str(value).replace("_", "\\_"),
                 name_len=max_name, n=max_n-1) for item, value in zip(header, values)]
             text = "".join(line_items)
             lines.append((text, values))
