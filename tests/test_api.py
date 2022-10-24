@@ -1239,6 +1239,38 @@ class RelativePathTest(CoverageTest):
         self.assert_file_count(".coverage.*", 0)
         self.assert_exists(".coverage")
 
+    def test_files_up_one_level(self):
+        # https://github.com/nedbat/coveragepy/issues/1280
+        self.make_file("src/mycode.py", """\
+            def foo():
+                return 17
+            """)
+        self.make_file("test/test_it.py", """\
+            from src.mycode import foo
+            assert foo() == 17
+            """)
+        self.make_file("test/.coveragerc", """\
+            [run]
+            parallel = True
+            relative_files = True
+
+            [paths]
+            source =
+                ../src/
+                */src
+            """)
+        os.chdir("test")
+        sys.path.insert(0, "..")
+        cov1 = coverage.Coverage()
+        self.start_import_stop(cov1, "test_it")
+        cov1.save()
+        cov2 = coverage.Coverage()
+        cov2.combine()
+        cov3 = coverage.Coverage()
+        cov3.load()
+        report = self.get_report(cov3)
+        assert self.last_line_squeezed(report) == "TOTAL 4 0 100%"
+
 
 class CombiningTest(CoverageTest):
     """More tests of combining data."""
