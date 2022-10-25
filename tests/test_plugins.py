@@ -7,7 +7,6 @@ import inspect
 import io
 import math
 import os.path
-import textwrap
 from xml.etree import ElementTree
 
 import pytest
