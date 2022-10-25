@@ -512,6 +512,7 @@ as a percentage.
                             file. Defaults to '.coverage'. [env: COVERAGE_FILE]
       --fail-under=MIN      Exit with a status of 2 if the total coverage is less
                             than MIN.
+      --format=FORMAT       Output format, either text (default) or markdown
       -i, --ignore-errors   Ignore errors while reading source files.
       --include=PAT1,PAT2,...
                             Include only files whose paths match one of these
@@ -534,7 +535,7 @@ as a percentage.
       --rcfile=RCFILE       Specify configuration file. By default '.coveragerc',
                             'setup.cfg', 'tox.ini', and 'pyproject.toml' are
                             tried. [env: COVERAGE_RCFILE]
-.. [[[end]]] (checksum: 2f8dde61bab2f44fbfe837aeae87dfd2)
+.. [[[end]]] (checksum: 8c671de502a388159689082d906f786a)
 
 The ``-m`` flag also shows the line numbers of missing statements::
 

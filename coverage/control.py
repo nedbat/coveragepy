@@ -909,7 +909,7 @@ class Coverage:
         self, morfs=None, show_missing=None, ignore_errors=None,
         file=None, omit=None, include=None, skip_covered=None,
         contexts=None, skip_empty=None, precision=None, sort=None,
-        format_text=None
+        output_format=None
     ):
         """Write a textual summary report to `file`.
 
@@ -923,7 +923,7 @@ class Coverage:
 
         `file` is a file-like object, suitable for writing.
 
-        `format_text` provides options, to print eitehr as plain text, or as
+        `output_format` provides options, to print eitehr as plain text, or as
         markdown code
 
         `include` is a list of file name patterns.  Files that match will be
@@ -966,7 +966,7 @@ class Coverage:
             ignore_errors=ignore_errors, report_omit=omit, report_include=include,
             show_missing=show_missing, skip_covered=skip_covered,
             report_contexts=contexts, skip_empty=skip_empty, precision=precision,
-            sort=sort, format_text=format_text
+            sort=sort, output_format=output_format
         ):
             reporter = SummaryReporter(self)
             return reporter.report(morfs, outfile=file)

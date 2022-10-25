@@ -44,7 +44,7 @@ class BaseCmdLineTest(CoverageTest):
     _defaults.Coverage().report(
         ignore_errors=None, include=None, omit=None, morfs=[],
         show_missing=None, skip_covered=None, contexts=None, skip_empty=None, precision=None,
-        sort=None, format_text=None
+        sort=None, output_format=None
     )
     _defaults.Coverage().xml_report(
         ignore_errors=None, include=None, omit=None, morfs=[], outfile=None,

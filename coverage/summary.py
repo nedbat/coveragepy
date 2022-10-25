@@ -6,7 +6,7 @@
 import sys
 
 from coverage.exceptions import ConfigError, NoDataError
-from coverage.misc import human_sorted_items
+from coverage.misc import human_key
 from coverage.report import get_analysis_to_report
 from coverage.results import Numbers
 
@@ -30,8 +30,7 @@ class SummaryReporter:
         self.outfile.write(line.rstrip())
         self.outfile.write("\n")
 
-    def _report_text(self, header, lines_values, sort_option, reverse,
-            total_line):
+    def _report_text(self, header, lines_values, total_line, end_lines):
         "internal method to print report data in text format"
         # Prepare the formatting strings, header, and column sorting.
         max_name = max([len(fr.relative_filename()) for (fr, analysis) in \
@@ -56,11 +55,6 @@ class SummaryReporter:
         if self.branches:
             column_order.update(dict(branch=3, brpart=4))
 
-        # `lines` is a list of pairs, (line text, line values).  The line text
-        # is a string that will be printed, and line values is a tuple of
-        # sortable values.
-        lines = []
-
         h_form.update(dict(Cover="{:>{n}}%"), Missing=" {:9}")
         for values in lines_values:
             # build string with line values
@@ -68,22 +62,10 @@ class SummaryReporter:
                 h_form[item].format(str(value),
                 name_len=max_name, n=max_n-1) for item, value in zip(header, values)]
             text = "".join(line_items)
-            lines.append((text, values))
+            self.writeout(text)
 
-        # Sort the lines and write them out.
-        if sort_option == "name":
-            lines = human_sorted_items(lines, reverse=reverse)
-        else:
-            position = column_order.get(sort_option)
-            if position is None:
-                raise ConfigError(f"Invalid sorting option: {self.config.sort!r}")
-            lines.sort(key=lambda l: (l[1][position], l[0]), reverse=reverse)
-
-        for line in lines:
-            self.writeout(line[0])
-
-        # Write a TOTAL line if we had at least one file.
-        if self.total.n_files > 0:
+        # Write a TOTAL line
+        if total_line:
             self.writeout(rule)
             line_items = [
                 h_form[item].format(str(value),
@@ -91,10 +73,11 @@ class SummaryReporter:
             text = "".join(line_items)
             self.writeout(text)
 
+        for end_line in end_lines:
+            self.writeout(end_line)
         return self.total.n_statements and self.total.pc_covered
 
-    def _report_markdown(self, header, lines_values, sort_option, reverse,
-        total_line):
+    def _report_markdown(self, header, lines_values, total_line, end_lines):
         "internal method to print report data in markdown format"
         # Prepare the formatting strings, header, and column sorting.
         max_name = max([len(fr.relative_filename().replace("_","\\_")) for\
@@ -119,11 +102,6 @@ class SummaryReporter:
         if self.branches:
             column_order.update(dict(branch=3, brpart=4))
 
-        # `lines` is a list of pairs, (line text, line values).  The line text
-        # is a string that will be printed, and line values is a tuple of
-        # sortable values.
-        lines = []
-
         for values in lines_values:
             # build string with line values
             h_form.update(dict(Cover="{:>{n}}% |"))
@@ -131,22 +109,10 @@ class SummaryReporter:
                 h_form[item].format(str(value).replace("_", "\\_"),
                 name_len=max_name, n=max_n-1) for item, value in zip(header, values)]
             text = "".join(line_items)
-            lines.append((text, values))
+            self.writeout(text)
 
-        # Sort the lines and write them out.
-        if sort_option == "name":
-            lines = human_sorted_items(lines, reverse=reverse)
-        else:
-            position = column_order.get(sort_option)
-            if position is None:
-                raise ConfigError(f"Invalid sorting option: {self.config.sort!r}")
-            lines.sort(key=lambda l: (l[1][position], l[0]), reverse=reverse)
-
-        for line in lines:
-            self.writeout(line[0])
-
-        # Write a TOTAL line if we had at least one file.
-        if self.total.n_files > 0:
+        # Write the TOTAL line
+        if total_line:
             total_form = dict(
                 Name="| {:>{name_len}}** |", Stmts="{:>5}** |", Miss="{:>5}** |",
                 Branch="{:>5}** |", BrPart="{:>5}** |", Cover="{:>{n}}%** |",
@@ -165,7 +131,8 @@ class SummaryReporter:
                         "**"+str(value), name_len=max_name-3, n=max_n-3)
             total_row_str = "".join(total_line_items)
             self.writeout(total_row_str)
-
+        for end_line in end_lines:
+            self.writeout(end_line)
         return self.total.n_statements and self.total.pc_covered
 
 
@@ -217,6 +184,15 @@ class SummaryReporter:
             sort_option = sort_option[1:]
         elif sort_option[0] == '+':
             sort_option = sort_option[1:]
+        sort_idx = column_order.get(sort_option)
+        if sort_idx is None:
+            raise ConfigError(f"Invalid sorting option: {self.config.sort!r}")
+        if sort_option == "name":
+            lines_values.sort(key=lambda tup: (human_key(tup[0]), tup[1]),
+                reverse=reverse)
+        else:
+            lines_values.sort(key=lambda tup: (tup[sort_idx], tup[0]),
+                reverse=reverse)
 
         # calculate total if we had at least one file.
         total_line = ()
@@ -228,28 +204,27 @@ class SummaryReporter:
             if self.config.show_missing:
                 total_line += ("",)
 
-        text_format = self.config.format_text or 'text'
-        if text_format.lower() == 'markdown':
-            self._report_markdown(header, lines_values, sort_option, reverse,
-                total_line)
-        else:
-            self._report_text(header, lines_values, sort_option, reverse,
-                total_line)
-
-        # Write other final lines.
+        # create other final lines
+        end_lines = []
         if not self.total.n_files and not self.skipped_count:
             raise NoDataError("No data to report.")
 
         if self.config.skip_covered and self.skipped_count:
-            fmt_skip_covered = "\n%s file%s skipped due to complete coverage."
-            self.writeout(
-                fmt_skip_covered % (self.skipped_count, 's' if self.skipped_count > 1 else '')
-            )
+            file_suffix = 's' if self.skipped_count>1 else ''
+            fmt_skip_covered = f"\n{self.skipped_count} file{file_suffix} "\
+                "skipped due to complete coverage."
+            end_lines.append(fmt_skip_covered)
         if self.config.skip_empty and self.empty_count:
-            fmt_skip_empty = "\n%s empty file%s skipped."
-            self.writeout(
-                fmt_skip_empty % (self.empty_count, 's' if self.empty_count > 1 else '')
-            )
+            file_suffix = 's' if self.empty_count>1 else ''
+            fmt_skip_empty = \
+                f"\n{self.empty_count} empty file{file_suffix} skipped."
+            end_lines.append(fmt_skip_empty)
+
+        text_format = self.config.output_format or 'text'
+        if text_format.lower() == 'markdown':
+            self._report_markdown(header, lines_values, total_line, end_lines)
+        else:
+            self._report_text(header, lines_values, total_line, end_lines)
 
         return self.total.n_statements and self.total.pc_covered
 
