@@ -26,13 +26,13 @@ certifi==2022.5.18.1 \
     # via
     #   -c requirements/pins.pip
     #   cibuildwheel
-cibuildwheel==2.11.1 \
-    --hash=sha256:a6e78d960c3983424859e9f606cae3ae296f8ab6a3fa5bdeb7343645a00b8068 \
-    --hash=sha256:fa8bcbcbe169f62e2adb9104a2efb5807c4be0ec39b4764dcd15185eb44898e6
+cibuildwheel==2.11.2 \
+    --hash=sha256:392a39c7022da9ac016362b727c3ae39b304742adfcc36dab7ab0a47b90cc461 \
+    --hash=sha256:e8dab8e6cf77ff0002f65873bba36b3969b23f522cc014538abcda2cbd24329f
     # via -r requirements/kit.in
-colorama==0.4.5 \
-    --hash=sha256:854bf444933e37f5824ae7bfc1e98d5bce2ebe4160d46b5edf346a89358e99da \
-    --hash=sha256:e6c6b4334fc50988a639d9b98aa429a0b57da6e17b9a44f0451f930b6967b7a4
+colorama==0.4.6 \
+    --hash=sha256:08695f5cb7ed6e0531a20572697297273c47b8cae5a63ffc6d6ed5c201be6e44 \
+    --hash=sha256:4f1d9991f5acc0ca119f9d443620b77f9d6b33703e51011c16baf57afb285fc6
     # via -r requirements/kit.in
 filelock==3.8.0 \
     --hash=sha256:55447caa666f2198c5b6b13a26d2084d26fa5b115c00d065664b2124680c4edc \
@@ -84,9 +84,9 @@ wheel==0.37.1 \
     --hash=sha256:4bdcd7d840138086126cd09254dc6195fb4fc6f01c050a1d7236f2630db1d22a \
     --hash=sha256:e9a504e793efbca1b8e0e9cb979a249cf4a0a7b5b8c9e8b65a5e39d49529c1c4
     # via -r requirements/kit.in
-zipp==3.9.0 \
-    --hash=sha256:3a7af91c3db40ec72dd9d154ae18e008c69efe8ca88dde4f9a731bb82fe2f9eb \
-    --hash=sha256:972cfa31bc2fedd3fa838a51e9bc7e64b7fb725a8c00e7431554311f180e9980
+zipp==3.10.0 \
+    --hash=sha256:4fcb6f278987a6605757302a6e40e896257570d11c51628968ccb2a47e80c6c1 \
+    --hash=sha256:7a7262fd930bd3e36c50b9a64897aec3fafff3dfdeec9623ae22b40e93f99bb8
     # via
     #   importlib-metadata
     #   pep517
