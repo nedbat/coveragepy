@@ -30,11 +30,17 @@ Unreleased
   - A ``[paths]`` setting like ``*/foo`` will now match ``foo/bar.py`` so that
     relative file paths can be combined more easily.
 
-- Fix internal logic that prevented coverage.py from running on implementations
-  other than CPython or PyPy (`issue 1474`_).
+- Fixed environment variable expansion in pyproject.toml files.  It was overly
+  broad, causing errors outside of coverage.py settings, as described in `issue
+  1481`_.  This is now fixed, but in rare cases will require changing your
+  pyproject.toml to quote non-string values using environment substitution.
+
+- Fixed internal logic that prevented coverage.py from running on
+  implementations other than CPython or PyPy (`issue 1474`_).
 
 .. _issue 991: https://github.com/nedbat/coveragepy/issues/991
 .. _issue 1474: https://github.com/nedbat/coveragepy/issues/1474
+.. _issue 1481: https://github.com/nedbat/coveragepy/issues/1481
 
 
 .. _changes_6-5-0:

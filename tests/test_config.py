@@ -3,7 +3,6 @@
 
 """Test the config file handling for coverage.py"""
 
-import math
 import sys
 from collections import OrderedDict
 
@@ -89,7 +88,7 @@ class ConfigTest(CoverageTest):
         assert cov.config.plugins == ["plugins.a_plugin"]
         assert cov.config.precision == 3
         assert cov.config.html_title == "tabblo & «ταБЬℓσ»"
-        assert math.isclose(cov.config.fail_under, 90.5)
+        assert cov.config.fail_under == 90.5
         assert cov.config.get_plugin_options("plugins.a_plugin") == {"hello": "world"}
 
         # Test that our class doesn't reject integers when loading floats
@@ -99,7 +98,7 @@ class ConfigTest(CoverageTest):
             fail_under = 90
             """)
         cov = coverage.Coverage(config_file="pyproject.toml")
-        assert math.isclose(cov.config.fail_under, 90)
+        assert cov.config.fail_under == 90
         assert isinstance(cov.config.fail_under, float)
 
     def test_ignored_config_file(self):
@@ -200,7 +199,7 @@ class ConfigTest(CoverageTest):
          r"multiple repeat"),
         ('[tool.coverage.run]\nconcurrency="foo"', "not a list"),
         ("[tool.coverage.report]\nprecision=1.23", "not an integer"),
-        ('[tool.coverage.report]\nfail_under="s"', "not a float"),
+        ('[tool.coverage.report]\nfail_under="s"', "couldn't convert to a float"),
     ])
     def test_toml_parse_errors(self, bad_config, msg):
         # Im-parsable values raise ConfigError, with details.
@@ -230,14 +229,15 @@ class ConfigTest(CoverageTest):
         assert cov.config.branch is True
         assert cov.config.exclude_list == ["the_$one", "anotherZZZ", "xZZZy", "xy", "huh${X}what"]
 
-    @pytest.mark.xfail(reason="updated to demonstrate bug #1481")
     def test_environment_vars_in_toml_config(self):
         # Config files can have $envvars in them.
         self.make_file("pyproject.toml", """\
             [tool.coverage.run]
             data_file = "$DATA_FILE.fooey"
-            branch = $BRANCH
+            branch = "$BRANCH"
             [tool.coverage.report]
+            precision = "$DIGITS"
+            fail_under = "$FAIL_UNDER"
             exclude_lines = [
                 "the_$$one",
                 "another${THING}",
@@ -246,15 +246,20 @@ class ConfigTest(CoverageTest):
                 "huh$${X}what",
             ]
             [othersection]
+            # This reproduces the failure from https://github.com/nedbat/coveragepy/issues/1481
+            # When OTHER has a backslash that isn't a valid escape, like \\z (see below).
             something = "if [ $OTHER ]; then printf '%s\\n' 'Hi'; fi"
             """)
         self.set_environ("BRANCH", "true")
+        self.set_environ("DIGITS", "3")
+        self.set_environ("FAIL_UNDER", "90.5")
         self.set_environ("DATA_FILE", "hello-world")
         self.set_environ("THING", "ZZZ")
         self.set_environ("OTHER", "hi\\zebra")
         cov = coverage.Coverage()
-        assert cov.config.data_file == "hello-world.fooey"
         assert cov.config.branch is True
+        assert cov.config.precision == 3
+        assert cov.config.data_file == "hello-world.fooey"
         assert cov.config.exclude_list == ["the_$one", "anotherZZZ", "xZZZy", "xy", "huh${X}what"]
 
     def test_tilde_in_config(self):
