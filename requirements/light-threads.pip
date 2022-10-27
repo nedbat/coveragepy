@@ -79,6 +79,7 @@ eventlet==0.33.1 \
     --hash=sha256:afbe17f06a58491e9aebd7a4a03e70b0b63fd4cf76d8307bae07f280479b1515
     # via -r requirements/light-threads.in
 gevent==22.10.1 \
+    --hash=sha256:03c10ca0beeab0c6be516030471ea630447ddd1f649d3335e5b162097cd4130a \
     --hash=sha256:04a920a812b6c0c36d4613a15c254ca1ce415ee75ade0df3b8941ab61ae7ce3f \
     --hash=sha256:0569e133bb620de1001ac807ad9a8abaadedd25349c6d695f80c9048a3f59d42 \
     --hash=sha256:06ea39c70ce166c4a1d4386c7fae96cb8d84ad799527b3378406051104d15443 \
