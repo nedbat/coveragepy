@@ -230,6 +230,7 @@ class ConfigTest(CoverageTest):
         assert cov.config.branch is True
         assert cov.config.exclude_list == ["the_$one", "anotherZZZ", "xZZZy", "xy", "huh${X}what"]
 
+    @pytest.mark.xfail(reason="updated to demonstrate bug #1481")
     def test_environment_vars_in_toml_config(self):
         # Config files can have $envvars in them.
         self.make_file("pyproject.toml", """\
@@ -244,10 +245,13 @@ class ConfigTest(CoverageTest):
                 "x${NOTHING}y",
                 "huh$${X}what",
             ]
+            [othersection]
+            something = "if [ $OTHER ]; then printf '%s\\n' 'Hi'; fi"
             """)
         self.set_environ("BRANCH", "true")
         self.set_environ("DATA_FILE", "hello-world")
         self.set_environ("THING", "ZZZ")
+        self.set_environ("OTHER", "hi\\zebra")
         cov = coverage.Coverage()
         assert cov.config.data_file == "hello-world.fooey"
         assert cov.config.branch is True
