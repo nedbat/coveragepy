@@ -3,7 +3,6 @@
 
 """TOML configuration support for coverage.py"""
 
-import configparser
 import os
 import re
 
@@ -78,8 +77,6 @@ class TomlConfigParser:
 
         """
         prefixes = ["tool.coverage."]
-        if self.our_file:
-            prefixes.append("")
         for prefix in prefixes:
             real_section = prefix + section
             parts = real_section.split(".")
@@ -98,11 +95,11 @@ class TomlConfigParser:
         """Like .get, but returns the real section name and the value."""
         name, data = self._get_section(section)
         if data is None:
-            raise configparser.NoSectionError(section)
+            raise ConfigError(f"No section: {section!r}")
         try:
             value = data[option]
-        except KeyError as exc:
-            raise configparser.NoOptionError(option, name) from exc
+        except KeyError:
+            raise ConfigError(f"No option {option!r} in section: {name!r}") from None
         return name, value
 
     def _get_single(self, section, option):
@@ -129,7 +126,7 @@ class TomlConfigParser:
     def options(self, section):
         _, data = self._get_section(section)
         if data is None:
-            raise configparser.NoSectionError(section)
+            raise ConfigError(f"No section: {section!r}")
         return list(data.keys())
 
     def get_section(self, section):

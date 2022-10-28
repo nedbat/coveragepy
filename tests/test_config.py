@@ -12,6 +12,7 @@ import pytest
 import coverage
 from coverage.config import HandyConfigParser
 from coverage.exceptions import ConfigError, CoverageWarning
+from coverage.tomlconfig import TomlConfigParser
 
 from tests.coveragetest import CoverageTest, UsingModulesMixin
 from tests.helpers import without_module
@@ -62,7 +63,7 @@ class ConfigTest(CoverageTest):
         assert cov.config.data_file == "delete.me"
 
     def test_toml_config_file(self):
-        # A .coveragerc file will be read into the configuration.
+        # A pyproject.toml file will be read into the configuration.
         self.make_file("pyproject.toml", """\
             # This is just a bogus toml file for testing.
             [tool.somethingelse]
@@ -80,7 +81,7 @@ class ConfigTest(CoverageTest):
             [tool.coverage.plugins.a_plugin]
             hello = "world"
             """)
-        cov = coverage.Coverage(config_file="pyproject.toml")
+        cov = coverage.Coverage()
         assert cov.config.timid
         assert not cov.config.branch
         assert cov.config.concurrency == ["a", "b"]
@@ -91,13 +92,14 @@ class ConfigTest(CoverageTest):
         assert cov.config.fail_under == 90.5
         assert cov.config.get_plugin_options("plugins.a_plugin") == {"hello": "world"}
 
+    def test_toml_ints_can_be_floats(self):
         # Test that our class doesn't reject integers when loading floats
         self.make_file("pyproject.toml", """\
             # This is just a bogus toml file for testing.
             [tool.coverage.report]
             fail_under = 90
             """)
-        cov = coverage.Coverage(config_file="pyproject.toml")
+        cov = coverage.Coverage()
         assert cov.config.fail_under == 90
         assert isinstance(cov.config.fail_under, float)
 
@@ -435,7 +437,8 @@ class ConfigTest(CoverageTest):
             [run]
             branch = True
             """)
-        config = HandyConfigParser("config.ini")
+        config = HandyConfigParser(True)
+        config.read(["config.ini"])
         with pytest.raises(ConfigError, match="No section: 'xyzzy'"):
             config.options("xyzzy")
         with pytest.raises(ConfigError, match="No option 'foo' in section: 'xyzzy'"):
@@ -756,3 +759,17 @@ class ConfigFileTest(UsingModulesMixin, CoverageTest):
             assert not cov.config.timid
             assert not cov.config.branch
             assert cov.config.data_file == ".coverage"
+
+    def test_exceptions_from_missing_toml_things(self):
+        self.make_file("pyproject.toml", """\
+            [tool.coverage.run]
+            branch = true
+            """)
+        config = TomlConfigParser(False)
+        config.read("pyproject.toml")
+        with pytest.raises(ConfigError, match="No section: 'xyzzy'"):
+            config.options("xyzzy")
+        with pytest.raises(ConfigError, match="No section: 'xyzzy'"):
+            config.get("xyzzy", "foo")
+        with pytest.raises(ConfigError, match="No option 'foo' in section: 'tool.coverage.run'"):
+            config.get("run", "foo")
