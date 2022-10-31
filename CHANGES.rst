@@ -38,14 +38,16 @@ Unreleased
 
 - Fixed environment variable expansion in pyproject.toml files.  It was overly
   broad, causing errors outside of coverage.py settings, as described in `issue
-  1481`_.  This is now fixed, but in rare cases will require changing your
-  pyproject.toml to quote non-string values using environment substitution.
+  1481`_ and `issue 1345`_.  This is now fixed, but in rare cases will require
+  changing your pyproject.toml to quote non-string values that use environment
+  substitution.
 
 - Fixed internal logic that prevented coverage.py from running on
   implementations other than CPython or PyPy (`issue 1474`_).
 
 .. _issue 991: https://github.com/nedbat/coveragepy/issues/991
 .. _issue 1280: https://github.com/nedbat/coveragepy/issues/1280
+.. _issue 1345: https://github.com/nedbat/coveragepy/issues/1345
 .. _issue 1407: https://github.com/nedbat/coveragepy/issues/1407
 .. _issue 1474: https://github.com/nedbat/coveragepy/issues/1474
 .. _issue 1481: https://github.com/nedbat/coveragepy/issues/1481
