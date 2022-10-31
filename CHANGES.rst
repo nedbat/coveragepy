@@ -17,12 +17,18 @@ development at the same time, such as 4.5.x and 5.0.
     ..  Version 9.8.1 — 2027-07-27
     ..  --------------------------
 
-Unreleased
-----------
+.. _changes_6-6-0b1:
 
-- Fixes to file pattern matching, fixing `issue 1407`_. Previously, `*` would
-  incorrectly match directory separators, making precise matching difficult.
-  This is now fixed.
+Version 6.6.0b1 — 2022-10-31
+----------------------------
+
+- Changes to file pattern matching, which might require updating your
+  configuration:
+
+  - Previously, ``*`` would incorrectly match directory separators, making
+    precise matching difficult.  This is now fixed, closing `issue 1407`_.
+
+  - Now ``**`` matches any number of nested directories, including none.
 
 - Improvements to combining data files when using the
   :ref:`config_run_relative_files` setting:
