@@ -57,21 +57,6 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         assert "/tests/zipmods.zip/covmodzip1.py " in report
         assert "mycode.py " in report
         assert self.last_line_squeezed(report) == "TOTAL 8 0 100%"
-        report = self.get_report(cov, output_format="markdown", squeeze=False)
-        # | Name                                    |  Stmts |   Miss |      Cover |
-        # |---------------------------------------- | -----: | -----: | ---------: |
-        # | foo/bar/tests/modules/covmod1.py        |      2 |      0 |       100% |
-        # | foo/bar/tests/zipmods.zip/covmodzip1.py |      2 |      0 |       100% |
-        # | mycode.py                               |      4 |      0 |       100% |
-        # |                               **TOTAL** |  **8** |  **0** |   **100%** |
-        assert "/coverage//_/_init/_/_/" not in report
-        assert "/tests/modules/covmod1.py " in report
-        assert "/tests/zipmods.zip/covmodzip1.py " in report
-        assert "mycode.py " in report
-        assert "**TOTAL**" in report.split("\n")[5]
-        assert "**8**" in report.split("\n")[5]
-        assert "**0**" in report.split("\n")[5]
-        assert "**100%**" in report.split("\n")[5]
 
     def test_report_just_one(self):
         # Try reporting just one module
@@ -92,22 +77,6 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         assert "mycode.py " in report
         assert self.last_line_squeezed(report) == "TOTAL 4 0 100%"
 
-        report = self.get_report(cov, squeeze=False, output_format="markdown",
-            morfs=["mycode.py"])
-        print(report)
-        # | Name      |  Stmts |   Miss |      Cover |
-        # |---------- | -----: | -----: | ---------: |
-        # | mycode.py |      4 |      0 |       100% |
-        # | **TOTAL** |  **4** |  **0** |   **100%** |
-
-        assert self.line_count(report) == 4
-        assert "/coverage/" not in report
-        assert "/tests/modules/covmod1.py " not in report
-        assert "/tests/zipmods.zip/covmodzip1.py " not in report
-        assert "mycode.py " in report
-        assert report.split("\n")[3] == "| **TOTAL** |  **4** |  **0** |"\
-            "   **100%** |"
-
     def test_report_wildcard(self):
         # Try reporting using wildcards to get the modules.
         self.make_mycode()
@@ -127,19 +96,6 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         assert "/tests/zipmods.zip/covmodzip1.py " not in report
         assert "mycode.py " in report
         assert self.last_line_squeezed(report) == "TOTAL 4 0 100%"
-        report = self.report_from_command("coverage report --format=markdown"\
-            " my*.py")
-        # | Name      |  Stmts |   Miss |      Cover |
-        # |---------- | -----: | -----: | ---------: |
-        # | mycode.py |      4 |      0 |       100% |
-        # | **TOTAL** |  **4** |  **0** |   **100%** |
-        assert self.line_count(report) == 4
-        assert "/coverage/" not in report
-        assert "/tests/modules/covmod1.py " not in report
-        assert "/tests/zipmods.zip/covmodzip1.py " not in report
-        assert "mycode.py " in report
-        assert report.split("\n")[3] == "| **TOTAL** |  **4** |  **0** |  "\
-            " **100%** |"
 
     def test_report_omitting(self):
         # Try reporting while omitting some modules
@@ -161,19 +117,6 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         assert "mycode.py " in report
         assert self.last_line_squeezed(report) == "TOTAL 4 0 100%"
 
-        report = self.get_report(cov, squeeze=False, output_format="markdown",
-            omit=[f"{TESTS_DIR}/*", "*/site-packages/*"])
-        # | Name      |  Stmts |   Miss |      Cover |
-        # |---------- | -----: | -----: | ---------: |
-        # | mycode.py |      4 |      0 |       100% |
-        # | **TOTAL** |  **4** |  **0** |   **100%** |
-        assert self.line_count(report) == 4
-        assert "/coverage/" not in report
-        assert "/tests/modules/covmod1.py " not in report
-        assert "/tests/zipmods.zip/covmodzip1.py " not in report
-        assert "mycode.py " in report
-        assert report.split("\n")[3] == "| **TOTAL** |  **4** |  **0** |   **100%** |"
-
     def test_report_including(self):
         # Try reporting while including some modules
         self.make_mycode()
@@ -193,17 +136,6 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         assert "/tests/zipmods.zip/covmodzip1.py " not in report
         assert "mycode.py " in report
         assert self.last_line_squeezed(report) == "TOTAL 4 0 100%"
-
-        report = self.get_report(cov, include=["mycode*"],
-            output_format="markdown", squeeze=False)
-        print(report)
-        assert self.line_count(report) == 4
-        assert "/coverage/" not in report
-        assert "/tests/modules/covmod1.py " not in report
-        assert "/tests/zipmods.zip/covmodzip1.py " not in report
-        assert "mycode.py " in report
-        assert report.split("\n")[3] == "| **TOTAL** |  **4** |  **0** |   "\
-            "**100%** |"
 
     def test_run_source_vs_report_include(self):
         # https://github.com/nedbat/coveragepy/issues/621
@@ -258,20 +190,9 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         # mybranch.py       5      0      2      1    86%
         # -----------------------------------------------
         # TOTAL             5      0      2      1    86%
-
         assert self.line_count(report) == 5
         assert "mybranch.py " in report
         assert self.last_line_squeezed(report) == "TOTAL 5 0 2 1 86%"
-        report = self.get_report(cov, squeeze=False, output_format="markdown")
-        # | Name        |  Stmts |   Miss | Branch | BrPart |      Cover |
-        # |------------ | -----: | -----: | -----: | -----: | ---------: |
-        # | mybranch.py |      5 |      0 |      2 |      1 |        86% |
-        # |   **TOTAL** |  **5** |  **0** |  **2** |  **1** |    **86%** |
-
-        assert self.line_count(report) == 4
-        assert "mybranch.py " in report
-        assert report.split("\n")[3] == "|   **TOTAL** |  **5** |  **0** |"\
-            "  **2** |  **1** |    **86%** |"
 
     def test_report_show_missing(self):
         self.make_file("mymissing.py", """\
@@ -299,25 +220,12 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         # --------------------------------------------
         # mymissing.py      14      3    79%   3-4, 10
         # --------------------------------------------
-        # TOTAL             14      3    79%   3-4, 10
+        # TOTAL             14      3    79%
 
         assert self.line_count(report) == 5
         squeezed = self.squeezed_lines(report)
         assert squeezed[2] == "mymissing.py 14 3 79% 3-4, 10"
         assert squeezed[4] == "TOTAL 14 3 79%"
-        report = self.get_report(cov, show_missing=True, squeeze=False,
-            output_format="markdown")
-        # | Name         |  Stmts |   Miss |      Cover |  Missing |
-        # |------------- | -----: | -----: | ---------: | -------: |
-        # | mymissing.py |     14 |      3 |        79% |  3-4, 10 |
-        # |    **TOTAL** | **14** |  **3** |    **79%** |          |
-
-
-        assert self.line_count(report) == 4
-        assert report.split("\n")[2] == "| mymissing.py |     14 |      3 |        "\
-            "79% |  3-4, 10 |"
-        assert report.split("\n")[3] == "|    **TOTAL** | **14** |  **3** |"\
-            "    **79%** |          |"
 
     def test_report_show_missing_branches(self):
         self.make_file("mybranch.py", """\
@@ -331,25 +239,6 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         cov = coverage.Coverage(branch=True)
         self.start_import_stop(cov, "mybranch")
         assert self.stdout() == 'x\ny\n'
-        report = self.get_report(cov, show_missing=True)
-
-        # Name           Stmts   Miss Branch BrPart  Cover   Missing
-        # ----------------------------------------------------------
-        # mybranch.py        6      0      4      2    80%   2->4, 4->exit
-        # ----------------------------------------------------------
-        # TOTAL              6      0      4      2    80%
-
-        assert self.line_count(report) == 5
-        squeezed = self.squeezed_lines(report)
-        assert squeezed[2] == "mybranch.py 6 0 4 2 80% 2->4, 4->exit"
-        assert squeezed[4] == "TOTAL 6 0 4 2 80%"
-        report = self.get_report(cov, show_missing=True, squeeze=False,
-            output_format="markdown")
-        assert self.line_count(report) == 4
-        assert report.split("\n")[2] == "| mybranch.py |      6 |      0 |"\
-            "      4 |      2 |        80% |2->4, 4->exit |"
-        assert report.split("\n")[3] == "|   **TOTAL** |  **6** |  **0** |"\
-            "  **4** |  **2** |    **80%** |          |"
 
     def test_report_show_missing_branches_and_lines(self):
         self.make_file("main.py", """\
@@ -370,26 +259,6 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         cov = coverage.Coverage(branch=True)
         self.start_import_stop(cov, "main")
         assert self.stdout() == 'x\ny\n'
-        report_lines = self.get_report(cov, squeeze=False, show_missing=True).splitlines()
-        expected = [
-            'Name           Stmts   Miss Branch BrPart  Cover  Missing',
-            '---------------------------------------------------------',
-            'main.py            1      0      0      0   100%',
-            'mybranch.py       10      2      8      3    61% 2->4, 4->6, 7-8',
-            '---------------------------------------------------------',
-            'TOTAL             11      2      8      3    63%',
-        ]
-        assert expected == report_lines
-
-        report = self.get_report(cov, squeeze=False, show_missing=True,
-            output_format="markdown")
-        assert report.split("\n")[2] == "| main.py     |      1 |      0 |"\
-            "      0 |      0 |       100% |          |"
-        assert report.split("\n")[3] == "| mybranch.py |     10 |      2 |"\
-            "      8 |      3 |        61% |2->4, 4->6, 7-8 |"
-        assert report.split("\n")[4] == "|   **TOTAL** | **11** |  **2** |"\
-            "  **8** |  **3** |    **63%** |          |"
-
 
     def test_report_skip_covered_no_branches(self):
         self.make_file("main.py", """
@@ -421,22 +290,6 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         assert squeezed[2] == "not_covered.py 2 1 50%"
         assert squeezed[4] == "TOTAL 6 1 83%"
         assert squeezed[6] == "1 file skipped due to complete coverage."
-        assert self.last_command_status == 0
-
-        report = self.report_from_command(
-            "coverage report --skip-covered --fail-under=70 --format=markdown")
-        # | Name            |  Stmts |   Miss |      Cover |
-        # |---------------- | -----: | -----: | ---------: |
-        # | not\_covered.py |      2 |      1 |        50% |
-        # |       **TOTAL** |  **6** |  **1** |    **83%** |
-
-        # 1 file skipped due to complete coverage.
-        assert self.line_count(report) == 6, report
-        assert report.split("\n")[2] == "| not/_covered.py |      2 |      1"\
-            " |        50% |"
-        assert report.split("\n")[3] == "|       **TOTAL** |  **6** |  **1**"\
-            " |    **83%** |"
-        assert report.split("\n")[5] == "1 file skipped due to complete coverage."
         assert self.last_command_status == 0
 
     def test_report_skip_covered_branches(self):
@@ -478,20 +331,6 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         assert squeezed[2] == "not_covered.py 4 0 2 1 83%"
         assert squeezed[4] == "TOTAL 13 0 4 1 94%"
         assert squeezed[6] == "2 files skipped due to complete coverage."
-        report = self.get_report(cov, skip_covered=True, squeeze=False,
-            output_format="markdown")
-        # | Name            |  Stmts |   Miss | Branch | BrPart |      Cover |
-        # |---------------- | -----: | -----: | -----: | -----: | ---------: |
-        # | not/_covered.py |      4 |      0 |      2 |      1 |        83% |
-        # |       **TOTAL** | **13** |  **0** |  **4** |  **1** |    **94%** |
-
-        # 2 files skipped due to complete coverage.
-        assert self.line_count(report) == 6, report
-        assert report.split("\n")[2] == "| not/_covered.py |      4 |      "\
-            "0 |      2 |      1 |        83% |"
-        assert report.split("\n")[3] == "|       **TOTAL** | **13** |  **0** "\
-            "|  **4** |  **1** |    **94%** |"
-        assert report.split("\n")[5] == "2 files skipped due to complete coverage."
 
     def test_report_skip_covered_branches_with_totals(self):
         self.make_file("main.py", """
@@ -535,24 +374,6 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         assert squeezed[5] == "TOTAL 13 1 4 1 88%"
         assert squeezed[7] == "1 file skipped due to complete coverage."
 
-        report = self.get_report(cov, skip_covered=True, squeeze=False,
-            output_format="markdown")
-        # | Name              |  Stmts |   Miss | Branch | BrPart |      Cover |
-        # |------------------ | -----: | -----: | -----: | -----: | ---------: |
-        # | also/_not/_run.py |      2 |      1 |      0 |      0 |        50% |
-        # | not/_covered.py   |      4 |      0 |      2 |      1 |        83% |
-        # |         **TOTAL** | **13** |  **1** |  **4** |  **1** |    **88%** |
-        assert self.line_count(report) == 7, report
-        assert report.split("\n")[2] == "| also/_not/_run.py |      2 |      "\
-            "1 |      0 |      0 |        50% |"
-        assert report.split("\n")[3] == "| not/_covered.py   |      4 |      "\
-            "0 |      2 |      1 |        83% |"
-        assert report.split("\n")[4] == "|         **TOTAL** | **13** |  "\
-            "**1** |  **4** |  **1** |    **88%** |"
-        assert report.split("\n")[6] == "1 file skipped due to complete coverage."
-
-
-
     def test_report_skip_covered_all_files_covered(self):
         self.make_file("main.py", """
             def foo():
@@ -574,10 +395,24 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         assert self.line_count(report) == 6, report
         squeezed = self.squeezed_lines(report)
         assert squeezed[5] == "1 file skipped due to complete coverage."
-        report = self.get_report(cov, skip_covered=True,
+        report = self.get_report(cov, squeeze=False, skip_covered=True,
             output_format="markdown")
+        # | Name      |    Stmts |     Miss |   Branch |   BrPart |    Cover |
+        # |---------- | -------: | -------: | -------: | -------: | -------: |
+        # | **TOTAL** |    **3** |    **0** |    **0** |    **0** | **100%** |
+        #
+        # 1 file skipped due to complete coverage.
 
         assert self.line_count(report) == 5, report
+        assert report.split("\n")[0] == (
+            '| Name      |    Stmts |     Miss |   Branch |   BrPart |    Cover |'
+        )
+        assert report.split("\n")[1] == (
+            '|---------- | -------: | -------: | -------: | -------: | -------: |'
+        )
+        assert report.split("\n")[2] == (
+            '| **TOTAL** |    **3** |    **0** |    **0** |    **0** | **100%** |'
+        )
         squeezed = self.squeezed_lines(report)
         assert squeezed[4] == "1 file skipped due to complete coverage."
 
@@ -601,7 +436,7 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
 
         assert self.line_count(report) == 6, report
         lines = self.report_lines(report)
-        assert lines[0] == "Name     Stmts   Miss Branch BrPart  Cover"
+        assert lines[0] == "Name    Stmts   Miss Branch BrPart  Cover"
         squeezed = self.squeezed_lines(report)
         assert squeezed[5] == "1 file skipped due to complete coverage."
 
@@ -657,19 +492,6 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         assert self.line_count(report) == 6, report
         assert report.split("\n")[3] == "TOTAL 0 0 100%"
         assert report.split("\n")[5] == "1 empty file skipped."
-        report = self.get_report(cov, squeeze=False,
-            skip_empty=True, output_format="markdown")
-
-        # | Name      |  Stmts |   Miss |      Cover |
-        # |---------- | -----: | -----: | ---------: |
-        # | **TOTAL** |  **0** |  **0** |   **100%** |
-        #
-        # 1 empty file skipped.
-
-        assert self.line_count(report) == 5, report
-        assert report.split("\n")[2] == \
-            "| **TOTAL** |  **0** |  **0** |   **100%** |"
-        assert report.split("\n")[4] == "1 empty file skipped."
 
     def test_report_precision(self):
         self.make_file(".coveragerc", """\
@@ -700,7 +522,7 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         cov = coverage.Coverage(branch=True)
         self.start_import_stop(cov, "main")
         assert self.stdout() == "n\nz\n"
-        report = self.get_report(cov)
+        report = self.get_report(cov, squeeze=False)
 
         # Name             Stmts   Miss Branch BrPart      Cover
         # ------------------------------------------------------
@@ -715,20 +537,6 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         assert squeezed[2] == "covered.py 3 0 0 0 100.000%"
         assert squeezed[4] == "not_covered.py 4 0 2 1 83.333%"
         assert squeezed[6] == "TOTAL 13 0 4 1 94.118%"
-        report = self.get_report(cov, squeeze=False, output_format="markdown")
-
-        #| Name            |  Stmts |   Miss | Branch | BrPart |        Cover |
-        #|---------------- | -----: | -----: | -----: | -----: | -----------: |
-        #| covered.py      |      3 |      0 |      0 |      0 |     100.000% |
-        #| main.py         |      6 |      0 |      2 |      0 |     100.000% |
-        #| not/_covered.py |      4 |      0 |      2 |      1 |      83.333% |
-        #|       **TOTAL** | **13** |  **0** |  **4** |  **1** |  **94.118%** |
-
-        assert self.line_count(report) == 6, report
-        squeezed = self.squeezed_lines(report)
-        assert squeezed[2] == "| covered.py | 3 | 0 | 0 | 0 | 100.000% |"
-        assert squeezed[4] == "| not/_covered.py | 4 | 0 | 2 | 1 | 83.333% |"
-        assert squeezed[5] == "| **TOTAL** | **13** | **0** | **4** | **1** | **94.118%** |"
 
     def test_dotpy_not_python(self):
         # We run a .py file, and when reporting, we can't parse it as Python.
@@ -747,20 +555,16 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         self.make_file("\xe2/accented.py", "print('accented')")
         self.make_data_file(lines={abs_file("\xe2/accented.py"): [1]})
         report_expected = (
-            "Name             Stmts   Miss  Cover\n" +
-            "------------------------------------\n" +
-            "\xe2/accented.py        1      0   100%\n" +
-            "------------------------------------\n" +
-            "TOTAL                1      0   100%\n"
+            "Name            Stmts   Miss  Cover\n" +
+            "-----------------------------------\n" +
+            "\xe2/accented.py       1      0   100%\n" +
+            "-----------------------------------\n" +
+            "TOTAL               1      0   100%\n"
         )
         cov = coverage.Coverage()
         cov.load()
         output = self.get_report(cov, squeeze=False)
         assert output == report_expected
-        output = self.get_report(cov, squeeze=False, output_format="markdown")
-        markdown_expected = \
-            "| \xe2/accented.py |      1 |      0 |       100% |"
-        assert output.split("\n")[2] == markdown_expected
 
     @pytest.mark.skipif(env.JYTHON, reason="Jython doesn't like accented file names")
     def test_accenteddotpy_not_python(self):
@@ -819,9 +623,6 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         cov.load()
         report = self.get_report(cov)
         assert self.last_line_squeezed(report) == "TOTAL 7 1 86%"
-        report = self.get_report(cov, squeeze=False, output_format="markdown")
-        assert report.split("\n")[-2] == \
-            "| **TOTAL** |  **7** |  **1** |    **86%** |"
 
     def test_report_with_chdir(self):
         self.make_file("chdir.py", """\
@@ -837,8 +638,7 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         report = self.report_from_command("coverage report")
         assert self.last_line_squeezed(report) == "TOTAL 5 0 100%"
         report = self.report_from_command("coverage report --format=markdown")
-        assert report.split("\n")[-2] == \
-            "| **TOTAL** |  **5** |  **0** |   **100%** |"
+        assert self.last_line_squeezed(report) == "| **TOTAL** | **5** | **0** | **100%** |"
 
     def test_bug_156_file_not_run_should_be_zero(self):
         # https://github.com/nedbat/coveragepy/issues/156
@@ -856,11 +656,6 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         self.start_import_stop(cov, "main")
         report = self.get_report(cov).splitlines()
         assert "mybranch.py 5 5 2 0 0%" in report
-        report = self.get_report(cov, squeeze=False, output_format="markdown")
-        assert \
-            "| mybranch.py |      5 |      5 |      2 |      0 |         0% |"\
-                in report
-
 
     def run_TheCode_and_report_it(self):
         """A helper for the next few tests."""
@@ -921,9 +716,8 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         report = self.get_report(cov).splitlines()
         assert "mod.py 1 0 100%" in report
         report = self.get_report(cov, squeeze=False, output_format="markdown")
-        print(report)
-        assert report.split("\n")[4] == \
-            "| **TOTAL** |  **2** |  **0** |   **100%** |"
+        assert report.split("\n")[3] == "| mod.py    |        1 |        0 |     100% |"
+        assert report.split("\n")[4] == "| **TOTAL** |    **2** |    **0** | **100%** |"
 
     def test_missing_py_file_during_run(self):
         # Create two Python files.
@@ -950,8 +744,6 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         self.make_file("mod.py", "a = 1\n")
         report = self.get_report(cov).splitlines()
         assert "mod.py 1 0 100%" in report
-        report = self.get_report(cov, squeeze=False, output_format="markdown")
-        assert "| mod.py    |      1 |      0 |       100% |" in report
 
     def test_empty_files(self):
         # Shows that empty files like __init__.py are listed as having zero
@@ -966,12 +758,41 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         report = self.get_report(cov, squeeze=False, output_format="markdown")
         # get_report() escapes backslash so we expect forward slash escaped
         # underscore
-        print(report)
         assert "tests/modules/pkg1//_/_init/_/_.py " in report
-        assert "|      1 |      0 |      0 |      0 |       100% |" in report
+        assert "|        1 |        0 |        0 |        0 |     100% |" in report
         assert "tests/modules/pkg2//_/_init/_/_.py " in report
-        assert "|      0 |      0 |      0 |      0 |       100% |" in report
+        assert "|        0 |        0 |        0 |        0 |     100% |" in report
 
+    def test_markdown_with_missing(self):
+        self.make_file("mymissing.py", """\
+            def missing(x, y):
+                if x:
+                    print("x")
+                    return x
+                if y:
+                    print("y")
+                try:
+                    print("z")
+                    1/0
+                    print("Never!")
+                except ZeroDivisionError:
+                    pass
+                return x
+            missing(0, 1)
+            """)
+        cov = coverage.Coverage(source=["."])
+        self.start_import_stop(cov, "mymissing")
+        assert self.stdout() == 'y\nz\n'
+        report = self.get_report(cov,squeeze=False, output_format="markdown", show_missing=True)
+
+        # | Name         |    Stmts |     Miss |   Cover |   Missing |
+        # |------------- | -------: | -------: | ------: | --------: |
+        # | mymissing.py |       14 |        3 |     79% |   3-4, 10 |
+        # |    **TOTAL** |   **14** |    **3** | **79%** |           |
+        assert self.line_count(report) == 4
+        report_lines = report.split("\n")
+        assert report_lines[2] == "| mymissing.py |       14 |        3 |     79% |   3-4, 10 |"
+        assert report_lines[3] == "|    **TOTAL** |   **14** |    **3** | **79%** |           |"
 
 class ReportingReturnValueTest(CoverageTest):
     """Tests of reporting functions returning values."""
@@ -1056,7 +877,6 @@ class SummaryReporterConfigurationTest(CoverageTest):
         # file10.py    234    228     3%
         # ------------------------------
         # TOTAL        586    386    34%
-        print(report)
         lines = report.splitlines()[2:-2]
         assert len(lines) == 3
         nums = [list(map(int, l.replace('%', '').split()[1:])) for l in lines]

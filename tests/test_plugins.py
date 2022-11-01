@@ -416,20 +416,19 @@ class GoodFileTracerTest(FileTracerTest):
 
         self.start_import_stop(cov, "caller")
 
-        cov.save()
-        cov.load()
-        report = self.get_report(cov, squeeze=False,
-            include=["*.html"], omit=["uni*.html"], show_missing=True)
-        # Name          Stmts   Miss Branch BrPart  Cover  Missing
-        # --------------------------------------------------------
-        # bar_4.html        4      2      0      0    50% 1, 4
-        # foo_7.html        7      5      0      0    29% 1-3, 6-7
-        # --------------------------------------------------------
-        # TOTAL            11      7      0      0    36%
-        assert report.split("\n")[2] == \
-            "bar_4.html        4      2      0      0    50% 1, 4"
-        total = int(report.split("\n")[-2].split(" ")[-1][:-1])
-        assert 0 == total - int(4/11*100)
+        repout = io.StringIO()
+        total = cov.report(file=repout, include=["*.html"], omit=["uni*.html"], show_missing=True)
+        report = repout.getvalue().splitlines()
+        expected = [
+            'Name         Stmts   Miss Branch BrPart  Cover   Missing',
+            '--------------------------------------------------------',
+            'bar_4.html       4      2      0      0    50%   1, 4',
+            'foo_7.html       7      5      0      0    29%   1-3, 6-7',
+            '--------------------------------------------------------',
+            'TOTAL           11      7      0      0    36%',
+        ]
+        assert expected == report
+        assert math.isclose(total, 4 / 11 * 100)
 
     def test_plugin2_with_html_report(self):
         self.make_render_and_caller()
@@ -516,18 +515,19 @@ class GoodFileTracerTest(FileTracerTest):
         cov = coverage.Coverage(include=["unsuspecting.py"])
         cov.set_option("run:plugins", ["fairly_odd_plugin"])
         self.start_import_stop(cov, "unsuspecting")
-        cov.save()
-        cov.load()
-        report = self.get_report(cov, squeeze=False, show_missing=True)
-        # Name               Stmts   Miss  Cover  Missing
-        # -----------------------------------------------
-        # unsuspecting.py        6      3    50% 2, 4, 6
-        # -----------------------------------------------
-        # TOTAL                  6      3    50%
-        assert report.split("\n")[2] == \
-            "unsuspecting.py        6      3    50% 2, 4, 6"
-        assert report.split("\n")[4] == \
-            "TOTAL                  6      3    50%"
+
+        repout = io.StringIO()
+        total = cov.report(file=repout, show_missing=True)
+        report = repout.getvalue().splitlines()
+        expected = [
+            'Name              Stmts   Miss  Cover   Missing',
+            '-----------------------------------------------',
+            'unsuspecting.py       6      3    50%   2, 4, 6',
+            '-----------------------------------------------',
+            'TOTAL                 6      3    50%',
+        ]
+        assert expected == report
+        assert total == 50
 
     def test_find_unexecuted(self):
         self.make_file("unexecuted_plugin.py", """\
