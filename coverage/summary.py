@@ -43,6 +43,7 @@ class SummaryReporter:
         max_n = max(len(total_line[header.index("Cover")]) + 2,
             len(" Cover")
         ) + 1
+        max_n = max([max_n] + [len(line[header.index("Cover")]) + 2 for line in lines_values])
         h_form = dict(
             Name="{:{name_len}}", Stmts="{:>7}", Miss="{:>7}",
             Branch="{:>7}", BrPart="{:>7}", Cover="{:>{n}}",
