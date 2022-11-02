@@ -89,6 +89,7 @@ class CoverageTest(
         kwargs.setdefault("show_missing", False)
         cov.report(file=repout, **kwargs)
         report = repout.getvalue().replace('\\', '/')
+        print(report)   # When tests fail, it's helpful to see the output
         if squeeze:
             report = re.sub(r" +", " ", report)
         return report
