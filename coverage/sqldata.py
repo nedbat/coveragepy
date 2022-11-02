@@ -1005,7 +1005,6 @@ class CoverageData(SimpleReprMixin):
             copts = textwrap.wrap(", ".join(copts), width=75)
 
         return [
-            ("sqlite3_version", sqlite3.version),
             ("sqlite3_sqlite_version", sqlite3.sqlite_version),
             ("sqlite3_temp_store", temp_store),
             ("sqlite3_compile_options", copts),

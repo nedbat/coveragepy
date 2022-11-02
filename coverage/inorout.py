@@ -16,7 +16,7 @@ import traceback
 from coverage import env
 from coverage.disposition import FileDisposition, disposition_init
 from coverage.exceptions import CoverageException, PluginError
-from coverage.files import TreeMatcher, FnmatchMatcher, ModuleMatcher
+from coverage.files import TreeMatcher, GlobMatcher, ModuleMatcher
 from coverage.files import prep_patterns, find_python_files, canonical_filename
 from coverage.misc import sys_modules_saved
 from coverage.python import source_for_file, source_for_morf
@@ -260,10 +260,10 @@ class InOrOut:
                 self.pylib_match = TreeMatcher(self.pylib_paths, "pylib")
                 debug(f"Python stdlib matching: {self.pylib_match!r}")
         if self.include:
-            self.include_match = FnmatchMatcher(self.include, "include")
+            self.include_match = GlobMatcher(self.include, "include")
             debug(f"Include matching: {self.include_match!r}")
         if self.omit:
-            self.omit_match = FnmatchMatcher(self.omit, "omit")
+            self.omit_match = GlobMatcher(self.omit, "omit")
             debug(f"Omit matching: {self.omit_match!r}")
 
         self.cover_match = TreeMatcher(self.cover_paths, "coverage")

@@ -18,14 +18,13 @@ supported on:
 
 .. PYVERSIONS
 
-* Python versions 3.7 through 3.11.0 rc2.
-
-* PyPy3 7.3.8.
+* Python versions 3.7 through 3.12.0a1.
+* PyPy3 7.3.9.
 
 .. ifconfig:: prerelease
 
     **This is a pre-release build.  The usual warnings about possible bugs
-    apply.** The latest stable version is coverage.py 6.4, `described here`_.
+    apply.** The latest stable version is coverage.py 6.5.0, `described here`_.
 
 
 .. _described here: http://coverage.readthedocs.io/

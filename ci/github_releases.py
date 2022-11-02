@@ -74,16 +74,11 @@ def get_releases(session, repo):
     releases = { r['tag_name']: r for r in github_paginated(session, url) }
     return releases
 
-RELEASE_BODY_FMT = """
+RELEASE_BODY_FMT = """\
 {relnote_text}
 
----
-PyPI page: [coverage {version}](https://pypi.org/project/coverage/{version})
-
-To install:
-```
-$ python3 -m pip install coverage=={version}
-```
+:arrow_right:\xa0 PyPI page: [coverage {version}](https://pypi.org/project/coverage/{version}).
+:arrow_right:\xa0 To install: `python3 -m pip install coverage=={version}`
 """
 
 def release_for_relnote(relnote):
@@ -101,22 +96,20 @@ def release_for_relnote(relnote):
         "prerelease": relnote["prerelease"],
     }
 
-def create_release(session, repo, relnote):
+def create_release(session, repo, release_data):
     """
     Create a new GitHub release.
     """
-    print(f"Creating {relnote['version']}")
-    data = release_for_relnote(relnote)
-    resp = session.post(RELEASES_URL.format(repo=repo), json=data)
+    print(f"Creating {release_data['name']}")
+    resp = session.post(RELEASES_URL.format(repo=repo), json=release_data)
     check_ok(resp)
 
-def update_release(session, url, relnote):
+def update_release(session, url, release_data):
     """
     Update an existing GitHub release.
     """
-    print(f"Updating {relnote['version']}")
-    data = release_for_relnote(relnote)
-    resp = session.patch(url, json=data)
+    print(f"Updating {release_data['name']}")
+    resp = session.patch(url, json=release_data)
     check_ok(resp)
 
 def update_github_releases(json_filename, repo):
@@ -139,14 +132,15 @@ def update_github_releases(json_filename, repo):
         tag = relnote["version"]
         if not does_tag_exist(tag):
             continue
+        release_data = release_for_relnote(relnote)
         exists = tag in releases
         if not exists:
-            create_release(gh_session, repo, relnote)
+            create_release(gh_session, repo, release_data)
         else:
             release = releases[tag]
-            if release["body"] != relnote["text"]:
+            if release["body"] != release_data["body"]:
                 url = release["url"]
-                update_release(gh_session, url, relnote)
+                update_release(gh_session, url, release_data)
 
 if __name__ == "__main__":
     update_github_releases(*sys.argv[1:3])

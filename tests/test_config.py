@@ -3,7 +3,6 @@
 
 """Test the config file handling for coverage.py"""
 
-import math
 import sys
 from collections import OrderedDict
 
@@ -13,6 +12,7 @@ import pytest
 import coverage
 from coverage.config import HandyConfigParser
 from coverage.exceptions import ConfigError, CoverageWarning
+from coverage.tomlconfig import TomlConfigParser
 
 from tests.coveragetest import CoverageTest, UsingModulesMixin
 from tests.helpers import without_module
@@ -63,7 +63,7 @@ class ConfigTest(CoverageTest):
         assert cov.config.data_file == "delete.me"
 
     def test_toml_config_file(self):
-        # A .coveragerc file will be read into the configuration.
+        # A pyproject.toml file will be read into the configuration.
         self.make_file("pyproject.toml", """\
             # This is just a bogus toml file for testing.
             [tool.somethingelse]
@@ -81,7 +81,7 @@ class ConfigTest(CoverageTest):
             [tool.coverage.plugins.a_plugin]
             hello = "world"
             """)
-        cov = coverage.Coverage(config_file="pyproject.toml")
+        cov = coverage.Coverage()
         assert cov.config.timid
         assert not cov.config.branch
         assert cov.config.concurrency == ["a", "b"]
@@ -89,17 +89,18 @@ class ConfigTest(CoverageTest):
         assert cov.config.plugins == ["plugins.a_plugin"]
         assert cov.config.precision == 3
         assert cov.config.html_title == "tabblo & «ταБЬℓσ»"
-        assert math.isclose(cov.config.fail_under, 90.5)
+        assert cov.config.fail_under == 90.5
         assert cov.config.get_plugin_options("plugins.a_plugin") == {"hello": "world"}
 
+    def test_toml_ints_can_be_floats(self):
         # Test that our class doesn't reject integers when loading floats
         self.make_file("pyproject.toml", """\
             # This is just a bogus toml file for testing.
             [tool.coverage.report]
             fail_under = 90
             """)
-        cov = coverage.Coverage(config_file="pyproject.toml")
-        assert math.isclose(cov.config.fail_under, 90)
+        cov = coverage.Coverage()
+        assert cov.config.fail_under == 90
         assert isinstance(cov.config.fail_under, float)
 
     def test_ignored_config_file(self):
@@ -200,7 +201,7 @@ class ConfigTest(CoverageTest):
          r"multiple repeat"),
         ('[tool.coverage.run]\nconcurrency="foo"', "not a list"),
         ("[tool.coverage.report]\nprecision=1.23", "not an integer"),
-        ('[tool.coverage.report]\nfail_under="s"', "not a float"),
+        ('[tool.coverage.report]\nfail_under="s"', "couldn't convert to a float"),
     ])
     def test_toml_parse_errors(self, bad_config, msg):
         # Im-parsable values raise ConfigError, with details.
@@ -235,8 +236,10 @@ class ConfigTest(CoverageTest):
         self.make_file("pyproject.toml", """\
             [tool.coverage.run]
             data_file = "$DATA_FILE.fooey"
-            branch = $BRANCH
+            branch = "$BRANCH"
             [tool.coverage.report]
+            precision = "$DIGITS"
+            fail_under = "$FAIL_UNDER"
             exclude_lines = [
                 "the_$$one",
                 "another${THING}",
@@ -244,13 +247,21 @@ class ConfigTest(CoverageTest):
                 "x${NOTHING}y",
                 "huh$${X}what",
             ]
+            [othersection]
+            # This reproduces the failure from https://github.com/nedbat/coveragepy/issues/1481
+            # When OTHER has a backslash that isn't a valid escape, like \\z (see below).
+            something = "if [ $OTHER ]; then printf '%s\\n' 'Hi'; fi"
             """)
         self.set_environ("BRANCH", "true")
+        self.set_environ("DIGITS", "3")
+        self.set_environ("FAIL_UNDER", "90.5")
         self.set_environ("DATA_FILE", "hello-world")
         self.set_environ("THING", "ZZZ")
+        self.set_environ("OTHER", "hi\\zebra")
         cov = coverage.Coverage()
-        assert cov.config.data_file == "hello-world.fooey"
         assert cov.config.branch is True
+        assert cov.config.precision == 3
+        assert cov.config.data_file == "hello-world.fooey"
         assert cov.config.exclude_list == ["the_$one", "anotherZZZ", "xZZZy", "xy", "huh${X}what"]
 
     def test_tilde_in_config(self):
@@ -426,7 +437,8 @@ class ConfigTest(CoverageTest):
             [run]
             branch = True
             """)
-        config = HandyConfigParser("config.ini")
+        config = HandyConfigParser(True)
+        config.read(["config.ini"])
         with pytest.raises(ConfigError, match="No section: 'xyzzy'"):
             config.options("xyzzy")
         with pytest.raises(ConfigError, match="No option 'foo' in section: 'xyzzy'"):
@@ -747,3 +759,17 @@ class ConfigFileTest(UsingModulesMixin, CoverageTest):
             assert not cov.config.timid
             assert not cov.config.branch
             assert cov.config.data_file == ".coverage"
+
+    def test_exceptions_from_missing_toml_things(self):
+        self.make_file("pyproject.toml", """\
+            [tool.coverage.run]
+            branch = true
+            """)
+        config = TomlConfigParser(False)
+        config.read("pyproject.toml")
+        with pytest.raises(ConfigError, match="No section: 'xyzzy'"):
+            config.options("xyzzy")
+        with pytest.raises(ConfigError, match="No section: 'xyzzy'"):
+            config.get("xyzzy", "foo")
+        with pytest.raises(ConfigError, match="No option 'foo' in section: 'tool.coverage.run'"):
+            config.get("run", "foo")

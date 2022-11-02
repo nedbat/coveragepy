@@ -137,6 +137,30 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         assert "mycode.py " in report
         assert self.last_line_squeezed(report) == "TOTAL 4 0 100%"
 
+    def test_omit_files_here(self):
+        # https://github.com/nedbat/coveragepy/issues/1407
+        self.make_file("foo.py", "")
+        self.make_file("bar/bar.py", "")
+        self.make_file("tests/test_baz.py", """\
+            def test_foo():
+                assert True
+            test_foo()
+            """)
+        self.run_command("coverage run --source=. --omit='./*.py' -m tests.test_baz")
+        report = self.report_from_command("coverage report")
+
+        # Name                Stmts   Miss  Cover
+        # ---------------------------------------
+        # tests/test_baz.py       3      0   100%
+        # ---------------------------------------
+        # TOTAL                   3      0   100%
+
+        assert self.line_count(report) == 5
+        assert "foo" not in report
+        assert "bar" not in report
+        assert "tests/test_baz.py" in report
+        assert self.last_line_squeezed(report) == "TOTAL 3 0 100%"
+
     def test_run_source_vs_report_include(self):
         # https://github.com/nedbat/coveragepy/issues/621
         self.make_file(".coveragerc", """\
