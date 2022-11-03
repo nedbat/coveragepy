@@ -1041,7 +1041,10 @@ class AstArcAnalyzer:
         had_wildcard = False
         for case in node.cases:
             case_start = self.line_for_node(case.pattern)
-            if isinstance(case.pattern, ast.MatchAs):
+            pattern = case.pattern
+            while isinstance(pattern, ast.MatchOr):
+                pattern = pattern.patterns[-1]
+            if isinstance(pattern, ast.MatchAs):
                 had_wildcard = True
             self.add_arc(last_start, case_start, "the pattern on line {lineno} always matched")
             from_start = ArcStart(case_start, cause="the pattern on line {lineno} never matched")

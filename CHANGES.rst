@@ -20,7 +20,10 @@ development at the same time, such as 4.5.x and 5.0.
 Unreleased
 ----------
 
-Nothing yet.
+- Fixed a mis-measurement of a strange use of wildcard alternatives in
+  match/case statements, closing `issue 1421`_.
+
+.. _issue 1421: https://github.com/nedbat/coveragepy/issues/1421
 
 
 .. _changes_6-6-0b1:
