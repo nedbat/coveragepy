@@ -536,10 +536,10 @@ CTracer_handle_call(CTracer *self, PyFrameObject *frame)
      * determines what kind of resume it is.
      */
     pCode = MyCode_GetCode(MyFrame_GetCode(frame));
-    real_call = (PyBytes_AS_STRING(pCode)[MyFrame_GetLasti(frame) + 1] == 0);
+    real_call = (PyBytes_AS_STRING(pCode)[PyFrame_GetLasti(frame) + 1] == 0);
 #else
     // f_lasti is -1 for a true call, and a real byte offset for a generator re-entry.
-    real_call = (MyFrame_GetLasti(frame) < 0);
+    real_call = (PyFrame_GetLasti(frame) < 0);
 #endif
 
     if (real_call) {
@@ -709,7 +709,7 @@ CTracer_handle_return(CTracer *self, PyFrameObject *frame)
         if (self->tracing_arcs && self->pcur_entry->file_data) {
             BOOL real_return = FALSE;
             pCode = MyCode_GetCode(MyFrame_GetCode(frame));
-            int lasti = MyFrame_GetLasti(frame);
+            int lasti = PyFrame_GetLasti(frame);
             Py_ssize_t code_size = PyBytes_GET_SIZE(pCode);
             unsigned char * code_bytes = (unsigned char *)PyBytes_AS_STRING(pCode);
 #ifdef RESUME
