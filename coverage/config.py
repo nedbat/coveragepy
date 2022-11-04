@@ -18,7 +18,7 @@ from coverage.tomlconfig import TomlConfigParser, TomlDecodeError
 os = isolate_module(os)
 
 
-class HandyConfigParser(configparser.RawConfigParser):
+class HandyConfigParser(configparser.ConfigParser):
     """Our specialization of ConfigParser."""
 
     def __init__(self, our_file):
@@ -29,19 +29,19 @@ class HandyConfigParser(configparser.RawConfigParser):
         for possible settings.
         """
 
-        configparser.RawConfigParser.__init__(self)
+        super().__init__(interpolation=None)
         self.section_prefixes = ["coverage:"]
         if our_file:
             self.section_prefixes.append("")
 
     def read(self, filenames, encoding_unused=None):
         """Read a file name as UTF-8 configuration data."""
-        return configparser.RawConfigParser.read(self, filenames, encoding="utf-8")
+        return super().read(filenames, encoding="utf-8")
 
     def has_option(self, section, option):
         for section_prefix in self.section_prefixes:
             real_section = section_prefix + section
-            has = configparser.RawConfigParser.has_option(self, real_section, option)
+            has = super().has_option(real_section, option)
             if has:
                 return has
         return False
@@ -49,7 +49,7 @@ class HandyConfigParser(configparser.RawConfigParser):
     def has_section(self, section):
         for section_prefix in self.section_prefixes:
             real_section = section_prefix + section
-            has = configparser.RawConfigParser.has_section(self, real_section)
+            has = super().has_section(real_section)
             if has:
                 return real_section
         return False
@@ -57,8 +57,8 @@ class HandyConfigParser(configparser.RawConfigParser):
     def options(self, section):
         for section_prefix in self.section_prefixes:
             real_section = section_prefix + section
-            if configparser.RawConfigParser.has_section(self, real_section):
-                return configparser.RawConfigParser.options(self, real_section)
+            if super().has_section(real_section):
+                return super().options(real_section)
         raise ConfigError(f"No section: {section!r}")
 
     def get_section(self, section):
@@ -71,7 +71,7 @@ class HandyConfigParser(configparser.RawConfigParser):
     def get(self, section, option, *args, **kwargs):
         """Get a value, replacing environment variables also.
 
-        The arguments are the same as `RawConfigParser.get`, but in the found
+        The arguments are the same as `ConfigParser.get`, but in the found
         value, ``$WORD`` or ``${WORD}`` are replaced by the value of the
         environment variable ``WORD``.
 
@@ -80,12 +80,12 @@ class HandyConfigParser(configparser.RawConfigParser):
         """
         for section_prefix in self.section_prefixes:
             real_section = section_prefix + section
-            if configparser.RawConfigParser.has_option(self, real_section, option):
+            if super().has_option(real_section, option):
                 break
         else:
             raise ConfigError(f"No option {option!r} in section: {section!r}")
 
-        v = configparser.RawConfigParser.get(self, real_section, option, *args, **kwargs)
+        v = super().get(real_section, option, *args, **kwargs)
         v = substitute_variables(v, os.environ)
         return v
 
