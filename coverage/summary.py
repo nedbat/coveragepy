@@ -32,26 +32,30 @@ class SummaryReporter:
 
     def _report_text(self, header, lines_values, total_line, end_lines):
         """Internal method that prints report data in text format.
-        `header` is a tuple with captions.
 
+        `header` is a tuple with captions.
         `lines_values` is list of tuples of sortable values.
         `total_line` is a tuple with values of the total line.
         `end_lines` is a tuple of ending lines with information about skipped files.
-        """        # Prepare the formatting strings, header, and column sorting.
-        max_name = max([len(line[0]) for line in lines_values] + [5]
-        ) + 1
-        max_n = max(len(total_line[header.index("Cover")]) + 2,
-            len(" Cover")
-        ) + 1
+
+        """
+        # Prepare the formatting strings, header, and column sorting.
+        max_name = max([len(line[0]) for line in lines_values] + [5]) + 1
+        max_n = max(len(total_line[header.index("Cover")]) + 2, len(" Cover")) + 1
         max_n = max([max_n] + [len(line[header.index("Cover")]) + 2 for line in lines_values])
         h_form = dict(
-            Name="{:{name_len}}", Stmts="{:>7}", Miss="{:>7}",
-            Branch="{:>7}", BrPart="{:>7}", Cover="{:>{n}}",
-            Missing="{:>10}"
-            )
+            Name="{:{name_len}}",
+            Stmts="{:>7}",
+            Miss="{:>7}",
+            Branch="{:>7}",
+            BrPart="{:>7}",
+            Cover="{:>{n}}",
+            Missing="{:>10}",
+        )
         header_items = [
             h_form[item].format(item, name_len=max_name, n=max_n)
-            for item in header]
+            for item in header
+        ]
         header_str = "".join(header_items)
         rule = "-" * len(header_str)
 
@@ -64,7 +68,8 @@ class SummaryReporter:
             # build string with line values
             line_items = [
                 h_form[item].format(str(value),
-                name_len=max_name, n=max_n-1) for item, value in zip(header, values)]
+                name_len=max_name, n=max_n-1) for item, value in zip(header, values)
+            ]
             text = "".join(line_items)
             self.writeout(text)
 
@@ -72,7 +77,8 @@ class SummaryReporter:
         self.writeout(rule)
         line_items = [
             h_form[item].format(str(value),
-            name_len=max_name, n=max_n-1) for item, value in zip(header, total_line)]
+            name_len=max_name, n=max_n-1) for item, value in zip(header, total_line)
+        ]
         text = "".join(line_items)
         self.writeout(text)
 
@@ -81,25 +87,27 @@ class SummaryReporter:
 
     def _report_markdown(self, header, lines_values, total_line, end_lines):
         """Internal method that prints report data in markdown format.
-        `header` is a tuple with captions.
 
+        `header` is a tuple with captions.
         `lines_values` is a sorted list of tuples containing coverage information.
         `total_line` is a tuple with values of the total line.
         `end_lines` is a tuple of ending lines with information about skipped files.
+
         """
         # Prepare the formatting strings, header, and column sorting.
-        max_name = max([len(line[0].replace("_", "\\_")) for line in lines_values] + [9]
-        )
+        max_name = max([len(line[0].replace("_", "\\_")) for line in lines_values] + [9])
         max_name += 1
         h_form = dict(
-            Name="| {:{name_len}}|", Stmts="{:>9} |", Miss="{:>9} |",
-            Branch="{:>9} |", BrPart="{:>9} |", Cover="{:>{n}} |",
-            Missing="{:>10} |")
-        max_n = max(len(total_line[header.index("Cover")]) + 6,
-            len(" Cover ")
+            Name="| {:{name_len}}|",
+            Stmts="{:>9} |",
+            Miss="{:>9} |",
+            Branch="{:>9} |",
+            BrPart="{:>9} |",
+            Cover="{:>{n}} |",
+            Missing="{:>10} |",
         )
-        header_items = [
-            h_form[item].format(item, name_len=max_name, n=max_n) for item in header]
+        max_n = max(len(total_line[header.index("Cover")]) + 6, len(" Cover "))
+        header_items = [h_form[item].format(item, name_len=max_name, n=max_n) for item in header]
         header_str = "".join(header_items)
         rule_str = "|" + " ".join(["- |".rjust(len(header_items[0])-1, '-')] +
             ["-: |".rjust(len(item)-1, '-') for item in header_items[1:]]
@@ -114,7 +122,8 @@ class SummaryReporter:
             h_form.update(dict(Cover="{:>{n}}% |"))
             line_items = [
                 h_form[item].format(str(value).replace("_", "\\_"),
-                name_len=max_name, n=max_n-1) for item, value in zip(header, values)]
+                name_len=max_name, n=max_n-1) for item, value in zip(header, values)
+            ]
             text = "".join(line_items)
             self.writeout(text)
 
@@ -125,12 +134,10 @@ class SummaryReporter:
             if value == '':
                 insert = value
             elif item == "Cover":
-                insert = " **"+str(value)+"%**"
+                insert = f" **{value}%**"
             else:
-                insert = " **"+str(value)+"**"
-            total_line_items += h_form[item].format(
-                insert, name_len=max_name, n=max_n
-                )
+                insert = f" **{value}**"
+            total_line_items += h_form[item].format(insert, name_len=max_name, n=max_n)
         total_row_str = "".join(total_line_items)
         self.writeout(total_row_str)
         for end_line in end_lines:
@@ -188,11 +195,9 @@ class SummaryReporter:
         if sort_idx is None:
             raise ConfigError(f"Invalid sorting option: {self.config.sort!r}")
         if sort_option == "name":
-            lines_values.sort(key=lambda tup: (human_key(tup[0]), tup[1]),
-                reverse=reverse)
+            lines_values.sort(key=lambda tup: (human_key(tup[0]), tup[1]), reverse=reverse)
         else:
-            lines_values.sort(key=lambda tup: (tup[sort_idx], tup[0]),
-                reverse=reverse)
+            lines_values.sort(key=lambda tup: (tup[sort_idx], tup[0]), reverse=reverse)
 
         # calculate total if we had at least one file.
         total_line = ("TOTAL", self.total.n_statements, self.total.n_missing)
@@ -209,8 +214,8 @@ class SummaryReporter:
 
         if self.config.skip_covered and self.skipped_count:
             file_suffix = 's' if self.skipped_count>1 else ''
-            fmt_skip_covered = (f"\n{self.skipped_count} file{file_suffix} skipped due to "
-                + "complete coverage."
+            fmt_skip_covered = (
+                f"\n{self.skipped_count} file{file_suffix} skipped due to complete coverage."
             )
             end_lines.append(fmt_skip_covered)
         if self.config.skip_empty and self.empty_count:
@@ -218,11 +223,12 @@ class SummaryReporter:
             fmt_skip_empty = f"\n{self.empty_count} empty file{file_suffix} skipped."
             end_lines.append(fmt_skip_empty)
 
-        text_format = self.config.output_format or 'text'
-        if text_format.lower() == 'markdown':
-            self._report_markdown(header, lines_values, total_line, end_lines)
+        text_format = self.config.output_format or "text"
+        if text_format == "markdown":
+            formatter = self._report_markdown
         else:
-            self._report_text(header, lines_values, total_line, end_lines)
+            formatter = self._report_text
+        formatter(header, lines_values, total_line, end_lines)
 
         return self.total.n_statements and self.total.pc_covered
 
