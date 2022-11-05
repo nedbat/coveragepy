@@ -96,6 +96,10 @@ class Opts:
         '', '--fail-under', action='store', metavar="MIN", type="float",
         help="Exit with a status of 2 if the total coverage is less than MIN.",
     )
+    output_format = optparse.make_option(
+        '', '--format', action='store', metavar="FORMAT", dest="output_format",
+        help="Output format, either text (default) or markdown",
+    )
     help = optparse.make_option(
         '-h', '--help', action='store_true',
         help="Get help on this command.",
@@ -245,6 +249,7 @@ class CoverageOptionParser(optparse.OptionParser):
             debug=None,
             directory=None,
             fail_under=None,
+            output_format=None,
             help=None,
             ignore_errors=None,
             include=None,
@@ -482,6 +487,7 @@ COMMANDS = {
             Opts.contexts,
             Opts.input_datafile,
             Opts.fail_under,
+            Opts.output_format,
             Opts.ignore_errors,
             Opts.include,
             Opts.omit,
@@ -689,6 +695,7 @@ class CoverageScript:
                 skip_covered=options.skip_covered,
                 skip_empty=options.skip_empty,
                 sort=options.sort,
+                output_format=options.output_format,
                 **report_args
             )
         elif options.action == "annotate":
