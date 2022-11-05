@@ -592,6 +592,10 @@ decimal point in coverage percentages, defaulting to none.
 
 The ``--sort`` option is the name of a column to sort the report by.
 
+The ``--format`` option controls the style of the table.  ``--format=text``
+creates plain text tables as shown above.  ``--format=markdown`` creates
+Markdown tables.
+
 Other common reporting options are described above in :ref:`cmd_reporting`.
 These options can also be set in your .coveragerc file. See
 :ref:`Configuration: [report] <config_report>`.

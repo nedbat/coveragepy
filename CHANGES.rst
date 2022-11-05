@@ -20,9 +20,16 @@ development at the same time, such as 4.5.x and 5.0.
 Unreleased
 ----------
 
+- Text reporting with ``coverage report`` now has a ``--format=`` option.
+  The original style (``--format=text``) is the default.  Now you can also
+  use ``--format=markdown`` to get the table in Markdown format, thanks to
+  Steve Oswald in `pull 1479`_, closing `issue 1418`_.
+
 - Fixed a mis-measurement of a strange use of wildcard alternatives in
   match/case statements, closing `issue 1421`_.
 
+.. _pull 1479: https://github.com/nedbat/coveragepy/pull/1479
+.. _issue 1418: https://github.com/nedbat/coveragepy/issues/1418
 .. _issue 1421: https://github.com/nedbat/coveragepy/issues/1421
 
 
