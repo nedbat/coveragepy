@@ -25,10 +25,14 @@ class SummaryReporter:
         self.total = Numbers(precision=self.config.precision)
         self.fmt_err = "%s   %s: %s"
 
-    def writeout(self, line):
+    def write(self, line):
         """Write a line to the output, adding a newline."""
         self.outfile.write(line.rstrip())
         self.outfile.write("\n")
+
+    def write_items(self, items):
+        """Write a list of strings, joined together."""
+        self.write("".join(items))
 
     def _report_text(self, header, lines_values, total_line, end_lines):
         """Internal method that prints report data in text format.
@@ -43,7 +47,7 @@ class SummaryReporter:
         max_name = max([len(line[0]) for line in lines_values] + [5]) + 1
         max_n = max(len(total_line[header.index("Cover")]) + 2, len(" Cover")) + 1
         max_n = max([max_n] + [len(line[header.index("Cover")]) + 2 for line in lines_values])
-        h_form = dict(
+        formats = dict(
             Name="{:{name_len}}",
             Stmts="{:>7}",
             Miss="{:>7}",
@@ -53,37 +57,35 @@ class SummaryReporter:
             Missing="{:>10}",
         )
         header_items = [
-            h_form[item].format(item, name_len=max_name, n=max_n)
+            formats[item].format(item, name_len=max_name, n=max_n)
             for item in header
         ]
         header_str = "".join(header_items)
         rule = "-" * len(header_str)
 
         # Write the header
-        self.writeout(header_str)
-        self.writeout(rule)
+        self.write(header_str)
+        self.write(rule)
 
-        h_form.update(dict(Cover="{:>{n}}%"), Missing="   {:9}")
+        formats.update(dict(Cover="{:>{n}}%"), Missing="   {:9}")
         for values in lines_values:
             # build string with line values
             line_items = [
-                h_form[item].format(str(value),
+                formats[item].format(str(value),
                 name_len=max_name, n=max_n-1) for item, value in zip(header, values)
             ]
-            text = "".join(line_items)
-            self.writeout(text)
+            self.write_items(line_items)
 
         # Write a TOTAL line
-        self.writeout(rule)
+        self.write(rule)
         line_items = [
-            h_form[item].format(str(value),
+            formats[item].format(str(value),
             name_len=max_name, n=max_n-1) for item, value in zip(header, total_line)
         ]
-        text = "".join(line_items)
-        self.writeout(text)
+        self.write_items(line_items)
 
         for end_line in end_lines:
-            self.writeout(end_line)
+            self.write(end_line)
 
     def _report_markdown(self, header, lines_values, total_line, end_lines):
         """Internal method that prints report data in markdown format.
@@ -97,7 +99,7 @@ class SummaryReporter:
         # Prepare the formatting strings, header, and column sorting.
         max_name = max([len(line[0].replace("_", "\\_")) for line in lines_values] + [9])
         max_name += 1
-        h_form = dict(
+        formats = dict(
             Name="| {:{name_len}}|",
             Stmts="{:>9} |",
             Miss="{:>9} |",
@@ -107,28 +109,27 @@ class SummaryReporter:
             Missing="{:>10} |",
         )
         max_n = max(len(total_line[header.index("Cover")]) + 6, len(" Cover "))
-        header_items = [h_form[item].format(item, name_len=max_name, n=max_n) for item in header]
+        header_items = [formats[item].format(item, name_len=max_name, n=max_n) for item in header]
         header_str = "".join(header_items)
         rule_str = "|" + " ".join(["- |".rjust(len(header_items[0])-1, '-')] +
             ["-: |".rjust(len(item)-1, '-') for item in header_items[1:]]
         )
 
         # Write the header
-        self.writeout(header_str)
-        self.writeout(rule_str)
+        self.write(header_str)
+        self.write(rule_str)
 
         for values in lines_values:
             # build string with line values
-            h_form.update(dict(Cover="{:>{n}}% |"))
+            formats.update(dict(Cover="{:>{n}}% |"))
             line_items = [
-                h_form[item].format(str(value).replace("_", "\\_"),
+                formats[item].format(str(value).replace("_", "\\_"),
                 name_len=max_name, n=max_n-1) for item, value in zip(header, values)
             ]
-            text = "".join(line_items)
-            self.writeout(text)
+            self.write_items(line_items)
 
         # Write the TOTAL line
-        h_form.update(dict(Name="|{:>{name_len}} |", Cover="{:>{n}} |"))
+        formats.update(dict(Name="|{:>{name_len}} |", Cover="{:>{n}} |"))
         total_line_items = []
         for item, value in zip(header, total_line):
             if value == '':
@@ -137,11 +138,11 @@ class SummaryReporter:
                 insert = f" **{value}%**"
             else:
                 insert = f" **{value}**"
-            total_line_items += h_form[item].format(insert, name_len=max_name, n=max_n)
+            total_line_items += formats[item].format(insert, name_len=max_name, n=max_n)
         total_row_str = "".join(total_line_items)
-        self.writeout(total_row_str)
+        self.write(total_row_str)
         for end_line in end_lines:
-            self.writeout(end_line)
+            self.write(end_line)
 
     def report(self, morfs, outfile=None):
         """Writes a report summarizing coverage statistics per module.
