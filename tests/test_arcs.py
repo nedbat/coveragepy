@@ -1362,6 +1362,19 @@ class MatchCaseTest(CoverageTest):
         )
         assert self.stdout() == "None\nno go\ngo: n\n"
 
+    def test_absurd_wildcard(self):
+        # https://github.com/nedbat/coveragepy/issues/1421
+        self.check_coverage("""\
+            def absurd(x):
+                match x:
+                    case (3 | 99 | (999 | _)):
+                        print("default")
+            absurd(5)
+            """,
+            arcz=".1 15 5.  .2 23 34 4.",
+        )
+        assert self.stdout() == "default\n"
+
 
 class OptimizedIfTest(CoverageTest):
     """Tests of if statements being optimized away."""

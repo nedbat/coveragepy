@@ -6,11 +6,3 @@
 # docutils has been going through some turmoil.  Different packages require it,
 # but have different pins.  This seems to satisfy them all:
 #docutils>=0.17,<0.18
-
-# https://github.com/jazzband/pip-tools/issues/1617
-pip<22.1
-
-# requests gets different versions in dev.pip and doc/requirements.pip, not
-# sure why, and they then ask for different versions of certifi, and we can't
-# install, so pin certifi.
-certifi==2022.5.18.1
