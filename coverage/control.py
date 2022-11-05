@@ -923,8 +923,8 @@ class Coverage:
 
         `file` is a file-like object, suitable for writing.
 
-        `output_format` provides options, to print eitehr as plain text, or as
-        markdown code
+        `output_format` determines the format, either "text" (the default),
+        or "markdown".
 
         `include` is a list of file name patterns.  Files that match will be
         included in the report. Files matching `omit` will not be included in
@@ -966,7 +966,7 @@ class Coverage:
             ignore_errors=ignore_errors, report_omit=omit, report_include=include,
             show_missing=show_missing, skip_covered=skip_covered,
             report_contexts=contexts, skip_empty=skip_empty, precision=precision,
-            sort=sort, output_format=output_format,
+            sort=sort, format=output_format,
         ):
             reporter = SummaryReporter(self)
             return reporter.report(morfs, outfile=file)

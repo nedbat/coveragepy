@@ -419,8 +419,7 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         assert self.line_count(report) == 6, report
         squeezed = self.squeezed_lines(report)
         assert squeezed[5] == "1 file skipped due to complete coverage."
-        report = self.get_report(cov, squeeze=False, skip_covered=True,
-            output_format="markdown")
+        report = self.get_report(cov, squeeze=False, skip_covered=True, output_format="markdown")
         # | Name      |    Stmts |     Miss |   Branch |   BrPart |    Cover |
         # |---------- | -------: | -------: | -------: | -------: | -------: |
         # | **TOTAL** |    **3** |    **0** |    **0** |    **0** | **100%** |

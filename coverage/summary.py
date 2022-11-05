@@ -224,7 +224,7 @@ class SummaryReporter:
             fmt_skip_empty = f"\n{self.empty_count} empty file{file_suffix} skipped."
             end_lines.append(fmt_skip_empty)
 
-        text_format = self.config.output_format or "text"
+        text_format = self.config.format or "text"
         if text_format == "markdown":
             formatter = self._report_markdown
         else:
