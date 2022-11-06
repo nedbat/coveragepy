@@ -11,7 +11,7 @@ from coverage.config import CoverageConfig
 from coverage.debug import short_stack
 from coverage.disposition import FileDisposition
 from coverage.exceptions import ConfigError
-from coverage.misc import human_sorted, isolate_module
+from coverage.misc import human_sorted_items, isolate_module
 from coverage.pytracer import PyTracer
 
 os = isolate_module(os)
@@ -367,8 +367,8 @@ class Collector:
             stats = tracer.get_stats()
             if stats:
                 print("\nCoverage.py tracer stats:")
-                for k in human_sorted(stats.keys()):
-                    print(f"{k:>20}: {stats[k]}")
+                for k, v in human_sorted_items(stats.items()):
+                    print(f"{k:>20}: {v}")
         if self.threading:
             self.threading.settrace(None)
 

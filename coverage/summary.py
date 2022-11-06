@@ -6,7 +6,7 @@
 import sys
 
 from coverage.exceptions import ConfigError, NoDataError
-from coverage.misc import human_key
+from coverage.misc import human_sorted_items
 from coverage.report import get_analysis_to_report
 from coverage.results import Numbers
 
@@ -198,9 +198,9 @@ class SummaryReporter:
         if sort_idx is None:
             raise ConfigError(f"Invalid sorting option: {self.config.sort!r}")
         if sort_option == "name":
-            lines_values.sort(key=lambda tup: (human_key(tup[0]), tup[1]), reverse=reverse)
+            lines_values = human_sorted_items(lines_values, reverse=reverse)
         else:
-            lines_values.sort(key=lambda tup: (tup[sort_idx], tup[0]), reverse=reverse)
+            lines_values.sort(key=lambda line: (line[sort_idx], line[0]), reverse=reverse)
 
         # Calculate total if we had at least one file.
         total_line = ["TOTAL", self.total.n_statements, self.total.n_missing]

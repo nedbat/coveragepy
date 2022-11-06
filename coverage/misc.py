@@ -368,7 +368,7 @@ def import_local_file(modname, modfile=None):
     return mod
 
 
-def human_key(s):
+def _human_key(s):
     """Turn a string into a list of string and number chunks.
         "z23a" -> ["z", 23, "a"]
     """
@@ -389,14 +389,17 @@ def human_sorted(strings):
     Returns the sorted list.
 
     """
-    return sorted(strings, key=human_key)
+    return sorted(strings, key=_human_key)
 
 def human_sorted_items(items, reverse=False):
-    """Sort the (string, value) items the way humans expect.
+    """Sort (string, ...) items the way humans expect.
+
+    The elements of `items` can be any tuple/list. They'll be sorted by the
+    first element (a string), with ties broken by the remaining elements.
 
     Returns the sorted list of items.
     """
-    return sorted(items, key=lambda pair: (human_key(pair[0]), pair[1]), reverse=reverse)
+    return sorted(items, key=lambda item: (_human_key(item[0]), *item[1:]), reverse=reverse)
 
 
 def plural(n, thing="", things=""):
