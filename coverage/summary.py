@@ -78,7 +78,9 @@ class SummaryReporter:
             self.write_items(line_items)
 
         # Write a TOTAL line
-        self.write(rule)
+        if lines_values:
+            self.write(rule)
+
         line_items = [
             formats[item].format(str(value),
             name_len=max_name, n=max_n-1) for item, value in zip(header, total_line)

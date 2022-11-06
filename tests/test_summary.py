@@ -409,17 +409,18 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         assert self.stdout() == ""
         report = self.get_report(cov, skip_covered=True)
 
-        # Name      Stmts   Miss Branch BrPart  Cover
-        # -------------------------------------------
+        # Name    Stmts   Miss Branch BrPart  Cover
         # -----------------------------------------
         # TOTAL       3      0      0      0   100%
         #
         # 1 file skipped due to complete coverage.
 
-        assert self.line_count(report) == 6, report
+        assert self.line_count(report) == 5, report
         squeezed = self.squeezed_lines(report)
-        assert squeezed[5] == "1 file skipped due to complete coverage."
+        assert squeezed[4] == "1 file skipped due to complete coverage."
+
         report = self.get_report(cov, squeeze=False, skip_covered=True, output_format="markdown")
+
         # | Name      |    Stmts |     Miss |   Branch |   BrPart |    Cover |
         # |---------- | -------: | -------: | -------: | -------: | -------: |
         # | **TOTAL** |    **3** |    **0** |    **0** |    **0** | **100%** |
@@ -455,16 +456,15 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
 
         # Name    Stmts   Miss Branch BrPart  Cover
         # -----------------------------------------
-        # -----------------------------------------
         # TOTAL       3      0      0      0   100%
         #
         # 1 file skipped due to complete coverage.
 
-        assert self.line_count(report) == 6, report
+        assert self.line_count(report) == 5, report
         lines = self.report_lines(report)
         assert lines[0] == "Name    Stmts   Miss Branch BrPart  Cover"
         squeezed = self.squeezed_lines(report)
-        assert squeezed[5] == "1 file skipped due to complete coverage."
+        assert squeezed[4] == "1 file skipped due to complete coverage."
 
     def test_report_skip_covered_no_data(self):
         cov = coverage.Coverage()
@@ -510,14 +510,13 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
 
         # Name             Stmts   Miss  Cover
         # ------------------------------------
-        # ------------------------------------
         # TOTAL                0      0   100%
         #
         # 1 empty file skipped.
 
-        assert self.line_count(report) == 6, report
-        assert report.split("\n")[3] == "TOTAL 0 0 100%"
-        assert report.split("\n")[5] == "1 empty file skipped."
+        assert self.line_count(report) == 5, report
+        assert report.split("\n")[2] == "TOTAL 0 0 100%"
+        assert report.split("\n")[4] == "1 empty file skipped."
 
     def test_report_precision(self):
         self.make_file(".coveragerc", """\

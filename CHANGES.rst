@@ -32,6 +32,9 @@ Unreleased
 - An empty file has a coverage total of 100%, but used to fail with
   ``--fail-under``.  This has been fixed, closing `issue 1470`_.
 
+- The text report table no longer writes out two separator lines if there are
+  no files listed in the table.  One is plenty.
+
 - Fixed a mis-measurement of a strange use of wildcard alternatives in
   match/case statements, closing `issue 1421`_.
 
