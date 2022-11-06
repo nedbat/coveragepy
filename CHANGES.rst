@@ -29,12 +29,16 @@ Unreleased
   - Using ``--format=total`` will write a single total number to the
     output.  This can be useful for making badges or writing status updates.
 
+- An empty file has a coverage total of 100%, but used to fail with
+  ``--fail-under``.  This has been fixed, closing `issue 1470`_.
+
 - Fixed a mis-measurement of a strange use of wildcard alternatives in
   match/case statements, closing `issue 1421`_.
 
 .. _pull 1479: https://github.com/nedbat/coveragepy/pull/1479
 .. _issue 1418: https://github.com/nedbat/coveragepy/issues/1418
 .. _issue 1421: https://github.com/nedbat/coveragepy/issues/1421
+.. _issue 1470: https://github.com/nedbat/coveragepy/issues/1470
 
 
 .. _changes_6-6-0b1:

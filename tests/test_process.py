@@ -1093,7 +1093,8 @@ class FailUnderEmptyFilesTest(CoverageTest):
         st, _ = self.run_command_status("coverage run empty.py")
         assert st == 0
         st, _ = self.run_command_status("coverage report")
-        assert st == 2
+        # An empty file is marked as 100% covered, so this is ok.
+        assert st == 0
 
 
 @pytest.mark.skipif(env.WINDOWS, reason="Windows can't delete the directory in use.")

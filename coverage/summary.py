@@ -165,7 +165,7 @@ class SummaryReporter:
         else:
             self.tabular_report()
 
-        return self.total.n_statements and self.total.pc_covered
+        return self.total.pc_covered
 
     def tabular_report(self):
         """Writes tabular report formats."""
