@@ -37,10 +37,10 @@ class SummaryReporter:
     def _report_text(self, header, lines_values, total_line, end_lines):
         """Internal method that prints report data in text format.
 
-        `header` is a tuple with captions.
-        `lines_values` is list of tuples of sortable values.
-        `total_line` is a tuple with values of the total line.
-        `end_lines` is a tuple of ending lines with information about skipped files.
+        `header` is a list with captions.
+        `lines_values` is list of lists of sortable values.
+        `total_line` is a list with values of the total line.
+        `end_lines` is a list of ending lines with information about skipped files.
 
         """
         # Prepare the formatting strings, header, and column sorting.
@@ -90,15 +90,15 @@ class SummaryReporter:
     def _report_markdown(self, header, lines_values, total_line, end_lines):
         """Internal method that prints report data in markdown format.
 
-        `header` is a tuple with captions.
-        `lines_values` is a sorted list of tuples containing coverage information.
-        `total_line` is a tuple with values of the total line.
-        `end_lines` is a tuple of ending lines with information about skipped files.
+        `header` is a list with captions.
+        `lines_values` is a sorted list of lists containing coverage information.
+        `total_line` is a list with values of the total line.
+        `end_lines` is a list of ending lines with information about skipped files.
 
         """
         # Prepare the formatting strings, header, and column sorting.
-        max_name = max([len(line[0].replace("_", "\\_")) for line in lines_values] + [9])
-        max_name += 1
+        max_name = max((len(line[0].replace("_", "\\_")) for line in lines_values), default=0)
+        max_name = max(max_name, len("**TOTAL**")) + 1
         formats = dict(
             Name="| {:{name_len}}|",
             Stmts="{:>9} |",
@@ -123,8 +123,8 @@ class SummaryReporter:
             # build string with line values
             formats.update(dict(Cover="{:>{n}}% |"))
             line_items = [
-                formats[item].format(str(value).replace("_", "\\_"),
-                name_len=max_name, n=max_n-1) for item, value in zip(header, values)
+                formats[item].format(str(value).replace("_", "\\_"), name_len=max_name, n=max_n-1)
+                for item, value in zip(header, values)
             ]
             self.write_items(line_items)
 
@@ -132,15 +132,14 @@ class SummaryReporter:
         formats.update(dict(Name="|{:>{name_len}} |", Cover="{:>{n}} |"))
         total_line_items = []
         for item, value in zip(header, total_line):
-            if value == '':
+            if value == "":
                 insert = value
             elif item == "Cover":
                 insert = f" **{value}%**"
             else:
                 insert = f" **{value}**"
             total_line_items += formats[item].format(insert, name_len=max_name, n=max_n)
-        total_row_str = "".join(total_line_items)
-        self.write(total_row_str)
+        self.write_items(total_line_items)
         for end_line in end_lines:
             self.write(end_line)
 
@@ -157,34 +156,37 @@ class SummaryReporter:
         for fr, analysis in get_analysis_to_report(self.coverage, morfs):
             self.report_one_file(fr, analysis)
 
-        # Prepare the formatting strings, header, and column sorting.
-        header = ("Name", "Stmts", "Miss",)
+        if not self.total.n_files and not self.skipped_count:
+            raise NoDataError("No data to report.")
+
+        # Prepare the header line and column sorting.
+        header = ["Name", "Stmts", "Miss"]
         if self.branches:
-            header += ("Branch", "BrPart",)
-        header += ("Cover",)
+            header += ["Branch", "BrPart"]
+        header += ["Cover"]
         if self.config.show_missing:
-            header += ("Missing",)
+            header += ["Missing"]
 
         column_order = dict(name=0, stmts=1, miss=2, cover=-1)
         if self.branches:
             column_order.update(dict(branch=3, brpart=4))
 
-        # `lines_values` is list of tuples of sortable values.
+        # `lines_values` is list of lists of sortable values.
         lines_values = []
 
         for (fr, analysis) in self.fr_analysis:
             nums = analysis.numbers
 
-            args = (fr.relative_filename(), nums.n_statements, nums.n_missing)
+            args = [fr.relative_filename(), nums.n_statements, nums.n_missing]
             if self.branches:
-                args += (nums.n_branches, nums.n_partial_branches)
-            args += (nums.pc_covered_str,)
+                args += [nums.n_branches, nums.n_partial_branches]
+            args += [nums.pc_covered_str]
             if self.config.show_missing:
-                args += (analysis.missing_formatted(branches=True),)
-            args += (nums.pc_covered,)
+                args += [analysis.missing_formatted(branches=True)]
+            args += [nums.pc_covered]
             lines_values.append(args)
 
-        # line-sorting.
+        # Line sorting.
         sort_option = (self.config.sort or "name").lower()
         reverse = False
         if sort_option[0] == '-':
@@ -200,29 +202,24 @@ class SummaryReporter:
         else:
             lines_values.sort(key=lambda tup: (tup[sort_idx], tup[0]), reverse=reverse)
 
-        # calculate total if we had at least one file.
-        total_line = ("TOTAL", self.total.n_statements, self.total.n_missing)
+        # Calculate total if we had at least one file.
+        total_line = ["TOTAL", self.total.n_statements, self.total.n_missing]
         if self.branches:
-            total_line += (self.total.n_branches, self.total.n_partial_branches)
-        total_line += (self.total.pc_covered_str,)
+            total_line += [self.total.n_branches, self.total.n_partial_branches]
+        total_line += [self.total.pc_covered_str]
         if self.config.show_missing:
-            total_line += ("",)
+            total_line += [""]
 
-        # create other final lines
+        # Create other final lines.
         end_lines = []
-        if not self.total.n_files and not self.skipped_count:
-            raise NoDataError("No data to report.")
-
         if self.config.skip_covered and self.skipped_count:
             file_suffix = 's' if self.skipped_count>1 else ''
-            fmt_skip_covered = (
+            end_lines.append(
                 f"\n{self.skipped_count} file{file_suffix} skipped due to complete coverage."
             )
-            end_lines.append(fmt_skip_covered)
         if self.config.skip_empty and self.empty_count:
-            file_suffix = 's' if self.empty_count>1 else ''
-            fmt_skip_empty = f"\n{self.empty_count} empty file{file_suffix} skipped."
-            end_lines.append(fmt_skip_empty)
+            file_suffix = 's' if self.empty_count > 1 else ''
+            end_lines.append(f"\n{self.empty_count} empty file{file_suffix} skipped.")
 
         text_format = self.config.format or "text"
         if text_format == "markdown":
