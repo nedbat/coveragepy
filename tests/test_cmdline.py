@@ -585,6 +585,11 @@ class CmdLineTest(BaseCmdLineTest):
             cov.load()
             cov.report(show_missing=None)
             """)
+        self.cmd_executes("report --format=markdown", """\
+            cov = Coverage()
+            cov.load()
+            cov.report(output_format="markdown")
+            """)
 
     def test_run(self):
         # coverage run [-p] [-L] [--timid] MODULE.py [ARG1 ARG2 ...]

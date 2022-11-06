@@ -20,11 +20,12 @@ class SummaryReporter:
         self.branches = coverage.get_data().has_arcs()
         self.outfile = None
         self.output_format = self.config.format or "text"
+        if self.output_format not in {"text", "markdown", "total"}:
+            raise ConfigError(f"Unknown report format choice: {self.output_format!r}")
         self.fr_analysis = []
         self.skipped_count = 0
         self.empty_count = 0
         self.total = Numbers(precision=self.config.precision)
-        self.fmt_err = "%s   %s: %s"
 
     def write(self, line):
         """Write a line to the output, adding a newline."""

@@ -1001,3 +1001,9 @@ class SummaryReporterConfigurationTest(CoverageTest):
         msg = "Invalid sorting option: 'Xyzzy'"
         with pytest.raises(ConfigError, match=msg):
             self.get_summary_text(('report:sort', 'Xyzzy'))
+
+    def test_report_with_invalid_format(self):
+        # Ask for an invalid format.
+        msg = "Unknown report format choice: 'xyzzy'"
+        with pytest.raises(ConfigError, match=msg):
+            self.get_summary_text(('report:format', 'xyzzy'))
