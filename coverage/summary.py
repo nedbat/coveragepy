@@ -19,6 +19,7 @@ class SummaryReporter:
         self.config = self.coverage.config
         self.branches = coverage.get_data().has_arcs()
         self.outfile = None
+        self.output_format = self.config.format or "text"
         self.fr_analysis = []
         self.skipped_count = 0
         self.empty_count = 0
@@ -159,6 +160,15 @@ class SummaryReporter:
         if not self.total.n_files and not self.skipped_count:
             raise NoDataError("No data to report.")
 
+        if self.output_format == "total":
+            self.write(self.total.pc_covered_str)
+        else:
+            self.tabular_report()
+
+        return self.total.n_statements and self.total.pc_covered
+
+    def tabular_report(self):
+        """Writes tabular report formats."""
         # Prepare the header line and column sorting.
         header = ["Name", "Stmts", "Miss"]
         if self.branches:
@@ -221,14 +231,11 @@ class SummaryReporter:
             file_suffix = 's' if self.empty_count > 1 else ''
             end_lines.append(f"\n{self.empty_count} empty file{file_suffix} skipped.")
 
-        text_format = self.config.format or "text"
-        if text_format == "markdown":
+        if self.output_format == "markdown":
             formatter = self._report_markdown
         else:
             formatter = self._report_text
         formatter(header, lines_values, total_line, end_lines)
-
-        return self.total.n_statements and self.total.pc_covered
 
     def report_one_file(self, fr, analysis):
         """Report on just one file, the callback from report()."""

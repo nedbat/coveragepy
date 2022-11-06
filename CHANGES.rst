@@ -21,9 +21,13 @@ Unreleased
 ----------
 
 - Text reporting with ``coverage report`` now has a ``--format=`` option.
-  The original style (``--format=text``) is the default.  Now you can also
-  use ``--format=markdown`` to get the table in Markdown format, thanks to
-  Steve Oswald in `pull 1479`_, closing `issue 1418`_.
+  The original style (``--format=text``) is the default.
+
+  - Using ``--format=markdown`` will write the table in Markdown format, thanks
+    to Steve Oswald in `pull 1479`_, closing `issue 1418`_.
+
+  - Using ``--format=total`` will write a single total number to the
+    output.  This can be useful for making badges or writing status updates.
 
 - Fixed a mis-measurement of a strange use of wildcard alternatives in
   match/case statements, closing `issue 1421`_.

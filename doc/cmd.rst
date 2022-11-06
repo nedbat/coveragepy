@@ -518,7 +518,8 @@ as a percentage.
                             file. Defaults to '.coverage'. [env: COVERAGE_FILE]
       --fail-under=MIN      Exit with a status of 2 if the total coverage is less
                             than MIN.
-      --format=FORMAT       Output format, either text (default) or markdown
+      --format=FORMAT       Output format, either text (default), markdown, or
+                            total.
       -i, --ignore-errors   Ignore errors while reading source files.
       --include=PAT1,PAT2,...
                             Include only files whose paths match one of these
@@ -541,7 +542,7 @@ as a percentage.
       --rcfile=RCFILE       Specify configuration file. By default '.coveragerc',
                             'setup.cfg', 'tox.ini', and 'pyproject.toml' are
                             tried. [env: COVERAGE_RCFILE]
-.. [[[end]]] (checksum: 8c671de502a388159689082d906f786a)
+.. [[[end]]] (checksum: 167272a29d9e7eb017a592a0e0747a06)
 
 The ``-m`` flag also shows the line numbers of missing statements::
 
@@ -592,9 +593,11 @@ decimal point in coverage percentages, defaulting to none.
 
 The ``--sort`` option is the name of a column to sort the report by.
 
-The ``--format`` option controls the style of the table.  ``--format=text``
+The ``--format`` option controls the style of the report.  ``--format=text``
 creates plain text tables as shown above.  ``--format=markdown`` creates
-Markdown tables.
+Markdown tables.  ``--format=total`` writes out a single number, the total
+coverage percentage as shown at the end of the tables, but without a percent
+sign.
 
 Other common reporting options are described above in :ref:`cmd_reporting`.
 These options can also be set in your .coveragerc file. See

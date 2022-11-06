@@ -439,6 +439,9 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         squeezed = self.squeezed_lines(report)
         assert squeezed[4] == "1 file skipped due to complete coverage."
 
+        total = self.get_report(cov, output_format="total", skip_covered=True)
+        assert total == "100\n"
+
     def test_report_skip_covered_longfilename(self):
         self.make_file("long_______________filename.py", """
             def foo():
@@ -829,7 +832,7 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         cov = coverage.Coverage(source=["."])
         self.start_import_stop(cov, "mymissing")
         assert self.stdout() == 'y\nz\n'
-        report = self.get_report(cov,squeeze=False, output_format="markdown", show_missing=True)
+        report = self.get_report(cov, squeeze=False, output_format="markdown", show_missing=True)
 
         # | Name         |    Stmts |     Miss |   Cover |   Missing |
         # |------------- | -------: | -------: | ------: | --------: |
@@ -839,6 +842,11 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         report_lines = report.split("\n")
         assert report_lines[2] == "| mymissing.py |       14 |        3 |     79% |   3-4, 10 |"
         assert report_lines[3] == "|    **TOTAL** |   **14** |    **3** | **79%** |           |"
+
+        assert self.get_report(cov, output_format="total") == "79\n"
+        assert self.get_report(cov, output_format="total", precision=2) == "78.57\n"
+        assert self.get_report(cov, output_format="total", precision=4) == "78.5714\n"
+
 
 class ReportingReturnValueTest(CoverageTest):
     """Tests of reporting functions returning values."""

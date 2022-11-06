@@ -98,7 +98,7 @@ class Opts:
     )
     format = optparse.make_option(
         '', '--format', action='store', metavar="FORMAT",
-        help="Output format, either text (default) or markdown",
+        help="Output format, either text (default), markdown, or total.",
     )
     help = optparse.make_option(
         '-h', '--help', action='store_true',

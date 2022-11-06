@@ -924,7 +924,7 @@ class Coverage:
         `file` is a file-like object, suitable for writing.
 
         `output_format` determines the format, either "text" (the default),
-        or "markdown".
+        "markdown", or "total".
 
         `include` is a list of file name patterns.  Files that match will be
         included in the report. Files matching `omit` will not be included in
