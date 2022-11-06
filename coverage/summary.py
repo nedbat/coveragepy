@@ -150,8 +150,7 @@ class SummaryReporter:
     def report(self, morfs, outfile=None):
         """Writes a report summarizing coverage statistics per module.
 
-        `outfile` is a file object to write the summary to. It must be opened
-        for native strings (bytes on Python 2, Unicode on Python 3).
+        `outfile` is a text-mode file object to write the summary to.
 
         """
         self.outfile = outfile or sys.stdout

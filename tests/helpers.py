@@ -62,8 +62,8 @@ def make_file(filename, text="", bytes=b"", newline=None):
     `filename` is the relative path to the file, including directories if
     desired, which will be created if need be.
 
-    `text` is the content to create in the file, a native string (bytes in
-    Python 2, unicode in Python 3), or `bytes` are the bytes to write.
+    `text` is the text content to create in the file, or `bytes` are the
+    bytes to write.
 
     If `newline` is provided, it is a string that will be used as the line
     endings in the created file, otherwise the line endings are as provided
