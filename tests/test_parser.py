@@ -3,6 +3,7 @@
 
 """Tests for coverage.py's code parsing."""
 
+import ast
 import os.path
 import textwrap
 import warnings
@@ -11,7 +12,7 @@ import pytest
 
 from coverage import env
 from coverage.exceptions import NotPython
-from coverage.parser import ast_dump, ast_parse, PythonParser
+from coverage.parser import ast_dump, PythonParser
 
 from tests.coveragetest import CoverageTest, TESTS_DIR
 from tests.helpers import arcz_to_arcs, re_lines, xfail_pypy_3749
@@ -530,7 +531,7 @@ def test_ast_dump():
             with warnings.catch_warnings():
                 # stress_phystoken.tok has deprecation warnings, suppress them.
                 warnings.filterwarnings("ignore", message=r".*invalid escape sequence",)
-                ast_root = ast_parse(source)
+                ast_root = ast.parse(source)
         result = []
         ast_dump(ast_root, print=result.append)
         if num_lines < 100:

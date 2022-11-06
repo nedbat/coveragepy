@@ -16,7 +16,6 @@ from coverage import env
 from coverage.exceptions import CoverageException, _ExceptionDuringRun, NoCode, NoSource
 from coverage.files import canonical_filename, python_reported_file
 from coverage.misc import isolate_module
-from coverage.phystokens import compile_unicode
 from coverage.python import get_python_source
 
 os = isolate_module(os)
@@ -274,8 +273,7 @@ def make_code_from_py(filename):
     except (OSError, NoSource) as exc:
         raise NoSource(f"No file to run: '{filename}'") from exc
 
-    code = compile_unicode(source, filename, "exec")
-    return code
+    return compile(source, filename, "exec")
 
 
 def make_code_from_pyc(filename):

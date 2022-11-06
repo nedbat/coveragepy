@@ -184,8 +184,6 @@ class CachedTokenizer:
 generate_tokens = CachedTokenizer().generate_tokens
 
 
-COOKIE_RE = re.compile(r"^[ \t]*#.*coding[:=][ \t]*([-\w.]+)", flags=re.MULTILINE)
-
 @contract(source='bytes')
 def source_encoding(source):
     """Determine the encoding for `source`, according to PEP 263.
@@ -197,31 +195,3 @@ def source_encoding(source):
     """
     readline = iter(source.splitlines(True)).__next__
     return tokenize.detect_encoding(readline)[0]
-
-
-@contract(source='unicode')
-def compile_unicode(source, filename, mode):
-    """Just like the `compile` builtin, but works on any Unicode string.
-
-    Python 2's compile() builtin has a stupid restriction: if the source string
-    is Unicode, then it may not have a encoding declaration in it.  Why not?
-    Who knows!  It also decodes to utf-8, and then tries to interpret those
-    utf-8 bytes according to the encoding declaration.  Why? Who knows!
-
-    This function neuters the coding declaration, and compiles it.
-
-    """
-    source = neuter_encoding_declaration(source)
-    code = compile(source, filename, mode)
-    return code
-
-
-@contract(source='unicode', returns='unicode')
-def neuter_encoding_declaration(source):
-    """Return `source`, with any encoding declaration neutered."""
-    if COOKIE_RE.search(source):
-        source_lines = source.splitlines(True)
-        for lineno in range(min(2, len(source_lines))):
-            source_lines[lineno] = COOKIE_RE.sub("# (deleted declaration)", source_lines[lineno])
-        source = "".join(source_lines)
-    return source

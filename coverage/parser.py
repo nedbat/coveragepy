@@ -15,7 +15,7 @@ from coverage.bytecode import code_objects
 from coverage.debug import short_stack
 from coverage.exceptions import NoSource, NotPython, _StopEverything
 from coverage.misc import contract, join_regex, new_contract, nice_pair, one_of
-from coverage.phystokens import compile_unicode, generate_tokens, neuter_encoding_declaration
+from coverage.phystokens import generate_tokens
 
 
 class PythonParser:
@@ -359,7 +359,7 @@ class ByteParser:
             self.code = code
         else:
             try:
-                self.code = compile_unicode(text, filename, "exec")
+                self.code = compile(text, filename, "exec")
             except SyntaxError as synerr:
                 raise NotPython(
                     "Couldn't parse '%s' as Python source: '%s' at line %d" % (
@@ -624,17 +624,13 @@ class NodeList:
 # TODO: the cause messages have too many commas.
 # TODO: Shouldn't the cause messages join with "and" instead of "or"?
 
-def ast_parse(text):
-    """How we create an AST parse."""
-    return ast.parse(neuter_encoding_declaration(text))
-
 
 class AstArcAnalyzer:
     """Analyze source text with an AST to find executable code paths."""
 
     @contract(text='unicode', statements=set)
     def __init__(self, text, statements, multiline):
-        self.root_node = ast_parse(text)
+        self.root_node = ast.parse(text)
         # TODO: I think this is happening in too many places.
         self.statements = {multiline.get(l, l) for l in statements}
         self.multiline = multiline
