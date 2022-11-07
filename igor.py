@@ -210,18 +210,15 @@ def run_tests_with_coverage(tracer, *runner_args):
 
 
 def do_combine_html():
-    """Combine data from a meta-coverage run, and make the HTML and XML reports."""
+    """Combine data from a meta-coverage run, and make the HTML report."""
     import coverage
     os.environ['COVERAGE_HOME'] = os.getcwd()
-    os.environ['COVERAGE_METAFILE'] = os.path.abspath(".metacov")
     cov = coverage.Coverage(config_file="metacov.ini")
     cov.load()
     cov.combine()
     cov.save()
     show_contexts = bool(os.environ.get('COVERAGE_DYNCTX') or os.environ.get('COVERAGE_CONTEXT'))
     cov.html_report(show_contexts=show_contexts)
-    cov.xml_report()
-    cov.json_report(pretty_print=True)
 
 
 def do_test_with_tracer(tracer, *runner_args):

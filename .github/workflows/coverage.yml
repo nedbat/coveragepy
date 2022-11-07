@@ -123,7 +123,6 @@ jobs:
         id: combine
         env:
           COVERAGE_RCFILE: "metacov.ini"
-          COVERAGE_METAFILE: ".metacov"
           COVERAGE_CONTEXT: "yes"
         run: |
           set -xe
