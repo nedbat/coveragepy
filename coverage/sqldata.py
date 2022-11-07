@@ -4,7 +4,6 @@
 """SQLite coverage data."""
 
 import collections
-import datetime
 import functools
 import glob
 import itertools
@@ -56,7 +55,6 @@ CREATE TABLE meta (
     --  'has_arcs' boolean      -- Is this data recording branches?
     --  'sys_argv' text         -- The coverage command line that recorded the data.
     --  'version' text          -- The version of coverage.py that made the file.
-    --  'when' text             -- Datetime when the file was created.
 );
 
 CREATE TABLE file (
@@ -305,7 +303,6 @@ class CoverageData(SimpleReprMixin):
             [
                 ("sys_argv", str(getattr(sys, "argv", None))),
                 ("version", __version__),
-                ("when", datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")),
             ]
         )
 

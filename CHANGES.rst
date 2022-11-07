@@ -29,6 +29,11 @@ Unreleased
   - Using ``--format=total`` will write a single total number to the
     output.  This can be useful for making badges or writing status updates.
 
+- Combining data files with ``coverage combine`` now quickly hashes the data
+  files to skip files that provide no new information.  This can reduce the
+  time needed.  For coverage.py's own test suite, combining was about 17%
+  faster.
+
 - An empty file has a coverage total of 100%, but used to fail with
   ``--fail-under``.  This has been fixed, closing `issue 1470`_.
 

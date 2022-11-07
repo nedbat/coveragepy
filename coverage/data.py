@@ -11,6 +11,7 @@ imports working.
 """
 
 import glob
+import hashlib
 import os.path
 
 from coverage.exceptions import CoverageException, NoDataError
@@ -110,7 +111,9 @@ def combine_parallel_data(
     if strict and not files_to_combine:
         raise NoDataError("No data to combine")
 
-    files_combined = 0
+    file_hashes = set()
+    combined_any = False
+
     for f in files_to_combine:
         if f == data.data_filename():
             # Sometimes we are combining into a file which is one of the
@@ -118,34 +121,50 @@ def combine_parallel_data(
             if data._debug.should('dataio'):
                 data._debug.write(f"Skipping combining ourself: {f!r}")
             continue
-        if data._debug.should('dataio'):
-            data._debug.write(f"Combining data file {f!r}")
-        try:
-            new_data = CoverageData(f, debug=data._debug)
-            new_data.read()
-        except CoverageException as exc:
-            if data._warn:
-                # The CoverageException has the file name in it, so just
-                # use the message as the warning.
-                data._warn(str(exc))
-        else:
-            data.update(new_data, aliases=aliases)
-            files_combined += 1
-            if message:
-                try:
-                    file_name = os.path.relpath(f)
-                except ValueError:
-                    # ValueError can be raised under Windows when os.getcwd() returns a
-                    # folder from a different drive than the drive of f, in which case
-                    # we print the original value of f instead of its relative path
-                    file_name = f
-                message(f"Combined data file {file_name}")
-            if not keep:
-                if data._debug.should('dataio'):
-                    data._debug.write(f"Deleting combined data file {f!r}")
-                file_be_gone(f)
 
-    if strict and not files_combined:
+        try:
+            rel_file_name = os.path.relpath(f)
+        except ValueError:
+            # ValueError can be raised under Windows when os.getcwd() returns a
+            # folder from a different drive than the drive of f, in which case
+            # we print the original value of f instead of its relative path
+            rel_file_name = f
+
+        with open(f, "rb") as fobj:
+            hasher = hashlib.new("sha3_256")
+            hasher.update(fobj.read())
+            sha = hasher.digest()
+            combine_this_one = sha not in file_hashes
+
+        delete_this_one = not keep
+        if combine_this_one:
+            if data._debug.should('dataio'):
+                data._debug.write(f"Combining data file {f!r}")
+            file_hashes.add(sha)
+            try:
+                new_data = CoverageData(f, debug=data._debug)
+                new_data.read()
+            except CoverageException as exc:
+                if data._warn:
+                    # The CoverageException has the file name in it, so just
+                    # use the message as the warning.
+                    data._warn(str(exc))
+                delete_this_one = False
+            else:
+                data.update(new_data, aliases=aliases)
+                combined_any = True
+                if message:
+                    message(f"Combined data file {rel_file_name}")
+        else:
+            if message:
+                message(f"Skipping duplicate data {rel_file_name}")
+
+        if delete_this_one:
+            if data._debug.should('dataio'):
+                data._debug.write(f"Deleting data file {f!r}")
+            file_be_gone(f)
+
+    if strict and not combined_any:
         raise NoDataError("No usable data files")
 
 

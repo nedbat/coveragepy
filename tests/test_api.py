@@ -1362,7 +1362,7 @@ class CombiningTest(CoverageTest):
 
         # Make bogus data files.
         self.make_file(".coverage.bad1", "This isn't a coverage data file.")
-        self.make_file(".coverage.bad2", "This isn't a coverage data file.")
+        self.make_file(".coverage.bad2", "This isn't a coverage data file either.")
 
         # Combine the parallel coverage data files into .coverage, but nothing is readable.
         cov = coverage.Coverage()

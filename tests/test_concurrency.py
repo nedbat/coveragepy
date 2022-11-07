@@ -484,9 +484,13 @@ class MultiprocessingTest(CoverageTest):
             out_lines = out.splitlines()
             assert len(out_lines) == nprocs + 1
             assert all(
-                re.fullmatch(r"Combined data file \.coverage\..*\.\d+\.\d+", line)
+                re.fullmatch(
+                    r"(Combined data file|Skipping duplicate data) \.coverage\..*\.\d+\.\d+",
+                    line
+                )
                 for line in out_lines
             )
+            assert len(glob.glob(".coverage.*")) == 0
             out = self.run_command("coverage report -m")
 
             last_line = self.squeezed_lines(out)[-1]
