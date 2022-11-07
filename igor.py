@@ -205,9 +205,7 @@ def run_tests_with_coverage(tracer, *runner_args):
         cov.stop()
         os.remove(pth_path)
 
-    cov.combine()
     cov.save()
-
     return status
 
 
