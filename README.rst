@@ -17,8 +17,8 @@ Code coverage testing for Python.
 |  |test-status| |quality-status| |docs| |metacov|
 |  |kit| |downloads| |format| |repos|
 |  |stars| |forks| |contributors|
-|  |tidelift| |core-infrastructure| |open-ssf|
-|  |sponsor| |twitter-coveragepy| |twitter-nedbat|
+|  |core-infrastructure| |open-ssf| |snyk|
+|  |tidelift| |sponsor| |twitter-coveragepy| |twitter-nedbat|
 
 Coverage.py measures code coverage, typically during test execution. It uses
 the code analysis tools and tracing hooks provided in the Python standard
@@ -174,3 +174,6 @@ Licensed under the `Apache 2.0 License`_.  For details, see `NOTICE.txt`_.
 .. |open-ssf| image:: https://api.securityscorecards.dev/projects/github.com/nedbat/coveragepy/badge
     :target: https://deps.dev/pypi/coverage
     :alt: OpenSSF Scorecard
+.. |snyk| image:: https://snyk.io/advisor/python/coverage/badge.svg
+    :target: https://snyk.io/advisor/python/coverage
+    :alt: Snyk package health
