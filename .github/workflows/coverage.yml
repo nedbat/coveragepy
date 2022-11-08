@@ -94,6 +94,10 @@ jobs:
     name: "Combine coverage data"
     needs: coverage
     runs-on: ubuntu-latest
+    outputs:
+      total: ${{ steps.total.outputs.total }}
+    env:
+      COVERAGE_RCFILE: "metacov.ini"
 
     steps:
       - name: "Check out the repo"
@@ -102,7 +106,7 @@ jobs:
       - name: "Set up Python"
         uses: "actions/setup-python@v4"
         with:
-          python-version: "3.8"
+          python-version: "3.7" # Minimum of PYVERSIONS
           cache: pip
           cache-dependency-path: 'requirements/*.pip'
 
@@ -122,12 +126,10 @@ jobs:
       - name: "Combine and report"
         id: combine
         env:
-          COVERAGE_RCFILE: "metacov.ini"
           COVERAGE_CONTEXT: "yes"
         run: |
           set -xe
-          python -m igor combine_html
-          python -m coverage json
+          python igor.py combine_html
 
       - name: "Upload HTML report"
         uses: actions/upload-artifact@v3
@@ -135,11 +137,10 @@ jobs:
           name: html_report
           path: htmlcov
 
-      - name: "Upload JSON report"
-        uses: actions/upload-artifact@v3
-        with:
-          name: json_report
-          path: coverage.json
+      - name: "Get total"
+        id: total
+        run: |
+          echo "total=$(python -m coverage report --format=total)" >> $GITHUB_OUTPUT
 
   publish:
     name: "Publish coverage report"
@@ -158,21 +159,15 @@ jobs:
           git config user.email ned@nedbatchelder.com
           git checkout main
 
-      - name: "Download coverage JSON report"
-        uses: actions/download-artifact@v3
-        with:
-          name: json_report
-
       - name: "Compute info for later steps"
         id: info
         run: |
           set -xe
-          export TOTAL=$(python -c "import json;print(json.load(open('coverage.json'))['totals']['percent_covered_display'])")
           export SHA10=$(echo ${{ github.sha }} | cut -c 1-10)
           export SLUG=$(date +'%Y%m%d')_$SHA10
           export REPORT_DIR=reports/$SLUG/htmlcov
           export REF="${{ github.ref }}"
-          echo "total=$TOTAL" >> $GITHUB_ENV
+          echo "total=${{ needs.combine.outputs.total }}" >> $GITHUB_ENV
           echo "sha10=$SHA10" >> $GITHUB_ENV
           echo "slug=$SLUG" >> $GITHUB_ENV
           echo "report_dir=$REPORT_DIR" >> $GITHUB_ENV
