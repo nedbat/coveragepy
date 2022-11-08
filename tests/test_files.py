@@ -380,6 +380,13 @@ class PathAliasesTest(CoverageTest):
         aliases.add('/home/*/src', './mysrc')
         self.assert_unchanged(aliases, '/home/foo/srcetc')
 
+    def test_no_dotslash(self, rel_yn):
+        # The result shouldn't start with "./" if the map result didn't.
+        aliases = PathAliases(relative=rel_yn)
+        aliases.add('*/project', '.')
+        # Because the map result has no slash, the actual result is os-dependent.
+        self.assert_mapped(aliases, '/ned/home/project/src/a.py', f'src{os.sep}a.py')
+
     def test_multiple_patterns(self, rel_yn):
         # also test the debugfn...
         msgs = []

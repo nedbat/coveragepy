@@ -435,6 +435,9 @@ class PathAliases:
                 new = new.replace(sep(path), sep(result))
                 if not self.relative:
                     new = canonical_filename(new)
+                dot_start = result.startswith(("./", ".\\")) and len(result) > 2
+                if new.startswith(("./", ".\\")) and not dot_start:
+                    new = new[2:]
                 self.debugfn(
                     f"Matched path {path!r} to rule {original_pattern!r} -> {result!r}, " +
                     f"producing {new!r}"
