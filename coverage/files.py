@@ -309,7 +309,7 @@ def _glob_to_regex(pattern):
     path_rx = []
     pos = 0
     while pos < len(pattern):
-        for rx, sub in G2RX_TOKENS:
+        for rx, sub in G2RX_TOKENS:                     # pragma: always breaks
             m = rx.match(pattern, pos=pos)
             if m:
                 if sub is None:
