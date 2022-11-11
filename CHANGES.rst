@@ -24,7 +24,7 @@ Unreleased
   The original style (``--format=text``) is the default.
 
   - Using ``--format=markdown`` will write the table in Markdown format, thanks
-    to Steve Oswald in `pull 1479`_, closing `issue 1418`_.
+    to `Steve Oswald <pull 1479_>`_, closing `issue 1418`_.
 
   - Using ``--format=total`` will write a single total number to the
     output.  This can be useful for making badges or writing status updates.
@@ -45,10 +45,10 @@ Unreleased
 
 - The ``[run] note`` setting has been completely removed.
 
-.. _pull 1479: https://github.com/nedbat/coveragepy/pull/1479
 .. _issue 1418: https://github.com/nedbat/coveragepy/issues/1418
 .. _issue 1421: https://github.com/nedbat/coveragepy/issues/1421
 .. _issue 1470: https://github.com/nedbat/coveragepy/issues/1470
+.. _pull 1479: https://github.com/nedbat/coveragepy/pull/1479
 
 
 .. _changes_6-6-0b1:
@@ -99,7 +99,7 @@ Version 6.5.0 — 2022-09-29
 --------------------------
 
 - The JSON report now includes details of which branches were taken, and which
-  are missing for each file. Thanks, Christoph Blessing (`pull 1438`_). Closes
+  are missing for each file. Thanks, `Christoph Blessing <pull 1438_>`_. Closes
   `issue 1425`_.
 
 - Starting with coverage.py 6.2, ``class`` statements were marked as a branch.
@@ -119,8 +119,8 @@ Version 6.5.0 — 2022-09-29
 .. _PEP 517: https://peps.python.org/pep-0517/
 .. _issue 1395: https://github.com/nedbat/coveragepy/issues/1395
 .. _issue 1425: https://github.com/nedbat/coveragepy/issues/1425
-.. _pull 1438: https://github.com/nedbat/coveragepy/pull/1438
 .. _issue 1449: https://github.com/nedbat/coveragepy/issues/1449
+.. _pull 1438: https://github.com/nedbat/coveragepy/pull/1438
 
 
 .. _changes_6-4-4:
@@ -136,29 +136,28 @@ Version 6.4.4 — 2022-08-16
 Version 6.4.3 — 2022-08-06
 --------------------------
 
-- Fix a failure when combining data files if the file names contained
-  glob-like patterns (`pull 1405`_).  Thanks, Michael Krebs and Benjamin
-  Schubert.
+- Fix a failure when combining data files if the file names contained glob-like
+  patterns.  Thanks, `Michael Krebs and Benjamin Schubert <pull 1405_>`_.
 
 - Fix a messaging failure when combining Windows data files on a different
-  drive than the current directory. (`pull 1430`_, fixing `issue 1428`_).
-  Thanks, Lorenzo Micò.
+  drive than the current directory, closing `issue 1428`_.  Thanks, `Lorenzo
+  Micò <pull 1430_>`_.
 
 - Fix path calculations when running in the root directory, as you might do in
-  a Docker container: `pull 1403`_, thanks Arthur Rio.
+  a Docker container. Thanks `Arthur Rio <pull 1403_>`_.
 
 - Filtering in the HTML report wouldn't work when reloading the index page.
-  This is now fixed (`pull 1413`_).  Thanks, Marc Legendre.
+  This is now fixed.  Thanks, `Marc Legendre <pull 1413_>`_.
 
-- Fix a problem with Cython code measurement (`pull 1347`_, fixing `issue
-  972`_).  Thanks, Matus Valo.
+- Fix a problem with Cython code measurement, closing `issue 972`_.  Thanks,
+  `Matus Valo <pull 1347_>`_.
 
 .. _issue 972: https://github.com/nedbat/coveragepy/issues/972
+.. _issue 1428: https://github.com/nedbat/coveragepy/issues/1428
 .. _pull 1347: https://github.com/nedbat/coveragepy/pull/1347
 .. _pull 1403: https://github.com/nedbat/coveragepy/issues/1403
 .. _pull 1405: https://github.com/nedbat/coveragepy/issues/1405
 .. _pull 1413: https://github.com/nedbat/coveragepy/issues/1413
-.. _issue 1428: https://github.com/nedbat/coveragepy/issues/1428
 .. _pull 1430: https://github.com/nedbat/coveragepy/pull/1430
 
 
@@ -175,10 +174,10 @@ Version 6.4.2 — 2022-07-12
 
 - Internal debugging data added to sys.modules is now an actual module, to
   avoid confusing code that examines everything in sys.modules.  Thanks,
-  Yilei Yang (`pull 1399`_).
+  `Yilei Yang <pull 1399_>`_.
 
-.. _pull 1399: https://github.com/nedbat/coveragepy/pull/1399
 .. _issue 1419: https://github.com/nedbat/coveragepy/issues/1419
+.. _pull 1399: https://github.com/nedbat/coveragepy/pull/1399
 
 
 .. _changes_6-4-1:
