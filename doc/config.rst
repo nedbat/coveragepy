@@ -222,14 +222,6 @@ measurement or reporting.  Ignored if ``source`` is set.  See :ref:`source` for
 details.
 
 
-.. _config_run_note:
-
-[run] note
-..........
-
-(string) This is now obsolete.
-
-
 .. _config_run_omit:
 
 [run] omit

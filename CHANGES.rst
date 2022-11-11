@@ -43,6 +43,8 @@ Unreleased
 - Fixed a mis-measurement of a strange use of wildcard alternatives in
   match/case statements, closing `issue 1421`_.
 
+- The ``[run] note`` setting has been completely removed.
+
 .. _pull 1479: https://github.com/nedbat/coveragepy/pull/1479
 .. _issue 1418: https://github.com/nedbat/coveragepy/issues/1418
 .. _issue 1421: https://github.com/nedbat/coveragepy/issues/1421

@@ -184,7 +184,6 @@ class CoverageConfig:
         self.debug = []
         self.disable_warnings = []
         self.dynamic_context = None
-        self.note = None
         self.parallel = False
         self.plugins = []
         self.relative_files = False
@@ -360,7 +359,6 @@ class CoverageConfig:
         ('debug', 'run:debug', 'list'),
         ('disable_warnings', 'run:disable_warnings', 'list'),
         ('dynamic_context', 'run:dynamic_context'),
-        ('note', 'run:note'),
         ('parallel', 'run:parallel', 'boolean'),
         ('plugins', 'run:plugins', 'list'),
         ('relative_files', 'run:relative_files', 'boolean'),

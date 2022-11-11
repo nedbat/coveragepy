@@ -808,9 +808,6 @@ class Coverage:
             for plugin_name, paths in file_paths.items():
                 self._data.touch_files(paths, plugin_name)
 
-        if self.config.note:
-            self._warn("The '[run] note' setting is no longer supported.")
-
     # Backward compatibility with version 1.
     def analysis(self, morf):
         """Like `analysis2` but doesn't return excluded line numbers."""

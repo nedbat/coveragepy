@@ -706,17 +706,6 @@ class ConfigFileTest(UsingModulesMixin, CoverageTest):
         assert not cov.config.branch
         assert cov.config.data_file == ".coverage"
 
-    def test_note_is_obsolete(self):
-        self.make_file("main.py", "a = 1")
-        self.make_file(".coveragerc", """\
-            [run]
-            note = I am here I am here I am here!
-            """)
-        cov = coverage.Coverage()
-        with self.assert_warnings(cov, [r"The '\[run] note' setting is no longer supported."]):
-            self.start_import_stop(cov, "main")
-            cov.report()
-
     def test_no_toml_installed_no_toml(self):
         # Can't read a toml file that doesn't exist.
         with without_module(coverage.tomlconfig, 'tomllib'):
