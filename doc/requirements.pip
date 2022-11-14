@@ -178,9 +178,9 @@ sphinxcontrib-serializinghtml==1.1.5 \
     --hash=sha256:352a9a00ae864471d3a7ead8d7d79f5fc0b57e8b3f95e9867eb9eb28999b92fd \
     --hash=sha256:aa5f6de5dfdf809ef505c4895e51ef5c9eac17d0f287933eb49ec495280b6952
     # via sphinx
-sphinxcontrib-spelling==7.6.2 \
-    --hash=sha256:a129d5dd0c00c9d414bcdf599afddb55bae01f1d543636e7ebb09491ba2babd4 \
-    --hash=sha256:a7ca90eea630c825657e1344000a11d7d7f547a865e0eebbed08d112beb073d1
+sphinxcontrib-spelling==7.7.0 \
+    --hash=sha256:56561c3f6a155b0946914e4de988729859315729dc181b5e4dc8a68fe78de35a \
+    --hash=sha256:95a0defef8ffec6526f9e83b20cc24b08c9179298729d87976891840e3aa3064
     # via -r doc/requirements.in
 tornado==6.2 \
     --hash=sha256:1d54d13ab8414ed44de07efecb97d4ef7c39f7438cf5e976ccd356bebb1b5fca \
