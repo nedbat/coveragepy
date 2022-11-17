@@ -189,9 +189,10 @@ def add_coverage_paths(paths):
 class InOrOut:
     """Machinery for determining what files to measure."""
 
-    def __init__(self, warn, debug):
+    def __init__(self, warn, debug, include_namespace_packages):
         self.warn = warn
         self.debug = debug
+        self.include_namespace_packages = include_namespace_packages
 
         # The matchers for should_trace.
         self.source_match = None
@@ -565,7 +566,10 @@ class InOrOut:
         Yield the file path, and the plugin name that handles the file.
 
         """
-        py_files = ((py_file, None) for py_file in find_python_files(src_dir))
+        py_files = (
+            (py_file, None) for py_file in
+            find_python_files(src_dir, self.include_namespace_packages)
+        )
         plugin_files = self._find_plugin_files(src_dir)
 
         for file_path, plugin_name in itertools.chain(py_files, plugin_files):

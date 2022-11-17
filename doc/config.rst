@@ -410,6 +410,14 @@ warning instead of an exception.
 See :ref:`source` for details.
 
 
+.. _config_include_namespace_packages:
+
+[report] include_namespace_packages
+...................................
+
+(boolean, default False) Include folders without an ``__init__.py`` in the
+coverage.
+
 .. _config_report_omit:
 
 [report] omit

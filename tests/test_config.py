@@ -494,6 +494,8 @@ class ConfigFileTest(UsingModulesMixin, CoverageTest):
         skip_covered = TruE
         skip_empty  =TruE
 
+        include_namespace_packages = TRUE
+
         [{section}html]
 
         directory    =     c:\\tricky\\dir.somewhere
@@ -589,6 +591,7 @@ class ConfigFileTest(UsingModulesMixin, CoverageTest):
         assert cov.config.get_plugin_options("plugins.another") == {}
         assert cov.config.json_show_contexts is True
         assert cov.config.json_pretty_print is True
+        assert cov.config.include_namespace_packages is True
 
     def test_config_file_settings(self):
         self.make_file(".coveragerc", self.LOTSA_SETTINGS.format(section=""))

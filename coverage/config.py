@@ -200,6 +200,7 @@ class CoverageConfig:
         self.fail_under = 0.0
         self.format = None
         self.ignore_errors = False
+        self.include_namespace_packages = False
         self.report_include = None
         self.report_omit = None
         self.partial_always_list = DEFAULT_PARTIAL_ALWAYS[:]
@@ -375,6 +376,7 @@ class CoverageConfig:
         ('fail_under', 'report:fail_under', 'float'),
         ('format', 'report:format', 'boolean'),
         ('ignore_errors', 'report:ignore_errors', 'boolean'),
+        ('include_namespace_packages', 'report:include_namespace_packages', 'boolean'),
         ('partial_always_list', 'report:partial_branches_always', 'regexlist'),
         ('partial_list', 'report:partial_branches', 'regexlist'),
         ('precision', 'report:precision', 'int'),
