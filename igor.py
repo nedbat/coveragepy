@@ -15,6 +15,7 @@ import glob
 import inspect
 import os
 import platform
+import pprint
 import re
 import subprocess
 import sys
@@ -380,9 +381,11 @@ def do_quietly(command):
 def get_release_facts():
     """Return an object with facts about the current release."""
     import coverage
+    import coverage.version
     facts = types.SimpleNamespace()
     facts.ver = coverage.__version__
     facts.vi = coverage.version_info
+    facts.dev = coverage.version._dev
     facts.shortver = f"{facts.vi[0]}.{facts.vi[1]}.{facts.vi[2]}"
     facts.anchor = facts.shortver.replace(".", "-")
     if facts.vi[3] != "final":
@@ -410,6 +413,10 @@ UNRELEASED = "Unreleased\n----------"
 def do_edit_for_release():
     """Edit a few files in preparation for a release."""
     facts = get_release_facts()
+
+    if facts.dev:
+        print(f"**\n** This is a dev release: {facts.ver}\n**\n\nNo edits")
+        return
 
     # NOTICE.txt
     update_file("NOTICE.txt", r"Copyright 2004.*? Ned", f"Copyright 2004-{facts.now:%Y} Ned")
@@ -448,13 +455,15 @@ def do_bump_version():
     )
 
     # coverage/version.py
-    next_version = f"version_info = {facts.next_vi}".replace("'", '"')
-    update_file("coverage/version.py", r"(?m)^version_info = .*$", next_version)
+    next_version = f"version_info = {facts.next_vi}\n_dev = 1".replace("'", '"')
+    update_file("coverage/version.py", r"(?m)^version_info = .*\n_dev = \d+$", next_version)
 
 
 def do_cheats():
     """Show a cheatsheet of useful things during releasing."""
     facts = get_release_facts()
+    pprint.pprint(facts.__dict__)
+    print()
     print(f"Coverage version is {facts.ver}")
 
     print(f"pip install git+https://github.com/nedbat/coveragepy@{facts.branch}")

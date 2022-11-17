@@ -18,18 +18,23 @@ class VersionTest(CoverageTest):
         # Make sure we didn't screw up the version_info tuple.
         assert isinstance(coverage.version_info, tuple)
         assert [type(d) for d in coverage.version_info] == [int, int, int, str, int]
-        assert coverage.version_info[3] in ['alpha', 'beta', 'candidate', 'final']
+        assert coverage.version_info[3] in {'alpha', 'beta', 'candidate', 'final'}
 
     def test_make_version(self):
-        assert _make_version(4, 0, 0, 'alpha', 0) == "4.0.0a0"
+        assert _make_version(4, 0, 0, 'alpha') == "4.0.0a0"
         assert _make_version(4, 0, 0, 'alpha', 1) == "4.0.0a1"
-        assert _make_version(4, 0, 0, 'final', 0) == "4.0.0"
-        assert _make_version(4, 1, 0, 'final', 0) == "4.1.0"
+        assert _make_version(4, 0, 0, 'final') == "4.0.0"
+        assert _make_version(4, 1, 0) == "4.1.0"
         assert _make_version(4, 1, 2, 'beta', 3) == "4.1.2b3"
-        assert _make_version(4, 1, 2, 'final', 0) == "4.1.2"
+        assert _make_version(4, 1, 2) == "4.1.2"
         assert _make_version(5, 10, 2, 'candidate', 7) == "5.10.2rc7"
+        assert _make_version(5, 10, 2, 'candidate', 7, 3) == "5.10.2rc7.dev3"
 
     def test_make_url(self):
-        assert _make_url(4, 0, 0, 'final', 0) == "https://coverage.readthedocs.io"
+        assert _make_url(4, 0, 0, 'final') == "https://coverage.readthedocs.io"
         expected = "https://coverage.readthedocs.io/en/4.1.2b3"
         assert _make_url(4, 1, 2, 'beta', 3) == expected
+        expected = "https://coverage.readthedocs.io/en/4.1.2b3.dev17"
+        assert _make_url(4, 1, 2, 'beta', 3, 17) == expected
+        expected = "https://coverage.readthedocs.io/en/4.1.2.dev17"
+        assert _make_url(4, 1, 2, 'final', 0, 17) == expected
