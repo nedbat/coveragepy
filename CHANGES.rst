@@ -34,6 +34,14 @@ Unreleased
   time needed.  For coverage.py's own test suite, combining was about 17%
   faster.
 
+- When searching for completely unexecuted files, coverage.py uses the presence
+  of ``__init__.py`` files to determine which directories have source that
+  could have been imported.  However, `implicit namespace packages`_ don't
+  require ``__init__.py``.  A new setting ``[report]
+  include_namespace_packages`` tells coverage.py to consider these directories
+  during reporting.  Thanks to `Felix Horvat <pull 1387_>`_ for the
+  contribution.  Closes `issue 1383`_.
+
 - An empty file has a coverage total of 100%, but used to fail with
   ``--fail-under``.  This has been fixed, closing `issue 1470`_.
 
@@ -45,9 +53,12 @@ Unreleased
 
 - The ``[run] note`` setting has been completely removed.
 
+.. _implicit namespace packages: https://peps.python.org/pep-0420/
+.. _issue 1383: https://github.com/nedbat/coveragepy/issues/1383
 .. _issue 1418: https://github.com/nedbat/coveragepy/issues/1418
 .. _issue 1421: https://github.com/nedbat/coveragepy/issues/1421
 .. _issue 1470: https://github.com/nedbat/coveragepy/issues/1470
+.. _pull 1387: https://github.com/nedbat/coveragepy/pull/1387
 .. _pull 1479: https://github.com/nedbat/coveragepy/pull/1479
 
 

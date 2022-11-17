@@ -530,7 +530,7 @@ class Coverage:
         self._inorout = InOrOut(
             warn=self._warn,
             debug=(self._debug if self._debug.should('trace') else None),
-            include_namespace_packages=self.config.include_namespace_packages
+            include_namespace_packages=self.config.include_namespace_packages,
         )
         self._inorout.configure(self.config)
         self._inorout.plugins = self._plugins

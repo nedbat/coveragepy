@@ -415,8 +415,14 @@ See :ref:`source` for details.
 [report] include_namespace_packages
 ...................................
 
-(boolean, default False) Include folders without an ``__init__.py`` in the
-coverage.
+(boolean, default False) When searching for completely unexecuted files,
+include directories without ``__init__.py`` files.  These are `implicit
+namespace packages`_, and are ususally skipped.
+
+.. _implicit namespace packages: https://peps.python.org/pep-0420/
+
+.. versionadded:: 6.6
+
 
 .. _config_report_omit:
 

@@ -68,6 +68,7 @@ Eli Skeggs
 Emil Madsen
 Éric Larivière
 Federico Bond
+Felix Horvat
 Frazer McLean
 Geoff Bache
 George Paci

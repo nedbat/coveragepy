@@ -470,14 +470,20 @@ def find_python_files(dirname, include_namespace_packages):
     best, but sub-directories are checked for a __init__.py to be sure we only
     find the importable files.
 
+    If `include_namespace_packages` is True, then the check for __init__.py
+    files is skipped.
+
+    Files with strange characters are skipped, since they couldn't have been
+    imported, and are probably editor side-files.
+
     """
     for i, (dirpath, dirnames, filenames) in enumerate(os.walk(dirname)):
-        if (i > 0 and '__init__.py' not in filenames
-            and not include_namespace_packages):
-            # If a directory doesn't have __init__.py, then it isn't
-            # importable and neither are its files
-            del dirnames[:]
-            continue
+        if not include_namespace_packages:
+            if i > 0 and "__init__.py" not in filenames:
+                # If a directory doesn't have __init__.py, then it isn't
+                # importable and neither are its files
+                del dirnames[:]
+                continue
         for filename in filenames:
             # We're only interested in files that look like reasonable Python
             # files: Must end with .py or .pyw, and must not have certain funny
