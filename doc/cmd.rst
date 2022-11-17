@@ -342,7 +342,7 @@ single directory, and use the **combine** command to combine them into one
 
     $ coverage combine
 
-You can also name directories or files on the command line::
+You can also name directories or files to be combined on the command line::
 
     $ coverage combine data1.dat windows_data_files/
 
@@ -364,19 +364,6 @@ An existing combined data file is ignored and re-written. If you want to use
 runs, use the ``--append`` switch on the **combine** command.  This behavior
 was the default before version 4.2.
 
-To combine data for a source file, coverage has to find its data in each of the
-data files.  Different test runs may run the same source file from different
-locations. For example, different operating systems will use different paths
-for the same file, or perhaps each Python version is run from a different
-subdirectory.  Coverage needs to know that different file paths are actually
-the same source file for reporting purposes.
-
-You can tell coverage.py how different source locations relate with a
-``[paths]`` section in your configuration file (see :ref:`config_paths`).
-It might be more convenient to use the ``[run] relative_files``
-setting to store relative file paths (see :ref:`relative_files
-<config_run_relative_files>`).
-
 If any of the data files can't be read, coverage.py will print a warning
 indicating the file and the problem.
 
@@ -389,11 +376,10 @@ want to keep those files, use the ``--keep`` command-line option.
     $ coverage combine --help
     Usage: coverage combine [options] <path1> <path2> ... <pathN>
 
-    Combine data from multiple coverage files collected with 'run -p'.  The
-    combined results are written to a single file representing the union of the
-    data. The positional arguments are data files or directories containing data
-    files. If no paths are provided, data files in the default data file's
-    directory are combined.
+    Combine data from multiple coverage files. The combined results are written to
+    a single file representing the union of the data. The positional arguments are
+    data files or directories containing data files. If no paths are provided,
+    data files in the default data file's directory are combined.
 
     Options:
       -a, --append          Append coverage data to .coverage, otherwise it starts
@@ -409,7 +395,29 @@ want to keep those files, use the ``--keep`` command-line option.
       --rcfile=RCFILE       Specify configuration file. By default '.coveragerc',
                             'setup.cfg', 'tox.ini', and 'pyproject.toml' are
                             tried. [env: COVERAGE_RCFILE]
-.. [[[end]]] (checksum: 0ac91b0781d7146b87953f09090dab92)
+.. [[[end]]] (checksum: 0bdd83f647ee76363c955bedd9ddf749)
+
+
+.. _cmd_combine_remapping:
+
+Re-mapping paths
+................
+
+To combine data for a source file, coverage has to find its data in each of the
+data files.  Different test runs may run the same source file from different
+locations. For example, different operating systems will use different paths
+for the same file, or perhaps each Python version is run from a different
+subdirectory.  Coverage needs to know that different file paths are actually
+the same source file for reporting purposes.
+
+You can tell coverage.py how different source locations relate with a
+``[paths]`` section in your configuration file (see :ref:`config_paths`).
+It might be more convenient to use the ``[run] relative_files``
+setting to store relative file paths (see :ref:`relative_files
+<config_run_relative_files>`).
+
+If data isn't combining properly, you can see details about the inner workings
+with ``--debug=pathmap``.
 
 
 .. _cmd_erase:
@@ -510,6 +518,8 @@ as a percentage.
                             file. Defaults to '.coverage'. [env: COVERAGE_FILE]
       --fail-under=MIN      Exit with a status of 2 if the total coverage is less
                             than MIN.
+      --format=FORMAT       Output format, either text (default), markdown, or
+                            total.
       -i, --ignore-errors   Ignore errors while reading source files.
       --include=PAT1,PAT2,...
                             Include only files whose paths match one of these
@@ -532,7 +542,7 @@ as a percentage.
       --rcfile=RCFILE       Specify configuration file. By default '.coveragerc',
                             'setup.cfg', 'tox.ini', and 'pyproject.toml' are
                             tried. [env: COVERAGE_RCFILE]
-.. [[[end]]] (checksum: 2f8dde61bab2f44fbfe837aeae87dfd2)
+.. [[[end]]] (checksum: 167272a29d9e7eb017a592a0e0747a06)
 
 The ``-m`` flag also shows the line numbers of missing statements::
 
@@ -582,6 +592,12 @@ The ``--precision`` option controls the number of digits displayed after the
 decimal point in coverage percentages, defaulting to none.
 
 The ``--sort`` option is the name of a column to sort the report by.
+
+The ``--format`` option controls the style of the report.  ``--format=text``
+creates plain text tables as shown above.  ``--format=markdown`` creates
+Markdown tables.  ``--format=total`` writes out a single number, the total
+coverage percentage as shown at the end of the tables, but without a percent
+sign.
 
 Other common reporting options are described above in :ref:`cmd_reporting`.
 These options can also be set in your .coveragerc file. See
@@ -999,6 +1015,9 @@ of operation to log:
 * ``lock``: log operations acquiring locks in the data layer.
 
 * ``multiproc``: log the start and stop of multiprocessing processes.
+
+* ``pathmap``: log the remapping of paths that happens during ``coverage
+  combine``. See :ref:`config_paths`.
 
 * ``pid``: annotate all warnings and debug output with the process and thread
   ids.

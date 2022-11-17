@@ -17,6 +17,7 @@ Code coverage testing for Python.
 |  |test-status| |quality-status| |docs| |metacov|
 |  |kit| |downloads| |format| |repos|
 |  |stars| |forks| |contributors|
+|  |core-infrastructure| |open-ssf| |snyk|
 |  |tidelift| |sponsor| |twitter-coveragepy| |twitter-nedbat|
 
 Coverage.py measures code coverage, typically during test execution. It uses
@@ -27,8 +28,8 @@ Coverage.py runs on these versions of Python:
 
 .. PYVERSIONS
 
-* CPython 3.7 through 3.11.0b1.
-* PyPy3 7.3.8.
+* CPython 3.7 through 3.12.0a1
+* PyPy3 7.3.9.
 
 Documentation is on `Read the Docs`_.  Code repository and issue tracker are on
 `GitHub`_.
@@ -75,6 +76,16 @@ Change history
 The complete history of changes is on the `change history page`_.
 
 .. _change history page: https://coverage.readthedocs.io/en/latest/changes.html
+
+
+Code of Conduct
+---------------
+
+Everyone participating in the coverage.py project is expected to treat other
+people with respect and to follow the guidelines articulated in the `Python
+Community Code of Conduct`_.
+
+.. _Python Community Code of Conduct: https://www.python.org/psf/codeofconduct/
 
 
 Contributing
@@ -157,3 +168,12 @@ Licensed under the `Apache 2.0 License`_.  For details, see `NOTICE.txt`_.
 .. |sponsor| image:: https://img.shields.io/badge/%E2%9D%A4-Sponsor%20me-brightgreen?style=flat&logo=GitHub
     :target: https://github.com/sponsors/nedbat
     :alt: Sponsor me on GitHub
+.. |core-infrastructure| image:: https://bestpractices.coreinfrastructure.org/projects/6412/badge
+    :target: https://bestpractices.coreinfrastructure.org/projects/6412
+    :alt: Core Infrastructure Initiative: passing
+.. |open-ssf| image:: https://api.securityscorecards.dev/projects/github.com/nedbat/coveragepy/badge
+    :target: https://deps.dev/pypi/coverage
+    :alt: OpenSSF Scorecard
+.. |snyk| image:: https://snyk.io/advisor/python/coverage/badge.svg
+    :target: https://snyk.io/advisor/python/coverage
+    :alt: Snyk package health

@@ -18,14 +18,13 @@ supported on:
 
 .. PYVERSIONS
 
-* Python versions 3.7 through 3.11.0b1.
-
-* PyPy3 7.3.8.
+* Python versions 3.7 through 3.12.0a1.
+* PyPy3 7.3.9.
 
 .. ifconfig:: prerelease
 
     **This is a pre-release build.  The usual warnings about possible bugs
-    apply.** The latest stable version is coverage.py 6.4, `described here`_.
+    apply.** The latest stable version is coverage.py 6.5.0, `described here`_.
 
 
 .. _described here: http://coverage.readthedocs.io/
@@ -68,9 +67,7 @@ Getting started is easy:
 
     Instructions for specific test runners:
 
-    .. tabs::
-
-        .. tab:: pytest
+    - **pytest**
 
             If you usually use::
 
@@ -83,7 +80,7 @@ Getting started is easy:
             Many people choose to use the `pytest-cov`_ plugin, but for most
             purposes, it is unnecessary.
 
-        .. tab:: unittest
+    - **unittest**
 
             Change "python" to "coverage run", so this::
 
@@ -93,18 +90,18 @@ Getting started is easy:
 
                 $ coverage run -m unittest discover
 
-        .. tab:: nosetest
-
-            *Nose has been unmaintained for a long time. You should seriously
-            consider adopting a different test runner.*
-
-            Change this::
-
-                $ nosetests arg1 arg2
-
-            to::
-
-                $ coverage run -m nose arg1 arg2
+    .. - **nosetest**
+    ..
+    ..        *Nose has been unmaintained for a long time. You should seriously
+    ..        consider adopting a different test runner.*
+    ..
+    ..        Change this::
+    ..
+    ..            $ nosetests arg1 arg2
+    ..
+    ..        to this::
+    ..
+    ..            $ coverage run -m nose arg1 arg2
 
     To limit coverage measurement to code in the current directory, and also
     find files that weren't executed at all, add the ``--source=.`` argument to

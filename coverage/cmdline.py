@@ -96,6 +96,10 @@ class Opts:
         '', '--fail-under', action='store', metavar="MIN", type="float",
         help="Exit with a status of 2 if the total coverage is less than MIN.",
     )
+    format = optparse.make_option(
+        '', '--format', action='store', metavar="FORMAT",
+        help="Output format, either text (default), markdown, or total.",
+    )
     help = optparse.make_option(
         '-h', '--help', action='store_true',
         help="Get help on this command.",
@@ -245,6 +249,7 @@ class CoverageOptionParser(optparse.OptionParser):
             debug=None,
             directory=None,
             fail_under=None,
+            format=None,
             help=None,
             ignore_errors=None,
             include=None,
@@ -379,8 +384,8 @@ COMMANDS = {
             ] + GLOBAL_ARGS,
         usage="[options] <path1> <path2> ... <pathN>",
         description=(
-            "Combine data from multiple coverage files collected " +
-            "with 'run -p'.  The combined results are written to a single " +
+            "Combine data from multiple coverage files. " +
+            "The combined results are written to a single " +
             "file representing the union of the data. The positional " +
             "arguments are data files or directories containing data files. " +
             "If no paths are provided, data files in the default data file's " +
@@ -482,6 +487,7 @@ COMMANDS = {
             Opts.contexts,
             Opts.input_datafile,
             Opts.fail_under,
+            Opts.format,
             Opts.ignore_errors,
             Opts.include,
             Opts.omit,
@@ -689,6 +695,7 @@ class CoverageScript:
                 skip_covered=options.skip_covered,
                 skip_empty=options.skip_empty,
                 sort=options.sort,
+                output_format=options.format,
                 **report_args
             )
         elif options.action == "annotate":

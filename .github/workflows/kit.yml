@@ -27,6 +27,9 @@ on:
       # Don't build kits all the time, but do if the branch is about kits.
       - "**/*kit*"
   workflow_dispatch:
+  repository_dispatch:
+    types:
+      - build-kits
 
 defaults:
   run:
@@ -37,6 +40,10 @@ env:
 
 permissions:
   contents: read
+
+concurrency:
+  group: "${{ github.workflow }}-${{ github.ref }}"
+  cancel-in-progress: true
 
 jobs:
   wheels:
@@ -70,11 +77,12 @@ jobs:
           #   }
           #   # PYVERSIONS. Available versions:
           #   # https://github.com/actions/python-versions/blob/main/versions-manifest.json
-          #   pys = ["cp37", "cp38", "cp39", "cp310"]
+          #   # Include prereleases if they are at rc stage.
+          #   pys = ["cp37", "cp38", "cp39", "cp310", "cp311"]
           #
           #   # Some OS/arch combinations need overrides for the Python versions:
           #   os_arch_pys = {
-          #     ("macos", "arm64"): ["cp38", "cp39", "cp310"],
+          #     ("macos", "arm64"): ["cp38", "cp39", "cp310", "cp311"],
           #   }
           #
           #   #----- ^^^ ---------------------- ^^^ -----
@@ -94,36 +102,43 @@ jobs:
           - {"os": "ubuntu", "py": "cp38", "arch": "x86_64"}
           - {"os": "ubuntu", "py": "cp39", "arch": "x86_64"}
           - {"os": "ubuntu", "py": "cp310", "arch": "x86_64"}
+          - {"os": "ubuntu", "py": "cp311", "arch": "x86_64"}
           - {"os": "ubuntu", "py": "cp37", "arch": "i686"}
           - {"os": "ubuntu", "py": "cp38", "arch": "i686"}
           - {"os": "ubuntu", "py": "cp39", "arch": "i686"}
           - {"os": "ubuntu", "py": "cp310", "arch": "i686"}
+          - {"os": "ubuntu", "py": "cp311", "arch": "i686"}
           - {"os": "ubuntu", "py": "cp37", "arch": "aarch64"}
           - {"os": "ubuntu", "py": "cp38", "arch": "aarch64"}
           - {"os": "ubuntu", "py": "cp39", "arch": "aarch64"}
           - {"os": "ubuntu", "py": "cp310", "arch": "aarch64"}
+          - {"os": "ubuntu", "py": "cp311", "arch": "aarch64"}
           - {"os": "macos", "py": "cp38", "arch": "arm64"}
           - {"os": "macos", "py": "cp39", "arch": "arm64"}
           - {"os": "macos", "py": "cp310", "arch": "arm64"}
+          - {"os": "macos", "py": "cp311", "arch": "arm64"}
           - {"os": "macos", "py": "cp37", "arch": "x86_64"}
           - {"os": "macos", "py": "cp38", "arch": "x86_64"}
           - {"os": "macos", "py": "cp39", "arch": "x86_64"}
           - {"os": "macos", "py": "cp310", "arch": "x86_64"}
+          - {"os": "macos", "py": "cp311", "arch": "x86_64"}
           - {"os": "windows", "py": "cp37", "arch": "x86"}
           - {"os": "windows", "py": "cp38", "arch": "x86"}
           - {"os": "windows", "py": "cp39", "arch": "x86"}
           - {"os": "windows", "py": "cp310", "arch": "x86"}
+          - {"os": "windows", "py": "cp311", "arch": "x86"}
           - {"os": "windows", "py": "cp37", "arch": "AMD64"}
           - {"os": "windows", "py": "cp38", "arch": "AMD64"}
           - {"os": "windows", "py": "cp39", "arch": "AMD64"}
           - {"os": "windows", "py": "cp310", "arch": "AMD64"}
-        # [[[end]]] (checksum: 4b02126e18e2b3798783d3cc6f303552)
+          - {"os": "windows", "py": "cp311", "arch": "AMD64"}
+        # [[[end]]] (checksum: ded8a9f214bf59776562d91ae6828863)
       fail-fast: false
 
     steps:
-      - name: Setup QEMU
+      - name: "Setup QEMU"
         if: matrix.os == 'ubuntu'
-        uses: docker/setup-qemu-action@v2
+        uses: docker/setup-qemu-action@e81a89b1732b9c48d79cd809d8d81d79c4647a18
         with:
           platforms: arm64
 
@@ -131,7 +146,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: "Install Python 3.8"
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v4
         with:
           python-version: "3.8"
           cache: pip
@@ -139,7 +154,7 @@ jobs:
 
       - name: "Install tools"
         run: |
-          python -m pip install -r requirements/kit.pip
+          python -m pip install --require-hashes -r requirements/kit.pip
 
       - name: "Build wheels"
         env:
@@ -168,7 +183,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: "Install Python 3.8"
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v4
         with:
           python-version: "3.8"
           cache: pip
@@ -176,7 +191,7 @@ jobs:
 
       - name: "Install tools"
         run: |
-          python -m pip install -r requirements/kit.pip
+          python -m pip install --require-hashes -r requirements/kit.pip
 
       - name: "Build sdist"
         run: |
@@ -200,7 +215,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: "Install PyPy"
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v4
         with:
           # PYVERSIONS
           python-version: "pypy-3.7"

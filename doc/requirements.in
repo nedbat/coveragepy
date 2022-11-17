@@ -7,11 +7,11 @@
 -c ../requirements/pins.pip
 
 cogapp
-doc8
+#doc8
 pyenchant
 sphinx
 sphinx-autobuild
 sphinx_rtd_theme
-sphinx-tabs
+#sphinx-tabs
 sphinxcontrib-restbuilder
 sphinxcontrib-spelling

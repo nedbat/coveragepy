@@ -23,11 +23,24 @@ If old data is persisting, you can use an explicit ``coverage erase`` command
 to clean out the old data.
 
 
+Q: Why are my function definitions marked as run when I haven't tested them?
+............................................................................
+
+The ``def`` and ``class`` lines in your Python file are executed when the file
+is imported.  Those are the lines that define your functions and classes.  They
+run even if you never call the functions. It's the body of the functions that
+will be marked as not executed if you don't test them, not the ``def`` lines.
+
+This can mean that your code has a moderate coverage total even if no tests
+have been written or run.  This might seem surprising, but it is accurate: the
+``def`` lines have actually been run.
+
+
 Q: Why do the bodies of functions show as executed, but the def lines do not?
 .............................................................................
 
-This happens because coverage.py is started after the functions are defined.
-The definition lines are executed without coverage measurement, then
+If this happens, it's because coverage.py has started after the functions are
+defined.  The definition lines are executed without coverage measurement, then
 coverage.py is started, then the function is called.  This means the body is
 measured, but the definition of the function itself is not.
 
@@ -54,7 +67,9 @@ Q: Can I find out which tests ran which lines?
 ..............................................
 
 Yes! Coverage.py has a feature called :ref:`dynamic_contexts` which can collect
-this information.  Add this to your .coveragerc file::
+this information.  Add this to your .coveragerc file:
+
+.. code-block:: ini
 
     [run]
     dynamic_context = test_function

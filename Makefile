@@ -72,9 +72,18 @@ metasmoke:
 
 ##@ Requirements management
 
+# When updating requirements, a few rules to follow:
+#
+# 1) Don't install more than one .pip file at once. Always use pip-compile to
+# combine .in files onto a single .pip file that can be installed where needed.
+#
+# 2) Check manual pins before `make upgrade` to see if they can be removed. Look
+# in requirements/pins.pip, and search for "windows" in .in files to find pins
+# and extra requirements that have been needed, but might be obsolete.
+
 .PHONY: upgrade
 
-PIP_COMPILE = pip-compile --upgrade --allow-unsafe
+PIP_COMPILE = pip-compile --upgrade --allow-unsafe --generate-hashes
 upgrade: export CUSTOM_COMPILE_COMMAND=make upgrade
 upgrade: 				## Update the *.pip files with the latest packages satisfying *.in files.
 	pip install -q -r requirements/pip-tools.pip
@@ -86,6 +95,7 @@ upgrade: 				## Update the *.pip files with the latest packages satisfying *.in 
 	$(PIP_COMPILE) -o requirements/dev.pip requirements/dev.in
 	$(PIP_COMPILE) -o requirements/light-threads.pip requirements/light-threads.in
 	$(PIP_COMPILE) -o doc/requirements.pip doc/requirements.in
+	$(PIP_COMPILE) -o requirements/lint.pip doc/requirements.in requirements/dev.in
 
 
 ##@ Pre-builds for prepping the code
@@ -106,10 +116,38 @@ workflows:				## Run cog on the workflows to keep them up-to-date.
 prebuild: css workflows cogdoc		## One command for all source prep.
 
 
+##@ Sample HTML reports
+
+.PHONY: _sample_cog_html sample_html sample_html_beta
+
+_sample_cog_html: clean
+	python -m pip install -e .
+	cd ~/cog/trunk; \
+		rm -rf htmlcov; \
+		PYTEST_ADDOPTS= coverage run --branch --source=cogapp -m pytest -k CogTestsInMemory; \
+		coverage combine; \
+		coverage html
+
+sample_html: _sample_cog_html		## Generate sample HTML report.
+	rm -f doc/sample_html/*.*
+	cp -r ~/cog/trunk/htmlcov/ doc/sample_html/
+	rm doc/sample_html/.gitignore
+
+sample_html_beta: _sample_cog_html	## Generate sample HTML report for a beta release.
+	rm -f doc/sample_html_beta/*.*
+	cp -r ~/cog/trunk/htmlcov/ doc/sample_html_beta/
+	rm doc/sample_html_beta/.gitignore
+
+
 ##@ Kitting: making releases
 
-.PHONY: kit kit_upload test_upload kit_local download_kits check_kits tag
+.PHONY: kit kit_upload test_upload kit_local build_kits download_kits check_kits tag
 .PHONY: update_stable comment_on_fixes
+
+REPO_OWNER = nedbat/coveragepy
+
+edit_for_release:			## Edit sources to insert release facts.
+	python igor.py edit_for_release
 
 kit:					## Make the source distribution.
 	python -m build
@@ -129,8 +167,11 @@ kit_local:
 	# don't go crazy trying to figure out why our new code isn't installing.
 	find ~/Library/Caches/pip/wheels -name 'coverage-*' -delete
 
+build_kits:				## Trigger GitHub to build kits
+	python ci/trigger_build_kits.py $(REPO_OWNER)
+
 download_kits:				## Download the built kits from GitHub.
-	python ci/download_gha_artifacts.py nedbat/coveragepy
+	python ci/download_gha_artifacts.py $(REPO_OWNER)
 
 check_kits:				## Check that dist/* are well-formed.
 	python -m twine check dist/*
@@ -143,8 +184,8 @@ update_stable:				## Set the stable branch to the latest release.
 	git branch -f stable $$(python setup.py --version)
 	git push origin stable
 
-comment_on_fixes:			## Add a comment to issues that were fixed.
-	python ci/comment_on_fixes.py
+bump_version:				## Edit sources to bump the version after a release.
+	python igor.py bump_version
 
 
 ##@ Documentation
@@ -201,4 +242,7 @@ $(RELNOTES_JSON): $(CHANGES_MD)
 	$(DOCBIN)/python ci/parse_relnotes.py tmp/rst_rst/changes.md $(RELNOTES_JSON)
 
 github_releases: $(RELNOTES_JSON)	## Update GitHub releases.
-	$(DOCBIN)/python ci/github_releases.py $(RELNOTES_JSON) nedbat/coveragepy
+	$(DOCBIN)/python ci/github_releases.py $(RELNOTES_JSON) $(REPO_OWNER)
+
+comment_on_fixes: $(RELNOTES_JSON)	## Add a comment to issues that were fixed.
+	python ci/comment_on_fixes.py $(REPO_OWNER)

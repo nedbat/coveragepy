@@ -67,6 +67,10 @@ class PyTracer:
         # On exit, self.in_atexit = True
         atexit.register(setattr, self, 'in_atexit', True)
 
+        # Cache a bound method on the instance, so that we don't have to
+        # re-create a bound method object all the time.
+        self._cached_bound_method_trace = self._trace
+
     def __repr__(self):
         return "<PyTracer at 0x{:x}: {} lines in {} files>".format(
             id(self),
@@ -105,7 +109,7 @@ class PyTracer:
 
         #self.log(":", frame.f_code.co_filename, frame.f_lineno, frame.f_code.co_name + "()", event)
 
-        if (self.stopped and sys.gettrace() == self._trace):    # pylint: disable=comparison-with-callable
+        if (self.stopped and sys.gettrace() == self._cached_bound_method_trace):    # pylint: disable=comparison-with-callable
             # The PyTrace.stop() method has been called, possibly by another
             # thread, let's deactivate ourselves now.
             if 0:
@@ -129,12 +133,13 @@ class PyTracer:
                 context_maybe = self.should_start_context(frame)
                 if context_maybe is not None:
                     self.context = context_maybe
-                    self.started_context = True
+                    started_context = True
                     self.switch_context(self.context)
                 else:
-                    self.started_context = False
+                    started_context = False
             else:
-                self.started_context = False
+                started_context = False
+            self.started_context = started_context
 
             # Entering a new frame.  Decide if we should trace in this file.
             self._activity = True
@@ -143,23 +148,33 @@ class PyTracer:
                     self.cur_file_data,
                     self.cur_file_name,
                     self.last_line,
-                    self.started_context,
+                    started_context,
                 )
             )
-            filename = frame.f_code.co_filename
-            self.cur_file_name = filename
-            disp = self.should_trace_cache.get(filename)
-            if disp is None:
-                disp = self.should_trace(filename, frame)
-                self.should_trace_cache[filename] = disp
 
-            self.cur_file_data = None
-            if disp.trace:
-                tracename = disp.source_filename
-                if tracename not in self.data:
-                    self.data[tracename] = set()
-                self.cur_file_data = self.data[tracename]
-            else:
+            # Improve tracing performance: when calling a function, both caller
+            # and callee are often within the same file. if that's the case, we
+            # don't have to re-check whether to trace the corresponding
+            # function (which is a little bit espensive since it involves
+            # dictionary lookups). This optimization is only correct if we
+            # didn't start a context.
+            filename = frame.f_code.co_filename
+            if filename != self.cur_file_name or started_context:
+                self.cur_file_name = filename
+                disp = self.should_trace_cache.get(filename)
+                if disp is None:
+                    disp = self.should_trace(filename, frame)
+                    self.should_trace_cache[filename] = disp
+
+                self.cur_file_data = None
+                if disp.trace:
+                    tracename = disp.source_filename
+                    if tracename not in self.data:
+                        self.data[tracename] = set()
+                    self.cur_file_data = self.data[tracename]
+                else:
+                    frame.f_trace_lines = False
+            elif not self.cur_file_data:
                 frame.f_trace_lines = False
 
             # The call event is really a "start frame" event, and happens for
@@ -225,7 +240,7 @@ class PyTracer:
             if self.started_context:
                 self.context = None
                 self.switch_context(None)
-        return self._trace
+        return self._cached_bound_method_trace
 
     def start(self):
         """Start this Tracer.
@@ -243,10 +258,10 @@ class PyTracer:
                     # function, but we are marked as running again, so maybe it
                     # will be ok?
                     #self.log("~", "starting on different threads")
-                    return self._trace
+                    return self._cached_bound_method_trace
 
-        sys.settrace(self._trace)
-        return self._trace
+        sys.settrace(self._cached_bound_method_trace)
+        return self._cached_bound_method_trace
 
     def stop(self):
         """Stop this Tracer."""
@@ -271,9 +286,10 @@ class PyTracer:
             # so don't warn if we are in atexit on PyPy and the trace function
             # has changed to None.
             dont_warn = (env.PYPY and env.PYPYVERSION >= (5, 4) and self.in_atexit and tf is None)
-            if (not dont_warn) and tf != self._trace:   # pylint: disable=comparison-with-callable
+            if (not dont_warn) and tf != self._cached_bound_method_trace:   # pylint: disable=comparison-with-callable
                 self.warn(
-                    f"Trace function changed, data is likely wrong: {tf!r} != {self._trace!r}",
+                    "Trace function changed, data is likely wrong: " +
+                    f"{tf!r} != {self._cached_bound_method_trace!r}",
                     slug="trace-changed",
                 )
 

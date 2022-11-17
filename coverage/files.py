@@ -4,7 +4,6 @@
 """File wrangling."""
 
 import hashlib
-import fnmatch
 import ntpath
 import os
 import os.path
@@ -24,8 +23,14 @@ def set_relative_directory():
     """Set the directory that `relative_filename` will be relative to."""
     global RELATIVE_DIR, CANONICAL_FILENAME_CACHE
 
+    # The current directory
+    abs_curdir = abs_file(os.curdir)
+    if not abs_curdir.endswith(os.sep):
+        # Suffix with separator only if not at the system root
+        abs_curdir = abs_curdir + os.sep
+
     # The absolute path to our current directory.
-    RELATIVE_DIR = os.path.normcase(abs_file(os.curdir) + os.sep)
+    RELATIVE_DIR = os.path.normcase(abs_curdir)
 
     # Cache of results of calling the canonical_filename() method, to
     # avoid duplicating work.
@@ -166,7 +171,7 @@ def isabs_anywhere(filename):
 
 
 def prep_patterns(patterns):
-    """Prepare the file patterns for use in a `FnmatchMatcher`.
+    """Prepare the file patterns for use in a `GlobMatcher`.
 
     If a pattern starts with a wildcard, it is used as a pattern
     as-is.  If it does not start with a wildcard, then it is made
@@ -247,15 +252,15 @@ class ModuleMatcher:
         return False
 
 
-class FnmatchMatcher:
+class GlobMatcher:
     """A matcher for files by file name pattern."""
     def __init__(self, pats, name="unknown"):
         self.pats = list(pats)
-        self.re = fnmatches_to_regex(self.pats, case_insensitive=env.WINDOWS)
+        self.re = globs_to_regex(self.pats, case_insensitive=env.WINDOWS)
         self.name = name
 
     def __repr__(self):
-        return f"<FnmatchMatcher {self.name} {self.pats!r}>"
+        return f"<GlobMatcher {self.name} {self.pats!r}>"
 
     def info(self):
         """A list of strings for displaying when dumping state."""
@@ -270,17 +275,60 @@ def sep(s):
     """Find the path separator used in this string, or os.sep if none."""
     sep_match = re.search(r"[\\/]", s)
     if sep_match:
-        the_sep = sep_match.group(0)
+        the_sep = sep_match[0]
     else:
         the_sep = os.sep
     return the_sep
 
 
-def fnmatches_to_regex(patterns, case_insensitive=False, partial=False):
-    """Convert fnmatch patterns to a compiled regex that matches any of them.
+# Tokenizer for _glob_to_regex.
+# None as a sub means disallowed.
+G2RX_TOKENS = [(re.compile(rx), sub) for rx, sub in [
+    (r"\*\*\*+", None),             # Can't have ***
+    (r"[^/]+\*\*+", None),          # Can't have x**
+    (r"\*\*+[^/]+", None),          # Can't have **x
+    (r"\*\*/\*\*", None),           # Can't have **/**
+    (r"^\*+/", r"(.*[/\\\\])?"),    # ^*/ matches any prefix-slash, or nothing.
+    (r"/\*+$", r"[/\\\\].*"),       # /*$ matches any slash-suffix.
+    (r"\*\*/", r"(.*[/\\\\])?"),    # **/ matches any subdirs, including none
+    (r"/", r"[/\\\\]"),             # / matches either slash or backslash
+    (r"\*", r"[^/\\\\]*"),          # * matches any number of non slash-likes
+    (r"\?", r"[^/\\\\]"),           # ? matches one non slash-like
+    (r"\[.*?\]", r"\g<0>"),         # [a-f] matches [a-f]
+    (r"[a-zA-Z0-9_-]+", r"\g<0>"),  # word chars match themselves
+    (r"[\[\]+{}]", None),           # Can't have regex special chars
+    (r".", r"\\\g<0>"),             # Anything else is escaped to be safe
+]]
+
+def _glob_to_regex(pattern):
+    """Convert a file-path glob pattern into a regex."""
+    # Turn all backslashes into slashes to simplify the tokenizer.
+    pattern = pattern.replace("\\", "/")
+    if "/" not in pattern:
+        pattern = "**/" + pattern
+    path_rx = []
+    pos = 0
+    while pos < len(pattern):
+        for rx, sub in G2RX_TOKENS:                     # pragma: always breaks
+            m = rx.match(pattern, pos=pos)
+            if m:
+                if sub is None:
+                    raise ConfigError(f"File pattern can't include {m[0]!r}")
+                path_rx.append(m.expand(sub))
+                pos = m.end()
+                break
+    return "".join(path_rx)
+
+
+def globs_to_regex(patterns, case_insensitive=False, partial=False):
+    """Convert glob patterns to a compiled regex that matches any of them.
 
     Slashes are always converted to match either slash or backslash, for
     Windows support, even when running elsewhere.
+
+    If the pattern has no slash or backslash, then it is interpreted as
+    matching a file name anywhere it appears in the tree.  Otherwise, the glob
+    pattern must match the whole file path.
 
     If `partial` is true, then the pattern will match if the target string
     starts with the pattern. Otherwise, it must match the entire string.
@@ -289,23 +337,13 @@ def fnmatches_to_regex(patterns, case_insensitive=False, partial=False):
     strings.
 
     """
-    regexes = (fnmatch.translate(pattern) for pattern in patterns)
-    # Python3.7 fnmatch translates "/" as "/". Before that, it translates as "\/",
-    # so we have to deal with maybe a backslash.
-    regexes = (re.sub(r"\\?/", r"[\\\\/]", regex) for regex in regexes)
-
-    if partial:
-        # fnmatch always adds a \Z to match the whole string, which we don't
-        # want, so we remove the \Z.  While removing it, we only replace \Z if
-        # followed by paren (introducing flags), or at end, to keep from
-        # destroying a literal \Z in the pattern.
-        regexes = (re.sub(r'\\Z(\(\?|$)', r'\1', regex) for regex in regexes)
-
     flags = 0
     if case_insensitive:
         flags |= re.IGNORECASE
-    compiled = re.compile(join_regex(regexes), flags=flags)
-
+    rx = join_regex(map(_glob_to_regex, patterns))
+    if not partial:
+        rx = rf"(?:{rx})\Z"
+    compiled = re.compile(rx, flags=flags)
     return compiled
 
 
@@ -320,20 +358,22 @@ class PathAliases:
     map a path through those aliases to produce a unified path.
 
     """
-    def __init__(self, relative=False):
-        self.aliases = []
+    def __init__(self, debugfn=None, relative=False):
+        self.aliases = []   # A list of (original_pattern, regex, result)
+        self.debugfn = debugfn or (lambda msg: 0)
         self.relative = relative
+        self.pprinted = False
 
-    def pprint(self):       # pragma: debugging
+    def pprint(self):
         """Dump the important parts of the PathAliases, for debugging."""
-        print(f"Aliases (relative={self.relative}):")
-        for regex, result in self.aliases:
-            print(f"{regex.pattern!r} --> {result!r}")
+        self.debugfn(f"Aliases (relative={self.relative}):")
+        for original_pattern, regex, result in self.aliases:
+            self.debugfn(f" Rule: {original_pattern!r} -> {result!r} using regex {regex.pattern!r}")
 
     def add(self, pattern, result):
         """Add the `pattern`/`result` pair to the list of aliases.
 
-        `pattern` is an `fnmatch`-style pattern.  `result` is a simple
+        `pattern` is an `glob`-style pattern.  `result` is a simple
         string.  When mapping paths, if a path starts with a match against
         `pattern`, then that match is replaced with `result`.  This models
         isomorphic source trees being rooted at different places on two
@@ -343,6 +383,7 @@ class PathAliases:
         match an entire tree, and not just its root.
 
         """
+        original_pattern = pattern
         pattern_sep = sep(pattern)
 
         if len(pattern) > 1:
@@ -354,19 +395,18 @@ class PathAliases:
 
         # The pattern is meant to match a filepath.  Let's make it absolute
         # unless it already is, or is meant to match any prefix.
-        if not pattern.startswith('*') and not isabs_anywhere(pattern +
-                                                              pattern_sep):
+        if not pattern.startswith('*') and not isabs_anywhere(pattern + pattern_sep):
             pattern = abs_file(pattern)
         if not pattern.endswith(pattern_sep):
             pattern += pattern_sep
 
         # Make a regex from the pattern.
-        regex = fnmatches_to_regex([pattern], case_insensitive=True, partial=True)
+        regex = globs_to_regex([pattern], case_insensitive=True, partial=True)
 
         # Normalize the result: it must end with a path separator.
         result_sep = sep(result)
         result = result.rstrip(r"\/") + result_sep
-        self.aliases.append((regex, result))
+        self.aliases.append((original_pattern, regex, result))
 
     def map(self, path):
         """Map `path` through the aliases.
@@ -384,14 +424,40 @@ class PathAliases:
         of `path` unchanged.
 
         """
-        for regex, result in self.aliases:
+        if not self.pprinted:
+            self.pprint()
+            self.pprinted = True
+
+        for original_pattern, regex, result in self.aliases:
             m = regex.match(path)
             if m:
-                new = path.replace(m.group(0), result)
+                new = path.replace(m[0], result)
                 new = new.replace(sep(path), sep(result))
                 if not self.relative:
                     new = canonical_filename(new)
+                dot_start = result.startswith(("./", ".\\")) and len(result) > 2
+                if new.startswith(("./", ".\\")) and not dot_start:
+                    new = new[2:]
+                self.debugfn(
+                    f"Matched path {path!r} to rule {original_pattern!r} -> {result!r}, " +
+                    f"producing {new!r}"
+                )
                 return new
+
+        # If we get here, no pattern matched.
+
+        if self.relative and not isabs_anywhere(path):
+            parts = re.split(r"[/\\]", path)
+            if len(parts) > 1:
+                dir1 = parts[0]
+                pattern = f"*/{dir1}"
+                regex = rf"^(.*[\\/])?{re.escape(dir1)}[\\/]"
+                result = f"{dir1}{os.sep}"
+                self.debugfn(f"Generating rule: {pattern!r} -> {result!r} using regex {regex!r}")
+                self.aliases.append((pattern, re.compile(regex), result))
+                return self.map(path)
+
+        self.debugfn(f"No rules match, path {path!r} is unchanged")
         return path
 
 

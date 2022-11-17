@@ -343,9 +343,6 @@ class GoodFileTracerTest(FileTracerTest):
 
             # quux_5.html will be omitted from the results.
             assert render("quux_5.html", 3) == "[quux_5.html @ 3]"
-
-            # For Python 2, make sure unicode is working.
-            assert render(u"uni_3.html", 2) == "[uni_3.html @ 2]"
             """)
 
         # will try to read the actual source files, so make some
@@ -381,11 +378,6 @@ class GoodFileTracerTest(FileTracerTest):
         assert "bar_4.html" in line_counts(cov.get_data())
 
         assert "quux_5.html" not in line_counts(cov.get_data())
-
-        _, statements, missing, _ = cov.analysis("uni_3.html")
-        assert statements == [1, 2, 3]
-        assert missing == [1]
-        assert "uni_3.html" in line_counts(cov.get_data())
 
     def test_plugin2_with_branch(self):
         self.make_render_and_caller()

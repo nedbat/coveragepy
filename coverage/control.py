@@ -424,11 +424,15 @@ class Coverage:
         appropriate Python value.  For example, use True for booleans, not the
         string ``"True"``.
 
-        As an example, calling::
+        As an example, calling:
+
+        .. code-block:: python
 
             cov.set_option("run:branch", True)
 
-        has the same effect as this configuration file::
+        has the same effect as this configuration file:
+
+        .. code-block:: ini
 
             [run]
             branch = True
@@ -738,13 +742,14 @@ class Coverage:
         self._post_init()
         self.get_data()
 
-        aliases = None
-        if self.config.paths:
-            aliases = PathAliases(relative=self.config.relative_files)
-            for paths in self.config.paths.values():
-                result = paths[0]
-                for pattern in paths[1:]:
-                    aliases.add(pattern, result)
+        aliases = PathAliases(
+            debugfn=(self._debug.write if self._debug.should("pathmap") else None),
+            relative=self.config.relative_files,
+        )
+        for paths in self.config.paths.values():
+            result = paths[0]
+            for pattern in paths[1:]:
+                aliases.add(pattern, result)
 
         combine_parallel_data(
             self._data,
@@ -803,9 +808,6 @@ class Coverage:
                 file_paths[plugin_name].append(file_path)
             for plugin_name, paths in file_paths.items():
                 self._data.touch_files(paths, plugin_name)
-
-        if self.config.note:
-            self._warn("The '[run] note' setting is no longer supported.")
 
     # Backward compatibility with version 1.
     def analysis(self, morf):
@@ -904,7 +906,8 @@ class Coverage:
     def report(
         self, morfs=None, show_missing=None, ignore_errors=None,
         file=None, omit=None, include=None, skip_covered=None,
-        contexts=None, skip_empty=None, precision=None, sort=None
+        contexts=None, skip_empty=None, precision=None, sort=None,
+        output_format=None,
     ):
         """Write a textual summary report to `file`.
 
@@ -917,6 +920,9 @@ class Coverage:
         report.
 
         `file` is a file-like object, suitable for writing.
+
+        `output_format` determines the format, either "text" (the default),
+        "markdown", or "total".
 
         `include` is a list of file name patterns.  Files that match will be
         included in the report. Files matching `omit` will not be included in
@@ -949,13 +955,16 @@ class Coverage:
         .. versionadded:: 5.2
             The `precision` parameter.
 
+        .. versionadded:: 6.6
+            The `format` parameter.
+
         """
         with override_config(
             self,
             ignore_errors=ignore_errors, report_omit=omit, report_include=include,
             show_missing=show_missing, skip_covered=skip_covered,
             report_contexts=contexts, skip_empty=skip_empty, precision=precision,
-            sort=sort
+            sort=sort, format=output_format,
         ):
             reporter = SummaryReporter(self)
             return reporter.report(morfs, outfile=file)

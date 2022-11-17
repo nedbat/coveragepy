@@ -1013,7 +1013,7 @@ CTracer_get_stats(CTracer *self, PyObject *args_unused)
 {
 #if COLLECT_STATS
     return Py_BuildValue(
-        "{sI,sI,sI,sI,sI,sI,sI,sI,si,sI,sI,sI}",
+        "{sI,sI,sI,sI,sI,sI,si,sI,sI,sI}",
         "calls", self->stats.calls,
         "lines", self->stats.lines,
         "returns", self->stats.returns,

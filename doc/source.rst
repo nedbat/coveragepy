@@ -57,10 +57,12 @@ file name patterns, specifying files not to measure.  If both ``include`` and
 match the include patterns, then any files that match the omit pattern are
 removed from the set.
 
-The ``include`` and ``omit`` file name patterns follow typical shell syntax:
-``*`` matches any number of characters and ``?`` matches a single character.
-Patterns that start with a wildcard character are used as-is, other patterns
-are interpreted relative to the current directory::
+.. highlight:: ini
+
+The ``include`` and ``omit`` file name patterns follow common shell syntax,
+described below in :ref:`source_glob`.  Patterns that start with a wildcard
+character are used as-is, other patterns are interpreted relative to the
+current directory::
 
     [run]
     omit =
@@ -75,7 +77,7 @@ The ``source``, ``include``, and ``omit`` values all work together to determine
 the source that will be measured.
 
 If both ``source`` and ``include`` are set, the ``include`` value is ignored
-and a warning is printed on the standard output.
+and a warning is issued.
 
 
 .. _source_reporting:
@@ -101,3 +103,22 @@ reporting.
 
 Note that these are ways of specifying files to measure.  You can also exclude
 individual source lines.  See :ref:`excluding` for details.
+
+
+.. _source_glob:
+
+File patterns
+-------------
+
+File path patterns are used for include and omit, and for combining path
+remapping.  They follow common shell syntax:
+
+- ``*`` matches any number of file name characters, not including the directory
+  separator.
+
+- ``?`` matches a single file name character.
+
+- ``**`` matches any number of nested directory names, including none.
+
+- Both ``/`` and ``\`` will match either a slash or a backslash, to make
+  cross-platform matching easier.

@@ -11,7 +11,7 @@ from coverage.config import CoverageConfig
 from coverage.debug import short_stack
 from coverage.disposition import FileDisposition
 from coverage.exceptions import ConfigError
-from coverage.misc import human_sorted, isolate_module
+from coverage.misc import human_sorted_items, isolate_module
 from coverage.pytracer import PyTracer
 
 os = isolate_module(os)
@@ -285,6 +285,8 @@ class Collector:
     # for running code before the thread main is the tracing function.  So we
     # install this as a trace function, and the first time it's called, it does
     # the real trace installation.
+    #
+    # New in 3.12: threading.settrace_all_threads: https://github.com/python/cpython/pull/96681
 
     def _installation_trace(self, frame, event, arg):
         """Called on new threads, installs the real tracer."""
@@ -365,8 +367,8 @@ class Collector:
             stats = tracer.get_stats()
             if stats:
                 print("\nCoverage.py tracer stats:")
-                for k in human_sorted(stats.keys()):
-                    print(f"{k:>20}: {stats[k]}")
+                for k, v in human_sorted_items(stats.items()):
+                    print(f"{k:>20}: {v}")
         if self.threading:
             self.threading.settrace(None)
 
@@ -432,7 +434,7 @@ class Collector:
         else:
             raise runtime_err                   # pragma: cant happen
 
-        return {self.cached_mapped_file(k): v for k, v in items if v}
+        return {self.cached_mapped_file(k): v for k, v in items}
 
     def plugin_was_disabled(self, plugin):
         """Record that `plugin` was disabled during the run."""

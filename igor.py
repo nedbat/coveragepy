@@ -15,10 +15,12 @@ import glob
 import inspect
 import os
 import platform
+import re
 import subprocess
 import sys
 import sysconfig
 import textwrap
+import types
 import warnings
 import zipfile
 
@@ -203,25 +205,20 @@ def run_tests_with_coverage(tracer, *runner_args):
         cov.stop()
         os.remove(pth_path)
 
-    cov.combine()
     cov.save()
-
     return status
 
 
 def do_combine_html():
-    """Combine data from a meta-coverage run, and make the HTML and XML reports."""
+    """Combine data from a meta-coverage run, and make the HTML report."""
     import coverage
     os.environ['COVERAGE_HOME'] = os.getcwd()
-    os.environ['COVERAGE_METAFILE'] = os.path.abspath(".metacov")
     cov = coverage.Coverage(config_file="metacov.ini")
     cov.load()
     cov.combine()
     cov.save()
     show_contexts = bool(os.environ.get('COVERAGE_DYNCTX') or os.environ.get('COVERAGE_CONTEXT'))
     cov.html_report(show_contexts=show_contexts)
-    cov.xml_report()
-    cov.json_report(pretty_print=True)
 
 
 def do_test_with_tracer(tracer, *runner_args):
@@ -380,44 +377,94 @@ def do_quietly(command):
     return proc.returncode
 
 
+def get_release_facts():
+    """Return an object with facts about the current release."""
+    import coverage
+    facts = types.SimpleNamespace()
+    facts.ver = coverage.__version__
+    facts.vi = coverage.version_info
+    facts.shortver = f"{facts.vi[0]}.{facts.vi[1]}.{facts.vi[2]}"
+    facts.anchor = facts.shortver.replace(".", "-")
+    if facts.vi[3] != "final":
+        facts.anchor += f"{facts.vi[3][0]}{facts.vi[4]}"
+    facts.next_vi = (facts.vi[0], facts.vi[1], facts.vi[2]+1, "alpha", 0)
+    facts.now = datetime.datetime.now()
+    facts.branch = subprocess.getoutput("git rev-parse --abbrev-ref @")
+    return facts
+
+
+def update_file(fname, pattern, replacement):
+    """Update the contents of a file, replacing pattern with replacement."""
+    with open(fname) as fobj:
+        old_text = fobj.read()
+
+    new_text = re.sub(pattern, replacement, old_text, count=1)
+
+    if new_text != old_text:
+        print(f"Updating {fname}")
+        with open(fname, "w") as fobj:
+            fobj.write(new_text)
+
+UNRELEASED = "Unreleased\n----------"
+
+def do_edit_for_release():
+    """Edit a few files in preparation for a release."""
+    facts = get_release_facts()
+
+    # NOTICE.txt
+    update_file("NOTICE.txt", r"Copyright 2004.*? Ned", f"Copyright 2004-{facts.now:%Y} Ned")
+
+    # CHANGES.rst
+    title = f"Version {facts.ver} — {facts.now:%Y-%m-%d}"
+    rule = "-" * len(title)
+    new_head = f".. _changes_{facts.anchor}:\n\n{title}\n{rule}"
+
+    update_file("CHANGES.rst", re.escape(UNRELEASED), new_head)
+
+    # doc/conf.py
+    new_conf = textwrap.dedent(f"""\
+        # @@@ editable
+        copyright = "2009\N{EN DASH}{facts.now:%Y}, Ned Batchelder" # pylint: disable=redefined-builtin
+        # The short X.Y.Z version.
+        version = "{facts.shortver}"
+        # The full version, including alpha/beta/rc tags.
+        release = "{facts.ver}"
+        # The date of release, in "monthname day, year" format.
+        release_date = "{facts.now:%B %-d, %Y}"
+        # @@@ end
+        """)
+    update_file("doc/conf.py", r"(?s)# @@@ editable\n.*# @@@ end\n", new_conf)
+
+
+def do_bump_version():
+    """Edit a few files right after a release to bump the version."""
+    facts = get_release_facts()
+
+    # CHANGES.rst
+    update_file(
+        "CHANGES.rst",
+        r"(?m)^\.\. _changes_",
+        f"{UNRELEASED}\n\nNothing yet.\n\n\n.. _changes_",
+    )
+
+    # coverage/version.py
+    next_version = f"version_info = {facts.next_vi}".replace("'", '"')
+    update_file("coverage/version.py", r"(?m)^version_info = .*$", next_version)
+
+
 def do_cheats():
     """Show a cheatsheet of useful things during releasing."""
-    import coverage
-    ver = coverage.__version__
-    vi = coverage.version_info
-    anchor = f"{vi[0]}-{vi[1]}-{vi[2]}"
-    if vi[3] != "final":
-        anchor += f"{vi[3][0]}{vi[4]}"
-    branch = subprocess.getoutput("git rev-parse --abbrev-ref @")
-    print(f"Coverage version is {ver}")
+    facts = get_release_facts()
+    print(f"Coverage version is {facts.ver}")
 
-    print(f"pip install git+https://github.com/nedbat/coveragepy@{branch}")
-
-    print("\nfor CHANGES.rst before release:")
-    print(f".. _changes_{anchor}:")
-    print()
-    head = f"Version {ver} — {datetime.datetime.now():%Y-%m-%d}"
-    print(head)
-    print("-" * len(head))
-
-    print(f"https://coverage.readthedocs.io/en/{ver}/changes.html#changes-{anchor}")
+    print(f"pip install git+https://github.com/nedbat/coveragepy@{facts.branch}")
+    print(f"https://coverage.readthedocs.io/en/{facts.ver}/changes.html#changes-{facts.anchor}")
 
     print(
+        "\n## For GitHub commenting:\n" +
         "This is now released as part of " +
-        f"[coverage {ver}](https://pypi.org/project/coverage/{ver})."
+        f"[coverage {facts.ver}](https://pypi.org/project/coverage/{facts.ver})."
     )
-    print("\nnext:")
-    next_vi = (vi[0], vi[1], vi[2]+1, "alpha", 0)
-    print(f"version_info = {next_vi}".replace("'", '"'))
-    print("\nfor CHANGES.rst after release:")
-    print(textwrap.dedent("""\
-        Unreleased
-        ----------
-
-        Nothing yet.
-
-
-        """))
 
 
 def do_help():

@@ -158,6 +158,8 @@ class SimpleArcTest(CoverageTest):
         if env.JYTHON:
             # Jython reports no lines for an empty file.
             arcz_missing=".1 1."                    # pragma: only jython
+        elif env.PYBEHAVIOR.empty_is_empty:
+            arcz_missing=".1 1."
         else:
             # Other Pythons report one line.
             arcz_missing=""
@@ -1359,6 +1361,19 @@ class MatchCaseTest(CoverageTest):
             arcz=".1 12 23 34 45 58 46 78 67 68 82 2.",
         )
         assert self.stdout() == "None\nno go\ngo: n\n"
+
+    def test_absurd_wildcard(self):
+        # https://github.com/nedbat/coveragepy/issues/1421
+        self.check_coverage("""\
+            def absurd(x):
+                match x:
+                    case (3 | 99 | (999 | _)):
+                        print("default")
+            absurd(5)
+            """,
+            arcz=".1 15 5.  .2 23 34 4.",
+        )
+        assert self.stdout() == "default\n"
 
 
 class OptimizedIfTest(CoverageTest):

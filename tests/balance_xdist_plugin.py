@@ -104,7 +104,7 @@ class BalanceXdistPlugin:       # pragma: debugging
         yield
         self.write_duration_row(item, "teardown", time.time() - start)
 
-    @pytest.mark.trylast
+    @pytest.hookimpl(trylast=True)
     def pytest_xdist_make_scheduler(self, config, log):
         """Create our BalancedScheduler using time data from the last run."""
         # Assign tests to chunks

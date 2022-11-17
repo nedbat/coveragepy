@@ -151,7 +151,14 @@ class PythonFileReporter(FileReporter):
 
         filename = source_for_morf(morf)
 
-        super().__init__(canonical_filename(filename))
+        fname = filename
+        canonicalize = True
+        if self.coverage is not None:
+            if self.coverage.config.relative_files:
+                canonicalize = False
+        if canonicalize:
+            fname = canonical_filename(filename)
+        super().__init__(fname)
 
         if hasattr(morf, '__name__'):
             name = morf.__name__.replace(".", os.sep)

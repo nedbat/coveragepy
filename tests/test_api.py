@@ -71,7 +71,6 @@ class ApiTest(CoverageTest):
         assert missing == [1]
 
     def test_filenames(self):
-
         self.make_file("mymain.py", """\
             import mymod
             a = 1
@@ -866,7 +865,11 @@ class SourceIncludeOmitTest(IncludeOmitTestsMixin, CoverageTest):
         # Since we need to import from there, we also add it to the beginning
         # of sys.path.
 
-        shutil.copytree(nice_file(TESTS_DIR, "modules"), "tests_dir_modules")
+        shutil.copytree(
+            nice_file(TESTS_DIR, "modules"),
+            "tests_dir_modules",
+            ignore=shutil.ignore_patterns("__pycache__"),
+        )
         sys.path.insert(0, abs_file("tests_dir_modules"))
 
     def coverage_usepkgs(self, **kwargs):
@@ -1236,6 +1239,38 @@ class RelativePathTest(CoverageTest):
         self.assert_file_count(".coverage.*", 0)
         self.assert_exists(".coverage")
 
+    def test_files_up_one_level(self):
+        # https://github.com/nedbat/coveragepy/issues/1280
+        self.make_file("src/mycode.py", """\
+            def foo():
+                return 17
+            """)
+        self.make_file("test/test_it.py", """\
+            from src.mycode import foo
+            assert foo() == 17
+            """)
+        self.make_file("test/.coveragerc", """\
+            [run]
+            parallel = True
+            relative_files = True
+
+            [paths]
+            source =
+                ../src/
+                */src
+            """)
+        os.chdir("test")
+        sys.path.insert(0, "..")
+        cov1 = coverage.Coverage()
+        self.start_import_stop(cov1, "test_it")
+        cov1.save()
+        cov2 = coverage.Coverage()
+        cov2.combine()
+        cov3 = coverage.Coverage()
+        cov3.load()
+        report = self.get_report(cov3)
+        assert self.last_line_squeezed(report) == "TOTAL 4 0 100%"
+
 
 class CombiningTest(CoverageTest):
     """More tests of combining data."""
@@ -1327,7 +1362,7 @@ class CombiningTest(CoverageTest):
 
         # Make bogus data files.
         self.make_file(".coverage.bad1", "This isn't a coverage data file.")
-        self.make_file(".coverage.bad2", "This isn't a coverage data file.")
+        self.make_file(".coverage.bad2", "This isn't a coverage data file either.")
 
         # Combine the parallel coverage data files into .coverage, but nothing is readable.
         cov = coverage.Coverage()

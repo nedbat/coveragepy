@@ -43,8 +43,8 @@ class BaseCmdLineTest(CoverageTest):
     )
     _defaults.Coverage().report(
         ignore_errors=None, include=None, omit=None, morfs=[],
-        show_missing=None, skip_covered=None, contexts=None, skip_empty=None, precision=None,
-        sort=None,
+        show_missing=None, skip_covered=None, contexts=None, skip_empty=None,
+        precision=None, sort=None, output_format=None,
     )
     _defaults.Coverage().xml_report(
         ignore_errors=None, include=None, omit=None, morfs=[], outfile=None,
@@ -584,6 +584,11 @@ class CmdLineTest(BaseCmdLineTest):
             cov = Coverage(data_file="foo.cov.2")
             cov.load()
             cov.report(show_missing=None)
+            """)
+        self.cmd_executes("report --format=markdown", """\
+            cov = Coverage()
+            cov.load()
+            cov.report(output_format="markdown")
             """)
 
     def test_run(self):

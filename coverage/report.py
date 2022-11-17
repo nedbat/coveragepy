@@ -6,7 +6,7 @@
 import sys
 
 from coverage.exceptions import CoverageException, NoDataError, NotPython
-from coverage.files import prep_patterns, FnmatchMatcher
+from coverage.files import prep_patterns, GlobMatcher
 from coverage.misc import ensure_dir_for_file, file_be_gone
 
 
@@ -57,11 +57,11 @@ def get_analysis_to_report(coverage, morfs):
     config = coverage.config
 
     if config.report_include:
-        matcher = FnmatchMatcher(prep_patterns(config.report_include), "report_include")
+        matcher = GlobMatcher(prep_patterns(config.report_include), "report_include")
         file_reporters = [fr for fr in file_reporters if matcher.match(fr.filename)]
 
     if config.report_omit:
-        matcher = FnmatchMatcher(prep_patterns(config.report_omit), "report_omit")
+        matcher = GlobMatcher(prep_patterns(config.report_omit), "report_omit")
         file_reporters = [fr for fr in file_reporters if not matcher.match(fr.filename)]
 
     if not file_reporters:

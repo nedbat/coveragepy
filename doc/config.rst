@@ -7,6 +7,8 @@
 Configuration reference
 =======================
 
+.. highlight:: ini
+
 Coverage.py options can be specified in a configuration file.  This makes it
 easier to re-run coverage.py with consistent settings, and also allows for
 specification of options that are otherwise only available in the
@@ -29,10 +31,14 @@ Coverage.py will read settings from other usual configuration files if no other
 configuration file is used.  It will automatically read from "setup.cfg" or
 "tox.ini" if they exist.  In this case, the section names have "coverage:"
 prefixed, so the ``[run]`` options described below will be found in the
-``[coverage:run]`` section of the file. If coverage.py is installed with the
-``toml`` extra (``pip install coverage[toml]``), it will automatically read
-from "pyproject.toml". Configuration must be within the ``[tool.coverage]``
-section, for example, ``[tool.coverage.run]``.
+``[coverage:run]`` section of the file.
+
+Coverage.py will read from "pyproject.toml" if TOML support is available,
+either because you are running on Python 3.11 or later, or because you
+installed with the ``toml`` extra (``pip install coverage[toml]``).
+Configuration must be within the ``[tool.coverage]`` section, for example,
+``[tool.coverage.run]``.  Environment variable expansion in values is
+available, but only within quoted strings, even for non-string values.
 
 
 Syntax
@@ -216,14 +222,6 @@ measurement or reporting.  Ignored if ``source`` is set.  See :ref:`source` for
 details.
 
 
-.. _config_run_note:
-
-[run] note
-..........
-
-(string) This is now obsolete.
-
-
 .. _config_run_omit:
 
 [run] omit
@@ -257,9 +255,9 @@ information.
 [run] relative_files
 ....................
 
-(*experimental*, boolean, default False) store relative file paths in the data
-file.  This makes it easier to measure code in one (or multiple) environments,
-and then report in another. See :ref:`cmd_combine` for details.
+(boolean, default False) store relative file paths in the data file.  This
+makes it easier to measure code in one (or multiple) environments, and then
+report in another. See :ref:`cmd_combine` for details.
 
 Note that setting ``source`` has to be done in the configuration file rather
 than the command line for this option to work, since the reporting commands
@@ -348,7 +346,10 @@ against the source file found at "src/module.py".
 If you specify more than one list of paths, they will be considered in order.
 The first list that has a match will be used.
 
-See :ref:`cmd_combine` for more information.
+The ``--debug=pathmap`` option can be used to log details of the re-mapping of
+paths.  See :ref:`the --debug option <cmd_run_debug>`.
+
+See :ref:`cmd_combine_remapping` and :ref:`source_glob` for more information.
 
 
 .. _config_report:

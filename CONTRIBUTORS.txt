@@ -21,8 +21,10 @@ Arcadiy Ivanov
 Aron Griffis
 Artem Dayneko
 Arthur Deygin
+Arthur Rio
 Ben Carlsson
 Ben Finney
+Benjamin Schubert
 Bernát Gábor
 Bill Hart
 Bradley Burns
@@ -40,6 +42,7 @@ Chris Rose
 Chris Warrick
 Christian Heimes
 Christine Lytwynec
+Christoph Blessing
 Christoph Zwerschke
 Clément Pit-Claudel
 Conrad Ho
@@ -98,7 +101,9 @@ Lars Hupfeldt Nielsen
 Leonardo Pistone
 Lex Berezhny
 Loïc Dachary
+Lorenzo Micò
 Marc Abramowitz
+Marc Legendre
 Marcelo Trylesinski
 Marcus Cobden
 Marius Gedminas
@@ -107,8 +112,11 @@ Martin Fuzzey
 Matt Bachmann
 Matthew Boehm
 Matthew Desmarais
+Matus Valo
 Max Linke
+Michael Krebs
 Michał Bultrowicz
+Michał Górny
 Mickie Betz
 Mike Fiedler
 Naveen Yadav
@@ -142,7 +150,9 @@ Stephan Richter
 Stephen Finucane
 Steve Dower
 Steve Leonard
+Steve Oswald
 Steve Peak
+Sviatoslav Sydorenko
 S. Y. Lee
 Teake Nutma
 Ted Wexler
@@ -153,6 +163,7 @@ Valentin Lab
 Vince Salvino
 Ville Skyttä
 Xie Yanbo
+Yilei "Dolee" Yang
 Yury Selivanov
 Zac Hatfield-Dodds
 Zooko Wilcox-O'Hearn

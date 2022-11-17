@@ -4,7 +4,6 @@
 """SQLite coverage data."""
 
 import collections
-import datetime
 import functools
 import glob
 import itertools
@@ -56,7 +55,6 @@ CREATE TABLE meta (
     --  'has_arcs' boolean      -- Is this data recording branches?
     --  'sys_argv' text         -- The coverage command line that recorded the data.
     --  'version' text          -- The version of coverage.py that made the file.
-    --  'when' text             -- Datetime when the file was created.
 );
 
 CREATE TABLE file (
@@ -305,7 +303,6 @@ class CoverageData(SimpleReprMixin):
             [
                 ("sys_argv", str(getattr(sys, "argv", None))),
                 ("version", __version__),
-                ("when", datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")),
             ]
         )
 
@@ -596,7 +593,9 @@ class CoverageData(SimpleReprMixin):
         """Update this data with data from several other :class:`CoverageData` instances.
 
         If `aliases` is provided, it's a `PathAliases` object that is used to
-        re-map paths to match the local machine's.
+        re-map paths to match the local machine's.  Note: `aliases` is None
+        only when called directly from the test suite.
+
         """
         if self._debug.should("dataop"):
             self._debug.write("Updating with data from {!r}".format(
@@ -609,8 +608,7 @@ class CoverageData(SimpleReprMixin):
 
         aliases = aliases or PathAliases()
 
-        # Force the database we're writing to to exist before we start nesting
-        # contexts.
+        # Force the database we're writing to to exist before we start nesting contexts.
         self._start_using()
 
         # Collector for all arcs, lines and tracers
@@ -774,8 +772,8 @@ class CoverageData(SimpleReprMixin):
         file_be_gone(self._filename)
         if parallel:
             data_dir, local = os.path.split(self._filename)
-            localdot = local + ".*"
-            pattern = os.path.join(os.path.abspath(data_dir), localdot)
+            local_abs_path = os.path.join(os.path.abspath(data_dir), local)
+            pattern = glob.escape(local_abs_path) + ".*"
             for filename in glob.glob(pattern):
                 if self._debug.should("dataio"):
                     self._debug.write(f"Erasing parallel data file {filename!r}")
@@ -1004,7 +1002,6 @@ class CoverageData(SimpleReprMixin):
             copts = textwrap.wrap(", ".join(copts), width=75)
 
         return [
-            ("sqlite3_version", sqlite3.version),
             ("sqlite3_sqlite_version", sqlite3.sqlite_version),
             ("sqlite3_temp_store", temp_store),
             ("sqlite3_compile_options", copts),
@@ -1064,7 +1061,7 @@ class SqliteDb(SimpleReprMixin):
         except sqlite3.Error as exc:
             raise DataError(f"Couldn't use data file {self.filename!r}: {exc}") from exc
 
-        self.con.create_function("REGEXP", 2, _regexp)
+        self.con.create_function("REGEXP", 2, lambda txt, pat: re.search(txt, pat) is not None)
 
         # This pragma makes writing faster. It disables rollbacks, but we never need them.
         # PyPy needs the .close() calls here, or sqlite gets twisted up:
@@ -1181,8 +1178,3 @@ class SqliteDb(SimpleReprMixin):
     def dump(self):
         """Return a multi-line string, the SQL dump of the database."""
         return "\n".join(self.con.iterdump())
-
-
-def _regexp(text, pattern):
-    """A regexp function for SQLite."""
-    return re.search(text, pattern) is not None

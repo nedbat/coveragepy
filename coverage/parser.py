@@ -15,7 +15,7 @@ from coverage.bytecode import code_objects
 from coverage.debug import short_stack
 from coverage.exceptions import NoSource, NotPython, _StopEverything
 from coverage.misc import contract, join_regex, new_contract, nice_pair, one_of
-from coverage.phystokens import compile_unicode, generate_tokens, neuter_encoding_declaration
+from coverage.phystokens import generate_tokens
 
 
 class PythonParser:
@@ -66,6 +66,9 @@ class PythonParser:
 
         # The raw line numbers of excluded lines of code, as marked by pragmas.
         self.raw_excluded = set()
+
+        # The line numbers of class definitions.
+        self.raw_classdefs = set()
 
         # The line numbers of docstring lines.
         self.raw_docstrings = set()
@@ -130,6 +133,12 @@ class PythonParser:
                 indent += 1
             elif toktype == token.DEDENT:
                 indent -= 1
+            elif toktype == token.NAME:
+                if ttext == 'class':
+                    # Class definitions look like branches in the bytecode, so
+                    # we need to exclude them.  The simplest way is to note the
+                    # lines with the 'class' keyword.
+                    self.raw_classdefs.add(slineno)
             elif toktype == token.OP:
                 if ttext == ':' and nesting == 0:
                     should_exclude = (elineno in self.raw_excluded) or excluding_decorators
@@ -292,6 +301,12 @@ class PythonParser:
                 continue
             exit_counts[l1] += 1
 
+        # Class definitions have one extra exit, so remove one for each:
+        for l in self.raw_classdefs:
+            # Ensure key is there: class definitions can include excluded lines.
+            if l in exit_counts:
+                exit_counts[l] -= 1
+
         return exit_counts
 
     def missing_arc_description(self, start, end, executed_arcs=None):
@@ -344,7 +359,7 @@ class ByteParser:
             self.code = code
         else:
             try:
-                self.code = compile_unicode(text, filename, "exec")
+                self.code = compile(text, filename, "exec")
             except SyntaxError as synerr:
                 raise NotPython(
                     "Couldn't parse '%s' as Python source: '%s' at line %d" % (
@@ -377,7 +392,7 @@ class ByteParser:
         """
         if hasattr(self.code, "co_lines"):
             for _, _, line in self.code.co_lines():
-                if line is not None:
+                if line:
                     yield line
         else:
             # Adapted from dis.py in the standard library.
@@ -609,17 +624,13 @@ class NodeList:
 # TODO: the cause messages have too many commas.
 # TODO: Shouldn't the cause messages join with "and" instead of "or"?
 
-def ast_parse(text):
-    """How we create an AST parse."""
-    return ast.parse(neuter_encoding_declaration(text))
-
 
 class AstArcAnalyzer:
     """Analyze source text with an AST to find executable code paths."""
 
     @contract(text='unicode', statements=set)
     def __init__(self, text, statements, multiline):
-        self.root_node = ast_parse(text)
+        self.root_node = ast.parse(text)
         # TODO: I think this is happening in too many places.
         self.statements = {multiline.get(l, l) for l in statements}
         self.multiline = multiline
@@ -1026,7 +1037,10 @@ class AstArcAnalyzer:
         had_wildcard = False
         for case in node.cases:
             case_start = self.line_for_node(case.pattern)
-            if isinstance(case.pattern, ast.MatchAs):
+            pattern = case.pattern
+            while isinstance(pattern, ast.MatchOr):
+                pattern = pattern.patterns[-1]
+            if isinstance(pattern, ast.MatchAs):
                 had_wildcard = True
             self.add_arc(last_start, case_start, "the pattern on line {lineno} always matched")
             from_start = ArcStart(case_start, cause="the pattern on line {lineno} never matched")
@@ -1287,7 +1301,6 @@ class AstArcAnalyzer:
             self.add_arc(start, -start, None, f"didn't finish the {noun} on line {start}")
         return _code_object__expression_callable
 
-    # pylint: disable=too-many-function-args
     _code_object__Lambda = _make_expression_code_method("lambda")
     _code_object__GeneratorExp = _make_expression_code_method("generator expression")
     _code_object__DictComp = _make_expression_code_method("dictionary comprehension")

@@ -8,6 +8,7 @@ import textwrap
 from tests.coveragetest import CoverageTest
 
 import coverage
+from coverage import env
 
 
 class LcovTest(CoverageTest):
@@ -202,10 +203,8 @@ class LcovTest(CoverageTest):
             DA:9,0,FPTWzd68bDx76HN7VHu1wA
             LF:6
             LH:4
-            BRDA:0,0,0,1
-            BRDA:7,0,1,1
-            BRF:2
-            BRH:2
+            BRF:0
+            BRH:0
             end_of_record
             """)
         actual_result = self.get_lcov_report_content()
@@ -252,7 +251,8 @@ class LcovTest(CoverageTest):
         line. It will also note the lack of branches, and the checksum for
         the line.
 
-        Although there are no lines found, it will note one line as hit.
+        Although there are no lines found, it will note one line as hit in
+        old Pythons, and no lines hit in newer Pythons.
         """
 
         self.make_file("__init__.py", "")
@@ -261,15 +261,27 @@ class LcovTest(CoverageTest):
         self.start_import_stop(cov, "__init__")
         cov.lcov_report()
         self.assert_exists("coverage.lcov")
-        expected_result = textwrap.dedent("""\
-            TN:
-            SF:__init__.py
-            DA:1,1,1B2M2Y8AsgTpgAmY7PhCfg
-            LF:0
-            LH:1
-            BRF:0
-            BRH:0
-            end_of_record
-            """)
+        # Newer Pythons have truly empty empty files.
+        if env.PYBEHAVIOR.empty_is_empty:
+            expected_result = textwrap.dedent("""\
+                TN:
+                SF:__init__.py
+                LF:0
+                LH:0
+                BRF:0
+                BRH:0
+                end_of_record
+                """)
+        else:
+            expected_result = textwrap.dedent("""\
+                TN:
+                SF:__init__.py
+                DA:1,1,1B2M2Y8AsgTpgAmY7PhCfg
+                LF:0
+                LH:1
+                BRF:0
+                BRH:0
+                end_of_record
+                """)
         actual_result = self.get_lcov_report_content()
         assert actual_result == expected_result

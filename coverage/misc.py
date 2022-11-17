@@ -181,8 +181,12 @@ def bool_or_none(b):
 
 
 def join_regex(regexes):
-    """Combine a list of regexes into one that matches any of them."""
-    return "|".join(f"(?:{r})" for r in regexes)
+    """Combine a series of regexes into one that matches any of them."""
+    regexes = list(regexes)
+    if len(regexes) == 1:
+        return regexes[0]
+    else:
+        return "|".join(f"(?:{r})" for r in regexes)
 
 
 def file_be_gone(path):
@@ -324,17 +328,17 @@ def substitute_variables(text, variables):
 
     def dollar_replace(match):
         """Called for each $replacement."""
-        # Only one of the groups will have matched, just get its text.
+        # Only one of the dollar_groups will have matched, just get its text.
         word = next(g for g in match.group(*dollar_groups) if g)    # pragma: always breaks
         if word == "$":
             return "$"
         elif word in variables:
             return variables[word]
-        elif match.group('strict'):
+        elif match['strict']:
             msg = f"Variable {word} is undefined: {text!r}"
             raise CoverageException(msg)
         else:
-            return match.group('defval')
+            return match['defval']
 
     text = re.sub(dollar_pattern, dollar_replace, text)
     return text
@@ -364,7 +368,7 @@ def import_local_file(modname, modfile=None):
     return mod
 
 
-def human_key(s):
+def _human_key(s):
     """Turn a string into a list of string and number chunks.
         "z23a" -> ["z", 23, "a"]
     """
@@ -385,14 +389,17 @@ def human_sorted(strings):
     Returns the sorted list.
 
     """
-    return sorted(strings, key=human_key)
+    return sorted(strings, key=_human_key)
 
 def human_sorted_items(items, reverse=False):
-    """Sort the (string, value) items the way humans expect.
+    """Sort (string, ...) items the way humans expect.
+
+    The elements of `items` can be any tuple/list. They'll be sorted by the
+    first element (a string), with ties broken by the remaining elements.
 
     Returns the sorted list of items.
     """
-    return sorted(items, key=lambda pair: (human_key(pair[0]), pair[1]), reverse=reverse)
+    return sorted(items, key=lambda item: (_human_key(item[0]), *item[1:]), reverse=reverse)
 
 
 def plural(n, thing="", things=""):

@@ -102,4 +102,17 @@ class JsonReporter:
                 'covered_branches': nums.n_executed_branches,
                 'missing_branches': nums.n_missing_branches,
             })
+            reported_file['executed_branches'] = list(
+                _convert_branch_arcs(analysis.executed_branch_arcs())
+            )
+            reported_file['missing_branches'] = list(
+                _convert_branch_arcs(analysis.missing_branch_arcs())
+            )
         return reported_file
+
+
+def _convert_branch_arcs(branch_arcs):
+    """Convert branch arcs to a list of two-element tuples."""
+    for source, targets in branch_arcs.items():
+        for target in targets:
+            yield source, target

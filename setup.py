@@ -45,6 +45,7 @@ Programming Language :: Python :: 3.8
 Programming Language :: Python :: 3.9
 Programming Language :: Python :: 3.10
 Programming Language :: Python :: 3.11
+Programming Language :: Python :: 3.12
 Programming Language :: Python :: Implementation :: CPython
 Programming Language :: Python :: Implementation :: PyPy
 Topic :: Software Development :: Quality Assurance
@@ -108,7 +109,7 @@ setup_args = dict(
 
     extras_require={
         # Enable pyproject.toml support.
-        'toml': ['tomli; python_version < "3.11"'],
+        'toml': ['tomli; python_full_version<="3.11.0a6"'],
     },
 
     # We need to get HTML assets from our htmlfiles directory.
@@ -120,7 +121,7 @@ setup_args = dict(
     long_description=long_description,
     long_description_content_type='text/x-rst',
     keywords='code coverage testing',
-    license='Apache 2.0',
+    license='Apache-2.0',
     classifiers=classifier_list,
     url="https://github.com/nedbat/coveragepy",
     project_urls={

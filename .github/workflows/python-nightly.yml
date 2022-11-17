@@ -8,10 +8,10 @@ on:
     branches:
       - "**/*nightly*"
   schedule:
-    # Run at 2:22am early Saturday morning Eastern time (6/7:22 UTC)
+    # Run at 2:22am early every morning Eastern time (6/7:22 UTC)
     # so that we get tips of CPython development tested.
-    # https://crontab.guru/#22_7_*_*_6
-    - cron: "22 7 * * 6"
+    # https://crontab.guru/#22_7_%2a_%2a_%2a
+    - cron: "22 7 * * *"
   workflow_dispatch:
 
 defaults:
@@ -21,6 +21,13 @@ defaults:
 env:
   PIP_DISABLE_PIP_VERSION_CHECK: 1
   COVERAGE_IGOR_VERBOSE: 1
+
+permissions:
+  contents: read
+
+concurrency:
+  group: "${{ github.workflow }}-${{ github.ref }}"
+  cancel-in-progress: true
 
 jobs:
   tests:
@@ -37,6 +44,7 @@ jobs:
           - "3.9-dev"
           - "3.10-dev"
           - "3.11-dev"
+          - "3.12-dev"
           # https://github.com/actions/setup-python#available-versions-of-pypy
           - "pypy-3.7-nightly"
           - "pypy-3.8-nightly"
@@ -48,13 +56,14 @@ jobs:
         uses: "actions/checkout@v3"
 
       - name: "Install ${{ matrix.python-version }} with deadsnakes"
-        uses: "deadsnakes/action@v2.1.1"
+        # uses: deadsnakes/action@v2.1.1
+        uses: deadsnakes/action@7ab8819e223c70d2bdedd692dfcea75824e0a617
         if: "!startsWith(matrix.python-version, 'pypy-')"
         with:
           python-version: "${{ matrix.python-version }}"
 
       - name: "Install ${{ matrix.python-version }} with setup-python"
-        uses: "actions/setup-python@v3"
+        uses: "actions/setup-python@v4"
         if: "startsWith(matrix.python-version, 'pypy-')"
         with:
           python-version: "${{ matrix.python-version }}"
@@ -69,7 +78,7 @@ jobs:
 
       - name: "Install dependencies"
         run: |
-          python -m pip install -r requirements/tox.pip
+          python -m pip install --require-hashes -r requirements/tox.pip
 
       - name: "Run tox"
         run: |

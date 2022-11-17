@@ -12,7 +12,6 @@ import pytest
 
 from coverage import env
 from coverage.phystokens import source_token_lines, source_encoding
-from coverage.phystokens import neuter_encoding_declaration, compile_unicode
 from coverage.python import get_python_source
 
 from tests.coveragetest import CoverageTest, TESTS_DIR
@@ -147,7 +146,7 @@ class SoftKeywordTest(CoverageTest):
         assert tokens[11][3] == ("nam", "case")
 
 
-# The default encoding is different in Python 2 and Python 3.
+# The default source file encoding.
 DEF_ENCODING = "utf-8"
 
 
@@ -206,115 +205,3 @@ class SourceEncodingTest(CoverageTest):
         source = b"# coding: klingon\n"
         with pytest.raises(SyntaxError, match="unknown encoding: klingon"):
             source_encoding(source)
-
-
-class NeuterEncodingDeclarationTest(CoverageTest):
-    """Tests of phystokens.neuter_encoding_declaration()."""
-
-    run_in_temp_dir = False
-
-    def test_neuter_encoding_declaration(self):
-        for lines_diff_expected, source, _ in ENCODING_DECLARATION_SOURCES:
-            neutered = neuter_encoding_declaration(source.decode("ascii"))
-            neutered = neutered.encode("ascii")
-
-            # The neutered source should have the same number of lines.
-            source_lines = source.splitlines()
-            neutered_lines = neutered.splitlines()
-            assert len(source_lines) == len(neutered_lines)
-
-            # Only one of the lines should be different.
-            lines_different = sum(
-                int(nline != sline) for nline, sline in zip(neutered_lines, source_lines)
-            )
-            assert lines_diff_expected == lines_different
-
-            # The neutered source will be detected as having no encoding
-            # declaration.
-            assert source_encoding(neutered) == DEF_ENCODING, f"Wrong encoding in {neutered!r}"
-
-    def test_two_encoding_declarations(self):
-        input_src = textwrap.dedent("""\
-            # -*- coding: ascii -*-
-            # -*- coding: utf-8 -*-
-            # -*- coding: utf-16 -*-
-            """)
-        expected_src = textwrap.dedent("""\
-            # (deleted declaration) -*-
-            # (deleted declaration) -*-
-            # -*- coding: utf-16 -*-
-            """)
-        output_src = neuter_encoding_declaration(input_src)
-        assert expected_src == output_src
-
-    def test_one_encoding_declaration(self):
-        input_src = textwrap.dedent("""\
-            # -*- coding: utf-16 -*-
-            # Just a comment.
-            # -*- coding: ascii -*-
-            """)
-        expected_src = textwrap.dedent("""\
-            # (deleted declaration) -*-
-            # Just a comment.
-            # -*- coding: ascii -*-
-            """)
-        output_src = neuter_encoding_declaration(input_src)
-        assert expected_src == output_src
-
-
-class Bug529Test(CoverageTest):
-    """Test of bug 529"""
-
-    def test_bug_529(self):
-        # Don't over-neuter coding declarations. This happened with a test
-        # file which contained code in multi-line strings, all with coding
-        # declarations. The neutering of the file also changed the multi-line
-        # strings, which it shouldn't have.
-        self.make_file("the_test.py", '''\
-            # -*- coding: utf-8 -*-
-            import unittest
-            class Bug529Test(unittest.TestCase):
-                def test_two_strings_are_equal(self):
-                    src1 = u"""\\
-                        # -*- coding: utf-8 -*-
-                        # Just a comment.
-                        """
-                    src2 = u"""\\
-                        # -*- coding: utf-8 -*-
-                        # Just a comment.
-                        """
-                    self.assertEqual(src1, src2)
-
-            if __name__ == "__main__":
-                unittest.main()
-            ''')
-        status, out = self.run_command_status("coverage run the_test.py")
-        assert status == 0
-        assert "OK" in out
-        # If this test fails, the output will be super-confusing, because it
-        # has a failing unit test contained within the failing unit test.
-
-
-class CompileUnicodeTest(CoverageTest):
-    """Tests of compiling Unicode strings."""
-
-    run_in_temp_dir = False
-
-    def assert_compile_unicode(self, source):
-        """Assert that `source` will compile properly with `compile_unicode`."""
-        source += "a = 42\n"
-        # This doesn't raise an exception:
-        code = compile_unicode(source, "<string>", "exec")
-        globs = {}
-        exec(code, globs)
-        assert globs['a'] == 42
-
-    def test_cp1252(self):
-        uni = """# coding: cp1252\n# \u201C curly \u201D\n"""
-        self.assert_compile_unicode(uni)
-
-    def test_double_coding_declaration(self):
-        # Build this string in a weird way so that actual vim's won't try to
-        # interpret it...
-        uni = "# -*-  coding:utf-8 -*-\n# v" + "im: fileencoding=utf-8\n"
-        self.assert_compile_unicode(uni)

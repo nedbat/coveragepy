@@ -3,6 +3,7 @@
 
 """Tests for coverage.py's code parsing."""
 
+import ast
 import os.path
 import textwrap
 import warnings
@@ -11,7 +12,7 @@ import pytest
 
 from coverage import env
 from coverage.exceptions import NotPython
-from coverage.parser import ast_dump, ast_parse, PythonParser
+from coverage.parser import ast_dump, PythonParser
 
 from tests.coveragetest import CoverageTest, TESTS_DIR
 from tests.helpers import arcz_to_arcs, re_lines, xfail_pypy_3749
@@ -43,7 +44,7 @@ class PythonParserTest(CoverageTest):
                 pass
             """)
         assert parser.exit_counts() == {
-            2:2, 3:1, 4:2, 5:1, 7:1, 9:2, 10:1
+            2:1, 3:1, 4:2, 5:1, 7:1, 9:1, 10:1
         }
 
     def test_generator_exit_counts(self):
@@ -89,7 +90,7 @@ class PythonParserTest(CoverageTest):
                     pass
             """)
         assert parser.exit_counts() == {
-            1:1, 2:1, 3:1
+            1:0, 2:1, 3:1
         }
 
     def test_missing_branch_to_excluded_code(self):
@@ -246,6 +247,15 @@ class PythonParserTest(CoverageTest):
         assert expected_statements == parser.statements
         assert expected_arcs == parser.arcs()
         assert expected_exits == parser.exit_counts()
+
+    def test_fuzzed_double_parse(self):
+        # https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=50381
+        # The second parse used to raise `TypeError: 'NoneType' object is not iterable`
+        msg = "EOF in multi-line statement"
+        with pytest.raises(NotPython, match=msg):
+            self.parse_source("]")
+        with pytest.raises(NotPython, match=msg):
+            self.parse_source("]")
 
 
 class ParserMissingArcDescriptionTest(CoverageTest):
@@ -463,7 +473,7 @@ class ParserFileTest(CoverageTest):
             class Bar:
                 pass
             """
-        counts = { 2:2, 3:1, 4:2, 5:1, 7:1, 9:2, 10:1 }
+        counts = { 2:1, 3:1, 4:2, 5:1, 7:1, 9:1, 10:1 }
         fname = slug + ".py"
         self.make_file(fname, text, newline=newline)
         parser = self.parse_file(fname)
@@ -521,7 +531,7 @@ def test_ast_dump():
             with warnings.catch_warnings():
                 # stress_phystoken.tok has deprecation warnings, suppress them.
                 warnings.filterwarnings("ignore", message=r".*invalid escape sequence",)
-                ast_root = ast_parse(source)
+                ast_root = ast.parse(source)
         result = []
         ast_dump(ast_root, print=result.append)
         if num_lines < 100:
