@@ -393,6 +393,7 @@ def get_release_facts():
     facts.next_vi = (facts.vi[0], facts.vi[1], facts.vi[2]+1, "alpha", 0)
     facts.now = datetime.datetime.now()
     facts.branch = subprocess.getoutput("git rev-parse --abbrev-ref @")
+    facts.sha = subprocess.getoutput("git rev-parse @")
     return facts
 
 
@@ -466,7 +467,12 @@ def do_cheats():
     print()
     print(f"Coverage version is {facts.ver}")
 
-    print(f"pip install git+https://github.com/nedbat/coveragepy@{facts.branch}")
+    egg = "egg=coverage==0.0"   # to force a re-install
+    if facts.branch == "master":
+        print(f"pip install git+https://github.com/nedbat/coveragepy#{egg}")
+    else:
+        print(f"pip install git+https://github.com/nedbat/coveragepy@{facts.branch}#{egg}")
+    print(f"pip install git+https://github.com/nedbat/coveragepy@{facts.sha}#{egg}")
     print(f"https://coverage.readthedocs.io/en/{facts.ver}/changes.html#changes-{facts.anchor}")
 
     print(
