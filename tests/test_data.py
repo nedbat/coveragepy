@@ -904,6 +904,26 @@ class CoverageDataFilesTest(CoverageTest):
         assert_measured_files(covdata3, MEASURED_FILES_1_2)
         self.assert_file_count(glob.escape(basename) + ".*", 0)
 
+    def test_meta_data(self):
+        # The metadata written to the data file shouldn't interfere with
+        # hashing to remove duplicates, except for debug=process, which
+        # writes debugging info as metadata.
+        debug = DebugControlString(options=[])
+        covdata1 = CoverageData(basename="meta.1", debug=debug)
+        covdata1.add_lines(LINES_1)
+        covdata1.write()
+        with sqlite3.connect("meta.1") as con:
+            data = sorted(k for (k,) in con.execute("select key from meta"))
+        assert data == ["has_arcs", "version"]
+
+        debug = DebugControlString(options=["process"])
+        covdata2 = CoverageData(basename="meta.2", debug=debug)
+        covdata2.add_lines(LINES_1)
+        covdata2.write()
+        with sqlite3.connect("meta.2") as con:
+            data = sorted(k for (k,) in con.execute("select key from meta"))
+        assert data == ["has_arcs", "sys_argv", "version", "when"]
+
 
 class DumpsLoadsTest(CoverageTest):
     """Tests of CoverageData.dumps and loads."""

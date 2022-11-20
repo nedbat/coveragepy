@@ -66,10 +66,11 @@ This is the database schema:
         key text,
         value text,
         unique (key)
-        -- Keys:
+        -- Possible keys:
         --  'has_arcs' boolean      -- Is this data recording branches?
         --  'sys_argv' text         -- The coverage command line that recorded the data.
         --  'version' text          -- The version of coverage.py that made the file.
+        --  'when' text             -- Datetime when the file was created.
     );
 
     CREATE TABLE file (
@@ -115,7 +116,7 @@ This is the database schema:
         foreign key (file_id) references file (id)
     );
 
-.. [[[end]]] (checksum: 9d87794485a9aa6d9064b735972a3447)
+.. [[[end]]] (checksum: 6a04d14b07f08f86cccf43056328dcb7)
 
 
 .. _numbits:

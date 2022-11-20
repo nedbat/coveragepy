@@ -4,6 +4,7 @@
 """SQLite coverage data."""
 
 import collections
+import datetime
 import functools
 import glob
 import itertools
@@ -51,10 +52,11 @@ CREATE TABLE meta (
     key text,
     value text,
     unique (key)
-    -- Keys:
+    -- Possible keys:
     --  'has_arcs' boolean      -- Is this data recording branches?
     --  'sys_argv' text         -- The coverage command line that recorded the data.
     --  'version' text          -- The version of coverage.py that made the file.
+    --  'when' text             -- Datetime when the file was created.
 );
 
 CREATE TABLE file (
@@ -298,13 +300,18 @@ class CoverageData(SimpleReprMixin):
             self._debug.write(f"Initing data file {self._filename!r}")
         db.executescript(SCHEMA)
         db.execute("insert into coverage_schema (version) values (?)", (SCHEMA_VERSION,))
-        db.executemany(
-            "insert or ignore into meta (key, value) values (?, ?)",
-            [
+
+        # When writing metadata, avoid information that will needlessly change
+        # the hash of the data file, unless we're debugging processes.
+        meta_data = [
+            ("version", __version__),
+        ]
+        if self._debug.should("process"):
+            meta_data.extend([
                 ("sys_argv", str(getattr(sys, "argv", None))),
-                ("version", __version__),
-            ]
-        )
+                ("when", datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")),
+            ])
+        db.executemany("insert or ignore into meta (key, value) values (?, ?)", meta_data)
 
     def _connect(self):
         """Get the SqliteDb object to use."""

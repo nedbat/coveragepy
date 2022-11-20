@@ -31,8 +31,8 @@ Unreleased
 
 - Combining data files with ``coverage combine`` now quickly hashes the data
   files to skip files that provide no new information.  This can reduce the
-  time needed.  For coverage.py's own test suite, combining was about 17%
-  faster.
+  time needed.  Many details affect the results, but for coverage.py's own test
+  suite, combining was about 40% faster.
 
 - When searching for completely unexecuted files, coverage.py uses the presence
   of ``__init__.py`` files to determine which directories have source that
@@ -51,7 +51,7 @@ Unreleased
 - Fixed a mis-measurement of a strange use of wildcard alternatives in
   match/case statements, closing `issue 1421`_.
 
-- The ``[run] note`` setting has been completely removed.
+- The deprecated ``[run] note`` setting has been completely removed.
 
 .. _implicit namespace packages: https://peps.python.org/pep-0420/
 .. _issue 1383: https://github.com/nedbat/coveragepy/issues/1383
