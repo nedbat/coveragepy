@@ -32,7 +32,7 @@ Unreleased
 - Combining data files with ``coverage combine`` now quickly hashes the data
   files to skip files that provide no new information.  This can reduce the
   time needed.  Many details affect the results, but for coverage.py's own test
-  suite, combining was about 40% faster.
+  suite, combining was about 40% faster. Closes `issue 1483`_.
 
 - When searching for completely unexecuted files, coverage.py uses the presence
   of ``__init__.py`` files to determine which directories have source that
@@ -58,6 +58,7 @@ Unreleased
 .. _issue 1418: https://github.com/nedbat/coveragepy/issues/1418
 .. _issue 1421: https://github.com/nedbat/coveragepy/issues/1421
 .. _issue 1470: https://github.com/nedbat/coveragepy/issues/1470
+.. _issue 1483: https://github.com/nedbat/coveragepy/issues/1483
 .. _pull 1387: https://github.com/nedbat/coveragepy/pull/1387
 .. _pull 1479: https://github.com/nedbat/coveragepy/pull/1479
 
