@@ -346,6 +346,10 @@ against the source file found at "src/module.py".
 If you specify more than one list of paths, they will be considered in order.
 The first list that has a match will be used.
 
+Remapping will also be done during reporting, but only within the single data
+file being reported.  Combining multiple files requires the ``combine``
+command.
+
 The ``--debug=pathmap`` option can be used to log details of the re-mapping of
 paths.  See :ref:`the --debug option <cmd_run_debug>`.
 

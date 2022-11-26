@@ -733,6 +733,18 @@ class Coverage:
         data = self.get_data()
         data.write()
 
+    def _make_aliases(self):
+        """Create a PathAliases from our configuration."""
+        aliases = PathAliases(
+            debugfn=(self._debug.write if self._debug.should("pathmap") else None),
+            relative=self.config.relative_files,
+        )
+        for paths in self.config.paths.values():
+            result = paths[0]
+            for pattern in paths[1:]:
+                aliases.add(pattern, result)
+        return aliases
+
     def combine(self, data_paths=None, strict=False, keep=False):
         """Combine together a number of similarly-named coverage data files.
 
@@ -764,18 +776,9 @@ class Coverage:
         self._post_init()
         self.get_data()
 
-        aliases = PathAliases(
-            debugfn=(self._debug.write if self._debug.should("pathmap") else None),
-            relative=self.config.relative_files,
-        )
-        for paths in self.config.paths.values():
-            result = paths[0]
-            for pattern in paths[1:]:
-                aliases.add(pattern, result)
-
         combine_parallel_data(
             self._data,
-            aliases=aliases,
+            aliases=self._make_aliases(),
             data_paths=data_paths,
             strict=strict,
             keep=keep,
@@ -925,6 +928,13 @@ class Coverage:
         file_reporters = [self._get_file_reporter(morf) for morf in morfs]
         return file_reporters
 
+    def _prepare_data_for_reporting(self):
+        """Re-map data before reporting, to get implicit 'combine' behavior."""
+        if self.config.paths:
+            mapped_data = CoverageData(warn=self._warn, debug=self._debug, no_disk=True)
+            mapped_data.update(self._data, aliases=self._make_aliases())
+            self._data = mapped_data
+
     def report(
         self,
         morfs=None,
@@ -990,6 +1000,7 @@ class Coverage:
             The `format` parameter.
 
         """
+        self._prepare_data_for_reporting()
         with override_config(
             self,
             ignore_errors=ignore_errors,
@@ -1034,6 +1045,7 @@ class Coverage:
         print("The annotate command will be removed in a future version.")
         print("Get in touch if you still use it: ned@nedbatchelder.com")
 
+        self._prepare_data_for_reporting()
         with override_config(
             self,
             ignore_errors=ignore_errors,
@@ -1083,6 +1095,7 @@ class Coverage:
             changing the files in the report folder.
 
         """
+        self._prepare_data_for_reporting()
         with override_config(
             self,
             ignore_errors=ignore_errors,
@@ -1123,6 +1136,7 @@ class Coverage:
         Returns a float, the total percentage covered.
 
         """
+        self._prepare_data_for_reporting()
         with override_config(
             self,
             ignore_errors=ignore_errors,
@@ -1157,6 +1171,7 @@ class Coverage:
         .. versionadded:: 5.0
 
         """
+        self._prepare_data_for_reporting()
         with override_config(
             self,
             ignore_errors=ignore_errors,
@@ -1187,6 +1202,7 @@ class Coverage:
 
         .. versionadded:: 6.3
         """
+        self._prepare_data_for_reporting()
         with override_config(
             self,
             ignore_errors=ignore_errors,

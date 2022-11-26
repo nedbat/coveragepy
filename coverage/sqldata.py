@@ -648,7 +648,12 @@ class CoverageData(SimpleReprMixin):
                 "inner join file on file.id = line_bits.file_id " +
                 "inner join context on context.id = line_bits.context_id"
             )
-            lines = {(files[path], context): numbits for (path, context, numbits) in cur}
+            lines = {}
+            for path, context, numbits in cur:
+                key = (files[path], context)
+                if key in lines:
+                    numbits = numbits_union(lines[key], numbits)
+                lines[key] = numbits
             cur.close()
 
             # Get tracer data.

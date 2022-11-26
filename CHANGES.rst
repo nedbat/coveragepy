@@ -29,6 +29,11 @@ Unreleased
   - Using ``--format=total`` will write a single total number to the
     output.  This can be useful for making badges or writing status updates.
 
+- Reporting operations now use the ``[paths]`` setting to remap file paths
+  within a single data file.  Combining multiple files still requires the
+  ``coverage combine`` step, but this simplifies some situations.  Closes
+  `issue 1212`_ and `issue 713`_.
+
 - Combining data files with ``coverage combine`` now quickly hashes the data
   files to skip files that provide no new information.  This can reduce the
   time needed.  Many details affect the results, but for coverage.py's own test
@@ -54,6 +59,8 @@ Unreleased
 - The deprecated ``[run] note`` setting has been completely removed.
 
 .. _implicit namespace packages: https://peps.python.org/pep-0420/
+.. _issue 713: https://github.com/nedbat/coveragepy/issues/713
+.. _issue 1212: https://github.com/nedbat/coveragepy/issues/1212
 .. _issue 1383: https://github.com/nedbat/coveragepy/issues/1383
 .. _issue 1418: https://github.com/nedbat/coveragepy/issues/1418
 .. _issue 1421: https://github.com/nedbat/coveragepy/issues/1421

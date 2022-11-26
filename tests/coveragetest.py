@@ -219,11 +219,14 @@ class CoverageTest(
 
         return cov
 
-    def make_data_file(self, basename=None, suffix=None, lines=None, file_tracers=None):
+    def make_data_file(self, basename=None, suffix=None, lines=None, arcs=None, file_tracers=None):
         """Write some data into a coverage data file."""
         data = coverage.CoverageData(basename=basename, suffix=suffix)
+        assert lines is None or arcs is None
         if lines:
             data.add_lines(lines)
+        if arcs:
+            data.add_arcs(arcs)
         if file_tracers:
             data.add_file_tracers(file_tracers)
         data.write()
