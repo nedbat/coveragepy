@@ -105,10 +105,22 @@ class Coverage:
             return None
 
     def __init__(
-        self, data_file=DEFAULT_DATAFILE, data_suffix=None, cover_pylib=None,
-        auto_data=False, timid=None, branch=None, config_file=True,
-        source=None, source_pkgs=None, omit=None, include=None, debug=None,
-        concurrency=None, check_preimported=False, context=None,
+        self,
+        data_file=DEFAULT_DATAFILE,
+        data_suffix=None,
+        cover_pylib=None,
+        auto_data=False,
+        timid=None,
+        branch=None,
+        config_file=True,
+        source=None,
+        source_pkgs=None,
+        omit=None,
+        include=None,
+        debug=None,
+        concurrency=None,
+        check_preimported=False,
+        context=None,
         messages=False,
     ):  # pylint: disable=too-many-arguments
         """
@@ -244,12 +256,22 @@ class Coverage:
 
         # Build our configuration from a number of sources.
         self.config = read_coverage_config(
-            config_file=config_file, warn=self._warn,
-            data_file=data_file, cover_pylib=cover_pylib, timid=timid,
-            branch=branch, parallel=bool_or_none(data_suffix),
-            source=source, source_pkgs=source_pkgs, run_omit=omit, run_include=include, debug=debug,
-            report_omit=omit, report_include=include,
-            concurrency=concurrency, context=context,
+            config_file=config_file,
+            warn=self._warn,
+            data_file=data_file,
+            cover_pylib=cover_pylib,
+            timid=timid,
+            branch=branch,
+            parallel=bool_or_none(data_suffix),
+            source=source,
+            source_pkgs=source_pkgs,
+            run_omit=omit,
+            run_include=include,
+            debug=debug,
+            report_omit=omit,
+            report_include=include,
+            concurrency=concurrency,
+            context=context,
         )
 
         # If we have sub-process measurement happening automatically, then we
@@ -904,9 +926,18 @@ class Coverage:
         return file_reporters
 
     def report(
-        self, morfs=None, show_missing=None, ignore_errors=None,
-        file=None, omit=None, include=None, skip_covered=None,
-        contexts=None, skip_empty=None, precision=None, sort=None,
+        self,
+        morfs=None,
+        show_missing=None,
+        ignore_errors=None,
+        file=None,
+        omit=None,
+        include=None,
+        skip_covered=None,
+        contexts=None,
+        skip_empty=None,
+        precision=None,
+        sort=None,
         output_format=None,
     ):
         """Write a textual summary report to `file`.
@@ -961,17 +992,28 @@ class Coverage:
         """
         with override_config(
             self,
-            ignore_errors=ignore_errors, report_omit=omit, report_include=include,
-            show_missing=show_missing, skip_covered=skip_covered,
-            report_contexts=contexts, skip_empty=skip_empty, precision=precision,
-            sort=sort, format=output_format,
+            ignore_errors=ignore_errors,
+            report_omit=omit,
+            report_include=include,
+            show_missing=show_missing,
+            skip_covered=skip_covered,
+            report_contexts=contexts,
+            skip_empty=skip_empty,
+            precision=precision,
+            sort=sort,
+            format=output_format,
         ):
             reporter = SummaryReporter(self)
             return reporter.report(morfs, outfile=file)
 
     def annotate(
-        self, morfs=None, directory=None, ignore_errors=None,
-        omit=None, include=None, contexts=None,
+        self,
+        morfs=None,
+        directory=None,
+        ignore_errors=None,
+        omit=None,
+        include=None,
+        contexts=None,
     ):
         """Annotate a list of modules.
 
@@ -992,18 +1034,30 @@ class Coverage:
         print("The annotate command will be removed in a future version.")
         print("Get in touch if you still use it: ned@nedbatchelder.com")
 
-        with override_config(self,
-            ignore_errors=ignore_errors, report_omit=omit,
-            report_include=include, report_contexts=contexts,
+        with override_config(
+            self,
+            ignore_errors=ignore_errors,
+            report_omit=omit,
+            report_include=include,
+            report_contexts=contexts,
         ):
             reporter = AnnotateReporter(self)
             reporter.report(morfs, directory=directory)
 
     def html_report(
-        self, morfs=None, directory=None, ignore_errors=None,
-        omit=None, include=None, extra_css=None, title=None,
-        skip_covered=None, show_contexts=None, contexts=None,
-        skip_empty=None, precision=None,
+        self,
+        morfs=None,
+        directory=None,
+        ignore_errors=None,
+        omit=None,
+        include=None,
+        extra_css=None,
+        title=None,
+        skip_covered=None,
+        show_contexts=None,
+        contexts=None,
+        skip_empty=None,
+        precision=None,
     ):
         """Generate an HTML report.
 
@@ -1029,19 +1083,33 @@ class Coverage:
             changing the files in the report folder.
 
         """
-        with override_config(self,
-            ignore_errors=ignore_errors, report_omit=omit, report_include=include,
-            html_dir=directory, extra_css=extra_css, html_title=title,
-            html_skip_covered=skip_covered, show_contexts=show_contexts, report_contexts=contexts,
-            html_skip_empty=skip_empty, precision=precision,
+        with override_config(
+            self,
+            ignore_errors=ignore_errors,
+            report_omit=omit,
+            report_include=include,
+            html_dir=directory,
+            extra_css=extra_css,
+            html_title=title,
+            html_skip_covered=skip_covered,
+            show_contexts=show_contexts,
+            report_contexts=contexts,
+            html_skip_empty=skip_empty,
+            precision=precision,
         ):
             reporter = HtmlReporter(self)
             ret = reporter.report(morfs)
             return ret
 
     def xml_report(
-        self, morfs=None, outfile=None, ignore_errors=None,
-        omit=None, include=None, contexts=None, skip_empty=None,
+        self,
+        morfs=None,
+        outfile=None,
+        ignore_errors=None,
+        omit=None,
+        include=None,
+        contexts=None,
+        skip_empty=None,
     ):
         """Generate an XML report of coverage results.
 
@@ -1055,16 +1123,27 @@ class Coverage:
         Returns a float, the total percentage covered.
 
         """
-        with override_config(self,
-            ignore_errors=ignore_errors, report_omit=omit, report_include=include,
-            xml_output=outfile, report_contexts=contexts, skip_empty=skip_empty,
+        with override_config(
+            self,
+            ignore_errors=ignore_errors,
+            report_omit=omit,
+            report_include=include,
+            xml_output=outfile,
+            report_contexts=contexts,
+            skip_empty=skip_empty,
         ):
             return render_report(self.config.xml_output, XmlReporter(self), morfs, self._message)
 
     def json_report(
-        self, morfs=None, outfile=None, ignore_errors=None,
-        omit=None, include=None, contexts=None, pretty_print=None,
-        show_contexts=None
+        self,
+        morfs=None,
+        outfile=None,
+        ignore_errors=None,
+        omit=None,
+        include=None,
+        contexts=None,
+        pretty_print=None,
+        show_contexts=None,
     ):
         """Generate a JSON report of coverage results.
 
@@ -1078,16 +1157,26 @@ class Coverage:
         .. versionadded:: 5.0
 
         """
-        with override_config(self,
-            ignore_errors=ignore_errors, report_omit=omit, report_include=include,
-            json_output=outfile, report_contexts=contexts, json_pretty_print=pretty_print,
-            json_show_contexts=show_contexts
+        with override_config(
+            self,
+            ignore_errors=ignore_errors,
+            report_omit=omit,
+            report_include=include,
+            json_output=outfile,
+            report_contexts=contexts,
+            json_pretty_print=pretty_print,
+            json_show_contexts=show_contexts,
         ):
             return render_report(self.config.json_output, JsonReporter(self), morfs, self._message)
 
     def lcov_report(
-        self, morfs=None, outfile=None, ignore_errors=None,
-        omit=None, include=None, contexts=None,
+        self,
+        morfs=None,
+        outfile=None,
+        ignore_errors=None,
+        omit=None,
+        include=None,
+        contexts=None,
     ):
         """Generate an LCOV report of coverage results.
 
@@ -1098,9 +1187,13 @@ class Coverage:
 
         .. versionadded:: 6.3
         """
-        with override_config(self,
-            ignore_errors=ignore_errors, report_omit=omit, report_include=include,
-            lcov_output=outfile,  report_contexts=contexts,
+        with override_config(
+            self,
+            ignore_errors=ignore_errors,
+            report_omit=omit,
+            report_include=include,
+            lcov_output=outfile,
+            report_contexts=contexts,
         ):
             return render_report(self.config.lcov_output, LcovReporter(self), morfs, self._message)
 
@@ -1134,9 +1227,7 @@ class Coverage:
             ('configs_read', self.config.config_files_read),
             ('config_file', self.config.config_file),
             ('config_contents',
-                repr(self.config._config_contents)
-                if self.config._config_contents
-                else '-none-'
+                repr(self.config._config_contents) if self.config._config_contents else '-none-'
             ),
             ('data_file', self._data.data_filename() if self._data is not None else "-none-"),
             ('python', sys.version.replace('\n', '')),
