@@ -4,9 +4,9 @@
 #
 #    make upgrade
 #
-auditwheel==5.2.1 \
-    --hash=sha256:504f9ca38bd884ce75f59e066ec80373abfc94ee65d0f807fe99f2b1d9ba774a \
-    --hash=sha256:587f4c7a56483349e3de3833d7d881bf325b82f47340e429ce38a259a1c810d8
+auditwheel==5.3.0 \
+    --hash=sha256:1da1af54de5badd10149250c257a799be003fd976794716f17914e3d4b4a9fc9 \
+    --hash=sha256:d0be87b5b6fb767eacf1ea4afa3292574cb0f4473a3c0ba55bc9dff1d0b5a333
     # via -r requirements/kit.in
 bashlex==0.16 \
     --hash=sha256:dc6f017e49ce2d0fe30ad9f5206da9cd13ded073d365688c9fda525354e8c373 \
@@ -36,9 +36,9 @@ filelock==3.8.0 \
     --hash=sha256:55447caa666f2198c5b6b13a26d2084d26fa5b115c00d065664b2124680c4edc \
     --hash=sha256:617eb4e5eedc82fc5f47b6d61e4d11cb837c56cb4544e39081099fa17ad109d4
     # via cibuildwheel
-importlib-metadata==5.0.0 \
-    --hash=sha256:da31db32b304314d044d3c12c79bd59e307889b287ad12ff387b3500835fc2ab \
-    --hash=sha256:ddb0e35065e8938f867ed4928d0ae5bf2a53b7773871bfe6bcc7e4fcdc7dea43
+importlib-metadata==5.1.0 \
+    --hash=sha256:d5059f9f1e8e41f80e9c56c2ee58811450c31984dfa625329ffd7c0dad88a73b \
+    --hash=sha256:d84d17e21670ec07990e1044a99efe8d615d860fd176fc29ef5c306068fda313
     # via
     #   auditwheel
     #   build
@@ -82,15 +82,15 @@ wheel==0.38.4 \
     --hash=sha256:965f5259b566725405b05e7cf774052044b1ed30119b5d586b2703aafe8719ac \
     --hash=sha256:b60533f3f5d530e971d6737ca6d58681ee434818fab630c83a734bb10c083ce8
     # via -r requirements/kit.in
-zipp==3.10.0 \
-    --hash=sha256:4fcb6f278987a6605757302a6e40e896257570d11c51628968ccb2a47e80c6c1 \
-    --hash=sha256:7a7262fd930bd3e36c50b9a64897aec3fafff3dfdeec9623ae22b40e93f99bb8
+zipp==3.11.0 \
+    --hash=sha256:83a28fcb75844b5c0cdaf5aa4003c2d728c77e05f5aeabe8e95e56727005fbaa \
+    --hash=sha256:a7a22e05929290a67401440b39690ae6563279bced5f314609d9d03798f56766
     # via
     #   importlib-metadata
     #   pep517
 
 # The following packages are considered to be unsafe in a requirements file:
-setuptools==65.5.1 \
-    --hash=sha256:d0b9a8433464d5800cbe05094acf5c6d52a91bfac9b52bcfc4d41382be5d5d31 \
-    --hash=sha256:e197a19aa8ec9722928f2206f8de752def0e4c9fc6953527360d1c36d94ddb2f
+setuptools==65.6.3 \
+    --hash=sha256:57f6f22bde4e042978bcd50176fdb381d7c21a9efa4041202288d3737a0c6a54 \
+    --hash=sha256:a7620757bf984b58deaf32fc8a4577a9bbc0850cf92c20e1ce41c38c19e5fb75
     # via -r requirements/kit.in

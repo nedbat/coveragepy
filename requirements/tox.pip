@@ -18,9 +18,9 @@ filelock==3.8.0 \
     # via
     #   tox
     #   virtualenv
-importlib-metadata==5.0.0 \
-    --hash=sha256:da31db32b304314d044d3c12c79bd59e307889b287ad12ff387b3500835fc2ab \
-    --hash=sha256:ddb0e35065e8938f867ed4928d0ae5bf2a53b7773871bfe6bcc7e4fcdc7dea43
+importlib-metadata==5.1.0 \
+    --hash=sha256:d5059f9f1e8e41f80e9c56c2ee58811450c31984dfa625329ffd7c0dad88a73b \
+    --hash=sha256:d84d17e21670ec07990e1044a99efe8d615d860fd176fc29ef5c306068fda313
     # via
     #   pluggy
     #   tox
@@ -57,9 +57,9 @@ tomli==2.0.1 \
     --hash=sha256:939de3e7a6161af0c887ef91b7d41a53e7c5a1ca976325f429cb46ea9bc30ecc \
     --hash=sha256:de526c12914f0c550d15924c62d72abc48d6fe7364aa87328337a31007fe8a4f
     # via tox
-tox==3.27.0 \
-    --hash=sha256:89e4bc6df3854e9fc5582462e328dd3660d7d865ba625ae5881bbc63836a6324 \
-    --hash=sha256:d2c945f02a03d4501374a3d5430877380deb69b218b1df9b7f1d2f2a10befaf9
+tox==3.27.1 \
+    --hash=sha256:b2a920e35a668cc06942ffd1cf3a4fb221a4d909ca72191fb6d84b0b18a7be04 \
+    --hash=sha256:f52ca66eae115fcfef0e77ef81fd107133d295c97c52df337adedb8dfac6ab84
     # via
     #   -r requirements/tox.in
     #   tox-gh-actions
@@ -75,9 +75,9 @@ virtualenv==20.16.7 \
     --hash=sha256:8691e3ff9387f743e00f6bb20f70121f5e4f596cae754531f2b3b3a1b1ac696e \
     --hash=sha256:efd66b00386fdb7dbe4822d172303f40cd05e50e01740b19ea42425cbe653e29
     # via tox
-zipp==3.10.0 \
-    --hash=sha256:4fcb6f278987a6605757302a6e40e896257570d11c51628968ccb2a47e80c6c1 \
-    --hash=sha256:7a7262fd930bd3e36c50b9a64897aec3fafff3dfdeec9623ae22b40e93f99bb8
+zipp==3.11.0 \
+    --hash=sha256:83a28fcb75844b5c0cdaf5aa4003c2d728c77e05f5aeabe8e95e56727005fbaa \
+    --hash=sha256:a7a22e05929290a67401440b39690ae6563279bced5f314609d9d03798f56766
     # via
     #   importlib-metadata
     #   importlib-resources
