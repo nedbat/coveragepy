@@ -5,7 +5,7 @@
 
 import collections
 
-from coverage.debug import SimpleReprMixin
+from coverage.debug import AutoReprMixin
 from coverage.exceptions import ConfigError
 from coverage.misc import contract, nice_pair
 
@@ -168,7 +168,7 @@ class Analysis:
         return stats
 
 
-class Numbers(SimpleReprMixin):
+class Numbers(AutoReprMixin):
     """The numerical results of measuring coverage.
 
     This holds the basic statistics from `Analysis`, and is used to roll

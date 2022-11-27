@@ -18,7 +18,7 @@ import textwrap
 import threading
 import zlib
 
-from coverage.debug import NoDebugging, SimpleReprMixin, clipped_repr
+from coverage.debug import NoDebugging, AutoReprMixin, clipped_repr
 from coverage.exceptions import CoverageException, DataError
 from coverage.files import PathAliases
 from coverage.misc import contract, file_be_gone, isolate_module
@@ -103,7 +103,7 @@ CREATE TABLE tracer (
 );
 """
 
-class CoverageData(SimpleReprMixin):
+class CoverageData(AutoReprMixin):
     """Manages collected coverage data, including file storage.
 
     This class is the public supported API to the data that coverage.py
@@ -1040,7 +1040,7 @@ def filename_suffix(suffix):
     return suffix
 
 
-class SqliteDb(SimpleReprMixin):
+class SqliteDb(AutoReprMixin):
     """A simple abstraction over a SQLite database.
 
     Use as a context manager, then you can use it like a

@@ -30,7 +30,7 @@ FORCED_DEBUG_FILE = None
 class DebugControl:
     """Control and output for debugging."""
 
-    show_repr_attr = False      # For SimpleReprMixin
+    show_repr_attr = False      # For AutoReprMixin
 
     def __init__(self, options, output):
         """Configure the options and output file for debugging."""
@@ -197,16 +197,16 @@ def add_pid_and_tid(text):
     return text
 
 
-class SimpleReprMixin:
-    """A mixin implementing a simple __repr__."""
-    simple_repr_ignore = ['simple_repr_ignore', '$coverage.object_id']
+class AutoReprMixin:
+    """A mixin implementing an automatic __repr__ for debugging."""
+    auto_repr_ignore = ['auto_repr_ignore', '$coverage.object_id']
 
     def __repr__(self):
         show_attrs = (
             (k, v) for k, v in self.__dict__.items()
             if getattr(v, "show_repr_attr", True)
             and not callable(v)
-            and k not in self.simple_repr_ignore
+            and k not in self.auto_repr_ignore
         )
         return "<{klass} @0x{id:x} {attrs}>".format(
             klass=self.__class__.__name__,
