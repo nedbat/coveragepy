@@ -39,12 +39,12 @@ released.)
 
 - Combining data files with ``coverage combine`` now quickly hashes the data
   files to skip files that provide no new information.  This can reduce the
-  time needed.  Many details affect the results, but for coverage.py's own test
-  suite, combining was about 40% faster. Closes `issue 1483`_.
+  time needed.  Many details affect the speed-up, but for coverage.py's own
+  test suite, combining was about 40% faster. Closes `issue 1483`_.
 
-- When searching for completely unexecuted files, coverage.py uses the presence
-  of ``__init__.py`` files to determine which directories have source that
-  could have been imported.  However, `implicit namespace packages`_ don't
+- When searching for completely un-executed files, coverage.py uses the
+  presence of ``__init__.py`` files to determine which directories have source
+  that could have been imported.  However, `implicit namespace packages`_ don't
   require ``__init__.py``.  A new setting ``[report]
   include_namespace_packages`` tells coverage.py to consider these directories
   during reporting.  Thanks to `Felix Horvat <pull 1387_>`_ for the
@@ -191,7 +191,7 @@ Version 6.4.2 — 2022-07-12
 --------------------------
 
 - Updated for a small change in Python 3.11.0 beta 4: modules now start with a
-  line with line number 0, which is ignored.  This line cannnot be executed, so
+  line with line number 0, which is ignored.  This line cannot be executed, so
   coverage totals were thrown off.  This line is now ignored by coverage.py,
   but this also means that truly empty modules (like ``__init__.py``) have no
   lines in them, rather than one phantom line.  Fixes `issue 1419`_.
@@ -242,7 +242,7 @@ Version 6.4 — 2022-05-22
     ``?`` to open/close the help panel.  Thanks, `J. M. F. Tsang
     <pull 1364_>`_.
 
-  - The timestamp and version are displayed at the top of the report.  Thanks,
+  - The time stamp and version are displayed at the top of the report.  Thanks,
     `Ammar Askar <pull 1354_>`_. Closes `issue 1351`_.
 
 - A new debug option ``debug=sqldata`` adds more detail to ``debug=sql``,
@@ -531,7 +531,7 @@ Version 6.0.2 — 2021-10-11
 
 - Packages named as "source packages" (with ``source``, or ``source_pkgs``, or
   pytest-cov's ``--cov``) might have been only partially measured.  Their
-  top-level statements could be marked as unexecuted, because they were
+  top-level statements could be marked as un-executed, because they were
   imported by coverage.py before measurement began (`issue 1232`_).  This is
   now fixed, but the package will be imported twice, once by coverage.py, then
   again by your test suite.  This could cause problems if importing the package

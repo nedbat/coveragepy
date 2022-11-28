@@ -419,9 +419,9 @@ See :ref:`source` for details.
 [report] include_namespace_packages
 ...................................
 
-(boolean, default False) When searching for completely unexecuted files,
+(boolean, default False) When searching for completely un-executed files,
 include directories without ``__init__.py`` files.  These are `implicit
-namespace packages`_, and are ususally skipped.
+namespace packages`_, and are usually skipped.
 
 .. _implicit namespace packages: https://peps.python.org/pep-0420/
 
@@ -617,7 +617,7 @@ section also apply to JSON output, where appropriate.
 [json] pretty_print
 ...................
 
-(boolean, default false) Controls if the JSON is outputted with whitespace
+(boolean, default false) Controls if the JSON is outputted with white space
 formatted for human consumption (True) or for minimum file size (False).
 
 

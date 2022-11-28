@@ -92,7 +92,7 @@ class Templite:
     and joined.  Be careful, this could join words together!
 
     Any of these constructs can have a hyphen at the end (`-}}`, `-%}`, `-#}`),
-    which will collapse the whitespace following the tag.
+    which will collapse the white space following the tag.
 
     Construct a Templite with the template text, then use `render` against a
     dictionary context to create a finished string::

@@ -817,7 +817,7 @@ class IncludeOmitTestsMixin(UsingModulesMixin, CoverageTest):
         self.filenames_in(result, "p1a p1b p2a p2b othera otherb osa osb")
         self.filenames_not_in(result, "p1c")
         # Because there was no source= specified, we don't search for
-        # unexecuted files.
+        # un-executed files.
 
     def test_include(self):
         result = self.coverage_usepkgs(include=["*/p1a.py"])
@@ -902,7 +902,7 @@ class SourceIncludeOmitTest(IncludeOmitTestsMixin, CoverageTest):
         lines = self.coverage_usepkgs(source=["pkg1"])
         self.filenames_in(lines, "p1a p1b")
         self.filenames_not_in(lines, "p2a p2b othera otherb osa osb")
-        # Because source= was specified, we do search for unexecuted files.
+        # Because source= was specified, we do search for un-executed files.
         assert lines['p1c'] == 0
 
     def test_source_package_as_dir(self):
@@ -911,13 +911,13 @@ class SourceIncludeOmitTest(IncludeOmitTestsMixin, CoverageTest):
         lines = self.coverage_usepkgs(source=["pkg1"])
         self.filenames_in(lines, "p1a p1b")
         self.filenames_not_in(lines, "p2a p2b othera otherb osa osb")
-        # Because source= was specified, we do search for unexecuted files.
+        # Because source= was specified, we do search for un-executed files.
         assert lines['p1c'] == 0
 
     def test_source_package_dotted_sub(self):
         lines = self.coverage_usepkgs(source=["pkg1.sub"])
         self.filenames_not_in(lines, "p2a p2b othera otherb osa osb")
-        # Because source= was specified, we do search for unexecuted files.
+        # Because source= was specified, we do search for un-executed files.
         assert lines['runmod3'] == 0
 
     def test_source_package_dotted_p1b(self):
@@ -929,7 +929,7 @@ class SourceIncludeOmitTest(IncludeOmitTestsMixin, CoverageTest):
         # https://github.com/nedbat/coveragepy/issues/218
         # Used to be if you omitted something executed and inside the source,
         # then after it was executed but not recorded, it would be found in
-        # the search for unexecuted files, and given a score of 0%.
+        # the search for un-executed files, and given a score of 0%.
 
         # The omit arg is by path, so need to be in the modules directory.
         os.chdir("tests_dir_modules")
@@ -959,7 +959,7 @@ class SourceIncludeOmitTest(IncludeOmitTestsMixin, CoverageTest):
         lines = self.coverage_usepkgs(source_pkgs=["pkg1"])
         self.filenames_in(lines, "p1a p1b")
         self.filenames_not_in(lines, "p2a p2b othera otherb osa osb ambiguous")
-        # Because source= was specified, we do search for unexecuted files.
+        # Because source= was specified, we do search for un-executed files.
         assert lines['p1c'] == 0
 
 

@@ -276,7 +276,7 @@ def do_zip_mods():
 
 
 def do_check_eol():
-    """Check files for incorrect newlines and trailing whitespace."""
+    """Check files for incorrect newlines and trailing white space."""
 
     ignore_dirs = [
         '.svn', '.hg', '.git',
@@ -290,7 +290,7 @@ def do_check_eol():
     checked = set()
 
     def check_file(fname, crlf=True, trail_white=True):
-        """Check a single file for whitespace abuse."""
+        """Check a single file for white space abuse."""
         fname = os.path.relpath(fname)
         if fname in checked:
             return
@@ -308,14 +308,14 @@ def do_check_eol():
                     if not crlf:
                         line = line.rstrip(b'\r')
                     if line.rstrip() != line:
-                        print(f"{fname}@{n}: trailing whitespace found")
+                        print(f"{fname}@{n}: trailing white space found")
                         return
 
         if line is not None and not line.strip():
             print(f"{fname}: final blank line")
 
     def check_files(root, patterns, **kwargs):
-        """Check a number of files for whitespace abuse."""
+        """Check a number of files for white space abuse."""
         for where, dirs, files in os.walk(root):
             for f in files:
                 fname = os.path.join(where, f)

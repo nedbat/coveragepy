@@ -95,7 +95,7 @@ def source_token_lines(source):
 
     If you concatenate all the token texts, and then join them with newlines,
     you should have your original `source` back, with two differences:
-    trailing whitespace is not preserved, and a final line with no newline
+    trailing white space is not preserved, and a final line with no newline
     is indistinguishable from a final line with a newline.
 
     """

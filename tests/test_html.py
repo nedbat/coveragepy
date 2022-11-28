@@ -67,7 +67,7 @@ class HtmlTestHelpers(CoverageTest):
     def get_html_index_content(self):
         """Return the content of index.html.
 
-        Timestamps are replaced with a placeholder so that clocks don't matter.
+        Time stamps are replaced with a placeholder so that clocks don't matter.
 
         """
         with open("htmlcov/index.html") as f:
@@ -85,17 +85,17 @@ class HtmlTestHelpers(CoverageTest):
         return index
 
     def assert_correct_timestamp(self, html):
-        """Extract the timestamp from `html`, and assert it is recent."""
+        """Extract the time stamp from `html`, and assert it is recent."""
         timestamp_pat = r"created at (\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2})"
         m = re.search(timestamp_pat, html)
-        assert m, "Didn't find a timestamp!"
+        assert m, "Didn't find a time stamp!"
         timestamp = datetime.datetime(*map(int, m.groups()))
-        # The timestamp only records the minute, so the delta could be from
+        # The time stamp only records the minute, so the delta could be from
         # 12:00 to 12:01:59, or two minutes.
         self.assert_recent_datetime(
             timestamp,
             seconds=120,
-            msg=f"Timestamp is wrong: {timestamp}",
+            msg=f"Time stamp is wrong: {timestamp}",
         )
 
     def assert_valid_hrefs(self):

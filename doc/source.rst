@@ -32,7 +32,7 @@ modules).
 
 If the source option is specified, only code in those locations will be
 measured.  Specifying the source option also enables coverage.py to report on
-unexecuted files, since it can search the source tree for files that haven't
+un-executed files, since it can search the source tree for files that haven't
 been measured at all.  Only importable files (ones at the root of the tree, or
 in directories with a ``__init__.py`` file) will be considered. Files with
 unusual punctuation in their names will be skipped (they are assumed to be

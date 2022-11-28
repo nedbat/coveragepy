@@ -177,11 +177,10 @@ class PythonParser:
                 first_on_line = True
 
             if ttext.strip() and toktype != tokenize.COMMENT:
-                # A non-whitespace token.
+                # A non-white-space token.
                 empty = False
                 if first_line is None:
-                    # The token is not whitespace, and is the first in a
-                    # statement.
+                    # The token is not white space, and is the first in a statement.
                     first_line = slineno
                     # Check whether to end an excluded suite.
                     if excluding and indent <= exclude_indent:

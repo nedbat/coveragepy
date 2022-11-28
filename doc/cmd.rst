@@ -1025,7 +1025,7 @@ of operation to log:
 * ``plugin``: print information about plugin operations.
 
 * ``process``: show process creation information, and changes in the current
-  directory.  This also writes a timestamp and command arguments into the data
+  directory.  This also writes a time stamp and command arguments into the data
   file.
 
 * ``pybehave``: show the values of `internal flags <env.py_>`_ describing the

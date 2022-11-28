@@ -93,7 +93,7 @@ class HandyConfigParser(configparser.ConfigParser):
         """Read a list of strings.
 
         The value of `section` and `option` is treated as a comma- and newline-
-        separated list of strings.  Each value is stripped of whitespace.
+        separated list of strings.  Each value is stripped of white space.
 
         Returns the list of strings.
 
@@ -111,7 +111,7 @@ class HandyConfigParser(configparser.ConfigParser):
         """Read a list of full-line regexes.
 
         The value of `section` and `option` is treated as a newline-separated
-        list of regexes.  Each value is stripped of whitespace.
+        list of regexes.  Each value is stripped of white space.
 
         Returns the list of strings.
 

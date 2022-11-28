@@ -32,7 +32,7 @@ SIMPLE_TOKENS = [
         ('ws', ' '), ('num', '2'), ('op', ')')],
 ]
 
-# Mixed-whitespace program, and its token stream.
+# Mixed-white-space program, and its token stream.
 MIXED_WS = """\
 def hello():
         a="Hello world!"

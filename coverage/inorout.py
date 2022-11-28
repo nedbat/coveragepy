@@ -576,7 +576,7 @@ class InOrOut:
             file_path = canonical_filename(file_path)
             if self.omit_match and self.omit_match.match(file_path):
                 # Turns out this file was omitted, so don't pull it back
-                # in as unexecuted.
+                # in as un-executed.
                 continue
             yield file_path, plugin_name
 

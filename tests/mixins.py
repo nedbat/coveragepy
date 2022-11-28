@@ -99,7 +99,7 @@ class RestoreModulesMixin:
         # So that we can re-import files, clean them out first.
         self._sys_module_saver.restore()
 
-        # Also have to clean out the .pyc files, since the timestamp
+        # Also have to clean out the .pyc files, since the time stamp
         # resolution is only one second, a changed file might not be
         # picked up.
         remove_tree("__pycache__")

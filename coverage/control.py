@@ -812,7 +812,7 @@ class Coverage:
         """After saving data, look for warnings, post-work, etc.
 
         Warn about things that should have happened but didn't.
-        Look for unexecuted files.
+        Look for un-executed files.
 
         """
         # If there are still entries in the source_pkgs_unmatched list,
@@ -825,7 +825,7 @@ class Coverage:
             self._warn("No data was collected.", slug="no-data-collected")
 
         # Touch all the files that could have executed, so that we can
-        # mark completely unexecuted files as 0% covered.
+        # mark completely un-executed files as 0% covered.
         if self._data is not None:
             file_paths = collections.defaultdict(list)
             for file_path, plugin_name in self._inorout.find_possibly_unexecuted_files():
