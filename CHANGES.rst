@@ -20,6 +20,9 @@ development at the same time, such as 4.5.x and 5.0.
 Unreleased
 ----------
 
+(Also see the changes for `6.6.0b1 <changes_6-6-0b1_>`_, since 6.6.0 was never
+released.)
+
 - Text reporting with ``coverage report`` now has a ``--format=`` option.
   The original style (``--format=text``) is the default.
 
@@ -74,6 +77,8 @@ Unreleased
 
 Version 6.6.0b1 — 2022-10-31
 ----------------------------
+
+(Note: 6.6.0 final was never released. These changes are part of 7.0.0.)
 
 - Changes to file pattern matching, which might require updating your
   configuration:

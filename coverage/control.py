@@ -996,7 +996,7 @@ class Coverage:
         .. versionadded:: 5.2
             The `precision` parameter.
 
-        .. versionadded:: 6.6
+        .. versionadded:: 7.0
             The `format` parameter.
 
         """

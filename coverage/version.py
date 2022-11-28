@@ -6,7 +6,7 @@
 
 # version_info: same semantics as sys.version_info.
 # _dev: the .devN suffix if any.
-version_info = (6, 6, 0, "beta", 2)
+version_info = (7, 0, 0, "alpha", 0)
 _dev = 0
 
 

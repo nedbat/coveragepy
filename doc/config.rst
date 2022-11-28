@@ -425,7 +425,7 @@ namespace packages`_, and are ususally skipped.
 
 .. _implicit namespace packages: https://peps.python.org/pep-0420/
 
-.. versionadded:: 6.6
+.. versionadded:: 7.0
 
 
 .. _config_report_omit:
