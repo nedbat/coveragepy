@@ -478,8 +478,11 @@ class ApiTest(CoverageTest):
 
     def test_ordered_combine(self):
         # https://github.com/nedbat/coveragepy/issues/649
-        # The order of the [paths] setting matters
-        def make_data_file():
+        # The order of the [paths] setting used to matter. Now the
+        # resulting path must exist, so the order doesn't matter.
+        def make_files():
+            self.make_file("plugins/p1.py", "")
+            self.make_file("girder/g1.py", "")
             self.make_data_file(
                 basename=".coverage.1",
                 lines={
@@ -498,7 +501,7 @@ class ApiTest(CoverageTest):
             return filenames
 
         # Case 1: get the order right.
-        make_data_file()
+        make_files()
         self.make_file(".coveragerc", """\
             [paths]
             plugins =
@@ -510,8 +513,8 @@ class ApiTest(CoverageTest):
             """)
         assert get_combined_filenames() == {'girder/g1.py', 'plugins/p1.py'}
 
-        # Case 2: get the order wrong.
-        make_data_file()
+        # Case 2: get the order "wrong".
+        make_files()
         self.make_file(".coveragerc", """\
             [paths]
             girder =
@@ -521,7 +524,7 @@ class ApiTest(CoverageTest):
                 plugins/
                 ci/girder/plugins/
             """)
-        assert get_combined_filenames() == {'girder/g1.py', 'girder/plugins/p1.py'}
+        assert get_combined_filenames() == {'girder/g1.py', 'plugins/p1.py'}
 
     def test_warnings(self):
         self.make_file("hello.py", """\
@@ -1197,6 +1200,10 @@ class RelativePathTest(CoverageTest):
             cov.save()
             shutil.move(glob.glob(".coverage.*")[0], "..")
 
+        self.make_file("foo.py", "a = 1")
+        self.make_file("bar.py", "a = 1")
+        self.make_file("modsrc/__init__.py", "x = 1")
+
         self.make_file(".coveragerc", """\
             [run]
             relative_files = true
@@ -1208,10 +1215,6 @@ class RelativePathTest(CoverageTest):
         cov = coverage.Coverage()
         cov.combine()
         cov.save()
-
-        self.make_file("foo.py", "a = 1")
-        self.make_file("bar.py", "a = 1")
-        self.make_file("modsrc/__init__.py", "x = 1")
 
         cov = coverage.Coverage()
         cov.load()

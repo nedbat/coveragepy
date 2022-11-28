@@ -32,6 +32,11 @@ released.)
   - Using ``--format=total`` will write a single total number to the
     output.  This can be useful for making badges or writing status updates.
 
+- When remapping file paths with the ``[paths]`` setting, a path will be
+  remapped only if the resulting path exists.  The documentation has long said
+  this was the case, but it was not enforced.  This fixes `issue 608`_,
+  improves `issue 649`_, and closes `issue 757`_.
+
 - Reporting operations now use the ``[paths]`` setting to remap file paths
   within a single data file.  Combining multiple files still requires the
   ``coverage combine`` step, but this simplifies some situations.  Closes
@@ -62,7 +67,10 @@ released.)
 - The deprecated ``[run] note`` setting has been completely removed.
 
 .. _implicit namespace packages: https://peps.python.org/pep-0420/
+.. _issue 608: https://github.com/nedbat/coveragepy/issues/608
+.. _issue 649: https://github.com/nedbat/coveragepy/issues/649
 .. _issue 713: https://github.com/nedbat/coveragepy/issues/713
+.. _issue 757: https://github.com/nedbat/coveragepy/issues/757
 .. _issue 1212: https://github.com/nedbat/coveragepy/issues/1212
 .. _issue 1383: https://github.com/nedbat/coveragepy/issues/1383
 .. _issue 1418: https://github.com/nedbat/coveragepy/issues/1418

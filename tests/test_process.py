@@ -217,6 +217,8 @@ class ProcessTest(CoverageTest):
 
         self.assert_file_count(".coverage.*", 2)
 
+        self.make_file("src/x.py", "")
+
         self.run_command("coverage combine")
         self.assert_exists(".coverage")
 

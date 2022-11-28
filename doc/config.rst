@@ -344,7 +344,9 @@ combined with data for "c:\\myproj\\src\\module.py", and will be reported
 against the source file found at "src/module.py".
 
 If you specify more than one list of paths, they will be considered in order.
-The first list that has a match will be used.
+A file path will only be remapped if the result exists.  If a path matches a
+list, but the result doesn't exist, the next list will be tried.  The first
+list that has an existing result will be used.
 
 Remapping will also be done during reporting, but only within the single data
 file being reported.  Combining multiple files requires the ``combine``

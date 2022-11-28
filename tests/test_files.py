@@ -346,16 +346,16 @@ class PathAliasesTest(CoverageTest):
         since aliases produce canonicalized paths by default.
 
         """
-        mapped = aliases.map(inp)
+        mapped = aliases.map(inp, exists=lambda p: True)
         if aliases.relative:
             expected = out
         else:
             expected = files.canonical_filename(out)
         assert mapped == expected
 
-    def assert_unchanged(self, aliases, inp):
+    def assert_unchanged(self, aliases, inp, exists=True):
         """Assert that `inp` mapped through `aliases` is unchanged."""
-        assert aliases.map(inp) == inp
+        assert aliases.map(inp, exists=lambda p: exists) == inp
 
     def test_noop(self, rel_yn):
         aliases = PathAliases(relative=rel_yn)
@@ -379,6 +379,11 @@ class PathAliasesTest(CoverageTest):
         aliases = PathAliases(relative=rel_yn)
         aliases.add('/home/*/src', './mysrc')
         self.assert_unchanged(aliases, '/home/foo/srcetc')
+
+    def test_no_map_if_not_exist(self, rel_yn):
+        aliases = PathAliases(relative=rel_yn)
+        aliases.add('/ned/home/*/src', './mysrc')
+        self.assert_unchanged(aliases, '/ned/home/foo/src/a.py', exists=False)
 
     def test_no_dotslash(self, rel_yn):
         # The result shouldn't start with "./" if the map result didn't.

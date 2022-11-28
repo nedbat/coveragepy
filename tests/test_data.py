@@ -788,6 +788,9 @@ class CoverageDataFilesTest(CoverageTest):
 
         self.assert_file_count(".coverage.*", 2)
 
+        self.make_file("a.py", "")
+        self.make_file("sub/b.py", "")
+        self.make_file("template.html", "")
         covdata3 = DebugCoverageData()
         aliases = PathAliases()
         aliases.add("/home/ned/proj/src/", "./")

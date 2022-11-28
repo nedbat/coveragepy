@@ -408,7 +408,7 @@ class PathAliases:
         result = result.rstrip(r"\/") + result_sep
         self.aliases.append((original_pattern, regex, result))
 
-    def map(self, path):
+    def map(self, path, exists=os.path.exists):
         """Map `path` through the aliases.
 
         `path` is checked against all of the patterns.  The first pattern to
@@ -418,6 +418,9 @@ class PathAliases:
 
         The separator style in the result is made to match that of the result
         in the alias.
+
+        `exists` is a function to determine if the resulting path actually
+        exists.
 
         Returns the mapped path.  If a mapping has happened, this is a
         canonical path.  If no mapping has happened, it is the original value
@@ -438,6 +441,8 @@ class PathAliases:
                 dot_start = result.startswith(("./", ".\\")) and len(result) > 2
                 if new.startswith(("./", ".\\")) and not dot_start:
                     new = new[2:]
+                if not exists(new):
+                    continue
                 self.debugfn(
                     f"Matched path {path!r} to rule {original_pattern!r} -> {result!r}, " +
                     f"producing {new!r}"
@@ -455,7 +460,7 @@ class PathAliases:
                 result = f"{dir1}{os.sep}"
                 self.debugfn(f"Generating rule: {pattern!r} -> {result!r} using regex {regex!r}")
                 self.aliases.append((pattern, re.compile(regex), result))
-                return self.map(path)
+                return self.map(path, exists=exists)
 
         self.debugfn(f"No rules match, path {path!r} is unchanged")
         return path
