@@ -81,3 +81,5 @@ zipp==3.11.0 \
     # via
     #   importlib-metadata
     #   importlib-resources
+atheris==2.1.1 \
+    --hash=sha256:97d5111b9de4d581b8a51cac3ebcacd81b2d2a69661f99b9316194ea6a01f6c7
