@@ -85,4 +85,16 @@ virtualenv==20.17.1 \
 zipp==3.11.0 \
     --hash=sha256:83a28fcb75844b5c0cdaf5aa4003c2d728c77e05f5aeabe8e95e56727005fbaa \
     --hash=sha256:a7a22e05929290a67401440b39690ae6563279bced5f314609d9d03798f56766
+<<<<<<< HEAD
     # via importlib-metadata
+||||||| parent of 3ef3fd0c (test: add fuzzing set up)
+    # via
+    #   importlib-metadata
+    #   importlib-resources
+=======
+    # via
+    #   importlib-metadata
+    #   importlib-resources
+atheris==2.1.1 \
+    --hash=sha256:97d5111b9de4d581b8a51cac3ebcacd81b2d2a69661f99b9316194ea6a01f6c7
+>>>>>>> 3ef3fd0c (test: add fuzzing set up)
