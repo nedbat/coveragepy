@@ -69,7 +69,7 @@ class FilesTest(CoverageTest):
         assert files.canonical_filename('sub/proj1/file1.py') == self.abs_path('file1.py')
 
     @pytest.mark.parametrize(
-        ["curdir", "sep"], [
+        "curdir, sep", [
             ("/", "/"),
             ("X:\\", "\\"),
         ]
@@ -80,6 +80,21 @@ class FilesTest(CoverageTest):
                 with mock.patch('coverage.files.os.path.normcase', return_value=curdir):
                     files.set_relative_directory()
                     assert files.relative_directory() == curdir
+
+    @pytest.mark.parametrize(
+        "to_make, to_check, answer", [
+            ("a/b/c/foo.py", "a/b/c/foo.py", True),
+            ("a/b/c/foo.py", "a/b/c/bar.py", False),
+            ("src/files.zip", "src/files.zip/foo.py", True),
+            ("src/files.egg", "src/files.egg/foo.py", True),
+            ("src/files.pex", "src/files.pex/foo.py", True),
+            ("src/files.zip", "src/morefiles.zip/foo.py", False),
+            ("src/files.pex", "src/files.pex/zipfiles/files.zip/foo.py", True),
+        ]
+    )
+    def test_source_exists(self, to_make, to_check, answer):
+        self.make_file(to_make, "")
+        assert files.source_exists(to_check) == answer
 
 
 @pytest.mark.parametrize("original, flat", [
@@ -117,6 +132,7 @@ def globs_to_regex_params(
 
     Everything is yielded so that `test_globs_to_regex` can call
     `globs_to_regex` once and check one result.
+
     """
     pat_id = "|".join(patterns)
     for text in matches:
@@ -576,6 +592,19 @@ class PathAliasesTest(CoverageTest):
 
         assert '~' not in the_file  # to be sure the test is pure.
         self.assert_mapped(aliases, the_file, '/the/source/a.py')
+
+
+class PathAliasesRealFilesTest(CoverageTest):
+    """Tests for coverage/files.py:PathAliases using real files."""
+
+    def test_aliasing_zip_files(self):
+        self.make_file("src/zipfiles/code.zip", "fake zip, doesn't matter")
+        aliases = PathAliases()
+        aliases.add("*/d1", "./src")
+        aliases.add("*/d2", "./src")
+
+        expected = files.canonical_filename("src/zipfiles/code.zip/p1.py")
+        assert aliases.map("tox/d1/zipfiles/code.zip/p1.py") == expected
 
 
 class FindPythonFilesTest(CoverageTest):

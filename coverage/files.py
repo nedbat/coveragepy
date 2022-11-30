@@ -153,6 +153,35 @@ def abs_file(path):
     return actual_path(os.path.abspath(os.path.realpath(path)))
 
 
+def zip_location(filename):
+    """Split a filename into a zipfile / inner name pair.
+
+    Only return a pair if the zipfile exists.  No check is made if the inner
+    name is in the zipfile.
+
+    """
+    for ext in ['.zip', '.egg', '.pex']:
+        zipbase, extension, inner = filename.partition(ext + sep(filename))
+        if extension:
+            zipfile = zipbase + ext
+            if os.path.exists(zipfile):
+                return zipfile, inner
+    return None
+
+
+def source_exists(path):
+    """Determine if a source file path exists."""
+    if os.path.exists(path):
+        return True
+
+    if zip_location(path):
+        # If zip_location returns anything, then it's a zipfile that
+        # exists. That's good enough for us.
+        return True
+
+    return False
+
+
 def python_reported_file(filename):
     """Return the string as Python would describe this file name."""
     if env.PYBEHAVIOR.report_absolute_files:
@@ -408,7 +437,7 @@ class PathAliases:
         result = result.rstrip(r"\/") + result_sep
         self.aliases.append((original_pattern, regex, result))
 
-    def map(self, path, exists=os.path.exists):
+    def map(self, path, exists=source_exists):
         """Map `path` through the aliases.
 
         `path` is checked against all of the patterns.  The first pattern to

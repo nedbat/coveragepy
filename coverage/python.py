@@ -9,7 +9,7 @@ import zipimport
 
 from coverage import env
 from coverage.exceptions import CoverageException, NoSource
-from coverage.files import canonical_filename, relative_filename
+from coverage.files import canonical_filename, relative_filename, zip_location
 from coverage.misc import contract, expensive, isolate_module, join_regex
 from coverage.parser import PythonParser
 from coverage.phystokens import source_token_lines, source_encoding
@@ -79,19 +79,18 @@ def get_zip_bytes(filename):
     an empty string if the file is empty.
 
     """
-    markers = ['.zip'+os.sep, '.egg'+os.sep, '.pex'+os.sep]
-    for marker in markers:
-        if marker in filename:
-            parts = filename.split(marker)
-            try:
-                zi = zipimport.zipimporter(parts[0]+marker[:-1])
-            except zipimport.ZipImportError:
-                continue
-            try:
-                data = zi.get_data(parts[1])
-            except OSError:
-                continue
-            return data
+    zipfile_inner = zip_location(filename)
+    if zipfile_inner is not None:
+        zipfile, inner = zipfile_inner
+        try:
+            zi = zipimport.zipimporter(zipfile)
+        except zipimport.ZipImportError:
+            return None
+        try:
+            data = zi.get_data(inner)
+        except OSError:
+            return None
+        return data
     return None
 
 
