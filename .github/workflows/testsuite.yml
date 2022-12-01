@@ -74,23 +74,14 @@ jobs:
           # python -c "import urllib.request as r; exec(r.urlopen('https://bit.ly/pydoctor').read())"
 
       - name: "Run tox for ${{ matrix.python-version }}"
-        continue-on-error: true
-        id: tox1
         run: |
           python -m tox -- -rfsEX
 
       - name: "Retry tox for ${{ matrix.python-version }}"
-        id: tox2
-        if: steps.tox1.outcome == 'failure'
-        run: |
-          python -m tox -- -rfsEX
-
-      - name: "Set status"
-        if: always()
-        run: |
-          if ${{ steps.tox1.outcome != 'success' && steps.tox2.outcome != 'success' }}; then
-             exit 1
-          fi
+        if: failure()
+        run: >-  # `exit 1` makes sure that the job remains red with flaky runs
+          python -m tox -- -rfsEX --lf -vvvvv
+          && exit 1
 
   # This job aggregates test results. It's the required check for branch protection.
   # https://github.com/marketplace/actions/alls-green#why
