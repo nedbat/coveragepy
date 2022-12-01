@@ -561,13 +561,12 @@ class PathAliasesTest(CoverageTest):
         self.assert_mapped(aliases, '/foo/bar/d1/x.py', './mysrc1/x.py')
         self.assert_mapped(aliases, '/foo/bar/d2/y.py', './mysrc2/y.py')
 
-    # The root test case was added for the manylinux Docker images,
-    # and I'm not sure how it should work on Windows, so skip it.
-    cases = [".", "..", "../other"]
-    if not env.WINDOWS:
-        cases += ["/"]
-    @pytest.mark.parametrize("dirname", cases)
+    @pytest.mark.parametrize("dirname", [".", "..", "../other", "/"])
     def test_dot(self, dirname):
+        if env.WINDOWS and dirname == "/":
+            # The root test case was added for the manylinux Docker images,
+            # and I'm not sure how it should work on Windows, so skip it.
+            pytest.skip("Don't know how to handle root on Windows")
         aliases = PathAliases()
         aliases.add(dirname, '/the/source')
         the_file = os.path.join(dirname, 'a.py')
