@@ -83,7 +83,7 @@ metasmoke:
 
 .PHONY: upgrade
 
-PIP_COMPILE = pip-compile --upgrade --allow-unsafe --generate-hashes
+PIP_COMPILE = pip-compile --upgrade --allow-unsafe --generate-hashes --resolver=backtracking
 upgrade: export CUSTOM_COMPILE_COMMAND=make upgrade
 upgrade: 				## Update the *.pip files with the latest packages satisfying *.in files.
 	pip install -q -r requirements/pip-tools.pip
