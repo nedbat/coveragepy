@@ -45,9 +45,9 @@
     - Download and check built kits from GitHub Actions:
         $ make clean download_kits check_kits
     - examine the dist directory, and remove anything that looks malformed.
+    - opvars
     - test the pypi upload:
         $ make test_upload
-- Update PyPI:
     - upload kits:
         $ make kit_upload
 - Tag the tree
@@ -59,6 +59,7 @@
     $ make clean github_releases
 - Visit the fixed issues on GitHub and mention the version it was fixed in.
     $ make comment_on_fixes
+- unopvars
 - Bump version:
     $ make bump_version
     $ git push
@@ -67,6 +68,7 @@
         - find the latest tag in the inactive list, edit it, make it active.
             - readthedocs won't find the tag until a commit is made on master.
         - keep just the latest version of each x.y release, make the rest active but hidden.
+            - pre-releases should be hidden
     - IF NOT PRE-RELEASE:
         - @ https://readthedocs.org/projects/coverage/builds/
             - wait for the new tag build to finish successfully.
