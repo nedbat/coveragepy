@@ -8,9 +8,6 @@ astroid==2.12.13 \
     --hash=sha256:10e0ad5f7b79c435179d0d0f0df69998c4eef4597534aae44910db060baeb907 \
     --hash=sha256:1493fe8bd3dfd73dc35bd53c9d5b6e49ead98497c47b2307662556a5692d29d7
     # via pylint
-atomicwrites==1.4.1 \
-    --hash=sha256:81b2c9071a49367a7f770170e5eec8cb66567cfbbc8c73d20ce5ca4a8d71cf11
-    # via -r requirements/pytest.pip
 attrs==22.1.0 \
     --hash=sha256:29adc2665447e5191d0e7c568fde78b21f9672d344281d0c6e1ab085429b22b6 \
     --hash=sha256:86efa402f67bf2df34f51a335487cf46b1ec130d02b8d39fd248abfd30da551c
@@ -316,9 +313,9 @@ pytest==7.2.0 \
     # via
     #   -r requirements/pytest.pip
     #   pytest-xdist
-pytest-xdist==3.0.2 \
-    --hash=sha256:688da9b814370e891ba5de650c9327d1a9d861721a524eb917e620eec3e90291 \
-    --hash=sha256:9feb9a18e1790696ea23e1434fa73b325ed4998b0e9fcb221f16fd1945e6df1b
+pytest-xdist==3.1.0 \
+    --hash=sha256:40fdb8f3544921c5dfcd486ac080ce22870e71d82ced6d2e78fa97c2addd480c \
+    --hash=sha256:70a76f191d8a1d2d6be69fc440cdf85f3e4c03c08b520fd5dc5d338d6cf07d89
     # via -r requirements/pytest.pip
 qualname==0.1.0 \
     --hash=sha256:277cf6aa4b2ad36beed1153cfa7bf521b210d54fbecb3d8eea0c5679cecc9ed8
