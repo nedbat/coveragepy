@@ -17,8 +17,10 @@ development at the same time, such as 4.5.x and 5.0.
     ..  Version 9.8.1 — 2027-07-27
     ..  --------------------------
 
-Unreleased
-----------
+.. _changes_7-0-0b1:
+
+Version 7.0.0b1 — 2022-12-03
+----------------------------
 
 A number of changes have been made to file path handling, including pattern
 matching and path remapping with the ``[paths]`` setting (see
@@ -129,7 +131,8 @@ update your settings.
 Version 6.6.0b1 — 2022-10-31
 ----------------------------
 
-(Note: 6.6.0 final was never released. These changes are part of 7.0.0.)
+(Note: 6.6.0 final was never released. These changes are part of `7.0.0b1
+<changes_7-0-0b1_>`_.)
 
 - Changes to file pattern matching, which might require updating your
   configuration:
