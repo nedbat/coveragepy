@@ -6,6 +6,12 @@
    Running "make prebuild" will bring it up to date.
 
 .. [[[cog
+    # optparse wraps help to the COLUMNS value.  Set it here to be sure it's
+    # consistent regardless of the environment.  Has to be set before we
+    # import cmdline.py, which creates the optparse objects.
+    import os
+    os.environ["COLUMNS"] = "80"
+
     import contextlib
     import io
     import re
