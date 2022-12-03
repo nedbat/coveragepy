@@ -41,7 +41,6 @@ jobs:
           # tox.ini so that tox will run properly. PYVERSIONS
           # Available versions:
           # https://launchpad.net/~deadsnakes/+archive/ubuntu/nightly/+packages
-          - "3.9-dev"
           - "3.10-dev"
           - "3.11-dev"
           - "3.12-dev"
