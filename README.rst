@@ -28,7 +28,7 @@ Coverage.py runs on these versions of Python:
 
 .. PYVERSIONS
 
-* CPython 3.7 through 3.12.0a1
+* CPython 3.7 through 3.12.0a2
 * PyPy3 7.3.9.
 
 Documentation is on `Read the Docs`_.  Code repository and issue tracker are on
@@ -37,8 +37,12 @@ Documentation is on `Read the Docs`_.  Code repository and issue tracker are on
 .. _Read the Docs: https://coverage.readthedocs.io/
 .. _GitHub: https://github.com/nedbat/coveragepy
 
+**New in 7.x:**
+improved data combining;
+``report --format=``.
 
-**New in 6.x:** dropped support for Python 2.7, 3.5, and 3.6;
+**New in 6.x:**
+dropped support for Python 2.7, 3.5, and 3.6;
 write data on SIGTERM;
 added support for 3.10 match/case statements.
 
