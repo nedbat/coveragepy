@@ -20,11 +20,48 @@ development at the same time, such as 4.5.x and 5.0.
 Unreleased
 ----------
 
-(Also see the changes for `6.6.0b1 <changes_6-6-0b1_>`_, since 6.6.0 was never
-released.)
+A number of changes have been made to file path handling, including pattern
+matching and path remapping with the ``[paths]`` setting (see
+:ref:`config_paths`).  These changes might affect you, and require you to
+update your settings.
 
-- Text reporting with ``coverage report`` now has a ``--format=`` option.
-  The original style (``--format=text``) is the default.
+(This release includes the changes from `6.6.0b1 <changes_6-6-0b1_>`_, since
+6.6.0 was never released.)
+
+- Changes to file pattern matching, which might require updating your
+  configuration:
+
+  - Previously, ``*`` would incorrectly match directory separators, making
+    precise matching difficult.  This is now fixed, closing `issue 1407`_.
+
+  - Now ``**`` matches any number of nested directories, including none.
+
+- Improvements to combining data files when using the
+  :ref:`config_run_relative_files` setting, which might require updating your
+  configuration:
+
+  - During ``coverage combine``, relative file paths are implicitly combined
+    without needing a ``[paths]`` configuration setting.  This also fixed
+    `issue 991`_.
+
+  - A ``[paths]`` setting like ``*/foo`` will now match ``foo/bar.py`` so that
+    relative file paths can be combined more easily.
+
+  - The :ref:`config_run_relative_files` setting is properly interpreted in
+    more places, fixing `issue 1280`_.
+
+- When remapping file paths with ``[paths]``, a path will be remapped only if
+  the resulting path exists.  The documentation has long said the prefix had to
+  exist, but it was never enforced.  This fixes `issue 608`_, improves `issue
+  649`_, and closes `issue 757`_.
+
+- Reporting operations now implicitly use the ``[paths]`` setting to remap file
+  paths within a single data file.  Combining multiple files still requires the
+  ``coverage combine`` step, but this simplifies some single-file situations.
+  Closes `issue 1212`_ and `issue 713`_.
+
+- The ``coverage report`` command now has a ``--format=`` option.  The original
+  style is now ``--format=text``, and is the default.
 
   - Using ``--format=markdown`` will write the table in Markdown format, thanks
     to `Steve Oswald <pull 1479_>`_, closing `issue 1418`_.
@@ -32,20 +69,10 @@ released.)
   - Using ``--format=total`` will write a single total number to the
     output.  This can be useful for making badges or writing status updates.
 
-- When remapping file paths with the ``[paths]`` setting, a path will be
-  remapped only if the resulting path exists.  The documentation has long said
-  this was the case, but it was not enforced.  This fixes `issue 608`_,
-  improves `issue 649`_, and closes `issue 757`_.
-
-- Reporting operations now use the ``[paths]`` setting to remap file paths
-  within a single data file.  Combining multiple files still requires the
-  ``coverage combine`` step, but this simplifies some situations.  Closes
-  `issue 1212`_ and `issue 713`_.
-
-- Combining data files with ``coverage combine`` now quickly hashes the data
-  files to skip files that provide no new information.  This can reduce the
-  time needed.  Many details affect the speed-up, but for coverage.py's own
-  test suite, combining was about 40% faster. Closes `issue 1483`_.
+- Combining data files with ``coverage combine`` now hashes the data files to
+  skip files that add no new information.  This can reduce the time needed.
+  Many details affect the speed-up, but for coverage.py's own test suite,
+  combining is about 40% faster. Closes `issue 1483`_.
 
 - When searching for completely un-executed files, coverage.py uses the
   presence of ``__init__.py`` files to determine which directories have source
@@ -54,6 +81,12 @@ released.)
   include_namespace_packages`` tells coverage.py to consider these directories
   during reporting.  Thanks to `Felix Horvat <pull 1387_>`_ for the
   contribution.  Closes `issue 1383`_.
+
+- Fixed environment variable expansion in pyproject.toml files.  It was overly
+  broad, causing errors outside of coverage.py settings, as described in `issue
+  1481`_ and `issue 1345`_.  This is now fixed, but in rare cases will require
+  changing your pyproject.toml to quote non-string values that use environment
+  substitution.
 
 - An empty file has a coverage total of 100%, but used to fail with
   ``--fail-under``.  This has been fixed, closing `issue 1470`_.
@@ -64,6 +97,9 @@ released.)
 - Fixed a mis-measurement of a strange use of wildcard alternatives in
   match/case statements, closing `issue 1421`_.
 
+- Fixed internal logic that prevented coverage.py from running on
+  implementations other than CPython or PyPy (`issue 1474`_).
+
 - The deprecated ``[run] note`` setting has been completely removed.
 
 .. _implicit namespace packages: https://peps.python.org/pep-0420/
@@ -71,14 +107,21 @@ released.)
 .. _issue 649: https://github.com/nedbat/coveragepy/issues/649
 .. _issue 713: https://github.com/nedbat/coveragepy/issues/713
 .. _issue 757: https://github.com/nedbat/coveragepy/issues/757
+.. _issue 991: https://github.com/nedbat/coveragepy/issues/991
 .. _issue 1212: https://github.com/nedbat/coveragepy/issues/1212
+.. _issue 1280: https://github.com/nedbat/coveragepy/issues/1280
+.. _issue 1345: https://github.com/nedbat/coveragepy/issues/1345
 .. _issue 1383: https://github.com/nedbat/coveragepy/issues/1383
+.. _issue 1407: https://github.com/nedbat/coveragepy/issues/1407
 .. _issue 1418: https://github.com/nedbat/coveragepy/issues/1418
 .. _issue 1421: https://github.com/nedbat/coveragepy/issues/1421
 .. _issue 1470: https://github.com/nedbat/coveragepy/issues/1470
+.. _issue 1474: https://github.com/nedbat/coveragepy/issues/1474
+.. _issue 1481: https://github.com/nedbat/coveragepy/issues/1481
 .. _issue 1483: https://github.com/nedbat/coveragepy/issues/1483
 .. _pull 1387: https://github.com/nedbat/coveragepy/pull/1387
 .. _pull 1479: https://github.com/nedbat/coveragepy/pull/1479
+
 
 
 .. _changes_6-6-0b1:
