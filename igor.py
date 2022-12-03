@@ -384,13 +384,16 @@ def get_release_facts():
     import coverage.version
     facts = types.SimpleNamespace()
     facts.ver = coverage.__version__
-    facts.vi = coverage.version_info
+    mjr, mnr, mcr, rel, ser = facts.vi = coverage.version_info
     facts.dev = coverage.version._dev
-    facts.shortver = f"{facts.vi[0]}.{facts.vi[1]}.{facts.vi[2]}"
+    facts.shortver = f"{mjr}.{mnr}.{mcr}"
     facts.anchor = facts.shortver.replace(".", "-")
-    if facts.vi[3] != "final":
-        facts.anchor += f"{facts.vi[3][0]}{facts.vi[4]}"
-    facts.next_vi = (facts.vi[0], facts.vi[1], facts.vi[2]+1, "alpha", 0)
+    if rel == "final":
+        facts.next_vi = (mjr, mnr, mcr+1, "alpha", 0)
+    else:
+        facts.anchor += f"{rel[0]}{ser}"
+        facts.next_vi = (mjr, mnr, mcr, rel, ser + 1)
+
     facts.now = datetime.datetime.now()
     facts.branch = subprocess.getoutput("git rev-parse --abbrev-ref @")
     facts.sha = subprocess.getoutput("git rev-parse @")
