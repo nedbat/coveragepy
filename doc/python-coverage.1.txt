@@ -8,7 +8,7 @@ Measure Python code coverage
 
 :Author: Ned Batchelder <ned@nedbatchelder.com>
 :Author: |author|
-:Date: 2022-01-25
+:Date: 2022-12-03
 :Copyright: Apache 2.0 license, attribution and disclaimer required.
 :Manual section: 1
 :Manual group: Coverage.py
@@ -298,6 +298,9 @@ COMMAND REFERENCE
 
     \--fail-under `MIN`
         Exit with a status of 2 if the total coverage is less than `MIN`.
+
+    \--format `FORMAT`
+        Output format, either text (default), markdown, or total.
 
     \-i, --ignore-errors
         Ignore errors while reading source files.
