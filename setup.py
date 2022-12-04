@@ -62,7 +62,16 @@ with open(cov_ver_py) as version_file:
     exec(compile(version_file.read(), cov_ver_py, 'exec'))
 
 with open("README.rst") as readme:
-    long_description = readme.read().replace("https://coverage.readthedocs.io", __url__)
+    readme_text = readme.read()
+
+temp_url = __url__.replace("readthedocs", "@@")
+assert "@@" not in readme_text
+long_description = (
+    readme_text
+    .replace("https://coverage.readthedocs.io/en/latest", temp_url)
+    .replace("https://coverage.readthedocs.io", temp_url)
+    .replace("@@", "readthedocs")
+)
 
 with open("CONTRIBUTORS.txt", "rb") as contributors:
     paras = contributors.read().split(b"\n\n")
