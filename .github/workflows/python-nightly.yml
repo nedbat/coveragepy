@@ -36,6 +36,7 @@ jobs:
     # For example, deadsnakes doesn't provide 3.10 nightly for 22.04 (jammy)
     # because jammy ships 3.10, and deadsnakes doesn't want to clobber it.
     # https://launchpad.net/~deadsnakes/+archive/ubuntu/nightly/+packages
+    # https://github.com/deadsnakes/issues/issues/234
     runs-on: ubuntu-20.04
 
     strategy:
