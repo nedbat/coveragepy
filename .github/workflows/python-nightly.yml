@@ -32,7 +32,11 @@ concurrency:
 jobs:
   tests:
     name: "Python ${{ matrix.python-version }}"
-    runs-on: ubuntu-latest
+    # Choose a recent Ubuntu that deadsnakes still builds all the versions for.
+    # For example, deadsnakes doesn't provide 3.10 nightly for 22.04 (jammy)
+    # because jammy ships 3.10, and deadsnakes doesn't want to clobber it.
+    # https://launchpad.net/~deadsnakes/+archive/ubuntu/nightly/+packages
+    runs-on: ubuntu-20.04
 
     strategy:
       matrix:
