@@ -97,6 +97,8 @@ upgrade: 				## Update the *.pip files with the latest packages satisfying *.in 
 	$(PIP_COMPILE) -o doc/requirements.pip doc/requirements.in
 	$(PIP_COMPILE) -o requirements/lint.pip doc/requirements.in requirements/dev.in
 
+diff_upgrade:				## Summarize the last `make upgrade`
+	@git diff -U0 | grep -v '^@' | grep == | sort -k1.2,1.99 -k1.1,1.1r -u
 
 ##@ Pre-builds for prepping the code
 
