@@ -45,9 +45,9 @@ charset-normalizer==2.1.1 \
     --hash=sha256:5a3d016c7c547f69d6f81fb0db9449ce888b418b5b9952cc5e6e66843e9dd845 \
     --hash=sha256:83e9a75d1911279afd89352c68b45348559d1fc0506b054b346651b5e7fee29f
     # via requests
-check-manifest==0.48 \
-    --hash=sha256:3b575f1dade7beb3078ef4bf33a94519834457c7281dbc726b15c5466b55c657 \
-    --hash=sha256:b1923685f98c1c2468601a1a7bed655db549a25d43c583caded3860ad8308f8c
+check-manifest==0.49 \
+    --hash=sha256:058cd30057714c39b96ce4d83f254fc770e3145c7b1932b5940b4e3efb5521ef \
+    --hash=sha256:64a640445542cf226919657c7b78d02d9c1ca5b1c25d7e66e0e1ff325060f416
     # via -r requirements/dev.in
 cogapp==3.3.0 \
     --hash=sha256:1be95183f70282422d594fa42426be6923070a4bd8335621f6347f3aeee81db0 \
@@ -101,9 +101,9 @@ execnet==1.9.0 \
     # via
     #   -r requirements/pytest.pip
     #   pytest-xdist
-filelock==3.8.0 \
-    --hash=sha256:55447caa666f2198c5b6b13a26d2084d26fa5b115c00d065664b2124680c4edc \
-    --hash=sha256:617eb4e5eedc82fc5f47b6d61e4d11cb837c56cb4544e39081099fa17ad109d4
+filelock==3.8.2 \
+    --hash=sha256:7565f628ea56bfcd8e54e42bdc55da899c85c1abfe1b5bcfd147e9188cebb3b2 \
+    --hash=sha256:8df285554452285f79c035efb0c861eb33a4bcfa5b7a137016e32e6a90f9792c
     # via
     #   -r requirements/pip.pip
     #   tox
@@ -179,9 +179,9 @@ greenlet==2.0.1 \
     --hash=sha256:f6327b6907b4cb72f650a5b7b1be23a2aab395017aa6f1adb13069d66360eb3f \
     --hash=sha256:fb412b7db83fe56847df9c47b6fe3f13911b06339c2aa02dcc09dce8bbf582cd
     # via -r requirements/dev.in
-hypothesis==6.59.0 \
-    --hash=sha256:4eb2875097a07553a1006cb2b96fab21682e4359b138b2ae3c5f5d8b3f5a8bf1 \
-    --hash=sha256:af05e24b123c9413b8752bbf822105dbb112f56456fb240723d7f410eebf78bb
+hypothesis==6.60.0 \
+    --hash=sha256:39c06cd49f491204380d7c7aa45389d3fb84ee80ea1e3f10afc744044aceb751 \
+    --hash=sha256:3e8a1e061a6bfa3d8c282dafec100f2c8c527ea50b6560e9a33adf0e2e5fef8f
     # via -r requirements/pytest.pip
 idna==3.4 \
     --hash=sha256:814f528e8dead7d329833b91c5faa87d60bf71824cd12a7530b5526063d02cb4 \
@@ -336,9 +336,9 @@ pkginfo==1.9.2 \
     --hash=sha256:ac03e37e4d601aaee40f8087f63fc4a2a6c9814dda2c8fa6aab1b1829653bdfa \
     --hash=sha256:d580059503f2f4549ad6e4c106d7437356dbd430e2c7df99ee1efe03d75f691e
     # via twine
-platformdirs==2.5.4 \
-    --hash=sha256:1006647646d80f16130f052404c6b901e80ee4ed6bef6792e1f238a8969106f7 \
-    --hash=sha256:af0276409f9a02373d540bf8480021a048711d572745aef4b7842dad245eba10
+platformdirs==2.6.0 \
+    --hash=sha256:1a89a12377800c81983db6be069ec068eee989748799b946cce2a6e80dcc54ca \
+    --hash=sha256:b46ffafa316e6b83b47489d240ce17173f123a9b9c83282141c3daf26ad9ac2e
     # via
     #   -r requirements/pip.pip
     #   pylint
@@ -376,9 +376,9 @@ pygments==2.13.0 \
     #   readme-renderer
     #   rich
     #   sphinx
-pylint==2.15.7 \
-    --hash=sha256:1d561d1d3e8be9dd880edc685162fbdaa0409c88b9b7400873c0cf345602e326 \
-    --hash=sha256:91e4776dbcb4b4d921a3e4b6fec669551107ba11f29d9199154a01622e460a57
+pylint==2.15.8 \
+    --hash=sha256:ea82cd6a1e11062dc86d555d07c021b0fb65afe39becbe6fe692efd6c4a67443 \
+    --hash=sha256:ec4a87c33da054ab86a6c79afa6771dc8765cb5631620053e727fcf3ef8cbed7
     # via -r requirements/dev.in
 pyparsing==3.0.9 \
     --hash=sha256:2b020ecf7d21b687f219b71ecad3631f644a47f01403fa1d1036b0c6416d70fb \
@@ -586,9 +586,9 @@ urwid==2.1.2 \
 urwid-readline==0.13 \
     --hash=sha256:018020cbc864bb5ed87be17dc26b069eae2755cb29f3a9c569aac3bded1efaf4
     # via pudb
-virtualenv==20.17.0 \
-    --hash=sha256:40a7e06a98728fd5769e1af6fd1a706005b4bb7e16176a272ed4292473180389 \
-    --hash=sha256:7d6a8d55b2f73b617f684ee40fd85740f062e1f2e379412cb1879c7136f05902
+virtualenv==20.17.1 \
+    --hash=sha256:ce3b1684d6e1a20a3e5ed36795a97dfc6af29bc3970ca8dab93e11ac6094b3c4 \
+    --hash=sha256:f8b927684efc6f1cc206c9db297a570ab9ad0e51c16fa9e45487d36d1905c058
     # via
     #   -r requirements/pip.pip
     #   tox
