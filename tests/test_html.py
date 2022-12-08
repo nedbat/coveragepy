@@ -16,10 +16,10 @@ from unittest import mock
 import pytest
 
 import coverage
+import coverage.html
 from coverage import env
 from coverage.exceptions import NoDataError, NotPython, NoSource
 from coverage.files import abs_file, flat_rootname
-import coverage.html
 from coverage.report import get_analysis_to_report
 
 from tests.coveragetest import CoverageTest, TESTS_DIR

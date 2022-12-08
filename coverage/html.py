@@ -23,6 +23,12 @@ from coverage.templite import Templite
 os = isolate_module(os)
 
 
+def show_obj(o, oname):
+    for name in dir(o):
+        val = getattr(o, name)
+        if not callable(val):
+            print("{}.{} = {!r:.100}".format(oname, name, val))
+
 def data_filename(fname):
     """Return the path to an "htmlfiles" data file of ours.
     """
@@ -239,6 +245,19 @@ class HtmlReporter:
                     next_html = "index.html"
                 else:
                     next_html = files_to_report[i + 1].html_filename
+                self.make_directory()
+                self.coverage = None
+                ftr.fr.coverage = None
+                ftr.analysis.data = None
+                import pickle
+                print("=-" * 60)
+                show_obj(ftr, "ftr")
+                show_obj(ftr.analysis, "ftr.analysis")
+                show_obj(ftr.analysis.data, "ftr.analysis.data")
+                show_obj(ftr.analysis.numbers, "ftr.analysis.numbers")
+                show_obj(ftr.fr, "ftr.fr")
+                show_obj(ftr.fr._parser, "ftr.fr._parser")
+                pickle.dumps(ftr)
                 futures.append(executor.submit(self.write_html_file, ftr, prev_html, next_html))
 
             for future in futures:
@@ -308,7 +327,6 @@ class HtmlReporter:
 
     def write_html_file(self, ftr, prev_html, next_html):
         """Generate an HTML file for one source file."""
-        self.make_directory()
 
         # Find out if the file on disk is already correct.
         if self.incr.can_skip_file(self.data, ftr.fr, ftr.rootname):
