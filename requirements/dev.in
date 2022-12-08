@@ -8,7 +8,7 @@
 -r pip.pip
 
 # PyPI requirements for running tests.
-tox
+-r tox.pip
 -r pytest.pip
 
 # for linting.
