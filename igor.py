@@ -477,6 +477,7 @@ def do_cheats():
         print(f"pip install git+https://github.com/nedbat/coveragepy@{facts.branch}#{egg}")
     print(f"pip install git+https://github.com/nedbat/coveragepy@{facts.sha}#{egg}")
     print(f"https://coverage.readthedocs.io/en/{facts.ver}/changes.html#changes-{facts.anchor}")
+    print(f"https://github.com/nedbat/coveragepy/tree/{facts.branch}")
 
     print(
         "\n## For GitHub commenting:\n" +
