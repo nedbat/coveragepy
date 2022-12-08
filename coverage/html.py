@@ -227,16 +227,22 @@ class HtmlReporter:
             else:
                 file_be_gone(os.path.join(self.directory, ftr.html_filename))
 
-        for i, ftr in enumerate(files_to_report):
-            if i == 0:
-                prev_html = "index.html"
-            else:
-                prev_html = files_to_report[i - 1].html_filename
-            if i == len(files_to_report) - 1:
-                next_html = "index.html"
-            else:
-                next_html = files_to_report[i + 1].html_filename
-            self.write_html_file(ftr, prev_html, next_html)
+        import concurrent.futures
+        with concurrent.futures.ProcessPoolExecutor() as executor:
+            futures = []
+            for i, ftr in enumerate(files_to_report):
+                if i == 0:
+                    prev_html = "index.html"
+                else:
+                    prev_html = files_to_report[i - 1].html_filename
+                if i == len(files_to_report) - 1:
+                    next_html = "index.html"
+                else:
+                    next_html = files_to_report[i + 1].html_filename
+                futures.append(executor.submit(self.write_html_file, ftr, prev_html, next_html))
+
+            for future in futures:
+                future.result()
 
         if not self.all_files_nums:
             raise NoDataError("No data to report.")
