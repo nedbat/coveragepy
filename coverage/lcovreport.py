@@ -96,7 +96,7 @@ class LcovReporter:
                 outfile.write(f"BRDA:{line_number},{block_number},{branch_number},1\n")
 
         # Summary of the branch coverage.
-        if analysis.has_arcs():
+        if analysis.has_arcs:
             branch_stats = analysis.branch_stats()
             brf = sum(t for t, k in branch_stats.values())
             brh = brf - sum(t - k for t, k in branch_stats.values())

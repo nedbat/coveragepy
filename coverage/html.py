@@ -63,7 +63,7 @@ class HtmlDataGeneration:
         """Produce the data needed for one file's report."""
         if self.has_arcs:
             missing_branch_arcs = analysis.missing_branch_arcs()
-            arcs_executed = analysis.arcs_executed()
+            arcs_executed = analysis.arcs_executed
 
         if self.config.show_contexts:
             contexts_by_lineno = analysis.data.contexts_by_lineno(analysis.filename)

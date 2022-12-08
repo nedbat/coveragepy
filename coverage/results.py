@@ -14,20 +14,23 @@ class Analysis:
     """The results of analyzing a FileReporter."""
 
     def __init__(self, data, precision, file_reporter, file_mapper):
-        self.data = data
         self.file_reporter = file_reporter
         self.filename = file_mapper(self.file_reporter.filename)
         self.statements = self.file_reporter.lines()
         self.excluded = self.file_reporter.excluded_lines()
 
         # Identify missing statements.
-        executed = self.data.lines(self.filename) or []
+        executed = data.lines(self.filename) or []
         executed = self.file_reporter.translate_lines(executed)
         self.executed = executed
         self.missing = self.statements - self.executed
 
-        if self.data.has_arcs():
-            self._arc_possibilities = sorted(self.file_reporter.arcs())
+        self.has_arcs = data.has_arcs()
+        if self.has_arcs:
+            self.arc_possibilities = sorted(self.file_reporter.arcs())
+            arcs_executed = data.arcs(self.filename) or []
+            arcs_executed = self.file_reporter.translate_arcs(arcs_executed)
+            self.arcs_executed = sorted(arcs_executed)
             self.exit_counts = self.file_reporter.exit_counts()
             self.no_branch = self.file_reporter.no_branch_lines()
             n_branches = self._total_branches()
@@ -35,7 +38,8 @@ class Analysis:
             n_partial_branches = sum(len(v) for k,v in mba.items() if k not in self.missing)
             n_missing_branches = sum(len(v) for k,v in mba.items())
         else:
-            self._arc_possibilities = []
+            self.arc_possibilities = []
+            self.arcs_executed = set()
             self.exit_counts = {}
             self.no_branch = set()
             n_branches = n_partial_branches = n_missing_branches = 0
@@ -59,34 +63,18 @@ class Analysis:
         If `branches` is true, includes the missing branch arcs also.
 
         """
-        if branches and self.has_arcs():
+        if branches and self.has_arcs:
             arcs = self.missing_branch_arcs().items()
         else:
             arcs = None
 
         return format_lines(self.statements, self.missing, arcs=arcs)
 
-    def has_arcs(self):
-        """Were arcs measured in this result?"""
-        return self.data.has_arcs()
-
-    @contract(returns='list(tuple(int, int))')
-    def arc_possibilities(self):
-        """Returns a sorted list of the arcs in the code."""
-        return self._arc_possibilities
-
-    @contract(returns='list(tuple(int, int))')
-    def arcs_executed(self):
-        """Returns a sorted list of the arcs actually executed in the code."""
-        executed = self.data.arcs(self.filename) or []
-        executed = self.file_reporter.translate_arcs(executed)
-        return sorted(executed)
-
     @contract(returns='list(tuple(int, int))')
     def arcs_missing(self):
         """Returns a sorted list of the un-executed arcs in the code."""
-        possible = self.arc_possibilities()
-        executed = self.arcs_executed()
+        possible = self.arc_possibilities
+        executed = self.arcs_executed
         missing = (
             p for p in possible
                 if p not in executed
@@ -98,16 +86,14 @@ class Analysis:
     @contract(returns='list(tuple(int, int))')
     def arcs_unpredicted(self):
         """Returns a sorted list of the executed arcs missing from the code."""
-        possible = self.arc_possibilities()
-        executed = self.arcs_executed()
         # Exclude arcs here which connect a line to itself.  They can occur
         # in executed data in some cases.  This is where they can cause
         # trouble, and here is where it's the least burden to remove them.
         # Also, generators can somehow cause arcs from "enter" to "exit", so
         # make sure we have at least one positive value.
         unpredicted = (
-            e for e in executed
-                if e not in possible
+            e for e in self.arcs_executed
+                if e not in self.arc_possibilities
                     and e[0] != e[1]
                     and (e[0] > 0 or e[1] > 0)
         )
@@ -143,7 +129,7 @@ class Analysis:
         Returns {l1:[l2a,l2b,...], ...}
 
         """
-        executed = self.arcs_executed()
+        executed = self.arcs_executed
         branch_lines = set(self._branch_lines())
         eba = collections.defaultdict(list)
         for l1, l2 in executed:
