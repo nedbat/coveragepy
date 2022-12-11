@@ -88,7 +88,7 @@ update your settings.
   require ``__init__.py``.  A new setting ``[report]
   include_namespace_packages`` tells coverage.py to consider these directories
   during reporting.  Thanks to `Felix Horvat <pull 1387_>`_ for the
-  contribution.  Closes `issue 1383`_.
+  contribution.  Closes `issue 1383`_ and `issue 1024`_.
 
 - Fixed environment variable expansion in pyproject.toml files.  It was overly
   broad, causing errors outside of coverage.py settings, as described in `issue
@@ -116,6 +116,7 @@ update your settings.
 .. _issue 713: https://github.com/nedbat/coveragepy/issues/713
 .. _issue 757: https://github.com/nedbat/coveragepy/issues/757
 .. _issue 991: https://github.com/nedbat/coveragepy/issues/991
+.. _issue 1024: https://github.com/nedbat/coveragepy/issues/1024
 .. _issue 1212: https://github.com/nedbat/coveragepy/issues/1212
 .. _issue 1280: https://github.com/nedbat/coveragepy/issues/1280
 .. _issue 1345: https://github.com/nedbat/coveragepy/issues/1345
