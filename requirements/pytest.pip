@@ -39,9 +39,9 @@ flaky==3.7.0 \
 future==0.18.2 \
     --hash=sha256:b1bead90b70cf6ec3f0710ae53a525360fa360d306a86583adc6bf83a4db537d
     # via pycontracts
-hypothesis==6.60.0 \
-    --hash=sha256:39c06cd49f491204380d7c7aa45389d3fb84ee80ea1e3f10afc744044aceb751 \
-    --hash=sha256:3e8a1e061a6bfa3d8c282dafec100f2c8c527ea50b6560e9a33adf0e2e5fef8f
+hypothesis==6.61.0 \
+    --hash=sha256:7bb22d22e35db99d5724bbf5bdc686b46add94a0f228bf1be249c47ec46b9c7f \
+    --hash=sha256:fbf7da30aea839d88898f74bcc027f0f997060498a8a7605880688c8a2166215
     # via -r requirements/pytest.in
 importlib-metadata==5.1.0 \
     --hash=sha256:d5059f9f1e8e41f80e9c56c2ee58811450c31984dfa625329ffd7c0dad88a73b \

@@ -59,15 +59,15 @@ tomli==2.0.1 \
     # via
     #   pyproject-api
     #   tox
-tox==3.27.1 \
-    --hash=sha256:b2a920e35a668cc06942ffd1cf3a4fb221a4d909ca72191fb6d84b0b18a7be04 \
-    --hash=sha256:f52ca66eae115fcfef0e77ef81fd107133d295c97c52df337adedb8dfac6ab84
+tox==3.28.0 \
+    --hash=sha256:57b5ab7e8bb3074edc3c0c0b4b192a4f3799d3723b2c5b76f1fa9f2d40316eea \
+    --hash=sha256:d0d28f3fe6d6d7195c27f8b054c3e99d5451952b54abdae673b71609a581f640
     # via
     #   -r requirements/tox.in
     #   tox-gh-actions
-tox-gh-actions==2.11.0 \
-    --hash=sha256:07779eedc7ba4a1749f9fad23fdc7e4760a9663c4a80c9e1adffc54858917f60 \
-    --hash=sha256:1aff5a36549c383adf133f4d1432c2f5206c7665f7756d6397704aa4c8880c6b
+tox-gh-actions==2.12.0 \
+    --hash=sha256:5214db422a3297854db14fe814d59bd95674b7c577793bf406e7832dabeca03d \
+    --hash=sha256:7a8aa62cd616b0e74c7db204bc44bbd603574f468f00c4ba3a2a3c87de8cf514
     # via -r requirements/tox.in
 typing-extensions==4.4.0 \
     --hash=sha256:1511434bb92bf8dd198c12b1cc812e800d4181cfcb867674e0f8279cc93087aa \

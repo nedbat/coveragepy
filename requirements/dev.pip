@@ -168,9 +168,9 @@ greenlet==2.0.1 \
     --hash=sha256:f6327b6907b4cb72f650a5b7b1be23a2aab395017aa6f1adb13069d66360eb3f \
     --hash=sha256:fb412b7db83fe56847df9c47b6fe3f13911b06339c2aa02dcc09dce8bbf582cd
     # via -r requirements/dev.in
-hypothesis==6.60.0 \
-    --hash=sha256:39c06cd49f491204380d7c7aa45389d3fb84ee80ea1e3f10afc744044aceb751 \
-    --hash=sha256:3e8a1e061a6bfa3d8c282dafec100f2c8c527ea50b6560e9a33adf0e2e5fef8f
+hypothesis==6.61.0 \
+    --hash=sha256:7bb22d22e35db99d5724bbf5bdc686b46add94a0f228bf1be249c47ec46b9c7f \
+    --hash=sha256:fbf7da30aea839d88898f74bcc027f0f997060498a8a7605880688c8a2166215
     # via -r requirements/pytest.pip
 idna==3.4 \
     --hash=sha256:814f528e8dead7d329833b91c5faa87d60bf71824cd12a7530b5526063d02cb4 \
@@ -202,9 +202,9 @@ iniconfig==1.1.1 \
     # via
     #   -r requirements/pytest.pip
     #   pytest
-isort==5.10.1 \
-    --hash=sha256:6f62d78e2f89b4500b080fe3a81690850cd254227f27f75c3a0c491a1f351ba7 \
-    --hash=sha256:e8443a5e7a020e9d7f97f1d7d9cd17c88bcb3bc7e218bf9cf5095fe550be2951
+isort==5.11.3 \
+    --hash=sha256:83155ffa936239d986b0f190347a3f2285f42a9b9e1725c89d865b27dd0627e5 \
+    --hash=sha256:a8ca25fbfad0f7d5d8447a4314837298d9f6b23aed8618584c894574f626b64b
     # via pylint
 jaraco-classes==3.2.3 \
     --hash=sha256:2353de3288bc6b82120752201c6b1c1a14b058267fa424ed5ce5984e3b922158 \
@@ -311,9 +311,9 @@ pygments==2.13.0 \
     #   pudb
     #   readme-renderer
     #   rich
-pylint==2.15.8 \
-    --hash=sha256:ea82cd6a1e11062dc86d555d07c021b0fb65afe39becbe6fe692efd6c4a67443 \
-    --hash=sha256:ec4a87c33da054ab86a6c79afa6771dc8765cb5631620053e727fcf3ef8cbed7
+pylint==2.15.9 \
+    --hash=sha256:18783cca3cfee5b83c6c5d10b3cdb66c6594520ffae61890858fe8d932e1c6b4 \
+    --hash=sha256:349c8cd36aede4d50a0754a8c0218b43323d13d5d88f4b2952ddfe3e169681eb
     # via -r requirements/dev.in
 pyparsing==3.0.9 \
     --hash=sha256:2b020ecf7d21b687f219b71ecad3631f644a47f01403fa1d1036b0c6416d70fb \
@@ -392,15 +392,15 @@ tomlkit==0.11.6 \
     --hash=sha256:07de26b0d8cfc18f871aec595fda24d95b08fef89d147caa861939f37230bf4b \
     --hash=sha256:71b952e5721688937fb02cf9d354dbcf0785066149d2855e44531ebdd2b65d73
     # via pylint
-tox==3.27.1 \
-    --hash=sha256:b2a920e35a668cc06942ffd1cf3a4fb221a4d909ca72191fb6d84b0b18a7be04 \
-    --hash=sha256:f52ca66eae115fcfef0e77ef81fd107133d295c97c52df337adedb8dfac6ab84
+tox==3.28.0 \
+    --hash=sha256:57b5ab7e8bb3074edc3c0c0b4b192a4f3799d3723b2c5b76f1fa9f2d40316eea \
+    --hash=sha256:d0d28f3fe6d6d7195c27f8b054c3e99d5451952b54abdae673b71609a581f640
     # via
     #   -r requirements/tox.pip
     #   tox-gh-actions
-tox-gh-actions==2.11.0 \
-    --hash=sha256:07779eedc7ba4a1749f9fad23fdc7e4760a9663c4a80c9e1adffc54858917f60 \
-    --hash=sha256:1aff5a36549c383adf133f4d1432c2f5206c7665f7756d6397704aa4c8880c6b
+tox-gh-actions==2.12.0 \
+    --hash=sha256:5214db422a3297854db14fe814d59bd95674b7c577793bf406e7832dabeca03d \
+    --hash=sha256:7a8aa62cd616b0e74c7db204bc44bbd603574f468f00c4ba3a2a3c87de8cf514
     # via -r requirements/tox.pip
 twine==4.0.2 \
     --hash=sha256:929bc3c280033347a00f847236564d1c52a3e61b1ac2516c97c48f3ceab756d8 \
