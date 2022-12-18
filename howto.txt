@@ -6,6 +6,7 @@
         version_info = (4, 0, 2, "beta", 1)
         version_info = (4, 0, 2, "candidate", 1)
         version_info = (4, 0, 2, "final", 0)
+    - make sure: _dev = 0
 - Supported Python version numbers. Search for "PYVERSIONS".
 - Update source files with release facts:
     $ make edit_for_release
