@@ -552,3 +552,5 @@ setuptools==65.6.3 \
     --hash=sha256:57f6f22bde4e042978bcd50176fdb381d7c21a9efa4041202288d3737a0c6a54 \
     --hash=sha256:a7620757bf984b58deaf32fc8a4577a9bbc0850cf92c20e1ce41c38c19e5fb75
     # via check-manifest
+atheris==2.1.1 \
+    --hash=sha256:97d5111b9de4d581b8a51cac3ebcacd81b2d2a69661f99b9316194ea6a01f6c7
