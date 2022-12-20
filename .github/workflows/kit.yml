@@ -78,6 +78,7 @@ jobs:
           #   # PYVERSIONS. Available versions:
           #   # https://github.com/actions/python-versions/blob/main/versions-manifest.json
           #   # Include prereleases if they are at rc stage.
+          #   # PyPy versions are handled further below in the "pypy" step.
           #   pys = ["cp37", "cp38", "cp39", "cp310", "cp311"]
           #
           #   # Some OS/arch combinations need overrides for the Python versions:
@@ -217,8 +218,7 @@ jobs:
       - name: "Install PyPy"
         uses: actions/setup-python@v4
         with:
-          # PYVERSIONS
-          python-version: "pypy-3.7"
+          python-version: "pypy-3.7" # Minimum of PyPy PYVERSIONS
           cache: pip
           cache-dependency-path: 'requirements/*.pip'
 
@@ -228,9 +228,9 @@ jobs:
 
       - name: "Build wheel"
         run: |
-          # One wheel works for all PyPy versions.
+          # One wheel works for all PyPy versions. PYVERSIONS
           # yes, this is weird syntax: https://github.com/pypa/build/issues/202
-          pypy3 -m build -w -C="--global-option=--python-tag" -C="--global-option=pp36.pp37.pp38"
+          pypy3 -m build -w -C="--global-option=--python-tag" -C="--global-option=pp37.pp38.pp39"
 
       - name: "List wheels"
         run: |

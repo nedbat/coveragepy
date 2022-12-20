@@ -20,7 +20,9 @@ development at the same time, such as 4.5.x and 5.0.
 Unreleased
 ----------
 
-Nothing yet.
+- The PyPy wheel now installs on PyPy 3.7, 3.8, and 3.9, closing `issue 1510`_.
+
+.. _issue 1510: https://github.com/nedbat/coveragepy/issues/1510
 
 
 .. _changes_7-0-0:
