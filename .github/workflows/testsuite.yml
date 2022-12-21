@@ -51,6 +51,10 @@ jobs:
           - "3.11"
           - "pypy-3.7"
           - "pypy-3.9"
+        exclude:
+          # Windows PyPy-3.9 always gets killed.
+          - os: windows
+            python-version: "pypy-3.9"
       fail-fast: false
 
     steps:
