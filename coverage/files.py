@@ -325,7 +325,7 @@ G2RX_TOKENS = [(re.compile(rx), sub) for rx, sub in [
     (r"\?", r"[^/\\\\]"),           # ? matches one non slash-like
     (r"\[.*?\]", r"\g<0>"),         # [a-f] matches [a-f]
     (r"[a-zA-Z0-9_-]+", r"\g<0>"),  # word chars match themselves
-    (r"[\[\]+{}]", None),           # Can't have regex special chars
+    (r"[\[\]]", None),              # Can't have single square brackets
     (r".", r"\\\g<0>"),             # Anything else is escaped to be safe
 ]]
 

@@ -20,9 +20,13 @@ development at the same time, such as 4.5.x and 5.0.
 Unreleased
 ----------
 
+- File pattern rules were too strict, forbidding plus signs and curly braces in
+  directory and file names.  This is now fixed, closing `issue 1513`_.
+
 - The PyPy wheel now installs on PyPy 3.7, 3.8, and 3.9, closing `issue 1510`_.
 
 .. _issue 1510: https://github.com/nedbat/coveragepy/issues/1510
+.. _issue 1513: https://github.com/nedbat/coveragepy/issues/1513
 
 
 .. _changes_7-0-0:

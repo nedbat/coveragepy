@@ -230,10 +230,18 @@ def globs_to_regex_params(
             matches=["foo", "hello/foo", "hi/there/foo"],
             nomatches=["foob", "hello/foob", "hello/Foo"],
         ),
+        globs_to_regex_params(
+            ["a+b/foo*", "x{y}z/foo*"],
+            matches=["a+b/foo", "a+b/foobar", "x{y}z/foobar"],
+            nomatches=["aab/foo", "ab/foo", "xyz/foo"],
+        ),
     ]))
 )
 def test_globs_to_regex(patterns, case_insensitive, partial, text, result):
     regex = globs_to_regex(patterns, case_insensitive=case_insensitive, partial=partial)
+    print(patterns)
+    print(regex)
+    print(text)
     assert bool(regex.match(text)) == result
 
 
@@ -243,8 +251,6 @@ def test_globs_to_regex(patterns, case_insensitive, partial, text, result):
     ("*****/foo.py", "*****"),
     ("Hello]there", "]"),
     ("Hello[there", "["),
-    ("Hello+there", "+"),
-    ("{a,b}c", "{"),
     ("x/a**/b.py", "a**"),
     ("x/abcd**/b.py", "abcd**"),
     ("x/**a/b.py", "**a"),
