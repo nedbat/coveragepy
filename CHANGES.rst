@@ -20,6 +20,9 @@ development at the same time, such as 4.5.x and 5.0.
 Unreleased
 ----------
 
+- When checking if a file mapping resolved to a file that exists, we weren't
+  considering files in .whl files.  This is now fixed, closing `issue 1511`_.
+
 - File pattern rules were too strict, forbidding plus signs and curly braces in
   directory and file names.  This is now fixed, closing `issue 1513`_.
 
@@ -29,6 +32,7 @@ Unreleased
 - The PyPy wheel now installs on PyPy 3.7, 3.8, and 3.9, closing `issue 1510`_.
 
 .. _issue 1510: https://github.com/nedbat/coveragepy/issues/1510
+.. _issue 1511: https://github.com/nedbat/coveragepy/issues/1511
 .. _issue 1512: https://github.com/nedbat/coveragepy/issues/1512
 .. _issue 1513: https://github.com/nedbat/coveragepy/issues/1513
 

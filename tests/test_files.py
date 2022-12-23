@@ -86,6 +86,7 @@ class FilesTest(CoverageTest):
             ("a/b/c/foo.py", "a/b/c/foo.py", True),
             ("a/b/c/foo.py", "a/b/c/bar.py", False),
             ("src/files.zip", "src/files.zip/foo.py", True),
+            ("src/files.whl", "src/files.whl/foo.py", True),
             ("src/files.egg", "src/files.egg/foo.py", True),
             ("src/files.pex", "src/files.pex/foo.py", True),
             ("src/files.zip", "src/morefiles.zip/foo.py", False),
@@ -93,6 +94,8 @@ class FilesTest(CoverageTest):
         ]
     )
     def test_source_exists(self, to_make, to_check, answer):
+        # source_exists won't look inside the zipfile, so it's fine to make
+        # an empty file with the zipfile name.
         self.make_file(to_make, "")
         assert files.source_exists(to_check) == answer
 

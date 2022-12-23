@@ -160,7 +160,7 @@ def zip_location(filename):
     name is in the zipfile.
 
     """
-    for ext in ['.zip', '.egg', '.pex']:
+    for ext in ['.zip', '.whl', '.egg', '.pex']:
         zipbase, extension, inner = filename.partition(ext + sep(filename))
         if extension:
             zipfile = zipbase + ext
@@ -473,7 +473,7 @@ class PathAliases:
                 if not exists(new):
                     self.debugfn(
                         f"Rule {original_pattern!r} changed {path!r} to {new!r} " +
-                        f"which doesn't exist, continuing"
+                        "which doesn't exist, continuing"
                     )
                     continue
                 self.debugfn(
