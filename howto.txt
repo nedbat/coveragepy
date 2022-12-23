@@ -31,8 +31,11 @@
     - IF NOT PRE-RELEASE:
         $ make sample_html
         check in the new sample html
-- Done with changes to source files, check them in.
-    $ git push
+- Done with changes to source files
+    - check them in on a branch
+    - wait for ci to finish
+    - merge to master
+    - git push
 - Build and publish docs:
     - IF PRE-RELEASE:
         $ make publishbeta
