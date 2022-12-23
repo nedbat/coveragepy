@@ -469,6 +469,38 @@ class HtmlWithUnparsableFilesTest(HtmlTestHelpers, CoverageTest):
         formfeed_html = self.get_html_report_content("formfeed.py")
         assert "line_two" in formfeed_html
 
+    def test_splitlines_special_chars(self):
+        # https://github.com/nedbat/coveragepy/issues/1512
+        # See https://docs.python.org/3/library/stdtypes.html#str.splitlines for
+        # the characters splitlines treats specially that readlines does not.
+
+        # I'm not exactly sure why we need the "a" strings here, but the old
+        # code wasn't failing without them.
+        self.make_file("splitlines_is_weird.py", """\
+            test = {
+                "0b": ["\x0b0"], "a1": "this is line 2",
+                "0c": ["\x0c0"], "a2": "this is line 3",
+                "1c": ["\x1c0"], "a3": "this is line 4",
+                "1d": ["\x1d0"], "a4": "this is line 5",
+                "1e": ["\x1e0"], "a5": "this is line 6",
+                "85": ["\x850"], "a6": "this is line 7",
+                "2028": ["\u20280"], "a7": "this is line 8",
+                "2029": ["\u20290"], "a8": "this is line 9",
+            }
+            DONE = 1
+            """)
+        cov = coverage.Coverage()
+        self.start_import_stop(cov, "splitlines_is_weird")
+        cov.html_report()
+
+        the_html = self.get_html_report_content("splitlines_is_weird.py")
+        assert "DONE" in the_html
+
+        # Check that the lines are properly decoded and reported...
+        html_lines = the_html.split("\n")
+        assert any(re.search(r'id="t2".*"this is line 2"', line) for line in html_lines)
+        assert any(re.search(r'id="t9".*"this is line 9"', line) for line in html_lines)
+
 
 class HtmlTest(HtmlTestHelpers, CoverageTest):
     """Moar HTML tests."""

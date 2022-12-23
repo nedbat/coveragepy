@@ -4,6 +4,7 @@
 """Better tokenizing for coverage.py."""
 
 import ast
+import io
 import keyword
 import re
 import token
@@ -172,7 +173,7 @@ class CachedTokenizer:
         """A stand-in for `tokenize.generate_tokens`."""
         if text != self.last_text:
             self.last_text = text
-            readline = iter(text.splitlines(True)).__next__
+            readline = io.StringIO(text).readline
             try:
                 self.last_tokens = list(tokenize.generate_tokens(readline))
             except:
