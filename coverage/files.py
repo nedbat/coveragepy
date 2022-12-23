@@ -471,6 +471,10 @@ class PathAliases:
                 if new.startswith(("./", ".\\")) and not dot_start:
                     new = new[2:]
                 if not exists(new):
+                    self.debugfn(
+                        f"Rule {original_pattern!r} changed {path!r} to {new!r} " +
+                        f"which doesn't exist, continuing"
+                    )
                     continue
                 self.debugfn(
                     f"Matched path {path!r} to rule {original_pattern!r} -> {result!r}, " +
