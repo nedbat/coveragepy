@@ -17,8 +17,10 @@ development at the same time, such as 4.5.x and 5.0.
     ..  Version 9.8.1 — 2027-07-27
     ..  --------------------------
 
-Unreleased
-----------
+.. _changes_7-0-1:
+
+Version 7.0.1 — 2022-12-23
+--------------------------
 
 - When checking if a file mapping resolved to a file that exists, we weren't
   considering files in .whl files.  This is now fixed, closing `issue 1511`_.
