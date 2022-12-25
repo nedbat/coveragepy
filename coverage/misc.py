@@ -98,44 +98,14 @@ def dummy_decorator_with_args(*args_unused, **kwargs_unused):
     return _decorator
 
 
-# Use PyContracts for assertion testing on parameters and returns, but only if
-# we are running our own test suite.
-if env.USE_CONTRACTS:
-    from contracts import contract              # pylint: disable=unused-import
-    from contracts import new_contract as raw_new_contract
+# We aren't using real PyContracts, so just define our decorators as
+# stunt-double no-ops.
+contract = dummy_decorator_with_args
+one_of = dummy_decorator_with_args
 
-    def new_contract(*args, **kwargs):
-        """A proxy for contracts.new_contract that doesn't mind happening twice."""
-        try:
-            raw_new_contract(*args, **kwargs)
-        except ValueError:
-            # During meta-coverage, this module is imported twice, and
-            # PyContracts doesn't like redefining contracts. It's OK.
-            pass
-
-    # Define contract words that PyContract doesn't have.
-    new_contract('bytes', lambda v: isinstance(v, bytes))
-    new_contract('unicode', lambda v: isinstance(v, str))
-
-    def one_of(argnames):
-        """Ensure that only one of the argnames is non-None."""
-        def _decorator(func):
-            argnameset = {name.strip() for name in argnames.split(",")}
-            def _wrapper(*args, **kwargs):
-                vals = [kwargs.get(name) for name in argnameset]
-                assert sum(val is not None for val in vals) == 1
-                return func(*args, **kwargs)
-            return _wrapper
-        return _decorator
-else:                                           # pragma: not testing
-    # We aren't using real PyContracts, so just define our decorators as
-    # stunt-double no-ops.
-    contract = dummy_decorator_with_args
-    one_of = dummy_decorator_with_args
-
-    def new_contract(*args_unused, **kwargs_unused):
-        """Dummy no-op implementation of `new_contract`."""
-        pass
+def new_contract(*args_unused, **kwargs_unused):
+    """Dummy no-op implementation of `new_contract`."""
+    pass
 
 
 def nice_pair(pair):

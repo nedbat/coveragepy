@@ -10,10 +10,6 @@ flaky
 hypothesis
 pytest
 pytest-xdist
-# Use a fork of PyContracts that supports Python 3.9
-#PyContracts==1.8.12
-# git+https://github.com/slorg1/contracts@collections_and_validator
-https://github.com/slorg1/contracts/archive/c5a6da27d4dc9985f68e574d20d86000880919c3.zip
 
 # Pytest has a windows-only dependency on colorama:
 # https://github.com/pytest-dev/pytest/blob/main/setup.cfg#L49

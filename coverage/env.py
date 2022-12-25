@@ -130,14 +130,7 @@ METACOV = os.getenv('COVERAGE_COVERAGE', '') != ''
 # test-specific behavior like contracts.
 TESTING = os.getenv('COVERAGE_TESTING', '') == 'True'
 
-# Environment COVERAGE_NO_CONTRACTS=1 can turn off contracts while debugging
-# tests to remove noise from stack traces.
-# $set_env.py: COVERAGE_NO_CONTRACTS - Disable PyContracts to simplify stack traces.
-USE_CONTRACTS = (
-    TESTING
-    and not bool(int(os.environ.get("COVERAGE_NO_CONTRACTS", 0)))
-    and (PYVERSION < (3, 11))
-)
+USE_CONTRACTS = False
 
 def debug_info():
     """Return a list of (name, value) pairs for printing debug information."""
