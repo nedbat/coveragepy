@@ -23,12 +23,6 @@ babel==2.11.0 \
     --hash=sha256:1ad3eca1c885218f6dce2ab67291178944f810a10a9b5f3cb8382a5a232b64fe \
     --hash=sha256:5ef4b3226b0180dedded4229651c8b0e1a3a6a2837d45a073272f313e4cf97f6
     # via sphinx
-backports-functools-lru-cache==1.6.4 \
-    --hash=sha256:d5ed2169378b67d3c545e5600d363a923b09c456dab1593914935a68ad478271 \
-    --hash=sha256:dbead04b9daa817909ec64e8d2855fb78feafe0b901d4568758e3a60559d8978
-    # via
-    #   -r requirements/pytest.pip
-    #   pycontracts
 bleach==5.0.1 \
     --hash=sha256:085f7f33c15bd408dd9b17a4ad77c577db66d76203e5984b1bd59baeee948b2a \
     --hash=sha256:0d03255c47eb9bd2f26aa9bb7f2107732e7e8fe195ca2f64709fcf3b0a4a085c
@@ -66,12 +60,6 @@ commonmark==0.9.1 \
     --hash=sha256:452f9dc859be7f06631ddcb328b6919c67984aca654e5fefb3914d54691aed60 \
     --hash=sha256:da2f38c92590f83de410ba1a3cbceafbc74fee9def35f9251ba9a971d6d66fd9
     # via rich
-decorator==5.1.1 \
-    --hash=sha256:637996211036b6385ef91435e4fae22989472f9d571faba8927ba8253acbc330 \
-    --hash=sha256:b8c3f85900b9dc423225913c5aace94729fe1fa9763b38939a95226f02d37186
-    # via
-    #   -r requirements/pytest.pip
-    #   pycontracts
 dill==0.3.6 \
     --hash=sha256:a07ffd2351b8c678dfc4a856a3005f8067aea51d6ba6c700796a4d9e280f39f0 \
     --hash=sha256:e5db55f3687856d8fbdab002ed78544e1c4559a130302693d839dfe8f93f2373
@@ -90,9 +78,9 @@ docutils==0.17.1 \
     #   readme-renderer
     #   sphinx
     #   sphinx-rtd-theme
-exceptiongroup==1.0.4 \
-    --hash=sha256:542adf9dea4055530d6e1279602fa5cb11dab2395fa650b8674eaec35fc4a828 \
-    --hash=sha256:bd14967b79cd9bdb54d97323216f8fdf533e278df937aa2a90089e7d6e06e5ec
+exceptiongroup==1.1.0 \
+    --hash=sha256:327cbda3da756e2de031a3107b81ab7b3770a602c4d16ca618298c526f4bec1e \
+    --hash=sha256:bcb67d800a4497e1b404c2dd44fca47d3b7a5e5433dbab67f96c1a685cdfdf23
     # via
     #   -r requirements/pytest.pip
     #   hypothesis
@@ -115,11 +103,6 @@ flaky==3.7.0 \
     --hash=sha256:3ad100780721a1911f57a165809b7ea265a7863305acb66708220820caf8aa0d \
     --hash=sha256:d6eda73cab5ae7364504b7c44670f70abed9e75f77dd116352f662817592ec9c
     # via -r requirements/pytest.pip
-future==0.18.2 \
-    --hash=sha256:b1bead90b70cf6ec3f0710ae53a525360fa360d306a86583adc6bf83a4db537d
-    # via
-    #   -r requirements/pytest.pip
-    #   pycontracts
 greenlet==2.0.1 \
     --hash=sha256:0109af1138afbfb8ae647e31a2b1ab030f58b21dd8528c27beaeb0093b7938a9 \
     --hash=sha256:0459d94f73265744fee4c2d5ec44c6f34aa8a31017e6e9de770f7bcf29710be9 \
@@ -377,9 +360,6 @@ py==1.11.0 \
     # via
     #   -r requirements/tox.pip
     #   tox
-pycontracts @ https://github.com/slorg1/contracts/archive/c5a6da27d4dc9985f68e574d20d86000880919c3.zip \
-    --hash=sha256:2b889cbfb03b43dc811b5879248ac5c7e209ece78f03be9633de76a6b21a5a89
-    # via -r requirements/pytest.pip
 pyenchant==3.2.2 \
     --hash=sha256:1cf830c6614362a78aab78d50eaf7c6c93831369c52e1bb64ffae1df0341e637 \
     --hash=sha256:5a636832987eaf26efe971968f4d1b78e81f62bca2bde0a9da210c7de43c3bce \
@@ -400,12 +380,6 @@ pylint==2.15.9 \
     --hash=sha256:18783cca3cfee5b83c6c5d10b3cdb66c6594520ffae61890858fe8d932e1c6b4 \
     --hash=sha256:349c8cd36aede4d50a0754a8c0218b43323d13d5d88f4b2952ddfe3e169681eb
     # via -r requirements/dev.in
-pyparsing==3.0.9 \
-    --hash=sha256:2b020ecf7d21b687f219b71ecad3631f644a47f01403fa1d1036b0c6416d70fb \
-    --hash=sha256:5026bae9a10eeaefb61dab2f09052b9f4307d44aee4eda64b309723d8d206bbc
-    # via
-    #   -r requirements/pytest.pip
-    #   pycontracts
 pytest==7.2.0 \
     --hash=sha256:892f933d339f068883b6fd5a459f03d85bfcb355e4981e146d2c7616c21fef71 \
     --hash=sha256:c4014eb40e10f11f355ad4e3c2fb2c6c6d1919c73f3b5a433de4708202cade59
@@ -420,11 +394,6 @@ pytz==2022.7 \
     --hash=sha256:7ccfae7b4b2c067464a6733c6261673fdb8fd1be905460396b97a073e9fa683a \
     --hash=sha256:93007def75ae22f7cd991c84e02d434876818661f8df9ad5df9e950ff4e52cfd
     # via babel
-qualname==0.1.0 \
-    --hash=sha256:277cf6aa4b2ad36beed1153cfa7bf521b210d54fbecb3d8eea0c5679cecc9ed8
-    # via
-    #   -r requirements/pytest.pip
-    #   pycontracts
 readme-renderer==37.3 \
     --hash=sha256:cd653186dfc73055656f090f227f5cb22a046d7f71a841dfa305f55c9a513273 \
     --hash=sha256:f67a16caedfa71eef48a31b39708637a6f4664c4394801a7b0d6432d13907343
@@ -459,11 +428,9 @@ six==1.16.0 \
     --hash=sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926 \
     --hash=sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254
     # via
-    #   -r requirements/pytest.pip
     #   -r requirements/tox.pip
     #   bleach
     #   livereload
-    #   pycontracts
     #   tox
 snowballstemmer==2.2.0 \
     --hash=sha256:09b16deb8547d3412ad7b590689584cd0fe25ec8db3be37788be3810cbf19cb1 \

@@ -6,3 +6,6 @@
 # docutils has been going through some turmoil.  Different packages require it,
 # but have different pins.  This seems to satisfy them all:
 #docutils>=0.17,<0.18
+
+tox<4
+tox-gh-actions<3
