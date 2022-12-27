@@ -19,10 +19,6 @@ from itertools import zip_longest
 
 from coverage.misc import contract
 
-def _to_blob(b):
-    """Convert a bytestring into a type SQLite will accept for a blob."""
-    return b
-
 
 @contract(nums='Iterable', returns='blob')
 def nums_to_numbits(nums):
@@ -38,11 +34,11 @@ def nums_to_numbits(nums):
         nbytes = max(nums) // 8 + 1
     except ValueError:
         # nums was empty.
-        return _to_blob(b'')
+        return b''
     b = bytearray(nbytes)
     for num in nums:
         b[num//8] |= 1 << num % 8
-    return _to_blob(bytes(b))
+    return bytes(b)
 
 
 @contract(numbits='blob', returns='list[int]')
@@ -75,7 +71,7 @@ def numbits_union(numbits1, numbits2):
         A new numbits, the union of `numbits1` and `numbits2`.
     """
     byte_pairs = zip_longest(numbits1, numbits2, fillvalue=0)
-    return _to_blob(bytes(b1 | b2 for b1, b2 in byte_pairs))
+    return bytes(b1 | b2 for b1, b2 in byte_pairs)
 
 
 @contract(numbits1='blob', numbits2='blob', returns='blob')
@@ -87,7 +83,7 @@ def numbits_intersection(numbits1, numbits2):
     """
     byte_pairs = zip_longest(numbits1, numbits2, fillvalue=0)
     intersection_bytes = bytes(b1 & b2 for b1, b2 in byte_pairs)
-    return _to_blob(intersection_bytes.rstrip(b'\0'))
+    return intersection_bytes.rstrip(b'\0')
 
 
 @contract(numbits1='blob', numbits2='blob', returns='bool')
