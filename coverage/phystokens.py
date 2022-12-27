@@ -7,14 +7,19 @@ import ast
 import io
 import keyword
 import re
+import sys
 import token
 import tokenize
 
+from typing import Iterable, List, Optional, Set, Tuple
+
 from coverage import env
-from coverage.misc import contract
 
 
-def phys_tokens(toks):
+TokenInfos = Iterable[tokenize.TokenInfo]
+
+
+def _phys_tokens(toks: TokenInfos) -> TokenInfos:
     """Return all physical tokens, even line continuations.
 
     tokenize.generate_tokens() doesn't return a token for the backslash that
@@ -24,9 +29,9 @@ def phys_tokens(toks):
     Returns the same values as generate_tokens()
 
     """
-    last_line = None
+    last_line: Optional[str] = None
     last_lineno = -1
-    last_ttext = None
+    last_ttext: str = ""
     for ttype, ttext, (slineno, scol), (elineno, ecol), ltext in toks:
         if last_lineno != elineno:
             if last_line and last_line.endswith("\\\n"):
@@ -57,7 +62,7 @@ def phys_tokens(toks):
                     # Figure out what column the backslash is in.
                     ccol = len(last_line.split("\n")[-2]) - 1
                     # Yield the token, with a fake token type.
-                    yield (
+                    yield tokenize.TokenInfo(
                         99999, "\\\n",
                         (slineno, ccol), (slineno, ccol+2),
                         last_line
@@ -65,27 +70,27 @@ def phys_tokens(toks):
             last_line = ltext
         if ttype not in (tokenize.NEWLINE, tokenize.NL):
             last_ttext = ttext
-        yield ttype, ttext, (slineno, scol), (elineno, ecol), ltext
+        yield tokenize.TokenInfo(ttype, ttext, (slineno, scol), (elineno, ecol), ltext)
         last_lineno = elineno
 
 
 class MatchCaseFinder(ast.NodeVisitor):
     """Helper for finding match/case lines."""
-    def __init__(self, source):
+    def __init__(self, source: str) -> None:
         # This will be the set of line numbers that start match or case statements.
-        self.match_case_lines = set()
+        self.match_case_lines: Set[int] = set()
         self.visit(ast.parse(source))
 
-    def visit_Match(self, node):
-        """Invoked by ast.NodeVisitor.visit"""
-        self.match_case_lines.add(node.lineno)
-        for case in node.cases:
-            self.match_case_lines.add(case.pattern.lineno)
-        self.generic_visit(node)
+    if sys.version_info >= (3, 10):
+        def visit_Match(self, node: ast.Match) -> None:
+            """Invoked by ast.NodeVisitor.visit"""
+            self.match_case_lines.add(node.lineno)
+            for case in node.cases:
+                self.match_case_lines.add(case.pattern.lineno)
+            self.generic_visit(node)
 
 
-@contract(source='unicode')
-def source_token_lines(source):
+def source_token_lines(source: str) -> Iterable[List[Tuple[str, str]]]:
     """Generate a series of lines, one for each line in `source`.
 
     Each line is a list of pairs, each pair is a token::
@@ -102,7 +107,7 @@ def source_token_lines(source):
     """
 
     ws_tokens = {token.INDENT, token.DEDENT, token.NEWLINE, tokenize.NL}
-    line = []
+    line: List[Tuple[str, str]] = []
     col = 0
 
     source = source.expandtabs(8).replace('\r\n', '\n')
@@ -111,7 +116,7 @@ def source_token_lines(source):
     if env.PYBEHAVIOR.soft_keywords:
         match_case_lines = MatchCaseFinder(source).match_case_lines
 
-    for ttype, ttext, (sline, scol), (_, ecol), _ in phys_tokens(tokgen):
+    for ttype, ttext, (sline, scol), (_, ecol), _ in _phys_tokens(tokgen):
         mark_start = True
         for part in re.split('(\n)', ttext):
             if part == '\n':
@@ -132,17 +137,20 @@ def source_token_lines(source):
                     if keyword.iskeyword(ttext):
                         # Hard keywords are always keywords.
                         tok_class = "key"
-                    elif env.PYBEHAVIOR.soft_keywords and keyword.issoftkeyword(ttext):
-                        # Soft keywords appear at the start of the line, on lines that start
-                        # match or case statements.
-                        if len(line) == 0:
-                            is_start_of_line = True
-                        elif (len(line) == 1) and line[0][0] == "ws":
-                            is_start_of_line = True
-                        else:
-                            is_start_of_line = False
-                        if is_start_of_line and sline in match_case_lines:
-                            tok_class = "key"
+                    elif sys.version_info >= (3, 10):   # PYVERSIONS
+                        # Need the version_info check to keep mypy from borking
+                        # on issoftkeyword here.
+                        if env.PYBEHAVIOR.soft_keywords and keyword.issoftkeyword(ttext):
+                            # Soft keywords appear at the start of the line,
+                            # on lines that start match or case statements.
+                            if len(line) == 0:
+                                is_start_of_line = True
+                            elif (len(line) == 1) and line[0][0] == "ws":
+                                is_start_of_line = True
+                            else:
+                                is_start_of_line = False
+                            if is_start_of_line and sline in match_case_lines:
+                                tok_class = "key"
                 line.append((tok_class, part))
                 mark_end = True
             scol = 0
@@ -164,12 +172,11 @@ class CachedTokenizer:
     actually tokenize twice.
 
     """
-    def __init__(self):
-        self.last_text = None
-        self.last_tokens = None
+    def __init__(self) -> None:
+        self.last_text: Optional[str] = None
+        self.last_tokens: List[tokenize.TokenInfo] = []
 
-    @contract(text='unicode')
-    def generate_tokens(self, text):
+    def generate_tokens(self, text: str) -> TokenInfos:
         """A stand-in for `tokenize.generate_tokens`."""
         if text != self.last_text:
             self.last_text = text
@@ -185,8 +192,7 @@ class CachedTokenizer:
 generate_tokens = CachedTokenizer().generate_tokens
 
 
-@contract(source='bytes')
-def source_encoding(source):
+def source_encoding(source: bytes) -> str:
     """Determine the encoding for `source`, according to PEP 263.
 
     `source` is a byte string: the text of the program.
