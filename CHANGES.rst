@@ -20,7 +20,9 @@ development at the same time, such as 4.5.x and 5.0.
 Unreleased
 ----------
 
-Nothing yet.
+- Fix: adjusted how decorators are traced on PyPy 7.3.10, fixing `issue 1515`_.
+
+.. _issue 1515: https://github.com/nedbat/coveragepy/issues/1515
 
 
 .. _changes_7-0-1:

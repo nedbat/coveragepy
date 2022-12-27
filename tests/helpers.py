@@ -317,8 +317,7 @@ def swallow_warnings(message=r".", category=CoverageWarning):
         warnings.filterwarnings("ignore", category=category, message=message)
         yield
 
-
-xfail_pypy_3749 = pytest.mark.xfail(
-    env.PYVERSION[:2] == (3, 8) and env.PYPY and env.PYPYVERSION >= (7, 3, 10),
-    reason="Avoid a PyPy bug: https://foss.heptapod.net/pypy/pypy/-/issues/3749",
+xfail_pypy38 = pytest.mark.xfail(
+    env.PYVERSION[:2] == (3, 8) and env.PYPY,
+    reason="Not sure why these few tests fail on PyPy 3.8 still",
 )

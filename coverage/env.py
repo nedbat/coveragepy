@@ -67,11 +67,16 @@ class PYBEHAVIOR:
     # does the finally jump back to the break/continue/return (3.8) to do the
     # work?
     finally_jumps_back = ((3, 8) <= PYVERSION < (3, 10))
+    if PYPY and PYPYVERSION < (7, 3, 7):
+        finally_jumps_back = False
 
     # When a function is decorated, does the trace function get called for the
     # @-line and also the def-line (new behavior in 3.8)? Or just the @-line
     # (old behavior)?
-    trace_decorated_def = (CPYTHON and PYVERSION >= (3, 8)) or (PYPY and PYVERSION >= (3, 9))
+    trace_decorated_def = (
+        (PYVERSION >= (3, 8)) and
+        (CPYTHON or (PYVERSION > (3, 8)) or (PYPYVERSION > (7, 3, 9)))
+    )
 
     # Functions are no longer claimed to start at their earliest decorator even though
     # the decorators are traced?

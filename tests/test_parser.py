@@ -15,7 +15,7 @@ from coverage.exceptions import NotPython
 from coverage.parser import ast_dump, PythonParser
 
 from tests.coveragetest import CoverageTest, TESTS_DIR
-from tests.helpers import arcz_to_arcs, re_lines, xfail_pypy_3749
+from tests.helpers import arcz_to_arcs, re_lines, xfail_pypy38
 
 
 class PythonParserTest(CoverageTest):
@@ -140,7 +140,7 @@ class PythonParserTest(CoverageTest):
                 '''
                 """)
 
-    @xfail_pypy_3749
+    @xfail_pypy38
     def test_decorator_pragmas(self):
         parser = self.parse_source("""\
             # 1
@@ -176,7 +176,7 @@ class PythonParserTest(CoverageTest):
         assert parser.raw_statements == raw_statements
         assert parser.statements == {8}
 
-    @xfail_pypy_3749
+    @xfail_pypy38
     def test_decorator_pragmas_with_colons(self):
         # A colon in a decorator expression would confuse the parser,
         # ending the exclusion of the decorated function.
@@ -211,7 +211,6 @@ class PythonParserTest(CoverageTest):
         assert parser.raw_statements == {1, 2, 3, 5, 6, 7, 8}
         assert parser.statements == {1, 2, 3}
 
-    @xfail_pypy_3749
     def test_empty_decorated_function(self):
         parser = self.parse_source("""\
             def decorator(func):

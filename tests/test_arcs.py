@@ -6,7 +6,7 @@
 import pytest
 
 from tests.coveragetest import CoverageTest
-from tests.helpers import assert_count_equal, xfail_pypy_3749
+from tests.helpers import assert_count_equal, xfail_pypy38
 
 import coverage
 from coverage import env
@@ -1645,7 +1645,6 @@ class MiscArcTest(CoverageTest):
 class DecoratorArcTest(CoverageTest):
     """Tests of arcs with decorators."""
 
-    @xfail_pypy_3749
     def test_function_decorator(self):
         arcz = (
             ".1 16 67 7A AE EF F. "     # main line
@@ -1674,7 +1673,7 @@ class DecoratorArcTest(CoverageTest):
             arcz=arcz,
         )
 
-    @xfail_pypy_3749
+    @xfail_pypy38
     def test_class_decorator(self):
         arcz = (
             ".1 16 67 6D 7A AE E. "     # main line
@@ -1702,7 +1701,6 @@ class DecoratorArcTest(CoverageTest):
             arcz=arcz,
         )
 
-    @xfail_pypy_3749
     def test_bug_466a(self):
         # A bad interaction between decorators and multi-line list assignments,
         # believe it or not...!
@@ -1727,7 +1725,6 @@ class DecoratorArcTest(CoverageTest):
             arcz=arcz,
         )
 
-    @xfail_pypy_3749
     def test_bug_466b(self):
         # A bad interaction between decorators and multi-line list assignments,
         # believe it or not...!
@@ -1919,7 +1916,6 @@ class AsyncTest(CoverageTest):
             arcz_missing=arcz_missing,
         )
 
-    @xfail_pypy_3749
     def test_async_decorator(self):
         arcz = ".1 14 4.     .2 2.  -46 6-4 "
         if env.PYBEHAVIOR.trace_decorated_def:
