@@ -12,10 +12,11 @@
 -r pytest.pip
 
 # for linting.
+check-manifest
 cogapp
 greenlet
 pylint
-check-manifest
+mypy
 readme_renderer
 
 # for kitting.
