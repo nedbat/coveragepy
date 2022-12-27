@@ -17,13 +17,11 @@ import json
 
 from itertools import zip_longest
 
-from coverage.misc import contract, new_contract
+from coverage.misc import contract
 
 def _to_blob(b):
     """Convert a bytestring into a type SQLite will accept for a blob."""
     return b
-
-new_contract('blob', lambda v: isinstance(v, bytes))
 
 
 @contract(nums='Iterable', returns='blob')

@@ -101,11 +101,6 @@ def contract(*args_unused, **kwargs_unused):
     return _decorator
 
 
-def new_contract(*args_unused, **kwargs_unused):
-    """Dummy no-op implementation of `new_contract`."""
-    pass
-
-
 def nice_pair(pair):
     """Make a nice string representation of a pair of numbers.
 

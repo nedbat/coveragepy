@@ -14,7 +14,7 @@ from coverage import env
 from coverage.bytecode import code_objects
 from coverage.debug import short_stack
 from coverage.exceptions import NoSource, NotPython, _StopEverything
-from coverage.misc import contract, join_regex, new_contract, nice_pair
+from coverage.misc import contract, join_regex, nice_pair
 from coverage.phystokens import generate_tokens
 
 
@@ -601,11 +601,6 @@ class ArcStart(collections.namedtuple("Arc", "lineno, cause")):
     """
     def __new__(cls, lineno, cause=None):
         return super().__new__(cls, lineno, cause)
-
-
-# Define contract words that PyContract doesn't have.
-# ArcStarts is for a list or set of ArcStart's.
-new_contract('ArcStarts', lambda seq: all(isinstance(x, ArcStart) for x in seq))
 
 
 class NodeList:
