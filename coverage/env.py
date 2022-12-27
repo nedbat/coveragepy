@@ -135,7 +135,6 @@ METACOV = os.getenv('COVERAGE_COVERAGE', '') != ''
 # test-specific behavior like contracts.
 TESTING = os.getenv('COVERAGE_TESTING', '') == 'True'
 
-USE_CONTRACTS = False
 
 def debug_info():
     """Return a list of (name, value) pairs for printing debug information."""

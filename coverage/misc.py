@@ -91,17 +91,15 @@ def import_third_party(modname):
             return None
 
 
-def dummy_decorator_with_args(*args_unused, **kwargs_unused):
+# We don't use PyContracts anymore, but the @contracts decorators will be
+# useful info when it comes time to add type annotations, so keep them as
+# dummies for now.
+def contract(*args_unused, **kwargs_unused):
     """Dummy no-op implementation of a decorator with arguments."""
     def _decorator(func):
         return func
     return _decorator
 
-
-# We aren't using real PyContracts, so just define our decorators as
-# stunt-double no-ops.
-contract = dummy_decorator_with_args
-one_of = dummy_decorator_with_args
 
 def new_contract(*args_unused, **kwargs_unused):
     """Dummy no-op implementation of `new_contract`."""

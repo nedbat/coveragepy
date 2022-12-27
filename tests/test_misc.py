@@ -7,10 +7,9 @@ import sys
 
 import pytest
 
-from coverage import env
 from coverage.exceptions import CoverageException
-from coverage.misc import contract, dummy_decorator_with_args, file_be_gone
-from coverage.misc import Hasher, one_of, substitute_variables, import_third_party
+from coverage.misc import file_be_gone
+from coverage.misc import Hasher, substitute_variables, import_third_party
 from coverage.misc import human_sorted, human_sorted_items
 
 from tests.coveragetest import CoverageTest
@@ -78,56 +77,6 @@ class RemoveFileTest(CoverageTest):
         # ". is a directory" on Unix, or "Access denied" on Windows
         with pytest.raises(OSError):
             file_be_gone(".")
-
-
-@pytest.mark.skipif(not env.USE_CONTRACTS, reason="Contracts are disabled, can't test them")
-class ContractTest(CoverageTest):
-    """Tests of our contract decorators."""
-
-    run_in_temp_dir = False
-
-    def test_bytes(self):
-        @contract(text='bytes|None')
-        def need_bytes(text=None):
-            return text
-
-        assert need_bytes(b"Hey") == b"Hey"
-        assert need_bytes() is None
-        with pytest.raises(Exception):
-            need_bytes("Oops")
-
-    def test_unicode(self):
-        @contract(text='unicode|None')
-        def need_unicode(text=None):
-            return text
-
-        assert need_unicode("Hey") == "Hey"
-        assert need_unicode() is None
-        with pytest.raises(Exception):
-            need_unicode(b"Oops")
-
-    def test_one_of(self):
-        @one_of("a, b, c")
-        def give_me_one(a=None, b=None, c=None):
-            return (a, b, c)
-
-        assert give_me_one(a=17) == (17, None, None)
-        assert give_me_one(b=set()) == (None, set(), None)
-        assert give_me_one(c=17) == (None, None, 17)
-        with pytest.raises(AssertionError):
-            give_me_one(a=17, b=set())
-        with pytest.raises(AssertionError):
-            give_me_one()
-
-    def test_dummy_decorator_with_args(self):
-        @dummy_decorator_with_args("anything", this=17, that="is fine")
-        def undecorated(a=None, b=None):
-            return (a, b)
-
-        assert undecorated() == (None, None)
-        assert undecorated(17) == (17, None)
-        assert undecorated(b=23) == (None, 23)
-        assert undecorated(b=42, a=3) == (3, 42)
 
 
 VARS = {

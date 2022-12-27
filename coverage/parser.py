@@ -14,7 +14,7 @@ from coverage import env
 from coverage.bytecode import code_objects
 from coverage.debug import short_stack
 from coverage.exceptions import NoSource, NotPython, _StopEverything
-from coverage.misc import contract, join_regex, new_contract, nice_pair, one_of
+from coverage.misc import contract, join_regex, new_contract, nice_pair
 from coverage.phystokens import generate_tokens
 
 
@@ -778,7 +778,6 @@ class AstArcAnalyzer:
             # Default for simple statements: one exit from this node.
             return {ArcStart(self.line_for_node(node))}
 
-    @one_of("from_start, prev_starts")
     @contract(returns='ArcStarts')
     def add_body_arcs(self, body, from_start=None, prev_starts=None):
         """Add arcs for the body of a compound statement.
