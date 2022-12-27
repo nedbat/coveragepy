@@ -4,7 +4,6 @@
 """Test the config file handling for coverage.py"""
 
 import sys
-from collections import OrderedDict
 
 from unittest import mock
 import pytest
@@ -357,15 +356,17 @@ class ConfigTest(CoverageTest):
                 /second/a
                 /second/b
             """)
-        old_paths = OrderedDict()
-        old_paths["first"] = ["/first/1", "/first/2"]
-        old_paths["second"] = ["/second/a", "/second/b"]
+        old_paths = {
+            "first": ["/first/1", "/first/2"],
+            "second": ["/second/a", "/second/b"],
+        }
         cov = coverage.Coverage()
         paths = cov.get_option("paths")
         assert paths == old_paths
 
-        new_paths = OrderedDict()
-        new_paths['magic'] = ['src', 'ok']
+        new_paths = {
+            "magic": ["src", "ok"],
+        }
         cov.set_option("paths", new_paths)
 
         assert cov.get_option("paths") == new_paths

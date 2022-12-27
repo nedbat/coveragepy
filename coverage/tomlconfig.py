@@ -119,9 +119,13 @@ class TomlConfigParser:
             return False
         return option in data
 
-    def has_section(self, section):
+    def real_section(self, section):
         name, _ = self._get_section(section)
         return name
+
+    def has_section(self, section):
+        name, _ = self._get_section(section)
+        return bool(name)
 
     def options(self, section):
         _, data = self._get_section(section)

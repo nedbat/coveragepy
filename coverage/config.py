@@ -3,6 +3,7 @@
 
 """Config file for coverage.py"""
 
+from __future__ import annotations
 import collections
 import configparser
 import copy
@@ -10,18 +11,28 @@ import os
 import os.path
 import re
 
+from typing import (
+    Any, Callable, Dict, Iterable, List, Optional, Tuple, Union,
+)
+
 from coverage.exceptions import ConfigError
-from coverage.misc import contract, isolate_module, human_sorted_items, substitute_variables
+from coverage.misc import isolate_module, human_sorted_items, substitute_variables
 
 from coverage.tomlconfig import TomlConfigParser, TomlDecodeError
 
 os = isolate_module(os)
 
 
+# One value read from a config file.
+TConfigValue = Union[str, List[str]]
+# An entire config section, mapping option names to values.
+TConfigSection = Dict[str, TConfigValue]
+
+
 class HandyConfigParser(configparser.ConfigParser):
     """Our specialization of ConfigParser."""
 
-    def __init__(self, our_file):
+    def __init__(self, our_file: bool) -> None:
         """Create the HandyConfigParser.
 
         `our_file` is True if this config file is specifically for coverage,
@@ -34,41 +45,46 @@ class HandyConfigParser(configparser.ConfigParser):
         if our_file:
             self.section_prefixes.append("")
 
-    def read(self, filenames, encoding_unused=None):
+    def read( # type: ignore[override]
+        self,
+        filenames: Iterable[str],
+        encoding_unused: Optional[str]=None,
+    ) -> List[str]:
         """Read a file name as UTF-8 configuration data."""
         return super().read(filenames, encoding="utf-8")
 
-    def has_option(self, section, option):
-        for section_prefix in self.section_prefixes:
-            real_section = section_prefix + section
-            has = super().has_option(real_section, option)
-            if has:
-                return has
-        return False
-
-    def has_section(self, section):
+    def real_section(self, section: str) -> Optional[str]:
+        """Get the actual name of a section."""
         for section_prefix in self.section_prefixes:
             real_section = section_prefix + section
             has = super().has_section(real_section)
             if has:
                 return real_section
+        return None
+
+    def has_option(self, section: str, option: str) -> bool:
+        real_section = self.real_section(section)
+        if real_section is not None:
+            return super().has_option(real_section, option)
         return False
 
-    def options(self, section):
-        for section_prefix in self.section_prefixes:
-            real_section = section_prefix + section
-            if super().has_section(real_section):
-                return super().options(real_section)
+    def has_section(self, section: str) -> bool:
+        return bool(self.real_section(section))
+
+    def options(self, section: str) -> List[str]:
+        real_section = self.real_section(section)
+        if real_section is not None:
+            return super().options(real_section)
         raise ConfigError(f"No section: {section!r}")
 
-    def get_section(self, section):
+    def get_section(self, section: str) -> TConfigSection:
         """Get the contents of a section, as a dictionary."""
-        d = {}
+        d: TConfigSection = {}
         for opt in self.options(section):
             d[opt] = self.get(section, opt)
         return d
 
-    def get(self, section, option, *args, **kwargs):
+    def get(self, section: str, option: str, *args: Any, **kwargs: Any) -> str: # type: ignore
         """Get a value, replacing environment variables also.
 
         The arguments are the same as `ConfigParser.get`, but in the found
@@ -85,11 +101,11 @@ class HandyConfigParser(configparser.ConfigParser):
         else:
             raise ConfigError(f"No option {option!r} in section: {section!r}")
 
-        v = super().get(real_section, option, *args, **kwargs)
+        v: str = super().get(real_section, option, *args, **kwargs)
         v = substitute_variables(v, os.environ)
         return v
 
-    def getlist(self, section, option):
+    def getlist(self, section: str, option: str) -> List[str]:
         """Read a list of strings.
 
         The value of `section` and `option` is treated as a comma- and newline-
@@ -107,7 +123,7 @@ class HandyConfigParser(configparser.ConfigParser):
                     values.append(value)
         return values
 
-    def getregexlist(self, section, option):
+    def getregexlist(self, section: str, option: str) -> List[str]:
         """Read a list of full-line regexes.
 
         The value of `section` and `option` is treated as a newline-separated
@@ -129,6 +145,9 @@ class HandyConfigParser(configparser.ConfigParser):
             if value:
                 value_list.append(value)
         return value_list
+
+
+TConfigParser = Union[HandyConfigParser, TomlConfigParser]
 
 
 # The default line exclusion regexes.
@@ -159,16 +178,16 @@ class CoverageConfig:
     """
     # pylint: disable=too-many-instance-attributes
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize the configuration attributes to their defaults."""
         # Metadata about the config.
         # We tried to read these config files.
-        self.attempted_config_files = []
+        self.attempted_config_files: List[str] = []
         # We did read these config files, but maybe didn't find any content for us.
-        self.config_files_read = []
+        self.config_files_read: List[str] = []
         # The file that gave us our configuration.
-        self.config_file = None
-        self._config_contents = None
+        self.config_file: Optional[str] = None
+        self._config_contents: Optional[bytes] = None
 
         # Defaults for [run] and [report]
         self._include = None
@@ -181,17 +200,17 @@ class CoverageConfig:
         self.context = None
         self.cover_pylib = False
         self.data_file = ".coverage"
-        self.debug = []
-        self.disable_warnings = []
+        self.debug: List[str] = []
+        self.disable_warnings: List[str] = []
         self.dynamic_context = None
         self.parallel = False
-        self.plugins = []
+        self.plugins: List[str] = []
         self.relative_files = False
         self.run_include = None
         self.run_omit = None
         self.sigterm = False
         self.source = None
-        self.source_pkgs = []
+        self.source_pkgs: List[str] = []
         self.timid = False
         self._crash = None
 
@@ -233,10 +252,10 @@ class CoverageConfig:
         self.lcov_output = "coverage.lcov"
 
         # Defaults for [paths]
-        self.paths = collections.OrderedDict()
+        self.paths: Dict[str, List[str]] = {}
 
         # Options for plugins
-        self.plugin_options = {}
+        self.plugin_options: Dict[str, TConfigSection] = {}
 
     MUST_BE_LIST = {
         "debug", "concurrency", "plugins",
@@ -244,7 +263,7 @@ class CoverageConfig:
         "run_omit", "run_include",
     }
 
-    def from_args(self, **kwargs):
+    def from_args(self, **kwargs: TConfigValue) -> None:
         """Read config values from `kwargs`."""
         for k, v in kwargs.items():
             if v is not None:
@@ -252,8 +271,7 @@ class CoverageConfig:
                     v = [v]
                 setattr(self, k, v)
 
-    @contract(filename=str)
-    def from_file(self, filename, warn, our_file):
+    def from_file(self, filename: str, warn: Callable[[str], None], our_file: bool) -> bool:
         """Read configuration from a .rc file.
 
         `filename` is a file name to read.
@@ -267,6 +285,7 @@ class CoverageConfig:
 
         """
         _, ext = os.path.splitext(filename)
+        cp: TConfigParser
         if ext == '.toml':
             cp = TomlConfigParser(our_file)
         else:
@@ -299,7 +318,7 @@ class CoverageConfig:
             all_options[section].add(option)
 
         for section, options in all_options.items():
-            real_section = cp.has_section(section)
+            real_section = cp.real_section(section)
             if real_section:
                 for unknown in set(cp.options(section)) - options:
                     warn(
@@ -335,7 +354,7 @@ class CoverageConfig:
 
         return used
 
-    def copy(self):
+    def copy(self) -> CoverageConfig:
         """Return a copy of the configuration."""
         return copy.deepcopy(self)
 
@@ -409,7 +428,13 @@ class CoverageConfig:
         ('lcov_output', 'lcov:output'),
     ]
 
-    def _set_attr_from_config_option(self, cp, attr, where, type_=''):
+    def _set_attr_from_config_option(
+        self,
+        cp: TConfigParser,
+        attr: str,
+        where: str,
+        type_: str='',
+    ) -> bool:
         """Set an attribute on self if it exists in the ConfigParser.
 
         Returns True if the attribute was set.
@@ -422,11 +447,11 @@ class CoverageConfig:
             return True
         return False
 
-    def get_plugin_options(self, plugin):
+    def get_plugin_options(self, plugin: str) -> TConfigSection:
         """Get a dictionary of options for the plugin named `plugin`."""
         return self.plugin_options.get(plugin, {})
 
-    def set_option(self, option_name, value):
+    def set_option(self, option_name: str, value: Union[TConfigValue, TConfigSection]) -> None:
         """Set an option in the configuration.
 
         `option_name` is a colon-separated string indicating the section and
@@ -438,7 +463,7 @@ class CoverageConfig:
         """
         # Special-cased options.
         if option_name == "paths":
-            self.paths = value
+            self.paths = value  # type: ignore
             return
 
         # Check all the hard-coded options.
@@ -451,13 +476,13 @@ class CoverageConfig:
         # See if it's a plugin option.
         plugin_name, _, key = option_name.partition(":")
         if key and plugin_name in self.plugins:
-            self.plugin_options.setdefault(plugin_name, {})[key] = value
+            self.plugin_options.setdefault(plugin_name, {})[key] = value # type: ignore
             return
 
         # If we get here, we didn't find the option.
         raise ConfigError(f"No such option: {option_name!r}")
 
-    def get_option(self, option_name):
+    def get_option(self, option_name: str) -> Optional[TConfigValue]:
         """Get an option from the configuration.
 
         `option_name` is a colon-separated string indicating the section and
@@ -469,13 +494,13 @@ class CoverageConfig:
         """
         # Special-cased options.
         if option_name == "paths":
-            return self.paths
+            return self.paths  # type: ignore
 
         # Check all the hard-coded options.
         for option_spec in self.CONFIG_FILE_OPTIONS:
             attr, where = option_spec[:2]
             if where == option_name:
-                return getattr(self, attr)
+                return getattr(self, attr)  # type: ignore
 
         # See if it's a plugin option.
         plugin_name, _, key = option_name.partition(":")
@@ -485,28 +510,28 @@ class CoverageConfig:
         # If we get here, we didn't find the option.
         raise ConfigError(f"No such option: {option_name!r}")
 
-    def post_process_file(self, path):
+    def post_process_file(self, path: str) -> str:
         """Make final adjustments to a file path to make it usable."""
         return os.path.expanduser(path)
 
-    def post_process(self):
+    def post_process(self) -> None:
         """Make final adjustments to settings to make them usable."""
         self.data_file = self.post_process_file(self.data_file)
         self.html_dir = self.post_process_file(self.html_dir)
         self.xml_output = self.post_process_file(self.xml_output)
-        self.paths = collections.OrderedDict(
+        self.paths = dict(
             (k, [self.post_process_file(f) for f in v])
             for k, v in self.paths.items()
         )
 
-    def debug_info(self):
+    def debug_info(self) -> List[Tuple[str, str]]:
         """Make a list of (name, value) pairs for writing debug info."""
-        return human_sorted_items(
+        return human_sorted_items(  # type: ignore
             (k, v) for k, v in self.__dict__.items() if not k.startswith("_")
         )
 
 
-def config_files_to_try(config_file):
+def config_files_to_try(config_file: Union[bool, str]) -> List[Tuple[str, bool, bool]]:
     """What config files should we try to read?
 
     Returns a list of tuples:
@@ -520,12 +545,14 @@ def config_files_to_try(config_file):
     specified_file = (config_file is not True)
     if not specified_file:
         # No file was specified. Check COVERAGE_RCFILE.
-        config_file = os.environ.get('COVERAGE_RCFILE')
-        if config_file:
+        rcfile = os.environ.get('COVERAGE_RCFILE')
+        if rcfile:
+            config_file = rcfile
             specified_file = True
     if not specified_file:
         # Still no file specified. Default to .coveragerc
         config_file = ".coveragerc"
+    assert isinstance(config_file, str)
     files_to_try = [
         (config_file, True, specified_file),
         ("setup.cfg", False, False),
@@ -535,7 +562,11 @@ def config_files_to_try(config_file):
     return files_to_try
 
 
-def read_coverage_config(config_file, warn, **kwargs):
+def read_coverage_config(
+    config_file: Union[bool, str],
+    warn: Callable[[str], None],
+    **kwargs: TConfigValue,
+) -> CoverageConfig:
     """Read the coverage.py configuration.
 
     Arguments:
