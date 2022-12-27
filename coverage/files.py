@@ -11,15 +11,25 @@ import posixpath
 import re
 import sys
 
+from typing import Callable, Dict, Iterable, List, Optional, Tuple, TYPE_CHECKING
+
 from coverage import env
 from coverage.exceptions import ConfigError
-from coverage.misc import contract, human_sorted, isolate_module, join_regex
+from coverage.misc import human_sorted, isolate_module, join_regex
 
 
 os = isolate_module(os)
 
+if TYPE_CHECKING:
+    Regex = re.Pattern[str]
+else:
+    Regex = re.Pattern  # Python <3.9 can't subscript Pattern
 
-def set_relative_directory():
+
+RELATIVE_DIR: str = ""
+CANONICAL_FILENAME_CACHE: Dict[str, str] = {}
+
+def set_relative_directory() -> None:
     """Set the directory that `relative_filename` will be relative to."""
     global RELATIVE_DIR, CANONICAL_FILENAME_CACHE
 
@@ -37,13 +47,12 @@ def set_relative_directory():
     CANONICAL_FILENAME_CACHE = {}
 
 
-def relative_directory():
+def relative_directory() -> str:
     """Return the directory that `relative_filename` is relative to."""
     return RELATIVE_DIR
 
 
-@contract(returns='unicode')
-def relative_filename(filename):
+def relative_filename(filename: str) -> str:
     """Return the relative form of `filename`.
 
     The file name will be relative to the current directory when the
@@ -56,8 +65,7 @@ def relative_filename(filename):
     return filename
 
 
-@contract(returns='unicode')
-def canonical_filename(filename):
+def canonical_filename(filename: str) -> str:
     """Return a canonical file name for `filename`.
 
     An absolute path with no redundant components and normalized case.
@@ -68,7 +76,7 @@ def canonical_filename(filename):
         if not os.path.isabs(filename):
             for path in [os.curdir] + sys.path:
                 if path is None:
-                    continue
+                    continue # type: ignore
                 f = os.path.join(path, filename)
                 try:
                     exists = os.path.exists(f)
@@ -84,8 +92,7 @@ def canonical_filename(filename):
 
 MAX_FLAT = 100
 
-@contract(filename='unicode', returns='unicode')
-def flat_rootname(filename):
+def flat_rootname(filename: str) -> str:
     """A base for a flat file name to correspond to this file.
 
     Useful for writing files about the code where you want all the files in
@@ -106,10 +113,10 @@ def flat_rootname(filename):
 
 if env.WINDOWS:
 
-    _ACTUAL_PATH_CACHE = {}
-    _ACTUAL_PATH_LIST_CACHE = {}
+    _ACTUAL_PATH_CACHE: Dict[str, str] = {}
+    _ACTUAL_PATH_LIST_CACHE: Dict[str, List[str]] = {}
 
-    def actual_path(path):
+    def actual_path(path: str) -> str:
         """Get the actual path of `path`, including the correct case."""
         if path in _ACTUAL_PATH_CACHE:
             return _ACTUAL_PATH_CACHE[path]
@@ -142,18 +149,17 @@ if env.WINDOWS:
         return actpath
 
 else:
-    def actual_path(path):
+    def actual_path(path: str) -> str:
         """The actual path for non-Windows platforms."""
         return path
 
 
-@contract(returns='unicode')
-def abs_file(path):
+def abs_file(path: str) -> str:
     """Return the absolute normalized form of `path`."""
     return actual_path(os.path.abspath(os.path.realpath(path)))
 
 
-def zip_location(filename):
+def zip_location(filename: str) -> Optional[Tuple[str, str]]:
     """Split a filename into a zipfile / inner name pair.
 
     Only return a pair if the zipfile exists.  No check is made if the inner
@@ -169,7 +175,7 @@ def zip_location(filename):
     return None
 
 
-def source_exists(path):
+def source_exists(path: str) -> bool:
     """Determine if a source file path exists."""
     if os.path.exists(path):
         return True
@@ -182,24 +188,21 @@ def source_exists(path):
     return False
 
 
-def python_reported_file(filename):
+def python_reported_file(filename: str) -> str:
     """Return the string as Python would describe this file name."""
     if env.PYBEHAVIOR.report_absolute_files:
         filename = os.path.abspath(filename)
     return filename
 
 
-RELATIVE_DIR = None
-CANONICAL_FILENAME_CACHE = None
-set_relative_directory()
 
 
-def isabs_anywhere(filename):
+def isabs_anywhere(filename: str) -> bool:
     """Is `filename` an absolute path on any OS?"""
     return ntpath.isabs(filename) or posixpath.isabs(filename)
 
 
-def prep_patterns(patterns):
+def prep_patterns(patterns: Iterable[str]) -> List[str]:
     """Prepare the file patterns for use in a `GlobMatcher`.
 
     If a pattern starts with a wildcard, it is used as a pattern
@@ -226,19 +229,20 @@ class TreeMatcher:
     somewhere in a subtree rooted at one of the directories.
 
     """
-    def __init__(self, paths, name="unknown"):
-        self.original_paths = human_sorted(paths)
-        self.paths = list(map(os.path.normcase, paths))
+    def __init__(self, paths: Iterable[str], name: str="unknown") -> None:
+        self.original_paths: List[str] = human_sorted(paths)
+        #self.paths = list(map(os.path.normcase, paths))
+        self.paths = [os.path.normcase(p) for p in paths]
         self.name = name
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<TreeMatcher {self.name} {self.original_paths!r}>"
 
-    def info(self):
+    def info(self) -> List[str]:
         """A list of strings for displaying when dumping state."""
         return self.original_paths
 
-    def match(self, fpath):
+    def match(self, fpath: str) -> bool:
         """Does `fpath` indicate a file in one of our trees?"""
         fpath = os.path.normcase(fpath)
         for p in self.paths:
@@ -254,18 +258,18 @@ class TreeMatcher:
 
 class ModuleMatcher:
     """A matcher for modules in a tree."""
-    def __init__(self, module_names, name="unknown"):
+    def __init__(self, module_names: Iterable[str], name:str = "unknown") -> None:
         self.modules = list(module_names)
         self.name = name
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<ModuleMatcher {self.name} {self.modules!r}>"
 
-    def info(self):
+    def info(self) -> List[str]:
         """A list of strings for displaying when dumping state."""
         return self.modules
 
-    def match(self, module_name):
+    def match(self, module_name: str) -> bool:
         """Does `module_name` indicate a module in one of our packages?"""
         if not module_name:
             return False
@@ -283,24 +287,24 @@ class ModuleMatcher:
 
 class GlobMatcher:
     """A matcher for files by file name pattern."""
-    def __init__(self, pats, name="unknown"):
+    def __init__(self, pats: Iterable[str], name: str="unknown") -> None:
         self.pats = list(pats)
         self.re = globs_to_regex(self.pats, case_insensitive=env.WINDOWS)
         self.name = name
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<GlobMatcher {self.name} {self.pats!r}>"
 
-    def info(self):
+    def info(self) -> List[str]:
         """A list of strings for displaying when dumping state."""
         return self.pats
 
-    def match(self, fpath):
+    def match(self, fpath: str) -> bool:
         """Does `fpath` match one of our file name patterns?"""
         return self.re.match(fpath) is not None
 
 
-def sep(s):
+def sep(s: str) -> str:
     """Find the path separator used in this string, or os.sep if none."""
     sep_match = re.search(r"[\\/]", s)
     if sep_match:
@@ -329,7 +333,7 @@ G2RX_TOKENS = [(re.compile(rx), sub) for rx, sub in [
     (r".", r"\\\g<0>"),             # Anything else is escaped to be safe
 ]]
 
-def _glob_to_regex(pattern):
+def _glob_to_regex(pattern: str) -> str:
     """Convert a file-path glob pattern into a regex."""
     # Turn all backslashes into slashes to simplify the tokenizer.
     pattern = pattern.replace("\\", "/")
@@ -349,7 +353,11 @@ def _glob_to_regex(pattern):
     return "".join(path_rx)
 
 
-def globs_to_regex(patterns, case_insensitive=False, partial=False):
+def globs_to_regex(
+    patterns: Iterable[str],
+    case_insensitive: bool=False,
+    partial: bool=False
+) -> Regex:
     """Convert glob patterns to a compiled regex that matches any of them.
 
     Slashes are always converted to match either slash or backslash, for
@@ -387,19 +395,20 @@ class PathAliases:
     map a path through those aliases to produce a unified path.
 
     """
-    def __init__(self, debugfn=None, relative=False):
-        self.aliases = []   # A list of (original_pattern, regex, result)
+    def __init__(self, debugfn:Optional[Callable[[str], None]]=None, relative:bool=False) -> None:
+        # A list of (original_pattern, regex, result)
+        self.aliases: List[Tuple[str, Regex, str]] = []
         self.debugfn = debugfn or (lambda msg: 0)
         self.relative = relative
         self.pprinted = False
 
-    def pprint(self):
+    def pprint(self) -> None:
         """Dump the important parts of the PathAliases, for debugging."""
         self.debugfn(f"Aliases (relative={self.relative}):")
         for original_pattern, regex, result in self.aliases:
             self.debugfn(f" Rule: {original_pattern!r} -> {result!r} using regex {regex.pattern!r}")
 
-    def add(self, pattern, result):
+    def add(self, pattern: str, result: str) -> None:
         """Add the `pattern`/`result` pair to the list of aliases.
 
         `pattern` is an `glob`-style pattern.  `result` is a simple
@@ -437,7 +446,7 @@ class PathAliases:
         result = result.rstrip(r"\/") + result_sep
         self.aliases.append((original_pattern, regex, result))
 
-    def map(self, path, exists=source_exists):
+    def map(self, path: str, exists:Callable[[str], bool]=source_exists) -> str:
         """Map `path` through the aliases.
 
         `path` is checked against all of the patterns.  The first pattern to
@@ -490,21 +499,21 @@ class PathAliases:
             if len(parts) > 1:
                 dir1 = parts[0]
                 pattern = f"*/{dir1}"
-                regex = rf"^(.*[\\/])?{re.escape(dir1)}[\\/]"
+                regex_pat = rf"^(.*[\\/])?{re.escape(dir1)}[\\/]"
                 result = f"{dir1}{os.sep}"
                 # Only add a new pattern if we don't already have this pattern.
                 if not any(p == pattern for p, _, _ in self.aliases):
                     self.debugfn(
-                        f"Generating rule: {pattern!r} -> {result!r} using regex {regex!r}"
+                        f"Generating rule: {pattern!r} -> {result!r} using regex {regex_pat!r}"
                     )
-                    self.aliases.append((pattern, re.compile(regex), result))
+                    self.aliases.append((pattern, re.compile(regex_pat), result))
                     return self.map(path, exists=exists)
 
         self.debugfn(f"No rules match, path {path!r} is unchanged")
         return path
 
 
-def find_python_files(dirname, include_namespace_packages):
+def find_python_files(dirname: str, include_namespace_packages: bool) -> Iterable[str]:
     """Yield all of the importable Python files in `dirname`, recursively.
 
     To be importable, the files have to be in a directory with a __init__.py,
@@ -533,3 +542,7 @@ def find_python_files(dirname, include_namespace_packages):
             # characters that probably mean they are editor junk.
             if re.match(r"^[^.#~!$@%^&*()+=,]+\.pyw?$", filename):
                 yield os.path.join(dirpath, filename)
+
+
+# Globally set the relative directory.
+set_relative_directory()
