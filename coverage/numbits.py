@@ -16,12 +16,12 @@ the future.  Use these functions to work with those binary blobs of data.
 import json
 
 from itertools import zip_longest
+from typing import Iterable, List
 
-from coverage.misc import contract
+import sqlite3
 
 
-@contract(nums='Iterable', returns='blob')
-def nums_to_numbits(nums):
+def nums_to_numbits(nums: Iterable[int]) -> bytes:
     """Convert `nums` into a numbits.
 
     Arguments:
@@ -41,8 +41,7 @@ def nums_to_numbits(nums):
     return bytes(b)
 
 
-@contract(numbits='blob', returns='list[int]')
-def numbits_to_nums(numbits):
+def numbits_to_nums(numbits: bytes) -> List[int]:
     """Convert a numbits into a list of numbers.
 
     Arguments:
@@ -63,8 +62,7 @@ def numbits_to_nums(numbits):
     return nums
 
 
-@contract(numbits1='blob', numbits2='blob', returns='blob')
-def numbits_union(numbits1, numbits2):
+def numbits_union(numbits1: bytes, numbits2: bytes) -> bytes:
     """Compute the union of two numbits.
 
     Returns:
@@ -74,8 +72,7 @@ def numbits_union(numbits1, numbits2):
     return bytes(b1 | b2 for b1, b2 in byte_pairs)
 
 
-@contract(numbits1='blob', numbits2='blob', returns='blob')
-def numbits_intersection(numbits1, numbits2):
+def numbits_intersection(numbits1: bytes, numbits2: bytes) -> bytes:
     """Compute the intersection of two numbits.
 
     Returns:
@@ -86,8 +83,7 @@ def numbits_intersection(numbits1, numbits2):
     return intersection_bytes.rstrip(b'\0')
 
 
-@contract(numbits1='blob', numbits2='blob', returns='bool')
-def numbits_any_intersection(numbits1, numbits2):
+def numbits_any_intersection(numbits1: bytes, numbits2: bytes) -> bool:
     """Is there any number that appears in both numbits?
 
     Determine whether two number sets have a non-empty intersection. This is
@@ -100,8 +96,7 @@ def numbits_any_intersection(numbits1, numbits2):
     return any(b1 & b2 for b1, b2 in byte_pairs)
 
 
-@contract(num='int', numbits='blob', returns='bool')
-def num_in_numbits(num, numbits):
+def num_in_numbits(num: int, numbits: bytes) -> bool:
     """Does the integer `num` appear in `numbits`?
 
     Returns:
@@ -113,7 +108,7 @@ def num_in_numbits(num, numbits):
     return bool(numbits[nbyte] & (1 << nbit))
 
 
-def register_sqlite_functions(connection):
+def register_sqlite_functions(connection: sqlite3.Connection) -> None:
     """
     Define numbits functions in a SQLite connection.
 
