@@ -52,7 +52,7 @@ class TomlConfigParser:
                 raise TomlDecodeError(str(err)) from err
             return [filename]
         else:
-            has_toml = re.search(r"^\[tool\.coverage\.", toml_text, flags=re.MULTILINE)
+            has_toml = re.search(r"^\[tool\.coverage(\.|])", toml_text, flags=re.MULTILINE)
             if self.our_file or has_toml:
                 # Looks like they meant to read TOML, but we can't read it.
                 msg = "Can't read {!r} without TOML support. Install with [toml] extra"

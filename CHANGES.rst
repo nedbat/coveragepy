@@ -20,9 +20,18 @@ development at the same time, such as 4.5.x and 5.0.
 Unreleased
 ----------
 
+- Fix: if Python doesn't provide tomllib, then TOML configuration files can
+  only be read if coverage.py is installed with the ``[toml]`` extra.
+  Coverage.py will raise an error if toml support is not installed when it sees
+  your settings are in a .toml file. But it didn't understand that
+  ``[tools.coverage]`` was a valid section header, so the error wasn't
+  reported, and settings were silently ignored.  This is now fixed, closing
+  `issue 1516`_.
+
 - Fix: adjusted how decorators are traced on PyPy 7.3.10, fixing `issue 1515`_.
 
 .. _issue 1515: https://github.com/nedbat/coveragepy/issues/1515
+.. _issue 1516: https://github.com/nedbat/coveragepy/issues/1516
 
 
 .. _changes_7-0-1:

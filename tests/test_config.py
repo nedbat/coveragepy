@@ -739,6 +739,19 @@ class ConfigFileTest(UsingModulesMixin, CoverageTest):
             with pytest.raises(ConfigError, match=msg):
                 coverage.Coverage()
 
+    @pytest.mark.skipif(sys.version_info >= (3, 11), reason="Python 3.11 has toml in stdlib")
+    def test_no_toml_installed_pyproject_toml_shorter_syntax(self):
+        # Can't have coverage config in pyproject.toml without toml installed.
+        self.make_file("pyproject.toml", """\
+            # A toml file!
+            [tool.coverage]
+            run.parallel = true
+            """)
+        with without_module(coverage.tomlconfig, 'tomllib'):
+            msg = "Can't read 'pyproject.toml' without TOML support"
+            with pytest.raises(ConfigError, match=msg):
+                coverage.Coverage()
+
     def test_no_toml_installed_pyproject_no_coverage(self):
         # It's ok to have non-coverage pyproject.toml without toml installed.
         self.make_file("pyproject.toml", """\
