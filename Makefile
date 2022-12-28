@@ -96,6 +96,7 @@ upgrade: 				## Update the *.pip files with the latest packages satisfying *.in 
 	$(PIP_COMPILE) -o requirements/light-threads.pip requirements/light-threads.in
 	$(PIP_COMPILE) -o doc/requirements.pip doc/requirements.in
 	$(PIP_COMPILE) -o requirements/lint.pip doc/requirements.in requirements/dev.in
+	$(PIP_COMPILE) -o requirements/mypy.pip requirements/mypy.in
 
 diff_upgrade:				## Summarize the last `make upgrade`
 	@git diff -U0 | grep -v '^@' | grep == | sort -k1.2,1.99 -k1.1,1.1r -u

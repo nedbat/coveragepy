@@ -16,7 +16,6 @@ check-manifest
 cogapp
 greenlet
 pylint
-mypy
 readme_renderer
 
 # for kitting.

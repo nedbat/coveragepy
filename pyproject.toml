@@ -7,28 +7,19 @@ build-backend = 'setuptools.build_meta'
 
 [tool.mypy]
 # mypy settings started from https://quantlane.com/blog/type-checking-large-codebase/
-# Ensure full coverage
-disallow_untyped_calls = false
-disallow_untyped_defs = true
-disallow_incomplete_defs = true
-disallow_untyped_decorators = false
 check_untyped_defs = true
-
-# Restrict dynamic typing
 disallow_any_generics = true
+disallow_incomplete_defs = true
 disallow_subclassing_any = true
-warn_return_any = true
-
-# Know exactly what you're doing
-warn_redundant_casts = true
-warn_unused_ignores = true
-warn_unused_configs = true
-warn_unreachable = true
-show_error_codes = true
-
-# Explicit is better than implicit
-no_implicit_optional = true
-
-# Don't follow imports
-ignore_missing_imports = true
+disallow_untyped_calls = false
+disallow_untyped_decorators = false
+disallow_untyped_defs = true
 follow_imports = "silent"
+ignore_missing_imports = true
+no_implicit_optional = true
+show_error_codes = true
+warn_redundant_casts = true
+warn_return_any = true
+warn_unreachable = true
+warn_unused_configs = true
+warn_unused_ignores = true
