@@ -121,7 +121,7 @@ from typing import Any, Dict, Iterable, List, Optional, Set, Tuple, Union
 
 from coverage import files
 from coverage.misc import _needs_to_implement
-from coverage.types import TArc, TConfigurable
+from coverage.types import TArc, TConfigurable, TLineNo
 
 
 class CoveragePlugin:
@@ -318,7 +318,7 @@ class FileTracer:
         """
         return None
 
-    def line_number_range(self, frame: FrameType) -> Tuple[int, int]:
+    def line_number_range(self, frame: FrameType) -> Tuple[TLineNo, TLineNo]:
         """Get the range of source line numbers for a given a call frame.
 
         The call frame is examined, and the source line number in the original
@@ -387,7 +387,7 @@ class FileReporter:
         with open(self.filename, encoding="utf-8") as f:
             return f.read()
 
-    def lines(self) -> Set[int]:    # type: ignore[return]
+    def lines(self) -> Set[TLineNo]:    # type: ignore[return]
         """Get the executable lines in this file.
 
         Your plug-in must determine which lines in the file were possibly
@@ -398,7 +398,7 @@ class FileReporter:
         """
         _needs_to_implement(self, "lines")
 
-    def excluded_lines(self) -> Set[int]:
+    def excluded_lines(self) -> Set[TLineNo]:
         """Get the excluded executable lines in this file.
 
         Your plug-in can use any method it likes to allow the user to exclude
@@ -411,7 +411,7 @@ class FileReporter:
         """
         return set()
 
-    def translate_lines(self, lines: Iterable[int]) -> Set[int]:
+    def translate_lines(self, lines: Iterable[TLineNo]) -> Set[TLineNo]:
         """Translate recorded lines into reported lines.
 
         Some file formats will want to report lines slightly differently than
@@ -445,7 +445,7 @@ class FileReporter:
         """
         return set()
 
-    def no_branch_lines(self) -> Set[int]:
+    def no_branch_lines(self) -> Set[TLineNo]:
         """Get the lines excused from branch coverage in this file.
 
         Your plug-in can use any method it likes to allow the user to exclude
@@ -471,7 +471,7 @@ class FileReporter:
         """
         return arcs
 
-    def exit_counts(self) -> Dict[int, int]:
+    def exit_counts(self) -> Dict[TLineNo, int]:
         """Get a count of exits from that each line.
 
         To determine which lines are branches, coverage.py looks for lines that
@@ -486,8 +486,8 @@ class FileReporter:
 
     def missing_arc_description(
         self,
-        start: int,
-        end: int,
+        start: TLineNo,
+        end: TLineNo,
         executed_arcs: Optional[Set[TArc]]=None,        # pylint: disable=unused-argument
     ) -> str:
         """Provide an English sentence describing a missing arc.

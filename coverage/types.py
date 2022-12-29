@@ -44,4 +44,7 @@ class TConfigurable(Protocol):
 
         """
 
-TArc = Tuple[int, int]
+# Line numbers are pervasive enough that they deserve their own type.
+TLineNo = int
+
+TArc = Tuple[TLineNo, TLineNo]

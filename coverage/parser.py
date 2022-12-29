@@ -24,7 +24,7 @@ from coverage.debug import short_stack
 from coverage.exceptions import NoSource, NotPython, _StopEverything
 from coverage.misc import join_regex, nice_pair
 from coverage.phystokens import generate_tokens
-from coverage.types import Protocol, TArc
+from coverage.types import Protocol, TArc, TLineNo
 
 
 class PythonParser:
@@ -65,40 +65,40 @@ class PythonParser:
         # The normalized line numbers of the statements in the code. Exclusions
         # are taken into account, and statements are adjusted to their first
         # lines.
-        self.statements: Set[int] = set()
+        self.statements: Set[TLineNo] = set()
 
         # The normalized line numbers of the excluded lines in the code,
         # adjusted to their first lines.
-        self.excluded: Set[int] = set()
+        self.excluded: Set[TLineNo] = set()
 
         # The raw_* attributes are only used in this class, and in
         # lab/parser.py to show how this class is working.
 
         # The line numbers that start statements, as reported by the line
         # number table in the bytecode.
-        self.raw_statements: Set[int] = set()
+        self.raw_statements: Set[TLineNo] = set()
 
         # The raw line numbers of excluded lines of code, as marked by pragmas.
-        self.raw_excluded: Set[int] = set()
+        self.raw_excluded: Set[TLineNo] = set()
 
         # The line numbers of class definitions.
-        self.raw_classdefs: Set[int] = set()
+        self.raw_classdefs: Set[TLineNo] = set()
 
         # The line numbers of docstring lines.
-        self.raw_docstrings: Set[int] = set()
+        self.raw_docstrings: Set[TLineNo] = set()
 
         # Internal detail, used by lab/parser.py.
         self.show_tokens = False
 
         # A dict mapping line numbers to lexical statement starts for
         # multi-line statements.
-        self._multiline: Dict[int, int] = {}
+        self._multiline: Dict[TLineNo, TLineNo] = {}
 
         # Lazily-created arc data, and missing arc descriptions.
         self._all_arcs: Optional[Set[TArc]] = None
         self._missing_arc_fragments: Optional[TArcFragments] = None
 
-    def lines_matching(self, *regexes: str) -> Set[int]:
+    def lines_matching(self, *regexes: str) -> Set[TLineNo]:
         """Find the lines matching one of a list of regexes.
 
         Returns a set of line numbers, the lines that contain a match for one
@@ -217,7 +217,7 @@ class PythonParser:
         if env.PYBEHAVIOR.module_firstline_1 and self._multiline:
             self._multiline[1] = min(self.raw_statements)
 
-    def first_line(self, lineno: int) -> int:
+    def first_line(self, lineno: TLineNo) -> TLineNo:
         """Return the first line number of the statement including `lineno`."""
         if lineno < 0:
             lineno = -self._multiline.get(-lineno, -lineno)
@@ -225,7 +225,7 @@ class PythonParser:
             lineno = self._multiline.get(lineno, lineno)
         return lineno
 
-    def first_lines(self, linenos: Iterable[int]) -> Set[int]:
+    def first_lines(self, linenos: Iterable[TLineNo]) -> Set[TLineNo]:
         """Map the line numbers in `linenos` to the correct first line of the
         statement.
 
@@ -234,7 +234,7 @@ class PythonParser:
         """
         return {self.first_line(l) for l in linenos}
 
-    def translate_lines(self, lines: Iterable[int]) -> Set[int]:
+    def translate_lines(self, lines: Iterable[TLineNo]) -> Set[TLineNo]:
         """Implement `FileReporter.translate_lines`."""
         return self.first_lines(lines)
 
@@ -297,13 +297,13 @@ class PythonParser:
 
         self._missing_arc_fragments = aaa.missing_arc_fragments
 
-    def exit_counts(self) -> Dict[int, int]:
+    def exit_counts(self) -> Dict[TLineNo, int]:
         """Get a count of exits from that each line.
 
         Excluded lines are excluded.
 
         """
-        exit_counts: Dict[int, int] = collections.defaultdict(int)
+        exit_counts: Dict[TLineNo, int] = collections.defaultdict(int)
         for l1, l2 in self.arcs():
             if l1 < 0:
                 # Don't ever report -1 as a line number
@@ -326,8 +326,8 @@ class PythonParser:
 
     def missing_arc_description(
         self,
-        start: int,
-        end: int,
+        start: TLineNo,
+        end: TLineNo,
         executed_arcs: Optional[Set[TArc]]=None,
     ) -> str:
         """Provide an English sentence describing a missing arc."""
@@ -410,7 +410,7 @@ class ByteParser:
         """
         return (ByteParser(self.text, code=c) for c in code_objects(self.code))
 
-    def _line_numbers(self) -> Iterable[int]:
+    def _line_numbers(self) -> Iterable[TLineNo]:
         """Yield the line numbers possible in this code object.
 
         Uses co_lnotab described in Python/compile.c to find the
@@ -440,7 +440,7 @@ class ByteParser:
             if line_num != last_line_num:
                 yield line_num
 
-    def _find_statements(self) -> Iterable[int]:
+    def _find_statements(self) -> Iterable[TLineNo]:
         """Find the statements in `self.code`.
 
         Produce a sequence of line numbers that start statements.  Recurses
@@ -468,7 +468,7 @@ class ArcStart(collections.namedtuple("Arc", "lineno, cause")):
     to have `lineno` interpolated into it.
 
     """
-    def __new__(cls, lineno: int, cause: Optional[str]=None) -> ArcStart:
+    def __new__(cls, lineno: TLineNo, cause: Optional[str]=None) -> ArcStart:
         return super().__new__(cls, lineno, cause)
 
 
@@ -476,8 +476,8 @@ class TAddArcFn(Protocol):
     """The type for AstArcAnalyzer.add_arc()."""
     def __call__(
         self,
-        start: int,
-        end: int,
+        start: TLineNo,
+        end: TLineNo,
         smsg: Optional[str]=None,
         emsg: Optional[str]=None,
     ) -> None:
@@ -518,7 +518,7 @@ class Block:
 
 class LoopBlock(Block):
     """A block on the block stack representing a `for` or `while` loop."""
-    def __init__(self, start: int) -> None:
+    def __init__(self, start: TLineNo) -> None:
         # The line number where the loop starts.
         self.start = start
         # A set of ArcStarts, the arcs from break statements exiting this loop.
@@ -536,7 +536,7 @@ class LoopBlock(Block):
 
 class FunctionBlock(Block):
     """A block on the block stack representing a function definition."""
-    def __init__(self, start: int, name: str) -> None:
+    def __init__(self, start: TLineNo, name: str) -> None:
         # The line number where the function starts.
         self.start = start
         # The name of the function.
@@ -561,7 +561,7 @@ class FunctionBlock(Block):
 
 class TryBlock(Block):
     """A block on the block stack representing a `try` block."""
-    def __init__(self, handler_start: Optional[int], final_start: Optional[int]) -> None:
+    def __init__(self, handler_start: Optional[TLineNo], final_start: Optional[TLineNo]) -> None:
         # The line number of the first "except" handler, if any.
         self.handler_start = handler_start
         # The line number of the "finally:" clause, if any.
@@ -604,7 +604,7 @@ class TryBlock(Block):
 
 class WithBlock(Block):
     """A block on the block stack representing a `with` block."""
-    def __init__(self, start: int) -> None:
+    def __init__(self, start: TLineNo) -> None:
         # We only ever use this block if it is needed, so that we don't have to
         # check this setting in all the methods.
         assert env.PYBEHAVIOR.exit_through_with
@@ -671,7 +671,12 @@ def _make_expression_code_method(noun: str) -> Callable[[AstArcAnalyzer, ast.AST
 class AstArcAnalyzer:
     """Analyze source text with an AST to find executable code paths."""
 
-    def __init__(self, text: str, statements: Set[int], multiline: Dict[int, int]) -> None:
+    def __init__(
+        self,
+        text: str,
+        statements: Set[TLineNo],
+        multiline: Dict[TLineNo, TLineNo],
+    ) -> None:
         self.root_node = ast.parse(text)
         # TODO: I think this is happening in too many places.
         self.statements = {multiline.get(l, l) for l in statements}
@@ -715,8 +720,8 @@ class AstArcAnalyzer:
 
     def add_arc(
         self,
-        start: int,
-        end: int,
+        start: TLineNo,
+        end: TLineNo,
         smsg: Optional[str]=None,
         emsg: Optional[str]=None,
     ) -> None:
@@ -733,7 +738,7 @@ class AstArcAnalyzer:
         """Yield the blocks in nearest-to-farthest order."""
         return reversed(self.block_stack)
 
-    def line_for_node(self, node: ast.AST) -> int:
+    def line_for_node(self, node: ast.AST) -> TLineNo:
         """What is the right line number to use for this node?
 
         This dispatches to _line__Node functions where needed.
@@ -741,7 +746,7 @@ class AstArcAnalyzer:
         """
         node_name = node.__class__.__name__
         handler = cast(
-            Optional[Callable[[ast.AST], int]],
+            Optional[Callable[[ast.AST], TLineNo]],
             getattr(self, "_line__" + node_name, None)
         )
         if handler is not None:
@@ -749,7 +754,7 @@ class AstArcAnalyzer:
         else:
             return node.lineno
 
-    def _line_decorated(self, node: ast.FunctionDef) -> int:
+    def _line_decorated(self, node: ast.FunctionDef) -> TLineNo:
         """Compute first line number for things that can be decorated (classes and functions)."""
         lineno = node.lineno
         if env.PYBEHAVIOR.trace_decorated_def or env.PYBEHAVIOR.def_ast_no_decorator:
@@ -757,12 +762,12 @@ class AstArcAnalyzer:
                 lineno = node.decorator_list[0].lineno
         return lineno
 
-    def _line__Assign(self, node: ast.Assign) -> int:
+    def _line__Assign(self, node: ast.Assign) -> TLineNo:
         return self.line_for_node(node.value)
 
     _line__ClassDef = _line_decorated
 
-    def _line__Dict(self, node: ast.Dict) -> int:
+    def _line__Dict(self, node: ast.Dict) -> TLineNo:
         if node.keys:
             if node.keys[0] is not None:
                 return node.keys[0].lineno
@@ -776,13 +781,13 @@ class AstArcAnalyzer:
     _line__FunctionDef = _line_decorated
     _line__AsyncFunctionDef = _line_decorated
 
-    def _line__List(self, node: ast.List) -> int:
+    def _line__List(self, node: ast.List) -> TLineNo:
         if node.elts:
             return self.line_for_node(node.elts[0])
         else:
             return node.lineno
 
-    def _line__Module(self, node: ast.Module) -> int:
+    def _line__Module(self, node: ast.Module) -> TLineNo:
         if env.PYBEHAVIOR.module_firstline_1:
             return 1
         elif node.body:
@@ -1007,8 +1012,8 @@ class AstArcAnalyzer:
 
     def _handle_decorated(self, node: ast.FunctionDef) -> Set[ArcStart]:
         """Add arcs for things that can be decorated (classes and functions)."""
-        main_line: int = node.lineno
-        last: Optional[int] = node.lineno
+        main_line: TLineNo = node.lineno
+        last: Optional[TLineNo] = node.lineno
         decs = node.decorator_list
         if decs:
             if env.PYBEHAVIOR.trace_decorated_def or env.PYBEHAVIOR.def_ast_no_decorator:
@@ -1162,7 +1167,7 @@ class AstArcAnalyzer:
         handler_exits: Set[ArcStart] = set()
 
         if node.handlers:
-            last_handler_start: Optional[int] = None
+            last_handler_start: Optional[TLineNo] = None
             for handler_node in node.handlers:
                 handler_start = self.line_for_node(handler_node)
                 if last_handler_start is not None:
@@ -1365,7 +1370,7 @@ def _is_simple_value(value: Any) -> bool:
 
 def ast_dump(
     node: ast.AST,
-    depth:int = 0,
+    depth: int = 0,
     print: Callable[[str], None]=print,     # pylint: disable=redefined-builtin
 ) -> None:
     """Dump the AST for `node`.

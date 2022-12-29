@@ -14,6 +14,7 @@ import tokenize
 from typing import Iterable, List, Optional, Set, Tuple
 
 from coverage import env
+from coverage.types import TLineNo
 
 
 TokenInfos = Iterable[tokenize.TokenInfo]
@@ -78,7 +79,7 @@ class MatchCaseFinder(ast.NodeVisitor):
     """Helper for finding match/case lines."""
     def __init__(self, source: str) -> None:
         # This will be the set of line numbers that start match or case statements.
-        self.match_case_lines: Set[int] = set()
+        self.match_case_lines: Set[TLineNo] = set()
         self.visit(ast.parse(source))
 
     if sys.version_info >= (3, 10):
