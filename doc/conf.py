@@ -128,7 +128,7 @@ nitpick_ignore = [
 ]
 
 nitpick_ignore_regex = [
-    (r"py:class", r"coverage\.types\..*"),
+    (r"py:class", r"coverage\..*\..*"),
 ]
 
 # -- Options for HTML output ---------------------------------------------------
