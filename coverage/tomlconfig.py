@@ -5,10 +5,14 @@
 
 import os
 import re
+import sys
+
+from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, Type, TypeVar
 
 from coverage import env
 from coverage.exceptions import ConfigError
 from coverage.misc import import_third_party, substitute_variables
+from coverage.types import TConfigSection, TConfigValue
 
 
 if env.PYVERSION >= (3, 11, 0, "alpha", 7):
@@ -23,6 +27,8 @@ class TomlDecodeError(Exception):
     pass
 
 
+TWant = TypeVar("TWant")
+
 class TomlConfigParser:
     """TOML file reading with the interface of HandyConfigParser."""
 
@@ -30,11 +36,11 @@ class TomlConfigParser:
     # need for docstrings.
     # pylint: disable=missing-function-docstring
 
-    def __init__(self, our_file):
+    def __init__(self, our_file: bool) -> None:
         self.our_file = our_file
-        self.data = None
+        self.data: Dict[str, Any] = {}
 
-    def read(self, filenames):
+    def read(self, filenames: Iterable[str]) -> List[str]:
         # RawConfigParser takes a filename or list of filenames, but we only
         # ever call this with a single filename.
         assert isinstance(filenames, (bytes, str, os.PathLike))
@@ -45,7 +51,7 @@ class TomlConfigParser:
                 toml_text = fp.read()
         except OSError:
             return []
-        if tomllib is not None:
+        if sys.version_info >= (3, 11) or tomllib is not None:
             try:
                 self.data = tomllib.loads(toml_text)
             except tomllib.TOMLDecodeError as err:
@@ -59,7 +65,7 @@ class TomlConfigParser:
                 raise ConfigError(msg.format(filename))
             return []
 
-    def _get_section(self, section):
+    def _get_section(self, section: str) -> Tuple[Optional[str], Optional[TConfigSection]]:
         """Get a section from the data.
 
         Arguments:
@@ -86,18 +92,19 @@ class TomlConfigParser:
             return None, None
         return real_section, data
 
-    def _get(self, section, option):
+    def _get(self, section: str, option: str) -> Tuple[str, TConfigValue]:
         """Like .get, but returns the real section name and the value."""
         name, data = self._get_section(section)
         if data is None:
             raise ConfigError(f"No section: {section!r}")
+        assert name is not None
         try:
             value = data[option]
         except KeyError:
             raise ConfigError(f"No option {option!r} in section: {name!r}") from None
         return name, value
 
-    def _get_single(self, section, option):
+    def _get_single(self, section: str, option: str) -> Any:
         """Get a single-valued option.
 
         Performs environment substitution if the value is a string. Other types
@@ -108,35 +115,43 @@ class TomlConfigParser:
             value = substitute_variables(value, os.environ)
         return name, value
 
-    def has_option(self, section, option):
+    def has_option(self, section: str, option: str) -> bool:
         _, data = self._get_section(section)
         if data is None:
             return False
         return option in data
 
-    def real_section(self, section):
+    def real_section(self, section: str) -> Optional[str]:
         name, _ = self._get_section(section)
         return name
 
-    def has_section(self, section):
+    def has_section(self, section: str) -> bool:
         name, _ = self._get_section(section)
         return bool(name)
 
-    def options(self, section):
+    def options(self, section: str) -> List[str]:
         _, data = self._get_section(section)
         if data is None:
             raise ConfigError(f"No section: {section!r}")
         return list(data.keys())
 
-    def get_section(self, section):
+    def get_section(self, section: str) -> TConfigSection:
         _, data = self._get_section(section)
-        return data
+        return data or {}
 
-    def get(self, section, option):
+    def get(self, section: str, option: str) -> Any:
         _, value = self._get_single(section, option)
         return value
 
-    def _check_type(self, section, option, value, type_, converter, type_desc):
+    def _check_type(
+        self,
+        section: str,
+        option: str,
+        value: Any,
+        type_: Type[TWant],
+        converter: Optional[Callable[[Any], TWant]],
+        type_desc: str,
+    ) -> TWant:
         """Check that `value` has the type we want, converting if needed.
 
         Returns the resulting value of the desired type.
@@ -154,23 +169,23 @@ class TomlConfigParser:
             f"Option [{section}]{option} is not {type_desc}: {value!r}"
         )
 
-    def getboolean(self, section, option):
+    def getboolean(self, section: str, option: str) -> bool:
         name, value = self._get_single(section, option)
         bool_strings = {"true": True, "false": False}
         return self._check_type(name, option, value, bool, bool_strings.__getitem__, "a boolean")
 
-    def _get_list(self, section, option):
+    def _get_list(self, section: str, option: str) -> Tuple[str, List[str]]:
         """Get a list of strings, substituting environment variables in the elements."""
         name, values = self._get(section, option)
         values = self._check_type(name, option, values, list, None, "a list")
         values = [substitute_variables(value, os.environ) for value in values]
         return name, values
 
-    def getlist(self, section, option):
+    def getlist(self, section: str, option: str) -> List[str]:
         _, values = self._get_list(section, option)
         return values
 
-    def getregexlist(self, section, option):
+    def getregexlist(self, section: str, option: str) -> List[str]:
         name, values = self._get_list(section, option)
         for value in values:
             value = value.strip()
@@ -180,11 +195,11 @@ class TomlConfigParser:
                 raise ConfigError(f"Invalid [{name}].{option} value {value!r}: {e}") from e
         return values
 
-    def getint(self, section, option):
+    def getint(self, section: str, option: str) -> int:
         name, value = self._get_single(section, option)
         return self._check_type(name, option, value, int, int, "an integer")
 
-    def getfloat(self, section, option):
+    def getfloat(self, section: str, option: str) -> float:
         name, value = self._get_single(section, option)
         if isinstance(value, int):
             value = float(value)
