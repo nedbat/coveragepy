@@ -3,17 +3,32 @@
 
 """Results of coverage measurement."""
 
+from __future__ import annotations
+
 import collections
+
+from typing import Callable, Dict, Iterable, List, Optional, Tuple, TYPE_CHECKING
 
 from coverage.debug import AutoReprMixin
 from coverage.exceptions import ConfigError
-from coverage.misc import contract, nice_pair
+from coverage.misc import nice_pair
+from coverage.types import TArc, TLineNo
+
+if TYPE_CHECKING:
+    from coverage.data import CoverageData
+    from coverage.plugin import FileReporter
 
 
 class Analysis:
     """The results of analyzing a FileReporter."""
 
-    def __init__(self, data, precision, file_reporter, file_mapper):
+    def __init__(
+        self,
+        data: CoverageData,
+        precision: int,
+        file_reporter: FileReporter,
+        file_mapper: Callable[[str], str],
+    ) -> None:
         self.data = data
         self.file_reporter = file_reporter
         self.filename = file_mapper(self.file_reporter.filename)
@@ -51,7 +66,7 @@ class Analysis:
             n_missing_branches=n_missing_branches,
         )
 
-    def missing_formatted(self, branches=False):
+    def missing_formatted(self, branches: bool=False) -> str:
         """The missing line numbers, formatted nicely.
 
         Returns a string like "1-2, 5-11, 13-14".
@@ -66,24 +81,21 @@ class Analysis:
 
         return format_lines(self.statements, self.missing, arcs=arcs)
 
-    def has_arcs(self):
+    def has_arcs(self) -> bool:
         """Were arcs measured in this result?"""
-        return self.data.has_arcs()
+        return self.data.has_arcs()     # type: ignore[no-any-return]
 
-    @contract(returns='list(tuple(int, int))')
-    def arc_possibilities(self):
+    def arc_possibilities(self) -> List[TArc]:
         """Returns a sorted list of the arcs in the code."""
         return self._arc_possibilities
 
-    @contract(returns='list(tuple(int, int))')
-    def arcs_executed(self):
+    def arcs_executed(self) -> List[TArc]:
         """Returns a sorted list of the arcs actually executed in the code."""
         executed = self.data.arcs(self.filename) or []
         executed = self.file_reporter.translate_arcs(executed)
         return sorted(executed)
 
-    @contract(returns='list(tuple(int, int))')
-    def arcs_missing(self):
+    def arcs_missing(self) -> List[TArc]:
         """Returns a sorted list of the un-executed arcs in the code."""
         possible = self.arc_possibilities()
         executed = self.arcs_executed()
@@ -95,8 +107,7 @@ class Analysis:
         )
         return sorted(missing)
 
-    @contract(returns='list(tuple(int, int))')
-    def arcs_unpredicted(self):
+    def arcs_unpredicted(self) -> List[TArc]:
         """Returns a sorted list of the executed arcs missing from the code."""
         possible = self.arc_possibilities()
         executed = self.arcs_executed()
@@ -113,16 +124,15 @@ class Analysis:
         )
         return sorted(unpredicted)
 
-    def _branch_lines(self):
+    def _branch_lines(self) -> List[TLineNo]:
         """Returns a list of line numbers that have more than one exit."""
         return [l1 for l1,count in self.exit_counts.items() if count > 1]
 
-    def _total_branches(self):
+    def _total_branches(self) -> int:
         """How many total branches are there?"""
         return sum(count for count in self.exit_counts.values() if count > 1)
 
-    @contract(returns='dict(int: list(int))')
-    def missing_branch_arcs(self):
+    def missing_branch_arcs(self) -> Dict[TLineNo, List[TLineNo]]:
         """Return arcs that weren't executed from branch lines.
 
         Returns {l1:[l2a,l2b,...], ...}
@@ -136,8 +146,7 @@ class Analysis:
                 mba[l1].append(l2)
         return mba
 
-    @contract(returns='dict(int: list(int))')
-    def executed_branch_arcs(self):
+    def executed_branch_arcs(self) -> Dict[TLineNo, List[TLineNo]]:
         """Return arcs that were executed from branch lines.
 
         Returns {l1:[l2a,l2b,...], ...}
@@ -151,8 +160,7 @@ class Analysis:
                 eba[l1].append(l2)
         return eba
 
-    @contract(returns='dict(int: tuple(int, int))')
-    def branch_stats(self):
+    def branch_stats(self) -> Dict[TLineNo, Tuple[int, int]]:
         """Get stats about branches.
 
         Returns a dict mapping line numbers to a tuple:
@@ -176,11 +184,17 @@ class Numbers(AutoReprMixin):
 
     """
 
-    def __init__(self,
-            precision=0,
-            n_files=0, n_statements=0, n_excluded=0, n_missing=0,
-            n_branches=0, n_partial_branches=0, n_missing_branches=0
-            ):
+    def __init__(
+        self,
+        precision: int=0,
+        n_files: int=0,
+        n_statements: int=0,
+        n_excluded: int=0,
+        n_missing: int=0,
+        n_branches: int=0,
+        n_partial_branches: int=0,
+        n_missing_branches: int=0,
+    ) -> None:
         assert 0 <= precision < 10
         self._precision = precision
         self._near0 = 1.0 / 10**precision
@@ -193,7 +207,7 @@ class Numbers(AutoReprMixin):
         self.n_partial_branches = n_partial_branches
         self.n_missing_branches = n_missing_branches
 
-    def init_args(self):
+    def init_args(self) -> List[int]:
         """Return a list for __init__(*args) to recreate this object."""
         return [
             self._precision,
@@ -202,17 +216,17 @@ class Numbers(AutoReprMixin):
         ]
 
     @property
-    def n_executed(self):
+    def n_executed(self) -> int:
         """Returns the number of executed statements."""
         return self.n_statements - self.n_missing
 
     @property
-    def n_executed_branches(self):
+    def n_executed_branches(self) -> int:
         """Returns the number of executed branches."""
         return self.n_branches - self.n_missing_branches
 
     @property
-    def pc_covered(self):
+    def pc_covered(self) -> float:
         """Returns a single percentage value for coverage."""
         if self.n_statements > 0:
             numerator, denominator = self.ratio_covered
@@ -222,7 +236,7 @@ class Numbers(AutoReprMixin):
         return pc_cov
 
     @property
-    def pc_covered_str(self):
+    def pc_covered_str(self) -> str:
         """Returns the percent covered, as a string, without a percent sign.
 
         Note that "0" is only returned when the value is truly zero, and "100"
@@ -232,7 +246,7 @@ class Numbers(AutoReprMixin):
         """
         return self.display_covered(self.pc_covered)
 
-    def display_covered(self, pc):
+    def display_covered(self, pc: float) -> str:
         """Return a displayable total percentage, as a string.
 
         Note that "0" is only returned when the value is truly zero, and "100"
@@ -248,7 +262,7 @@ class Numbers(AutoReprMixin):
             pc = round(pc, self._precision)
         return "%.*f" % (self._precision, pc)
 
-    def pc_str_width(self):
+    def pc_str_width(self) -> int:
         """How many characters wide can pc_covered_str be?"""
         width = 3   # "100"
         if self._precision > 0:
@@ -256,13 +270,13 @@ class Numbers(AutoReprMixin):
         return width
 
     @property
-    def ratio_covered(self):
+    def ratio_covered(self) -> Tuple[int, int]:
         """Return a numerator and denominator for the coverage ratio."""
         numerator = self.n_executed + self.n_executed_branches
         denominator = self.n_statements + self.n_branches
         return numerator, denominator
 
-    def __add__(self, other):
+    def __add__(self, other: Numbers) -> Numbers:
         nums = Numbers(precision=self._precision)
         nums.n_files = self.n_files + other.n_files
         nums.n_statements = self.n_statements + other.n_statements
@@ -277,13 +291,16 @@ class Numbers(AutoReprMixin):
         )
         return nums
 
-    def __radd__(self, other):
+    def __radd__(self, other: int) -> Numbers:
         # Implementing 0+Numbers allows us to sum() a list of Numbers.
         assert other == 0   # we only ever call it this way.
         return self
 
 
-def _line_ranges(statements, lines):
+def _line_ranges(
+    statements: Iterable[TLineNo],
+    lines: Iterable[TLineNo],
+) -> List[Tuple[TLineNo, TLineNo]]:
     """Produce a list of ranges for `format_lines`."""
     statements = sorted(statements)
     lines = sorted(lines)
@@ -307,7 +324,11 @@ def _line_ranges(statements, lines):
     return pairs
 
 
-def format_lines(statements, lines, arcs=None):
+def format_lines(
+    statements: Iterable[TLineNo],
+    lines: Iterable[TLineNo],
+    arcs: Optional[Iterable[Tuple[TLineNo, List[TLineNo]]]]=None,
+) -> str:
     """Nicely format a list of line numbers.
 
     Format a list of line numbers for printing by coalescing groups of lines as
@@ -326,7 +347,7 @@ def format_lines(statements, lines, arcs=None):
 
     """
     line_items = [(pair[0], nice_pair(pair)) for pair in _line_ranges(statements, lines)]
-    if arcs:
+    if arcs is not None:
         line_exits = sorted(arcs)
         for line, exits in line_exits:
             for ex in sorted(exits):
@@ -338,8 +359,7 @@ def format_lines(statements, lines, arcs=None):
     return ret
 
 
-@contract(total='number', fail_under='number', precision=int, returns=bool)
-def should_fail_under(total, fail_under, precision):
+def should_fail_under(total: float, fail_under: float, precision: int) -> bool:
     """Determine if a total should fail due to fail-under.
 
     `total` is a float, the coverage measurement total. `fail_under` is the

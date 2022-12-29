@@ -458,7 +458,7 @@ class FileReporter:
         """
         return set()
 
-    def translate_arcs(self, arcs: Set[TArc]) -> Set[TArc]:
+    def translate_arcs(self, arcs: Iterable[TArc]) -> Set[TArc]:
         """Translate recorded arcs into reported arcs.
 
         Similar to :meth:`translate_lines`, but for arcs.  `arcs` is a set of
@@ -469,7 +469,7 @@ class FileReporter:
         The default implementation returns `arcs` unchanged.
 
         """
-        return arcs
+        return set(arcs)
 
     def exit_counts(self) -> Dict[TLineNo, int]:
         """Get a count of exits from that each line.
