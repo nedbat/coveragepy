@@ -15,8 +15,7 @@ import tokenize
 
 from types import CodeType
 from typing import (
-    cast, TYPE_CHECKING,
-    Any, Callable, Dict, Iterable, List, Optional, Sequence, Set, Tuple,
+    cast, Any, Callable, Dict, Iterable, List, Optional, Sequence, Set, Tuple,
 )
 
 from coverage import env
@@ -25,13 +24,8 @@ from coverage.debug import short_stack
 from coverage.exceptions import NoSource, NotPython, _StopEverything
 from coverage.misc import join_regex, nice_pair
 from coverage.phystokens import generate_tokens
+from coverage.types import Protocol, TArc
 
-if TYPE_CHECKING:
-    # Protocol is new in 3.8.  PYVERSIONS
-    from typing import Protocol
-else:
-    class Protocol:             # pylint: disable=missing-class-docstring
-        pass
 
 class PythonParser:
     """Parse code to find executable lines, excluded lines, etc.
@@ -489,7 +483,6 @@ class TAddArcFn(Protocol):
     ) -> None:
         ...
 
-TArc = Tuple[int, int]
 TArcFragments = Dict[TArc, List[Tuple[Optional[str], Optional[str]]]]
 
 class Block:

@@ -123,6 +123,14 @@ intersphinx_mapping = {
     'python': ('https://docs.python.org/3', None),
 }
 
+nitpick_ignore = [
+    ("py:class", "frame"),
+]
+
+nitpick_ignore_regex = [
+    (r"py:class", r"coverage\.types\..*"),
+]
+
 # -- Options for HTML output ---------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  Major themes that come with

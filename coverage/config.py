@@ -17,16 +17,10 @@ from typing import (
 
 from coverage.exceptions import ConfigError
 from coverage.misc import isolate_module, human_sorted_items, substitute_variables
-
 from coverage.tomlconfig import TomlConfigParser, TomlDecodeError
+from coverage.types import TConfigurable, TConfigSection, TConfigValue
 
 os = isolate_module(os)
-
-
-# One value read from a config file.
-TConfigValue = Union[str, List[str]]
-# An entire config section, mapping option names to values.
-TConfigSection = Dict[str, TConfigValue]
 
 
 class HandyConfigParser(configparser.ConfigParser):
@@ -169,7 +163,7 @@ DEFAULT_PARTIAL_ALWAYS = [
 ]
 
 
-class CoverageConfig:
+class CoverageConfig(TConfigurable):
     """Coverage.py configuration.
 
     The attributes of this class are the various settings that control the
