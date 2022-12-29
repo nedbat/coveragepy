@@ -36,6 +36,7 @@ class Analysis:
         self.excluded = self.file_reporter.excluded_lines()
 
         # Identify missing statements.
+        executed: Iterable[TLineNo]
         executed = self.data.lines(self.filename) or []
         executed = self.file_reporter.translate_lines(executed)
         self.executed = executed
@@ -83,7 +84,7 @@ class Analysis:
 
     def has_arcs(self) -> bool:
         """Were arcs measured in this result?"""
-        return self.data.has_arcs()     # type: ignore[no-any-return]
+        return self.data.has_arcs()
 
     def arc_possibilities(self) -> List[TArc]:
         """Returns a sorted list of the arcs in the code."""
@@ -91,6 +92,7 @@ class Analysis:
 
     def arcs_executed(self) -> List[TArc]:
         """Returns a sorted list of the arcs actually executed in the code."""
+        executed: Iterable[TArc]
         executed = self.data.arcs(self.filename) or []
         executed = self.file_reporter.translate_arcs(executed)
         return sorted(executed)

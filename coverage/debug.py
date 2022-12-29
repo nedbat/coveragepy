@@ -98,6 +98,10 @@ class NoDebugging:
         """Should we write debug messages?  Never."""
         return False
 
+    def write(self, msg):
+        """This will never be called."""
+        raise AssertionError("NoDebugging.write should never be called.")
+
 
 def info_header(label):
     """Make a nice header string."""

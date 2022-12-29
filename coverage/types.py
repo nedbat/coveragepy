@@ -14,6 +14,8 @@ else:
     class Protocol:             # pylint: disable=missing-class-docstring
         pass
 
+## Configuration
+
 # One value read from a config file.
 TConfigValue = Union[str, List[str]]
 # An entire config section, mapping option names to values.
@@ -44,7 +46,26 @@ class TConfigurable(Protocol):
 
         """
 
+## Parsing
+
 # Line numbers are pervasive enough that they deserve their own type.
 TLineNo = int
 
 TArc = Tuple[TLineNo, TLineNo]
+
+## Debugging
+
+class TWarnFn(Protocol):
+    """A callable warn() function."""
+    def __call__(self, msg: str, slug: Optional[str]=None, once: bool=False,) -> None:
+        ...
+
+
+class TDebugCtl(Protocol):
+    """A DebugControl object, or something like it."""
+
+    def should(self, option: str) -> bool:
+        """Decide whether to output debug information in category `option`."""
+
+    def write(self, msg: str) -> None:
+        """Write a line of debug output."""
