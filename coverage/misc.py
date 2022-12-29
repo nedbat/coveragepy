@@ -91,16 +91,6 @@ def import_third_party(modname):
             return None
 
 
-# We don't use PyContracts anymore, but the @contracts decorators will be
-# useful info when it comes time to add type annotations, so keep them as
-# dummies for now.
-def contract(*args_unused, **kwargs_unused):
-    """Dummy no-op implementation of a decorator with arguments."""
-    def _decorator(func):
-        return func
-    return _decorator
-
-
 def nice_pair(pair):
     """Make a nice string representation of a pair of numbers.
 

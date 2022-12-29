@@ -178,7 +178,7 @@ class VirtualenvTest(CoverageTest):
                 print(sum(colorsys.rgb_to_hls(1, 0, 0)))
                 """)
 
-            self.del_environ("COVERAGE_TESTING")    # To avoid needing contracts installed.
+            self.del_environ("COVERAGE_TESTING")    # To get realistic behavior
             self.set_environ("COVERAGE_DEBUG_FILE", "debug_out.txt")
             self.set_environ("COVERAGE_DEBUG", "trace")
 

@@ -132,7 +132,7 @@ METACOV = os.getenv('COVERAGE_COVERAGE', '') != ''
 
 # Are we running our test suite?
 # Even when running tests, you can use COVERAGE_TESTING=0 to disable the
-# test-specific behavior like contracts.
+# test-specific behavior like AST checking.
 TESTING = os.getenv('COVERAGE_TESTING', '') == 'True'
 
 
