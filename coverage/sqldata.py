@@ -299,10 +299,8 @@ class CoverageData(AutoReprMixin):
                         )
                     ) from exc
             else:
-                if row is None:
-                    schema_version = None
-                else:
-                    schema_version = row[0]
+                assert row is not None
+                schema_version = row[0]
                 if schema_version != SCHEMA_VERSION:
                     raise DataError(
                         "Couldn't use data file {!r}: wrong schema: {} instead of {}".format(
@@ -1232,18 +1230,6 @@ class SqliteDb(AutoReprMixin):
             # error.  Try again immediately.
             # https://github.com/nedbat/coveragepy/issues/1010
             return self.con.executemany(sql, data)
-
-    @contextlib.contextmanager
-    def executemany(self, sql: str, data: Iterable[Any]) -> Generator[sqlite3.Cursor, None, None]:
-        """Context managed :meth:`python:sqlite3.Connection.executemany`.
-
-        Use with a ``with`` statement to auto-close the returned cursor.
-        """
-        cur = self._executemany(sql, data)
-        try:
-            yield cur
-        finally:
-            cur.close()
 
     def executemany_void(self, sql: str, data: Iterable[Any]) -> None:
         """Same as :meth:`python:sqlite3.Connection.executemany` when you don't need the cursor."""
