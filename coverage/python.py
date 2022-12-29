@@ -3,23 +3,30 @@
 
 """Python source expertise for coverage.py"""
 
+from __future__ import annotations
+
 import os.path
 import types
 import zipimport
 
+from typing import cast, Dict, Iterable, Optional, Set, TYPE_CHECKING
+
 from coverage import env
 from coverage.exceptions import CoverageException, NoSource
 from coverage.files import canonical_filename, relative_filename, zip_location
-from coverage.misc import contract, expensive, isolate_module, join_regex
+from coverage.misc import expensive, isolate_module, join_regex
 from coverage.parser import PythonParser
 from coverage.phystokens import source_token_lines, source_encoding
 from coverage.plugin import FileReporter
+from coverage.types import TArc, TLineNo, TMorf, TSourceTokenLines
+
+if TYPE_CHECKING:
+    from coverage import Coverage
 
 os = isolate_module(os)
 
 
-@contract(returns='bytes')
-def read_python_source(filename):
+def read_python_source(filename: str) -> bytes:
     """Read the Python source text from `filename`.
 
     Returns bytes.
@@ -35,8 +42,7 @@ def read_python_source(filename):
     return source.replace(b"\r\n", b"\n").replace(b"\r", b"\n")
 
 
-@contract(returns='unicode')
-def get_python_source(filename):
+def get_python_source(filename: str) -> str:
     """Return the source code, as unicode."""
     base, ext = os.path.splitext(filename)
     if ext == ".py" and env.WINDOWS:
@@ -44,24 +50,25 @@ def get_python_source(filename):
     else:
         exts = [ext]
 
+    source_bytes: Optional[bytes]
     for ext in exts:
         try_filename = base + ext
         if os.path.exists(try_filename):
             # A regular text file: open it.
-            source = read_python_source(try_filename)
+            source_bytes = read_python_source(try_filename)
             break
 
         # Maybe it's in a zip file?
-        source = get_zip_bytes(try_filename)
-        if source is not None:
+        source_bytes = get_zip_bytes(try_filename)
+        if source_bytes is not None:
             break
     else:
         # Couldn't find source.
         raise NoSource(f"No source for code: '{filename}'.")
 
     # Replace \f because of http://bugs.python.org/issue19035
-    source = source.replace(b'\f', b' ')
-    source = source.decode(source_encoding(source), "replace")
+    source_bytes = source_bytes.replace(b'\f', b' ')
+    source = source_bytes.decode(source_encoding(source_bytes), "replace")
 
     # Python code should always end with a line with a newline.
     if source and source[-1] != '\n':
@@ -70,8 +77,7 @@ def get_python_source(filename):
     return source
 
 
-@contract(returns='bytes|None')
-def get_zip_bytes(filename):
+def get_zip_bytes(filename: str) -> Optional[bytes]:
     """Get data from `filename` if it is a zip file path.
 
     Returns the bytestring data read from the zip file, or None if no zip file
@@ -87,14 +93,15 @@ def get_zip_bytes(filename):
         except zipimport.ZipImportError:
             return None
         try:
-            data = zi.get_data(inner)
+            # typeshed is wrong for get_data: https://github.com/python/typeshed/pull/9428
+            data = cast(bytes, zi.get_data(inner))
         except OSError:
             return None
         return data
     return None
 
 
-def source_for_file(filename):
+def source_for_file(filename: str) -> str:
     """Return the source filename for `filename`.
 
     Given a file name being traced, return the best guess as to the source
@@ -127,7 +134,7 @@ def source_for_file(filename):
     return filename
 
 
-def source_for_morf(morf):
+def source_for_morf(morf: TMorf) -> str:
     """Get the source filename for the module-or-file `morf`."""
     if hasattr(morf, '__file__') and morf.__file__:
         filename = morf.__file__
@@ -145,7 +152,7 @@ def source_for_morf(morf):
 class PythonFileReporter(FileReporter):
     """Report support for a Python file."""
 
-    def __init__(self, morf, coverage=None):
+    def __init__(self, morf: TMorf, coverage: Optional[Coverage]=None) -> None:
         self.coverage = coverage
 
         filename = source_for_morf(morf)
@@ -153,6 +160,7 @@ class PythonFileReporter(FileReporter):
         fname = filename
         canonicalize = True
         if self.coverage is not None:
+            assert self.coverage.config is not None
             if self.coverage.config.relative_files:
                 canonicalize = False
         if canonicalize:
@@ -168,20 +176,20 @@ class PythonFileReporter(FileReporter):
             name = relative_filename(filename)
         self.relname = name
 
-        self._source = None
-        self._parser = None
+        self._source: Optional[str] = None
+        self._parser: Optional[PythonParser] = None
         self._excluded = None
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<PythonFileReporter {self.filename!r}>"
 
-    @contract(returns='unicode')
-    def relative_filename(self):
+    def relative_filename(self) -> str:
         return self.relname
 
     @property
-    def parser(self):
+    def parser(self) -> PythonParser:
         """Lazily create a :class:`PythonParser`."""
+        assert self.coverage is not None
         if self._parser is None:
             self._parser = PythonParser(
                 filename=self.filename,
@@ -190,22 +198,24 @@ class PythonFileReporter(FileReporter):
             self._parser.parse_source()
         return self._parser
 
-    def lines(self):
+    def lines(self) -> Set[TLineNo]:
         """Return the line numbers of statements in the file."""
         return self.parser.statements
 
-    def excluded_lines(self):
+    def excluded_lines(self) -> Set[TLineNo]:
         """Return the line numbers of statements in the file."""
         return self.parser.excluded
 
-    def translate_lines(self, lines):
+    def translate_lines(self, lines: Iterable[TLineNo]) -> Set[TLineNo]:
         return self.parser.translate_lines(lines)
 
-    def translate_arcs(self, arcs):
+    def translate_arcs(self, arcs: Iterable[TArc]) -> Set[TArc]:
         return self.parser.translate_arcs(arcs)
 
     @expensive
-    def no_branch_lines(self):
+    def no_branch_lines(self) -> Set[TLineNo]:
+        assert self.coverage is not None
+        assert self.coverage.config is not None
         no_branch = self.parser.lines_matching(
             join_regex(self.coverage.config.partial_list),
             join_regex(self.coverage.config.partial_always_list),
@@ -213,23 +223,27 @@ class PythonFileReporter(FileReporter):
         return no_branch
 
     @expensive
-    def arcs(self):
+    def arcs(self) -> Set[TArc]:
         return self.parser.arcs()
 
     @expensive
-    def exit_counts(self):
+    def exit_counts(self) -> Dict[TLineNo, int]:
         return self.parser.exit_counts()
 
-    def missing_arc_description(self, start, end, executed_arcs=None):
+    def missing_arc_description(
+        self,
+        start: TLineNo,
+        end: TLineNo,
+        executed_arcs: Optional[Set[TArc]]=None,
+    ) -> str:
         return self.parser.missing_arc_description(start, end, executed_arcs)
 
-    @contract(returns='unicode')
-    def source(self):
+    def source(self) -> str:
         if self._source is None:
             self._source = get_python_source(self.filename)
         return self._source
 
-    def should_be_python(self):
+    def should_be_python(self) -> bool:
         """Does it seem like this file should contain Python?
 
         This is used to decide if a file reported as part of the execution of
@@ -249,5 +263,5 @@ class PythonFileReporter(FileReporter):
         # Everything else is probably not Python.
         return False
 
-    def source_token_lines(self):
+    def source_token_lines(self) -> TSourceTokenLines:
         return source_token_lines(self.source())

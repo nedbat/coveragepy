@@ -14,7 +14,7 @@ import tokenize
 from typing import Iterable, List, Optional, Set, Tuple
 
 from coverage import env
-from coverage.types import TLineNo
+from coverage.types import TLineNo, TSourceTokenLines
 
 
 TokenInfos = Iterable[tokenize.TokenInfo]
@@ -91,7 +91,7 @@ class MatchCaseFinder(ast.NodeVisitor):
             self.generic_visit(node)
 
 
-def source_token_lines(source: str) -> Iterable[List[Tuple[str, str]]]:
+def source_token_lines(source: str) -> TSourceTokenLines:
     """Generate a series of lines, one for each line in `source`.
 
     Each line is a list of pairs, each pair is a token::

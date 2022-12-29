@@ -238,9 +238,9 @@ class PythonParser:
         """Implement `FileReporter.translate_lines`."""
         return self.first_lines(lines)
 
-    def translate_arcs(self, arcs: Iterable[TArc]) -> List[TArc]:
+    def translate_arcs(self, arcs: Iterable[TArc]) -> Set[TArc]:
         """Implement `FileReporter.translate_arcs`."""
-        return [(self.first_line(a), self.first_line(b)) for (a, b) in arcs]
+        return {(self.first_line(a), self.first_line(b)) for (a, b) in arcs}
 
     def parse_source(self) -> None:
         """Parse source text to find executable lines, excluded lines, etc.

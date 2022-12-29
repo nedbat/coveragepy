@@ -5,7 +5,8 @@
 Types for use throughout coverage.py.
 """
 
-from typing import Dict, List, Optional, Tuple, Union, TYPE_CHECKING
+from types import ModuleType
+from typing import Dict, Iterable, List, Optional, Tuple, Union, TYPE_CHECKING
 
 if TYPE_CHECKING:
     # Protocol is new in 3.8.  PYVERSIONS
@@ -52,6 +53,10 @@ class TConfigurable(Protocol):
 TLineNo = int
 
 TArc = Tuple[TLineNo, TLineNo]
+
+TMorf = Union[ModuleType, str]
+
+TSourceTokenLines = Iterable[List[Tuple[str, str]]]
 
 ## Debugging
 

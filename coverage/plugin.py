@@ -121,7 +121,7 @@ from typing import Any, Dict, Iterable, List, Optional, Set, Tuple, Union
 
 from coverage import files
 from coverage.misc import _needs_to_implement
-from coverage.types import TArc, TConfigurable, TLineNo
+from coverage.types import TArc, TConfigurable, TLineNo, TSourceTokenLines
 
 
 class CoveragePlugin:
@@ -504,7 +504,7 @@ class FileReporter:
         """
         return f"Line {start} didn't jump to line {end}"
 
-    def source_token_lines(self) -> Iterable[List[Tuple[str, str]]]:
+    def source_token_lines(self) -> TSourceTokenLines:
         """Generate a series of tokenized lines, one for each line in `source`.
 
         These tokens are used for syntax-colored reports.
