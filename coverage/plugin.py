@@ -117,7 +117,7 @@ from __future__ import annotations
 import functools
 
 from types import FrameType
-from typing import Any, Dict, Iterable, List, Optional, Set, Tuple, Union
+from typing import Any, Dict, Iterable, Optional, Set, Tuple, Union
 
 from coverage import files
 from coverage.misc import _needs_to_implement

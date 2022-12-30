@@ -112,7 +112,7 @@ class Coverage(TConfigurable):
         else:
             return None
 
-    def __init__(
+    def __init__(                       # pylint: disable=too-many-arguments
         self,
         data_file=DEFAULT_DATAFILE,
         data_suffix=None,
@@ -130,7 +130,7 @@ class Coverage(TConfigurable):
         check_preimported=False,
         context=None,
         messages=False,
-    ) -> None:  # pylint: disable=too-many-arguments
+    ) -> None:
         """
         Many of these arguments duplicate and override values that can be
         provided in a configuration file.  Parameters that are missing here

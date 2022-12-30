@@ -75,6 +75,7 @@ disable=
     self-assigning-variable,
     consider-using-with,
     missing-timeout,
+    use-implicit-booleaness-not-comparison,
 # Formatting stuff
     superfluous-parens,
 # Messages that are noisy for now, eventually maybe we'll turn them on:
