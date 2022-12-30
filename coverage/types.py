@@ -6,7 +6,7 @@ Types for use throughout coverage.py.
 """
 
 from types import ModuleType
-from typing import Dict, Iterable, List, Optional, Tuple, Union, TYPE_CHECKING
+from typing import Dict, Iterable, List, Optional, Sequence, Tuple, Union, TYPE_CHECKING
 
 if TYPE_CHECKING:
     # Protocol is new in 3.8.  PYVERSIONS
@@ -74,3 +74,6 @@ class TDebugCtl(Protocol):
 
     def write(self, msg: str) -> None:
         """Write a line of debug output."""
+
+# Data returned from sys_info()
+TSysInfo = Sequence[Tuple[str, Union[str, Iterable[str]]]]

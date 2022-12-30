@@ -638,7 +638,7 @@ class ConfigFileTest(UsingModulesMixin, CoverageTest):
             """)
         cov = coverage.Coverage()
         assert cov.config.run_include == ["foo"]
-        assert cov.config.run_omit is None
+        assert cov.config.run_omit == []
         assert cov.config.branch is False
 
     def test_setupcfg_only_if_not_coveragerc(self):
@@ -655,7 +655,7 @@ class ConfigFileTest(UsingModulesMixin, CoverageTest):
             branch = true
             """)
         cov = coverage.Coverage()
-        assert cov.config.run_omit is None
+        assert cov.config.run_omit == []
         assert cov.config.branch is False
 
     def test_setupcfg_only_if_prefixed(self):

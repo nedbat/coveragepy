@@ -20,6 +20,10 @@ development at the same time, such as 4.5.x and 5.0.
 Unreleased
 ----------
 
+- Refactor: a number of refactorings internally due to adding type annotations.
+  This should not affect outward behavior, but they were a bit invasive in some
+  places.
+
 - Fix: if Python doesn't provide tomllib, then TOML configuration files can
   only be read if coverage.py is installed with the ``[toml]`` extra.
   Coverage.py will raise an error if toml support is not installed when it sees

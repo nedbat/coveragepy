@@ -190,20 +190,20 @@ class CoverageConfig(TConfigurable):
         # Defaults for [run]
         self.branch = False
         self.command_line = None
-        self.concurrency = None
+        self.concurrency: List[str] = []
         self.context = None
         self.cover_pylib = False
         self.data_file = ".coverage"
         self.debug: List[str] = []
         self.disable_warnings: List[str] = []
-        self.dynamic_context = None
+        self.dynamic_context: Optional[str] = None
         self.parallel = False
         self.plugins: List[str] = []
         self.relative_files = False
-        self.run_include = None
-        self.run_omit = None
+        self.run_include: List[str] = []
+        self.run_omit: List[str] = []
         self.sigterm = False
-        self.source = None
+        self.source: Optional[List[str]] = None
         self.source_pkgs: List[str] = []
         self.timid = False
         self._crash = None
@@ -214,8 +214,8 @@ class CoverageConfig(TConfigurable):
         self.format = None
         self.ignore_errors = False
         self.include_namespace_packages = False
-        self.report_include = None
-        self.report_omit = None
+        self.report_include: Optional[List[str]] = None
+        self.report_omit: Optional[List[str]] = None
         self.partial_always_list = DEFAULT_PARTIAL_ALWAYS[:]
         self.partial_list = DEFAULT_PARTIAL[:]
         self.precision = 0

@@ -160,7 +160,6 @@ class PythonFileReporter(FileReporter):
         fname = filename
         canonicalize = True
         if self.coverage is not None:
-            assert self.coverage.config is not None
             if self.coverage.config.relative_files:
                 canonicalize = False
         if canonicalize:
@@ -215,7 +214,6 @@ class PythonFileReporter(FileReporter):
     @expensive
     def no_branch_lines(self) -> Set[TLineNo]:
         assert self.coverage is not None
-        assert self.coverage.config is not None
         no_branch = self.parser.lines_matching(
             join_regex(self.coverage.config.partial_list),
             join_regex(self.coverage.config.partial_always_list),
