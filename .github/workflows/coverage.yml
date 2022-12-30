@@ -49,13 +49,23 @@ jobs:
           - "3.10"
           - "3.11"
           - "pypy-3.7"
+          - "pypy-3.8"
+          - "pypy-3.9"
         exclude:
           # Windows PyPy doesn't seem to work?
           - os: windows-latest
             python-version: "pypy-3.7"
+          - os: windows-latest
+            python-version: "pypy-3.8"
+          - os: windows-latest
+            python-version: "pypy-3.9"
           # Mac PyPy always takes the longest, and doesn't add anything.
           - os: macos-latest
             python-version: "pypy-3.7"
+          - os: macos-latest
+            python-version: "pypy-3.8"
+          - os: macos-latest
+            python-version: "pypy-3.9"
       # If one job fails, stop the whole thing.
       fail-fast: true
 
