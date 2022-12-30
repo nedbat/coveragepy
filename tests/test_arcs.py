@@ -13,6 +13,15 @@ from coverage import env
 from coverage.files import abs_file
 
 
+# When a try block ends, does the finally block (incorrectly) jump to the
+# last statement, or does it go the line outside the try block that it
+# should?
+xfail_pypy_3882 = pytest.mark.xfail(
+    env.PYPY and env.PYVERSION[:2] == (3, 8) and env.PYPYVERSION >= (7, 3, 11),
+    reason="https://foss.heptapod.net/pypy/pypy/-/issues/3882",
+)
+
+
 class SimpleArcTest(CoverageTest):
     """Tests for coverage.py's arc measurement."""
 
@@ -764,6 +773,7 @@ class ExceptionArcTest(CoverageTest):
             arcz_unpredicted="8A",
         )
 
+    @xfail_pypy_3882
     def test_try_finally(self):
         self.check_coverage("""\
             a, c = 1, 1
@@ -806,6 +816,7 @@ class ExceptionArcTest(CoverageTest):
             arcz_missing="",
         )
 
+    @xfail_pypy_3882
     def test_finally_in_loop(self):
         self.check_coverage("""\
             a, c, d, i = 1, 1, 1, 99
@@ -845,6 +856,7 @@ class ExceptionArcTest(CoverageTest):
         )
 
 
+    @xfail_pypy_3882
     def test_break_through_finally(self):
         arcz = ".1 12 23 34 3D 45 56 67 68 7A    AD 8A A3 BC CD D."
         if env.PYBEHAVIOR.finally_jumps_back:
@@ -888,6 +900,7 @@ class ExceptionArcTest(CoverageTest):
             arcz_missing="3D 9A A3 BC CD",
         )
 
+    @xfail_pypy_3882
     def test_continue_through_finally(self):
         arcz = ".1 12 23 34 3D 45 56 67 68       7A 8A A3 BC CD D."
         if env.PYBEHAVIOR.finally_jumps_back:
@@ -895,7 +908,7 @@ class ExceptionArcTest(CoverageTest):
         self.check_coverage("""\
             a, b, c, d, i = 1, 1, 1, 1, 99
             try:
-                for i in range(5):
+                for i in range(3):
                     try:
                         a = 5
                         if i > 0:
@@ -1067,6 +1080,7 @@ class ExceptionArcTest(CoverageTest):
             arcz=arcz,
         )
 
+    @xfail_pypy_3882
     def test_except_jump_finally(self):
         arcz = (
             ".1 1Q QR RS ST TU U. " +
@@ -1114,6 +1128,7 @@ class ExceptionArcTest(CoverageTest):
             arcz_unpredicted="67",
         )
 
+    @xfail_pypy_3882
     def test_else_jump_finally(self):
         arcz = (
             ".1 1S ST TU UV VW W. " +
@@ -1515,6 +1530,7 @@ class OptimizedIfTest(CoverageTest):
             arcz_missing=arcz_missing,
         )
 
+    @xfail_pypy_3882
     def test_if_not_debug(self):
         if env.PYBEHAVIOR.optimize_if_not_debug == 1:
             arcz = ".1 12 23 34 42 37 72 28 8."
