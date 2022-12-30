@@ -155,7 +155,6 @@ class MemoryLeakTest(CoverageTest):
 
     """
     @flaky
-    @pytest.mark.skipif(env.JYTHON, reason="Don't bother on Jython")
     @pytest.mark.skipif(not env.C_TRACER, reason="Only the C tracer has refcounting issues")
     def test_for_leaks(self):
         # Our original bad memory leak only happened on line numbers > 255, so
@@ -235,7 +234,6 @@ class MemoryFumblingTest(CoverageTest):
         assert "Fatal" not in out
 
 
-@pytest.mark.skipif(env.JYTHON, reason="Pyexpat isn't a problem on Jython")
 class PyexpatTest(CoverageTest):
     """Pyexpat screws up tracing. Make sure we've counter-defended properly."""
 
@@ -387,13 +385,6 @@ class ExceptionTest(CoverageTest):
                 filename = callname + ".py"
                 lines = data.lines(abs_file(filename))
                 clean_lines[filename] = sorted(lines)
-
-            if env.JYTHON:                  # pragma: only jython
-                # Jython doesn't report on try or except lines, so take those
-                # out of the expected lines.
-                invisible = [202, 206, 302, 304]
-                for lines in lines_expected.values():
-                    lines[:] = [l for l in lines if l not in invisible]
 
             assert clean_lines == lines_expected
 

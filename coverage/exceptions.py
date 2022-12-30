@@ -57,16 +57,6 @@ class _ExceptionDuringRun(CoverageException):
     pass
 
 
-class _StopEverything(_BaseCoverageException):
-    """An exception that means everything should stop.
-
-    The CoverageTest class converts these to SkipTest, so that when running
-    tests, raising this exception will automatically skip the test.
-
-    """
-    pass
-
-
 class CoverageWarning(Warning):
     """A warning from Coverage.py."""
     pass

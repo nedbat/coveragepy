@@ -59,7 +59,3 @@ def test_source_for_file_windows(tmpdir):
     # If both pyw and py exist, py is preferred
     path.ensure(file=True)
     assert source_for_file(src + 'c') == src
-
-
-def test_source_for_file_jython():
-    assert source_for_file("a$py.class") == "a.py"

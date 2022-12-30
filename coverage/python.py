@@ -35,10 +35,6 @@ def read_python_source(filename: str) -> bytes:
     with open(filename, "rb") as f:
         source = f.read()
 
-    if env.IRONPYTHON:
-        # IronPython reads Unicode strings even for "rb" files.
-        source = bytes(source)
-
     return source.replace(b"\r\n", b"\n").replace(b"\r", b"\n")
 
 
@@ -125,10 +121,6 @@ def source_for_file(filename: str) -> str:
                 return pyw_filename
         # Didn't find source, but it's probably the .py file we want.
         return py_filename
-
-    elif filename.endswith("$py.class"):
-        # Jython is easy to guess.
-        return filename[:-9] + ".py"
 
     # No idea, just use the file name as-is.
     return filename

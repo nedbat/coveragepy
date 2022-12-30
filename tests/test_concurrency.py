@@ -4,6 +4,7 @@
 """Tests for concurrency libraries."""
 
 import glob
+import multiprocessing
 import os
 import random
 import re
@@ -12,6 +13,7 @@ import threading
 import time
 
 from flaky import flaky
+import greenlet
 import pytest
 
 import coverage
@@ -27,11 +29,6 @@ from tests.coveragetest import CoverageTest
 # These libraries aren't always available, we'll skip tests if they aren't.
 
 try:
-    import multiprocessing
-except ImportError:         # pragma: only jython
-    multiprocessing = None
-
-try:
     import eventlet
 except ImportError:
     eventlet = None
@@ -40,11 +37,6 @@ try:
     import gevent
 except ImportError:
     gevent = None
-
-try:
-    import greenlet
-except ImportError:         # pragma: only jython
-    greenlet = None
 
 
 def measurable_line(l):
@@ -59,9 +51,6 @@ def measurable_line(l):
         return False
     if l.startswith('else:'):
         return False
-    if env.JYTHON and l.startswith(('try:', 'except:', 'except ', 'break', 'with ')):
-        # Jython doesn't measure these statements.
-        return False                    # pragma: only jython
     return True
 
 
@@ -443,7 +432,6 @@ def start_method_fixture(request):
     return start_method
 
 
-@pytest.mark.skipif(not multiprocessing, reason="No multiprocessing in this Python")
 @flaky(max_runs=30)         # Sometimes a test fails due to inherent randomness. Try more times.
 class MultiprocessingTest(CoverageTest):
     """Test support of the multiprocessing module."""

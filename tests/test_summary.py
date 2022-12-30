@@ -614,7 +614,6 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         output = self.get_report(cov, squeeze=False)
         assert output == report_expected
 
-    @pytest.mark.skipif(env.JYTHON, reason="Jython doesn't like accented file names")
     def test_accenteddotpy_not_python(self):
         # We run a .py file with a non-ascii name, and when reporting, we can't
         # parse it as Python.  We should get an error message in the report.
@@ -779,10 +778,9 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         # Python 3 puts the .pyc files in a __pycache__ directory, and will
         # not import from there without source.  It will import a .pyc from
         # the source location though.
-        if not env.JYTHON:
-            pycs = glob.glob("__pycache__/mod.*.pyc")
-            assert len(pycs) == 1
-            os.rename(pycs[0], "mod.pyc")
+        pycs = glob.glob("__pycache__/mod.*.pyc")
+        assert len(pycs) == 1
+        os.rename(pycs[0], "mod.pyc")
 
         # Run the program.
         cov = coverage.Coverage()

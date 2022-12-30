@@ -21,7 +21,7 @@ from typing import (
 from coverage import env
 from coverage.bytecode import code_objects
 from coverage.debug import short_stack
-from coverage.exceptions import NoSource, NotPython, _StopEverything
+from coverage.exceptions import NoSource, NotPython
 from coverage.misc import join_regex, nice_pair
 from coverage.phystokens import generate_tokens
 from coverage.types import Protocol, TArc, TLineNo
@@ -392,15 +392,6 @@ class ByteParser:
                         filename, synerr.msg, synerr.lineno or 0
                     )
                 ) from synerr
-
-        # Alternative Python implementations don't always provide all the
-        # attributes on code objects that we need to do the analysis.
-        for attr in ['co_lnotab', 'co_firstlineno']:
-            if not hasattr(self.code, attr):
-                raise _StopEverything(                  # pragma: only jython
-                    "This implementation of Python doesn't support code analysis.\n" +
-                    "Run coverage.py under another Python for this command."
-                )
 
     def child_parsers(self) -> Iterable[ByteParser]:
         """Iterate over all the code objects nested within this one.

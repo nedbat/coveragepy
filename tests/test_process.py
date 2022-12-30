@@ -578,8 +578,6 @@ class ProcessTest(CoverageTest):
     # Pypy passes locally, but fails in CI? Perhaps the version of macOS is
     # significant?  https://foss.heptapod.net/pypy/pypy/-/issues/3074
     @pytest.mark.skipif(env.PYPY, reason="PyPy is unreliable with this test")
-    # Jython as of 2.7.1rc3 won't compile a filename that isn't utf-8.
-    @pytest.mark.skipif(env.JYTHON, reason="Jython can't handle this test")
     def test_lang_c(self):
         # LANG=C forces getfilesystemencoding on Linux to 'ascii', which causes
         # failures with non-ascii file names. We don't want to make a real file
@@ -669,12 +667,6 @@ class EnvironmentTest(CoverageTest):
         """
         # First, is this even credible try_execfile.py output?
         assert '"DATA": "xyzzy"' in actual
-
-        if env.JYTHON:                  # pragma: only jython
-            # Argv0 is different for Jython, remove that from the comparison.
-            expected = re_lines_text(r'\s+"argv0":', expected, match=False)
-            actual = re_lines_text(r'\s+"argv0":', actual, match=False)
-
         assert actual == expected
 
     def test_coverage_run_is_like_python(self):
@@ -906,10 +898,8 @@ class ExcepthookTest(CoverageTest):
             """)
         cov_st, cov_out = self.run_command_status("coverage run excepthook.py")
         py_st, py_out = self.run_command_status("python excepthook.py")
-        if not env.JYTHON:
-            assert cov_st == py_st
-            assert cov_st == 1
-
+        assert cov_st == py_st
+        assert cov_st == 1
         assert "in excepthook" in py_out
         assert cov_out == py_out
 
@@ -960,15 +950,12 @@ class ExcepthookTest(CoverageTest):
             """)
         cov_st, cov_out = self.run_command_status("coverage run excepthook_throw.py")
         py_st, py_out = self.run_command_status("python excepthook_throw.py")
-        if not env.JYTHON:
-            assert cov_st == py_st
-            assert cov_st == 1
-
+        assert cov_st == py_st
+        assert cov_st == 1
         assert "in excepthook" in py_out
         assert cov_out == py_out
 
 
-@pytest.mark.skipif(env.JYTHON, reason="Coverage command names don't work on Jython")
 class AliasedCommandTest(CoverageTest):
     """Tests of the version-specific command aliases."""
 
@@ -1261,7 +1248,6 @@ class ProcessStartupWithSourceTest(CoverageTest):
             self.make_file(path("__init__.py"), "")
         # sub.py will write a few lines.
         self.make_file(path("sub.py"), """\
-            # Avoid 'with' so Jython can play along.
             f = open("out.txt", "w")
             f.write("Hello, world!")
             f.close()

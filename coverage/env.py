@@ -15,8 +15,6 @@ OSX = sys.platform == "darwin"
 # Python implementations.
 CPYTHON = (platform.python_implementation() == "CPython")
 PYPY = (platform.python_implementation() == "PyPy")
-JYTHON = (platform.python_implementation() == "Jython")
-IRONPYTHON = (platform.python_implementation() == "IronPython")
 
 # Python versions. We amend version_info with one more value, a zero if an
 # official version, or 1 if built from source beyond an official version.

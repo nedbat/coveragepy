@@ -14,7 +14,6 @@ import sys
 
 import pytest
 
-from coverage import env
 from coverage.exceptions import NoCode, NoSource, _ExceptionDuringRun
 from coverage.execfile import run_python_file, run_python_module
 from coverage.files import python_reported_file
@@ -196,9 +195,6 @@ class RunPycFileTest(CoverageTest):
 
     def make_pyc(self, **kwargs):
         """Create a .pyc file, and return the path to it."""
-        if env.JYTHON:
-            pytest.skip("Can't make .pyc files on Jython")
-
         self.make_file("compiled.py", """\
             def doit():
                 print("I am here!")

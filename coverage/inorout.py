@@ -81,10 +81,6 @@ def name_for_module(filename: str, frame: Optional[FrameType]) -> str:
 
     """
     module_globals = frame.f_globals if frame is not None else {}
-    if module_globals is None:          # pragma: only ironpython
-        # IronPython doesn't provide globals: https://github.com/IronLanguages/main/issues/1296
-        module_globals = {}             # type: ignore[unreachable]
-
     dunder_name: str = module_globals.get('__name__', None)
 
     if isinstance(dunder_name, str) and dunder_name != '__main__':
@@ -348,10 +344,6 @@ class InOrOut:
             # "<exec_function>".  Don't ever trace these executions, since we
             # can't do anything with the data later anyway.
             return nope(disp, "not a real file name")
-
-        # Jython reports the .class file to the tracer, use the source file.
-        if filename.endswith("$py.class"):
-            filename = filename[:-9] + ".py"
 
         canonical = canonical_filename(filename)
         disp.canonical_filename = canonical

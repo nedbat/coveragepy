@@ -15,10 +15,7 @@ import re
 import shlex
 import sys
 
-import pytest
-
 import coverage
-from coverage import env
 from coverage.cmdline import CoverageScript
 from coverage.misc import import_local_file
 
@@ -386,18 +383,9 @@ class CoverageTest(
             command_words = [os.path.basename(sys.executable)]
 
         elif command_name == "coverage":
-            if env.JYTHON:                  # pragma: only jython
-                # Jython can't do reporting, so let's skip the test now.
-                if command_args and command_args[0] in ('report', 'html', 'xml', 'annotate'):
-                    pytest.skip("Can't run reporting commands in Jython")
-                # Jython can't run "coverage" as a command because the shebang
-                # refers to another shebang'd Python script. So run them as
-                # modules.
-                command_words = "jython -m coverage".split()
-            else:
-                # The invocation requests the coverage.py program.  Substitute the
-                # actual coverage.py main command name.
-                command_words = [self.coverage_command]
+            # The invocation requests the coverage.py program.  Substitute the
+            # actual coverage.py main command name.
+            command_words = [self.coverage_command]
 
         else:
             command_words = [command_name]
@@ -407,8 +395,6 @@ class CoverageTest(
         # Add our test modules directory to PYTHONPATH.  I'm sure there's too
         # much path munging here, but...
         pythonpath_name = "PYTHONPATH"
-        if env.JYTHON:
-            pythonpath_name = "JYTHONPATH"          # pragma: only jython
 
         testmods = nice_file(self.working_root(), "tests/modules")
         zipfile = nice_file(self.working_root(), "tests/zipmods.zip")

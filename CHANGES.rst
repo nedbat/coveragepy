@@ -20,10 +20,6 @@ development at the same time, such as 4.5.x and 5.0.
 Unreleased
 ----------
 
-- Refactor: a number of refactorings internally due to adding type annotations.
-  This should not affect outward behavior, but they were a bit invasive in some
-  places.
-
 - Fix: if Python doesn't provide tomllib, then TOML configuration files can
   only be read if coverage.py is installed with the ``[toml]`` extra.
   Coverage.py will raise an error if toml support is not installed when it sees
@@ -33,6 +29,12 @@ Unreleased
   `issue 1516`_.
 
 - Fix: adjusted how decorators are traced on PyPy 7.3.10, fixing `issue 1515`_.
+
+- Refactor: a number of refactorings internally due to adding type annotations.
+  This should not affect outward behavior, but they were a bit invasive in some
+  places.
+
+- Remove vestigial and long-untested support for Jython and IronPython.
 
 .. _issue 1515: https://github.com/nedbat/coveragepy/issues/1515
 .. _issue 1516: https://github.com/nedbat/coveragepy/issues/1516

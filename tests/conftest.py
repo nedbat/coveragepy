@@ -16,7 +16,6 @@ from pathlib import Path
 import pytest
 
 from coverage import env
-from coverage.exceptions import _StopEverything
 from coverage.files import set_relative_directory
 
 # Pytest will rewrite assertions in test modules, but not elsewhere.
@@ -105,14 +104,6 @@ def pytest_sessionfinish():
             pth_file = pth_dir / "subcover.pth"
             if pth_file.exists():
                 pth_file.unlink()
-
-@pytest.hookimpl(hookwrapper=True)
-def pytest_runtest_call(item):
-    """Run once for each test."""
-    # Convert _StopEverything into skipped tests.
-    outcome = yield
-    if outcome.excinfo and issubclass(outcome.excinfo[0], _StopEverything):  # pragma: only jython
-        pytest.skip(f"Skipping {item.nodeid} for _StopEverything: {outcome.excinfo[1]}")
 
 
 def possible_pth_dirs():

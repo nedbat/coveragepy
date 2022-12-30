@@ -37,6 +37,7 @@ from coverage.jsonreport import JsonReporter
 from coverage.lcovreport import LcovReporter
 from coverage.misc import bool_or_none, join_regex, human_sorted
 from coverage.misc import DefaultValue, ensure_dir_for_file, isolate_module
+from coverage.multiproc import patch_multiprocessing
 from coverage.plugin import FileReporter
 from coverage.plugin_support import Plugins
 from coverage.python import PythonFileReporter
@@ -46,12 +47,6 @@ from coverage.summary import SummaryReporter
 from coverage.types import TConfigurable, TConfigSection, TConfigValue, TSysInfo
 from coverage.xmlreport import XmlReporter
 
-try:
-    from coverage.multiproc import patch_multiprocessing
-    has_patch_multiprocessing = True
-except ImportError:                                         # pragma: only jython
-    # Jython has no multiprocessing module.
-    has_patch_multiprocessing = False
 
 os = isolate_module(os)
 
@@ -493,10 +488,6 @@ class Coverage(TConfigurable):
         # Construct the collector.
         concurrency: List[str] = self.config.concurrency or []
         if "multiprocessing" in concurrency:
-            if not has_patch_multiprocessing:
-                raise ConfigError(                      # pragma: only jython
-                    "multiprocessing is not supported on this Python"
-                )
             if self.config.config_file is None:
                 raise ConfigError("multiprocessing requires a configuration file")
             patch_multiprocessing(rcfile=self.config.config_file)
