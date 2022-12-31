@@ -3,12 +3,16 @@
 
 """HTML reporting for coverage.py."""
 
+from __future__ import annotations
+
 import datetime
 import json
 import os
 import re
 import shutil
-import types
+
+from dataclasses import dataclass
+from typing import Iterable, List, Optional, TYPE_CHECKING
 
 import coverage
 from coverage.data import add_data_to_hash
@@ -17,13 +21,18 @@ from coverage.files import flat_rootname
 from coverage.misc import ensure_dir, file_be_gone, Hasher, isolate_module, format_local_datetime
 from coverage.misc import human_sorted, plural
 from coverage.report import get_analysis_to_report
-from coverage.results import Numbers
+from coverage.results import Analysis, Numbers
 from coverage.templite import Templite
+from coverage.types import TLineNo, TMorf
+
+if TYPE_CHECKING:
+    from coverage import Coverage
+    from coverage.plugins import FileReporter
 
 os = isolate_module(os)
 
 
-def data_filename(fname):
+def data_filename(fname: str) -> str:
     """Return the path to an "htmlfiles" data file of ours.
     """
     static_dir = os.path.join(os.path.dirname(__file__), "htmlfiles")
@@ -31,17 +40,39 @@ def data_filename(fname):
     return static_filename
 
 
-def read_data(fname):
+def read_data(fname: str) -> str:
     """Return the contents of a data file of ours."""
     with open(data_filename(fname)) as data_file:
         return data_file.read()
 
 
-def write_html(fname, html):
+def write_html(fname: str, html: str) -> None:
     """Write `html` to `fname`, properly encoded."""
     html = re.sub(r"(\A\s+)|(\s+$)", "", html, flags=re.MULTILINE) + "\n"
     with open(fname, "wb") as fout:
         fout.write(html.encode('ascii', 'xmlcharrefreplace'))
+
+
+@dataclass
+class LineData:
+    """The data for each source line of HTML output."""
+    tokens: str
+    number: TLineNo
+    category: str
+    statement: bool
+    contexts: List[str]
+    contexts_label: str
+    context_list: List[str]
+    short_annotations: List[str]
+    long_annotations: List[str]
+
+
+@dataclass
+class FileData:
+    """The data for each source file of HTML output."""
+    relative_filename: str
+    nums: Numbers
+    lines: List[LineData]
 
 
 class HtmlDataGeneration:
@@ -49,7 +80,7 @@ class HtmlDataGeneration:
 
     EMPTY = "(empty)"
 
-    def __init__(self, cov):
+    def __init__(self, cov: Coverage) -> None:
         self.coverage = cov
         self.config = self.coverage.config
         data = self.coverage.get_data()
@@ -59,7 +90,7 @@ class HtmlDataGeneration:
                 self.coverage._warn("No contexts were measured")
         data.set_query_contexts(self.config.report_contexts)
 
-    def data_for_file(self, fr, analysis):
+    def data_for_file(self, fr: FileReporter, analysis: Analysis) -> FileData:
         """Produce the data needed for one file's report."""
         if self.has_arcs:
             missing_branch_arcs = analysis.missing_branch_arcs()
@@ -72,7 +103,7 @@ class HtmlDataGeneration:
 
         for lineno, tokens in enumerate(fr.source_token_lines(), start=1):
             # Figure out how to mark this line.
-            category = None
+            category = ""
             short_annotations = []
             long_annotations = []
 
@@ -86,13 +117,14 @@ class HtmlDataGeneration:
                     if b < 0:
                         short_annotations.append("exit")
                     else:
-                        short_annotations.append(b)
+                        short_annotations.append(str(b))
                     long_annotations.append(fr.missing_arc_description(lineno, b, arcs_executed))
             elif lineno in analysis.statements:
                 category = 'run'
 
-            contexts = contexts_label = None
-            context_list = None
+            contexts = []
+            contexts_label = ""
+            context_list = []
             if category and self.config.show_contexts:
                 contexts = human_sorted(c or self.EMPTY for c in contexts_by_lineno.get(lineno, ()))
                 if contexts == [self.EMPTY]:
@@ -101,7 +133,7 @@ class HtmlDataGeneration:
                     contexts_label = f"{len(contexts)} ctx"
                     context_list = contexts
 
-            lines.append(types.SimpleNamespace(
+            lines.append(LineData(
                 tokens=tokens,
                 number=lineno,
                 category=category,
@@ -113,7 +145,7 @@ class HtmlDataGeneration:
                 long_annotations=long_annotations,
             ))
 
-        file_data = types.SimpleNamespace(
+        file_data = FileData(
             relative_filename=fr.relative_filename(),
             nums=analysis.numbers,
             lines=lines,
@@ -124,7 +156,7 @@ class HtmlDataGeneration:
 
 class FileToReport:
     """A file we're considering reporting."""
-    def __init__(self, fr, analysis):
+    def __init__(self, fr: FileReporter, analysis: Analysis) -> None:
         self.fr = fr
         self.analysis = analysis
         self.rootname = flat_rootname(fr.relative_filename())
@@ -144,7 +176,7 @@ class HtmlReporter:
         "favicon_32.png",
     ]
 
-    def __init__(self, cov):
+    def __init__(self, cov: Coverage) -> None:
         self.coverage = cov
         self.config = self.coverage.config
         self.directory = self.config.html_dir
@@ -160,6 +192,7 @@ class HtmlReporter:
 
         title = self.config.html_title
 
+        self.extra_css: Optional[str]
         if self.config.extra_css:
             self.extra_css = os.path.basename(self.config.extra_css)
         else:
@@ -204,7 +237,7 @@ class HtmlReporter:
         self.pyfile_html_source = read_data("pyfile.html")
         self.source_tmpl = Templite(self.pyfile_html_source, self.template_globals)
 
-    def report(self, morfs):
+    def report(self, morfs: Iterable[TMorf]) -> float:
         """Generate an HTML report for `morfs`.
 
         `morfs` is a list of modules or file names.
@@ -254,13 +287,13 @@ class HtmlReporter:
         self.make_local_static_report_files()
         return self.totals.n_statements and self.totals.pc_covered
 
-    def make_directory(self):
+    def make_directory(self) -> None:
         """Make sure our htmlcov directory exists."""
         ensure_dir(self.directory)
         if not os.listdir(self.directory):
             self.directory_was_empty = True
 
-    def make_local_static_report_files(self):
+    def make_local_static_report_files(self) -> None:
         """Make local instances of static files for HTML report."""
         # The files we provide must always be copied.
         for static in self.STATIC_FILES:
@@ -439,12 +472,12 @@ class IncrementalChecker:
         self.directory = directory
         self.reset()
 
-    def reset(self):
+    def reset(self) -> None:
         """Initialize to empty. Causes all files to be reported."""
         self.globals = ''
         self.files = {}
 
-    def read(self):
+    def read(self) -> None:
         """Read the information we stored last time."""
         usable = False
         try:
@@ -469,7 +502,7 @@ class IncrementalChecker:
         else:
             self.reset()
 
-    def write(self):
+    def write(self) -> None:
         """Write the current status."""
         status_file = os.path.join(self.directory, self.STATUS_FILE)
         files = {}

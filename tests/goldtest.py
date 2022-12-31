@@ -11,19 +11,24 @@ import os.path
 import re
 import xml.etree.ElementTree
 
+from typing import Iterable, List, Optional, Tuple
+
 from tests.coveragetest import TESTS_DIR
 from tests.helpers import os_sep
 
 
-def gold_path(path):
+def gold_path(path: str) -> str:
     """Get a path to a gold file for comparison."""
     return os.path.join(TESTS_DIR, "gold", path)
 
 
 def compare(
-        expected_dir, actual_dir, file_pattern=None,
-        actual_extra=False, scrubs=None,
-        ):
+    expected_dir: str,
+    actual_dir: str,
+    file_pattern: Optional[str]=None,
+    actual_extra: bool=False,
+    scrubs: Optional[List[Tuple[str, str]]]=None,
+) -> None:
     """Compare files matching `file_pattern` in `expected_dir` and `actual_dir`.
 
     `actual_extra` true means `actual_dir` can have extra files in it
@@ -41,11 +46,11 @@ def compare(
     assert os_sep("/gold/") in expected_dir
 
     dc = filecmp.dircmp(expected_dir, actual_dir)
-    diff_files = fnmatch_list(dc.diff_files, file_pattern)
-    expected_only = fnmatch_list(dc.left_only, file_pattern)
-    actual_only = fnmatch_list(dc.right_only, file_pattern)
+    diff_files = _fnmatch_list(dc.diff_files, file_pattern)
+    expected_only = _fnmatch_list(dc.left_only, file_pattern)
+    actual_only = _fnmatch_list(dc.right_only, file_pattern)
 
-    def save_mismatch(f):
+    def save_mismatch(f: str) -> None:
         """Save a mismatched result to tests/actual."""
         save_path = expected_dir.replace(os_sep("/gold/"), os_sep("/actual/"))
         os.makedirs(save_path, exist_ok=True)
@@ -75,10 +80,10 @@ def compare(
             actual = scrub(actual, scrubs)
         if expected != actual:
             text_diff.append(f'{expected_file} != {actual_file}')
-            expected = expected.splitlines()
-            actual = actual.splitlines()
+            expected_lines = expected.splitlines()
+            actual_lines = actual.splitlines()
             print(f":::: diff '{expected_file}' and '{actual_file}'")
-            print("\n".join(difflib.Differ().compare(expected, actual)))
+            print("\n".join(difflib.Differ().compare(expected_lines, actual_lines)))
             print(f":::: end diff '{expected_file}' and '{actual_file}'")
             save_mismatch(f)
 
@@ -93,7 +98,7 @@ def compare(
         assert not actual_only, f"Files in {actual_dir} only: {actual_only}"
 
 
-def contains(filename, *strlist):
+def contains(filename: str, *strlist: str) -> None:
     """Check that the file contains all of a list of strings.
 
     An assert will be raised if one of the arguments in `strlist` is
@@ -107,7 +112,7 @@ def contains(filename, *strlist):
         assert s in text, f"Missing content in {filename}: {s!r}"
 
 
-def contains_rx(filename, *rxlist):
+def contains_rx(filename: str, *rxlist: str) -> None:
     """Check that the file has lines that re.search all of the regexes.
 
     An assert will be raised if one of the regexes in `rxlist` doesn't match
@@ -123,7 +128,7 @@ def contains_rx(filename, *rxlist):
         )
 
 
-def contains_any(filename, *strlist):
+def contains_any(filename: str, *strlist: str) -> None:
     """Check that the file contains at least one of a list of strings.
 
     An assert will be raised if none of the arguments in `strlist` is in
@@ -140,7 +145,7 @@ def contains_any(filename, *strlist):
     assert False, f"Missing content in {filename}: {strlist[0]!r} [1 of {len(strlist)}]"
 
 
-def doesnt_contain(filename, *strlist):
+def doesnt_contain(filename: str, *strlist: str) -> None:
     """Check that the file contains none of a list of strings.
 
     An assert will be raised if any of the strings in `strlist` appears in
@@ -156,16 +161,15 @@ def doesnt_contain(filename, *strlist):
 
 # Helpers
 
-def canonicalize_xml(xtext):
+def canonicalize_xml(xtext: str) -> str:
     """Canonicalize some XML text."""
     root = xml.etree.ElementTree.fromstring(xtext)
     for node in root.iter():
         node.attrib = dict(sorted(node.items()))
-    xtext = xml.etree.ElementTree.tostring(root)
-    return xtext.decode("utf-8")
+    return xml.etree.ElementTree.tostring(root).decode("utf-8")
 
 
-def fnmatch_list(files, file_pattern):
+def _fnmatch_list(files: List[str], file_pattern: Optional[str]) -> List[str]:
     """Filter the list of `files` to only those that match `file_pattern`.
     If `file_pattern` is None, then return the entire list of files.
     Returns a list of the filtered files.
@@ -175,7 +179,7 @@ def fnmatch_list(files, file_pattern):
     return files
 
 
-def scrub(strdata, scrubs):
+def scrub(strdata: str, scrubs: Iterable[Tuple[str, str]]) -> str:
     """Scrub uninteresting data from the payload in `strdata`.
     `scrubs` is a list of (find, replace) pairs of regexes that are used on
     `strdata`.  A string is returned.

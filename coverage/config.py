@@ -226,10 +226,10 @@ class CoverageConfig(TConfigurable):
         self.sort = None
 
         # Defaults for [html]
-        self.extra_css = None
+        self.extra_css: Optional[str] = None
         self.html_dir = "htmlcov"
-        self.html_skip_covered = None
-        self.html_skip_empty = None
+        self.html_skip_covered: Optional[bool] = None
+        self.html_skip_empty: Optional[bool] = None
         self.html_title = "Coverage report"
         self.show_contexts = False
 

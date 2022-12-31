@@ -866,7 +866,7 @@ class Coverage(TConfigurable):
             analysis.missing_formatted(),
         )
 
-    def _analyze(self, it):
+    def _analyze(self, it) -> Analysis:
         """Analyze a single morf or code unit.
 
         Returns an `Analysis` object.
@@ -949,7 +949,7 @@ class Coverage(TConfigurable):
         precision=None,
         sort=None,
         output_format=None,
-    ):
+    ) -> float:
         """Write a textual summary report to `file`.
 
         Each module in `morfs` is listed, with counts of statements, executed
@@ -1070,7 +1070,7 @@ class Coverage(TConfigurable):
         contexts=None,
         skip_empty=None,
         precision=None,
-    ):
+    ) -> float:
         """Generate an HTML report.
 
         The HTML is written to `directory`.  The file "index.html" is the
@@ -1123,7 +1123,7 @@ class Coverage(TConfigurable):
         include=None,
         contexts=None,
         skip_empty=None,
-    ):
+    ) -> float:
         """Generate an XML report of coverage results.
 
         The report is compatible with Cobertura reports.
@@ -1158,7 +1158,7 @@ class Coverage(TConfigurable):
         contexts=None,
         pretty_print=None,
         show_contexts=None,
-    ):
+    ) -> float:
         """Generate a JSON report of coverage results.
 
         Each module in `morfs` is included in the report.  `outfile` is the
@@ -1192,7 +1192,7 @@ class Coverage(TConfigurable):
         omit=None,
         include=None,
         contexts=None,
-    ):
+    ) -> float:
         """Generate an LCOV report of coverage results.
 
         Each module in 'morfs' is included in the report. 'outfile' is the
