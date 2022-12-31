@@ -706,6 +706,12 @@ class ApiTest(CoverageTest):
         cov.stop()                                                      # pragma: nested
         assert_coverage_warnings(warns, "Conflicting dynamic contexts (dynamic-conflict)")
 
+    def test_unknown_dynamic_context(self):
+        cov = coverage.Coverage()
+        cov.set_option("run:dynamic_context", "no-idea")
+        with pytest.raises(Exception, match="Don't understand dynamic_context setting: 'no-idea'"):
+            cov.start()
+
     def test_switch_context_unstarted(self):
         # Coverage must be started to switch context
         msg = "Cannot switch context, coverage is not started"
