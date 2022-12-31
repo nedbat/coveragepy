@@ -147,7 +147,7 @@ class SummaryReporter:
         for end_line in end_lines:
             self.write(end_line)
 
-    def report(self, morfs, outfile=None):
+    def report(self, morfs, outfile=None) -> float:
         """Writes a report summarizing coverage statistics per module.
 
         `outfile` is a text-mode file object to write the summary to.

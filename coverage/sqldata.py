@@ -594,16 +594,16 @@ class CoverageData(AutoReprMixin):
     def touch_file(self, filename: str, plugin_name: str="") -> None:
         """Ensure that `filename` appears in the data, empty if needed.
 
-        `plugin_name` is the name of the plugin responsible for this file. It is used
-        to associate the right filereporter, etc.
+        `plugin_name` is the name of the plugin responsible for this file.
+        It is used to associate the right filereporter, etc.
         """
         self.touch_files([filename], plugin_name)
 
-    def touch_files(self, filenames: Iterable[str], plugin_name: str="") -> None:
+    def touch_files(self, filenames: Iterable[str], plugin_name: Optional[str]=None) -> None:
         """Ensure that `filenames` appear in the data, empty if needed.
 
-        `plugin_name` is the name of the plugin responsible for these files. It is used
-        to associate the right filereporter, etc.
+        `plugin_name` is the name of the plugin responsible for these files.
+        It is used to associate the right filereporter, etc.
         """
         if self._debug.should("dataop"):
             self._debug.write(f"Touching {filenames!r}")

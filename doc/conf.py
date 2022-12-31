@@ -125,6 +125,7 @@ intersphinx_mapping = {
 
 nitpick_ignore = [
     ("py:class", "frame"),
+    ("py:class", "module"),
 ]
 
 nitpick_ignore_regex = [

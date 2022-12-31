@@ -237,7 +237,7 @@ class HtmlReporter:
         self.pyfile_html_source = read_data("pyfile.html")
         self.source_tmpl = Templite(self.pyfile_html_source, self.template_globals)
 
-    def report(self, morfs: Iterable[TMorf]) -> float:
+    def report(self, morfs: Optional[Iterable[TMorf]]) -> float:
         """Generate an HTML report for `morfs`.
 
         `morfs` is a list of modules or file names.

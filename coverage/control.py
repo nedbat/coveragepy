@@ -11,7 +11,6 @@ import contextlib
 import os
 import os.path
 import platform
-import re
 import signal
 import sys
 import threading
@@ -19,7 +18,10 @@ import time
 import warnings
 
 from types import FrameType
-from typing import Any, Callable, Dict, Generator, List, Optional, Union
+from typing import (
+    cast,
+    Any, Callable, Dict, Generator, IO, Iterable, List, Optional, Tuple, Union,
+)
 
 from coverage import env
 from coverage.annotate import AnnotateReporter
@@ -44,14 +46,16 @@ from coverage.python import PythonFileReporter
 from coverage.report import render_report
 from coverage.results import Analysis
 from coverage.summary import SummaryReporter
-from coverage.types import TConfigurable, TConfigSection, TConfigValue, TSysInfo
+from coverage.types import (
+    TConfigurable, TConfigSection, TConfigValue, TLineNo, TMorf, TSysInfo,
+)
 from coverage.xmlreport import XmlReporter
 
 
 os = isolate_module(os)
 
 @contextlib.contextmanager
-def override_config(cov: Coverage, **kwargs: Any) -> Generator[None, None, None]:
+def override_config(cov: Coverage, **kwargs: TConfigValue) -> Generator[None, None, None]:
     """Temporarily tweak the configuration of `cov`.
 
     The arguments are applied to `cov.config` with the `from_args` method.
@@ -109,22 +113,22 @@ class Coverage(TConfigurable):
 
     def __init__(                       # pylint: disable=too-many-arguments
         self,
-        data_file=DEFAULT_DATAFILE,
-        data_suffix=None,
-        cover_pylib=None,
-        auto_data=False,
-        timid=None,
-        branch=None,
-        config_file=True,
-        source=None,
-        source_pkgs=None,
-        omit=None,
-        include=None,
-        debug=None,
-        concurrency=None,
-        check_preimported=False,
-        context=None,
-        messages=False,
+        data_file: Optional[str]=DEFAULT_DATAFILE,      # type: ignore[assignment]
+        data_suffix: Optional[Union[str, bool]]=None,
+        cover_pylib: Optional[bool]=None,
+        auto_data: bool=False,
+        timid: Optional[bool]=None,
+        branch: Optional[bool]=None,
+        config_file: Union[str, bool]=True,
+        source: Optional[List[str]]=None,
+        source_pkgs: Optional[List[str]]=None,
+        omit: Optional[List[str]]=None,
+        include: Optional[List[str]]=None,
+        debug: Optional[List[str]]=None,
+        concurrency: Optional[Union[str, List[str]]]=None,
+        check_preimported: bool=False,
+        context: Optional[str]=None,
+        messages: bool=False,
     ) -> None:
         """
         Many of these arguments duplicate and override values that can be
@@ -245,8 +249,8 @@ class Coverage(TConfigurable):
         self._file_mapper: Callable[[str], str]
 
         self._data_suffix = self._run_suffix = None
-        self._exclude_re: Dict[str, re.Pattern[str]] = {}
-        self._old_sigterm = None
+        self._exclude_re: Dict[str, str] = {}
+        self._old_sigterm: Optional[Callable[[int, Optional[FrameType]], Any]] = None
 
         # State machine variables:
         # Have we initialized everything?
@@ -569,9 +573,11 @@ class Coverage(TConfigurable):
                 # The Python docs seem to imply that SIGTERM works uniformly even
                 # on Windows, but that's not my experience, and this agrees:
                 # https://stackoverflow.com/questions/35772001/x/35792192#35792192
-                self._old_sigterm = signal.signal(signal.SIGTERM, self._on_sigterm)
+                self._old_sigterm = signal.signal(      # type: ignore[assignment]
+                    signal.SIGTERM, self._on_sigterm,
+                )
 
-    def _init_data(self, suffix):
+    def _init_data(self, suffix: Optional[Union[str, bool]]) -> None:
         """Create a data file if we don't have one yet."""
         if not hasattr(self, "_data"):
             # Create the data file.  We do this at construction time so that the
@@ -627,7 +633,7 @@ class Coverage(TConfigurable):
             self._collector.stop()
         self._started = False
 
-    def _atexit(self, event="atexit") -> None:
+    def _atexit(self, event: str="atexit") -> None:
         """Clean up on process shutdown."""
         if self._debug.should("process"):
             self._debug.write(f"{event}: pid: {os.getpid()}, instance: {self!r}")
@@ -636,7 +642,7 @@ class Coverage(TConfigurable):
         if self._auto_save:
             self.save()
 
-    def _on_sigterm(self, signum_unused, frame_unused) -> None:
+    def _on_sigterm(self, signum_unused: int, frame_unused: Optional[FrameType]) -> None:
         """A handler for signal.SIGTERM."""
         self._atexit("sigterm")
         # Statements after here won't be seen by metacov because we just wrote
@@ -660,7 +666,7 @@ class Coverage(TConfigurable):
         del self._data
         self._inited_for_start = False
 
-    def switch_context(self, new_context) -> None:
+    def switch_context(self, new_context: str) -> None:
         """Switch to a new dynamic context.
 
         `new_context` is a string to use as the :ref:`dynamic context
@@ -681,13 +687,13 @@ class Coverage(TConfigurable):
 
         self._collector.switch_context(new_context)
 
-    def clear_exclude(self, which='exclude') -> None:
+    def clear_exclude(self, which: str='exclude') -> None:
         """Clear the exclude list."""
         self._init()
         setattr(self.config, which + "_list", [])
         self._exclude_regex_stale()
 
-    def exclude(self, regex, which='exclude') -> None:
+    def exclude(self, regex: str, which: str='exclude') -> None:
         """Exclude source lines from execution consideration.
 
         A number of lists of regular expressions are maintained.  Each list
@@ -704,6 +710,7 @@ class Coverage(TConfigurable):
         """
         self._init()
         excl_list = getattr(self.config, which + "_list")
+        assert isinstance(regex, str)
         excl_list.append(regex)
         self._exclude_regex_stale()
 
@@ -711,29 +718,29 @@ class Coverage(TConfigurable):
         """Drop all the compiled exclusion regexes, a list was modified."""
         self._exclude_re.clear()
 
-    def _exclude_regex(self, which):
-        """Return a compiled regex for the given exclusion list."""
+    def _exclude_regex(self, which: str) -> str:
+        """Return a regex string for the given exclusion list."""
         if which not in self._exclude_re:
             excl_list = getattr(self.config, which + "_list")
             self._exclude_re[which] = join_regex(excl_list)
         return self._exclude_re[which]
 
-    def get_exclude_list(self, which='exclude'):
-        """Return a list of excluded regex patterns.
+    def get_exclude_list(self, which: str='exclude') -> List[str]:
+        """Return a list of excluded regex strings.
 
         `which` indicates which list is desired.  See :meth:`exclude` for the
         lists that are available, and their meaning.
 
         """
         self._init()
-        return getattr(self.config, which + "_list")
+        return cast(List[str], getattr(self.config, which + "_list"))
 
     def save(self) -> None:
         """Save the collected coverage data to the data file."""
         data = self.get_data()
         data.write()
 
-    def _make_aliases(self):
+    def _make_aliases(self) -> PathAliases:
         """Create a PathAliases from our configuration."""
         aliases = PathAliases(
             debugfn=(self._debug.write if self._debug.should("pathmap") else None),
@@ -745,7 +752,12 @@ class Coverage(TConfigurable):
                 aliases.add(pattern, result)
         return aliases
 
-    def combine(self, data_paths=None, strict=False, keep=False) -> None:
+    def combine(
+        self,
+        data_paths: Optional[Iterable[str]]=None,
+        strict: bool=False,
+        keep: bool=False
+    ) -> None:
         """Combine together a number of similarly-named coverage data files.
 
         All coverage data files whose name starts with `data_file` (from the
@@ -785,7 +797,7 @@ class Coverage(TConfigurable):
             message=self._message,
         )
 
-    def get_data(self):
+    def get_data(self) -> CoverageData:
         """Get the collected data.
 
         Also warn about various problems collecting data.
@@ -835,12 +847,15 @@ class Coverage(TConfigurable):
                 self._data.touch_files(paths, plugin_name)
 
     # Backward compatibility with version 1.
-    def analysis(self, morf):
+    def analysis(self, morf: TMorf) -> Tuple[str, List[TLineNo], List[TLineNo], str]:
         """Like `analysis2` but doesn't return excluded line numbers."""
         f, s, _, m, mf = self.analysis2(morf)
         return f, s, m, mf
 
-    def analysis2(self, morf):
+    def analysis2(
+        self,
+        morf: TMorf,
+    ) -> Tuple[str, List[TLineNo], List[TLineNo], List[TLineNo], str]:
         """Analyze a module.
 
         `morf` is a module or a file name.  It will be analyzed to determine
@@ -866,7 +881,7 @@ class Coverage(TConfigurable):
             analysis.missing_formatted(),
         )
 
-    def _analyze(self, it) -> Analysis:
+    def _analyze(self, it: Union[FileReporter, TMorf]) -> Analysis:
         """Analyze a single morf or code unit.
 
         Returns an `Analysis` object.
@@ -877,15 +892,17 @@ class Coverage(TConfigurable):
         self._post_init()
 
         data = self.get_data()
-        if not isinstance(it, FileReporter):
-            it = self._get_file_reporter(it)
+        if isinstance(it, FileReporter):
+            fr = it
+        else:
+            fr = self._get_file_reporter(it)
 
-        return Analysis(data, self.config.precision, it, self._file_mapper)
+        return Analysis(data, self.config.precision, fr, self._file_mapper)
 
-    def _get_file_reporter(self, morf):
+    def _get_file_reporter(self, morf: TMorf) -> FileReporter:
         """Get a FileReporter for a module or file name."""
         plugin = None
-        file_reporter = "python"
+        file_reporter: Union[str, FileReporter] = "python"
 
         if isinstance(morf, str):
             mapped_morf = self._file_mapper(morf)
@@ -905,9 +922,10 @@ class Coverage(TConfigurable):
         if file_reporter == "python":
             file_reporter = PythonFileReporter(morf, self)
 
+        assert isinstance(file_reporter, FileReporter)
         return file_reporter
 
-    def _get_file_reporters(self, morfs=None):
+    def _get_file_reporters(self, morfs: Optional[Iterable[TMorf]]=None) -> List[FileReporter]:
         """Get a list of FileReporters for a list of modules or file names.
 
         For each module or file name in `morfs`, find a FileReporter.  Return
@@ -923,7 +941,7 @@ class Coverage(TConfigurable):
 
         # Be sure we have a collection.
         if not isinstance(morfs, (list, tuple, set)):
-            morfs = [morfs]
+            morfs = [morfs]     # type: ignore[list-item]
 
         file_reporters = [self._get_file_reporter(morf) for morf in morfs]
         return file_reporters
@@ -937,18 +955,18 @@ class Coverage(TConfigurable):
 
     def report(
         self,
-        morfs=None,
-        show_missing=None,
-        ignore_errors=None,
-        file=None,
-        omit=None,
-        include=None,
-        skip_covered=None,
-        contexts=None,
-        skip_empty=None,
-        precision=None,
-        sort=None,
-        output_format=None,
+        morfs: Optional[Iterable[TMorf]]=None,
+        show_missing: Optional[bool]=None,
+        ignore_errors: Optional[bool]=None,
+        file: Optional[IO[str]]=None,
+        omit: Optional[List[str]]=None,
+        include: Optional[List[str]]=None,
+        skip_covered: Optional[bool]=None,
+        contexts: Optional[List[str]]=None,
+        skip_empty: Optional[bool]=None,
+        precision: Optional[int]=None,
+        sort: Optional[str]=None,
+        output_format: Optional[str]=None,
     ) -> float:
         """Write a textual summary report to `file`.
 
@@ -974,7 +992,7 @@ class Coverage(TConfigurable):
         If `skip_empty` is true, don't report on empty files (those that have
         no statements).
 
-        `contexts` is a list of regular expressions.  Only data from
+        `contexts` is a list of regular expression strings.  Only data from
         :ref:`dynamic contexts <dynamic_contexts>` that match one of those
         expressions (using :func:`re.search <python:re.search>`) will be
         included in the report.
@@ -1019,13 +1037,13 @@ class Coverage(TConfigurable):
 
     def annotate(
         self,
-        morfs=None,
-        directory=None,
-        ignore_errors=None,
-        omit=None,
-        include=None,
-        contexts=None,
-    ):
+        morfs: Optional[Iterable[TMorf]]=None,
+        directory: Optional[str]=None,
+        ignore_errors: Optional[bool]=None,
+        omit: Optional[List[str]]=None,
+        include: Optional[List[str]]=None,
+        contexts: Optional[List[str]]=None,
+    ) -> None:
         """Annotate a list of modules.
 
         .. note::
@@ -1058,18 +1076,18 @@ class Coverage(TConfigurable):
 
     def html_report(
         self,
-        morfs=None,
-        directory=None,
-        ignore_errors=None,
-        omit=None,
-        include=None,
-        extra_css=None,
-        title=None,
-        skip_covered=None,
-        show_contexts=None,
-        contexts=None,
-        skip_empty=None,
-        precision=None,
+        morfs: Optional[Iterable[TMorf]]=None,
+        directory: Optional[str]=None,
+        ignore_errors: Optional[bool]=None,
+        omit: Optional[List[str]]=None,
+        include: Optional[List[str]]=None,
+        extra_css: Optional[str]=None,
+        title: Optional[str]=None,
+        skip_covered: Optional[bool]=None,
+        show_contexts: Optional[bool]=None,
+        contexts: Optional[List[str]]=None,
+        skip_empty: Optional[bool]=None,
+        precision: Optional[int]=None,
     ) -> float:
         """Generate an HTML report.
 
@@ -1116,13 +1134,13 @@ class Coverage(TConfigurable):
 
     def xml_report(
         self,
-        morfs=None,
-        outfile=None,
-        ignore_errors=None,
-        omit=None,
-        include=None,
-        contexts=None,
-        skip_empty=None,
+        morfs: Optional[Iterable[TMorf]]=None,
+        outfile: Optional[str]=None,
+        ignore_errors: Optional[bool]=None,
+        omit: Optional[List[str]]=None,
+        include: Optional[List[str]]=None,
+        contexts: Optional[List[str]]=None,
+        skip_empty: Optional[bool]=None,
     ) -> float:
         """Generate an XML report of coverage results.
 
@@ -1150,19 +1168,21 @@ class Coverage(TConfigurable):
 
     def json_report(
         self,
-        morfs=None,
-        outfile=None,
-        ignore_errors=None,
-        omit=None,
-        include=None,
-        contexts=None,
-        pretty_print=None,
-        show_contexts=None,
+        morfs: Optional[Iterable[TMorf]]=None,
+        outfile: Optional[str]=None,
+        ignore_errors: Optional[bool]=None,
+        omit: Optional[List[str]]=None,
+        include: Optional[List[str]]=None,
+        contexts: Optional[List[str]]=None,
+        pretty_print: Optional[bool]=None,
+        show_contexts: Optional[bool]=None,
     ) -> float:
         """Generate a JSON report of coverage results.
 
         Each module in `morfs` is included in the report.  `outfile` is the
         path to write the file to, "-" will write to stdout.
+
+        `pretty_print` is a boolean, whether to pretty-print the JSON output or not.
 
         See :meth:`report` for other arguments.
 
@@ -1186,12 +1206,12 @@ class Coverage(TConfigurable):
 
     def lcov_report(
         self,
-        morfs=None,
-        outfile=None,
-        ignore_errors=None,
-        omit=None,
-        include=None,
-        contexts=None,
+        morfs: Optional[Iterable[TMorf]]=None,
+        outfile: Optional[str]=None,
+        ignore_errors: Optional[bool]=None,
+        omit: Optional[List[str]]=None,
+        include: Optional[List[str]]=None,
+        contexts: Optional[List[str]]=None,
     ) -> float:
         """Generate an LCOV report of coverage results.
 
@@ -1221,7 +1241,7 @@ class Coverage(TConfigurable):
         self._init()
         self._post_init()
 
-        def plugin_info(plugins):
+        def plugin_info(plugins: List[Any]) -> List[str]:
             """Make an entry for the sys_info from a list of plug-ins."""
             entries = []
             for plugin in plugins:
@@ -1279,10 +1299,13 @@ class Coverage(TConfigurable):
 if int(os.environ.get("COVERAGE_DEBUG_CALLS", 0)):              # pragma: debugging
     from coverage.debug import decorate_methods, show_calls
 
-    Coverage = decorate_methods(show_calls(show_args=True), butnot=['get_data'])(Coverage)
+    Coverage = decorate_methods(        # type: ignore[misc]
+        show_calls(show_args=True),
+        butnot=['get_data']
+    )(Coverage)
 
 
-def process_startup() -> None:
+def process_startup() -> Optional[Coverage]:
     """Call this at Python start-up to perhaps measure coverage.
 
     If the environment variable COVERAGE_PROCESS_START is defined, coverage
@@ -1325,7 +1348,7 @@ def process_startup() -> None:
         return None
 
     cov = Coverage(config_file=cps)
-    process_startup.coverage = cov
+    process_startup.coverage = cov      # type: ignore[attr-defined]
     cov._warn_no_data = False
     cov._warn_unimported_source = False
     cov._warn_preimported_source = False

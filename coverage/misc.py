@@ -16,6 +16,8 @@ import re
 import sys
 import types
 
+from typing import Iterable
+
 from coverage import env
 from coverage.exceptions import CoverageException
 
@@ -133,8 +135,8 @@ def bool_or_none(b):
         return bool(b)
 
 
-def join_regex(regexes):
-    """Combine a series of regexes into one that matches any of them."""
+def join_regex(regexes: Iterable[str]) -> str:
+    """Combine a series of regex strings into one that matches any of them."""
     regexes = list(regexes)
     if len(regexes) == 1:
         return regexes[0]

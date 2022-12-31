@@ -43,7 +43,7 @@ class PythonParser:
         """
         Source can be provided as `text`, the text itself, or `filename`, from
         which the text will be read.  Excluded lines are those that match
-        `exclude`, a regex.
+        `exclude`, a regex string.
 
         """
         assert text or filename, "PythonParser needs either text or filename"
