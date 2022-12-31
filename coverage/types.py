@@ -6,7 +6,10 @@ Types for use throughout coverage.py.
 """
 
 from types import ModuleType
-from typing import Dict, Iterable, List, Optional, Sequence, Tuple, Union, TYPE_CHECKING
+from typing import (
+    Any, Dict, Iterable, List, Optional, Sequence, Tuple, Union,
+    TYPE_CHECKING,
+)
 
 if TYPE_CHECKING:
     # Protocol is new in 3.8.  PYVERSIONS
@@ -14,6 +17,10 @@ if TYPE_CHECKING:
 else:
     class Protocol:             # pylint: disable=missing-class-docstring
         pass
+
+# Many places use kwargs as Coverage kwargs.
+TCovKwargs = Any
+
 
 ## Configuration
 

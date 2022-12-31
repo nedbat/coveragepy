@@ -14,12 +14,15 @@ import glob
 import hashlib
 import os.path
 
+from typing import Callable, Dict, Iterable, List, Optional
+
 from coverage.exceptions import CoverageException, NoDataError
-from coverage.misc import file_be_gone, human_sorted, plural
+from coverage.files import PathAliases
+from coverage.misc import Hasher, file_be_gone, human_sorted, plural
 from coverage.sqldata import CoverageData
 
 
-def line_counts(data, fullpath=False):
+def line_counts(data: CoverageData, fullpath: bool=False) -> Dict[str, int]:
     """Return a dict summarizing the line coverage data.
 
     Keys are based on the file names, and values are the number of executed
@@ -36,11 +39,13 @@ def line_counts(data, fullpath=False):
     else:
         filename_fn = os.path.basename
     for filename in data.measured_files():
-        summ[filename_fn(filename)] = len(data.lines(filename))
+        lines = data.lines(filename)
+        assert lines is not None
+        summ[filename_fn(filename)] = len(lines)
     return summ
 
 
-def add_data_to_hash(data, filename, hasher):
+def add_data_to_hash(data: CoverageData, filename: str, hasher: Hasher) -> None:
     """Contribute `filename`'s data to the `hasher`.
 
     `hasher` is a `coverage.misc.Hasher` instance to be updated with
@@ -55,7 +60,7 @@ def add_data_to_hash(data, filename, hasher):
     hasher.update(data.file_tracer(filename))
 
 
-def combinable_files(data_file, data_paths=None):
+def combinable_files(data_file: str, data_paths: Optional[Iterable[str]]=None) -> List[str]:
     """Make a list of data files to be combined.
 
     `data_file` is a path to a data file.  `data_paths` is a list of files or
@@ -79,8 +84,13 @@ def combinable_files(data_file, data_paths=None):
 
 
 def combine_parallel_data(
-    data, aliases=None, data_paths=None, strict=False, keep=False, message=None,
-):
+    data: CoverageData,
+    aliases: Optional[PathAliases]=None,
+    data_paths: Optional[Iterable[str]]=None,
+    strict: bool=False,
+    keep: bool=False,
+    message: Optional[Callable[[str], None]]=None,
+) -> None:
     """Combine a number of data files together.
 
     `data` is a CoverageData.
@@ -98,12 +108,14 @@ def combine_parallel_data(
     If `data_paths` is not provided, then the directory portion of
     `data.filename` is used as the directory to search for data files.
 
-    Unless `keep` is True every data file found and combined is then deleted from disk. If a file
-    cannot be read, a warning will be issued, and the file will not be
-    deleted.
+    Unless `keep` is True every data file found and combined is then deleted
+    from disk. If a file cannot be read, a warning will be issued, and the
+    file will not be deleted.
 
     If `strict` is true, and no files are found to combine, an error is
     raised.
+
+    `message` is a function to use for printing messages to the user.
 
     """
     files_to_combine = combinable_files(data.base_filename(), data_paths)
@@ -168,7 +180,7 @@ def combine_parallel_data(
         raise NoDataError("No usable data files")
 
 
-def debug_data_file(filename):
+def debug_data_file(filename: str) -> None:
     """Implementation of 'coverage debug data'."""
     data = CoverageData(filename)
     filename = data.data_filename()

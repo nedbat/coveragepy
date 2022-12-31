@@ -106,7 +106,7 @@ def nice_file(*fparts):
     return os.path.normcase(os.path.abspath(os.path.realpath(fname)))
 
 
-def os_sep(s):
+def os_sep(s: str) -> str:
     """Replace slashes in `s` with the correct separator for the OS."""
     return s.replace("/", os.sep)
 

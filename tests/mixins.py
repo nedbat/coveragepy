@@ -12,6 +12,8 @@ import os
 import os.path
 import sys
 
+from typing import Tuple
+
 import pytest
 
 from coverage.misc import SysModuleSaver
@@ -122,14 +124,14 @@ class StdStreamCapturingMixin:
         """Grab the fixture so our methods can use it."""
         self.capsys = capsys
 
-    def stdouterr(self):
+    def stdouterr(self) -> Tuple[str, str]:
         """Returns (out, err), two strings for stdout and stderr."""
         return self.capsys.readouterr()
 
-    def stdout(self):
+    def stdout(self) -> str:
         """Returns a string, the captured stdout."""
         return self.capsys.readouterr().out
 
-    def stderr(self):
+    def stderr(self) -> str:
         """Returns a string, the captured stderr."""
         return self.capsys.readouterr().err
