@@ -13,7 +13,6 @@ import threading
 import time
 
 from flaky import flaky
-import greenlet
 import pytest
 
 import coverage
@@ -37,6 +36,11 @@ try:
     import gevent
 except ImportError:
     gevent = None
+
+try:
+    import greenlet
+except ImportError:
+    greenlet = None
 
 
 def measurable_line(l):
