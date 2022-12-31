@@ -10,6 +10,7 @@ from tests.helpers import assert_count_equal, xfail_pypy38
 
 import coverage
 from coverage import env
+from coverage.data import sorted_lines
 from coverage.files import abs_file
 
 
@@ -2079,5 +2080,5 @@ class LineDataTest(CoverageTest):
         self.start_import_stop(cov, "fun1")
 
         data = cov.get_data()
-        fun1_lines = data.lines(abs_file("fun1.py"))
+        fun1_lines = sorted_lines(data, abs_file("fun1.py"))
         assert_count_equal(fun1_lines, [1, 2, 5])

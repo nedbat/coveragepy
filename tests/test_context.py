@@ -9,7 +9,7 @@ from unittest import mock
 
 import coverage
 from coverage.context import qualname_from_frame
-from coverage.data import CoverageData
+from coverage.data import CoverageData, sorted_lines
 
 from tests.coveragetest import CoverageTest
 from tests.helpers import assert_count_equal
@@ -165,7 +165,7 @@ class DynamicContextTest(CoverageTest):
 
         def assert_context_lines(context, lines):
             data.set_query_context(context)
-            assert_count_equal(lines, data.lines(fname))
+            assert_count_equal(lines, sorted_lines(data, fname))
 
         assert_context_lines("", self.OUTER_LINES)
         assert_context_lines("two_tests.test_one", self.TEST_ONE_LINES)
@@ -187,7 +187,7 @@ class DynamicContextTest(CoverageTest):
 
         def assert_context_lines(context, lines):
             data.set_query_context(context)
-            assert_count_equal(lines, data.lines(fname))
+            assert_count_equal(lines, sorted_lines(data, fname))
 
         assert_context_lines("stat", self.OUTER_LINES)
         assert_context_lines("stat|two_tests.test_one", self.TEST_ONE_LINES)

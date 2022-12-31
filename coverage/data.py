@@ -56,7 +56,7 @@ def add_data_to_hash(data: CoverageData, filename: str, hasher: Hasher) -> None:
     if data.has_arcs():
         hasher.update(sorted(data.arcs(filename) or []))
     else:
-        hasher.update(sorted(data.lines(filename) or []))
+        hasher.update(sorted_lines(data, filename))
     hasher.update(data.file_tracer(filename))
 
 
@@ -200,3 +200,9 @@ def debug_data_file(filename: str) -> None:
         if plugin:
             line += f" [{plugin}]"
         print(line)
+
+
+def sorted_lines(data: CoverageData, filename: str) -> List[int]:
+    """Get the sorted lines for a file, for tests."""
+    lines = data.lines(filename)
+    return sorted(lines or [])

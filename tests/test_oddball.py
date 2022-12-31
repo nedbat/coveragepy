@@ -12,6 +12,7 @@ import pytest
 
 import coverage
 from coverage import env
+from coverage.data import sorted_lines
 from coverage.files import abs_file
 from coverage.misc import import_local_file
 
@@ -383,8 +384,7 @@ class ExceptionTest(CoverageTest):
             data = cov.get_data()
             for callname in callnames:
                 filename = callname + ".py"
-                lines = data.lines(abs_file(filename))
-                clean_lines[filename] = sorted(lines)
+                clean_lines[filename] = sorted_lines(data, abs_file(filename))
 
             assert clean_lines == lines_expected
 
@@ -427,7 +427,7 @@ class DoctestTest(CoverageTest):
         self.start_import_stop(cov, "the_doctest")
         data = cov.get_data()
         assert len(data.measured_files()) == 1
-        lines = data.lines(data.measured_files().pop())
+        lines = sorted_lines(data, data.measured_files().pop())
         assert lines == [1, 3, 18, 19, 21, 23, 24]
 
 

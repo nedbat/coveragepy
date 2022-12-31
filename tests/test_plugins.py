@@ -14,7 +14,7 @@ import pytest
 import coverage
 from coverage import env
 from coverage.control import Plugins
-from coverage.data import line_counts
+from coverage.data import line_counts, sorted_lines
 from coverage.exceptions import CoverageWarning, NoSource, PluginError
 from coverage.misc import import_local_file
 
@@ -1047,11 +1047,11 @@ class DynamicContextPluginTest(CoverageTest):
         expected = ['', 'doctest:HTML_TAG', 'test:HTML_TAG', 'test:RENDERERS']
         assert expected == sorted(data.measured_contexts())
         data.set_query_context("doctest:HTML_TAG")
-        assert [2] == data.lines(filenames['rendering.py'])
+        assert [2] == sorted_lines(data, filenames['rendering.py'])
         data.set_query_context("test:HTML_TAG")
-        assert [2] == data.lines(filenames['rendering.py'])
+        assert [2] == sorted_lines(data, filenames['rendering.py'])
         data.set_query_context("test:RENDERERS")
-        assert [2, 5, 8, 11] == sorted(data.lines(filenames['rendering.py']))
+        assert [2, 5, 8, 11] == sorted_lines(data, filenames['rendering.py'])
 
     def test_static_context(self):
         self.make_plugin_capitalized_testnames('plugin_tests.py')
@@ -1101,7 +1101,7 @@ class DynamicContextPluginTest(CoverageTest):
 
         def assert_context_lines(context, lines):
             data.set_query_context(context)
-            assert lines == sorted(data.lines(filenames['rendering.py']))
+            assert lines == sorted_lines(data, filenames['rendering.py'])
 
         assert_context_lines("doctest:HTML_TAG", [2])
         assert_context_lines("testsuite.test_html_tag", [2])
@@ -1139,7 +1139,7 @@ class DynamicContextPluginTest(CoverageTest):
 
         def assert_context_lines(context, lines):
             data.set_query_context(context)
-            assert lines == sorted(data.lines(filenames['rendering.py']))
+            assert lines == sorted_lines(data, filenames['rendering.py'])
 
         assert_context_lines("test:HTML_TAG", [2])
         assert_context_lines("test:RENDERERS", [2, 5, 8, 11])

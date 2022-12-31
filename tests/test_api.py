@@ -19,7 +19,7 @@ import pytest
 
 import coverage
 from coverage import Coverage, env
-from coverage.data import line_counts
+from coverage.data import line_counts, sorted_lines
 from coverage.exceptions import CoverageException, DataError, NoDataError, NoSource
 from coverage.files import abs_file, relative_filename
 from coverage.misc import import_local_file
@@ -655,9 +655,9 @@ class ApiTest(CoverageTest):
         suite_filename = filenames['testsuite.py']
 
         data.set_query_context("multiply_six")
-        assert [2, 8] == sorted(data.lines(suite_filename))
+        assert [2, 8] == sorted_lines(data, suite_filename)
         data.set_query_context("multiply_zero")
-        assert [2, 5] == sorted(data.lines(suite_filename))
+        assert [2, 5] == sorted_lines(data, suite_filename)
 
     def test_switch_context_with_static(self) -> None:
         # This test simulates a coverage-aware test runner,
@@ -694,9 +694,9 @@ class ApiTest(CoverageTest):
         suite_filename = filenames['testsuite.py']
 
         data.set_query_context("mysuite|multiply_six")
-        assert [2, 8] == sorted(data.lines(suite_filename))
+        assert [2, 8] == sorted_lines(data, suite_filename)
         data.set_query_context("mysuite|multiply_zero")
-        assert [2, 5] == sorted(data.lines(suite_filename))
+        assert [2, 5] == sorted_lines(data, suite_filename)
 
     def test_dynamic_context_conflict(self) -> None:
         cov = coverage.Coverage(source=["."])
