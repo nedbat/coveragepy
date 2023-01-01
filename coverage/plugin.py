@@ -121,7 +121,7 @@ from typing import Any, Dict, Iterable, Optional, Set, Tuple, Union
 
 from coverage import files
 from coverage.misc import _needs_to_implement
-from coverage.types import TArc, TConfigurable, TLineNo, TSourceTokenLines, TSysInfo
+from coverage.types import TArc, TConfigurable, TLineNo, TSourceTokenLines
 
 
 class CoveragePlugin:
@@ -235,7 +235,7 @@ class CoveragePlugin:
         """
         pass
 
-    def sys_info(self) -> TSysInfo:
+    def sys_info(self) -> Iterable[Tuple[str, Any]]:
         """Get a list of information useful for debugging.
 
         Plug-in type: any.

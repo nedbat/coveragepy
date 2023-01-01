@@ -15,6 +15,8 @@ import sys
 import types
 import _thread
 
+from typing import Any, Callable, Iterable, Iterator, Tuple
+
 from coverage.misc import isolate_module
 
 os = isolate_module(os)
@@ -108,7 +110,7 @@ def info_header(label):
     return "--{:-<60s}".format(" "+label+" ")
 
 
-def info_formatter(info):
+def info_formatter(info: Iterable[Tuple[str, Any]]) -> Iterator[str]:
     """Produce a sequence of formatted lines from info.
 
     `info` is a sequence of pairs (label, data).  The produced lines are
@@ -135,7 +137,11 @@ def info_formatter(info):
             yield "%*s: %s" % (label_len, label, data)
 
 
-def write_formatted_info(write, header, info):
+def write_formatted_info(
+    write: Callable[[str], None],
+    header: str,
+    info: Iterable[Tuple[str, Any]],
+) -> None:
     """Write a sequence of (label,data) pairs nicely.
 
     `write` is a function write(str) that accepts each line of output.

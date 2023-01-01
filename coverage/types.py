@@ -7,7 +7,7 @@ Types for use throughout coverage.py.
 
 from types import ModuleType
 from typing import (
-    Any, Dict, Iterable, List, Optional, Sequence, Tuple, Union,
+    Any, Dict, Iterable, List, Optional, Tuple, Union,
     TYPE_CHECKING,
 )
 
@@ -81,6 +81,3 @@ class TDebugCtl(Protocol):
 
     def write(self, msg: str) -> None:
         """Write a line of debug output."""
-
-# Data returned from sys_info()
-TSysInfo = Sequence[Tuple[str, Union[str, Iterable[str]]]]

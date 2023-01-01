@@ -518,7 +518,7 @@ class CoverageConfig(TConfigurable):
             for k, v in self.paths.items()
         )
 
-    def debug_info(self) -> List[Tuple[str, str]]:
+    def debug_info(self) -> Iterable[Tuple[str, Any]]:
         """Make a list of (name, value) pairs for writing debug info."""
         return human_sorted_items(  # type: ignore
             (k, v) for k, v in self.__dict__.items() if not k.startswith("_")

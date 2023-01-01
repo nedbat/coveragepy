@@ -46,9 +46,7 @@ from coverage.python import PythonFileReporter
 from coverage.report import render_report
 from coverage.results import Analysis
 from coverage.summary import SummaryReporter
-from coverage.types import (
-    TConfigurable, TConfigSection, TConfigValue, TLineNo, TMorf, TSysInfo,
-)
+from coverage.types import TConfigurable, TConfigSection, TConfigValue, TLineNo, TMorf
 from coverage.xmlreport import XmlReporter
 
 
@@ -1233,7 +1231,7 @@ class Coverage(TConfigurable):
         ):
             return render_report(self.config.lcov_output, LcovReporter(self), morfs, self._message)
 
-    def sys_info(self) -> TSysInfo:
+    def sys_info(self) -> Iterable[Tuple[str, Any]]:
         """Return a list of (key, value) pairs showing internal information."""
 
         import coverage as covmod

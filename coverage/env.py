@@ -7,6 +7,8 @@ import os
 import platform
 import sys
 
+from typing import Any, Iterable, Tuple
+
 # Operating systems.
 WINDOWS = sys.platform == "win32"
 LINUX = sys.platform.startswith("linux")
@@ -21,7 +23,7 @@ PYPY = (platform.python_implementation() == "PyPy")
 PYVERSION = sys.version_info + (int(platform.python_version()[-1] == "+"),)
 
 if PYPY:
-    PYPYVERSION = sys.pypy_version_info
+    PYPYVERSION = sys.pypy_version_info         # type: ignore[attr-defined]
 
 # Python behavior.
 class PYBEHAVIOR:
@@ -134,13 +136,14 @@ METACOV = os.getenv('COVERAGE_COVERAGE', '') != ''
 TESTING = os.getenv('COVERAGE_TESTING', '') == 'True'
 
 
-def debug_info():
+def debug_info() -> Iterable[Tuple[str, Any]]:
     """Return a list of (name, value) pairs for printing debug information."""
     info = [
         (name, value) for name, value in globals().items()
         if not name.startswith("_") and
             name not in {"PYBEHAVIOR", "debug_info"} and
-            not isinstance(value, type(os))
+            not isinstance(value, type(os)) and
+            not str(value).startswith("typing.")
     ]
     info += [
         (name, value) for name, value in PYBEHAVIOR.__dict__.items()
