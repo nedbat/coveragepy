@@ -3,6 +3,7 @@
 
 """Test LCOV-based summary reporting for coverage.py."""
 
+import math
 import textwrap
 
 from tests.coveragetest import CoverageTest
@@ -75,7 +76,8 @@ class LcovTest(CoverageTest):
         self.assert_doesnt_exist(".coverage")
         cov = coverage.Coverage(source=["."])
         self.start_import_stop(cov, "main_file")
-        cov.lcov_report()
+        pct = cov.lcov_report()
+        assert pct == 50.0
         actual_result = self.get_lcov_report_content()
         assert expected_result == actual_result
 
@@ -87,7 +89,8 @@ class LcovTest(CoverageTest):
         self.make_file(".coveragerc", "[lcov]\noutput = data.lcov\n")
         cov = coverage.Coverage(source=".")
         self.start_import_stop(cov, "test_file")
-        cov.lcov_report()
+        pct = cov.lcov_report()
+        assert pct == 50.0
         self.assert_exists("data.lcov")
         expected_result = textwrap.dedent("""\
             TN:
@@ -130,7 +133,8 @@ class LcovTest(CoverageTest):
         self.assert_doesnt_exist(".coverage")
         cov = coverage.Coverage(branch=True, source=".")
         self.start_import_stop(cov, "main_file")
-        cov.lcov_report()
+        pct = cov.lcov_report()
+        assert math.isclose(pct, 16.666666666666668)
         self.assert_exists("coverage.lcov")
         expected_result = textwrap.dedent("""\
             TN:
@@ -177,7 +181,8 @@ class LcovTest(CoverageTest):
         self.assert_doesnt_exist(".coverage")
         cov = coverage.Coverage(branch=True, source=".")
         self.start_import_stop(cov, "test_file")
-        cov.lcov_report()
+        pct = cov.lcov_report()
+        assert math.isclose(pct, 41.666666666666664)
         self.assert_exists("coverage.lcov")
         expected_result = textwrap.dedent("""\
             TN:
@@ -225,7 +230,8 @@ class LcovTest(CoverageTest):
         self.assert_doesnt_exist(".coverage")
         cov = coverage.Coverage(branch=True, source=".")
         self.start_import_stop(cov, "main_file")
-        cov.lcov_report()
+        pct = cov.lcov_report()
+        assert math.isclose(pct, 66.66666666666667)
         self.assert_exists("coverage.lcov")
         expected_result = textwrap.dedent("""\
             TN:
@@ -259,7 +265,8 @@ class LcovTest(CoverageTest):
         self.assert_doesnt_exist(".coverage")
         cov = coverage.Coverage(branch=True, source=".")
         self.start_import_stop(cov, "__init__")
-        cov.lcov_report()
+        pct = cov.lcov_report()
+        assert pct == 0.0
         self.assert_exists("coverage.lcov")
         # Newer Pythons have truly empty empty files.
         if env.PYBEHAVIOR.empty_is_empty:

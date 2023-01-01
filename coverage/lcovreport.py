@@ -8,6 +8,7 @@ import base64
 from hashlib import md5
 
 from coverage.report import get_analysis_to_report
+from coverage.results import Analysis, Numbers
 
 
 class LcovReporter:
@@ -17,7 +18,7 @@ class LcovReporter:
 
     def __init__(self, coverage):
         self.coverage = coverage
-        self.config = self.coverage.config
+        self.total = Numbers(self.coverage.config.precision)
 
     def report(self, morfs, outfile=None):
         """Renders the full lcov report.
@@ -33,12 +34,16 @@ class LcovReporter:
         for fr, analysis in get_analysis_to_report(self.coverage, morfs):
             self.get_lcov(fr, analysis, outfile)
 
+        return self.total.n_statements and self.total.pc_covered
+
     def get_lcov(self, fr, analysis, outfile=None):
         """Produces the lcov data for a single file.
 
         This currently supports both line and branch coverage,
         however function coverage is not supported.
         """
+        self.total += analysis.numbers
+
         outfile.write("TN:\n")
         outfile.write(f"SF:{fr.relative_filename()}\n")
         source_lines = fr.source().splitlines()

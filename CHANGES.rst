@@ -30,6 +30,9 @@ Unreleased
 
 - Fix: adjusted how decorators are traced on PyPy 7.3.10, fixing `issue 1515`_.
 
+- Fix: the ``coverage lcov`` report did not properly implement the
+  ``--fail-under=MIN`` option.  This has been fixed.
+
 - Refactor: a number of refactorings internally due to adding type annotations.
   This should not affect outward behavior, but they were a bit invasive in some
   places.
