@@ -111,7 +111,7 @@ class Coverage(TConfigurable):
 
     def __init__(                       # pylint: disable=too-many-arguments
         self,
-        data_file: Optional[str]=DEFAULT_DATAFILE,      # type: ignore[assignment]
+        data_file: Optional[Union[str, DefaultValue]]=DEFAULT_DATAFILE,
         data_suffix: Optional[Union[str, bool]]=None,
         cover_pylib: Optional[bool]=None,
         auto_data: bool=False,
@@ -219,7 +219,7 @@ class Coverage(TConfigurable):
         # data_file=None means no disk file at all. data_file missing means
         # use the value from the config file.
         self._no_disk = data_file is None
-        if data_file is DEFAULT_DATAFILE:
+        if isinstance(data_file, DefaultValue):
             data_file = None
 
         # This is injectable by tests.

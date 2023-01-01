@@ -25,7 +25,7 @@ TCovKwargs = Any
 ## Configuration
 
 # One value read from a config file.
-TConfigValue = Optional[Union[bool, int, str, List[str]]]
+TConfigValue = Optional[Union[bool, int, float, str, List[str]]]
 # An entire config section, mapping option names to values.
 TConfigSection = Dict[str, TConfigValue]
 

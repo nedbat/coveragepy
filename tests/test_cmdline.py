@@ -10,6 +10,8 @@ import sys
 import textwrap
 
 from unittest import mock
+from typing import Any, List, Mapping, Optional, Tuple
+
 import pytest
 
 import coverage
@@ -18,6 +20,7 @@ from coverage import env
 from coverage.control import DEFAULT_DATAFILE
 from coverage.config import CoverageConfig
 from coverage.exceptions import _ExceptionDuringRun
+from coverage.types import TConfigValue
 from coverage.version import __url__
 
 from tests.coveragetest import CoverageTest, OK, ERR, command_line
@@ -67,7 +70,7 @@ class BaseCmdLineTest(CoverageTest):
 
     DEFAULT_KWARGS = {name: kw for name, _, kw in _defaults.mock_calls}
 
-    def model_object(self):
+    def model_object(self) -> mock.Mock:
         """Return a Mock suitable for use in CoverageScript."""
         mk = mock.Mock()
 
@@ -90,7 +93,11 @@ class BaseCmdLineTest(CoverageTest):
     # Global names in cmdline.py that will be mocked during the tests.
     MOCK_GLOBALS = ['Coverage', 'PyRunner', 'show_help']
 
-    def mock_command_line(self, args, options=None):
+    def mock_command_line(
+        self,
+        args: str,
+        options: Optional[Mapping[str, TConfigValue]]=None,
+    ) -> Tuple[mock.Mock, int]:
         """Run `args` through the command line, with a Mock.
 
         `options` is a dict of names and values to pass to `set_option`.
@@ -118,7 +125,13 @@ class BaseCmdLineTest(CoverageTest):
 
         return mk, ret
 
-    def cmd_executes(self, args, code, ret=OK, options=None):
+    def cmd_executes(
+        self,
+        args: str,
+        code: str,
+        ret: int=OK,
+        options: Optional[Mapping[str, TConfigValue]]=None,
+    ) -> None:
         """Assert that the `args` end up executing the sequence in `code`."""
         called, status = self.mock_command_line(args, options=options)
         assert status == ret, f"Wrong status: got {status!r}, wanted {ret!r}"
@@ -140,14 +153,14 @@ class BaseCmdLineTest(CoverageTest):
 
         self.assert_same_mock_calls(expected, called)
 
-    def cmd_executes_same(self, args1, args2):
+    def cmd_executes_same(self, args1: str, args2: str) -> None:
         """Assert that the `args1` executes the same as `args2`."""
         m1, r1 = self.mock_command_line(args1)
         m2, r2 = self.mock_command_line(args2)
         assert r1 == r2
         self.assert_same_mock_calls(m1, m2)
 
-    def assert_same_mock_calls(self, m1, m2):
+    def assert_same_mock_calls(self, m1: mock.Mock, m2: mock.Mock) -> None:
         """Assert that `m1.mock_calls` and `m2.mock_calls` are the same."""
         # Use a real equality comparison, but if it fails, use a nicer assert
         # so we can tell what's going on.  We have to use the real == first due
@@ -157,7 +170,13 @@ class BaseCmdLineTest(CoverageTest):
             pp2 = pprint.pformat(m2.mock_calls)
             assert pp1+'\n' == pp2+'\n'
 
-    def cmd_help(self, args, help_msg=None, topic=None, ret=ERR):
+    def cmd_help(
+        self,
+        args: str,
+        help_msg: Optional[str]=None,
+        topic: Optional[str]=None,
+        ret: int=ERR,
+    ) -> None:
         """Run a command line, and check that it prints the right help.
 
         Only the last function call in the mock is checked, which should be the
@@ -174,7 +193,7 @@ class BaseCmdLineTest(CoverageTest):
 
 class BaseCmdLineTestTest(BaseCmdLineTest):
     """Tests that our BaseCmdLineTest helpers work."""
-    def test_cmd_executes_same(self):
+    def test_cmd_executes_same(self) -> None:
         # All the other tests here use self.cmd_executes_same in successful
         # ways, so here we just check that it fails.
         with pytest.raises(AssertionError):
@@ -184,7 +203,7 @@ class BaseCmdLineTestTest(BaseCmdLineTest):
 class CmdLineTest(BaseCmdLineTest):
     """Tests of the coverage.py command line."""
 
-    def test_annotate(self):
+    def test_annotate(self) -> None:
         # coverage annotate [-d DIR] [-i] [--omit DIR,...] [FILE1 FILE2 ...]
         self.cmd_executes("annotate", """\
             cov = Coverage()
@@ -222,7 +241,7 @@ class CmdLineTest(BaseCmdLineTest):
             cov.annotate(morfs=["mod1", "mod2", "mod3"])
             """)
 
-    def test_combine(self):
+    def test_combine(self) -> None:
         # coverage combine with args
         self.cmd_executes("combine datadir1", """\
             cov = Coverage()
@@ -259,7 +278,7 @@ class CmdLineTest(BaseCmdLineTest):
             cov.save()
             """)
 
-    def test_combine_doesnt_confuse_options_with_args(self):
+    def test_combine_doesnt_confuse_options_with_args(self) -> None:
         # https://github.com/nedbat/coveragepy/issues/385
         self.cmd_executes("combine --rcfile cov.ini", """\
             cov = Coverage(config_file='cov.ini')
@@ -277,23 +296,23 @@ class CmdLineTest(BaseCmdLineTest):
         ("debug foo", "Don't know what you mean by 'foo'"),
         ("debug sys config", "Only one topic at a time, please"),
     ])
-    def test_debug(self, cmd, output):
+    def test_debug(self, cmd: str, output: str) -> None:
         self.cmd_help(cmd, output)
 
-    def test_debug_sys(self):
+    def test_debug_sys(self) -> None:
         self.command_line("debug sys")
         out = self.stdout()
         assert "version:" in out
         assert "data_file:" in out
 
-    def test_debug_config(self):
+    def test_debug_config(self) -> None:
         self.command_line("debug config")
         out = self.stdout()
         assert "cover_pylib:" in out
         assert "skip_covered:" in out
         assert "skip_empty:" in out
 
-    def test_debug_pybehave(self):
+    def test_debug_pybehave(self) -> None:
         self.command_line("debug pybehave")
         out = self.stdout()
         assert " CPYTHON:" in out
@@ -303,7 +322,7 @@ class CmdLineTest(BaseCmdLineTest):
         vtuple = ast.literal_eval(pyversion.partition(":")[-1].strip())
         assert vtuple[:5] == sys.version_info
 
-    def test_debug_premain(self):
+    def test_debug_premain(self) -> None:
         self.command_line("debug premain")
         out = self.stdout()
         #   ... many lines ...
@@ -317,7 +336,7 @@ class CmdLineTest(BaseCmdLineTest):
         assert re.search(r"(?m)^\s+command_line : .*[/\\]coverage[/\\]cmdline.py:\d+$", out)
         assert re.search(r"(?m)^\s+do_debug : .*[/\\]coverage[/\\]cmdline.py:\d+$", out)
 
-    def test_erase(self):
+    def test_erase(self) -> None:
         # coverage erase
         self.cmd_executes("erase", """\
             cov = Coverage()
@@ -328,23 +347,23 @@ class CmdLineTest(BaseCmdLineTest):
             cov.erase()
             """)
 
-    def test_version(self):
+    def test_version(self) -> None:
         # coverage --version
         self.cmd_help("--version", topic="version", ret=OK)
 
-    def test_help_option(self):
+    def test_help_option(self) -> None:
         # coverage -h
         self.cmd_help("-h", topic="help", ret=OK)
         self.cmd_help("--help", topic="help", ret=OK)
 
-    def test_help_command(self):
+    def test_help_command(self) -> None:
         self.cmd_executes("help", "show_help(topic='help')")
 
-    def test_cmd_help(self):
+    def test_cmd_help(self) -> None:
         self.cmd_executes("run --help", "show_help(parser='<CmdOptionParser:run>')")
         self.cmd_executes_same("help run", "run --help")
 
-    def test_html(self):
+    def test_html(self) -> None:
         # coverage html -d DIR [-i] [--omit DIR,...] [FILE1 FILE2 ...]
         self.cmd_executes("html", """\
             cov = Coverage()
@@ -402,7 +421,7 @@ class CmdLineTest(BaseCmdLineTest):
             cov.html_report()
             """)
 
-    def test_json(self):
+    def test_json(self) -> None:
         # coverage json [-i] [--omit DIR,...] [FILE1 FILE2 ...]
         self.cmd_executes("json", """\
             cov = Coverage()
@@ -465,7 +484,7 @@ class CmdLineTest(BaseCmdLineTest):
             cov.json_report()
             """)
 
-    def test_lcov(self):
+    def test_lcov(self) -> None:
         # coverage lcov [-i] [--omit DIR,...] [FILE1 FILE2 ...]
         self.cmd_executes("lcov", """\
             cov = Coverage()
@@ -508,7 +527,7 @@ class CmdLineTest(BaseCmdLineTest):
             cov.lcov_report()
             """)
 
-    def test_report(self):
+    def test_report(self) -> None:
         # coverage report [-m] [-i] [-o DIR,...] [FILE1 FILE2 ...]
         self.cmd_executes("report", """\
             cov = Coverage()
@@ -591,7 +610,7 @@ class CmdLineTest(BaseCmdLineTest):
             cov.report(output_format="markdown")
             """)
 
-    def test_run(self):
+    def test_run(self) -> None:
         # coverage run [-p] [-L] [--timid] MODULE.py [ARG1 ARG2 ...]
 
         # run calls coverage.erase first.
@@ -726,7 +745,7 @@ class CmdLineTest(BaseCmdLineTest):
             cov.save()
             """)
 
-    def test_multiprocessing_needs_config_file(self):
+    def test_multiprocessing_needs_config_file(self) -> None:
         # You can't use command-line args to add options to multiprocessing
         # runs, since they won't make it to the subprocesses. You need to use a
         # config file.
@@ -736,7 +755,7 @@ class CmdLineTest(BaseCmdLineTest):
         assert msg in err
         assert "Remove --branch from the command line." in err
 
-    def test_run_debug(self):
+    def test_run_debug(self) -> None:
         self.cmd_executes("run --debug=opt1 foo.py", """\
             cov = Coverage(debug=["opt1"])
             runner = PyRunner(['foo.py'], as_module=False)
@@ -756,7 +775,7 @@ class CmdLineTest(BaseCmdLineTest):
             cov.save()
             """)
 
-    def test_run_module(self):
+    def test_run_module(self) -> None:
         self.cmd_executes("run -m mymodule", """\
             cov = Coverage()
             runner = PyRunner(['mymodule'], as_module=True)
@@ -786,11 +805,11 @@ class CmdLineTest(BaseCmdLineTest):
             """)
         self.cmd_executes_same("run -m mymodule", "run --module mymodule")
 
-    def test_run_nothing(self):
+    def test_run_nothing(self) -> None:
         self.command_line("run", ret=ERR)
         assert "Nothing to do" in self.stderr()
 
-    def test_run_from_config(self):
+    def test_run_from_config(self) -> None:
         options = {"run:command_line": "myprog.py a 123 'a quoted thing' xyz"}
         self.cmd_executes("run", """\
             cov = Coverage()
@@ -804,7 +823,7 @@ class CmdLineTest(BaseCmdLineTest):
             options=options,
         )
 
-    def test_run_module_from_config(self):
+    def test_run_module_from_config(self) -> None:
         self.cmd_executes("run", """\
             cov = Coverage()
             runner = PyRunner(['mymodule', 'thing1', 'thing2'], as_module=True)
@@ -817,7 +836,7 @@ class CmdLineTest(BaseCmdLineTest):
             options={"run:command_line": "-m mymodule thing1 thing2"},
         )
 
-    def test_run_from_config_but_empty(self):
+    def test_run_from_config_but_empty(self) -> None:
         self.cmd_executes("run", """\
             cov = Coverage()
             show_help('Nothing to do.')
@@ -826,7 +845,7 @@ class CmdLineTest(BaseCmdLineTest):
             options={"run:command_line": ""},
         )
 
-    def test_run_dashm_only(self):
+    def test_run_dashm_only(self) -> None:
         self.cmd_executes("run -m", """\
             cov = Coverage()
             show_help('No module specified for -m')
@@ -841,11 +860,11 @@ class CmdLineTest(BaseCmdLineTest):
             options={"run:command_line": "myprog.py"}
         )
 
-    def test_cant_append_parallel(self):
+    def test_cant_append_parallel(self) -> None:
         self.command_line("run --append --parallel-mode foo.py", ret=ERR)
         assert "Can't append to data files in parallel mode." in self.stderr()
 
-    def test_xml(self):
+    def test_xml(self) -> None:
         # coverage xml [-i] [--omit DIR,...] [FILE1 FILE2 ...]
         self.cmd_executes("xml", """\
             cov = Coverage()
@@ -898,10 +917,10 @@ class CmdLineTest(BaseCmdLineTest):
             cov.xml_report()
             """)
 
-    def test_no_arguments_at_all(self):
+    def test_no_arguments_at_all(self) -> None:
         self.cmd_help("", topic="minimum_help", ret=OK)
 
-    def test_bad_command(self):
+    def test_bad_command(self) -> None:
         self.cmd_help("xyzzy", "Unknown command: 'xyzzy'")
 
 
@@ -910,7 +929,7 @@ class CmdLineWithFilesTest(BaseCmdLineTest):
 
     run_in_temp_dir = True
 
-    def test_debug_data(self):
+    def test_debug_data(self) -> None:
         data = self.make_data_file(
             lines={
                 "file1.py": range(1, 18),
@@ -929,7 +948,7 @@ class CmdLineWithFilesTest(BaseCmdLineTest):
             file2.py: 23 lines
             """)
 
-    def test_debug_data_with_no_data_file(self):
+    def test_debug_data_with_no_data_file(self) -> None:
         data = self.make_data_file()
         self.command_line("debug data")
         assert self.stdout() == textwrap.dedent(f"""\
@@ -938,7 +957,7 @@ class CmdLineWithFilesTest(BaseCmdLineTest):
             No data collected: file doesn't exist
             """)
 
-    def test_debug_combinable_data(self):
+    def test_debug_combinable_data(self) -> None:
         data1 = self.make_data_file(lines={"file1.py": range(1, 18), "file2.py": [1]})
         data2 = self.make_data_file(suffix="123", lines={"file2.py": range(1, 10)})
 
@@ -961,13 +980,13 @@ class CmdLineWithFilesTest(BaseCmdLineTest):
 class CmdLineStdoutTest(BaseCmdLineTest):
     """Test the command line with real stdout output."""
 
-    def test_minimum_help(self):
+    def test_minimum_help(self) -> None:
         self.command_line("")
         out = self.stdout()
         assert "Code coverage for Python" in out
         assert out.count("\n") < 4
 
-    def test_version(self):
+    def test_version(self) -> None:
         self.command_line("--version")
         out = self.stdout()
         assert "ersion " in out
@@ -977,7 +996,7 @@ class CmdLineStdoutTest(BaseCmdLineTest):
             assert "without C extension" in out
         assert out.count("\n") < 4
 
-    def test_help_contains_command_name(self):
+    def test_help_contains_command_name(self) -> None:
         # Command name should be present in help output.
         fake_command_path = os_sep("lorem/ipsum/dolor")
         expected_command_name = "dolor"
@@ -987,7 +1006,7 @@ class CmdLineStdoutTest(BaseCmdLineTest):
         out = self.stdout()
         assert expected_command_name in out
 
-    def test_help_contains_command_name_from_package(self):
+    def test_help_contains_command_name_from_package(self) -> None:
         # Command package name should be present in help output.
         #
         # When the main module is actually a package's `__main__` module, the resulting command line
@@ -1002,13 +1021,13 @@ class CmdLineStdoutTest(BaseCmdLineTest):
         out = self.stdout()
         assert expected_command_name in out
 
-    def test_help(self):
+    def test_help(self) -> None:
         self.command_line("help")
         lines = self.stdout().splitlines()
         assert len(lines) > 10
         assert lines[-1] == f"Full documentation is at {__url__}"
 
-    def test_cmd_help(self):
+    def test_cmd_help(self) -> None:
         self.command_line("help run")
         out = self.stdout()
         lines = out.splitlines()
@@ -1017,26 +1036,26 @@ class CmdLineStdoutTest(BaseCmdLineTest):
         assert len(lines) > 20
         assert lines[-1] == f"Full documentation is at {__url__}"
 
-    def test_unknown_topic(self):
+    def test_unknown_topic(self) -> None:
         # Should probably be an ERR return, but meh.
         self.command_line("help foobar")
         lines = self.stdout().splitlines()
         assert lines[0] == "Don't know topic 'foobar'"
         assert lines[-1] == f"Full documentation is at {__url__}"
 
-    def test_error(self):
+    def test_error(self) -> None:
         self.command_line("fooey kablooey", ret=ERR)
         err = self.stderr()
         assert "fooey" in err
         assert "help" in err
 
-    def test_option_error(self):
+    def test_option_error(self) -> None:
         self.command_line("run --fooey", ret=ERR)
         err = self.stderr()
         assert "fooey" in err
         assert "help" in err
 
-    def test_doc_url(self):
+    def test_doc_url(self) -> None:
         assert __url__.startswith("https://coverage.readthedocs.io")
 
 
@@ -1048,7 +1067,7 @@ class CmdMainTest(CoverageTest):
     class CoverageScriptStub:
         """A stub for coverage.cmdline.CoverageScript, used by CmdMainTest."""
 
-        def command_line(self, argv):
+        def command_line(self, argv: List[str]) -> int:
             """Stub for command_line, the arg determines what it will do."""
             if argv[0] == 'hello':
                 print("Hello, world!")
@@ -1065,33 +1084,33 @@ class CmdMainTest(CoverageTest):
                 raise AssertionError(f"Bad CoverageScriptStub: {argv!r}")
             return 0
 
-    def setUp(self):
+    def setUp(self) -> None:
         super().setUp()
         old_CoverageScript = coverage.cmdline.CoverageScript
-        coverage.cmdline.CoverageScript = self.CoverageScriptStub
+        coverage.cmdline.CoverageScript = self.CoverageScriptStub   # type: ignore
         self.addCleanup(setattr, coverage.cmdline, 'CoverageScript', old_CoverageScript)
 
-    def test_normal(self):
+    def test_normal(self) -> None:
         ret = coverage.cmdline.main(['hello'])
         assert ret == 0
         assert self.stdout() == "Hello, world!\n"
 
-    def test_raise(self):
+    def test_raise(self) -> None:
         ret = coverage.cmdline.main(['raise'])
         assert ret == 1
         out, err = self.stdouterr()
         assert out == ""
         print(err)
-        err = err.splitlines(keepends=True)
-        assert err[0] == 'Traceback (most recent call last):\n'
-        assert '    raise Exception("oh noes!")\n' in err
-        assert err[-1] == 'Exception: oh noes!\n'
+        err_parts = err.splitlines(keepends=True)
+        assert err_parts[0] == 'Traceback (most recent call last):\n'
+        assert '    raise Exception("oh noes!")\n' in err_parts
+        assert err_parts[-1] == 'Exception: oh noes!\n'
 
-    def test_internalraise(self):
+    def test_internalraise(self) -> None:
         with pytest.raises(ValueError, match="coverage is broken"):
             coverage.cmdline.main(['internalraise'])
 
-    def test_exit(self):
+    def test_exit(self) -> None:
         ret = coverage.cmdline.main(['exit'])
         assert ret == 23
 
@@ -1099,7 +1118,14 @@ class CmdMainTest(CoverageTest):
 class CoverageReportingFake:
     """A fake Coverage.coverage test double for FailUnderTest methods."""
     # pylint: disable=missing-function-docstring
-    def __init__(self, report_result, html_result=0, xml_result=0, json_report=0, lcov_result=0):
+    def __init__(
+        self,
+        report_result: float,
+        html_result: float=0,
+        xml_result: float=0,
+        json_report: float=0,
+        lcov_result: float=0,
+    ) -> None:
         self.config = CoverageConfig()
         self.report_result = report_result
         self.html_result = html_result
@@ -1107,28 +1133,28 @@ class CoverageReportingFake:
         self.json_result = json_report
         self.lcov_result = lcov_result
 
-    def set_option(self, optname, optvalue):
+    def set_option(self, optname: str, optvalue: TConfigValue) -> None:
         self.config.set_option(optname, optvalue)
 
-    def get_option(self, optname):
+    def get_option(self, optname: str) -> TConfigValue:
         return self.config.get_option(optname)
 
-    def load(self):
+    def load(self) -> None:
         pass
 
-    def report(self, *args_unused, **kwargs_unused):
+    def report(self, *args_unused: Any, **kwargs_unused: Any) -> float:
         return self.report_result
 
-    def html_report(self, *args_unused, **kwargs_unused):
+    def html_report(self, *args_unused: Any, **kwargs_unused: Any) -> float:
         return self.html_result
 
-    def xml_report(self, *args_unused, **kwargs_unused):
+    def xml_report(self, *args_unused: Any, **kwargs_unused: Any) -> float:
         return self.xml_result
 
-    def json_report(self, *args_unused, **kwargs_unused):
+    def json_report(self, *args_unused: Any, **kwargs_unused: Any) -> float:
         return self.json_result
 
-    def lcov_report(self, *args_unused, **kwargs_unused):
+    def lcov_report(self, *args_unused: Any, **kwargs_unused: Any) -> float:
         return self.lcov_result
 
 
@@ -1161,7 +1187,13 @@ class FailUnderTest(CoverageTest):
         # Command-line overrides configuration.
         ((20, 30, 40, 50, 60), 19, "report --fail-under=21", 2),
     ])
-    def test_fail_under(self, results, fail_under, cmd, ret):
+    def test_fail_under(
+        self,
+        results: Tuple[float, float, float, float, float],
+        fail_under: Optional[float],
+        cmd: str,
+        ret: int,
+    ) -> None:
         cov = CoverageReportingFake(*results)
         if fail_under is not None:
             cov.set_option("report:fail_under", fail_under)
@@ -1175,7 +1207,7 @@ class FailUnderTest(CoverageTest):
         (20.12345, "report --fail-under=20.1235 --precision=5", 2,
             "Coverage failure: total of 20.12345 is less than fail-under=20.12350\n"),
     ])
-    def test_fail_under_with_precision(self, result, cmd, ret, msg):
+    def test_fail_under_with_precision(self, result: float, cmd: str, ret: int, msg: str) -> None:
         cov = CoverageReportingFake(report_result=result)
         with mock.patch("coverage.cmdline.Coverage", lambda *a,**kw: cov):
             self.command_line(cmd, ret)

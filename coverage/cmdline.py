@@ -12,6 +12,8 @@ import sys
 import textwrap
 import traceback
 
+from typing import cast, Any, List, NoReturn, Optional, Tuple
+
 import coverage
 from coverage import Coverage
 from coverage import env
@@ -235,8 +237,9 @@ class CoverageOptionParser(optparse.OptionParser):
 
     """
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(add_help_option=False, *args, **kwargs)
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        kwargs["add_help_option"] = False
+        super().__init__(*args, **kwargs)
         self.set_defaults(
             # Keep these arguments alphabetized by their names.
             action=None,
@@ -278,19 +281,19 @@ class CoverageOptionParser(optparse.OptionParser):
         """Used to stop the optparse error handler ending the process."""
         pass
 
-    def parse_args_ok(self, args=None, options=None):
+    def parse_args_ok(self, args: List[str]) -> Tuple[bool, Optional[optparse.Values], List[str]]:
         """Call optparse.parse_args, but return a triple:
 
         (ok, options, args)
 
         """
         try:
-            options, args = super().parse_args(args, options)
+            options, args = super().parse_args(args)
         except self.OptionParserError:
-            return False, None, None
+            return False, None, []
         return True, options, args
 
-    def error(self, msg):
+    def error(self, msg: str) -> NoReturn:
         """Override optparse.error so sys.exit doesn't get called."""
         show_help(msg)
         raise self.OptionParserError
@@ -299,7 +302,7 @@ class CoverageOptionParser(optparse.OptionParser):
 class GlobalOptionParser(CoverageOptionParser):
     """Command-line parser for coverage.py global option arguments."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
 
         self.add_options([
@@ -311,14 +314,19 @@ class GlobalOptionParser(CoverageOptionParser):
 class CmdOptionParser(CoverageOptionParser):
     """Parse one of the new-style commands for coverage.py."""
 
-    def __init__(self, action, options, defaults=None, usage=None, description=None):
+    def __init__(
+        self,
+        action: str,
+        options: List[optparse.Option],
+        description: str,
+        usage: Optional[str]=None,
+    ):
         """Create an OptionParser for a coverage.py command.
 
         `action` is the slug to put into `options.action`.
         `options` is a list of Option's for the command.
-        `defaults` is a dict of default value for options.
-        `usage` is the usage string to display in help.
         `description` is the description of the command, for the help text.
+        `usage` is the usage string to display in help.
 
         """
         if usage:
@@ -327,18 +335,18 @@ class CmdOptionParser(CoverageOptionParser):
             usage=usage,
             description=description,
         )
-        self.set_defaults(action=action, **(defaults or {}))
+        self.set_defaults(action=action)
         self.add_options(options)
         self.cmd = action
 
-    def __eq__(self, other):
+    def __eq__(self, other: str) -> bool:       # type: ignore[override]
         # A convenience equality, so that I can put strings in unit test
         # results, and they will compare equal to objects.
         return (other == f"<CmdOptionParser:{self.cmd}>")
 
-    __hash__ = None     # This object doesn't need to be hashed.
+    __hash__ = None         # type: ignore[assignment]
 
-    def get_prog_name(self):
+    def get_prog_name(self) -> str:
         """Override of an undocumented function in optparse.OptionParser."""
         program_name = super().get_prog_name()
 
@@ -540,7 +548,11 @@ COMMANDS = {
 }
 
 
-def show_help(error=None, topic=None, parser=None):
+def show_help(
+    error: Optional[str]=None,
+    topic: Optional[str]=None,
+    parser: Optional[optparse.OptionParser]=None,
+) -> None:
     """Display an error message, or the named topic."""
     assert error or topic or parser
 
@@ -573,6 +585,7 @@ def show_help(error=None, topic=None, parser=None):
         print(parser.format_help().strip())
         print()
     else:
+        assert topic is not None
         help_msg = textwrap.dedent(HELP_TOPICS.get(topic, '')).strip()
         if help_msg:
             print(help_msg.format(**help_params))
@@ -587,11 +600,11 @@ OK, ERR, FAIL_UNDER = 0, 1, 2
 class CoverageScript:
     """The command-line interface to coverage.py."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.global_option = False
-        self.coverage = None
+        self.coverage: Coverage
 
-    def command_line(self, argv):
+    def command_line(self, argv: List[str]) -> int:
         """The bulk of the command line interface to coverage.py.
 
         `argv` is the argument list to process.
@@ -606,6 +619,7 @@ class CoverageScript:
 
         # The command syntax we parse depends on the first argument.  Global
         # switch syntax always starts with an option.
+        parser: Optional[optparse.OptionParser]
         self.global_option = argv[0].startswith('-')
         if self.global_option:
             parser = GlobalOptionParser()
@@ -619,6 +633,7 @@ class CoverageScript:
         ok, options, args = parser.parse_args_ok(argv)
         if not ok:
             return ERR
+        assert options is not None
 
         # Handle help and version.
         if self.do_help(options, args, parser):
@@ -740,8 +755,8 @@ class CoverageScript:
             if options.precision is not None:
                 self.coverage.set_option("report:precision", options.precision)
 
-            fail_under = self.coverage.get_option("report:fail_under")
-            precision = self.coverage.get_option("report:precision")
+            fail_under = cast(float, self.coverage.get_option("report:fail_under"))
+            precision = cast(int, self.coverage.get_option("report:precision"))
             if should_fail_under(total, fail_under, precision):
                 msg = "total of {total} is less than fail-under={fail_under:.{p}f}".format(
                     total=Numbers(precision=precision).display_covered(total),
@@ -753,7 +768,12 @@ class CoverageScript:
 
         return OK
 
-    def do_help(self, options, args, parser):
+    def do_help(
+        self,
+        options: optparse.Values,
+        args: List[str],
+        parser: optparse.OptionParser,
+    ) -> bool:
         """Deal with help requests.
 
         Return True if it handled the request, False if not.
@@ -770,9 +790,9 @@ class CoverageScript:
         if options.action == "help":
             if args:
                 for a in args:
-                    parser = COMMANDS.get(a)
-                    if parser:
-                        show_help(parser=parser)
+                    parser_maybe = COMMANDS.get(a)
+                    if parser_maybe is not None:
+                        show_help(parser=parser_maybe)
                     else:
                         show_help(topic=a)
             else:
@@ -786,7 +806,7 @@ class CoverageScript:
 
         return False
 
-    def do_run(self, options, args):
+    def do_run(self, options: optparse.Values, args: List[str]) -> int:
         """Implementation of 'coverage run'."""
 
         if not args:
@@ -794,7 +814,7 @@ class CoverageScript:
                 # Specified -m with nothing else.
                 show_help("No module specified for -m")
                 return ERR
-            command_line = self.coverage.get_option("run:command_line")
+            command_line = cast(str, self.coverage.get_option("run:command_line"))
             if command_line is not None:
                 args = shlex.split(command_line)
                 if args and args[0] in {"-m", "--module"}:
@@ -845,7 +865,7 @@ class CoverageScript:
 
         return OK
 
-    def do_debug(self, args):
+    def do_debug(self, args: List[str]) -> int:
         """Implementation of 'coverage debug'."""
 
         if not args:
@@ -878,7 +898,7 @@ class CoverageScript:
         return OK
 
 
-def unshell_list(s):
+def unshell_list(s: str) -> Optional[List[str]]:
     """Turn a command-line argument into a list."""
     if not s:
         return None
@@ -892,7 +912,7 @@ def unshell_list(s):
     return s.split(',')
 
 
-def unglob_args(args):
+def unglob_args(args: List[str]) -> List[str]:
     """Interpret shell wildcards for platforms that need it."""
     if env.WINDOWS:
         globbed = []
@@ -938,7 +958,7 @@ HELP_TOPICS = {
 }
 
 
-def main(argv=None):
+def main(argv: Optional[List[str]]=None) -> Optional[int]:
     """The main entry point to coverage.py.
 
     This is installed as the script entry point.
@@ -976,7 +996,9 @@ if _profile:                                                # pragma: debugging
     from ox_profile.core.launchers import SimpleLauncher    # pylint: disable=import-error
     original_main = main
 
-    def main(argv=None):                                    # pylint: disable=function-redefined
+    def main(                                               # pylint: disable=function-redefined
+        argv: Optional[List[str]]=None,
+    ) -> Optional[int]:
         """A wrapper around main that profiles."""
         profiler = SimpleLauncher.launch()
         try:

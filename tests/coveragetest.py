@@ -310,7 +310,7 @@ class CoverageTest(
         assert age.total_seconds() >= 0, msg
         assert age.total_seconds() <= seconds, msg
 
-    def command_line(self, args, ret=OK):
+    def command_line(self, args: str, ret: int=OK) -> None:
         """Run `args` through the command line.
 
         Use this when you want to run the full coverage machinery, but in the
@@ -467,7 +467,7 @@ class UsingModulesMixin:
         sys.path.append(nice_file(TESTS_DIR, "zipmods.zip"))
 
 
-def command_line(args):
+def command_line(args: str) -> int:
     """Run `args` through the CoverageScript command line.
 
     Returns the return code from CoverageScript.command_line.
