@@ -3,13 +3,22 @@
 
 """Json reporting for coverage.py"""
 
+from __future__ import annotations
+
 import datetime
 import json
 import sys
 
+from typing import Any, Dict, IO, Iterable, List, Optional, Tuple, TYPE_CHECKING
+
 from coverage import __version__
 from coverage.report import get_analysis_to_report
-from coverage.results import Numbers
+from coverage.results import Analysis, Numbers
+from coverage.types import TMorf, TLineNo
+
+if TYPE_CHECKING:
+    from coverage import Coverage
+    from coverage.data import CoverageData
 
 
 class JsonReporter:
@@ -17,13 +26,13 @@ class JsonReporter:
 
     report_type = "JSON report"
 
-    def __init__(self, coverage):
+    def __init__(self, coverage: Coverage) -> None:
         self.coverage = coverage
         self.config = self.coverage.config
         self.total = Numbers(self.config.precision)
-        self.report_data = {}
+        self.report_data: Dict[str, Any] = {}
 
-    def report(self, morfs, outfile=None):
+    def report(self, morfs: Optional[Iterable[TMorf]], outfile: IO[str]) -> float:
         """Generate a json report for `morfs`.
 
         `morfs` is a list of modules or file names.
@@ -75,7 +84,7 @@ class JsonReporter:
 
         return self.total.n_statements and self.total.pc_covered
 
-    def report_one_file(self, coverage_data, analysis):
+    def report_one_file(self, coverage_data: CoverageData, analysis: Analysis) -> Dict[str, Any]:
         """Extract the relevant report data for a single file."""
         nums = analysis.numbers
         self.total += nums
@@ -96,7 +105,7 @@ class JsonReporter:
         if self.config.json_show_contexts:
             reported_file['contexts'] = analysis.data.contexts_by_lineno(analysis.filename)
         if coverage_data.has_arcs():
-            reported_file['summary'].update({
+            summary.update({
                 'num_branches': nums.n_branches,
                 'num_partial_branches': nums.n_partial_branches,
                 'covered_branches': nums.n_executed_branches,
@@ -111,7 +120,9 @@ class JsonReporter:
         return reported_file
 
 
-def _convert_branch_arcs(branch_arcs):
+def _convert_branch_arcs(
+    branch_arcs: Dict[TLineNo, List[TLineNo]],
+) -> Iterable[Tuple[TLineNo, TLineNo]]:
     """Convert branch arcs to a list of two-element tuples."""
     for source, targets in branch_arcs.items():
         for target in targets:

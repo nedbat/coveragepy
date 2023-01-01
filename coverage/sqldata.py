@@ -884,7 +884,7 @@ class CoverageData(AutoReprMixin):
             with con.execute("select id from context where context = ?", (context,)) as cur:
                 self._query_context_ids = [row[0] for row in cur.fetchall()]
 
-    def set_query_contexts(self, contexts: Sequence[str]) -> None:
+    def set_query_contexts(self, contexts: Optional[Sequence[str]]) -> None:
         """Set a number of contexts for subsequent querying.
 
         The next :meth:`lines`, :meth:`arcs`, or :meth:`contexts_by_lineno`

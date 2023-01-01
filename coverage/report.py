@@ -71,7 +71,7 @@ def render_report(
 
 def get_analysis_to_report(
     coverage: Coverage,
-    morfs: Iterable[TMorf]
+    morfs: Optional[Iterable[TMorf]],
 ) -> Iterator[Tuple[FileReporter, Analysis]]:
     """Get the files to report on.
 
