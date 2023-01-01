@@ -3,14 +3,38 @@
 
 """Reporter foundation for coverage.py."""
 
+from __future__ import annotations
+
 import sys
+
+from typing import Callable, Iterable, Iterator, IO, Optional, Tuple, TYPE_CHECKING
 
 from coverage.exceptions import CoverageException, NoDataError, NotPython
 from coverage.files import prep_patterns, GlobMatcher
 from coverage.misc import ensure_dir_for_file, file_be_gone
+from coverage.plugin import FileReporter
+from coverage.results import Analysis
+from coverage.types import Protocol, TMorf
+
+if TYPE_CHECKING:
+    from coverage import Coverage
 
 
-def render_report(output_path, reporter, morfs, msgfn) -> float:
+class Reporter(Protocol):
+    """What we expect of reporters."""
+
+    report_type: str
+
+    def report(self, morfs: Optional[Iterable[TMorf]], outfile: IO[str]) -> float:
+        """Generate a report of `morfs`, written to `outfile`."""
+
+
+def render_report(
+    output_path: str,
+    reporter: Reporter,
+    morfs: Optional[Iterable[TMorf]],
+    msgfn: Callable[[str], None],
+) -> float:
     """Run a one-file report generator, managing the output file.
 
     This function ensures the output file is ready to be written to. Then writes
@@ -45,7 +69,10 @@ def render_report(output_path, reporter, morfs, msgfn) -> float:
                 msgfn(f"Wrote {reporter.report_type} to {output_path}")
 
 
-def get_analysis_to_report(coverage, morfs):
+def get_analysis_to_report(
+    coverage: Coverage,
+    morfs: Iterable[TMorf]
+) -> Iterator[Tuple[FileReporter, Analysis]]:
     """Get the files to report on.
 
     For each morf in `morfs`, if it should be reported on (based on the omit
@@ -75,7 +102,7 @@ def get_analysis_to_report(coverage, morfs):
             # explicitly suppress those errors.
             # NotPython is only raised by PythonFileReporter, which has a
             # should_be_python() method.
-            if fr.should_be_python():
+            if fr.should_be_python():       # type: ignore[attr-defined]
                 if config.ignore_errors:
                     msg = f"Couldn't parse Python file '{fr.filename}'"
                     coverage._warn(msg, slug="couldnt-parse")

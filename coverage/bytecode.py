@@ -3,10 +3,11 @@
 
 """Bytecode manipulation for coverage.py"""
 
-import types
+from types import CodeType
+from typing import Generator
 
 
-def code_objects(code):
+def code_objects(code: CodeType) -> Generator[CodeType, None, None]:
     """Iterate over all the code objects in `code`."""
     stack = [code]
     while stack:
@@ -14,6 +15,6 @@ def code_objects(code):
         # push its children for later returning.
         code = stack.pop()
         for c in code.co_consts:
-            if isinstance(c, types.CodeType):
+            if isinstance(c, CodeType):
                 stack.append(c)
         yield code
