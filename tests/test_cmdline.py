@@ -318,6 +318,12 @@ class CmdLineTest(BaseCmdLineTest):
         assert " CPYTHON:" in out
         assert " PYVERSION:" in out
         assert " pep626:" in out
+
+        # Some things that shouldn't appear..
+        assert "typing." not in out     # import from typing
+        assert ": <" not in out         # objects without a good repr
+
+        # It should report PYVERSION correctly.
         pyversion = re_line(r" PYVERSION:", out)
         vtuple = ast.literal_eval(pyversion.partition(":")[-1].strip())
         assert vtuple[:5] == sys.version_info

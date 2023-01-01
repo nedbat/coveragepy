@@ -9,6 +9,13 @@ import sys
 
 from typing import Any, Iterable, Tuple
 
+# debug_info() at the bottom wants to show all the globals, but not imports.
+# Grab the global names here to know which names to not show. Nothing defined
+# above this line will be in the output.
+_UNINTERESTING_GLOBALS = list(globals())
+# These names also shouldn't be shown.
+_UNINTERESTING_GLOBALS += ["PYBEHAVIOR", "debug_info"]
+
 # Operating systems.
 WINDOWS = sys.platform == "win32"
 LINUX = sys.platform.startswith("linux")
@@ -140,10 +147,7 @@ def debug_info() -> Iterable[Tuple[str, Any]]:
     """Return a list of (name, value) pairs for printing debug information."""
     info = [
         (name, value) for name, value in globals().items()
-        if not name.startswith("_") and
-            name not in {"PYBEHAVIOR", "debug_info"} and
-            not isinstance(value, type(os)) and
-            not str(value).startswith("typing.")
+        if not name.startswith("_") and name not in _UNINTERESTING_GLOBALS
     ]
     info += [
         (name, value) for name, value in PYBEHAVIOR.__dict__.items()
