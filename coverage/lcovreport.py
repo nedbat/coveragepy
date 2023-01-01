@@ -3,12 +3,22 @@
 
 """LCOV reporting for coverage.py."""
 
+from __future__ import annotations
+
 import sys
 import base64
 from hashlib import md5
 
+from typing import IO, Iterable, Optional, TYPE_CHECKING
+
+from coverage.plugin import FileReporter
 from coverage.report import get_analysis_to_report
 from coverage.results import Analysis, Numbers
+from coverage.types import TMorf
+
+if TYPE_CHECKING:
+    from coverage import Coverage
+    from coverage.data import CoverageData
 
 
 class LcovReporter:
@@ -16,11 +26,11 @@ class LcovReporter:
 
     report_type = "LCOV report"
 
-    def __init__(self, coverage):
+    def __init__(self, coverage: Coverage) -> None:
         self.coverage = coverage
         self.total = Numbers(self.coverage.config.precision)
 
-    def report(self, morfs, outfile=None):
+    def report(self, morfs: Optional[Iterable[TMorf]], outfile: IO[str]) -> float:
         """Renders the full lcov report.
 
         'morfs' is a list of modules or filenames
@@ -36,7 +46,7 @@ class LcovReporter:
 
         return self.total.n_statements and self.total.pc_covered
 
-    def get_lcov(self, fr, analysis, outfile=None):
+    def get_lcov(self, fr: FileReporter, analysis: Analysis, outfile: IO[str]) -> None:
         """Produces the lcov data for a single file.
 
         This currently supports both line and branch coverage,
