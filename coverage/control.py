@@ -25,12 +25,12 @@ from typing import (
 
 from coverage import env
 from coverage.annotate import AnnotateReporter
-from coverage.collector import Collector, CTracer
+from coverage.collector import Collector, HAS_CTRACER
 from coverage.config import read_coverage_config
 from coverage.context import should_start_context_test_function, combine_context_switchers
 from coverage.data import CoverageData, combine_parallel_data
 from coverage.debug import DebugControl, short_stack, write_formatted_info
-from coverage.disposition import FileDisposition, disposition_debug_msg
+from coverage.disposition import disposition_debug_msg
 from coverage.exceptions import ConfigError, CoverageException, CoverageWarning, PluginError
 from coverage.files import PathAliases, abs_file, relative_filename, set_relative_directory
 from coverage.html import HtmlReporter
@@ -46,7 +46,9 @@ from coverage.python import PythonFileReporter
 from coverage.report import render_report
 from coverage.results import Analysis
 from coverage.summary import SummaryReporter
-from coverage.types import TConfigurable, TConfigSection, TConfigValue, TLineNo, TMorf
+from coverage.types import (
+    TConfigurable, TConfigSection, TConfigValue, TFileDisposition, TLineNo, TMorf,
+)
 from coverage.xmlreport import XmlReporter
 
 
@@ -362,7 +364,7 @@ class Coverage(TConfigurable):
         if wrote_any:
             write_formatted_info(self._debug.write, "end", ())
 
-    def _should_trace(self, filename: str, frame: FrameType) -> FileDisposition:
+    def _should_trace(self, filename: str, frame: FrameType) -> TFileDisposition:
         """Decide whether to trace execution in `filename`.
 
         Calls `_should_trace_internal`, and returns the FileDisposition.
@@ -1253,7 +1255,7 @@ class Coverage(TConfigurable):
             ('coverage_version', covmod.__version__),
             ('coverage_module', covmod.__file__),
             ('tracer', self._collector.tracer_name() if hasattr(self, "_collector") else "-none-"),
-            ('CTracer', 'available' if CTracer else "unavailable"),
+            ('CTracer', 'available' if HAS_CTRACER else "unavailable"),
             ('plugins.file_tracers', plugin_info(self._plugins.file_tracers)),
             ('plugins.configurers', plugin_info(self._plugins.configurers)),
             ('plugins.context_switchers', plugin_info(self._plugins.context_switchers)),

@@ -127,6 +127,9 @@ from coverage.types import TArc, TConfigurable, TLineNo, TSourceTokenLines
 class CoveragePlugin:
     """Base class for coverage.py plug-ins."""
 
+    _coverage_plugin_name: str
+    _coverage_enabled: bool
+
     def file_tracer(self, filename: str) -> Optional[FileTracer]: # pylint: disable=unused-argument
         """Get a :class:`FileTracer` object for a file.
 
@@ -249,7 +252,12 @@ class CoveragePlugin:
         return []
 
 
-class FileTracer:
+class CoveragePluginBase:
+    """Plugins produce specialized objects, which point back to the original plugin."""
+    _coverage_plugin: CoveragePlugin
+
+
+class FileTracer(CoveragePluginBase):
     """Support needed for files during the execution phase.
 
     File tracer plug-ins implement subclasses of FileTracer to return from
@@ -337,7 +345,7 @@ class FileTracer:
 
 
 @functools.total_ordering
-class FileReporter:
+class FileReporter(CoveragePluginBase):
     """Support needed for files during the analysis and reporting phases.
 
     File tracer plug-ins implement a subclass of `FileReporter`, and return

@@ -7,7 +7,11 @@ import atexit
 import dis
 import sys
 
+from types import FrameType
+from typing import Any, Callable, Dict, Mapping, Optional
+
 from coverage import env
+from coverage.types import TFileDisposition, TTraceData, TTraceFn, TTracer, TWarnFn
 
 # We need the YIELD_VALUE opcode below, in a comparison-friendly form.
 RESUME = dis.opmap.get('RESUME')
@@ -22,7 +26,7 @@ if RESUME is None:
 
 THIS_FILE = __file__.rstrip("co")
 
-class PyTracer:
+class PyTracer(TTracer):
     """Python implementation of the raw data tracer."""
 
     # Because of poor implementations of trace-function-manipulating tools,
@@ -41,14 +45,17 @@ class PyTracer:
     # PyTracer to get accurate results.  The command-line --timid argument is
     # used to force the use of this tracer.
 
-    def __init__(self):
+    def __init__(self) -> None:
+        # pylint: disable=super-init-not-called
         # Attributes set from the collector:
-        self.data = None
+        self.data: TTraceData
         self.trace_arcs = False
-        self.should_trace = None
-        self.should_trace_cache = None
-        self.should_start_context = None
-        self.warn = None
+        self.should_trace: Callable[[str, FrameType], TFileDisposition]
+        self.should_trace_cache: Mapping[str, Optional[TFileDisposition]]
+        self.should_start_context: Optional[Callable[[FrameType], Optional[str]]] = None
+        self.switch_context: Optional[Callable[[Optional[str]], None]] = None
+        self.warn: TWarnFn
+
         # The threading module to use, if any.
         self.threading = None
 
@@ -71,14 +78,13 @@ class PyTracer:
         # re-create a bound method object all the time.
         self._cached_bound_method_trace = self._trace
 
-    def __repr__(self):
-        return "<PyTracer at 0x{:x}: {} lines in {} files>".format(
-            id(self),
-            sum(len(v) for v in self.data.values()),
-            len(self.data),
-        )
+    def __repr__(self) -> str:
+        me = id(self)
+        points = sum(len(v) for v in self.data.values())
+        files = len(self.data)
+        return f"<PyTracer at 0x{me:x}: {points} data points in {files} files>"
 
-    def log(self, marker, *args):
+    def log(self, marker, *args) -> None:
         """For hard-core logging of what this tracer is doing."""
         with open("/tmp/debug_trace.txt", "a") as f:
             f.write("{} {}[{}]".format(
@@ -101,7 +107,7 @@ class PyTracer:
                 f.write(stack)
             f.write("\n")
 
-    def _trace(self, frame, event, arg_unused):
+    def _trace(self, frame: FrameType, event: str, arg_unused: Any) -> TTraceFn:
         """The trace function passed to sys.settrace."""
 
         if THIS_FILE in frame.f_code.co_filename:
@@ -242,7 +248,7 @@ class PyTracer:
                 self.switch_context(None)
         return self._cached_bound_method_trace
 
-    def start(self):
+    def start(self) -> TTraceFn:
         """Start this Tracer.
 
         Return a Python function suitable for use with sys.settrace().
@@ -263,7 +269,7 @@ class PyTracer:
         sys.settrace(self._cached_bound_method_trace)
         return self._cached_bound_method_trace
 
-    def stop(self):
+    def stop(self) -> None:
         """Stop this Tracer."""
         # Get the active tracer callback before setting the stop flag to be
         # able to detect if the tracer was changed prior to stopping it.
@@ -293,14 +299,14 @@ class PyTracer:
                     slug="trace-changed",
                 )
 
-    def activity(self):
+    def activity(self) -> bool:
         """Has there been any activity?"""
         return self._activity
 
-    def reset_activity(self):
+    def reset_activity(self) -> None:
         """Reset the activity() flag."""
         self._activity = False
 
-    def get_stats(self):
+    def get_stats(self) -> Optional[Dict[str, int]]:
         """Return a dictionary of statistics, or None."""
         return None

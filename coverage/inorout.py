@@ -16,7 +16,9 @@ import sysconfig
 import traceback
 
 from types import FrameType, ModuleType
-from typing import cast, Any, Iterable, List, Optional, Set, Tuple, TYPE_CHECKING
+from typing import (
+    cast, Any, Iterable, List, Optional, Set, Tuple, Type, TYPE_CHECKING,
+)
 
 from coverage import env
 from coverage.disposition import FileDisposition, disposition_init
@@ -25,7 +27,7 @@ from coverage.files import TreeMatcher, GlobMatcher, ModuleMatcher
 from coverage.files import prep_patterns, find_python_files, canonical_filename
 from coverage.misc import sys_modules_saved
 from coverage.python import source_for_file, source_for_morf
-from coverage.types import TMorf, TWarnFn, TDebugCtl
+from coverage.types import TFileDisposition, TMorf, TWarnFn, TDebugCtl
 
 if TYPE_CHECKING:
     from coverage.config import CoverageConfig
@@ -290,9 +292,9 @@ class InOrOut:
                 self.source_in_third = True
 
         self.plugins: Plugins
-        self.disp_class = FileDisposition
+        self.disp_class: Type[TFileDisposition] = FileDisposition
 
-    def should_trace(self, filename: str, frame: Optional[FrameType]=None) -> FileDisposition:
+    def should_trace(self, filename: str, frame: Optional[FrameType]=None) -> TFileDisposition:
         """Decide whether to trace execution in `filename`, with a reason.
 
         This function is called from the trace function.  As each new file name
@@ -304,7 +306,7 @@ class InOrOut:
         original_filename = filename
         disp = disposition_init(self.disp_class, filename)
 
-        def nope(disp: FileDisposition, reason: str) -> FileDisposition:
+        def nope(disp: TFileDisposition, reason: str) -> TFileDisposition:
             """Simple helper to make it easy to return NO."""
             disp.trace = False
             disp.reason = reason

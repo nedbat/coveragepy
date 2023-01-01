@@ -17,7 +17,7 @@ from typing import cast, Any, List, NoReturn, Optional, Tuple
 import coverage
 from coverage import Coverage
 from coverage import env
-from coverage.collector import CTracer
+from coverage.collector import HAS_CTRACER
 from coverage.config import CoverageConfig
 from coverage.control import DEFAULT_DATAFILE
 from coverage.data import combinable_files, debug_data_file
@@ -573,7 +573,7 @@ def show_help(
 
     help_params = dict(coverage.__dict__)
     help_params['program_name'] = program_name
-    if CTracer is not None:
+    if HAS_CTRACER:
         help_params['extension_modifier'] = 'with C extension'
     else:
         help_params['extension_modifier'] = 'without C extension'

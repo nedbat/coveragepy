@@ -139,7 +139,7 @@ class RecursionTest(CoverageTest):
             assert re.fullmatch(
                 r"Trace function changed, data is likely wrong: None != " +
                 r"<bound method PyTracer._trace of " +
-                "<PyTracer at 0x[0-9a-fA-F]+: 5 lines in 1 files>>",
+                "<PyTracer at 0x[0-9a-fA-F]+: 5 data points in 1 files>>",
                 cov._warnings[0],
             )
         else:

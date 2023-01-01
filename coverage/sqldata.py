@@ -22,7 +22,7 @@ import threading
 import zlib
 
 from typing import (
-    cast, Any, Callable, Dict, Generator, Iterable, List, Optional,
+    cast, Any, Callable, Collection, Dict, Generator, Iterable, List, Mapping, Optional,
     Sequence, Set, Tuple, TypeVar, Union,
 )
 
@@ -430,7 +430,7 @@ class CoverageData(AutoReprMixin):
                 return None
 
     @_locked
-    def set_context(self, context: str) -> None:
+    def set_context(self, context: Optional[str]) -> None:
         """Set the current context for future :meth:`add_lines` etc.
 
         `context` is a str, the name of the context to use for the next data
@@ -474,7 +474,7 @@ class CoverageData(AutoReprMixin):
         return self._filename
 
     @_locked
-    def add_lines(self, line_data: Dict[str, Sequence[TLineNo]]) -> None:
+    def add_lines(self, line_data: Mapping[str, Collection[TLineNo]]) -> None:
         """Add measured line data.
 
         `line_data` is a dictionary mapping file names to iterables of ints::
@@ -508,7 +508,7 @@ class CoverageData(AutoReprMixin):
                 )
 
     @_locked
-    def add_arcs(self, arc_data: Dict[str, Set[TArc]]) -> None:
+    def add_arcs(self, arc_data: Mapping[str, Collection[TArc]]) -> None:
         """Add measured arc data.
 
         `arc_data` is a dictionary mapping file names to iterables of pairs of
@@ -558,7 +558,7 @@ class CoverageData(AutoReprMixin):
                 )
 
     @_locked
-    def add_file_tracers(self, file_tracers: Dict[str, str]) -> None:
+    def add_file_tracers(self, file_tracers: Mapping[str, str]) -> None:
         """Add per-file plugin information.
 
         `file_tracers` is { filename: plugin_name, ... }
