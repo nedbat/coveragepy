@@ -29,7 +29,7 @@ Coverage.py runs on these versions of Python:
 .. PYVERSIONS
 
 * CPython 3.7 through 3.12.0a3
-* PyPy3 7.3.10.
+* PyPy3 7.3.11.
 
 Documentation is on `Read the Docs`_.  Code repository and issue tracker are on
 `GitHub`_.

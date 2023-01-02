@@ -17,8 +17,10 @@ development at the same time, such as 4.5.x and 5.0.
     ..  Version 9.8.1 — 2027-07-27
     ..  --------------------------
 
-Unreleased
-----------
+.. _changes_7-0-2:
+
+Version 7.0.2 — 2023-01-02
+--------------------------
 
 - Fix: when using the ``[run] relative_files = True`` setting, a relative
   ``[paths]`` pattern was still being made absolute.  This is now fixed,
@@ -26,22 +28,23 @@ Unreleased
 
 - Fix: if Python doesn't provide tomllib, then TOML configuration files can
   only be read if coverage.py is installed with the ``[toml]`` extra.
-  Coverage.py will raise an error if toml support is not installed when it sees
+  Coverage.py will raise an error if TOML support is not installed when it sees
   your settings are in a .toml file. But it didn't understand that
-  ``[tools.coverage]`` was a valid section header, so the error wasn't
-  reported, and settings were silently ignored.  This is now fixed, closing
-  `issue 1516`_.
+  ``[tools.coverage]`` was a valid section header, so the error wasn't reported
+  if you used that header, and settings were silently ignored.  This is now
+  fixed, closing `issue 1516`_.
 
 - Fix: adjusted how decorators are traced on PyPy 7.3.10, fixing `issue 1515`_.
 
 - Fix: the ``coverage lcov`` report did not properly implement the
   ``--fail-under=MIN`` option.  This has been fixed.
 
-- Refactor: a number of refactorings internally due to adding type annotations.
+- Refactor: added many type annotations, including a number of refactorings.
   This should not affect outward behavior, but they were a bit invasive in some
-  places.
+  places, so keep your eyes peeled for oddities.
 
-- Remove vestigial and long-untested support for Jython and IronPython.
+- Refactor: removed the vestigial and long untested support for Jython and
+  IronPython.
 
 .. _issue 1515: https://github.com/nedbat/coveragepy/issues/1515
 .. _issue 1516: https://github.com/nedbat/coveragepy/issues/1516
