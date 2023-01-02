@@ -20,6 +20,10 @@ development at the same time, such as 4.5.x and 5.0.
 Unreleased
 ----------
 
+- Fix: when using the ``[run] relative_files = True`` setting, a relative
+  ``[paths]`` pattern was still being made absolute.  This is now fixed,
+  closing `issue 1519`_.
+
 - Fix: if Python doesn't provide tomllib, then TOML configuration files can
   only be read if coverage.py is installed with the ``[toml]`` extra.
   Coverage.py will raise an error if toml support is not installed when it sees
@@ -41,6 +45,7 @@ Unreleased
 
 .. _issue 1515: https://github.com/nedbat/coveragepy/issues/1515
 .. _issue 1516: https://github.com/nedbat/coveragepy/issues/1516
+.. _issue 1519: https://github.com/nedbat/coveragepy/issues/1519
 
 
 .. _changes_7-0-1:

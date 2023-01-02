@@ -395,7 +395,11 @@ class PathAliases:
     map a path through those aliases to produce a unified path.
 
     """
-    def __init__(self, debugfn:Optional[Callable[[str], None]]=None, relative:bool=False) -> None:
+    def __init__(
+        self,
+        debugfn: Optional[Callable[[str], None]]=None,
+        relative: bool=False,
+    ) -> None:
         # A list of (original_pattern, regex, result)
         self.aliases: List[Tuple[str, Regex, str]] = []
         self.debugfn = debugfn or (lambda msg: 0)
@@ -431,10 +435,11 @@ class PathAliases:
         if pattern.endswith("*"):
             raise ConfigError("Pattern must not end with wildcards.")
 
-        # The pattern is meant to match a filepath.  Let's make it absolute
+        # The pattern is meant to match a file path.  Let's make it absolute
         # unless it already is, or is meant to match any prefix.
-        if not pattern.startswith('*') and not isabs_anywhere(pattern + pattern_sep):
-            pattern = abs_file(pattern)
+        if not self.relative:
+            if not pattern.startswith('*') and not isabs_anywhere(pattern + pattern_sep):
+                pattern = abs_file(pattern)
         if not pattern.endswith(pattern_sep):
             pattern += pattern_sep
 

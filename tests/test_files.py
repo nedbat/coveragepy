@@ -17,7 +17,9 @@ from coverage.files import (
     GlobMatcher, ModuleMatcher, PathAliases, TreeMatcher, abs_file,
     actual_path, find_python_files, flat_rootname, globs_to_regex,
 )
+
 from tests.coveragetest import CoverageTest
+from tests.helpers import os_sep
 
 
 class FilesTest(CoverageTest):
@@ -415,8 +417,16 @@ class PathAliasesTest(CoverageTest):
         # The result shouldn't start with "./" if the map result didn't.
         aliases = PathAliases(relative=rel_yn)
         aliases.add('*/project', '.')
-        # Because the map result has no slash, the actual result is os-dependent.
-        self.assert_mapped(aliases, '/ned/home/project/src/a.py', f'src{os.sep}a.py')
+        self.assert_mapped(aliases, '/ned/home/project/src/a.py', os_sep('src/a.py'))
+
+    def test_relative_pattern(self):
+        aliases = PathAliases(relative=True)
+        aliases.add(".tox/*/site-packages", "src")
+        self.assert_mapped(
+            aliases,
+            ".tox/py314/site-packages/proj/a.py",
+            os_sep("src/proj/a.py"),
+        )
 
     def test_multiple_patterns(self, rel_yn):
         # also test the debugfn...
