@@ -6,8 +6,8 @@
 
 # version_info: same semantics as sys.version_info.
 # _dev: the .devN suffix if any.
-version_info = (7, 0, 2, "final", 0)
-_dev = 0
+version_info = (7, 0, 3, "alpha", 0)
+_dev = 1
 
 
 def _make_version(
