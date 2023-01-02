@@ -8,7 +8,7 @@ import dis
 import sys
 
 from types import FrameType
-from typing import Any, Callable, Dict, Mapping, Optional
+from typing import Any, Callable, Dict, Optional
 
 from coverage import env
 from coverage.types import TFileDisposition, TTraceData, TTraceFn, TTracer, TWarnFn
@@ -51,7 +51,7 @@ class PyTracer(TTracer):
         self.data: TTraceData
         self.trace_arcs = False
         self.should_trace: Callable[[str, FrameType], TFileDisposition]
-        self.should_trace_cache: Mapping[str, Optional[TFileDisposition]]
+        self.should_trace_cache: Dict[str, Optional[TFileDisposition]]
         self.should_start_context: Optional[Callable[[FrameType], Optional[str]]] = None
         self.switch_context: Optional[Callable[[Optional[str]], None]] = None
         self.warn: TWarnFn
@@ -61,8 +61,8 @@ class PyTracer(TTracer):
 
         self.cur_file_data = None
         self.last_line = 0          # int, but uninitialized.
-        self.cur_file_name = None
-        self.context = None
+        self.cur_file_name: Optional[str] = None
+        self.context: Optional[str] = None
         self.started_context = False
 
         self.data_stack = []
@@ -84,7 +84,7 @@ class PyTracer(TTracer):
         files = len(self.data)
         return f"<PyTracer at 0x{me:x}: {points} data points in {files} files>"
 
-    def log(self, marker, *args) -> None:
+    def log(self, marker: str, *args: Any) -> None:
         """For hard-core logging of what this tracer is doing."""
         with open("/tmp/debug_trace.txt", "a") as f:
             f.write("{} {}[{}]".format(
@@ -93,13 +93,13 @@ class PyTracer(TTracer):
                 len(self.data_stack),
             ))
             if 0:   # if you want thread ids..
-                f.write(".{:x}.{:x}".format(
+                f.write(".{:x}.{:x}".format(                    # type: ignore[unreachable]
                     self.thread.ident,
                     self.threading.current_thread().ident,
                 ))
             f.write(" {}".format(" ".join(map(str, args))))
             if 0:   # if you want callers..
-                f.write(" | ")
+                f.write(" | ")                                  # type: ignore[unreachable]
                 stack = " / ".join(
                     (fname or "???").rpartition("/")[-1]
                     for _, fname, _, _ in self.data_stack
@@ -107,7 +107,7 @@ class PyTracer(TTracer):
                 f.write(stack)
             f.write("\n")
 
-    def _trace(self, frame: FrameType, event: str, arg_unused: Any) -> TTraceFn:
+    def _trace(self, frame: FrameType, event: str, arg_unused: Any) -> Optional[TTraceFn]:
         """The trace function passed to sys.settrace."""
 
         if THIS_FILE in frame.f_code.co_filename:
@@ -119,8 +119,8 @@ class PyTracer(TTracer):
             # The PyTrace.stop() method has been called, possibly by another
             # thread, let's deactivate ourselves now.
             if 0:
-                self.log("---\nX", frame.f_code.co_filename, frame.f_lineno)
-                f = frame
+                f = frame                           # type: ignore[unreachable]
+                self.log("---\nX", f.f_code.co_filename, f.f_lineno)
                 while f:
                     self.log(">", f.f_code.co_filename, f.f_lineno, f.f_code.co_name, f.f_trace)
                     f = f.f_back
@@ -140,6 +140,7 @@ class PyTracer(TTracer):
                 if context_maybe is not None:
                     self.context = context_maybe
                     started_context = True
+                    assert self.switch_context is not None
                     self.switch_context(self.context)
                 else:
                     started_context = False
@@ -175,6 +176,7 @@ class PyTracer(TTracer):
                 self.cur_file_data = None
                 if disp.trace:
                     tracename = disp.source_filename
+                    assert tracename is not None
                     if tracename not in self.data:
                         self.data[tracename] = set()
                     self.cur_file_data = self.data[tracename]

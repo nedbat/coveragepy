@@ -225,7 +225,7 @@ class Coverage(TConfigurable):
             data_file = None
 
         # This is injectable by tests.
-        self._debug_file = None
+        self._debug_file: Optional[IO[str]] = None
 
         self._auto_load = self._auto_save = auto_data
         self._data_suffix_specified = data_suffix
