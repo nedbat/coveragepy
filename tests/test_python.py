@@ -3,6 +3,7 @@
 
 """Tests of coverage/python.py"""
 
+import pathlib
 import sys
 
 import pytest
@@ -37,9 +38,8 @@ class GetZipBytesTest(CoverageTest):
         assert mod.encoding == encoding
 
 
-def test_source_for_file(tmpdir):
-    path = tmpdir.join("a.py")
-    src = str(path)
+def test_source_for_file(tmp_path: pathlib.Path) -> None:
+    src = str(tmp_path / "a.py")
     assert source_for_file(src) == src
     assert source_for_file(src + 'c') == src
     assert source_for_file(src + 'o') == src
@@ -48,14 +48,15 @@ def test_source_for_file(tmpdir):
 
 
 @pytest.mark.skipif(not env.WINDOWS, reason="not windows")
-def test_source_for_file_windows(tmpdir):
-    path = tmpdir.join("a.py")
-    src = str(path)
+def test_source_for_file_windows(tmp_path: pathlib.Path) -> None:
+    a_py = tmp_path / "a.py"
+    src = str(a_py)
 
     # On windows if a pyw exists, it is an acceptable source
-    path_windows = tmpdir.ensure("a.pyw")
+    path_windows = tmp_path / "a.pyw"
+    path_windows.write_text("")
     assert str(path_windows) == source_for_file(src + 'c')
 
     # If both pyw and py exist, py is preferred
-    path.ensure(file=True)
+    a_py.write_text("")
     assert source_for_file(src + 'c') == src

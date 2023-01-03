@@ -29,6 +29,7 @@ import csv
 import os
 import shutil
 import time
+
 from pathlib import Path
 
 import pytest
@@ -64,7 +65,7 @@ class BalanceXdistPlugin:       # pragma: debugging
         if not self.running_all:
             return
 
-        tests_csv_dir = Path(session.startdir).resolve() / "tmp/tests_csv"
+        tests_csv_dir = session.startpath.resolve() / "tmp/tests_csv"
         self.tests_csv = tests_csv_dir / f"{self.worker}.csv"
 
         if self.worker == "none":

@@ -6,6 +6,7 @@
 import glob
 import multiprocessing
 import os
+import pathlib
 import random
 import re
 import sys
@@ -626,21 +627,22 @@ def test_coverage_stop_in_threads():
     assert has_stopped_coverage == [t.ident]
 
 
-def test_thread_safe_save_data(tmpdir):
+def test_thread_safe_save_data(tmp_path: pathlib.Path) -> None:
     # Non-regression test for: https://github.com/nedbat/coveragepy/issues/581
 
     # Create some Python modules and put them in the path
-    modules_dir = tmpdir.mkdir('test_modules')
+    modules_dir = tmp_path / "test_modules"
+    modules_dir.mkdir()
     module_names = [f"m{i:03d}" for i in range(1000)]
     for module_name in module_names:
-        modules_dir.join(module_name + ".py").write("def f(): pass\n")
+        (modules_dir / (module_name + ".py")).write_text("def f(): pass\n")
 
     # Shared variables for threads
     should_run = [True]
     imported = []
 
     old_dir = os.getcwd()
-    os.chdir(modules_dir.strpath)
+    os.chdir(modules_dir)
     try:
         # Make sure that all dummy modules can be imported.
         for module_name in module_names:

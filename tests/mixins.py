@@ -12,7 +12,7 @@ import os
 import os.path
 import sys
 
-from typing import Tuple
+from typing import Iterator, Tuple
 
 import pytest
 
@@ -57,10 +57,10 @@ class TempDirMixin:
     run_in_temp_dir = True
 
     @pytest.fixture(autouse=True)
-    def _temp_dir(self, tmpdir_factory):
+    def _temp_dir(self, tmp_path_factory: pytest.TempPathFactory) -> Iterator[None]:
         """Create a temp dir for the tests, if they want it."""
         if self.run_in_temp_dir:
-            tmpdir = tmpdir_factory.mktemp("t")
+            tmpdir = tmp_path_factory.mktemp("t")
             self.temp_dir = str(tmpdir)
             with change_dir(self.temp_dir):
                 # Modules should be importable from this temp directory.  We don't
