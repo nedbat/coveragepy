@@ -195,8 +195,6 @@ def python_reported_file(filename: str) -> str:
     return filename
 
 
-
-
 def isabs_anywhere(filename: str) -> bool:
     """Is `filename` an absolute path on any OS?"""
     return ntpath.isabs(filename) or posixpath.isabs(filename)

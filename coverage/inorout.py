@@ -201,8 +201,8 @@ class InOrOut:
                 self.source_pkgs.append(src)
         self.source_pkgs_unmatched = self.source_pkgs[:]
 
-        self.omit = prep_patterns(config.run_omit)
         self.include = prep_patterns(config.run_include)
+        self.omit = prep_patterns(config.run_omit)
 
         # The directories for files considered "installed with the interpreter".
         self.pylib_paths: Set[str] = set()
