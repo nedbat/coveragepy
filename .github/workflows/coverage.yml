@@ -95,6 +95,13 @@ jobs:
           set -xe
           python -m tox
 
+      - name: "Combine data"
+        env:
+          COVERAGE_RCFILE: "metacov.ini"
+        run: |
+          python -m coverage combine
+          mv .metacov .metacov.${{ matrix.python-version }}.${{ matrix.os }}
+
       - name: "Upload coverage data"
         uses: actions/upload-artifact@v3
         with:
@@ -174,10 +181,9 @@ jobs:
           echo "url=https://nedbat.github.io/coverage-reports/$REPORT_DIR" >> $GITHUB_ENV
           echo "branch=${REF#refs/heads/}" >> $GITHUB_ENV
 
-      - name: "Create summary"
+      - name: "Summarize"
         run: |
           echo '### Total coverage: ${{ env.total }}%' >> $GITHUB_STEP_SUMMARY
-          echo '[${{ env.url }}](${{ env.url }})' >> $GITHUB_STEP_SUMMARY
 
       - name: "Checkout reports repo"
         if: ${{ github.ref == 'refs/heads/master' }}
@@ -220,6 +226,7 @@ jobs:
           git add ${{ env.report_dir }} latest.html
           git commit --file=../commit.txt
           git push
+          echo '[${{ env.url }}](${{ env.url }})' >> $GITHUB_STEP_SUMMARY
 
       - name: "Create badge"
         if: ${{ github.ref == 'refs/heads/master' }}
