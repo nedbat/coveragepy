@@ -73,7 +73,7 @@ class HandyConfigParser(configparser.ConfigParser):
 
     def get_section(self, section: str) -> TConfigSection:
         """Get the contents of a section, as a dictionary."""
-        d: TConfigSection = {}
+        d: Dict[str, TConfigValue] = {}
         for opt in self.options(section):
             d[opt] = self.get(section, opt)
         return d

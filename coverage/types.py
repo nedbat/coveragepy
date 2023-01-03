@@ -109,7 +109,7 @@ TCovKwargs = Any
 # One value read from a config file.
 TConfigValue = Optional[Union[bool, int, float, str, List[str]]]
 # An entire config section, mapping option names to values.
-TConfigSection = Dict[str, TConfigValue]
+TConfigSection = Mapping[str, TConfigValue]
 
 class TConfigurable(Protocol):
     """Something that can proxy to the coverage configuration settings."""
