@@ -13,6 +13,7 @@ import os.path
 import sys
 
 from typing import Iterator, Tuple
+from typing import Iterable, Optional
 
 import pytest
 
@@ -24,26 +25,26 @@ class PytestBase:
     """A base class to connect to pytest in a test class hierarchy."""
 
     @pytest.fixture(autouse=True)
-    def connect_to_pytest(self, request, monkeypatch):
+    def connect_to_pytest(self, request, monkeypatch) -> None:
         """Captures pytest facilities for use by other test helpers."""
         # pylint: disable=attribute-defined-outside-init
         self._pytest_request = request
         self._monkeypatch = monkeypatch
         self.setUp()
 
-    def setUp(self):
+    def setUp(self) -> None:
         """Per-test initialization. Override this as you wish."""
         pass
 
-    def addCleanup(self, fn, *args):
+    def addCleanup(self, fn, *args) -> None:
         """Like unittest's addCleanup: code to call when the test is done."""
         self._pytest_request.addfinalizer(lambda: fn(*args))
 
-    def set_environ(self, name, value):
+    def set_environ(self, name, value) -> None:
         """Set an environment variable `name` to be `value`."""
         self._monkeypatch.setenv(name, value)
 
-    def del_environ(self, name):
+    def del_environ(self, name) -> None:
         """Delete an environment variable, unless we set it."""
         self._monkeypatch.delenv(name, raising=False)
 
@@ -72,7 +73,13 @@ class TempDirMixin:
         else:
             yield
 
-    def make_file(self, filename, text="", bytes=b"", newline=None):
+    def make_file(
+        self,
+        filename: str,
+        text: str="",
+        bytes: bytes=b"",
+        newline: Optional[str]=None,
+    ) -> str:
         """Make a file. See `tests.helpers.make_file`"""
         # pylint: disable=redefined-builtin     # bytes
         assert self.run_in_temp_dir, "Only use make_file when running in a temp dir"
@@ -83,7 +90,7 @@ class RestoreModulesMixin:
     """Auto-restore the imported modules at the end of each test."""
 
     @pytest.fixture(autouse=True)
-    def _module_saving(self):
+    def _module_saving(self) -> Iterable[None]:
         """Remove modules we imported during the test."""
         self._sys_module_saver = SysModuleSaver()
         try:
@@ -91,7 +98,7 @@ class RestoreModulesMixin:
         finally:
             self._sys_module_saver.restore()
 
-    def clean_local_file_imports(self):
+    def clean_local_file_imports(self) -> None:
         """Clean up the results of calls to `import_local_file`.
 
         Use this if you need to `import_local_file` the same file twice in
@@ -120,7 +127,7 @@ class StdStreamCapturingMixin:
 
     """
     @pytest.fixture(autouse=True)
-    def _capcapsys(self, capsys):
+    def _capcapsys(self, capsys: pytest.CaptureFixture[str]) -> None:
         """Grab the fixture so our methods can use it."""
         self.capsys = capsys
 

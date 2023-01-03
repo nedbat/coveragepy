@@ -24,13 +24,14 @@ class GetZipBytesTest(CoverageTest):
         "encoding",
         ["utf-8", "gb2312", "hebrew", "shift_jis", "cp1252"],
     )
-    def test_get_encoded_zip_files(self, encoding):
+    def test_get_encoded_zip_files(self, encoding: str) -> None:
         # See igor.py, do_zipmods, for the text of these files.
         zip_file = "tests/zipmods.zip"
         sys.path.append(zip_file)       # So we can import the files.
         filename = zip_file + "/encoded_" + encoding + ".py"
         filename = os_sep(filename)
         zip_data = get_zip_bytes(filename)
+        assert zip_data is not None
         zip_text = zip_data.decode(encoding)
         assert 'All OK' in zip_text
         # Run the code to see that we really got it encoded properly.
