@@ -17,8 +17,10 @@ development at the same time, such as 4.5.x and 5.0.
     ..  Version 9.8.1 — 2027-07-27
     ..  --------------------------
 
-Unreleased
-----------
+.. _changes_7-0-3:
+
+Version 7.0.3 — 2023-01-03
+--------------------------
 
 - Fix: when using pytest-cov or pytest-xdist, or perhaps both, the combining
   step could fail with ``assert row is not None`` using 7.0.2.  This was due to
