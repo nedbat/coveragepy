@@ -20,7 +20,7 @@ class HasherTest(CoverageTest):
 
     run_in_temp_dir = False
 
-    def test_string_hashing(self):
+    def test_string_hashing(self) -> None:
         h1 = Hasher()
         h1.update("Hello, world!")
         h2 = Hasher()
@@ -30,28 +30,28 @@ class HasherTest(CoverageTest):
         assert h1.hexdigest() != h2.hexdigest()
         assert h1.hexdigest() == h3.hexdigest()
 
-    def test_bytes_hashing(self):
+    def test_bytes_hashing(self) -> None:
         h1 = Hasher()
         h1.update(b"Hello, world!")
         h2 = Hasher()
         h2.update(b"Goodbye!")
         assert h1.hexdigest() != h2.hexdigest()
 
-    def test_unicode_hashing(self):
+    def test_unicode_hashing(self) -> None:
         h1 = Hasher()
         h1.update("Hello, world! \N{SNOWMAN}")
         h2 = Hasher()
         h2.update("Goodbye!")
         assert h1.hexdigest() != h2.hexdigest()
 
-    def test_dict_hashing(self):
+    def test_dict_hashing(self) -> None:
         h1 = Hasher()
         h1.update({'a': 17, 'b': 23})
         h2 = Hasher()
         h2.update({'b': 23, 'a': 17})
         assert h1.hexdigest() == h2.hexdigest()
 
-    def test_dict_collision(self):
+    def test_dict_collision(self) -> None:
         h1 = Hasher()
         h1.update({'a': 17, 'b': {'c': 1, 'd': 2}})
         h2 = Hasher()
@@ -62,17 +62,17 @@ class HasherTest(CoverageTest):
 class RemoveFileTest(CoverageTest):
     """Tests of misc.file_be_gone."""
 
-    def test_remove_nonexistent_file(self):
+    def test_remove_nonexistent_file(self) -> None:
         # It's OK to try to remove a file that doesn't exist.
         file_be_gone("not_here.txt")
 
-    def test_remove_actual_file(self):
+    def test_remove_actual_file(self) -> None:
         # It really does remove a file that does exist.
         self.make_file("here.txt", "We are here, we are here, we are here!")
         file_be_gone("here.txt")
         self.assert_doesnt_exist("here.txt")
 
-    def test_actual_errors(self):
+    def test_actual_errors(self) -> None:
         # Errors can still happen.
         # ". is a directory" on Unix, or "Access denied" on Windows
         with pytest.raises(OSError):
@@ -96,13 +96,13 @@ VARS = {
     ("Defaulted: ${WUT-missing}!", "Defaulted: missing!"),
     ("Defaulted empty: ${WUT-}!", "Defaulted empty: !"),
 ])
-def test_substitute_variables(before, after):
+def test_substitute_variables(before: str, after: str) -> None:
     assert substitute_variables(before, VARS) == after
 
 @pytest.mark.parametrize("text", [
     "Strict: ${NOTHING?} is an error",
 ])
-def test_substitute_variables_errors(text):
+def test_substitute_variables_errors(text: str) -> None:
     with pytest.raises(CoverageException) as exc_info:
         substitute_variables(text, VARS)
     assert text in str(exc_info.value)
@@ -114,7 +114,7 @@ class ImportThirdPartyTest(CoverageTest):
 
     run_in_temp_dir = False
 
-    def test_success(self):
+    def test_success(self) -> None:
         # Make sure we don't have pytest in sys.modules before we start.
         del sys.modules["pytest"]
         # Import pytest
@@ -127,7 +127,7 @@ class ImportThirdPartyTest(CoverageTest):
         # But it's not in sys.modules:
         assert "pytest" not in sys.modules
 
-    def test_failure(self):
+    def test_failure(self) -> None:
         _, has = import_third_party("xyzzy")
         assert not has
         assert "xyzzy" not in sys.modules
@@ -140,11 +140,11 @@ HUMAN_DATA = [
 ]
 
 @pytest.mark.parametrize("words, ordered", HUMAN_DATA)
-def test_human_sorted(words, ordered):
+def test_human_sorted(words: str, ordered: str) -> None:
     assert " ".join(human_sorted(words.split())) == ordered
 
 @pytest.mark.parametrize("words, ordered", HUMAN_DATA)
-def test_human_sorted_items(words, ordered):
+def test_human_sorted_items(words: str, ordered: str) -> None:
     keys = words.split()
     items = [(k, 1) for k in keys] + [(k, 2) for k in keys]
     okeys = ordered.split()

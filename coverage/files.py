@@ -3,6 +3,8 @@
 
 """File wrangling."""
 
+from __future__ import annotations
+
 import hashlib
 import ntpath
 import os
@@ -11,7 +13,7 @@ import posixpath
 import re
 import sys
 
-from typing import Callable, Dict, Iterable, List, Optional, Tuple, TYPE_CHECKING
+from typing import Callable, Dict, Iterable, List, Optional, Tuple
 
 from coverage import env
 from coverage.exceptions import ConfigError
@@ -19,11 +21,6 @@ from coverage.misc import human_sorted, isolate_module, join_regex
 
 
 os = isolate_module(os)
-
-if TYPE_CHECKING:
-    Regex = re.Pattern[str]
-else:
-    Regex = re.Pattern  # Python <3.9 can't subscript Pattern
 
 
 RELATIVE_DIR: str = ""
@@ -355,7 +352,7 @@ def globs_to_regex(
     patterns: Iterable[str],
     case_insensitive: bool=False,
     partial: bool=False
-) -> Regex:
+) -> re.Pattern[str]:
     """Convert glob patterns to a compiled regex that matches any of them.
 
     Slashes are always converted to match either slash or backslash, for
@@ -399,7 +396,7 @@ class PathAliases:
         relative: bool=False,
     ) -> None:
         # A list of (original_pattern, regex, result)
-        self.aliases: List[Tuple[str, Regex, str]] = []
+        self.aliases: List[Tuple[str, re.Pattern[str], str]] = []
         self.debugfn = debugfn or (lambda msg: 0)
         self.relative = relative
         self.pprinted = False
