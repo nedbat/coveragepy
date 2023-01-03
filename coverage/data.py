@@ -161,6 +161,8 @@ def combine_parallel_data(
                     # The CoverageException has the file name in it, so just
                     # use the message as the warning.
                     data._warn(str(exc))
+                if message:
+                    message(f"Couldn't combine data file {rel_file_name}: {exc}")
                 delete_this_one = False
             else:
                 data.update(new_data, aliases=aliases)

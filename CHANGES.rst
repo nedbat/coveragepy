@@ -20,7 +20,14 @@ development at the same time, such as 4.5.x and 5.0.
 Unreleased
 ----------
 
-Nothing yet.
+- Fix: when using pytest-cov or pytest-xdist, or perhaps both, the combining
+  step could fail with ``assert row is not None`` using 7.0.2.  This was due to
+  a race condition that has always been possible and is still possible. In
+  7.0.1 and before, the error was silently swallowed by the combining code.
+  Now it will produce a message "Couldn't combine data file" and ignore the
+  data file as it used to do before 7.0.2.  Closes `issue 1522`_.
+
+.. _issue 1522: https://github.com/nedbat/coveragepy/issues/1522
 
 
 .. _changes_7-0-2:

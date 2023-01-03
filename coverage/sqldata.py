@@ -289,6 +289,7 @@ class CoverageData(AutoReprMixin):
         with self._dbs[threading.get_ident()] as db:
             try:
                 row = db.execute_one("select version from coverage_schema")
+                assert row is not None
             except Exception as exc:
                 if "no such table: coverage_schema" in str(exc):
                     self._init_db(db)
@@ -299,7 +300,6 @@ class CoverageData(AutoReprMixin):
                         )
                     ) from exc
             else:
-                assert row is not None
                 schema_version = row[0]
                 if schema_version != SCHEMA_VERSION:
                     raise DataError(
