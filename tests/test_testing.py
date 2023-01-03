@@ -12,14 +12,13 @@ import warnings
 import pytest
 
 import coverage
-from coverage import tomlconfig
 from coverage.exceptions import CoverageWarning
 from coverage.files import actual_path
 
 from tests.coveragetest import CoverageTest
 from tests.helpers import (
     arcs_to_arcz_repr, arcz_to_arcs, assert_count_equal, assert_coverage_warnings,
-    CheckUniqueFilenames, re_lines, re_lines_text, re_line, without_module,
+    CheckUniqueFilenames, re_lines, re_lines_text, re_line,
 )
 
 
@@ -354,16 +353,6 @@ def _same_python_executable(e1, e2):
         return True
 
     return False                                        # pragma: only failure
-
-
-def test_without_module():
-    toml1 = tomlconfig.tomllib
-    with without_module(tomlconfig, 'tomllib'):
-        toml2 = tomlconfig.tomllib
-    toml3 = tomlconfig.tomllib
-
-    assert toml1 is toml3 is not None
-    assert toml2 is None
 
 
 class ArczTest(CoverageTest):

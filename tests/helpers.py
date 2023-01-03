@@ -15,12 +15,10 @@ import subprocess
 import textwrap
 import warnings
 
-from types import ModuleType
 from typing import (
     cast,
     Any, Callable, Generator, Iterable, List, Optional, Set, Tuple, Type, Union,
 )
-from unittest import mock
 
 import pytest
 
@@ -282,24 +280,6 @@ def change_dir(new_dir: str) -> Generator[None, None, None]:
         yield
     finally:
         os.chdir(old_dir)
-
-
-def without_module(using_module: ModuleType, missing_module_name: str) -> mock._patch[Any]:
-    """
-    Hide a module for testing.
-
-    Use this in a test function to make an optional module unavailable during
-    the test::
-
-        with without_module(product.something, 'tomli'):
-            use_toml_somehow()
-
-    Arguments:
-        using_module: a module in which to hide `missing_module_name`.
-        missing_module_name (str): the name of the module to hide.
-
-    """
-    return mock.patch.object(using_module, missing_module_name, None)
 
 
 def assert_count_equal(a: Iterable[Union[int, str]], b: Iterable[Union[int, str]]) -> None:

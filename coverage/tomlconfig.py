@@ -5,7 +5,6 @@
 
 import os
 import re
-import sys
 
 from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, Type, TypeVar
 
@@ -17,9 +16,10 @@ from coverage.types import TConfigSection, TConfigValue
 
 if env.PYVERSION >= (3, 11, 0, "alpha", 7):
     import tomllib      # pylint: disable=import-error
+    has_tomllib = True
 else:
     # TOML support on Python 3.10 and below is an install-time extra option.
-    tomllib = import_third_party("tomli")
+    tomllib, has_tomllib = import_third_party("tomli")
 
 
 class TomlDecodeError(Exception):
@@ -51,7 +51,7 @@ class TomlConfigParser:
                 toml_text = fp.read()
         except OSError:
             return []
-        if sys.version_info >= (3, 11) or tomllib is not None:
+        if has_tomllib:
             try:
                 self.data = tomllib.loads(toml_text)
             except tomllib.TOMLDecodeError as err:

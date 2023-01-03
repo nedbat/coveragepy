@@ -83,14 +83,16 @@ def import_third_party(modname):
         modname (str): the name of the module to import.
 
     Returns:
-        The imported module, or None if the module couldn't be imported.
+        The imported module, and a boolean indicating if the module could be imported.
+
+    If the boolean is False, the module returned is not the one you want: don't use it.
 
     """
     with sys_modules_saved():
         try:
-            return importlib.import_module(modname)
+            return importlib.import_module(modname), True
         except ImportError:
-            return None
+            return sys, False
 
 
 def nice_pair(pair):

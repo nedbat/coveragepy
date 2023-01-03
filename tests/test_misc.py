@@ -118,7 +118,8 @@ class ImportThirdPartyTest(CoverageTest):
         # Make sure we don't have pytest in sys.modules before we start.
         del sys.modules["pytest"]
         # Import pytest
-        mod = import_third_party("pytest")
+        mod, has = import_third_party("pytest")
+        assert has
         # Yes, it's really pytest:
         assert mod.__name__ == "pytest"
         print(dir(mod))
@@ -127,8 +128,8 @@ class ImportThirdPartyTest(CoverageTest):
         assert "pytest" not in sys.modules
 
     def test_failure(self):
-        mod = import_third_party("xyzzy")
-        assert mod is None
+        _, has = import_third_party("xyzzy")
+        assert not has
         assert "xyzzy" not in sys.modules
 
 
