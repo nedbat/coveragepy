@@ -18,7 +18,7 @@ import sys
 from types import ModuleType
 from typing import (
     Any, Collection, Dict, Generator, Iterable, List, Mapping, Optional,
-    Tuple, Union,
+    Sequence, Tuple, Union,
 )
 
 import coverage
@@ -135,8 +135,8 @@ class CoverageTest(
     def check_coverage(
         self,
         text: str,
-        lines: Optional[Union[List[TLineNo], List[List[TLineNo]]]]=None,
-        missing: Union[str, List[str]]="",
+        lines: Optional[Union[Sequence[TLineNo], Sequence[List[TLineNo]]]]=None,
+        missing: Union[str, Sequence[str]]="",
         report: str="",
         excludes: Optional[Iterable[str]]=None,
         partials: Iterable[str]=(),

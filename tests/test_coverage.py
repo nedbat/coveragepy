@@ -15,7 +15,7 @@ from tests.coveragetest import CoverageTest
 class TestCoverageTest(CoverageTest):
     """Make sure our complex self.check_coverage method works."""
 
-    def test_successful_coverage(self):
+    def test_successful_coverage(self) -> None:
         # The simplest run possible.
         self.check_coverage("""\
             a = 1
@@ -49,7 +49,7 @@ class TestCoverageTest(CoverageTest):
             missing=("47-49", "3", "100,102")
         )
 
-    def test_failed_coverage(self):
+    def test_failed_coverage(self) -> None:
         # If the lines are wrong, the message shows right and wrong.
         with pytest.raises(AssertionError, match=r"\[1, 2] != \[1]"):
             self.check_coverage("""\
@@ -89,7 +89,7 @@ class TestCoverageTest(CoverageTest):
                 missing=("37", "4-10"),
             )
 
-    def test_exceptions_really_fail(self):
+    def test_exceptions_really_fail(self) -> None:
         # An assert in the checked code will really raise up to us.
         with pytest.raises(AssertionError, match="This is bad"):
             self.check_coverage("""\
@@ -110,7 +110,7 @@ class TestCoverageTest(CoverageTest):
 class BasicCoverageTest(CoverageTest):
     """The simplest tests, for quick smoke testing of fundamental changes."""
 
-    def test_simple(self):
+    def test_simple(self) -> None:
         self.check_coverage("""\
             a = 1
             b = 2
@@ -121,7 +121,7 @@ class BasicCoverageTest(CoverageTest):
             """,
             [1,2,4,6], report="4 0 0 0 100%")
 
-    def test_indentation_wackiness(self):
+    def test_indentation_wackiness(self) -> None:
         # Partial final lines are OK.
         self.check_coverage("""\
             import sys
@@ -130,7 +130,7 @@ class BasicCoverageTest(CoverageTest):
                 """,    # indented last line
             [1,2,3], "3")
 
-    def test_multiline_initializer(self):
+    def test_multiline_initializer(self) -> None:
         self.check_coverage("""\
             d = {
                 'foo': 1+2,
@@ -142,7 +142,7 @@ class BasicCoverageTest(CoverageTest):
             """,
             [1,7], "")
 
-    def test_list_comprehension(self):
+    def test_list_comprehension(self) -> None:
         self.check_coverage("""\
             l = [
                 2*i for i in range(10)
@@ -156,7 +156,7 @@ class BasicCoverageTest(CoverageTest):
 class SimpleStatementTest(CoverageTest):
     """Testing simple single-line statements."""
 
-    def test_expression(self):
+    def test_expression(self) -> None:
         # Bare expressions as statements are tricky: some implementations
         # optimize some of them away.  All implementations seem to count
         # the implicit return at the end as executable.
@@ -185,7 +185,7 @@ class SimpleStatementTest(CoverageTest):
             """,
             ([1,2,4], [4]), "")
 
-    def test_assert(self):
+    def test_assert(self) -> None:
         self.check_coverage("""\
             assert (1 + 2)
             assert (1 +
@@ -197,7 +197,7 @@ class SimpleStatementTest(CoverageTest):
             """,
             [1,2,4,5], "")
 
-    def test_assignment(self):
+    def test_assignment(self) -> None:
         # Simple variable assignment
         self.check_coverage("""\
             a = (1 + 2)
@@ -208,7 +208,7 @@ class SimpleStatementTest(CoverageTest):
             """,
             [1,2,4], "")
 
-    def test_assign_tuple(self):
+    def test_assign_tuple(self) -> None:
         self.check_coverage("""\
             a = 1
             a,b,c = 7,8,9
@@ -216,7 +216,7 @@ class SimpleStatementTest(CoverageTest):
             """,
             [1,2,3], "")
 
-    def test_more_assignments(self):
+    def test_more_assignments(self) -> None:
         self.check_coverage("""\
             x = []
             d = {}
@@ -231,7 +231,7 @@ class SimpleStatementTest(CoverageTest):
             """,
             [1, 2, 3], "")
 
-    def test_attribute_assignment(self):
+    def test_attribute_assignment(self) -> None:
         # Attribute assignment
         self.check_coverage("""\
             class obj: pass
@@ -244,7 +244,7 @@ class SimpleStatementTest(CoverageTest):
             """,
             [1,2,3,4,6], "")
 
-    def test_list_of_attribute_assignment(self):
+    def test_list_of_attribute_assignment(self) -> None:
         self.check_coverage("""\
             class obj: pass
             o = obj()
@@ -258,7 +258,7 @@ class SimpleStatementTest(CoverageTest):
             """,
             [1,2,3,4,7], "")
 
-    def test_augmented_assignment(self):
+    def test_augmented_assignment(self) -> None:
         self.check_coverage("""\
             a = 1
             a += 1
@@ -269,7 +269,7 @@ class SimpleStatementTest(CoverageTest):
             """,
             [1,2,3,5], "")
 
-    def test_triple_string_stuff(self):
+    def test_triple_string_stuff(self) -> None:
         self.check_coverage("""\
             a = '''
                 a multiline
@@ -291,7 +291,7 @@ class SimpleStatementTest(CoverageTest):
             """,
             [1,5,11], "")
 
-    def test_pass(self):
+    def test_pass(self) -> None:
         # pass is tricky: if it's the only statement in a block, then it is
         # "executed". But if it is not the only statement, then it is not.
         self.check_coverage("""\
@@ -328,7 +328,7 @@ class SimpleStatementTest(CoverageTest):
             """,
             ([1,2,4,5], [1,2,5]), "")
 
-    def test_del(self):
+    def test_del(self) -> None:
         self.check_coverage("""\
             d = { 'a': 1, 'b': 1, 'c': 1, 'd': 1, 'e': 1 }
             del d['a']
@@ -342,7 +342,7 @@ class SimpleStatementTest(CoverageTest):
             """,
             [1,2,3,6,9], "")
 
-    def test_raise(self):
+    def test_raise(self) -> None:
         self.check_coverage("""\
             try:
                 raise Exception(
@@ -353,7 +353,7 @@ class SimpleStatementTest(CoverageTest):
             """,
             [1,2,5,6], "")
 
-    def test_raise_followed_by_statement(self):
+    def test_raise_followed_by_statement(self) -> None:
         if env.PYBEHAVIOR.omit_after_jump:
             lines = [1,2,4,5]
             missing = ""
@@ -369,7 +369,7 @@ class SimpleStatementTest(CoverageTest):
             """,
             lines=lines, missing=missing)
 
-    def test_return(self):
+    def test_return(self) -> None:
         self.check_coverage("""\
             def fn():
                 a = 1
@@ -402,7 +402,7 @@ class SimpleStatementTest(CoverageTest):
             """,
             [1,2,3,7,8], "")
 
-    def test_return_followed_by_statement(self):
+    def test_return_followed_by_statement(self) -> None:
         if env.PYBEHAVIOR.omit_after_return:
             lines = [1,2,3,6,7]
             missing = ""
@@ -421,7 +421,7 @@ class SimpleStatementTest(CoverageTest):
             lines=lines, missing=missing,
         )
 
-    def test_yield(self):
+    def test_yield(self) -> None:
         self.check_coverage("""\
             def gen():
                 yield 1
@@ -435,7 +435,7 @@ class SimpleStatementTest(CoverageTest):
             """,
             [1,2,3,6,8,9], "")
 
-    def test_break(self):
+    def test_break(self) -> None:
         if env.PYBEHAVIOR.omit_after_jump:
             lines = [1,2,3,5]
             missing = ""
@@ -452,7 +452,7 @@ class SimpleStatementTest(CoverageTest):
             """,
             lines=lines, missing=missing)
 
-    def test_continue(self):
+    def test_continue(self) -> None:
         if env.PYBEHAVIOR.omit_after_jump:
             lines = [1,2,3,5]
             missing = ""
@@ -469,7 +469,7 @@ class SimpleStatementTest(CoverageTest):
             """,
             lines=lines, missing=missing)
 
-    def test_strange_unexecuted_continue(self):
+    def test_strange_unexecuted_continue(self) -> None:
         # Peephole optimization of jumps to jumps can mean that some statements
         # never hit the line tracer.  The behavior is different in different
         # versions of Python, so be careful when running this test.
@@ -500,7 +500,7 @@ class SimpleStatementTest(CoverageTest):
             missing=["", "6"],
         )
 
-    def test_import(self):
+    def test_import(self) -> None:
         self.check_coverage("""\
             import string
             from sys import path
@@ -547,7 +547,7 @@ class SimpleStatementTest(CoverageTest):
             """,
             [1,3], "")
 
-    def test_global(self):
+    def test_global(self) -> None:
         self.check_coverage("""\
             g = h = i = 1
             def fn():
@@ -568,7 +568,7 @@ class SimpleStatementTest(CoverageTest):
             """,
             [1,2,3,4,5], "")
 
-    def test_exec(self):
+    def test_exec(self) -> None:
         self.check_coverage("""\
             a = b = c = 1
             exec("a = 2")
@@ -598,7 +598,7 @@ class SimpleStatementTest(CoverageTest):
             """,
             [1,2,3,4,7], "")
 
-    def test_extra_doc_string(self):
+    def test_extra_doc_string(self) -> None:
         self.check_coverage("""\
             a = 1
             "An extra docstring, should be a comment."
@@ -621,7 +621,7 @@ class SimpleStatementTest(CoverageTest):
             "",
         )
 
-    def test_nonascii(self):
+    def test_nonascii(self) -> None:
         self.check_coverage("""\
             # coding: utf-8
             a = 2
@@ -630,7 +630,7 @@ class SimpleStatementTest(CoverageTest):
             [2, 3]
         )
 
-    def test_module_docstring(self):
+    def test_module_docstring(self) -> None:
         self.check_coverage("""\
             '''I am a module docstring.'''
             a = 2
@@ -652,7 +652,7 @@ class SimpleStatementTest(CoverageTest):
 class CompoundStatementTest(CoverageTest):
     """Testing coverage of multi-line compound statements."""
 
-    def test_statement_list(self):
+    def test_statement_list(self) -> None:
         self.check_coverage("""\
             a = 1;
             b = 2; c = 3
@@ -662,7 +662,7 @@ class CompoundStatementTest(CoverageTest):
             """,
             [1,2,3,5], "")
 
-    def test_if(self):
+    def test_if(self) -> None:
         self.check_coverage("""\
             a = 1
             if a == 1:
@@ -705,7 +705,7 @@ class CompoundStatementTest(CoverageTest):
             """,
             [1,2,3,4,6,8,9], "6-8")
 
-    def test_elif(self):
+    def test_elif(self) -> None:
         self.check_coverage("""\
             a = 1; b = 2; c = 3;
             if a == 1:
@@ -743,7 +743,7 @@ class CompoundStatementTest(CoverageTest):
             [1,2,3,4,5,7,8], "3, 5", report="7 2 4 2 64% 3, 5",
         )
 
-    def test_elif_no_else(self):
+    def test_elif_no_else(self) -> None:
         self.check_coverage("""\
             a = 1; b = 2; c = 3;
             if a == 1:
@@ -765,7 +765,7 @@ class CompoundStatementTest(CoverageTest):
             [1,2,3,4,5,6], "3", report="6 1 4 2 70% 3, 4->6",
         )
 
-    def test_elif_bizarre(self):
+    def test_elif_bizarre(self) -> None:
         self.check_coverage("""\
             def f(self):
                 if self==1:
@@ -783,7 +783,7 @@ class CompoundStatementTest(CoverageTest):
             """,
             [1,2,3,4,5,6,7,8,9,10,11,13], "2-13")
 
-    def test_split_if(self):
+    def test_split_if(self) -> None:
         self.check_coverage("""\
             a = 1; b = 2; c = 3;
             if \\
@@ -824,7 +824,7 @@ class CompoundStatementTest(CoverageTest):
             """,
             [1,2,4,5,7,9,10], "4, 7")
 
-    def test_pathological_split_if(self):
+    def test_pathological_split_if(self) -> None:
         self.check_coverage("""\
             a = 1; b = 2; c = 3;
             if (
@@ -871,7 +871,7 @@ class CompoundStatementTest(CoverageTest):
             """,
             [1,2,5,6,9,11,12], "5, 9")
 
-    def test_absurd_split_if(self):
+    def test_absurd_split_if(self) -> None:
         self.check_coverage("""\
             a = 1; b = 2; c = 3;
             if a == 1 \\
@@ -912,7 +912,7 @@ class CompoundStatementTest(CoverageTest):
             """,
             [1,2,4,5,7,9,10], "4, 7")
 
-    def test_constant_if(self):
+    def test_constant_if(self) -> None:
         if env.PYBEHAVIOR.keep_constant_test:
             lines = [1, 2, 3]
         else:
@@ -926,7 +926,7 @@ class CompoundStatementTest(CoverageTest):
             "",
         )
 
-    def test_while(self):
+    def test_while(self) -> None:
         self.check_coverage("""\
             a = 3; b = 0
             while a:
@@ -944,7 +944,7 @@ class CompoundStatementTest(CoverageTest):
             """,
             [1,2,3,4,5], "")
 
-    def test_while_else(self):
+    def test_while_else(self) -> None:
         # Take the else branch.
         self.check_coverage("""\
             a = 3; b = 0
@@ -969,7 +969,7 @@ class CompoundStatementTest(CoverageTest):
             """,
             [1,2,3,4,5,7,8], "7")
 
-    def test_split_while(self):
+    def test_split_while(self) -> None:
         self.check_coverage("""\
             a = 3; b = 0
             while \\
@@ -990,7 +990,7 @@ class CompoundStatementTest(CoverageTest):
             """,
             [1,2,5,6,7], "")
 
-    def test_for(self):
+    def test_for(self) -> None:
         self.check_coverage("""\
             a = 0
             for i in [1,2,3,4,5]:
@@ -1016,7 +1016,7 @@ class CompoundStatementTest(CoverageTest):
             """,
             [1,2,3,4,5], "")
 
-    def test_for_else(self):
+    def test_for_else(self) -> None:
         self.check_coverage("""\
             a = 0
             for i in range(5):
@@ -1037,7 +1037,7 @@ class CompoundStatementTest(CoverageTest):
             """,
             [1,2,3,4,6,7], "6")
 
-    def test_split_for(self):
+    def test_split_for(self) -> None:
         self.check_coverage("""\
             a = 0
             for \\
@@ -1057,7 +1057,7 @@ class CompoundStatementTest(CoverageTest):
             """,
             [1,2,6,7], "")
 
-    def test_try_except(self):
+    def test_try_except(self) -> None:
         self.check_coverage("""\
             a = 0
             try:
@@ -1118,7 +1118,7 @@ class CompoundStatementTest(CoverageTest):
             arcz_missing="45 58",
         )
 
-    def test_try_except_stranded_else(self):
+    def test_try_except_stranded_else(self) -> None:
         if env.PYBEHAVIOR.omit_after_jump:
             # The else can't be reached because the try ends with a raise.
             lines = [1,2,3,4,5,6,9]
@@ -1147,7 +1147,7 @@ class CompoundStatementTest(CoverageTest):
             arcz_missing=arcz_missing,
         )
 
-    def test_try_finally(self):
+    def test_try_finally(self) -> None:
         self.check_coverage("""\
             a = 0
             try:
@@ -1171,7 +1171,7 @@ class CompoundStatementTest(CoverageTest):
             """,
             [1,2,3,4,5,7,8,9,10], "")
 
-    def test_function_def(self):
+    def test_function_def(self) -> None:
         self.check_coverage("""\
             a = 99
             def foo():
@@ -1213,7 +1213,7 @@ class CompoundStatementTest(CoverageTest):
             """,
             [1,10,12,13], "")
 
-    def test_class_def(self):
+    def test_class_def(self) -> None:
         arcz="-22 2D DE E-2  23 36 6A A-2  -68 8-6   -AB B-A"
         self.check_coverage("""\
             # A comment.
@@ -1239,7 +1239,7 @@ class CompoundStatementTest(CoverageTest):
 class ExcludeTest(CoverageTest):
     """Tests of the exclusion feature to mark lines as not covered."""
 
-    def test_default(self):
+    def test_default(self) -> None:
         # A number of forms of pragma comment are accepted.
         self.check_coverage("""\
             a = 1
@@ -1253,7 +1253,7 @@ class ExcludeTest(CoverageTest):
             [1,3,5,7]
         )
 
-    def test_simple(self):
+    def test_simple(self) -> None:
         self.check_coverage("""\
             a = 1; b = 2
 
@@ -1262,7 +1262,7 @@ class ExcludeTest(CoverageTest):
             """,
             [1,3], "", excludes=['-cc'])
 
-    def test_two_excludes(self):
+    def test_two_excludes(self) -> None:
         self.check_coverage("""\
             a = 1; b = 2
 
@@ -1274,7 +1274,7 @@ class ExcludeTest(CoverageTest):
             """,
             [1,3,5,7], "5", excludes=['-cc', '-xx'])
 
-    def test_excluding_if_suite(self):
+    def test_excluding_if_suite(self) -> None:
         self.check_coverage("""\
             a = 1; b = 2
 
@@ -1286,7 +1286,7 @@ class ExcludeTest(CoverageTest):
             """,
             [1,7], "", excludes=['not-here'])
 
-    def test_excluding_if_but_not_else_suite(self):
+    def test_excluding_if_but_not_else_suite(self) -> None:
         self.check_coverage("""\
             a = 1; b = 2
 
@@ -1301,7 +1301,7 @@ class ExcludeTest(CoverageTest):
             """,
             [1,8,9,10], "", excludes=['not-here'])
 
-    def test_excluding_else_suite(self):
+    def test_excluding_else_suite(self) -> None:
         self.check_coverage("""\
             a = 1; b = 2
 
@@ -1336,7 +1336,7 @@ class ExcludeTest(CoverageTest):
             """,
             [1,3,4,5,6,17], "", excludes=['#pragma: NO COVER'])
 
-    def test_excluding_elif_suites(self):
+    def test_excluding_elif_suites(self) -> None:
         self.check_coverage("""\
             a = 1; b = 2
 
@@ -1354,7 +1354,7 @@ class ExcludeTest(CoverageTest):
             """,
             [1,3,4,5,6,11,12,13], "11-12", excludes=['#pragma: NO COVER'])
 
-    def test_excluding_oneline_if(self):
+    def test_excluding_oneline_if(self) -> None:
         self.check_coverage("""\
             def foo():
                 a = 2
@@ -1365,7 +1365,7 @@ class ExcludeTest(CoverageTest):
             """,
             [1,2,4,6], "", excludes=["no cover"])
 
-    def test_excluding_a_colon_not_a_suite(self):
+    def test_excluding_a_colon_not_a_suite(self) -> None:
         self.check_coverage("""\
             def foo():
                 l = list(range(10))
@@ -1376,7 +1376,7 @@ class ExcludeTest(CoverageTest):
             """,
             [1,2,4,6], "", excludes=["no cover"])
 
-    def test_excluding_for_suite(self):
+    def test_excluding_for_suite(self) -> None:
         self.check_coverage("""\
             a = 0
             for i in [1,2,3,4,5]:     #pragma: NO COVER
@@ -1404,7 +1404,7 @@ class ExcludeTest(CoverageTest):
             """,
             [1,7], "", excludes=['#pragma: NO COVER'])
 
-    def test_excluding_for_else(self):
+    def test_excluding_for_else(self) -> None:
         self.check_coverage("""\
             a = 0
             for i in range(5):
@@ -1416,7 +1416,7 @@ class ExcludeTest(CoverageTest):
             """,
             [1,2,3,4,7], "", excludes=['#pragma: NO COVER'])
 
-    def test_excluding_while(self):
+    def test_excluding_while(self) -> None:
         self.check_coverage("""\
             a = 3; b = 0
             while a*b:           #pragma: NO COVER
@@ -1436,7 +1436,7 @@ class ExcludeTest(CoverageTest):
             """,
             [1,7], "", excludes=['#pragma: NO COVER'])
 
-    def test_excluding_while_else(self):
+    def test_excluding_while_else(self) -> None:
         self.check_coverage("""\
             a = 3; b = 0
             while a:
@@ -1448,7 +1448,7 @@ class ExcludeTest(CoverageTest):
             """,
             [1,2,3,4,7], "", excludes=['#pragma: NO COVER'])
 
-    def test_excluding_try_except(self):
+    def test_excluding_try_except(self) -> None:
         self.check_coverage("""\
             a = 0
             try:
@@ -1495,7 +1495,7 @@ class ExcludeTest(CoverageTest):
             arcz_missing="58",
         )
 
-    def test_excluding_try_except_stranded_else(self):
+    def test_excluding_try_except_stranded_else(self) -> None:
         if env.PYBEHAVIOR.omit_after_jump:
             # The else can't be reached because the try ends with a raise.
             arcz = ".1 12 23 34 45 56 69 9."
@@ -1519,7 +1519,7 @@ class ExcludeTest(CoverageTest):
             arcz_missing=arcz_missing,
         )
 
-    def test_excluding_if_pass(self):
+    def test_excluding_if_pass(self) -> None:
         # From a comment on the coverage.py page by Michael McNeil Forbes:
         self.check_coverage("""\
             def f():
@@ -1532,7 +1532,7 @@ class ExcludeTest(CoverageTest):
             """,
             [1,7], "", excludes=["no cover"])
 
-    def test_excluding_function(self):
+    def test_excluding_function(self) -> None:
         self.check_coverage("""\
             def fn(foo):      #pragma: NO COVER
                 a = 1
@@ -1544,7 +1544,7 @@ class ExcludeTest(CoverageTest):
             """,
             [6,7], "", excludes=['#pragma: NO COVER'])
 
-    def test_excluding_method(self):
+    def test_excluding_method(self) -> None:
         self.check_coverage("""\
             class Fooey:
                 def __init__(self):
@@ -1558,7 +1558,7 @@ class ExcludeTest(CoverageTest):
             """,
             [1,2,3,8,9], "", excludes=['#pragma: NO COVER'])
 
-    def test_excluding_class(self):
+    def test_excluding_class(self) -> None:
         self.check_coverage("""\
             class Fooey:            #pragma: NO COVER
                 def __init__(self):
@@ -1572,7 +1572,7 @@ class ExcludeTest(CoverageTest):
             """,
             [8,9], "", excludes=['#pragma: NO COVER'])
 
-    def test_excludes_non_ascii(self):
+    def test_excludes_non_ascii(self) -> None:
         self.check_coverage("""\
             # coding: utf-8
             a = 1; b = 2
@@ -1583,7 +1583,7 @@ class ExcludeTest(CoverageTest):
             [2, 4], "", excludes=['✘cover']
         )
 
-    def test_formfeed(self):
+    def test_formfeed(self) -> None:
         # https://github.com/nedbat/coveragepy/issues/461
         self.check_coverage("""\
             x = 1
@@ -1599,7 +1599,7 @@ class ExcludeTest(CoverageTest):
             [1, 6], "", excludes=['assert'],
         )
 
-    def test_excluded_comprehension_branches(self):
+    def test_excluded_comprehension_branches(self) -> None:
         # https://github.com/nedbat/coveragepy/issues/1271
         self.check_coverage("""\
             x, y = [0], [1]
@@ -1617,7 +1617,7 @@ class ExcludeTest(CoverageTest):
 class Py24Test(CoverageTest):
     """Tests of new syntax in Python 2.4."""
 
-    def test_function_decorators(self):
+    def test_function_decorators(self) -> None:
         lines = [1, 2, 3, 4, 6, 8, 10, 12]
         if env.PYBEHAVIOR.trace_decorated_def:
             lines = sorted(lines + [9])
@@ -1637,7 +1637,7 @@ class Py24Test(CoverageTest):
             """,
             lines, "")
 
-    def test_function_decorators_with_args(self):
+    def test_function_decorators_with_args(self) -> None:
         lines = [1, 2, 3, 4, 5, 6, 8, 10, 12]
         if env.PYBEHAVIOR.trace_decorated_def:
             lines = sorted(lines + [9])
@@ -1657,7 +1657,7 @@ class Py24Test(CoverageTest):
             """,
             lines, "")
 
-    def test_double_function_decorators(self):
+    def test_double_function_decorators(self) -> None:
         lines = [1, 2, 3, 4, 5, 7, 8, 9, 10, 11, 12, 14, 15, 17, 19, 21, 22, 24, 26]
         if env.PYBEHAVIOR.trace_decorated_def:
             lines = sorted(lines + [16, 23])
@@ -1695,7 +1695,7 @@ class Py24Test(CoverageTest):
 class Py25Test(CoverageTest):
     """Tests of new syntax in Python 2.5."""
 
-    def test_with_statement(self):
+    def test_with_statement(self) -> None:
         self.check_coverage("""\
             class Managed:
                 def __enter__(self):
@@ -1718,7 +1718,7 @@ class Py25Test(CoverageTest):
             """,
             [1,2,3,5,6,8,9,10,11,13,14,15,16,17,18], "")
 
-    def test_try_except_finally(self):
+    def test_try_except_finally(self) -> None:
         self.check_coverage("""\
             a = 0; b = 0
             try:
@@ -1798,7 +1798,7 @@ class Py25Test(CoverageTest):
             arcz_missing="45 59",
         )
 
-    def test_try_except_finally_stranded_else(self):
+    def test_try_except_finally_stranded_else(self) -> None:
         if env.PYBEHAVIOR.omit_after_jump:
             # The else can't be reached because the try ends with a raise.
             lines = [1,2,3,4,5,6,10,11]
@@ -1835,33 +1835,33 @@ class ModuleTest(CoverageTest):
 
     run_in_temp_dir = False
 
-    def test_not_singleton(self):
+    def test_not_singleton(self) -> None:
         # You *can* create another coverage object.
         coverage.Coverage()
         coverage.Coverage()
 
-    def test_old_name_and_new_name(self):
+    def test_old_name_and_new_name(self) -> None:
         assert coverage.coverage is coverage.Coverage
 
 
 class ReportingTest(CoverageTest):
     """Tests of some reporting behavior."""
 
-    def test_no_data_to_report_on_annotate(self):
+    def test_no_data_to_report_on_annotate(self) -> None:
         # Reporting with no data produces a nice message and no output
         # directory.
         with pytest.raises(NoDataError, match="No data to report."):
             self.command_line("annotate -d ann")
         self.assert_doesnt_exist("ann")
 
-    def test_no_data_to_report_on_html(self):
+    def test_no_data_to_report_on_html(self) -> None:
         # Reporting with no data produces a nice message and no output
         # directory.
         with pytest.raises(NoDataError, match="No data to report."):
             self.command_line("html -d htmlcov")
         self.assert_doesnt_exist("htmlcov")
 
-    def test_no_data_to_report_on_xml(self):
+    def test_no_data_to_report_on_xml(self) -> None:
         # Reporting with no data produces a nice message.
         with pytest.raises(NoDataError, match="No data to report."):
             self.command_line("xml")

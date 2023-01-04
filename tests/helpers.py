@@ -17,7 +17,7 @@ import warnings
 
 from typing import (
     cast,
-    Any, Callable, Generator, Iterable, List, Optional, Set, Tuple, Type, Union,
+    Any, Callable, Generator, Iterable, List, Optional, Set, Tuple, Type, TypeVar, Union,
 )
 
 import pytest
@@ -281,14 +281,20 @@ def change_dir(new_dir: str) -> Generator[None, None, None]:
     finally:
         os.chdir(old_dir)
 
+T = TypeVar("T")
 
-def assert_count_equal(a: Iterable[Union[int, str]], b: Iterable[Union[int, str]]) -> None:
+def assert_count_equal(
+    a: Optional[Iterable[T]],
+    b: Optional[Iterable[T]],
+) -> None:
     """
     A pytest-friendly implementation of assertCountEqual.
 
     Assert that `a` and `b` have the same elements, but maybe in different order.
     This only works for hashable elements.
     """
+    assert a is not None
+    assert b is not None
     assert collections.Counter(list(a)) == collections.Counter(list(b))
 
 
