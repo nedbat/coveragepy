@@ -1079,7 +1079,7 @@ class AstArcAnalyzer:
         exits |= self.add_body_arcs(node.orelse, from_start=from_start)
         return exits
 
-    if sys.version_info >= (3, 10):
+    if sys.version_info > (3, 10, 0, 'alpha', 1):
         def _handle__Match(self, node: ast.Match) -> Set[ArcStart]:
             start = self.line_for_node(node)
             last_start = start

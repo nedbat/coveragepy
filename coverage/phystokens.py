@@ -82,7 +82,7 @@ class MatchCaseFinder(ast.NodeVisitor):
         self.match_case_lines: Set[TLineNo] = set()
         self.visit(ast.parse(source))
 
-    if sys.version_info >= (3, 10):
+    if sys.version_info > (3, 10, 0, 'alpha', 1):
         def visit_Match(self, node: ast.Match) -> None:
             """Invoked by ast.NodeVisitor.visit"""
             self.match_case_lines.add(node.lineno)
