@@ -328,7 +328,7 @@ class PythonParser:
         self,
         start: TLineNo,
         end: TLineNo,
-        executed_arcs: Optional[Set[TArc]]=None,
+        executed_arcs: Optional[Iterable[TArc]]=None,
     ) -> str:
         """Provide an English sentence describing a missing arc."""
         if self._missing_arc_fragments is None:

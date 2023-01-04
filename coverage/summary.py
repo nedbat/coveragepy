@@ -3,40 +3,56 @@
 
 """Summary reporting"""
 
+from __future__ import annotations
+
 import sys
+
+from typing import Any, IO, Iterable, List, Optional, Tuple, TYPE_CHECKING
 
 from coverage.exceptions import ConfigError, NoDataError
 from coverage.misc import human_sorted_items
+from coverage.plugin import FileReporter
 from coverage.report import get_analysis_to_report
-from coverage.results import Numbers
+from coverage.results import Analysis, Numbers
+from coverage.types import TMorf
+
+if TYPE_CHECKING:
+    from coverage import Coverage
 
 
 class SummaryReporter:
     """A reporter for writing the summary report."""
 
-    def __init__(self, coverage):
+    def __init__(self, coverage: Coverage) -> None:
         self.coverage = coverage
         self.config = self.coverage.config
         self.branches = coverage.get_data().has_arcs()
-        self.outfile = None
+        self.outfile: Optional[IO[str]] = None
         self.output_format = self.config.format or "text"
         if self.output_format not in {"text", "markdown", "total"}:
             raise ConfigError(f"Unknown report format choice: {self.output_format!r}")
-        self.fr_analysis = []
+        self.fr_analysis: List[Tuple[FileReporter, Analysis]] = []
         self.skipped_count = 0
         self.empty_count = 0
         self.total = Numbers(precision=self.config.precision)
 
-    def write(self, line):
+    def write(self, line: str) -> None:
         """Write a line to the output, adding a newline."""
+        assert self.outfile is not None
         self.outfile.write(line.rstrip())
         self.outfile.write("\n")
 
-    def write_items(self, items):
+    def write_items(self, items: Iterable[str]) -> None:
         """Write a list of strings, joined together."""
         self.write("".join(items))
 
-    def _report_text(self, header, lines_values, total_line, end_lines):
+    def _report_text(
+        self,
+        header: List[str],
+        lines_values: List[List[Any]],
+        total_line: List[Any],
+        end_lines: List[str],
+    ) -> None:
         """Internal method that prints report data in text format.
 
         `header` is a list with captions.
@@ -91,7 +107,13 @@ class SummaryReporter:
         for end_line in end_lines:
             self.write(end_line)
 
-    def _report_markdown(self, header, lines_values, total_line, end_lines):
+    def _report_markdown(
+        self,
+        header: List[str],
+        lines_values: List[List[Any]],
+        total_line: List[Any],
+        end_lines: List[str],
+    ) -> None:
         """Internal method that prints report data in markdown format.
 
         `header` is a list with captions.
@@ -134,7 +156,7 @@ class SummaryReporter:
 
         # Write the TOTAL line
         formats.update(dict(Name="|{:>{name_len}} |", Cover="{:>{n}} |"))
-        total_line_items = []
+        total_line_items: List[str] = []
         for item, value in zip(header, total_line):
             if value == "":
                 insert = value
@@ -147,7 +169,7 @@ class SummaryReporter:
         for end_line in end_lines:
             self.write(end_line)
 
-    def report(self, morfs, outfile=None) -> float:
+    def report(self, morfs: Optional[Iterable[TMorf]], outfile: Optional[IO[str]]=None) -> float:
         """Writes a report summarizing coverage statistics per module.
 
         `outfile` is a text-mode file object to write the summary to.
@@ -169,7 +191,7 @@ class SummaryReporter:
 
         return self.total.pc_covered
 
-    def tabular_report(self):
+    def tabular_report(self) -> None:
         """Writes tabular report formats."""
         # Prepare the header line and column sorting.
         header = ["Name", "Stmts", "Miss"]
@@ -212,7 +234,10 @@ class SummaryReporter:
         if sort_option == "name":
             lines_values = human_sorted_items(lines_values, reverse=reverse)
         else:
-            lines_values.sort(key=lambda line: (line[sort_idx], line[0]), reverse=reverse)
+            lines_values.sort(
+                key=lambda line: (line[sort_idx], line[0]),     # type: ignore[index]
+                reverse=reverse,
+            )
 
         # Calculate total if we had at least one file.
         total_line = ["TOTAL", self.total.n_statements, self.total.n_missing]
@@ -239,7 +264,7 @@ class SummaryReporter:
             formatter = self._report_text
         formatter(header, lines_values, total_line, end_lines)
 
-    def report_one_file(self, fr, analysis):
+    def report_one_file(self, fr: FileReporter, analysis: Analysis) -> None:
         """Report on just one file, the callback from report()."""
         nums = analysis.numbers
         self.total += nums

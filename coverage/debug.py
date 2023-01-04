@@ -23,6 +23,7 @@ from typing import (
 )
 
 from coverage.misc import isolate_module
+from coverage.types import TWritable
 
 os = isolate_module(os)
 
@@ -184,7 +185,7 @@ def short_stack(limit: Optional[int]=None, skip: int=0) -> str:
 
 def dump_stack_frames(
     limit: Optional[int]=None,
-    out: Optional[IO[str]]=None,
+    out: Optional[TWritable]=None,
     skip: int=0
 ) -> None:
     """Print a summary of the stack to stdout, or someplace else."""
@@ -371,7 +372,7 @@ class DebugOutputFile:                              # pragma: debugging
         self.outfile.flush()
 
 
-def log(msg, stack=False):                                  # pragma: debugging
+def log(msg: str, stack: bool=False) -> None:               # pragma: debugging
     """Write a log message as forcefully as possible."""
     out = DebugOutputFile.get_one(interim=True)
     out.write(msg+"\n")

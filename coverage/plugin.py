@@ -496,7 +496,7 @@ class FileReporter(CoveragePluginBase):
         self,
         start: TLineNo,
         end: TLineNo,
-        executed_arcs: Optional[Set[TArc]]=None,        # pylint: disable=unused-argument
+        executed_arcs: Optional[Iterable[TArc]]=None,   # pylint: disable=unused-argument
     ) -> str:
         """Provide an English sentence describing a missing arc.
 

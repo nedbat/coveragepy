@@ -25,7 +25,7 @@ import pytest
 from coverage import env
 from coverage.exceptions import CoverageWarning
 from coverage.misc import output_encoding
-from coverage.types import TLineNo
+from coverage.types import TArc, TLineNo
 
 
 def run_command(cmd: str) -> Tuple[int, str]:
@@ -198,7 +198,7 @@ _arcz_map.update({c: ord(c) - ord('0') for c in '123456789'})
 _arcz_map.update({c: 10 + ord(c) - ord('A') for c in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'})
 
 
-def arcz_to_arcs(arcz: str) -> List[Tuple[TLineNo, TLineNo]]:
+def arcz_to_arcs(arcz: str) -> List[TArc]:
     """Convert a compact textual representation of arcs to a list of pairs.
 
     The text has space-separated pairs of letters.  Period is -1, 1-9 are
@@ -249,7 +249,7 @@ def _arcs_to_arcz_repr_one(num: TLineNo) -> str:
     return z
 
 
-def arcs_to_arcz_repr(arcs: Iterable[Tuple[TLineNo, TLineNo]]) -> str:
+def arcs_to_arcz_repr(arcs: Optional[Iterable[TArc]]) -> str:
     """Convert a list of arcs to a readable multi-line form for asserting.
 
     Each pair is on its own line, with a comment showing the arcz form,

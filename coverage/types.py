@@ -166,3 +166,10 @@ class TDebugCtl(Protocol):
 
     def write(self, msg: str) -> None:
         """Write a line of debug output."""
+
+
+class TWritable(Protocol):
+    """Anything that can be written to."""
+
+    def write(self, msg: str) -> None:
+        """Write a message."""

@@ -22,7 +22,7 @@ import types
 from types import ModuleType
 from typing import (
     Any, Callable, Dict, Generator, IO, Iterable, List, Mapping, Optional,
-    Tuple, TypeVar, Union,
+    Sequence, Tuple, TypeVar, Union,
 )
 
 from coverage import env
@@ -361,10 +361,12 @@ def human_sorted(strings: Iterable[str]) -> List[str]:
     """
     return sorted(strings, key=_human_key)
 
+SortableItem = TypeVar("SortableItem", bound=Sequence[Any])
+
 def human_sorted_items(
-    items: Iterable[Tuple[str, Any]],
+    items: Iterable[SortableItem],
     reverse: bool=False,
-) -> List[Tuple[str, Any]]:
+) -> List[SortableItem]:
     """Sort (string, ...) items the way humans expect.
 
     The elements of `items` can be any tuple/list. They'll be sorted by the

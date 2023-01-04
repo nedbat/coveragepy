@@ -224,7 +224,7 @@ class PythonFileReporter(FileReporter):
         self,
         start: TLineNo,
         end: TLineNo,
-        executed_arcs: Optional[Set[TArc]]=None,
+        executed_arcs: Optional[Iterable[TArc]]=None,
     ) -> str:
         return self.parser.missing_arc_description(start, end, executed_arcs)
 
