@@ -11,7 +11,9 @@ import os
 import sys
 import sysconfig
 import warnings
+
 from pathlib import Path
+from typing import Generator, Optional
 
 import pytest
 
@@ -30,7 +32,7 @@ pytest_plugins = "tests.balance_xdist_plugin"
 
 
 @pytest.fixture(autouse=True)
-def set_warnings():
+def set_warnings() -> None:
     """Configure warnings to show while running tests."""
     warnings.simplefilter("default")
     warnings.simplefilter("once", DeprecationWarning)
@@ -61,7 +63,7 @@ def set_warnings():
 
 
 @pytest.fixture(autouse=True)
-def reset_sys_path():
+def reset_sys_path() -> Generator[None, None, None]:
     """Clean up sys.path changes around every test."""
     sys_path = list(sys.path)
     yield
@@ -69,7 +71,7 @@ def reset_sys_path():
 
 
 @pytest.fixture(autouse=True)
-def reset_environment():
+def reset_environment() -> Generator[None, None, None]:
     """Make sure a test setting an envvar doesn't leak into another test."""
     old_environ = os.environ.copy()
     yield
@@ -78,14 +80,14 @@ def reset_environment():
 
 
 @pytest.fixture(autouse=True)
-def reset_filesdotpy_globals():
+def reset_filesdotpy_globals() -> Generator[None, None, None]:
     """coverage/files.py has some unfortunate globals. Reset them every test."""
     set_relative_directory()
     yield
 
 WORKER = os.environ.get("PYTEST_XDIST_WORKER", "none")
 
-def pytest_sessionstart():
+def pytest_sessionstart() -> None:
     """Run once at the start of the test session."""
     # Only in the main process...
     if WORKER == "none":
@@ -96,7 +98,7 @@ def pytest_sessionstart():
         # subcover.pth is deleted by pytest_sessionfinish below.
 
 
-def pytest_sessionfinish():
+def pytest_sessionfinish() -> None:
     """Hook the end of a test session, to clean up."""
     # This is called by each of the workers and by the main process.
     if WORKER == "none":
@@ -106,7 +108,7 @@ def pytest_sessionfinish():
                 pth_file.unlink()
 
 
-def possible_pth_dirs():
+def possible_pth_dirs() -> Generator[Path, None, None]:
     """Produce a sequence of directories for trying to write .pth files."""
     # First look through sys.path, and if we find a .pth file, then it's a good
     # place to put ours.
@@ -120,7 +122,7 @@ def possible_pth_dirs():
     yield Path(sysconfig.get_path("purelib"))       # pragma: cant happen
 
 
-def find_writable_pth_directory():
+def find_writable_pth_directory() -> Optional[Path]:
     """Find a place to write a .pth file."""
     for pth_dir in possible_pth_dirs():             # pragma: part covered
         try_it = pth_dir / f"touch_{WORKER}.it"

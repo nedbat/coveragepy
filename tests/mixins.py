@@ -12,8 +12,7 @@ import os
 import os.path
 import sys
 
-from typing import Iterator, Tuple
-from typing import Iterable, Optional
+from typing import Any, Callable, Iterable, Iterator, Optional, Tuple
 
 import pytest
 
@@ -25,7 +24,11 @@ class PytestBase:
     """A base class to connect to pytest in a test class hierarchy."""
 
     @pytest.fixture(autouse=True)
-    def connect_to_pytest(self, request, monkeypatch) -> None:
+    def connect_to_pytest(
+        self,
+        request: pytest.FixtureRequest,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
         """Captures pytest facilities for use by other test helpers."""
         # pylint: disable=attribute-defined-outside-init
         self._pytest_request = request
@@ -36,15 +39,15 @@ class PytestBase:
         """Per-test initialization. Override this as you wish."""
         pass
 
-    def addCleanup(self, fn, *args) -> None:
+    def addCleanup(self, fn: Callable[..., None], *args: Any) -> None:
         """Like unittest's addCleanup: code to call when the test is done."""
         self._pytest_request.addfinalizer(lambda: fn(*args))
 
-    def set_environ(self, name, value) -> None:
+    def set_environ(self, name: str, value: str) -> None:
         """Set an environment variable `name` to be `value`."""
         self._monkeypatch.setenv(name, value)
 
-    def del_environ(self, name) -> None:
+    def del_environ(self, name: str) -> None:
         """Delete an environment variable, unless we set it."""
         self._monkeypatch.delenv(name, raising=False)
 
@@ -133,12 +136,12 @@ class StdStreamCapturingMixin:
 
     def stdouterr(self) -> Tuple[str, str]:
         """Returns (out, err), two strings for stdout and stderr."""
-        return self.capsys.readouterr()
+        return self.capsys.readouterr()             # type: ignore[no-any-return]
 
     def stdout(self) -> str:
         """Returns a string, the captured stdout."""
-        return self.capsys.readouterr().out
+        return self.capsys.readouterr().out         # type: ignore[no-any-return]
 
     def stderr(self) -> str:
         """Returns a string, the captured stderr."""
-        return self.capsys.readouterr().err
+        return self.capsys.readouterr().err         # type: ignore[no-any-return]

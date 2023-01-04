@@ -3,12 +3,12 @@
 
 """OS information for testing."""
 
-from coverage import env
+import sys
 
 
-if env.WINDOWS:
+if sys.platform == "win32":
     # Windows implementation
-    def process_ram():
+    def process_ram() -> int:
         """How much RAM is this process using? (Windows)"""
         import ctypes
         # From: http://lists.ubuntu.com/archives/bazaar-commits/2009-February/011990.html
@@ -38,35 +38,35 @@ if env.WINDOWS:
             return 0                # pragma: cant happen
         return mem_struct.PrivateUsage
 
-elif env.LINUX:
+elif sys.platform.startswith("linux"):
     # Linux implementation
     import os
 
     _scale = {'kb': 1024, 'mb': 1024*1024}
 
-    def _VmB(key):
+    def _VmB(key: str) -> int:
         """Read the /proc/PID/status file to find memory use."""
         try:
             # Get pseudo file /proc/<pid>/status
-            with open('/proc/%d/status' % os.getpid()) as t:
+            with open(f"/proc/{os.getpid()}/status") as t:
                 v = t.read()
         except OSError:             # pragma: cant happen
             return 0    # non-Linux?
         # Get VmKey line e.g. 'VmRSS:  9999  kB\n ...'
         i = v.index(key)
-        v = v[i:].split(None, 3)
-        if len(v) < 3:              # pragma: part covered
+        vp = v[i:].split(None, 3)
+        if len(vp) < 3:             # pragma: part covered
             return 0                # pragma: cant happen
         # Convert Vm value to bytes.
-        return int(float(v[1]) * _scale[v[2].lower()])
+        return int(float(vp[1]) * _scale[vp[2].lower()])
 
-    def process_ram():
+    def process_ram() -> int:
         """How much RAM is this process using? (Linux implementation)"""
         return _VmB('VmRSS')
 
 else:
     # Generic implementation.
-    def process_ram():
+    def process_ram() -> int:
         """How much RAM is this process using? (stdlib implementation)"""
         import resource
         return resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
