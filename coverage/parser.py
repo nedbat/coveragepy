@@ -9,7 +9,6 @@ import ast
 import collections
 import os
 import re
-import sys
 import token
 import tokenize
 
