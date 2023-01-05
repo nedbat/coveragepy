@@ -2,17 +2,29 @@
 # For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
 
 """Test json-based summary reporting for coverage.py"""
-from datetime import datetime
+
+from __future__ import annotations
+
 import json
 import os
 
+from datetime import datetime
+from typing import Any, Dict
+
 import coverage
+from coverage import Coverage
+
 from tests.coveragetest import UsingModulesMixin, CoverageTest
 
 
 class JsonReportTest(UsingModulesMixin, CoverageTest):
     """Tests of the JSON reports from coverage.py."""
-    def _assert_expected_json_report(self, cov, expected_result):
+
+    def _assert_expected_json_report(
+        self,
+        cov: Coverage,
+        expected_result: Dict[str, Any],
+    ) -> None:
         """
         Helper for tests that handles the common ceremony so the tests can be clearly show the
         consequences of setting various arguments.
@@ -39,7 +51,7 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
         del (parsed_result['meta']['timestamp'])
         assert parsed_result == expected_result
 
-    def test_branch_coverage(self):
+    def test_branch_coverage(self) -> None:
         cov = coverage.Coverage(branch=True)
         expected_result = {
             'meta': {
@@ -91,7 +103,7 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
         }
         self._assert_expected_json_report(cov, expected_result)
 
-    def test_simple_line_coverage(self):
+    def test_simple_line_coverage(self) -> None:
         cov = coverage.Coverage()
         expected_result = {
             'meta': {
@@ -125,7 +137,7 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
         }
         self._assert_expected_json_report(cov, expected_result)
 
-    def run_context_test(self, relative_files):
+    def run_context_test(self, relative_files: bool) -> None:
         """A helper for two tests below."""
         self.make_file("config", """\
             [run]
@@ -187,8 +199,8 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
         }
         self._assert_expected_json_report(cov, expected_result)
 
-    def test_context_non_relative(self):
+    def test_context_non_relative(self) -> None:
         self.run_context_test(relative_files=False)
 
-    def test_context_relative(self):
+    def test_context_relative(self) -> None:
         self.run_context_test(relative_files=True)

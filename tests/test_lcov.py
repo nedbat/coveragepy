@@ -3,6 +3,8 @@
 
 """Test LCOV-based summary reporting for coverage.py."""
 
+from __future__ import annotations
+
 import math
 import textwrap
 
@@ -15,7 +17,7 @@ from coverage import env
 class LcovTest(CoverageTest):
     """Tests of the LCOV reports from coverage.py."""
 
-    def create_initial_files(self):
+    def create_initial_files(self) -> None:
         """
         Helper for tests that handles the common ceremony so the tests can
         show the consequences of changes in the setup.
@@ -44,13 +46,12 @@ class LcovTest(CoverageTest):
                     self.assertAlmostEqual(cuboid_volume(5.5),166.375)
             """)
 
-    def get_lcov_report_content(self, filename="coverage.lcov"):
+    def get_lcov_report_content(self, filename: str="coverage.lcov") -> str:
         """Return the content of an LCOV report."""
         with open(filename, "r") as file:
-            file_contents = file.read()
-        return file_contents
+            return file.read()
 
-    def test_lone_file(self):
+    def test_lone_file(self) -> None:
         """For a single file with a couple of functions, the lcov should cover
         the function definitions themselves, but not the returns."""
         self.make_file("main_file.py", """\
@@ -81,7 +82,7 @@ class LcovTest(CoverageTest):
         actual_result = self.get_lcov_report_content()
         assert expected_result == actual_result
 
-    def test_simple_line_coverage_two_files(self):
+    def test_simple_line_coverage_two_files(self) -> None:
         """Test that line coverage is created when coverage is run,
         and matches the output of the file below."""
         self.create_initial_files()
@@ -119,7 +120,7 @@ class LcovTest(CoverageTest):
         actual_result = self.get_lcov_report_content(filename="data.lcov")
         assert expected_result == actual_result
 
-    def test_branch_coverage_one_file(self):
+    def test_branch_coverage_one_file(self) -> None:
         """Test that the reporter produces valid branch coverage."""
         self.make_file("main_file.py", """\
             #!/usr/bin/env python3
@@ -154,7 +155,7 @@ class LcovTest(CoverageTest):
         actual_result = self.get_lcov_report_content()
         assert expected_result == actual_result
 
-    def test_branch_coverage_two_files(self):
+    def test_branch_coverage_two_files(self) -> None:
         """Test that valid branch coverage is generated
         in the case of two files."""
         self.make_file("main_file.py", """\
@@ -215,7 +216,7 @@ class LcovTest(CoverageTest):
         actual_result = self.get_lcov_report_content()
         assert actual_result == expected_result
 
-    def test_half_covered_branch(self):
+    def test_half_covered_branch(self) -> None:
         """Test that for a given branch that is only half covered,
         the block numbers remain the same, and produces valid lcov.
         """
@@ -251,7 +252,7 @@ class LcovTest(CoverageTest):
         actual_result = self.get_lcov_report_content()
         assert actual_result == expected_result
 
-    def test_empty_init_files(self):
+    def test_empty_init_files(self) -> None:
         """Test that in the case of an empty __init__.py file, the lcov
         reporter will note that the file is there, and will note the empty
         line. It will also note the lack of branches, and the checksum for
