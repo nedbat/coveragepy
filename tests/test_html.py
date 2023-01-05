@@ -3,6 +3,8 @@
 
 """Tests that HTML generation is awesome."""
 
+from __future__ import annotations
+
 import collections
 import datetime
 import glob

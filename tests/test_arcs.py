@@ -3,6 +3,8 @@
 
 """Tests for coverage.py's arc measurement."""
 
+from __future__ import annotations
+
 import pytest
 
 from tests.coveragetest import CoverageTest

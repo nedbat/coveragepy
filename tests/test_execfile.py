@@ -3,6 +3,8 @@
 
 """Tests for coverage.execfile"""
 
+from __future__ import annotations
+
 import compileall
 import json
 import os

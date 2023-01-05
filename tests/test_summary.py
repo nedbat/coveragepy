@@ -3,6 +3,8 @@
 
 """Test text-based summary reporting for coverage.py"""
 
+from __future__ import annotations
+
 import glob
 import io
 import math

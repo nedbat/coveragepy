@@ -3,6 +3,8 @@
 
 """Tests for XML reports from coverage.py."""
 
+from __future__ import annotations
+
 import os
 import os.path
 import re

@@ -3,6 +3,8 @@
 
 """Determine contexts for coverage.py"""
 
+from __future__ import annotations
+
 from types import FrameType
 from typing import cast, Callable, Optional, Sequence
 

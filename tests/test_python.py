@@ -3,6 +3,8 @@
 
 """Tests of coverage/python.py"""
 
+from __future__ import annotations
+
 import pathlib
 import sys
 

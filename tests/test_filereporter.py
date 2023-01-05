@@ -3,6 +3,8 @@
 
 """Tests for FileReporters"""
 
+from __future__ import annotations
+
 import sys
 
 from coverage.plugin import FileReporter

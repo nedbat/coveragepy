@@ -3,6 +3,8 @@
 
 """Bytecode manipulation for coverage.py"""
 
+from __future__ import annotations
+
 from types import CodeType
 from typing import Generator
 

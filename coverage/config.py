@@ -4,6 +4,7 @@
 """Config file for coverage.py"""
 
 from __future__ import annotations
+
 import collections
 import configparser
 import copy

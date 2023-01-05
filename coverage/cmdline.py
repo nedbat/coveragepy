@@ -3,6 +3,8 @@
 
 """Command-line support for coverage.py."""
 
+from __future__ import annotations
+
 import glob
 import optparse     # pylint: disable=deprecated-module
 import os

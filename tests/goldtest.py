@@ -3,6 +3,8 @@
 
 """A test base class for tests based on gold file comparison."""
 
+from __future__ import annotations
+
 import difflib
 import filecmp
 import fnmatch

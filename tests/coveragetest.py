@@ -3,6 +3,8 @@
 
 """Base test case class for coverage.py testing."""
 
+from __future__ import annotations
+
 import contextlib
 import datetime
 import difflib

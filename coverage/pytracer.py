@@ -3,6 +3,8 @@
 
 """Raw data collector for coverage.py."""
 
+from __future__ import annotations
+
 import atexit
 import dis
 import sys

@@ -3,6 +3,8 @@
 
 """Tests for coverage.py's API."""
 
+from __future__ import annotations
+
 import fnmatch
 import glob
 import io

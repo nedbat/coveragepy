@@ -3,6 +3,8 @@
 
 """Tests for context support."""
 
+from __future__ import annotations
+
 import inspect
 import os.path
 

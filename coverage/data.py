@@ -10,6 +10,8 @@ imports working.
 
 """
 
+from __future__ import annotations
+
 import glob
 import hashlib
 import os.path

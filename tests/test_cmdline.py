@@ -3,6 +3,8 @@
 
 """Test cmdline.py for coverage.py."""
 
+from __future__ import annotations
+
 import ast
 import pprint
 import re

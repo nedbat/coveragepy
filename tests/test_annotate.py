@@ -3,6 +3,8 @@
 
 """Tests for annotation from coverage.py."""
 
+from __future__ import annotations
+
 import coverage
 
 from tests.coveragetest import CoverageTest

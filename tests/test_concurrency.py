@@ -3,6 +3,8 @@
 
 """Tests for concurrency libraries."""
 
+from __future__ import annotations
+
 import glob
 import multiprocessing
 import os

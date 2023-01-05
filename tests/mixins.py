@@ -7,6 +7,8 @@ Test class mixins
 Some of these are transitional while working toward pure-pytest style.
 """
 
+from __future__ import annotations
+
 import importlib
 import os
 import os.path

@@ -4,6 +4,8 @@
 """The version and URL for coverage.py"""
 # This file is exec'ed in setup.py, don't import anything!
 
+from __future__ import annotations
+
 # version_info: same semantics as sys.version_info.
 # _dev: the .devN suffix if any.
 version_info = (7, 0, 4, "alpha", 0)

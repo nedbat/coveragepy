@@ -3,6 +3,8 @@
 
 """Test the config file handling for coverage.py"""
 
+from __future__ import annotations
+
 import sys
 
 from unittest import mock

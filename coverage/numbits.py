@@ -13,12 +13,14 @@ in the blobs should be considered an implementation detail that might change in
 the future.  Use these functions to work with those binary blobs of data.
 
 """
+
+from __future__ import annotations
+
 import json
+import sqlite3
 
 from itertools import zip_longest
 from typing import Iterable, List
-
-import sqlite3
 
 
 def nums_to_numbits(nums: Iterable[int]) -> bytes:
