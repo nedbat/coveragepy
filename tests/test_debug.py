@@ -9,6 +9,8 @@ import os
 import re
 import sys
 
+from typing import Any, Callable, Iterable
+
 import pytest
 
 import coverage
@@ -25,7 +27,7 @@ class InfoFormatterTest(CoverageTest):
 
     run_in_temp_dir = False
 
-    def test_info_formatter(self):
+    def test_info_formatter(self) -> None:
         lines = list(info_formatter([
             ('x', 'hello there'),
             ('very long label', ['one element']),
@@ -43,7 +45,7 @@ class InfoFormatterTest(CoverageTest):
         ]
         assert expected == lines
 
-    def test_info_formatter_with_generator(self):
+    def test_info_formatter_with_generator(self) -> None:
         lines = list(info_formatter(('info%d' % i, i) for i in range(3)))
         expected = [
             '                         info0: 0',
@@ -52,7 +54,7 @@ class InfoFormatterTest(CoverageTest):
         ]
         assert expected == lines
 
-    def test_too_long_label(self):
+    def test_too_long_label(self) -> None:
         with pytest.raises(AssertionError):
             list(info_formatter([('this label is way too long and will not fit', 23)]))
 
@@ -61,7 +63,7 @@ class InfoFormatterTest(CoverageTest):
     ("x",               "-- x ---------------------------------------------------------"),
     ("hello there",     "-- hello there -----------------------------------------------"),
 ])
-def test_info_header(label, header):
+def test_info_header(label: str, header: str) -> None:
     assert info_header(label) == header
 
 
@@ -71,7 +73,7 @@ def test_info_header(label, header):
     (0xA5A55A5A, 0xFFFF),
     (0x1234cba956780fed, 0x8008),
 ])
-def test_short_id(id64, id16):
+def test_short_id(id64: int, id16: int) -> None:
     assert short_id(id64) == id16
 
 
@@ -79,7 +81,7 @@ def test_short_id(id64, id16):
     ("hello", 10, "'hello'"),
     ("0123456789abcdefghijklmnopqrstuvwxyz", 15, "'01234...vwxyz'"),
 ])
-def test_clipped_repr(text, numchars, result):
+def test_clipped_repr(text: str, numchars: int, result: str) -> None:
     assert clipped_repr(text, numchars) == result
 
 
@@ -90,14 +92,18 @@ def test_clipped_repr(text, numchars, result):
     ("hello\nbye\n", [lambda x: "="+x], "=hello\n=bye\n"),
     ("hello\nbye\n", [lambda x: "="+x, lambda x: x+"\ndone\n"], "=hello\ndone\n=bye\ndone\n"),
 ])
-def test_filter_text(text, filters, result):
+def test_filter_text(
+    text: str,
+    filters: Iterable[Callable[[str], str]],
+    result: str,
+) -> None:
     assert filter_text(text, filters) == result
 
 
 class DebugTraceTest(CoverageTest):
     """Tests of debug output."""
 
-    def f1_debug_output(self, debug):
+    def f1_debug_output(self, debug: Iterable[str]) -> str:
         """Runs some code with `debug` option, returns the debug output."""
         # Make code to run.
         self.make_file("f1.py", """\
@@ -116,13 +122,13 @@ class DebugTraceTest(CoverageTest):
 
         return debug_out.getvalue()
 
-    def test_debug_no_trace(self):
+    def test_debug_no_trace(self) -> None:
         out_text = self.f1_debug_output([])
 
         # We should have no output at all.
         assert not out_text
 
-    def test_debug_trace(self):
+    def test_debug_trace(self) -> None:
         out_text = self.f1_debug_output(["trace"])
 
         # We should have a line like "Tracing 'f1.py'", perhaps with an
@@ -132,7 +138,7 @@ class DebugTraceTest(CoverageTest):
         # We should have lines like "Not tracing 'collector.py'..."
         assert re_lines(r"^Not tracing .*: is part of coverage.py$", out_text)
 
-    def test_debug_trace_pid(self):
+    def test_debug_trace_pid(self) -> None:
         out_text = self.f1_debug_output(["trace", "pid"])
 
         # Now our lines are always prefixed with the process id.
@@ -144,7 +150,7 @@ class DebugTraceTest(CoverageTest):
         assert re_lines(pid_prefix + "Tracing ", out_text)
         assert re_lines(pid_prefix + "Not tracing ", out_text)
 
-    def test_debug_callers(self):
+    def test_debug_callers(self) -> None:
         out_text = self.f1_debug_output(["pid", "dataop", "dataio", "callers", "lock"])
         # For every real message, there should be a stack trace with a line like
         #       "f1_debug_output : /Users/ned/coverage/tests/test_debug.py @71"
@@ -161,7 +167,7 @@ class DebugTraceTest(CoverageTest):
         assert re_lines(r"^\s*\d+\.\w{4}: Adding file tracers: 0 files", real_messages[-1])
         assert re_lines(r"\s+add_file_tracers : .*coverage[/\\]sqldata.py:\d+$", last_line)
 
-    def test_debug_config(self):
+    def test_debug_config(self) -> None:
         out_text = self.f1_debug_output(["config"])
 
         labels = """
@@ -176,7 +182,7 @@ class DebugTraceTest(CoverageTest):
             msg = f"Incorrect lines for {label!r}"
             assert 1 == len(re_lines(label_pat, out_text)), msg
 
-    def test_debug_sys(self):
+    def test_debug_sys(self) -> None:
         out_text = self.f1_debug_output(["sys"])
 
         labels = """
@@ -190,7 +196,7 @@ class DebugTraceTest(CoverageTest):
             msg = f"Incorrect lines for {label!r}"
             assert 1 == len(re_lines(label_pat, out_text)), msg
 
-    def test_debug_sys_ctracer(self):
+    def test_debug_sys_ctracer(self) -> None:
         out_text = self.f1_debug_output(["sys"])
         tracer_line = re_line(r"CTracer:", out_text).strip()
         if env.C_TRACER:
@@ -199,7 +205,7 @@ class DebugTraceTest(CoverageTest):
             expected = "CTracer: unavailable"
         assert expected == tracer_line
 
-    def test_debug_pybehave(self):
+    def test_debug_pybehave(self) -> None:
         out_text = self.f1_debug_output(["pybehave"])
         out_lines = out_text.splitlines()
         assert 10 < len(out_lines) < 40
@@ -208,15 +214,15 @@ class DebugTraceTest(CoverageTest):
         assert vtuple[:5] == sys.version_info
 
 
-def f_one(*args, **kwargs):
+def f_one(*args: Any, **kwargs: Any) -> str:
     """First of the chain of functions for testing `short_stack`."""
     return f_two(*args, **kwargs)
 
-def f_two(*args, **kwargs):
+def f_two(*args: Any, **kwargs: Any) -> str:
     """Second of the chain of functions for testing `short_stack`."""
     return f_three(*args, **kwargs)
 
-def f_three(*args, **kwargs):
+def f_three(*args: Any, **kwargs: Any) -> str:
     """Third of the chain of functions for testing `short_stack`."""
     return short_stack(*args, **kwargs)
 
@@ -226,17 +232,17 @@ class ShortStackTest(CoverageTest):
 
     run_in_temp_dir = False
 
-    def test_short_stack(self):
+    def test_short_stack(self) -> None:
         stack = f_one().splitlines()
         assert len(stack) > 10
         assert "f_three" in stack[-1]
         assert "f_two" in stack[-2]
         assert "f_one" in stack[-3]
 
-    def test_short_stack_limit(self):
+    def test_short_stack_limit(self) -> None:
         stack = f_one(limit=5).splitlines()
         assert len(stack) == 5
 
-    def test_short_stack_skip(self):
+    def test_short_stack_skip(self) -> None:
         stack = f_one(skip=1).splitlines()
         assert "f_two" in stack[-1]

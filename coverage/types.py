@@ -107,14 +107,16 @@ TCovKwargs = Any
 ## Configuration
 
 # One value read from a config file.
-TConfigValue = Optional[Union[bool, int, float, str, List[str]]]
+TConfigValueIn = Optional[Union[bool, int, float, str, Iterable[str]]]
+TConfigValueOut = Optional[Union[bool, int, float, str, List[str]]]
 # An entire config section, mapping option names to values.
-TConfigSection = Mapping[str, TConfigValue]
+TConfigSectionIn = Mapping[str, TConfigValueIn]
+TConfigSectionOut = Mapping[str, TConfigValueOut]
 
 class TConfigurable(Protocol):
     """Something that can proxy to the coverage configuration settings."""
 
-    def get_option(self, option_name: str) -> Optional[TConfigValue]:
+    def get_option(self, option_name: str) -> Optional[TConfigValueOut]:
         """Get an option from the configuration.
 
         `option_name` is a colon-separated string indicating the section and
@@ -125,7 +127,7 @@ class TConfigurable(Protocol):
 
         """
 
-    def set_option(self, option_name: str, value: Union[TConfigValue, TConfigSection]) -> None:
+    def set_option(self, option_name: str, value: Union[TConfigValueIn, TConfigSectionIn]) -> None:
         """Set an option in the configuration.
 
         `option_name` is a colon-separated string indicating the section and

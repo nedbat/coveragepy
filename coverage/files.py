@@ -351,7 +351,7 @@ def _glob_to_regex(pattern: str) -> str:
 def globs_to_regex(
     patterns: Iterable[str],
     case_insensitive: bool=False,
-    partial: bool=False
+    partial: bool=False,
 ) -> re.Pattern[str]:
     """Convert glob patterns to a compiled regex that matches any of them.
 

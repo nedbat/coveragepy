@@ -11,7 +11,7 @@ from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, Type, T
 from coverage import env
 from coverage.exceptions import ConfigError
 from coverage.misc import import_third_party, substitute_variables
-from coverage.types import TConfigSection, TConfigValue
+from coverage.types import TConfigSectionOut, TConfigValueOut
 
 
 if env.PYVERSION >= (3, 11, 0, "alpha", 7):
@@ -65,7 +65,7 @@ class TomlConfigParser:
                 raise ConfigError(msg.format(filename))
             return []
 
-    def _get_section(self, section: str) -> Tuple[Optional[str], Optional[TConfigSection]]:
+    def _get_section(self, section: str) -> Tuple[Optional[str], Optional[TConfigSectionOut]]:
         """Get a section from the data.
 
         Arguments:
@@ -92,7 +92,7 @@ class TomlConfigParser:
             return None, None
         return real_section, data
 
-    def _get(self, section: str, option: str) -> Tuple[str, TConfigValue]:
+    def _get(self, section: str, option: str) -> Tuple[str, TConfigValueOut]:
         """Like .get, but returns the real section name and the value."""
         name, data = self._get_section(section)
         if data is None:
@@ -135,7 +135,7 @@ class TomlConfigParser:
             raise ConfigError(f"No section: {section!r}")
         return list(data.keys())
 
-    def get_section(self, section: str) -> TConfigSection:
+    def get_section(self, section: str) -> TConfigSectionOut:
         _, data = self._get_section(section)
         return data or {}
 

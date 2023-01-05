@@ -22,7 +22,7 @@ from coverage.data import CoverageData
 from coverage.exceptions import ConfigError, NoDataError, NotPython
 from coverage.files import abs_file
 from coverage.summary import SummaryReporter
-from coverage.types import TConfigValue
+from coverage.types import TConfigValueIn
 
 from tests.coveragetest import CoverageTest, TESTS_DIR, UsingModulesMixin
 from tests.helpers import assert_coverage_warnings
@@ -900,7 +900,7 @@ class SummaryReporterConfigurationTest(CoverageTest):
         source += "    a = 2\n" * dont_run
         self.make_file(filename, source)
 
-    def get_summary_text(self, *options: Tuple[str, TConfigValue]) -> str:
+    def get_summary_text(self, *options: Tuple[str, TConfigValueIn]) -> str:
         """Get text output from the SummaryReporter.
 
         The arguments are tuples: (name, value) for Coverage.set_option.

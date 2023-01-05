@@ -47,7 +47,8 @@ from coverage.report import render_report
 from coverage.results import Analysis
 from coverage.summary import SummaryReporter
 from coverage.types import (
-    TConfigurable, TConfigSection, TConfigValue, TFileDisposition, TLineNo, TMorf,
+    TConfigurable, TConfigSectionIn, TConfigValueIn, TConfigValueOut,
+    TFileDisposition, TLineNo, TMorf,
 )
 from coverage.xmlreport import XmlReporter
 
@@ -55,7 +56,7 @@ from coverage.xmlreport import XmlReporter
 os = isolate_module(os)
 
 @contextlib.contextmanager
-def override_config(cov: Coverage, **kwargs: TConfigValue) -> Generator[None, None, None]:
+def override_config(cov: Coverage, **kwargs: TConfigValueIn) -> Generator[None, None, None]:
     """Temporarily tweak the configuration of `cov`.
 
     The arguments are applied to `cov.config` with the `from_args` method.
@@ -120,12 +121,12 @@ class Coverage(TConfigurable):
         timid: Optional[bool]=None,
         branch: Optional[bool]=None,
         config_file: Union[str, bool]=True,
-        source: Optional[List[str]]=None,
-        source_pkgs: Optional[List[str]]=None,
-        omit: Optional[Union[str, List[str]]]=None,
-        include: Optional[Union[str, List[str]]]=None,
-        debug: Optional[List[str]]=None,
-        concurrency: Optional[Union[str, List[str]]]=None,
+        source: Optional[Iterable[str]]=None,
+        source_pkgs: Optional[Iterable[str]]=None,
+        omit: Optional[Union[str, Iterable[str]]]=None,
+        include: Optional[Union[str, Iterable[str]]]=None,
+        debug: Optional[Iterable[str]]=None,
+        concurrency: Optional[Union[str, Iterable[str]]]=None,
         check_preimported: bool=False,
         context: Optional[str]=None,
         messages: bool=False,
@@ -425,7 +426,7 @@ class Coverage(TConfigurable):
         if self._messages:
             print(msg)
 
-    def get_option(self, option_name: str) -> Optional[TConfigValue]:
+    def get_option(self, option_name: str) -> Optional[TConfigValueOut]:
         """Get an option from the configuration.
 
         `option_name` is a colon-separated string indicating the section and
@@ -443,7 +444,7 @@ class Coverage(TConfigurable):
         """
         return self.config.get_option(option_name)
 
-    def set_option(self, option_name: str, value: Union[TConfigValue, TConfigSection]) -> None:
+    def set_option(self, option_name: str, value: Union[TConfigValueIn, TConfigSectionIn]) -> None:
         """Set an option in the configuration.
 
         `option_name` is a colon-separated string indicating the section and

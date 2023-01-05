@@ -7,6 +7,8 @@ import itertools
 import os
 import os.path
 import re
+
+from typing import Any, Generator, Iterable, List
 from unittest import mock
 
 import pytest
@@ -17,6 +19,7 @@ from coverage.files import (
     GlobMatcher, ModuleMatcher, PathAliases, TreeMatcher, abs_file,
     actual_path, find_python_files, flat_rootname, globs_to_regex,
 )
+from coverage.types import Protocol
 
 from tests.coveragetest import CoverageTest
 from tests.helpers import os_sep
@@ -25,11 +28,11 @@ from tests.helpers import os_sep
 class FilesTest(CoverageTest):
     """Tests of coverage.files."""
 
-    def abs_path(self, p):
+    def abs_path(self, p: str) -> str:
         """Return the absolute path for `p`."""
         return os.path.join(abs_file(os.getcwd()), os.path.normpath(p))
 
-    def test_simple(self):
+    def test_simple(self) -> None:
         self.make_file("hello.py")
         files.set_relative_directory()
         assert files.relative_filename("hello.py") == "hello.py"
@@ -37,7 +40,7 @@ class FilesTest(CoverageTest):
         assert a != "hello.py"
         assert files.relative_filename(a) == "hello.py"
 
-    def test_peer_directories(self):
+    def test_peer_directories(self) -> None:
         self.make_file("sub/proj1/file1.py")
         self.make_file("sub/proj2/file2.py")
         a1 = self.abs_path("sub/proj1/file1.py")
@@ -48,7 +51,7 @@ class FilesTest(CoverageTest):
         assert files.relative_filename(a1) == "file1.py"
         assert files.relative_filename(a2) == a2
 
-    def test_filepath_contains_absolute_prefix_twice(self):
+    def test_filepath_contains_absolute_prefix_twice(self) -> None:
         # https://github.com/nedbat/coveragepy/issues/194
         # Build a path that has two pieces matching the absolute path prefix.
         # Technically, this test doesn't do that on Windows, but drive
@@ -59,7 +62,7 @@ class FilesTest(CoverageTest):
         rel = os.path.join('sub', trick, 'file1.py')
         assert files.relative_filename(abs_file(rel)) == rel
 
-    def test_canonical_filename_ensure_cache_hit(self):
+    def test_canonical_filename_ensure_cache_hit(self) -> None:
         self.make_file("sub/proj1/file1.py")
         d = actual_path(self.abs_path("sub/proj1"))
         os.chdir(d)
@@ -76,7 +79,7 @@ class FilesTest(CoverageTest):
             ("X:\\", "\\"),
         ]
     )
-    def test_relative_dir_for_root(self, curdir, sep):
+    def test_relative_dir_for_root(self, curdir: str, sep: str) -> None:
         with mock.patch.object(files.os, 'curdir', new=curdir):
             with mock.patch.object(files.os, 'sep', new=sep):
                 with mock.patch('coverage.files.os.path.normcase', return_value=curdir):
@@ -95,7 +98,7 @@ class FilesTest(CoverageTest):
             ("src/files.pex", "src/files.pex/zipfiles/files.zip/foo.py", True),
         ]
     )
-    def test_source_exists(self, to_make, to_check, answer):
+    def test_source_exists(self, to_make: str, to_check: str, answer: bool) -> None:
         # source_exists won't look inside the zipfile, so it's fine to make
         # an empty file with the zipfile name.
         self.make_file(to_make, "")
@@ -122,13 +125,17 @@ class FilesTest(CoverageTest):
         "d_e597dfacb73a23d5_my_program_py"
      ),
 ])
-def test_flat_rootname(original, flat):
+def test_flat_rootname(original: str, flat: str) -> None:
     assert flat_rootname(original) == flat
 
 
 def globs_to_regex_params(
-    patterns, case_insensitive=False, partial=False, matches=(), nomatches=(),
-):
+    patterns: Iterable[str],
+    case_insensitive: bool=False,
+    partial: bool=False,
+    matches: Iterable[str]=(),
+    nomatches: Iterable[str]=(),
+) -> Generator[Any, None, None]:
     """Generate parameters for `test_globs_to_regex`.
 
     `patterns`, `case_insensitive`, and `partial` are arguments for
@@ -242,11 +249,14 @@ def globs_to_regex_params(
         ),
     ]))
 )
-def test_globs_to_regex(patterns, case_insensitive, partial, text, result):
+def test_globs_to_regex(
+    patterns: Iterable[str],
+    case_insensitive: bool,
+    partial: bool,
+    text: str,
+    result: bool,
+) -> None:
     regex = globs_to_regex(patterns, case_insensitive=case_insensitive, partial=partial)
-    print(patterns)
-    print(regex)
-    print(text)
     assert bool(regex.match(text)) == result
 
 
@@ -261,26 +271,33 @@ def test_globs_to_regex(patterns, case_insensitive, partial, text, result):
     ("x/**a/b.py", "**a"),
     ("x/**/**/b.py", "**/**"),
 ])
-def test_invalid_globs(pattern, bad_word):
+def test_invalid_globs(pattern: str, bad_word: str) -> None:
     msg = f"File pattern can't include {bad_word!r}"
     with pytest.raises(ConfigError, match=re.escape(msg)):
         globs_to_regex([pattern])
 
 
+class TMatcher(Protocol):
+    """The shape all Matchers have."""
+
+    def match(self, s: str) -> bool:
+        """Does this string match?"""
+
+
 class MatcherTest(CoverageTest):
     """Tests of file matchers."""
 
-    def setUp(self):
+    def setUp(self) -> None:
         super().setUp()
         files.set_relative_directory()
 
-    def assertMatches(self, matcher, filepath, matches):
+    def assertMatches(self, matcher: TMatcher, filepath: str, matches: bool) -> None:
         """The `matcher` should agree with `matches` about `filepath`."""
         canonical = files.canonical_filename(filepath)
         msg = f"File {filepath} should have matched as {matches}"
         assert matches == matcher.match(canonical), msg
 
-    def test_tree_matcher(self):
+    def test_tree_matcher(self) -> None:
         case_folding = env.WINDOWS
         matches_to_try = [
             (self.make_file("sub/file1.py"), True),
@@ -302,7 +319,7 @@ class MatcherTest(CoverageTest):
         for filepath, matches in matches_to_try:
             self.assertMatches(tm, filepath, matches)
 
-    def test_module_matcher(self):
+    def test_module_matcher(self) -> None:
         matches_to_try = [
             ('test', True),
             ('trash', False),
@@ -325,7 +342,7 @@ class MatcherTest(CoverageTest):
         for modulename, matches in matches_to_try:
             assert mm.match(modulename) == matches, modulename
 
-    def test_glob_matcher(self):
+    def test_glob_matcher(self) -> None:
         matches_to_try = [
             (self.make_file("sub/file1.py"), True),
             (self.make_file("sub/file2.c"), False),
@@ -338,7 +355,7 @@ class MatcherTest(CoverageTest):
         for filepath, matches in matches_to_try:
             self.assertMatches(fnm, filepath, matches)
 
-    def test_glob_matcher_overload(self):
+    def test_glob_matcher_overload(self) -> None:
         fnm = GlobMatcher(["*x%03d*.txt" % i for i in range(500)])
         self.assertMatches(fnm, "x007foo.txt", True)
         self.assertMatches(fnm, "x123foo.txt", True)
@@ -346,7 +363,7 @@ class MatcherTest(CoverageTest):
         self.assertMatches(fnm, "x499.txt", True)
         self.assertMatches(fnm, "x500.txt", False)
 
-    def test_glob_windows_paths(self):
+    def test_glob_windows_paths(self) -> None:
         # We should be able to match Windows paths even if we are running on
         # a non-Windows OS.
         fnm = GlobMatcher(["*/foo.py"])
@@ -356,9 +373,9 @@ class MatcherTest(CoverageTest):
 
 
 @pytest.fixture(params=[False, True], name="rel_yn")
-def relative_setting(request):
+def relative_setting(request: pytest.FixtureRequest) -> bool:
     """Parameterized fixture to choose whether PathAliases is relative or not."""
-    return request.param
+    return request.param        # type: ignore[no-any-return]
 
 
 class PathAliasesTest(CoverageTest):
@@ -366,7 +383,7 @@ class PathAliasesTest(CoverageTest):
 
     run_in_temp_dir = False
 
-    def assert_mapped(self, aliases, inp, out):
+    def assert_mapped(self, aliases: PathAliases, inp: str, out: str) -> None:
         """Assert that `inp` mapped through `aliases` produces `out`.
 
         If the aliases are not relative, then `out` is canonicalized first,
@@ -380,20 +397,20 @@ class PathAliasesTest(CoverageTest):
             expected = files.canonical_filename(out)
         assert mapped == expected
 
-    def assert_unchanged(self, aliases, inp, exists=True):
+    def assert_unchanged(self, aliases: PathAliases, inp: str, exists: bool=True) -> None:
         """Assert that `inp` mapped through `aliases` is unchanged."""
         assert aliases.map(inp, exists=lambda p: exists) == inp
 
-    def test_noop(self, rel_yn):
+    def test_noop(self, rel_yn: bool) -> None:
         aliases = PathAliases(relative=rel_yn)
         self.assert_unchanged(aliases, '/ned/home/a.py')
 
-    def test_nomatch(self, rel_yn):
+    def test_nomatch(self, rel_yn: bool) -> None:
         aliases = PathAliases(relative=rel_yn)
         aliases.add('/home/*/src', './mysrc')
         self.assert_unchanged(aliases, '/home/foo/a.py')
 
-    def test_wildcard(self, rel_yn):
+    def test_wildcard(self, rel_yn: bool) -> None:
         aliases = PathAliases(relative=rel_yn)
         aliases.add('/ned/home/*/src', './mysrc')
         self.assert_mapped(aliases, '/ned/home/foo/src/a.py', './mysrc/a.py')
@@ -402,24 +419,24 @@ class PathAliasesTest(CoverageTest):
         aliases.add('/ned/home/*/src/', './mysrc')
         self.assert_mapped(aliases, '/ned/home/foo/src/a.py', './mysrc/a.py')
 
-    def test_no_accidental_match(self, rel_yn):
+    def test_no_accidental_match(self, rel_yn: bool) -> None:
         aliases = PathAliases(relative=rel_yn)
         aliases.add('/home/*/src', './mysrc')
         self.assert_unchanged(aliases, '/home/foo/srcetc')
 
-    def test_no_map_if_not_exist(self, rel_yn):
+    def test_no_map_if_not_exist(self, rel_yn: bool) -> None:
         aliases = PathAliases(relative=rel_yn)
         aliases.add('/ned/home/*/src', './mysrc')
         self.assert_unchanged(aliases, '/ned/home/foo/src/a.py', exists=False)
         self.assert_unchanged(aliases, 'foo/src/a.py', exists=False)
 
-    def test_no_dotslash(self, rel_yn):
+    def test_no_dotslash(self, rel_yn: bool) -> None:
         # The result shouldn't start with "./" if the map result didn't.
         aliases = PathAliases(relative=rel_yn)
         aliases.add('*/project', '.')
         self.assert_mapped(aliases, '/ned/home/project/src/a.py', os_sep('src/a.py'))
 
-    def test_relative_pattern(self):
+    def test_relative_pattern(self) -> None:
         aliases = PathAliases(relative=True)
         aliases.add(".tox/*/site-packages", "src")
         self.assert_mapped(
@@ -428,9 +445,9 @@ class PathAliasesTest(CoverageTest):
             os_sep("src/proj/a.py"),
         )
 
-    def test_multiple_patterns(self, rel_yn):
+    def test_multiple_patterns(self, rel_yn: bool) -> None:
         # also test the debugfn...
-        msgs = []
+        msgs: List[str] = []
         aliases = PathAliases(debugfn=msgs.append, relative=rel_yn)
         aliases.add('/home/*/src', './mysrc')
         aliases.add('/lib/*/libsrc', './mylib')
@@ -466,20 +483,20 @@ class PathAliasesTest(CoverageTest):
         "/ned/home/*/",
         "/ned/home/*/*/",
     ])
-    def test_cant_have_wildcard_at_end(self, badpat):
+    def test_cant_have_wildcard_at_end(self, badpat: str) -> None:
         aliases = PathAliases()
         msg = "Pattern must not end with wildcards."
         with pytest.raises(ConfigError, match=msg):
             aliases.add(badpat, "fooey")
 
-    def test_no_accidental_munging(self):
+    def test_no_accidental_munging(self) -> None:
         aliases = PathAliases()
         aliases.add(r'c:\Zoo\boo', 'src/')
         aliases.add('/home/ned$', 'src/')
         self.assert_mapped(aliases, r'c:\Zoo\boo\foo.py', 'src/foo.py')
         self.assert_mapped(aliases, r'/home/ned$/foo.py', 'src/foo.py')
 
-    def test_paths_are_os_corrected(self, rel_yn):
+    def test_paths_are_os_corrected(self, rel_yn: bool) -> None:
         aliases = PathAliases(relative=rel_yn)
         aliases.add('/home/ned/*/src', './mysrc')
         aliases.add(r'c:\ned\src', './mysrc')
@@ -500,7 +517,7 @@ class PathAliasesTest(CoverageTest):
     lin_win_paths = [[lin, win], [win, lin]]
 
     @pytest.mark.parametrize("paths", lin_win_paths)
-    def test_windows_on_linux(self, paths, rel_yn):
+    def test_windows_on_linux(self, paths: Iterable[str], rel_yn: bool) -> None:
         # https://github.com/nedbat/coveragepy/issues/618
         aliases = PathAliases(relative=rel_yn)
         for path in paths:
@@ -512,7 +529,7 @@ class PathAliasesTest(CoverageTest):
         )
 
     @pytest.mark.parametrize("paths", lin_win_paths)
-    def test_linux_on_windows(self, paths, rel_yn):
+    def test_linux_on_windows(self, paths: Iterable[str], rel_yn: bool) -> None:
         # https://github.com/nedbat/coveragepy/issues/618
         aliases = PathAliases(relative=rel_yn)
         for path in paths:
@@ -524,7 +541,7 @@ class PathAliasesTest(CoverageTest):
         )
 
     @pytest.mark.parametrize("paths", lin_win_paths)
-    def test_relative_windows_on_linux(self, paths):
+    def test_relative_windows_on_linux(self, paths: Iterable[str]) -> None:
         # https://github.com/nedbat/coveragepy/issues/991
         aliases = PathAliases(relative=True)
         for path in paths:
@@ -536,7 +553,7 @@ class PathAliasesTest(CoverageTest):
         )
 
     @pytest.mark.parametrize("paths", lin_win_paths)
-    def test_relative_linux_on_windows(self, paths):
+    def test_relative_linux_on_windows(self, paths: Iterable[str]) -> None:
         # https://github.com/nedbat/coveragepy/issues/991
         aliases = PathAliases(relative=True)
         for path in paths:
@@ -548,7 +565,7 @@ class PathAliasesTest(CoverageTest):
         )
 
     @pytest.mark.skipif(env.WINDOWS, reason="This test assumes Unix file system")
-    def test_implicit_relative_windows_on_linux(self):
+    def test_implicit_relative_windows_on_linux(self) -> None:
         # https://github.com/nedbat/coveragepy/issues/991
         aliases = PathAliases(relative=True)
         self.assert_mapped(
@@ -558,7 +575,7 @@ class PathAliasesTest(CoverageTest):
         )
 
     @pytest.mark.skipif(not env.WINDOWS, reason="This test assumes Windows file system")
-    def test_implicit_relative_linux_on_windows(self):
+    def test_implicit_relative_linux_on_windows(self) -> None:
         # https://github.com/nedbat/coveragepy/issues/991
         aliases = PathAliases(relative=True)
         self.assert_mapped(
@@ -567,7 +584,7 @@ class PathAliasesTest(CoverageTest):
             r"project\module\tests\file.py",
         )
 
-    def test_multiple_wildcard(self, rel_yn):
+    def test_multiple_wildcard(self, rel_yn: bool) -> None:
         aliases = PathAliases(relative=rel_yn)
         aliases.add('/home/jenkins/*/a/*/b/*/django', './django')
         self.assert_mapped(
@@ -576,7 +593,7 @@ class PathAliasesTest(CoverageTest):
             './django/foo/bar.py',
         )
 
-    def test_windows_root_paths(self, rel_yn):
+    def test_windows_root_paths(self, rel_yn: bool) -> None:
         aliases = PathAliases(relative=rel_yn)
         aliases.add('X:\\', '/tmp/src')
         self.assert_mapped(
@@ -590,7 +607,7 @@ class PathAliasesTest(CoverageTest):
             "/tmp/src/file.py",
         )
 
-    def test_leading_wildcard(self, rel_yn):
+    def test_leading_wildcard(self, rel_yn: bool) -> None:
         aliases = PathAliases(relative=rel_yn)
         aliases.add('*/d1', './mysrc1')
         aliases.add('*/d2', './mysrc2')
@@ -598,7 +615,7 @@ class PathAliasesTest(CoverageTest):
         self.assert_mapped(aliases, '/foo/bar/d2/y.py', './mysrc2/y.py')
 
     @pytest.mark.parametrize("dirname", [".", "..", "../other", "/"])
-    def test_dot(self, dirname):
+    def test_dot(self, dirname: str) -> None:
         if env.WINDOWS and dirname == "/":
             # The root test case was added for the manylinux Docker images,
             # and I'm not sure how it should work on Windows, so skip it.
@@ -616,7 +633,7 @@ class PathAliasesTest(CoverageTest):
 class PathAliasesRealFilesTest(CoverageTest):
     """Tests for coverage/files.py:PathAliases using real files."""
 
-    def test_aliasing_zip_files(self):
+    def test_aliasing_zip_files(self) -> None:
         self.make_file("src/zipfiles/code.zip", "fake zip, doesn't matter")
         aliases = PathAliases()
         aliases.add("*/d1", "./src")
@@ -629,7 +646,7 @@ class PathAliasesRealFilesTest(CoverageTest):
 class FindPythonFilesTest(CoverageTest):
     """Tests of `find_python_files`."""
 
-    def test_find_python_files(self):
+    def test_find_python_files(self) -> None:
         self.make_file("sub/a.py")
         self.make_file("sub/b.py")
         self.make_file("sub/x.c")                   # nope: not .py
@@ -645,7 +662,7 @@ class FindPythonFilesTest(CoverageTest):
             "sub/windows.pyw",
         ])
 
-    def test_find_python_files_include_namespace_packages(self):
+    def test_find_python_files_include_namespace_packages(self) -> None:
         self.make_file("sub/a.py")
         self.make_file("sub/b.py")
         self.make_file("sub/x.c")                   # nope: not .py
@@ -669,5 +686,5 @@ class WindowsFileTest(CoverageTest):
 
     run_in_temp_dir = False
 
-    def test_actual_path(self):
+    def test_actual_path(self) -> None:
         assert actual_path(r'c:\Windows') == actual_path(r'C:\wINDOWS')

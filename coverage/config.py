@@ -18,7 +18,9 @@ from typing import (
 from coverage.exceptions import ConfigError
 from coverage.misc import isolate_module, human_sorted_items, substitute_variables
 from coverage.tomlconfig import TomlConfigParser, TomlDecodeError
-from coverage.types import TConfigurable, TConfigSection, TConfigValue
+from coverage.types import (
+    TConfigurable, TConfigSectionIn, TConfigValueIn, TConfigSectionOut, TConfigValueOut,
+)
 
 os = isolate_module(os)
 
@@ -71,9 +73,9 @@ class HandyConfigParser(configparser.ConfigParser):
             return super().options(real_section)
         raise ConfigError(f"No section: {section!r}")
 
-    def get_section(self, section: str) -> TConfigSection:
+    def get_section(self, section: str) -> TConfigSectionOut:
         """Get the contents of a section, as a dictionary."""
-        d: Dict[str, TConfigValue] = {}
+        d: Dict[str, TConfigValueOut] = {}
         for opt in self.options(section):
             d[opt] = self.get(section, opt)
         return d
@@ -249,7 +251,7 @@ class CoverageConfig(TConfigurable):
         self.paths: Dict[str, List[str]] = {}
 
         # Options for plugins
-        self.plugin_options: Dict[str, TConfigSection] = {}
+        self.plugin_options: Dict[str, TConfigSectionOut] = {}
 
     MUST_BE_LIST = {
         "debug", "concurrency", "plugins",
@@ -257,7 +259,7 @@ class CoverageConfig(TConfigurable):
         "run_omit", "run_include",
     }
 
-    def from_args(self, **kwargs: TConfigValue) -> None:
+    def from_args(self, **kwargs: TConfigValueIn) -> None:
         """Read config values from `kwargs`."""
         for k, v in kwargs.items():
             if v is not None:
@@ -441,11 +443,11 @@ class CoverageConfig(TConfigurable):
             return True
         return False
 
-    def get_plugin_options(self, plugin: str) -> TConfigSection:
+    def get_plugin_options(self, plugin: str) -> TConfigSectionOut:
         """Get a dictionary of options for the plugin named `plugin`."""
         return self.plugin_options.get(plugin, {})
 
-    def set_option(self, option_name: str, value: Union[TConfigValue, TConfigSection]) -> None:
+    def set_option(self, option_name: str, value: Union[TConfigValueIn, TConfigSectionIn]) -> None:
         """Set an option in the configuration.
 
         `option_name` is a colon-separated string indicating the section and
@@ -476,7 +478,7 @@ class CoverageConfig(TConfigurable):
         # If we get here, we didn't find the option.
         raise ConfigError(f"No such option: {option_name!r}")
 
-    def get_option(self, option_name: str) -> Optional[TConfigValue]:
+    def get_option(self, option_name: str) -> Optional[TConfigValueOut]:
         """Get an option from the configuration.
 
         `option_name` is a colon-separated string indicating the section and
@@ -559,7 +561,7 @@ def config_files_to_try(config_file: Union[bool, str]) -> List[Tuple[str, bool, 
 def read_coverage_config(
     config_file: Union[bool, str],
     warn: Callable[[str], None],
-    **kwargs: TConfigValue,
+    **kwargs: TConfigValueIn,
 ) -> CoverageConfig:
     """Read the coverage.py configuration.
 

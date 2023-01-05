@@ -20,7 +20,7 @@ from coverage import env
 from coverage.control import DEFAULT_DATAFILE
 from coverage.config import CoverageConfig
 from coverage.exceptions import _ExceptionDuringRun
-from coverage.types import TConfigValue
+from coverage.types import TConfigValueIn, TConfigValueOut
 from coverage.version import __url__
 
 from tests.coveragetest import CoverageTest, OK, ERR, command_line
@@ -96,7 +96,7 @@ class BaseCmdLineTest(CoverageTest):
     def mock_command_line(
         self,
         args: str,
-        options: Optional[Mapping[str, TConfigValue]]=None,
+        options: Optional[Mapping[str, TConfigValueIn]]=None,
     ) -> Tuple[mock.Mock, int]:
         """Run `args` through the command line, with a Mock.
 
@@ -130,7 +130,7 @@ class BaseCmdLineTest(CoverageTest):
         args: str,
         code: str,
         ret: int=OK,
-        options: Optional[Mapping[str, TConfigValue]]=None,
+        options: Optional[Mapping[str, TConfigValueIn]]=None,
     ) -> None:
         """Assert that the `args` end up executing the sequence in `code`."""
         called, status = self.mock_command_line(args, options=options)
@@ -1139,10 +1139,10 @@ class CoverageReportingFake:
         self.json_result = json_report
         self.lcov_result = lcov_result
 
-    def set_option(self, optname: str, optvalue: TConfigValue) -> None:
+    def set_option(self, optname: str, optvalue: TConfigValueIn) -> None:
         self.config.set_option(optname, optvalue)
 
-    def get_option(self, optname: str) -> TConfigValue:
+    def get_option(self, optname: str) -> TConfigValueOut:
         return self.config.get_option(optname)
 
     def load(self) -> None:
