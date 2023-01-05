@@ -19,7 +19,7 @@ import sys
 
 from types import ModuleType
 from typing import (
-    Any, Collection, Dict, Generator, Iterable, List, Mapping, Optional,
+    Any, Collection, Dict, Iterable, Iterator, List, Mapping, Optional,
     Sequence, Tuple, Union,
 )
 
@@ -272,7 +272,7 @@ class CoverageTest(
         cov: Coverage,
         warnings: Iterable[str],
         not_warnings: Iterable[str]=(),
-    ) -> Generator[None, None, None]:
+    ) -> Iterator[None]:
         """A context manager to check that particular warnings happened in `cov`.
 
         `cov` is a Coverage instance.  `warnings` is a list of regexes.  Every

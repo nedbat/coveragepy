@@ -16,8 +16,8 @@ import textwrap
 import warnings
 
 from typing import (
-    cast,
-    Any, Callable, Generator, Iterable, List, Optional, Set, Tuple, Type, TypeVar, Union,
+    Any, Callable, Iterable, Iterator, List, Optional, Set, Tuple, Type,
+    TypeVar, Union, cast,
 )
 
 import pytest
@@ -267,7 +267,7 @@ def arcs_to_arcz_repr(arcs: Optional[Iterable[TArc]]) -> str:
 
 
 @contextlib.contextmanager
-def change_dir(new_dir: str) -> Generator[None, None, None]:
+def change_dir(new_dir: str) -> Iterator[None]:
     """Change directory, and then change back.
 
     Use as a context manager, it will return to the original
@@ -322,7 +322,7 @@ def assert_coverage_warnings(
 def swallow_warnings(
     message: str=r".",
     category: Type[Warning]=CoverageWarning,
-) -> Generator[None, None, None]:
+) -> Iterator[None]:
     """Swallow particular warnings.
 
     It's OK if they happen, or if they don't happen. Just ignore them.

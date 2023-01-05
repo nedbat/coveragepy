@@ -21,7 +21,7 @@ import types
 
 from types import ModuleType
 from typing import (
-    Any, Callable, Dict, Generator, IO, Iterable, List, Mapping, Optional,
+    Any, Callable, Dict, IO, Iterable, Iterator, List, Mapping, Optional,
     Sequence, Tuple, TypeVar, Union,
 )
 
@@ -71,7 +71,7 @@ class SysModuleSaver:
 
 
 @contextlib.contextmanager
-def sys_modules_saved() -> Generator[None, None, None]:
+def sys_modules_saved() -> Iterator[None]:
     """A context manager to remove any modules imported during a block."""
     saver = SysModuleSaver()
     try:

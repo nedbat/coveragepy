@@ -6,10 +6,10 @@
 from __future__ import annotations
 
 from types import CodeType
-from typing import Generator
+from typing import Iterator
 
 
-def code_objects(code: CodeType) -> Generator[CodeType, None, None]:
+def code_objects(code: CodeType) -> Iterator[CodeType]:
     """Iterate over all the code objects in `code`."""
     stack = [code]
     while stack:

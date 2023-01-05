@@ -20,7 +20,7 @@ import warnings
 from types import FrameType
 from typing import (
     cast,
-    Any, Callable, Dict, Generator, IO, Iterable, List, Optional, Tuple, Union,
+    Any, Callable, Dict, IO, Iterable, Iterator, List, Optional, Tuple, Union,
 )
 
 from coverage import env
@@ -56,7 +56,7 @@ from coverage.xmlreport import XmlReporter
 os = isolate_module(os)
 
 @contextlib.contextmanager
-def override_config(cov: Coverage, **kwargs: TConfigValueIn) -> Generator[None, None, None]:
+def override_config(cov: Coverage, **kwargs: TConfigValueIn) -> Iterator[None]:
     """Temporarily tweak the configuration of `cov`.
 
     The arguments are applied to `cov.config` with the `from_args` method.

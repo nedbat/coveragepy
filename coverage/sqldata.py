@@ -22,8 +22,8 @@ import threading
 import zlib
 
 from typing import (
-    cast, Any, Callable, Collection, Dict, Generator, Iterable, List, Mapping, Optional,
-    Sequence, Set, Tuple, TypeVar, Union,
+    cast, Any, Callable, Collection, Dict, Iterable, Iterator, List, Mapping,
+    Optional, Sequence, Set, Tuple, TypeVar, Union,
 )
 
 from coverage.debug import NoDebugging, AutoReprMixin, clipped_repr
@@ -1171,7 +1171,7 @@ class SqliteDb(AutoReprMixin):
         self,
         sql: str,
         parameters: Iterable[Any]=(),
-    ) -> Generator[sqlite3.Cursor, None, None]:
+    ) -> Iterator[sqlite3.Cursor]:
         """Context managed :meth:`python:sqlite3.Connection.execute`.
 
         Use with a ``with`` statement to auto-close the returned cursor.

@@ -15,7 +15,7 @@ import sysconfig
 import warnings
 
 from pathlib import Path
-from typing import Generator, Optional
+from typing import Iterator, Optional
 
 import pytest
 
@@ -65,7 +65,7 @@ def set_warnings() -> None:
 
 
 @pytest.fixture(autouse=True)
-def reset_sys_path() -> Generator[None, None, None]:
+def reset_sys_path() -> Iterator[None]:
     """Clean up sys.path changes around every test."""
     sys_path = list(sys.path)
     yield
@@ -73,7 +73,7 @@ def reset_sys_path() -> Generator[None, None, None]:
 
 
 @pytest.fixture(autouse=True)
-def reset_environment() -> Generator[None, None, None]:
+def reset_environment() -> Iterator[None]:
     """Make sure a test setting an envvar doesn't leak into another test."""
     old_environ = os.environ.copy()
     yield
@@ -82,7 +82,7 @@ def reset_environment() -> Generator[None, None, None]:
 
 
 @pytest.fixture(autouse=True)
-def reset_filesdotpy_globals() -> Generator[None, None, None]:
+def reset_filesdotpy_globals() -> Iterator[None]:
     """coverage/files.py has some unfortunate globals. Reset them every test."""
     set_relative_directory()
     yield
@@ -110,7 +110,7 @@ def pytest_sessionfinish() -> None:
                 pth_file.unlink()
 
 
-def possible_pth_dirs() -> Generator[Path, None, None]:
+def possible_pth_dirs() -> Iterator[Path]:
     """Produce a sequence of directories for trying to write .pth files."""
     # First look through sys.path, and if we find a .pth file, then it's a good
     # place to put ours.

@@ -14,7 +14,7 @@ import py_compile
 import re
 import sys
 
-from typing import Any, Generator
+from typing import Any, Iterator
 
 import pytest
 
@@ -31,7 +31,7 @@ class RunFileTest(CoverageTest):
     """Test cases for `run_python_file`."""
 
     @pytest.fixture(autouse=True)
-    def clean_up(self) -> Generator[None, None, None]:
+    def clean_up(self) -> Iterator[None]:
         """These tests all run in-process. Clean up global changes."""
         yield
         sys.excepthook = sys.__excepthook__

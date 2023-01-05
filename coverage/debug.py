@@ -18,8 +18,7 @@ import types
 import _thread
 
 from typing import (
-    Any, Callable, Generator, IO, Iterable, Iterator, Optional, List, Tuple,
-    cast,
+    Any, Callable, IO, Iterable, Iterator, Optional, List, Tuple, cast,
 )
 
 from coverage.misc import isolate_module
@@ -65,7 +64,7 @@ class DebugControl:
         return (option in self.options)
 
     @contextlib.contextmanager
-    def without_callers(self) -> Generator[None, None, None]:
+    def without_callers(self) -> Iterator[None]:
         """A context manager to prevent call stacks from being logged."""
         old = self.suppress_callers
         self.suppress_callers = True
