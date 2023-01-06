@@ -96,7 +96,7 @@ class DebugControlString(DebugControl):
 
     def get_output(self) -> str:
         """Get the output text from the `DebugControl`."""
-        return cast(str, self.raw_output.getvalue())
+        return cast(str, self.raw_output.getvalue())        # type: ignore
 
 
 class NoDebugging:
@@ -188,9 +188,9 @@ def dump_stack_frames(
     skip: int = 0
 ) -> None:
     """Print a summary of the stack to stdout, or someplace else."""
-    out = out or sys.stdout
-    out.write(short_stack(limit=limit, skip=skip+1))
-    out.write("\n")
+    fout = out or sys.stdout
+    fout.write(short_stack(limit=limit, skip=skip+1))
+    fout.write("\n")
 
 
 def clipped_repr(text: str, numchars: int = 50) -> str:
@@ -371,7 +371,7 @@ class DebugOutputFile:                              # pragma: debugging
         self.outfile.flush()
 
 
-def log(msg: str, stack: bool = False) -> None:               # pragma: debugging
+def log(msg: str, stack: bool = False) -> None:             # pragma: debugging
     """Write a log message as forcefully as possible."""
     out = DebugOutputFile.get_one(interim=True)
     out.write(msg+"\n")
@@ -379,9 +379,13 @@ def log(msg: str, stack: bool = False) -> None:               # pragma: debuggin
         dump_stack_frames(out=out, skip=1)
 
 
-def decorate_methods(decorator, butnot=(), private=False):  # pragma: debugging
+def decorate_methods(
+    decorator: Callable[..., Any],
+    butnot: Iterable[str] = (),
+    private: bool = False,
+) -> Callable[..., Any]:                                    # pragma: debugging
     """A class decorator to apply a decorator to methods."""
-    def _decorator(cls):
+    def _decorator(cls):                                    # type: ignore
         for name, meth in inspect.getmembers(cls, inspect.isroutine):
             if name not in cls.__dict__:
                 continue
@@ -395,10 +399,10 @@ def decorate_methods(decorator, butnot=(), private=False):  # pragma: debugging
     return _decorator
 
 
-def break_in_pudb(func):                                    # pragma: debugging
+def break_in_pudb(func: Callable[..., Any]) -> Callable[..., Any]:  # pragma: debugging
     """A function decorator to stop in the debugger for each call."""
     @functools.wraps(func)
-    def _wrapper(*args, **kwargs):
+    def _wrapper(*args: Any, **kwargs: Any) -> Any:
         import pudb
         sys.stdout = sys.__stdout__
         pudb.set_trace()
@@ -416,9 +420,9 @@ def show_calls(
     show_return: bool = False,
 ) -> Callable[..., Any]:                                    # pragma: debugging
     """A method decorator to debug-log each call to the function."""
-    def _decorator(func):
+    def _decorator(func: Callable[..., Any]) -> Callable[..., Any]:
         @functools.wraps(func)
-        def _wrapper(self, *args, **kwargs):
+        def _wrapper(self: Any, *args: Any, **kwargs: Any) -> Any:
             oid = getattr(self, OBJ_ID_ATTR, None)
             if oid is None:
                 oid = f"{os.getpid():08d} {next(OBJ_IDS):04d}"
