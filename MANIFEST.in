@@ -23,6 +23,7 @@ include pylintrc
 include setup.py
 include tox.ini
 include .editorconfig
+include .git-blame-ignore-revs
 include .readthedocs.yml
 
 recursive-include ci *
