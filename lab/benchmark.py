@@ -123,6 +123,9 @@ class ProjectToTest:
             if self.git_url:
                 self.slug = self.git_url.split("/")[-1]
 
+    def shell(self):
+        return ShellSession(f"output_{self.slug}.log")
+
     def make_dir(self):
         self.dir = Path(f"work_{self.slug}")
         if self.dir.exists():
@@ -421,7 +424,7 @@ class Experiment:
 
         for proj in self.projects:
             print(f"Testing with {proj.slug}")
-            with ShellSession(f"output_{proj.slug}.log") as shell:
+            with proj.shell() as shell:
                 proj.make_dir()
                 proj.get_source(shell)
 
@@ -570,6 +573,7 @@ if 0:
 if 1:
     run_experiment(
         py_versions=[
+            Python(3, 9),
             Python(3, 11),
         ],
         cov_versions=[
