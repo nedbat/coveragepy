@@ -1,9 +1,11 @@
 """Run performance comparisons for versions of coverage"""
 
+import collections
 import contextlib
 import dataclasses
 import itertools
 import os
+import random
 import shutil
 import statistics
 import subprocess
@@ -412,7 +414,7 @@ class Env:
     shell: ShellSession
 
 
-ResultData = Dict[Tuple[str, str, str], float]
+ResultKey = Tuple[str, str, str]
 
 DIMENSION_NAMES = ["proj", "pyver", "cov"]
 
@@ -429,10 +431,9 @@ class Experiment:
         self.py_versions = py_versions
         self.cov_versions = cov_versions
         self.projects = projects
-        self.result_data: ResultData = {}
+        self.result_data: Dict[ResultKey, List[float]] = {}
 
     def run(self, num_runs: int = 3) -> None:
-        results = []
         total_runs = (
             len(self.projects)
             * len(self.py_versions)
@@ -441,8 +442,10 @@ class Experiment:
         )
         total_run_nums = iter(itertools.count(start=1))
 
+        all_runs = []
+
         for proj in self.projects:
-            print(f"Testing with {proj.slug}")
+            print(f"Prepping project {proj.slug}")
             with proj.shell() as shell:
                 proj.make_dir()
                 proj.get_source(shell)
@@ -459,37 +462,46 @@ class Experiment:
                         print(f"Prepping for {proj.slug} {pyver.slug}")
                         proj.prep_environment(env)
                         for cov_ver in self.cov_versions:
-                            durations = []
-                            for run_num in range(num_runs):
-                                total_run_num = next(total_run_nums)
-                                print(
-                                    f"Running tests, cov={cov_ver.slug}, "
-                                    + f"{run_num+1} of {num_runs}, "
-                                    + f"total {total_run_num}/{total_runs}"
-                                )
-                                if cov_ver.pip_args is None:
-                                    dur = proj.run_no_coverage(env)
-                                else:
-                                    dur = proj.run_with_coverage(
-                                        env,
-                                        cov_ver.pip_args,
-                                        cov_ver.tweaks,
-                                    )
-                                print(f"Tests took {dur:.3f}s")
-                                durations.append(dur)
-                            med = statistics.median(durations)
-                            result = (
-                                f"Median for {proj.slug}, {pyver.slug}, "
-                                + f"cov={cov_ver.slug}: {med:.3f}s"
-                            )
-                            print(f"## {result}")
-                            results.append(result)
-                            result_key = (proj.slug, pyver.slug, cov_ver.slug)
-                            self.result_data[result_key] = med
+                            all_runs.append((proj, pyver, cov_ver, env))
 
+        all_runs *= num_runs
+        random.shuffle(all_runs)
+
+        run_data: Dict[ResultKey, List[float]] = collections.defaultdict(list)
+
+        for proj, pyver, cov_ver, env in all_runs:
+            total_run_num = next(total_run_nums)
+            print(
+                "Running tests: "
+                + f"{proj.slug}, {pyver.slug}, cov={cov_ver.slug}, "
+                + f"{total_run_num} of {total_runs}"
+            )
+            with env.shell:
+                with change_dir(proj.dir):
+                    if cov_ver.pip_args is None:
+                        dur = proj.run_no_coverage(env)
+                    else:
+                        dur = proj.run_with_coverage(
+                            env,
+                            cov_ver.pip_args,
+                            cov_ver.tweaks,
+                        )
+            print(f"Tests took {dur:.3f}s")
+            result_key = (proj.slug, pyver.slug, cov_ver.slug)
+            run_data[result_key].append(dur)
+
+        # Summarize and collect the data.
         print("# Results")
-        for result in results:
-            print(result)
+        for proj in self.projects:
+            for pyver in self.py_versions:
+                for cov_ver in self.cov_versions:
+                    result_key = (proj.slug, pyver.slug, cov_ver.slug)
+                    med = statistics.median(run_data[result_key])
+                    self.result_data[result_key] = med
+                    print(
+                        f"Median for {proj.slug}, {pyver.slug}, "
+                        + f"cov={cov_ver.slug}: {med:.3f}s"
+                    )
 
     def show_results(
         self,
