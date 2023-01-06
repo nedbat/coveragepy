@@ -207,7 +207,7 @@ class ConcurrencyTest(CoverageTest):
         code: str,
         concurrency: str,
         the_module: ModuleType,
-        expected_out: Optional[str]=None,
+        expected_out: Optional[str] = None,
     ) -> None:
         """Run some concurrency testing code and see that it was all covered.
 
@@ -460,8 +460,8 @@ class MultiprocessingTest(CoverageTest):
         the_module: ModuleType,
         nprocs: int,
         start_method: str,
-        concurrency: str="multiprocessing",
-        args: str="",
+        concurrency: str = "multiprocessing",
+        args: str = "",
     ) -> None:
         """Run code using multiprocessing, it should produce `expected_out`."""
         self.make_file("multi.py", code)

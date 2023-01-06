@@ -180,7 +180,7 @@ def ensure_dir_for_file(path: str) -> None:
     ensure_dir(os.path.dirname(path))
 
 
-def output_encoding(outfile: Optional[IO[str]]=None) -> str:
+def output_encoding(outfile: Optional[IO[str]] = None) -> str:
     """Determine the encoding to use for output written to `outfile` or stdout."""
     if outfile is None:
         outfile = sys.stdout
@@ -318,7 +318,7 @@ def format_local_datetime(dt: datetime.datetime) -> str:
     return dt.astimezone().strftime('%Y-%m-%d %H:%M %z')
 
 
-def import_local_file(modname: str, modfile: Optional[str]=None) -> ModuleType:
+def import_local_file(modname: str, modfile: Optional[str] = None) -> ModuleType:
     """Import a local file as a module.
 
     Opens a file in the current directory named `modname`.py, imports it
@@ -365,7 +365,7 @@ SortableItem = TypeVar("SortableItem", bound=Sequence[Any])
 
 def human_sorted_items(
     items: Iterable[SortableItem],
-    reverse: bool=False,
+    reverse: bool = False,
 ) -> List[SortableItem]:
     """Sort (string, ...) items the way humans expect.
 
@@ -377,7 +377,7 @@ def human_sorted_items(
     return sorted(items, key=lambda item: (_human_key(item[0]), *item[1:]), reverse=reverse)
 
 
-def plural(n: int, thing: str="", things: str="") -> str:
+def plural(n: int, thing: str = "", things: str = "") -> str:
     """Pluralize a word.
 
     If n is 1, return thing.  Otherwise return things, or thing+s.

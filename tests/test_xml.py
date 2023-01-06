@@ -37,7 +37,7 @@ class XmlTestHelpers(CoverageTest):
         self.start_import_stop(cov, "main")
         return cov
 
-    def make_tree(self, width: int, depth: int, curdir: str=".") -> None:
+    def make_tree(self, width: int, depth: int, curdir: str = ".") -> None:
         """Make a tree of packages.
 
         Makes `width` directories, named d0 .. d{width-1}. Each directory has
@@ -457,7 +457,7 @@ class XmlPackageStructureTest(XmlTestHelpers, CoverageTest):
         assert [elt.text for elt in elts] == ["src"]
 
 
-def compare_xml(expected: str, actual: str, actual_extra: bool=False) -> None:
+def compare_xml(expected: str, actual: str, actual_extra: bool = False) -> None:
     """Specialized compare function for our XML files."""
     source_path = coverage.files.relative_directory().rstrip(r"\/")
 

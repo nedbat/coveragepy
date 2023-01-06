@@ -133,10 +133,10 @@ def test_flat_rootname(original: str, flat: str) -> None:
 
 def globs_to_regex_params(
     patterns: Iterable[str],
-    case_insensitive: bool=False,
-    partial: bool=False,
-    matches: Iterable[str]=(),
-    nomatches: Iterable[str]=(),
+    case_insensitive: bool = False,
+    partial: bool = False,
+    matches: Iterable[str] = (),
+    nomatches: Iterable[str] = (),
 ) -> Iterator[Any]:
     """Generate parameters for `test_globs_to_regex`.
 
@@ -399,7 +399,7 @@ class PathAliasesTest(CoverageTest):
             expected = files.canonical_filename(out)
         assert mapped == expected
 
-    def assert_unchanged(self, aliases: PathAliases, inp: str, exists: bool=True) -> None:
+    def assert_unchanged(self, aliases: PathAliases, inp: str, exists: bool = True) -> None:
         """Assert that `inp` mapped through `aliases` is unchanged."""
         assert aliases.map(inp, exists=lambda p: exists) == inp
 

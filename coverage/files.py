@@ -224,7 +224,7 @@ class TreeMatcher:
     somewhere in a subtree rooted at one of the directories.
 
     """
-    def __init__(self, paths: Iterable[str], name: str="unknown") -> None:
+    def __init__(self, paths: Iterable[str], name: str = "unknown") -> None:
         self.original_paths: List[str] = human_sorted(paths)
         #self.paths = list(map(os.path.normcase, paths))
         self.paths = [os.path.normcase(p) for p in paths]
@@ -282,7 +282,7 @@ class ModuleMatcher:
 
 class GlobMatcher:
     """A matcher for files by file name pattern."""
-    def __init__(self, pats: Iterable[str], name: str="unknown") -> None:
+    def __init__(self, pats: Iterable[str], name: str = "unknown") -> None:
         self.pats = list(pats)
         self.re = globs_to_regex(self.pats, case_insensitive=env.WINDOWS)
         self.name = name
@@ -350,8 +350,8 @@ def _glob_to_regex(pattern: str) -> str:
 
 def globs_to_regex(
     patterns: Iterable[str],
-    case_insensitive: bool=False,
-    partial: bool=False,
+    case_insensitive: bool = False,
+    partial: bool = False,
 ) -> re.Pattern[str]:
     """Convert glob patterns to a compiled regex that matches any of them.
 
@@ -392,8 +392,8 @@ class PathAliases:
     """
     def __init__(
         self,
-        debugfn: Optional[Callable[[str], None]]=None,
-        relative: bool=False,
+        debugfn: Optional[Callable[[str], None]] = None,
+        relative: bool = False,
     ) -> None:
         # A list of (original_pattern, regex, result)
         self.aliases: List[Tuple[str, re.Pattern[str], str]] = []
@@ -446,7 +446,7 @@ class PathAliases:
         result = result.rstrip(r"\/") + result_sep
         self.aliases.append((original_pattern, regex, result))
 
-    def map(self, path: str, exists:Callable[[str], bool]=source_exists) -> str:
+    def map(self, path: str, exists:Callable[[str], bool] = source_exists) -> str:
         """Map `path` through the aliases.
 
         `path` is checked against all of the patterns.  The first pattern to

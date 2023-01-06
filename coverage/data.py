@@ -24,7 +24,7 @@ from coverage.misc import Hasher, file_be_gone, human_sorted, plural
 from coverage.sqldata import CoverageData
 
 
-def line_counts(data: CoverageData, fullpath: bool=False) -> Dict[str, int]:
+def line_counts(data: CoverageData, fullpath: bool = False) -> Dict[str, int]:
     """Return a dict summarizing the line coverage data.
 
     Keys are based on the file names, and values are the number of executed
@@ -62,7 +62,7 @@ def add_data_to_hash(data: CoverageData, filename: str, hasher: Hasher) -> None:
     hasher.update(data.file_tracer(filename))
 
 
-def combinable_files(data_file: str, data_paths: Optional[Iterable[str]]=None) -> List[str]:
+def combinable_files(data_file: str, data_paths: Optional[Iterable[str]] = None) -> List[str]:
     """Make a list of data files to be combined.
 
     `data_file` is a path to a data file.  `data_paths` is a list of files or
@@ -87,11 +87,11 @@ def combinable_files(data_file: str, data_paths: Optional[Iterable[str]]=None) -
 
 def combine_parallel_data(
     data: CoverageData,
-    aliases: Optional[PathAliases]=None,
-    data_paths: Optional[Iterable[str]]=None,
-    strict: bool=False,
-    keep: bool=False,
-    message: Optional[Callable[[str], None]]=None,
+    aliases: Optional[PathAliases] = None,
+    data_paths: Optional[Iterable[str]] = None,
+    strict: bool = False,
+    keep: bool = False,
+    message: Optional[Callable[[str], None]] = None,
 ) -> None:
     """Combine a number of data files together.
 

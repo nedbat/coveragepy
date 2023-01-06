@@ -36,9 +36,9 @@ class PythonParser:
     """
     def __init__(
         self,
-        text: Optional[str]=None,
-        filename: Optional[str]=None,
-        exclude: Optional[str]=None,
+        text: Optional[str] = None,
+        filename: Optional[str] = None,
+        exclude: Optional[str] = None,
     ) -> None:
         """
         Source can be provided as `text`, the text itself, or `filename`, from
@@ -328,7 +328,7 @@ class PythonParser:
         self,
         start: TLineNo,
         end: TLineNo,
-        executed_arcs: Optional[Iterable[TArc]]=None,
+        executed_arcs: Optional[Iterable[TArc]] = None,
     ) -> str:
         """Provide an English sentence describing a missing arc."""
         if self._missing_arc_fragments is None:
@@ -376,8 +376,8 @@ class ByteParser:
     def __init__(
         self,
         text: str,
-        code: Optional[CodeType]=None,
-        filename: Optional[str]=None,
+        code: Optional[CodeType] = None,
+        filename: Optional[str] = None,
     ) -> None:
         self.text = text
         if code is not None:
@@ -459,7 +459,7 @@ class ArcStart(collections.namedtuple("Arc", "lineno, cause")):
     to have `lineno` interpolated into it.
 
     """
-    def __new__(cls, lineno: TLineNo, cause: Optional[str]=None) -> ArcStart:
+    def __new__(cls, lineno: TLineNo, cause: Optional[str] = None) -> ArcStart:
         return super().__new__(cls, lineno, cause)
 
 
@@ -469,8 +469,8 @@ class TAddArcFn(Protocol):
         self,
         start: TLineNo,
         end: TLineNo,
-        smsg: Optional[str]=None,
-        emsg: Optional[str]=None,
+        smsg: Optional[str] = None,
+        emsg: Optional[str] = None,
     ) -> None:
         ...
 
@@ -613,7 +613,7 @@ class WithBlock(Block):
         self,
         exits: Set[ArcStart],
         add_arc: TAddArcFn,
-        from_set: Optional[Set[ArcStart]]=None,
+        from_set: Optional[Set[ArcStart]] = None,
     ) -> bool:
         """Helper to process the four kinds of exits."""
         for xit in exits:
@@ -713,8 +713,8 @@ class AstArcAnalyzer:
         self,
         start: TLineNo,
         end: TLineNo,
-        smsg: Optional[str]=None,
-        emsg: Optional[str]=None,
+        smsg: Optional[str] = None,
+        emsg: Optional[str] = None,
     ) -> None:
         """Add an arc, including message fragments to use if it is missing."""
         if self.debug:                      # pragma: debugging
@@ -829,8 +829,8 @@ class AstArcAnalyzer:
     def add_body_arcs(
         self,
         body: Sequence[ast.AST],
-        from_start: Optional[ArcStart]=None,
-        prev_starts: Optional[Set[ArcStart]]=None
+        from_start: Optional[ArcStart] = None,
+        prev_starts: Optional[Set[ArcStart]] = None
     ) -> Set[ArcStart]:
         """Add arcs for the body of a compound statement.
 
@@ -1362,7 +1362,7 @@ def _is_simple_value(value: Any) -> bool:
 def ast_dump(
     node: ast.AST,
     depth: int = 0,
-    print: Callable[[str], None]=print,     # pylint: disable=redefined-builtin
+    print: Callable[[str], None] = print,   # pylint: disable=redefined-builtin
 ) -> None:
     """Dump the AST for `node`.
 

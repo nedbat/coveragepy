@@ -81,9 +81,9 @@ class TempDirMixin:
     def make_file(
         self,
         filename: str,
-        text: str="",
-        bytes: bytes=b"",
-        newline: Optional[str]=None,
+        text: str = "",
+        bytes: bytes = b"",
+        newline: Optional[str] = None,
     ) -> str:
         """Make a file. See `tests.helpers.make_file`"""
         # pylint: disable=redefined-builtin     # bytes

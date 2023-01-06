@@ -45,7 +45,7 @@ class HandyConfigParser(configparser.ConfigParser):
     def read( # type: ignore[override]
         self,
         filenames: Iterable[str],
-        encoding_unused: Optional[str]=None,
+        encoding_unused: Optional[str] = None,
     ) -> List[str]:
         """Read a file name as UTF-8 configuration data."""
         return super().read(filenames, encoding="utf-8")
@@ -430,7 +430,7 @@ class CoverageConfig(TConfigurable):
         cp: TConfigParser,
         attr: str,
         where: str,
-        type_: str='',
+        type_: str = '',
     ) -> bool:
         """Set an attribute on self if it exists in the ConfigParser.
 

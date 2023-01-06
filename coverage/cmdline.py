@@ -321,7 +321,7 @@ class CmdOptionParser(CoverageOptionParser):
         action: str,
         options: List[optparse.Option],
         description: str,
-        usage: Optional[str]=None,
+        usage: Optional[str] = None,
     ):
         """Create an OptionParser for a coverage.py command.
 
@@ -551,9 +551,9 @@ COMMANDS = {
 
 
 def show_help(
-    error: Optional[str]=None,
-    topic: Optional[str]=None,
-    parser: Optional[optparse.OptionParser]=None,
+    error: Optional[str] = None,
+    topic: Optional[str] = None,
+    parser: Optional[optparse.OptionParser] = None,
 ) -> None:
     """Display an error message, or the named topic."""
     assert error or topic or parser
@@ -960,7 +960,7 @@ HELP_TOPICS = {
 }
 
 
-def main(argv: Optional[List[str]]=None) -> Optional[int]:
+def main(argv: Optional[List[str]] = None) -> Optional[int]:
     """The main entry point to coverage.py.
 
     This is installed as the script entry point.
@@ -999,7 +999,7 @@ if _profile:                                                # pragma: debugging
     original_main = main
 
     def main(                                               # pylint: disable=function-redefined
-        argv: Optional[List[str]]=None,
+        argv: Optional[List[str]] = None,
     ) -> Optional[int]:
         """A wrapper around main that profiles."""
         profiler = SimpleLauncher.launch()

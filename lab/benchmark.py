@@ -157,7 +157,7 @@ class ProjectToTest:
 
 class EmptyProject(ProjectToTest):
     """A dummy project for testing other parts of this code."""
-    def __init__(self, slug: str="empty", fake_durations: Iterable[float]=(1.23,)):
+    def __init__(self, slug: str = "empty", fake_durations: Iterable[float] = (1.23,)):
         self.slug = slug
         self.durations = iter(itertools.cycle(fake_durations))
 

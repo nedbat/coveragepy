@@ -67,7 +67,7 @@ class Analysis:
             n_missing_branches=n_missing_branches,
         )
 
-    def missing_formatted(self, branches: bool=False) -> str:
+    def missing_formatted(self, branches: bool = False) -> str:
         """The missing line numbers, formatted nicely.
 
         Returns a string like "1-2, 5-11, 13-14".
@@ -188,14 +188,14 @@ class Numbers(AutoReprMixin):
 
     def __init__(
         self,
-        precision: int=0,
-        n_files: int=0,
-        n_statements: int=0,
-        n_excluded: int=0,
-        n_missing: int=0,
-        n_branches: int=0,
-        n_partial_branches: int=0,
-        n_missing_branches: int=0,
+        precision: int = 0,
+        n_files: int = 0,
+        n_statements: int = 0,
+        n_excluded: int = 0,
+        n_missing: int = 0,
+        n_branches: int = 0,
+        n_partial_branches: int = 0,
+        n_missing_branches: int = 0,
     ) -> None:
         assert 0 <= precision < 10
         self._precision = precision
@@ -329,7 +329,7 @@ def _line_ranges(
 def format_lines(
     statements: Iterable[TLineNo],
     lines: Iterable[TLineNo],
-    arcs: Optional[Iterable[Tuple[TLineNo, List[TLineNo]]]]=None,
+    arcs: Optional[Iterable[Tuple[TLineNo, List[TLineNo]]]] = None,
 ) -> str:
     """Nicely format a list of line numbers.
 

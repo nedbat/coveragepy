@@ -1062,7 +1062,7 @@ class TestRunnerPluginTest(CoverageTest):
     way they do.
 
     """
-    def pretend_to_be_nose_with_cover(self, erase: bool=False, cd: bool=False) -> None:
+    def pretend_to_be_nose_with_cover(self, erase: bool = False, cd: bool = False) -> None:
         """This is what the nose --with-cover plugin does."""
         self.make_file("no_biggie.py", """\
             a = 1
@@ -1492,7 +1492,7 @@ class CombiningTest(CoverageTest):
 class ReportMapsPathsTest(CoverageTest):
     """Check that reporting implicitly maps paths."""
 
-    def make_files(self, data: str, settings: bool=False) -> None:
+    def make_files(self, data: str, settings: bool = False) -> None:
         """Create the test files we need for line coverage."""
         src = """\
             if VER == 1:

@@ -53,7 +53,7 @@ class AnnotateReporter:
     blank_re = re.compile(r"\s*(#|$)")
     else_re = re.compile(r"\s*else\s*:\s*(#|$)")
 
-    def report(self, morfs: Optional[Iterable[TMorf]], directory: Optional[str]=None) -> None:
+    def report(self, morfs: Optional[Iterable[TMorf]], directory: Optional[str] = None) -> None:
         """Run the report.
 
         See `coverage.report()` for arguments.

@@ -39,7 +39,7 @@ class Plugins:
         cls,
         modules: Iterable[str],
         config: CoverageConfig,
-        debug: Optional[TDebugCtl]=None,
+        debug: Optional[TDebugCtl] = None,
     ) -> Plugins:
         """Load plugins from `modules`.
 
@@ -139,7 +139,7 @@ class Plugins:
 class LabelledDebug:
     """A Debug writer, but with labels for prepending to the messages."""
 
-    def __init__(self, label: str, debug: TDebugCtl, prev_labels: Iterable[str]=()):
+    def __init__(self, label: str, debug: TDebugCtl, prev_labels: Iterable[str] = ()):
         self.labels = list(prev_labels) + [label]
         self.debug = debug
 

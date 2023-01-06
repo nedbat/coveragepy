@@ -56,7 +56,7 @@ if env.PYPY:
         pass
 
 
-def canonical_path(morf: TMorf, directory: bool=False) -> str:
+def canonical_path(morf: TMorf, directory: bool = False) -> str:
     """Return the canonical path of the module or file `morf`.
 
     If the module is a package, then return its directory. If it is a
@@ -294,7 +294,7 @@ class InOrOut:
         self.plugins: Plugins
         self.disp_class: Type[TFileDisposition] = FileDisposition
 
-    def should_trace(self, filename: str, frame: Optional[FrameType]=None) -> TFileDisposition:
+    def should_trace(self, filename: str, frame: Optional[FrameType] = None) -> TFileDisposition:
         """Decide whether to trace execution in `filename`, with a reason.
 
         This function is called from the trace function.  As each new file name

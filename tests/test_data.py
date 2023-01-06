@@ -88,7 +88,7 @@ TCoverageData = Callable[..., CoverageData]
 def assert_line_counts(
     covdata: CoverageData,
     counts: Mapping[str, int],
-    fullpath: bool=False,
+    fullpath: bool = False,
 ) -> None:
     """Check that the line_counts of `covdata` is `counts`."""
     assert line_counts(covdata, fullpath) == counts

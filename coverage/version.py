@@ -16,9 +16,9 @@ def _make_version(
     major: int,
     minor: int,
     micro: int,
-    releaselevel: str="final",
-    serial: int=0,
-    dev: int=0,
+    releaselevel: str = "final",
+    serial: int = 0,
+    dev: int = 0,
 ) -> str:
     """Create a readable version string from version_info tuple components."""
     assert releaselevel in ['alpha', 'beta', 'candidate', 'final']
@@ -36,8 +36,8 @@ def _make_url(
     minor: int,
     micro: int,
     releaselevel: str,
-    serial: int=0,
-    dev: int=0,
+    serial: int = 0,
+    dev: int = 0,
 ) -> str:
     """Make the URL people should start at for this version of coverage.py."""
     url = "https://coverage.readthedocs.io"

@@ -67,7 +67,7 @@ class XmlReporter:
         self.packages: Dict[str, PackageData] = {}
         self.xml_out: xml.dom.minidom.Document
 
-    def report(self, morfs: Optional[Iterable[TMorf]], outfile: Optional[IO[str]]=None) -> float:
+    def report(self, morfs: Optional[Iterable[TMorf]], outfile: Optional[IO[str]] = None) -> float:
         """Generate a Cobertura-compatible XML report for `morfs`.
 
         `morfs` is a list of modules or file names.

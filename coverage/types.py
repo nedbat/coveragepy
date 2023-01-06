@@ -32,7 +32,7 @@ class TTraceFn(Protocol):
         frame: FrameType,
         event: str,
         arg: Any,
-        lineno: Optional[int]=None  # Our own twist, see collector.py
+        lineno: Optional[int] = None  # Our own twist, see collector.py
     ) -> TTraceFn:
         ...
 
@@ -156,7 +156,7 @@ class TPlugin(Protocol):
 
 class TWarnFn(Protocol):
     """A callable warn() function."""
-    def __call__(self, msg: str, slug: Optional[str]=None, once: bool=False,) -> None:
+    def __call__(self, msg: str, slug: Optional[str] = None, once: bool = False,) -> None:
         ...
 
 

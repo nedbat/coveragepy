@@ -144,7 +144,7 @@ def source_for_morf(morf: TMorf) -> str:
 class PythonFileReporter(FileReporter):
     """Report support for a Python file."""
 
-    def __init__(self, morf: TMorf, coverage: Optional[Coverage]=None) -> None:
+    def __init__(self, morf: TMorf, coverage: Optional[Coverage] = None) -> None:
         self.coverage = coverage
 
         filename = source_for_morf(morf)
@@ -224,7 +224,7 @@ class PythonFileReporter(FileReporter):
         self,
         start: TLineNo,
         end: TLineNo,
-        executed_arcs: Optional[Iterable[TArc]]=None,
+        executed_arcs: Optional[Iterable[TArc]] = None,
     ) -> str:
         return self.parser.missing_arc_description(start, end, executed_arcs)
 

@@ -212,11 +212,11 @@ class CoverageData(AutoReprMixin):
 
     def __init__(
         self,
-        basename: Optional[str]=None,
-        suffix: Optional[Union[str, bool]]=None,
-        no_disk: bool=False,
-        warn: Optional[TWarnFn]=None,
-        debug: Optional[TDebugCtl]=None,
+        basename: Optional[str] = None,
+        suffix: Optional[Union[str, bool]] = None,
+        no_disk: bool = False,
+        warn: Optional[TWarnFn] = None,
+        debug: Optional[TDebugCtl] = None,
     ) -> None:
         """Create a :class:`CoverageData` object to hold coverage-measured data.
 
@@ -403,7 +403,7 @@ class CoverageData(AutoReprMixin):
         self._read_db()
         self._have_used = True
 
-    def _file_id(self, filename: str, add: bool=False) -> Optional[int]:
+    def _file_id(self, filename: str, add: bool = False) -> Optional[int]:
         """Get the file id for `filename`.
 
         If filename is not in the database yet, add it if `add` is True.
@@ -536,7 +536,7 @@ class CoverageData(AutoReprMixin):
                     data,
                 )
 
-    def _choose_lines_or_arcs(self, lines: bool=False, arcs: bool=False) -> None:
+    def _choose_lines_or_arcs(self, lines: bool = False, arcs: bool = False) -> None:
         """Force the data file to choose between lines and arcs."""
         assert lines or arcs
         assert not (lines and arcs)
@@ -591,7 +591,7 @@ class CoverageData(AutoReprMixin):
                         (file_id, plugin_name)
                     )
 
-    def touch_file(self, filename: str, plugin_name: str="") -> None:
+    def touch_file(self, filename: str, plugin_name: str = "") -> None:
         """Ensure that `filename` appears in the data, empty if needed.
 
         `plugin_name` is the name of the plugin responsible for this file.
@@ -599,7 +599,7 @@ class CoverageData(AutoReprMixin):
         """
         self.touch_files([filename], plugin_name)
 
-    def touch_files(self, filenames: Iterable[str], plugin_name: Optional[str]=None) -> None:
+    def touch_files(self, filenames: Iterable[str], plugin_name: Optional[str] = None) -> None:
         """Ensure that `filenames` appear in the data, empty if needed.
 
         `plugin_name` is the name of the plugin responsible for these files.
@@ -618,7 +618,7 @@ class CoverageData(AutoReprMixin):
                     # Set the tracer for this file
                     self.add_file_tracers({filename: plugin_name})
 
-    def update(self, other_data: CoverageData, aliases: Optional[PathAliases]=None) -> None:
+    def update(self, other_data: CoverageData, aliases: Optional[PathAliases] = None) -> None:
         """Update this data with data from several other :class:`CoverageData` instances.
 
         If `aliases` is provided, it's a `PathAliases` object that is used to
@@ -787,7 +787,7 @@ class CoverageData(AutoReprMixin):
             self._reset()
             self.read()
 
-    def erase(self, parallel: bool=False) -> None:
+    def erase(self, parallel: bool = False) -> None:
         """Erase the data in this object.
 
         If `parallel` is true, then also deletes data files created from the
@@ -1170,7 +1170,7 @@ class SqliteDb(AutoReprMixin):
     def execute(
         self,
         sql: str,
-        parameters: Iterable[Any]=(),
+        parameters: Iterable[Any] = (),
     ) -> Iterator[sqlite3.Cursor]:
         """Context managed :meth:`python:sqlite3.Connection.execute`.
 
@@ -1182,11 +1182,11 @@ class SqliteDb(AutoReprMixin):
         finally:
             cur.close()
 
-    def execute_void(self, sql: str, parameters: Iterable[Any]=()) -> None:
+    def execute_void(self, sql: str, parameters: Iterable[Any] = ()) -> None:
         """Same as :meth:`python:sqlite3.Connection.execute` when you don't need the cursor."""
         self._execute(sql, parameters).close()
 
-    def execute_for_rowid(self, sql: str, parameters: Iterable[Any]=()) -> int:
+    def execute_for_rowid(self, sql: str, parameters: Iterable[Any] = ()) -> int:
         """Like execute, but returns the lastrowid."""
         with self.execute(sql, parameters) as cur:
             assert cur.lastrowid is not None
@@ -1195,7 +1195,7 @@ class SqliteDb(AutoReprMixin):
             self.debug.write(f"Row id result: {rowid!r}")
         return rowid
 
-    def execute_one(self, sql: str, parameters: Iterable[Any]=()) -> Optional[Tuple[Any, ...]]:
+    def execute_one(self, sql: str, parameters: Iterable[Any] = ()) -> Optional[Tuple[Any, ...]]:
         """Execute a statement and return the one row that results.
 
         This is like execute(sql, parameters).fetchone(), except it is

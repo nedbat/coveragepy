@@ -114,22 +114,22 @@ class Coverage(TConfigurable):
 
     def __init__(                       # pylint: disable=too-many-arguments
         self,
-        data_file: Optional[Union[str, DefaultValue]]=DEFAULT_DATAFILE,
-        data_suffix: Optional[Union[str, bool]]=None,
-        cover_pylib: Optional[bool]=None,
-        auto_data: bool=False,
-        timid: Optional[bool]=None,
-        branch: Optional[bool]=None,
-        config_file: Union[str, bool]=True,
-        source: Optional[Iterable[str]]=None,
-        source_pkgs: Optional[Iterable[str]]=None,
-        omit: Optional[Union[str, Iterable[str]]]=None,
-        include: Optional[Union[str, Iterable[str]]]=None,
-        debug: Optional[Iterable[str]]=None,
-        concurrency: Optional[Union[str, Iterable[str]]]=None,
-        check_preimported: bool=False,
-        context: Optional[str]=None,
-        messages: bool=False,
+        data_file: Optional[Union[str, DefaultValue]] = DEFAULT_DATAFILE,
+        data_suffix: Optional[Union[str, bool]] = None,
+        cover_pylib: Optional[bool] = None,
+        auto_data: bool = False,
+        timid: Optional[bool] = None,
+        branch: Optional[bool] = None,
+        config_file: Union[str, bool] = True,
+        source: Optional[Iterable[str]] = None,
+        source_pkgs: Optional[Iterable[str]] = None,
+        omit: Optional[Union[str, Iterable[str]]] = None,
+        include: Optional[Union[str, Iterable[str]]] = None,
+        debug: Optional[Iterable[str]] = None,
+        concurrency: Optional[Union[str, Iterable[str]]] = None,
+        check_preimported: bool = False,
+        context: Optional[str] = None,
+        messages: bool = False,
     ) -> None:
         """
         Many of these arguments duplicate and override values that can be
@@ -392,7 +392,7 @@ class Coverage(TConfigurable):
 
         return not reason
 
-    def _warn(self, msg: str, slug: Optional[str]=None, once: bool=False) -> None:
+    def _warn(self, msg: str, slug: Optional[str] = None, once: bool = False) -> None:
         """Use `msg` as a warning.
 
         For warning suppression, use `slug` as the shorthand.
@@ -634,7 +634,7 @@ class Coverage(TConfigurable):
             self._collector.stop()
         self._started = False
 
-    def _atexit(self, event: str="atexit") -> None:
+    def _atexit(self, event: str = "atexit") -> None:
         """Clean up on process shutdown."""
         if self._debug.should("process"):
             self._debug.write(f"{event}: pid: {os.getpid()}, instance: {self!r}")
@@ -688,13 +688,13 @@ class Coverage(TConfigurable):
 
         self._collector.switch_context(new_context)
 
-    def clear_exclude(self, which: str='exclude') -> None:
+    def clear_exclude(self, which: str = 'exclude') -> None:
         """Clear the exclude list."""
         self._init()
         setattr(self.config, which + "_list", [])
         self._exclude_regex_stale()
 
-    def exclude(self, regex: str, which: str='exclude') -> None:
+    def exclude(self, regex: str, which: str = 'exclude') -> None:
         """Exclude source lines from execution consideration.
 
         A number of lists of regular expressions are maintained.  Each list
@@ -726,7 +726,7 @@ class Coverage(TConfigurable):
             self._exclude_re[which] = join_regex(excl_list)
         return self._exclude_re[which]
 
-    def get_exclude_list(self, which: str='exclude') -> List[str]:
+    def get_exclude_list(self, which: str = 'exclude') -> List[str]:
         """Return a list of excluded regex strings.
 
         `which` indicates which list is desired.  See :meth:`exclude` for the
@@ -755,9 +755,9 @@ class Coverage(TConfigurable):
 
     def combine(
         self,
-        data_paths: Optional[Iterable[str]]=None,
-        strict: bool=False,
-        keep: bool=False
+        data_paths: Optional[Iterable[str]] = None,
+        strict: bool = False,
+        keep: bool = False
     ) -> None:
         """Combine together a number of similarly-named coverage data files.
 
@@ -926,7 +926,7 @@ class Coverage(TConfigurable):
         assert isinstance(file_reporter, FileReporter)
         return file_reporter
 
-    def _get_file_reporters(self, morfs: Optional[Iterable[TMorf]]=None) -> List[FileReporter]:
+    def _get_file_reporters(self, morfs: Optional[Iterable[TMorf]] = None) -> List[FileReporter]:
         """Get a list of FileReporters for a list of modules or file names.
 
         For each module or file name in `morfs`, find a FileReporter.  Return
@@ -956,18 +956,18 @@ class Coverage(TConfigurable):
 
     def report(
         self,
-        morfs: Optional[Iterable[TMorf]]=None,
-        show_missing: Optional[bool]=None,
-        ignore_errors: Optional[bool]=None,
-        file: Optional[IO[str]]=None,
-        omit: Optional[Union[str, List[str]]]=None,
-        include: Optional[Union[str, List[str]]]=None,
-        skip_covered: Optional[bool]=None,
-        contexts: Optional[List[str]]=None,
-        skip_empty: Optional[bool]=None,
-        precision: Optional[int]=None,
-        sort: Optional[str]=None,
-        output_format: Optional[str]=None,
+        morfs: Optional[Iterable[TMorf]] = None,
+        show_missing: Optional[bool] = None,
+        ignore_errors: Optional[bool] = None,
+        file: Optional[IO[str]] = None,
+        omit: Optional[Union[str, List[str]]] = None,
+        include: Optional[Union[str, List[str]]] = None,
+        skip_covered: Optional[bool] = None,
+        contexts: Optional[List[str]] = None,
+        skip_empty: Optional[bool] = None,
+        precision: Optional[int] = None,
+        sort: Optional[str] = None,
+        output_format: Optional[str] = None,
     ) -> float:
         """Write a textual summary report to `file`.
 
@@ -1038,12 +1038,12 @@ class Coverage(TConfigurable):
 
     def annotate(
         self,
-        morfs: Optional[Iterable[TMorf]]=None,
-        directory: Optional[str]=None,
-        ignore_errors: Optional[bool]=None,
-        omit: Optional[Union[str, List[str]]]=None,
-        include: Optional[Union[str, List[str]]]=None,
-        contexts: Optional[List[str]]=None,
+        morfs: Optional[Iterable[TMorf]] = None,
+        directory: Optional[str] = None,
+        ignore_errors: Optional[bool] = None,
+        omit: Optional[Union[str, List[str]]] = None,
+        include: Optional[Union[str, List[str]]] = None,
+        contexts: Optional[List[str]] = None,
     ) -> None:
         """Annotate a list of modules.
 
@@ -1077,18 +1077,18 @@ class Coverage(TConfigurable):
 
     def html_report(
         self,
-        morfs: Optional[Iterable[TMorf]]=None,
-        directory: Optional[str]=None,
-        ignore_errors: Optional[bool]=None,
-        omit: Optional[Union[str, List[str]]]=None,
-        include: Optional[Union[str, List[str]]]=None,
-        extra_css: Optional[str]=None,
-        title: Optional[str]=None,
-        skip_covered: Optional[bool]=None,
-        show_contexts: Optional[bool]=None,
-        contexts: Optional[List[str]]=None,
-        skip_empty: Optional[bool]=None,
-        precision: Optional[int]=None,
+        morfs: Optional[Iterable[TMorf]] = None,
+        directory: Optional[str] = None,
+        ignore_errors: Optional[bool] = None,
+        omit: Optional[Union[str, List[str]]] = None,
+        include: Optional[Union[str, List[str]]] = None,
+        extra_css: Optional[str] = None,
+        title: Optional[str] = None,
+        skip_covered: Optional[bool] = None,
+        show_contexts: Optional[bool] = None,
+        contexts: Optional[List[str]] = None,
+        skip_empty: Optional[bool] = None,
+        precision: Optional[int] = None,
     ) -> float:
         """Generate an HTML report.
 
@@ -1135,13 +1135,13 @@ class Coverage(TConfigurable):
 
     def xml_report(
         self,
-        morfs: Optional[Iterable[TMorf]]=None,
-        outfile: Optional[str]=None,
-        ignore_errors: Optional[bool]=None,
-        omit: Optional[Union[str, List[str]]]=None,
-        include: Optional[Union[str, List[str]]]=None,
-        contexts: Optional[List[str]]=None,
-        skip_empty: Optional[bool]=None,
+        morfs: Optional[Iterable[TMorf]] = None,
+        outfile: Optional[str] = None,
+        ignore_errors: Optional[bool] = None,
+        omit: Optional[Union[str, List[str]]] = None,
+        include: Optional[Union[str, List[str]]] = None,
+        contexts: Optional[List[str]] = None,
+        skip_empty: Optional[bool] = None,
     ) -> float:
         """Generate an XML report of coverage results.
 
@@ -1169,14 +1169,14 @@ class Coverage(TConfigurable):
 
     def json_report(
         self,
-        morfs: Optional[Iterable[TMorf]]=None,
-        outfile: Optional[str]=None,
-        ignore_errors: Optional[bool]=None,
-        omit: Optional[Union[str, List[str]]]=None,
-        include: Optional[Union[str, List[str]]]=None,
-        contexts: Optional[List[str]]=None,
-        pretty_print: Optional[bool]=None,
-        show_contexts: Optional[bool]=None,
+        morfs: Optional[Iterable[TMorf]] = None,
+        outfile: Optional[str] = None,
+        ignore_errors: Optional[bool] = None,
+        omit: Optional[Union[str, List[str]]] = None,
+        include: Optional[Union[str, List[str]]] = None,
+        contexts: Optional[List[str]] = None,
+        pretty_print: Optional[bool] = None,
+        show_contexts: Optional[bool] = None,
     ) -> float:
         """Generate a JSON report of coverage results.
 
@@ -1207,12 +1207,12 @@ class Coverage(TConfigurable):
 
     def lcov_report(
         self,
-        morfs: Optional[Iterable[TMorf]]=None,
-        outfile: Optional[str]=None,
-        ignore_errors: Optional[bool]=None,
-        omit: Optional[Union[str, List[str]]]=None,
-        include: Optional[Union[str, List[str]]]=None,
-        contexts: Optional[List[str]]=None,
+        morfs: Optional[Iterable[TMorf]] = None,
+        outfile: Optional[str] = None,
+        ignore_errors: Optional[bool] = None,
+        omit: Optional[Union[str, List[str]]] = None,
+        include: Optional[Union[str, List[str]]] = None,
+        contexts: Optional[List[str]] = None,
     ) -> float:
         """Generate an LCOV report of coverage results.
 

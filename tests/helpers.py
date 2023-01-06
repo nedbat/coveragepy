@@ -64,9 +64,9 @@ def run_command(cmd: str) -> Tuple[int, str]:
 
 def make_file(
     filename: str,
-    text: str="",
-    bytes: bytes=b"",
-    newline: Optional[str]=None,
+    text: str = "",
+    bytes: bytes = b"",
+    newline: Optional[str] = None,
 ) -> str:
     """Create a file for testing.
 
@@ -154,7 +154,7 @@ class CheckUniqueFilenames:
         return self.wrapped(filename, *args, **kwargs)
 
 
-def re_lines(pat: str, text: str, match: bool=True) -> List[str]:
+def re_lines(pat: str, text: str, match: bool = True) -> List[str]:
     """Return a list of lines selected by `pat` in the string `text`.
 
     If `match` is false, the selection is inverted: only the non-matching
@@ -167,7 +167,7 @@ def re_lines(pat: str, text: str, match: bool=True) -> List[str]:
     return [l for l in text.splitlines() if bool(re.search(pat, l)) == match]
 
 
-def re_lines_text(pat: str, text: str, match: bool=True) -> str:
+def re_lines_text(pat: str, text: str, match: bool = True) -> str:
     """Return the multi-line text of lines selected by `pat`."""
     return "".join(l + "\n" for l in re_lines(pat, text, match=match))
 
@@ -320,8 +320,8 @@ def assert_coverage_warnings(
 
 @contextlib.contextmanager
 def swallow_warnings(
-    message: str=r".",
-    category: Type[Warning]=CoverageWarning,
+    message: str = r".",
+    category: Type[Warning] = CoverageWarning,
 ) -> Iterator[None]:
     """Swallow particular warnings.
 

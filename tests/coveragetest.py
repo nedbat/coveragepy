@@ -76,7 +76,7 @@ class CoverageTest(
         self,
         cov: Coverage,
         modname: str,
-        modfile: Optional[str]=None
+        modfile: Optional[str] = None
     ) -> ModuleType:
         """Start coverage, import a file, then stop coverage.
 
@@ -96,7 +96,7 @@ class CoverageTest(
             cov.stop()
         return mod
 
-    def get_report(self, cov: Coverage, squeeze: bool=True, **kwargs: Any) -> str:
+    def get_report(self, cov: Coverage, squeeze: bool = True, **kwargs: Any) -> str:
         """Get the report from `cov`, and canonicalize it."""
         repout = io.StringIO()
         kwargs.setdefault("show_missing", False)
@@ -137,17 +137,17 @@ class CoverageTest(
     def check_coverage(
         self,
         text: str,
-        lines: Optional[Union[Sequence[TLineNo], Sequence[List[TLineNo]]]]=None,
-        missing: Union[str, Sequence[str]]="",
-        report: str="",
-        excludes: Optional[Iterable[str]]=None,
-        partials: Iterable[str]=(),
-        arcz: Optional[str]=None,
-        arcz_missing: Optional[str]=None,
-        arcz_unpredicted: Optional[str]=None,
-        arcs: Optional[Iterable[TArc]]=None,
-        arcs_missing: Optional[Iterable[TArc]]=None,
-        arcs_unpredicted: Optional[Iterable[TArc]]=None,
+        lines: Optional[Union[Sequence[TLineNo], Sequence[List[TLineNo]]]] = None,
+        missing: Union[str, Sequence[str]] = "",
+        report: str = "",
+        excludes: Optional[Iterable[str]] = None,
+        partials: Iterable[str] = (),
+        arcz: Optional[str] = None,
+        arcz_missing: Optional[str] = None,
+        arcz_unpredicted: Optional[str] = None,
+        arcs: Optional[Iterable[TArc]] = None,
+        arcs_missing: Optional[Iterable[TArc]] = None,
+        arcs_unpredicted: Optional[Iterable[TArc]] = None,
     ) -> Coverage:
         """Check the coverage measurement of `text`.
 
@@ -248,11 +248,11 @@ class CoverageTest(
 
     def make_data_file(
         self,
-        basename: Optional[str]=None,
-        suffix: Optional[str]=None,
-        lines: Optional[Mapping[str, Collection[TLineNo]]]=None,
-        arcs: Optional[Mapping[str, Collection[TArc]]]=None,
-        file_tracers: Optional[Mapping[str, str]]=None,
+        basename: Optional[str] = None,
+        suffix: Optional[str] = None,
+        lines: Optional[Mapping[str, Collection[TLineNo]]] = None,
+        arcs: Optional[Mapping[str, Collection[TArc]]] = None,
+        file_tracers: Optional[Mapping[str, str]] = None,
     ) -> CoverageData:
         """Write some data into a coverage data file."""
         data = coverage.CoverageData(basename=basename, suffix=suffix)
@@ -271,7 +271,7 @@ class CoverageTest(
         self,
         cov: Coverage,
         warnings: Iterable[str],
-        not_warnings: Iterable[str]=(),
+        not_warnings: Iterable[str] = (),
     ) -> Iterator[None]:
         """A context manager to check that particular warnings happened in `cov`.
 
@@ -292,8 +292,8 @@ class CoverageTest(
         saved_warnings = []
         def capture_warning(
             msg: str,
-            slug: Optional[str]=None,
-            once: bool=False,               # pylint: disable=unused-argument
+            slug: Optional[str] = None,
+            once: bool = False,               # pylint: disable=unused-argument
         ) -> None:
             """A fake implementation of Coverage._warn, to capture warnings."""
             # NOTE: we don't implement `once`.
@@ -353,15 +353,15 @@ class CoverageTest(
     def assert_recent_datetime(
         self,
         dt: datetime.datetime,
-        seconds: int=10,
-        msg: Optional[str]=None,
+        seconds: int = 10,
+        msg: Optional[str] = None,
     ) -> None:
         """Assert that `dt` marks a time at most `seconds` seconds ago."""
         age = datetime.datetime.now() - dt
         assert age.total_seconds() >= 0, msg
         assert age.total_seconds() <= seconds, msg
 
-    def command_line(self, args: str, ret: int=OK) -> None:
+    def command_line(self, args: str, ret: int = OK) -> None:
         """Run `args` through the command line.
 
         Use this when you want to run the full coverage machinery, but in the

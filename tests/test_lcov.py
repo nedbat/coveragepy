@@ -46,7 +46,7 @@ class LcovTest(CoverageTest):
                     self.assertAlmostEqual(cuboid_volume(5.5),166.375)
             """)
 
-    def get_lcov_report_content(self, filename: str="coverage.lcov") -> str:
+    def get_lcov_report_content(self, filename: str = "coverage.lcov") -> str:
         """Return the content of an LCOV report."""
         with open(filename, "r") as file:
             return file.read()

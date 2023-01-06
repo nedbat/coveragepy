@@ -55,8 +55,8 @@ class HtmlTestHelpers(CoverageTest):
 
     def run_coverage(
         self,
-        covargs: Optional[Dict[str, Any]]=None,
-        htmlargs: Optional[Dict[str, Any]]=None,
+        covargs: Optional[Dict[str, Any]] = None,
+        htmlargs: Optional[Dict[str, Any]] = None,
     ) -> float:
         """Run coverage.py on main_file.py, and create an HTML report."""
         self.clean_local_file_imports()
@@ -136,7 +136,7 @@ class FileWriteTracker:
     def __init__(self, written: Set[str]) -> None:
         self.written = written
 
-    def open(self, filename: str, mode: str="r") -> IO[str]:
+    def open(self, filename: str, mode: str = "r") -> IO[str]:
         """Be just like `open`, but write written file names to `self.written`."""
         if mode.startswith("w"):
             self.written.add(filename.replace('\\', '/'))
@@ -158,8 +158,8 @@ class HtmlDeltaTest(HtmlTestHelpers, CoverageTest):
 
     def run_coverage(
         self,
-        covargs: Optional[Dict[str, Any]]=None,
-        htmlargs: Optional[Dict[str, Any]]=None,
+        covargs: Optional[Dict[str, Any]] = None,
+        htmlargs: Optional[Dict[str, Any]] = None,
     ) -> float:
         """Run coverage in-process for the delta tests.
 
@@ -658,7 +658,7 @@ def filepath_to_regex(path: str) -> str:
 def compare_html(
     expected: str,
     actual: str,
-    extra_scrubs: Optional[List[Tuple[str, str]]]=None,
+    extra_scrubs: Optional[List[Tuple[str, str]]] = None,
 ) -> None:
     """Specialized compare function for our HTML files."""
     __tracebackhide__ = True    # pytest, please don't show me this function.

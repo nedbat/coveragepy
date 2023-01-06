@@ -98,7 +98,7 @@ class BaseCmdLineTest(CoverageTest):
     def mock_command_line(
         self,
         args: str,
-        options: Optional[Mapping[str, TConfigValueIn]]=None,
+        options: Optional[Mapping[str, TConfigValueIn]] = None,
     ) -> Tuple[mock.Mock, int]:
         """Run `args` through the command line, with a Mock.
 
@@ -131,8 +131,8 @@ class BaseCmdLineTest(CoverageTest):
         self,
         args: str,
         code: str,
-        ret: int=OK,
-        options: Optional[Mapping[str, TConfigValueIn]]=None,
+        ret: int = OK,
+        options: Optional[Mapping[str, TConfigValueIn]] = None,
     ) -> None:
         """Assert that the `args` end up executing the sequence in `code`."""
         called, status = self.mock_command_line(args, options=options)
@@ -175,9 +175,9 @@ class BaseCmdLineTest(CoverageTest):
     def cmd_help(
         self,
         args: str,
-        help_msg: Optional[str]=None,
-        topic: Optional[str]=None,
-        ret: int=ERR,
+        help_msg: Optional[str] = None,
+        topic: Optional[str] = None,
+        ret: int = ERR,
     ) -> None:
         """Run a command line, and check that it prints the right help.
 
@@ -1129,10 +1129,10 @@ class CoverageReportingFake:
     def __init__(
         self,
         report_result: float,
-        html_result: float=0,
-        xml_result: float=0,
-        json_report: float=0,
-        lcov_result: float=0,
+        html_result: float = 0,
+        xml_result: float = 0,
+        json_report: float = 0,
+        lcov_result: float = 0,
     ) -> None:
         self.config = CoverageConfig()
         self.report_result = report_result

@@ -27,9 +27,9 @@ def gold_path(path: str) -> str:
 def compare(
     expected_dir: str,
     actual_dir: str,
-    file_pattern: Optional[str]=None,
-    actual_extra: bool=False,
-    scrubs: Optional[List[Tuple[str, str]]]=None,
+    file_pattern: Optional[str] = None,
+    actual_extra: bool = False,
+    scrubs: Optional[List[Tuple[str, str]]] = None,
 ) -> None:
     """Compare files matching `file_pattern` in `expected_dir` and `actual_dir`.
 

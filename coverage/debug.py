@@ -160,7 +160,7 @@ def write_formatted_info(
         write(f" {line}")
 
 
-def short_stack(limit: Optional[int]=None, skip: int=0) -> str:
+def short_stack(limit: Optional[int] = None, skip: int = 0) -> str:
     """Return a string summarizing the call stack.
 
     The string is multi-line, with one line per stack frame. Each line shows
@@ -183,9 +183,9 @@ def short_stack(limit: Optional[int]=None, skip: int=0) -> str:
 
 
 def dump_stack_frames(
-    limit: Optional[int]=None,
-    out: Optional[TWritable]=None,
-    skip: int=0
+    limit: Optional[int] = None,
+    out: Optional[TWritable] = None,
+    skip: int = 0
 ) -> None:
     """Print a summary of the stack to stdout, or someplace else."""
     out = out or sys.stdout
@@ -193,7 +193,7 @@ def dump_stack_frames(
     out.write("\n")
 
 
-def clipped_repr(text: str, numchars: int=50) -> str:
+def clipped_repr(text: str, numchars: int = 50) -> str:
     """`repr(text)`, but limited to `numchars`."""
     r = reprlib.Repr()
     r.maxstring = numchars
@@ -312,10 +312,10 @@ class DebugOutputFile:                              # pragma: debugging
     @classmethod
     def get_one(
         cls,
-        fileobj: Optional[IO[str]]=None,
-        show_process: bool=True,
-        filters: Iterable[Callable[[str], str]]=(),
-        interim: bool=False,
+        fileobj: Optional[IO[str]] = None,
+        show_process: bool = True,
+        filters: Iterable[Callable[[str], str]] = (),
+        interim: bool = False,
     ) -> DebugOutputFile:
         """Get a DebugOutputFile.
 
@@ -371,7 +371,7 @@ class DebugOutputFile:                              # pragma: debugging
         self.outfile.flush()
 
 
-def log(msg: str, stack: bool=False) -> None:               # pragma: debugging
+def log(msg: str, stack: bool = False) -> None:               # pragma: debugging
     """Write a log message as forcefully as possible."""
     out = DebugOutputFile.get_one(interim=True)
     out.write(msg+"\n")
@@ -411,9 +411,9 @@ CALLS = itertools.count()
 OBJ_ID_ATTR = "$coverage.object_id"
 
 def show_calls(
-    show_args: bool=True,
-    show_stack: bool=False,
-    show_return: bool=False,
+    show_args: bool = True,
+    show_stack: bool = False,
+    show_return: bool = False,
 ) -> Callable[..., Any]:                                    # pragma: debugging
     """A method decorator to debug-log each call to the function."""
     def _decorator(func):
