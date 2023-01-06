@@ -142,7 +142,9 @@ class ProjectToTest:
         """
         pass
 
-    def tweak_coverage_settings(self, settings: Iterable[Tuple[str, Any]]) -> Iterator[None]:
+    def tweak_coverage_settings(
+        self, settings: Iterable[Tuple[str, Any]]
+    ) -> Iterator[None]:
         """Tweak the coverage settings.
 
         NOTE: This is not properly factored, and is only used by ToxProject now!!!
@@ -160,6 +162,7 @@ class ProjectToTest:
 
 class EmptyProject(ProjectToTest):
     """A dummy project for testing other parts of this code."""
+
     def __init__(self, slug: str = "empty", fake_durations: Iterable[float] = (1.23,)):
         self.slug = slug
         self.durations = iter(itertools.cycle(fake_durations))
@@ -193,9 +196,11 @@ class ToxProject(ProjectToTest):
             f".tox/{env.pyver.toxenv}/bin/python -m pip install {pip_args}"
         )
         with self.tweak_coverage_settings(cov_tweaks):
-            self.pre_check(env)     # NOTE: Not properly factored, and only used from here.
+            self.pre_check(env)  # NOTE: Not properly factored, and only used from here.
             duration = self.run_tox(env, env.pyver.toxenv, "--skip-pkg-install")
-            self.post_check(env)    # NOTE: Not properly factored, and only used from here.
+            self.post_check(
+                env
+            )  # NOTE: Not properly factored, and only used from here.
         return duration
 
 
@@ -238,7 +243,9 @@ class ProjectAttrs(ToxProject):
 
     git_url = "https://github.com/python-attrs/attrs"
 
-    def tweak_coverage_settings(self, tweaks: Iterable[Tuple[str, Any]]) -> Iterator[None]:
+    def tweak_coverage_settings(
+        self, tweaks: Iterable[Tuple[str, Any]]
+    ) -> Iterator[None]:
         return tweak_toml_coverage_settings("pyproject.toml", tweaks)
 
     def pre_check(self, env):
@@ -248,7 +255,9 @@ class ProjectAttrs(ToxProject):
         env.shell.run_command("ls -al")
 
 
-def tweak_toml_coverage_settings(toml_file: str, tweaks: Iterable[Tuple[str, Any]]) -> Iterator[None]:
+def tweak_toml_coverage_settings(
+    toml_file: str, tweaks: Iterable[Tuple[str, Any]]
+) -> Iterator[None]:
     if tweaks:
         toml_inserts = []
         for name, value in tweaks:
@@ -263,8 +272,6 @@ def tweak_toml_coverage_settings(toml_file: str, tweaks: Iterable[Tuple[str, Any
     else:
         header = insert = ""
     return file_replace(Path(toml_file), header, insert)
-
-
 
 
 class AdHocProject(ProjectToTest):
@@ -295,9 +302,7 @@ class AdHocProject(ProjectToTest):
     def run_with_coverage(self, env, pip_args, cov_tweaks):
         env.shell.run_command(f"{env.python} -m pip install {pip_args}")
         with change_dir(self.cur_dir):
-            env.shell.run_command(
-                f"{env.python} -m coverage run {self.python_file}"
-            )
+            env.shell.run_command(f"{env.python} -m coverage run {self.python_file}")
         return env.shell.last_duration
 
 
@@ -308,12 +313,14 @@ class SlipcoverBenchmark(AdHocProject):
     Clone https://github.com/plasma-umass/slipcover to /src/slipcover
 
     """
+
     def __init__(self, python_file):
         super().__init__(
             python_file=f"/src/slipcover/benchmarks/{python_file}",
             cur_dir="/src/slipcover",
             pip_args="six pyperf",
         )
+
 
 class PyVersion:
     """A version of Python to use."""
@@ -325,12 +332,14 @@ class PyVersion:
     # The tox environment to run this Python
     toxenv: str
 
+
 class Python(PyVersion):
     """A version of CPython to use."""
 
     def __init__(self, major, minor):
         self.command = self.slug = f"python{major}.{minor}"
         self.toxenv = f"py{major}{minor}"
+
 
 class PyPy(PyVersion):
     """A version of PyPy to use."""
@@ -339,8 +348,10 @@ class PyPy(PyVersion):
         self.command = self.slug = f"pypy{major}.{minor}"
         self.toxenv = f"pypy{major}{minor}"
 
+
 class AdHocPython(PyVersion):
     """A custom build of Python to use."""
+
     def __init__(self, path, slug):
         self.command = f"{path}/bin/python3"
         self.slug = slug
@@ -350,6 +361,7 @@ class AdHocPython(PyVersion):
 @dataclasses.dataclass
 class Coverage:
     """A version of coverage.py to use, maybe None."""
+
     # Short word for messages, directories, etc
     slug: str
     # Arguments for "pip install ..."
@@ -357,8 +369,10 @@ class Coverage:
     # Tweaks to the .coveragerc file
     tweaks: Optional[Iterable[Tuple[str, Any]]] = None
 
+
 class CoveragePR(Coverage):
     """A version of coverage.py from a pull request."""
+
     def __init__(self, number, tweaks=None):
         super().__init__(
             slug=f"#{number}",
@@ -366,8 +380,10 @@ class CoveragePR(Coverage):
             tweaks=tweaks,
         )
 
+
 class CoverageCommit(Coverage):
     """A version of coverage.py from a specific commit."""
+
     def __init__(self, sha, tweaks=None):
         super().__init__(
             slug=sha,
@@ -375,8 +391,10 @@ class CoverageCommit(Coverage):
             tweaks=tweaks,
         )
 
+
 class CoverageSource(Coverage):
     """The coverage.py in a working tree."""
+
     def __init__(self, directory, tweaks=None):
         super().__init__(
             slug="source",
@@ -398,6 +416,7 @@ ResultData = Dict[Tuple[str, str, str], float]
 
 DIMENSION_NAMES = ["proj", "pyver", "cov"]
 
+
 class Experiment:
     """A particular time experiment to run."""
 
@@ -415,10 +434,10 @@ class Experiment:
     def run(self, num_runs: int = 3) -> None:
         results = []
         total_runs = (
-            len(self.projects) *
-            len(self.py_versions) *
-            len(self.cov_versions) *
-            num_runs
+            len(self.projects)
+            * len(self.py_versions)
+            * len(self.cov_versions)
+            * num_runs
         )
         total_run_nums = iter(itertools.count(start=1))
 
@@ -444,15 +463,17 @@ class Experiment:
                             for run_num in range(num_runs):
                                 total_run_num = next(total_run_nums)
                                 print(
-                                    f"Running tests, cov={cov_ver.slug}, " +
-                                    f"{run_num+1} of {num_runs}, " +
-                                    f"total {total_run_num}/{total_runs}"
+                                    f"Running tests, cov={cov_ver.slug}, "
+                                    + f"{run_num+1} of {num_runs}, "
+                                    + f"total {total_run_num}/{total_runs}"
                                 )
                                 if cov_ver.pip_args is None:
                                     dur = proj.run_no_coverage(env)
                                 else:
                                     dur = proj.run_with_coverage(
-                                        env, cov_ver.pip_args, cov_ver.tweaks,
+                                        env,
+                                        cov_ver.pip_args,
+                                        cov_ver.tweaks,
                                     )
                                 print(f"Tests took {dur:.3f}s")
                                 durations.append(dur)
@@ -487,6 +508,7 @@ class Experiment:
         remap = [data_order.index(datum) for datum in DIMENSION_NAMES]
 
         WIDTH = 20
+
         def as_table_row(vals):
             return "| " + " | ".join(v.ljust(WIDTH) for v in vals) + " |"
 
@@ -506,7 +528,7 @@ class Experiment:
             for col in dimensions[column]:
                 key = (*tup, col)
                 key = tuple(key[i] for i in remap)
-                result_time = self.result_data[key]     # type: ignore
+                result_time = self.result_data[key]  # type: ignore
                 row.append(f"{result_time:.3f} s")
                 col_data[col] = result_time
             for _, num, denom in ratios:
@@ -516,6 +538,7 @@ class Experiment:
 
 
 PERF_DIR = Path("/tmp/covperf")
+
 
 def run_experiment(
     py_versions: List[PyVersion],
@@ -534,13 +557,17 @@ def run_experiment(
     if any(rslug not in slugs for rslug in ratio_slugs):
         raise Exception(f"Ratio slug doesn't match a slug: {ratio_slugs}, {slugs}")
     if set(rows + [column]) != set(DIMENSION_NAMES):
-        raise Exception(f"All of these must be in rows or column: {', '.join(DIMENSION_NAMES)}")
+        raise Exception(
+            f"All of these must be in rows or column: {', '.join(DIMENSION_NAMES)}"
+        )
 
     print(f"Removing and re-making {PERF_DIR}")
     rmrf(PERF_DIR)
 
     with change_dir(PERF_DIR):
-        exp = Experiment(py_versions=py_versions, cov_versions=cov_versions, projects=projects)
+        exp = Experiment(
+            py_versions=py_versions, cov_versions=cov_versions, projects=projects
+        )
         exp.run(num_runs=int(sys.argv[1]))
         exp.show_results(rows=rows, column=column, ratios=ratios)
 
@@ -548,7 +575,7 @@ def run_experiment(
 if 0:
     run_experiment(
         py_versions=[
-            #Python(3, 11),
+            # Python(3, 11),
             AdHocPython("/usr/local/cpython/v3.10.5", "v3.10.5"),
             AdHocPython("/usr/local/cpython/v3.11.0b3", "v3.11.0b3"),
             AdHocPython("/usr/local/cpython/94231", "94231"),
@@ -578,14 +605,18 @@ if 1:
         ],
         cov_versions=[
             Coverage("701", "coverage==7.0.1"),
-            Coverage("701.dynctx", "coverage==7.0.1", [("dynamic_context", "test_function")]),
+            Coverage(
+                "701.dynctx", "coverage==7.0.1", [("dynamic_context", "test_function")]
+            ),
             Coverage("702", "coverage==7.0.2"),
-            Coverage("702.dynctx", "coverage==7.0.2", [("dynamic_context", "test_function")]),
+            Coverage(
+                "702.dynctx", "coverage==7.0.2", [("dynamic_context", "test_function")]
+            ),
         ],
         projects=[
-            #EmptyProject("empty", [1.2, 3.4]),
-            #EmptyProject("dummy", [6.9, 7.1]),
-            #ProjectDateutil(),
+            # EmptyProject("empty", [1.2, 3.4]),
+            # EmptyProject("dummy", [6.9, 7.1]),
+            # ProjectDateutil(),
             ProjectAttrs(),
         ],
         rows=["proj", "pyver"],
