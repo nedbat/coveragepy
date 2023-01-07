@@ -433,7 +433,7 @@ class Collector:
         plugin._coverage_enabled = False
         disposition.trace = False
 
-    @functools.lru_cache(maxsize=0)
+    @functools.lru_cache(maxsize=None)          # pylint: disable=method-cache-max-size-none
     def cached_mapped_file(self, filename: str) -> str:
         """A locally cached version of file names mapped through file_mapper."""
         return self.file_mapper(filename)

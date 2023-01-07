@@ -20,7 +20,12 @@ development at the same time, such as 4.5.x and 5.0.
 Unreleased
 ----------
 
-Nothing yet.
+- Performance: an internal cache of file names was accidentally disabled,
+  resulting in sometimes drastic reductions in performance.  This is now fixed,
+  closing `issue 1527`_.   Thanks to Ivan Ciuvalschii for the reproducible test
+  case.
+
+.. _issue 1527: https://github.com/nedbat/coveragepy/issues/1527
 
 
 .. _changes_7-0-3:
