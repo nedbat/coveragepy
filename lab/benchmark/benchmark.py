@@ -541,11 +541,11 @@ class Experiment:
                 key = (*tup, col)
                 key = tuple(key[i] for i in remap)
                 result_time = self.result_data[key]  # type: ignore
-                row.append(f"{result_time:.3f} s")
+                row.append(f"{result_time:.1f} s")
                 col_data[col] = result_time
             for _, num, denom in ratios:
                 ratio = col_data[num] / col_data[denom]
-                row.append(f"{ratio * 100:.2f}%")
+                row.append(f"{ratio * 100:.0f}%")
             print(as_table_row(row))
 
 
