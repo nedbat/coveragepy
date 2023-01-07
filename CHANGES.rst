@@ -17,8 +17,10 @@ development at the same time, such as 4.5.x and 5.0.
     ..  Version 9.8.1 — 2027-07-27
     ..  --------------------------
 
-Unreleased
-----------
+.. _changes_7-0-4:
+
+Version 7.0.4 — 2023-01-07
+--------------------------
 
 - Performance: an internal cache of file names was accidentally disabled,
   resulting in sometimes drastic reductions in performance.  This is now fixed,
