@@ -36,16 +36,17 @@
     - wait for ci to finish
     - merge to master
     - git push
+- Start the kits:
+    - Trigger the kit GitHub Action
+        $ make build_kits
 - Build and publish docs:
     - IF PRE-RELEASE:
         $ make publishbeta
     - ELSE:
         $ make publish
 - Kits:
-    - Trigger the kit GitHub Action
-        $ make build_kits
-        - wait for it to finish:
-            - https://github.com/nedbat/coveragepy/actions/workflows/kit.yml
+    - Wait for kits to finish:
+        - https://github.com/nedbat/coveragepy/actions/workflows/kit.yml
     - Download and check built kits from GitHub Actions:
         $ make clean download_kits check_kits
     - examine the dist directory, and remove anything that looks malformed.
@@ -66,7 +67,6 @@
 - unopvars
 - Bump version:
     $ make bump_version
-    $ git push
 - Update readthedocs
     - @ https://readthedocs.org/projects/coverage/versions/
         - find the latest tag in the inactive list, edit it, make it active.

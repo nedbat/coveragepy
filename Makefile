@@ -188,7 +188,10 @@ update_stable:				## Set the stable branch to the latest release.
 	git push origin stable
 
 bump_version:				## Edit sources to bump the version after a release.
+	git switch -c nedbat/bump-version
 	python igor.py bump_version
+	git commit -a -m "build: bump version"
+	git push -u origin @
 
 
 ##@ Documentation
