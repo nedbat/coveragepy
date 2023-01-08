@@ -58,7 +58,7 @@ class PhysTokensTest(CoverageTest):
 
     run_in_temp_dir = False
 
-    def check_tokenization(self, source):
+    def check_tokenization(self, source: str) -> None:
         """Tokenize `source`, then put it back together, should be the same."""
         tokenized = ""
         for line in source_token_lines(source):
@@ -71,26 +71,26 @@ class PhysTokensTest(CoverageTest):
         tokenized = re.sub(r"(?m)[ \t]+$", "", tokenized)
         assert source == tokenized
 
-    def check_file_tokenization(self, fname):
+    def check_file_tokenization(self, fname: str) -> None:
         """Use the contents of `fname` for `check_tokenization`."""
         self.check_tokenization(get_python_source(fname))
 
-    def test_simple(self):
+    def test_simple(self) -> None:
         assert list(source_token_lines(SIMPLE)) == SIMPLE_TOKENS
         self.check_tokenization(SIMPLE)
 
-    def test_missing_final_newline(self):
+    def test_missing_final_newline(self) -> None:
         # We can tokenize source that is missing the final newline.
         assert list(source_token_lines(SIMPLE.rstrip())) == SIMPLE_TOKENS
 
-    def test_tab_indentation(self):
+    def test_tab_indentation(self) -> None:
         # Mixed tabs and spaces...
         assert list(source_token_lines(MIXED_WS)) == MIXED_WS_TOKENS
 
-    def test_bug_822(self):
+    def test_bug_822(self) -> None:
         self.check_tokenization(BUG_822)
 
-    def test_tokenize_real_file(self):
+    def test_tokenize_real_file(self) -> None:
         # Check the tokenization of a real file (large, btw).
         real_file = os.path.join(TESTS_DIR, "test_coverage.py")
         self.check_file_tokenization(real_file)
@@ -99,7 +99,7 @@ class PhysTokensTest(CoverageTest):
         "stress_phystoken.tok",
         "stress_phystoken_dos.tok",
     ])
-    def test_stress(self, fname):
+    def test_stress(self, fname: str) -> None:
         # Check the tokenization of the stress-test files.
         # And check that those files haven't been incorrectly "fixed".
         with warnings.catch_warnings():
@@ -116,7 +116,7 @@ class SoftKeywordTest(CoverageTest):
 
     run_in_temp_dir = False
 
-    def test_soft_keywords(self):
+    def test_soft_keywords(self) -> None:
         source = textwrap.dedent("""\
             match re.match(something):
                 case ["what"]:
@@ -168,40 +168,40 @@ class SourceEncodingTest(CoverageTest):
 
     run_in_temp_dir = False
 
-    def test_detect_source_encoding(self):
+    def test_detect_source_encoding(self) -> None:
         for _, source, expected in ENCODING_DECLARATION_SOURCES:
             assert source_encoding(source) == expected, f"Wrong encoding in {source!r}"
 
-    def test_detect_source_encoding_not_in_comment(self):
+    def test_detect_source_encoding_not_in_comment(self) -> None:
         # Should not detect anything here
         source = b'def parse(src, encoding=None):\n    pass'
         assert source_encoding(source) == DEF_ENCODING
 
-    def test_dont_detect_source_encoding_on_third_line(self):
+    def test_dont_detect_source_encoding_on_third_line(self) -> None:
         # A coding declaration doesn't count on the third line.
         source = b"\n\n# coding=cp850\n\n"
         assert source_encoding(source) == DEF_ENCODING
 
-    def test_detect_source_encoding_of_empty_file(self):
+    def test_detect_source_encoding_of_empty_file(self) -> None:
         # An important edge case.
         assert source_encoding(b"") == DEF_ENCODING
 
-    def test_bom(self):
+    def test_bom(self) -> None:
         # A BOM means utf-8.
         source = b"\xEF\xBB\xBFtext = 'hello'\n"
         assert source_encoding(source) == 'utf-8-sig'
 
-    def test_bom_with_encoding(self):
+    def test_bom_with_encoding(self) -> None:
         source = b"\xEF\xBB\xBF# coding: utf-8\ntext = 'hello'\n"
         assert source_encoding(source) == 'utf-8-sig'
 
-    def test_bom_is_wrong(self):
+    def test_bom_is_wrong(self) -> None:
         # A BOM with an explicit non-utf8 encoding is an error.
         source = b"\xEF\xBB\xBF# coding: cp850\n"
         with pytest.raises(SyntaxError, match="encoding problem: utf-8"):
             source_encoding(source)
 
-    def test_unknown_encoding(self):
+    def test_unknown_encoding(self) -> None:
         source = b"# coding: klingon\n"
         with pytest.raises(SyntaxError, match="unknown encoding: klingon"):
             source_encoding(source)

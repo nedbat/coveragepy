@@ -27,7 +27,7 @@ from tests.helpers import CheckUniqueFilenames, swallow_warnings
 class FakeConfig:
     """A fake config for use in tests."""
 
-    def __init__(self, plugin, options):
+    def __init__(self, plugin, options) -> None:
         self.plugin = plugin
         self.options = options
         self.asked_for = []
@@ -44,7 +44,7 @@ class FakeConfig:
 class LoadPluginsTest(CoverageTest):
     """Test Plugins.load_plugins directly."""
 
-    def test_implicit_boolean(self):
+    def test_implicit_boolean(self) -> None:
         self.make_file("plugin1.py", """\
             from coverage import CoveragePlugin
 
@@ -62,7 +62,7 @@ class LoadPluginsTest(CoverageTest):
         plugins = Plugins.load_plugins(["plugin1"], config)
         assert plugins
 
-    def test_importing_and_configuring(self):
+    def test_importing_and_configuring(self) -> None:
         self.make_file("plugin1.py", """\
             from coverage import CoveragePlugin
 
@@ -83,7 +83,7 @@ class LoadPluginsTest(CoverageTest):
         assert plugins[0].options == {'a': 'hello'}
         assert config.asked_for == ['plugin1']
 
-    def test_importing_and_configuring_more_than_one(self):
+    def test_importing_and_configuring_more_than_one(self) -> None:
         self.make_file("plugin1.py", """\
             from coverage import CoveragePlugin
 
@@ -124,11 +124,11 @@ class LoadPluginsTest(CoverageTest):
         assert plugins[1].this_is == "me"
         assert plugins[1].options == {'a': 'second'}
 
-    def test_cant_import(self):
+    def test_cant_import(self) -> None:
         with pytest.raises(ImportError, match="No module named '?plugin_not_there'?"):
             _ = Plugins.load_plugins(["plugin_not_there"], None)
 
-    def test_plugin_must_define_coverage_init(self):
+    def test_plugin_must_define_coverage_init(self) -> None:
         self.make_file("no_plugin.py", """\
             from coverage import CoveragePlugin
             Nothing = 0
@@ -141,7 +141,7 @@ class LoadPluginsTest(CoverageTest):
 class PluginTest(CoverageTest):
     """Test plugins through the Coverage class."""
 
-    def test_plugin_imported(self):
+    def test_plugin_imported(self) -> None:
         # Prove that a plugin will be imported.
         self.make_file("my_plugin.py", """\
             from coverage import CoveragePlugin
@@ -162,7 +162,7 @@ class PluginTest(CoverageTest):
         with open("evidence.out") as f:
             assert f.read() == "we are here!"
 
-    def test_missing_plugin_raises_import_error(self):
+    def test_missing_plugin_raises_import_error(self) -> None:
         # Prove that a missing plugin will raise an ImportError.
         with pytest.raises(ImportError, match="No module named '?does_not_exist_woijwoicweo'?"):
             cov = coverage.Coverage()
@@ -170,7 +170,7 @@ class PluginTest(CoverageTest):
             cov.start()
         cov.stop()
 
-    def test_bad_plugin_isnt_hidden(self):
+    def test_bad_plugin_isnt_hidden(self) -> None:
         # Prove that a plugin with an error in it will raise the error.
         self.make_file("plugin_over_zero.py", "1/0")
         with pytest.raises(ZeroDivisionError):
@@ -179,7 +179,7 @@ class PluginTest(CoverageTest):
             cov.start()
         cov.stop()
 
-    def test_plugin_sys_info(self):
+    def test_plugin_sys_info(self) -> None:
         self.make_file("plugin_sys_info.py", """\
             import coverage
 
@@ -213,7 +213,7 @@ class PluginTest(CoverageTest):
         ]
         assert expected_end == out_lines[-len(expected_end):]
 
-    def test_plugin_with_no_sys_info(self):
+    def test_plugin_with_no_sys_info(self) -> None:
         self.make_file("plugin_no_sys_info.py", """\
             import coverage
 
@@ -239,7 +239,7 @@ class PluginTest(CoverageTest):
         ]
         assert expected_end == out_lines[-len(expected_end):]
 
-    def test_local_files_are_importable(self):
+    def test_local_files_are_importable(self) -> None:
         self.make_file("importing_plugin.py", """\
             from coverage import CoveragePlugin
             import local_module
@@ -264,7 +264,7 @@ class PluginTest(CoverageTest):
 @pytest.mark.skipif(env.C_TRACER, reason="This test is only about PyTracer.")
 class PluginWarningOnPyTracerTest(CoverageTest):
     """Test that we get a controlled exception with plugins on PyTracer."""
-    def test_exception_if_plugins_on_pytracer(self):
+    def test_exception_if_plugins_on_pytracer(self) -> None:
         self.make_file("simple.py", "a = 1")
 
         cov = coverage.Coverage()
@@ -285,7 +285,7 @@ class FileTracerTest(CoverageTest):
 class GoodFileTracerTest(FileTracerTest):
     """Tests of file tracer plugin happy paths."""
 
-    def test_plugin1(self):
+    def test_plugin1(self) -> None:
         self.make_file("simple.py", """\
             import try_xyz
             a = 1
@@ -354,7 +354,7 @@ class GoodFileTracerTest(FileTracerTest):
         self.make_file("bar_4.html", lines(4))
         self.make_file("foo_7.html", lines(7))
 
-    def test_plugin2(self):
+    def test_plugin2(self) -> None:
         self.make_render_and_caller()
 
         cov = coverage.Coverage(omit=["*quux*"])
@@ -379,7 +379,7 @@ class GoodFileTracerTest(FileTracerTest):
 
         assert "quux_5.html" not in line_counts(cov.get_data())
 
-    def test_plugin2_with_branch(self):
+    def test_plugin2_with_branch(self) -> None:
         self.make_render_and_caller()
 
         cov = coverage.Coverage(branch=True, omit=["*quux*"])
@@ -400,7 +400,7 @@ class GoodFileTracerTest(FileTracerTest):
 
         assert analysis.missing == {1, 2, 3, 6, 7}
 
-    def test_plugin2_with_text_report(self):
+    def test_plugin2_with_text_report(self) -> None:
         self.make_render_and_caller()
 
         cov = coverage.Coverage(branch=True, omit=["*quux*"])
@@ -422,7 +422,7 @@ class GoodFileTracerTest(FileTracerTest):
         assert expected == report
         assert math.isclose(total, 4 / 11 * 100)
 
-    def test_plugin2_with_html_report(self):
+    def test_plugin2_with_html_report(self) -> None:
         self.make_render_and_caller()
 
         cov = coverage.Coverage(branch=True, omit=["*quux*"])
@@ -437,7 +437,7 @@ class GoodFileTracerTest(FileTracerTest):
         self.assert_exists("htmlcov/bar_4_html.html")
         self.assert_exists("htmlcov/foo_7_html.html")
 
-    def test_plugin2_with_xml_report(self):
+    def test_plugin2_with_xml_report(self) -> None:
         self.make_render_and_caller()
 
         cov = coverage.Coverage(branch=True, omit=["*quux*"])
@@ -468,7 +468,7 @@ class GoodFileTracerTest(FileTracerTest):
             'name': 'foo_7.html',
         }
 
-    def test_defer_to_python(self):
+    def test_defer_to_python(self) -> None:
         # A plugin that measures, but then wants built-in python reporting.
         self.make_file("fairly_odd_plugin.py", """\
             # A plugin that claims all the odd lines are executed, and none of
@@ -521,7 +521,7 @@ class GoodFileTracerTest(FileTracerTest):
         assert expected == report
         assert total == 50
 
-    def test_find_unexecuted(self):
+    def test_find_unexecuted(self) -> None:
         self.make_file("unexecuted_plugin.py", """\
             import os
             import coverage.plugin
@@ -653,7 +653,7 @@ class BadFileTracerTest(FileTracerTest):
             found_exc = any(em in stderr for em in excmsgs)             #  pragma: part covered
             assert found_exc, f"expected one of {excmsgs} in stderr"
 
-    def test_file_tracer_has_no_file_tracer_method(self):
+    def test_file_tracer_has_no_file_tracer_method(self) -> None:
         self.make_file("bad_plugin.py", """\
             class Plugin(object):
                 pass
@@ -663,7 +663,7 @@ class BadFileTracerTest(FileTracerTest):
             """)
         self.run_bad_plugin("bad_plugin", "Plugin", our_error=False)
 
-    def test_file_tracer_has_inherited_sourcefilename_method(self):
+    def test_file_tracer_has_inherited_sourcefilename_method(self) -> None:
         self.make_file("bad_plugin.py", """\
             import coverage
             class Plugin(coverage.CoveragePlugin):
@@ -682,7 +682,7 @@ class BadFileTracerTest(FileTracerTest):
             excmsg="Class 'bad_plugin.FileTracer' needs to implement source_filename()",
         )
 
-    def test_plugin_has_inherited_filereporter_method(self):
+    def test_plugin_has_inherited_filereporter_method(self) -> None:
         self.make_file("bad_plugin.py", """\
             import coverage
             class Plugin(coverage.CoveragePlugin):
@@ -702,7 +702,7 @@ class BadFileTracerTest(FileTracerTest):
         with pytest.raises(NotImplementedError, match=expected_msg):
             cov.report()
 
-    def test_file_tracer_fails(self):
+    def test_file_tracer_fails(self) -> None:
         self.make_file("bad_plugin.py", """\
             import coverage.plugin
             class Plugin(coverage.plugin.CoveragePlugin):
@@ -714,7 +714,7 @@ class BadFileTracerTest(FileTracerTest):
             """)
         self.run_bad_plugin("bad_plugin", "Plugin")
 
-    def test_file_tracer_fails_eventually(self):
+    def test_file_tracer_fails_eventually(self) -> None:
         # Django coverage plugin can report on a few files and then fail.
         # https://github.com/nedbat/coveragepy/issues/1011
         self.make_file("bad_plugin.py", """\
@@ -745,7 +745,7 @@ class BadFileTracerTest(FileTracerTest):
             """)
         self.run_bad_plugin("bad_plugin", "Plugin")
 
-    def test_file_tracer_returns_wrong(self):
+    def test_file_tracer_returns_wrong(self) -> None:
         self.make_file("bad_plugin.py", """\
             import coverage.plugin
             class Plugin(coverage.plugin.CoveragePlugin):
@@ -759,7 +759,7 @@ class BadFileTracerTest(FileTracerTest):
             "bad_plugin", "Plugin", our_error=False, excmsg="'float' object has no attribute",
         )
 
-    def test_has_dynamic_source_filename_fails(self):
+    def test_has_dynamic_source_filename_fails(self) -> None:
         self.make_file("bad_plugin.py", """\
             import coverage.plugin
             class Plugin(coverage.plugin.CoveragePlugin):
@@ -775,7 +775,7 @@ class BadFileTracerTest(FileTracerTest):
             """)
         self.run_bad_plugin("bad_plugin", "Plugin")
 
-    def test_source_filename_fails(self):
+    def test_source_filename_fails(self) -> None:
         self.make_file("bad_plugin.py", """\
             import coverage.plugin
             class Plugin(coverage.plugin.CoveragePlugin):
@@ -791,7 +791,7 @@ class BadFileTracerTest(FileTracerTest):
             """)
         self.run_bad_plugin("bad_plugin", "Plugin")
 
-    def test_source_filename_returns_wrong(self):
+    def test_source_filename_returns_wrong(self) -> None:
         self.make_file("bad_plugin.py", """\
             import coverage.plugin
             class Plugin(coverage.plugin.CoveragePlugin):
@@ -815,7 +815,7 @@ class BadFileTracerTest(FileTracerTest):
             ],
         )
 
-    def test_dynamic_source_filename_fails(self):
+    def test_dynamic_source_filename_fails(self) -> None:
         self.make_file("bad_plugin.py", """\
             import coverage.plugin
             class Plugin(coverage.plugin.CoveragePlugin):
@@ -834,7 +834,7 @@ class BadFileTracerTest(FileTracerTest):
             """)
         self.run_bad_plugin("bad_plugin", "Plugin")
 
-    def test_line_number_range_raises_error(self):
+    def test_line_number_range_raises_error(self) -> None:
         self.make_file("bad_plugin.py", """\
             import coverage.plugin
             class Plugin(coverage.plugin.CoveragePlugin):
@@ -856,7 +856,7 @@ class BadFileTracerTest(FileTracerTest):
             "bad_plugin", "Plugin", our_error=False, excmsg="borked!",
         )
 
-    def test_line_number_range_returns_non_tuple(self):
+    def test_line_number_range_returns_non_tuple(self) -> None:
         self.make_file("bad_plugin.py", """\
             import coverage.plugin
             class Plugin(coverage.plugin.CoveragePlugin):
@@ -878,7 +878,7 @@ class BadFileTracerTest(FileTracerTest):
             "bad_plugin", "Plugin", our_error=False, excmsg="line_number_range must return 2-tuple",
         )
 
-    def test_line_number_range_returns_triple(self):
+    def test_line_number_range_returns_triple(self) -> None:
         self.make_file("bad_plugin.py", """\
             import coverage.plugin
             class Plugin(coverage.plugin.CoveragePlugin):
@@ -900,7 +900,7 @@ class BadFileTracerTest(FileTracerTest):
             "bad_plugin", "Plugin", our_error=False, excmsg="line_number_range must return 2-tuple",
         )
 
-    def test_line_number_range_returns_pair_of_strings(self):
+    def test_line_number_range_returns_pair_of_strings(self) -> None:
         self.make_file("bad_plugin.py", """\
             import coverage.plugin
             class Plugin(coverage.plugin.CoveragePlugin):
@@ -932,7 +932,7 @@ class ConfigurerPluginTest(CoverageTest):
 
     run_in_temp_dir = False
 
-    def test_configurer_plugin(self):
+    def test_configurer_plugin(self) -> None:
         cov = coverage.Coverage()
         cov.set_option("run:plugins", ["tests.plugin_config"])
         cov.start()
@@ -978,7 +978,7 @@ class DynamicContextPluginTest(CoverageTest):
                 reg.add_dynamic_context(Plugin())
             """)
 
-    def make_test_files(self):
+    def make_test_files(self) -> None:
         """Make some files to use while testing dynamic context plugins."""
         self.make_file("rendering.py", """\
             def html_tag(tag, content):
@@ -997,7 +997,7 @@ class DynamicContextPluginTest(CoverageTest):
         self.make_file("testsuite.py", """\
             import rendering
 
-            def test_html_tag():
+            def test_html_tag() -> None:
                 assert rendering.html_tag('b', 'hello') == '<b>hello</b>'
 
             def doctest_html_tag():
@@ -1005,7 +1005,7 @@ class DynamicContextPluginTest(CoverageTest):
                     rendering.html_tag('i', 'text') == '<i>text</i>'
                     '''.strip())
 
-            def test_renderers():
+            def test_renderers() -> None:
                 assert rendering.render_paragraph('hello') == '<p>hello</p>'
                 assert rendering.render_bold('wide') == '<b>wide</b>'
                 assert rendering.render_span('world') == '<span>world</span>'
@@ -1030,7 +1030,7 @@ class DynamicContextPluginTest(CoverageTest):
         finally:
             cov.stop()
 
-    def test_plugin_standalone(self):
+    def test_plugin_standalone(self) -> None:
         self.make_plugin_capitalized_testnames('plugin_tests.py')
         self.make_test_files()
 
@@ -1053,7 +1053,7 @@ class DynamicContextPluginTest(CoverageTest):
         data.set_query_context("test:RENDERERS")
         assert [2, 5, 8, 11] == sorted_lines(data, filenames['rendering.py'])
 
-    def test_static_context(self):
+    def test_static_context(self) -> None:
         self.make_plugin_capitalized_testnames('plugin_tests.py')
         self.make_test_files()
 
@@ -1074,7 +1074,7 @@ class DynamicContextPluginTest(CoverageTest):
         ]
         assert expected == sorted(data.measured_contexts())
 
-    def test_plugin_with_test_function(self):
+    def test_plugin_with_test_function(self) -> None:
         self.make_plugin_capitalized_testnames('plugin_tests.py')
         self.make_test_files()
 
@@ -1107,7 +1107,7 @@ class DynamicContextPluginTest(CoverageTest):
         assert_context_lines("testsuite.test_html_tag", [2])
         assert_context_lines("testsuite.test_renderers", [2, 5, 8, 11])
 
-    def test_multiple_plugins(self):
+    def test_multiple_plugins(self) -> None:
         self.make_plugin_capitalized_testnames('plugin_tests.py')
         self.make_plugin_track_render('plugin_renderers.py')
         self.make_test_files()
