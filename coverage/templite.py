@@ -10,7 +10,13 @@ http://aosabook.org/en/500L/a-template-engine.html
 
 # Coincidentally named the same as http://code.activestate.com/recipes/496702/
 
+from __future__ import annotations
+
 import re
+
+from typing import (
+    Any, Callable, Dict, List, NoReturn, Optional, Set, Union, cast,
+)
 
 
 class TempliteSyntaxError(ValueError):
@@ -26,14 +32,14 @@ class TempliteValueError(ValueError):
 class CodeBuilder:
     """Build source code conveniently."""
 
-    def __init__(self, indent=0):
-        self.code = []
+    def __init__(self, indent: int = 0) -> None:
+        self.code: List[Union[str, CodeBuilder]] = []
         self.indent_level = indent
 
-    def __str__(self):
+    def __str__(self) -> str:
         return "".join(str(c) for c in self.code)
 
-    def add_line(self, line):
+    def add_line(self, line: str) -> None:
         """Add a line of source to the code.
 
         Indentation and newline will be added for you, don't provide them.
@@ -41,7 +47,7 @@ class CodeBuilder:
         """
         self.code.extend([" " * self.indent_level, line, "\n"])
 
-    def add_section(self):
+    def add_section(self) -> CodeBuilder:
         """Add a section, a sub-CodeBuilder."""
         section = CodeBuilder(self.indent_level)
         self.code.append(section)
@@ -49,22 +55,22 @@ class CodeBuilder:
 
     INDENT_STEP = 4      # PEP8 says so!
 
-    def indent(self):
+    def indent(self) -> None:
         """Increase the current indent for following lines."""
         self.indent_level += self.INDENT_STEP
 
-    def dedent(self):
+    def dedent(self) -> None:
         """Decrease the current indent for following lines."""
         self.indent_level -= self.INDENT_STEP
 
-    def get_globals(self):
+    def get_globals(self) -> Dict[str, Any]:
         """Execute the code, and return a dict of globals it defines."""
         # A check that the caller really finished all the blocks they started.
         assert self.indent_level == 0
         # Get the Python source as a single string.
         python_source = str(self)
         # Execute the source, defining globals, and return them.
-        global_namespace = {}
+        global_namespace: Dict[str, Any] = {}
         exec(python_source, global_namespace)
         return global_namespace
 
@@ -111,7 +117,7 @@ class Templite:
         })
 
     """
-    def __init__(self, text, *contexts):
+    def __init__(self, text: str, *contexts: Dict[str, Any]) -> None:
         """Construct a Templite with the given `text`.
 
         `contexts` are dictionaries of values to use for future renderings.
@@ -122,8 +128,8 @@ class Templite:
         for context in contexts:
             self.context.update(context)
 
-        self.all_vars = set()
-        self.loop_vars = set()
+        self.all_vars: Set[str] = set()
+        self.loop_vars: Set[str] = set()
 
         # We construct a function in source form, then compile it and hold onto
         # it, and execute it to render the template.
@@ -137,9 +143,9 @@ class Templite:
         code.add_line("extend_result = result.extend")
         code.add_line("to_str = str")
 
-        buffered = []
+        buffered: List[str] = []
 
-        def flush_output():
+        def flush_output() -> None:
             """Force `buffered` to the code builder."""
             if len(buffered) == 1:
                 code.add_line("append_result(%s)" % buffered[0])
@@ -232,9 +238,15 @@ class Templite:
 
         code.add_line('return "".join(result)')
         code.dedent()
-        self._render_function = code.get_globals()['render_function']
+        self._render_function = cast(
+            Callable[
+                [Dict[str, Any], Callable[..., Any]],
+                str
+            ],
+            code.get_globals()['render_function'],
+        )
 
-    def _expr_code(self, expr):
+    def _expr_code(self, expr: str) -> str:
         """Generate a Python expression for `expr`."""
         if "|" in expr:
             pipes = expr.split("|")
@@ -252,11 +264,11 @@ class Templite:
             code = "c_%s" % expr
         return code
 
-    def _syntax_error(self, msg, thing):
+    def _syntax_error(self, msg: str, thing: Any) -> NoReturn:
         """Raise a syntax error using `msg`, and showing `thing`."""
         raise TempliteSyntaxError(f"{msg}: {thing!r}")
 
-    def _variable(self, name, vars_set):
+    def _variable(self, name: str, vars_set: Set[str]) -> None:
         """Track that `name` is used as a variable.
 
         Adds the name to `vars_set`, a set of variable names.
@@ -268,7 +280,7 @@ class Templite:
             self._syntax_error("Not a valid name", name)
         vars_set.add(name)
 
-    def render(self, context=None):
+    def render(self, context: Optional[Dict[str, Any]] = None) -> str:
         """Render this template by applying it to `context`.
 
         `context` is a dictionary of values to use in this rendering.
@@ -280,7 +292,7 @@ class Templite:
             render_context.update(context)
         return self._render_function(render_context, self._do_dots)
 
-    def _do_dots(self, value, *dots):
+    def _do_dots(self, value: Any, *dots: str) -> Any:
         """Evaluate dotted expressions at run-time."""
         for dot in dots:
             try:
