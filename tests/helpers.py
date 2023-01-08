@@ -15,6 +15,7 @@ import subprocess
 import textwrap
 import warnings
 
+from pathlib import Path
 from typing import (
     Any, Callable, Iterable, Iterator, List, Optional, Set, Tuple, Type,
     TypeVar, Union, cast,
@@ -267,7 +268,7 @@ def arcs_to_arcz_repr(arcs: Optional[Iterable[TArc]]) -> str:
 
 
 @contextlib.contextmanager
-def change_dir(new_dir: str) -> Iterator[None]:
+def change_dir(new_dir: Union[str, Path]) -> Iterator[None]:
     """Change directory, and then change back.
 
     Use as a context manager, it will return to the original

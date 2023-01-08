@@ -3,9 +3,14 @@
 
 """Tests about understanding how third-party code is installed."""
 
+from __future__ import annotations
+
 import os
 import os.path
 import shutil
+
+from pathlib import Path
+from typing import Iterator, cast
 
 import pytest
 
@@ -16,7 +21,7 @@ from tests.helpers import change_dir, make_file
 from tests.helpers import re_lines, run_command
 
 
-def run_in_venv(cmd):
+def run_in_venv(cmd: str) -> str:
     r"""Run `cmd` in the virtualenv at `venv`.
 
     The first word of the command will be adjusted to run it from the
@@ -37,13 +42,13 @@ def run_in_venv(cmd):
 
 
 @pytest.fixture(scope="session", name="venv_world")
-def venv_world_fixture(tmp_path_factory):
+def venv_world_fixture(tmp_path_factory: pytest.TempPathFactory) -> Path:
     """Create a virtualenv with a few test packages for VirtualenvTest to use.
 
     Returns the directory containing the "venv" virtualenv.
     """
 
-    venv_world = tmp_path_factory.mktemp("venv_world")
+    venv_world = cast(Path, tmp_path_factory.mktemp("venv_world"))
     with change_dir(venv_world):
         # Create a virtualenv.
         run_command("python -m venv venv")
@@ -153,9 +158,9 @@ def venv_world_fixture(tmp_path_factory):
     "coverage",
     "python -m coverage",
 ], name="coverage_command")
-def coverage_command_fixture(request):
+def coverage_command_fixture(request: pytest.FixtureRequest) -> str:
     """Parametrized fixture to use multiple forms of "coverage" command."""
-    return request.param
+    return cast(str, request.param)
 
 
 class VirtualenvTest(CoverageTest):
@@ -164,7 +169,7 @@ class VirtualenvTest(CoverageTest):
     expected_stdout = "33\n110\n198\n1.5\n"
 
     @pytest.fixture(autouse=True)
-    def in_venv_world_fixture(self, venv_world):
+    def in_venv_world_fixture(self, venv_world: Path) -> Iterator[None]:
         """For running tests inside venv_world, and cleaning up made files."""
         with change_dir(venv_world):
             self.make_file("myproduct.py", """\
@@ -188,12 +193,12 @@ class VirtualenvTest(CoverageTest):
                 if fname not in {"venv", "another_pkg", "bug888"}:
                     os.remove(fname)
 
-    def get_trace_output(self):
+    def get_trace_output(self) -> str:
         """Get the debug output of coverage.py"""
         with open("debug_out.txt") as f:
             return f.read()
 
-    def test_third_party_venv_isnt_measured(self, coverage_command):
+    def test_third_party_venv_isnt_measured(self, coverage_command: str) -> None:
         out = run_in_venv(coverage_command + " run --source=. myproduct.py")
         # In particular, this warning doesn't appear:
         # Already imported a file that will be measured: .../coverage/__main__.py
@@ -218,7 +223,7 @@ class VirtualenvTest(CoverageTest):
         assert "coverage" not in out
         assert "colorsys" not in out
 
-    def test_us_in_venv_isnt_measured(self, coverage_command):
+    def test_us_in_venv_isnt_measured(self, coverage_command: str) -> None:
         out = run_in_venv(coverage_command + " run --source=third myproduct.py")
         assert out == self.expected_stdout
 
@@ -245,7 +250,7 @@ class VirtualenvTest(CoverageTest):
         assert "coverage" not in out
         assert "colorsys" not in out
 
-    def test_venv_isnt_measured(self, coverage_command):
+    def test_venv_isnt_measured(self, coverage_command: str) -> None:
         out = run_in_venv(coverage_command + " run myproduct.py")
         assert out == self.expected_stdout
 
@@ -261,7 +266,7 @@ class VirtualenvTest(CoverageTest):
         assert "colorsys" not in out
 
     @pytest.mark.skipif(not env.C_TRACER, reason="Plugins are only supported with the C tracer.")
-    def test_venv_with_dynamic_plugin(self, coverage_command):
+    def test_venv_with_dynamic_plugin(self, coverage_command: str) -> None:
         # https://github.com/nedbat/coveragepy/issues/1150
         # Django coverage plugin was incorrectly getting warnings:
         # "Already imported: ... django/template/blah.py"
@@ -277,7 +282,7 @@ class VirtualenvTest(CoverageTest):
         # Already imported a file that will be measured: ...third/render.py (already-imported)
         assert out == "HTML: hello.html@1723\n"
 
-    def test_installed_namespace_packages(self, coverage_command):
+    def test_installed_namespace_packages(self, coverage_command: str) -> None:
         # https://github.com/nedbat/coveragepy/issues/1231
         # When namespace packages were installed, they were considered
         # third-party packages.  Test that isn't still happening.
@@ -319,7 +324,7 @@ class VirtualenvTest(CoverageTest):
         assert "fifth" in out
         assert "sixth" in out
 
-    def test_bug_888(self, coverage_command):
+    def test_bug_888(self, coverage_command: str) -> None:
         out = run_in_venv(
             coverage_command +
             " run --source=bug888/app,bug888/plugin bug888/app/testcov/main.py"
