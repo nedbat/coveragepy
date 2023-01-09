@@ -385,7 +385,7 @@ class ByteParser:
         else:
             assert filename is not None
             try:
-                self.code = compile(text, filename, "exec")
+                self.code = compile(text, filename, "exec", dont_inherit=True)
             except SyntaxError as synerr:
                 raise NotPython(
                     "Couldn't parse '%s' as Python source: '%s' at line %d" % (

@@ -849,6 +849,22 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         assert self.get_report(cov, output_format="total", precision=2) == "78.57\n"
         assert self.get_report(cov, output_format="total", precision=4) == "78.5714\n"
 
+    def test_bug_1524(self) -> None:
+        self.make_file("bug1524.py", """\
+            class Mine:
+                @property
+                def thing(self) -> int:
+                    return 17
+
+            print(Mine().thing)
+            """)
+        cov = coverage.Coverage()
+        self.start_import_stop(cov, "bug1524")
+        assert self.stdout() == "17\n"
+        report = self.get_report(cov)
+        report_lines = report.splitlines()
+        assert report_lines[2] == "bug1524.py 5 0 100%"
+
 
 class ReportingReturnValueTest(CoverageTest):
     """Tests of reporting functions returning values."""

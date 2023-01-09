@@ -177,7 +177,7 @@ def all_code_objects(code):
 def disassemble(pyparser):
     """Disassemble code, for ad-hoc experimenting."""
 
-    code = compile(pyparser.text, "", "exec")
+    code = compile(pyparser.text, "", "exec", dont_inherit=True)
     for code_obj in all_code_objects(code):
         if pyparser.text:
             srclines = pyparser.text.splitlines()

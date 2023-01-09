@@ -20,7 +20,11 @@ development at the same time, such as 4.5.x and 5.0.
 Unreleased
 ----------
 
-Nothing yet.
+- Fix: On Python 3.7, a file with type annotations but no ``from __future__
+  import annotations`` would be missing statements in the coverage report. This
+  is now fixed, closing `issue 1524`_.
+
+.. _issue 1524: https://github.com/nedbat/coveragepy/issues/1524
 
 
 .. _changes_7-0-4:

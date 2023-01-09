@@ -59,7 +59,7 @@ with open(cov_ver_py) as version_file:
     # Keep pylint happy.
     __version__ = __url__ = version_info = ""
     # Execute the code in version.py.
-    exec(compile(version_file.read(), cov_ver_py, 'exec'))
+    exec(compile(version_file.read(), cov_ver_py, 'exec', dont_inherit=True))
 
 with open("README.rst") as readme:
     readme_text = readme.read()

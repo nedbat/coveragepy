@@ -142,7 +142,7 @@ class BaseCmdLineTest(CoverageTest):
         code = textwrap.dedent(code)
         expected = self.model_object()
         globs = {n: getattr(expected, n) for n in self.MOCK_GLOBALS}
-        code_obj = compile(code, "<code>", "exec")
+        code_obj = compile(code, "<code>", "exec", dont_inherit=True)
         eval(code_obj, globs, {})                           # pylint: disable=eval-used
 
         # Many of our functions take a lot of arguments, and cmdline.py
