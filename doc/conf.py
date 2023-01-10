@@ -65,11 +65,11 @@ project = 'Coverage.py'
 # @@@ editable
 copyright = "2009–2023, Ned Batchelder" # pylint: disable=redefined-builtin
 # The short X.Y.Z version.
-version = "7.0.4"
+version = "7.0.5"
 # The full version, including alpha/beta/rc tags.
-release = "7.0.4"
+release = "7.0.5"
 # The date of release, in "monthname day, year" format.
-release_date = "January 7, 2023"
+release_date = "January 10, 2023"
 # @@@ end
 
 rst_epilog = """

@@ -17,8 +17,10 @@ development at the same time, such as 4.5.x and 5.0.
     ..  Version 9.8.1 — 2027-07-27
     ..  --------------------------
 
-Unreleased
-----------
+.. _changes_7-0-5:
+
+Version 7.0.5 — 2023-01-10
+--------------------------
 
 - Fix: On Python 3.7, a file with type annotations but no ``from __future__
   import annotations`` would be missing statements in the coverage report. This
