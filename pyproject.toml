@@ -23,3 +23,7 @@ warn_return_any = true
 warn_unreachable = true
 warn_unused_configs = true
 warn_unused_ignores = true
+
+exclude = """(?x)(
+    ^coverage/fullcoverage/encodings\\.py$      # can't import things into it.
+    )"""

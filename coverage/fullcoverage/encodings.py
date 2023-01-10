@@ -14,6 +14,9 @@ execute from the very earliest stages of Python's own boot process.  This fixes
 a problem with coverage.py - that it starts too late to trace the coverage of
 many of the most fundamental modules in the Standard Library.
 
+DO NOT import other modules into here, it will interfere with the goal of this
+code executing before all imports.  This is why this file isn't type-checked.
+
 """
 
 import sys
