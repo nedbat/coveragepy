@@ -12,7 +12,10 @@ import marshal
 import os
 import struct
 import sys
-import types
+
+from importlib.machinery import ModuleSpec
+from types import CodeType, ModuleType
+from typing import Any, List, Optional, Tuple
 
 from coverage import env
 from coverage.exceptions import CoverageException, _ExceptionDuringRun, NoCode, NoSource
@@ -30,11 +33,13 @@ class DummyLoader:
 
     Currently only implements the .fullname attribute
     """
-    def __init__(self, fullname, *_args):
+    def __init__(self, fullname: str, *_args: Any) -> None:
         self.fullname = fullname
 
 
-def find_module(modulename):
+def find_module(
+    modulename: str,
+) -> Tuple[Optional[str], str, ModuleSpec]:
     """Find the module named `modulename`.
 
     Returns the file path of the module, the name of the enclosing
@@ -68,18 +73,23 @@ class PyRunner:
     This is meant to emulate real Python execution as closely as possible.
 
     """
-    def __init__(self, args, as_module=False):
+    def __init__(self, args: List[str], as_module: bool = False) -> None:
         self.args = args
         self.as_module = as_module
 
         self.arg0 = args[0]
-        self.package = self.modulename = self.pathname = self.loader = self.spec = None
+        self.package: Optional[str] = None
+        self.modulename: Optional[str] = None
+        self.pathname: Optional[str] = None
+        self.loader: Optional[DummyLoader] = None
+        self.spec: Optional[ModuleSpec] = None
 
-    def prepare(self):
+    def prepare(self) -> None:
         """Set sys.path properly.
 
         This needs to happen before any importing, and without importing anything.
         """
+        path0: Optional[str]
         if self.as_module:
             path0 = os.getcwd()
         elif os.path.isdir(self.arg0):
@@ -113,7 +123,7 @@ class PyRunner:
         if path0 is not None:
             sys.path[0] = python_reported_file(path0)
 
-    def _prepare2(self):
+    def _prepare2(self) -> None:
         """Do more preparation to run Python code.
 
         Includes finding the module to run and adjusting sys.argv[0].
@@ -126,6 +136,7 @@ class PyRunner:
             if self.spec is not None:
                 self.modulename = self.spec.name
             self.loader = DummyLoader(self.modulename)
+            assert pathname is not None
             self.pathname = os.path.abspath(pathname)
             self.args[0] = self.arg0 = self.pathname
         elif os.path.isdir(self.arg0):
@@ -155,13 +166,13 @@ class PyRunner:
 
         self.arg0 = python_reported_file(self.arg0)
 
-    def run(self):
+    def run(self) -> None:
         """Run the Python code!"""
 
         self._prepare2()
 
         # Create a module to serve as __main__
-        main_mod = types.ModuleType('__main__')
+        main_mod = ModuleType('__main__')
 
         from_pyc = self.arg0.endswith((".pyc", ".pyo"))
         main_mod.__file__ = self.arg0
@@ -169,11 +180,11 @@ class PyRunner:
             main_mod.__file__ = main_mod.__file__[:-1]
         if self.package is not None:
             main_mod.__package__ = self.package
-        main_mod.__loader__ = self.loader
+        main_mod.__loader__ = self.loader   # type: ignore[assignment]
         if self.spec is not None:
             main_mod.__spec__ = self.spec
 
-        main_mod.__builtins__ = sys.modules['builtins']
+        main_mod.__builtins__ = sys.modules['builtins']     # type: ignore[attr-defined]
 
         sys.modules['__main__'] = main_mod
 
@@ -209,6 +220,9 @@ class PyRunner:
             # so that the coverage.py code doesn't appear in the final printed
             # traceback.
             typ, err, tb = sys.exc_info()
+            assert typ is not None
+            assert err is not None
+            assert tb is not None
 
             # PyPy3 weirdness.  If I don't access __context__, then somehow it
             # is non-None when the exception is reported at the upper layer,
@@ -218,6 +232,7 @@ class PyRunner:
 
             # Call the excepthook.
             try:
+                assert err.__traceback__ is not None
                 err.__traceback__ = err.__traceback__.tb_next
                 sys.excepthook(typ, err, tb.tb_next)
             except SystemExit:                      # pylint: disable=try-except-raise
@@ -227,7 +242,11 @@ class PyRunner:
                 # shenanigans is kind of involved.
                 sys.stderr.write("Error in sys.excepthook:\n")
                 typ2, err2, tb2 = sys.exc_info()
+                assert typ2 is not None
+                assert err2 is not None
+                assert tb2 is not None
                 err2.__suppress_context__ = True
+                assert err2.__traceback__ is not None
                 err2.__traceback__ = err2.__traceback__.tb_next
                 sys.__excepthook__(typ2, err2, tb2.tb_next)
                 sys.stderr.write("\nOriginal exception was:\n")
@@ -238,7 +257,7 @@ class PyRunner:
             os.chdir(cwd)
 
 
-def run_python_module(args):
+def run_python_module(args: List[str]) -> None:
     """Run a Python module, as though with ``python -m name args...``.
 
     `args` is the argument array to present as sys.argv, including the first
@@ -252,7 +271,7 @@ def run_python_module(args):
     runner.run()
 
 
-def run_python_file(args):
+def run_python_file(args: List[str]) -> None:
     """Run a Python file as if it were the main program on the command line.
 
     `args` is the argument array to present as sys.argv, including the first
@@ -267,7 +286,7 @@ def run_python_file(args):
     runner.run()
 
 
-def make_code_from_py(filename):
+def make_code_from_py(filename: str) -> CodeType:
     """Get source from `filename` and make a code object of it."""
     # Open the source file.
     try:
@@ -275,10 +294,10 @@ def make_code_from_py(filename):
     except (OSError, NoSource) as exc:
         raise NoSource(f"No file to run: '{filename}'") from exc
 
-    return compile(source, filename, "exec", dont_inherit=True)
+    return compile(source, filename, "exec", dont_inherit=True) # type: ignore[no-any-return]
 
 
-def make_code_from_pyc(filename):
+def make_code_from_pyc(filename: str) -> CodeType:
     """Get a code object from a .pyc file."""
     try:
         fpyc = open(filename, "rb")
@@ -303,5 +322,6 @@ def make_code_from_pyc(filename):
 
         # The rest of the file is the code object we want.
         code = marshal.load(fpyc)
+        assert isinstance(code, CodeType)
 
     return code
