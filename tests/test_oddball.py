@@ -209,6 +209,7 @@ class MemoryFumblingTest(CoverageTest):
         pytest.skip("This is too expensive for now (30s)")
         # Start and stop coverage thousands of times to flush out bad
         # reference counting, maybe.
+        _ = "this is just here to put a type comment on"    # type: ignore[unreachable]
         self.make_file("the_code.py", """\
             import random
             def f():

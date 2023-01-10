@@ -48,7 +48,7 @@ def venv_world_fixture(tmp_path_factory: pytest.TempPathFactory) -> Path:
     Returns the directory containing the "venv" virtualenv.
     """
 
-    venv_world = cast(Path, tmp_path_factory.mktemp("venv_world"))
+    venv_world = tmp_path_factory.mktemp("venv_world")
     with change_dir(venv_world):
         # Create a virtualenv.
         run_command("python -m venv venv")
