@@ -12,10 +12,10 @@ import re
 import shutil
 
 from dataclasses import dataclass
-from typing import Iterable, List, Optional, TYPE_CHECKING
+from typing import Any, Dict, Iterable, List, Optional, Tuple, TYPE_CHECKING, cast
 
 import coverage
-from coverage.data import add_data_to_hash
+from coverage.data import CoverageData, add_data_to_hash
 from coverage.exceptions import NoDataError
 from coverage.files import flat_rootname
 from coverage.misc import ensure_dir, file_be_gone, Hasher, isolate_module, format_local_datetime
@@ -25,9 +25,26 @@ from coverage.results import Analysis, Numbers
 from coverage.templite import Templite
 from coverage.types import TLineNo, TMorf
 
+
 if TYPE_CHECKING:
+    # To avoid circular imports:
     from coverage import Coverage
     from coverage.plugins import FileReporter
+
+    # To be able to use 3.8 typing features, and still run on 3.7:
+    from typing import TypedDict
+
+    class IndexInfoDict(TypedDict):
+        """Information for each file, to render the index file."""
+        nums: Numbers
+        html_filename: str
+        relative_filename: str
+
+    class FileInfoDict(TypedDict):
+        """Summary of the information from last rendering, to avoid duplicate work."""
+        hash: str
+        index: IndexInfoDict
+
 
 os = isolate_module(os)
 
@@ -56,7 +73,7 @@ def write_html(fname: str, html: str) -> None:
 @dataclass
 class LineData:
     """The data for each source line of HTML output."""
-    tokens: str
+    tokens: List[Tuple[str, str]]
     number: TLineNo
     category: str
     statement: bool
@@ -65,6 +82,10 @@ class LineData:
     context_list: List[str]
     short_annotations: List[str]
     long_annotations: List[str]
+    html: str = ""
+    annotate: Optional[str] = None
+    annotate_long: Optional[str] = None
+    css_class: str = ""
 
 
 @dataclass
@@ -201,8 +222,8 @@ class HtmlReporter:
         self.data = self.coverage.get_data()
         self.has_arcs = self.data.has_arcs()
 
-        self.file_summaries = []
-        self.all_files_nums = []
+        self.file_summaries: List[IndexInfoDict] = []
+        self.all_files_nums: List[Numbers] = []
         self.incr = IncrementalChecker(self.directory)
         self.datagen = HtmlDataGeneration(self.coverage)
         self.totals = Numbers(precision=self.config.precision)
@@ -274,7 +295,7 @@ class HtmlReporter:
         if not self.all_files_nums:
             raise NoDataError("No data to report.")
 
-        self.totals = sum(self.all_files_nums)
+        self.totals = cast(Numbers, sum(self.all_files_nums))
 
         # Write the index file.
         if files_to_report:
@@ -308,9 +329,10 @@ class HtmlReporter:
 
         # The user may have extra CSS they want copied.
         if self.extra_css:
+            assert self.config.extra_css is not None
             shutil.copyfile(self.config.extra_css, os.path.join(self.directory, self.extra_css))
 
-    def should_report_file(self, ftr):
+    def should_report_file(self, ftr: FileToReport) -> bool:
         """Determine if we'll report this file."""
         # Get the numbers for this file.
         nums = ftr.analysis.numbers
@@ -333,7 +355,7 @@ class HtmlReporter:
 
         return True
 
-    def write_html_file(self, ftr, prev_html, next_html):
+    def write_html_file(self, ftr: FileToReport, prev_html: str, next_html: str) -> None:
         """Generate an HTML file for one source file."""
         self.make_directory()
 
@@ -346,16 +368,16 @@ class HtmlReporter:
         file_data = self.datagen.data_for_file(ftr.fr, ftr.analysis)
         for ldata in file_data.lines:
             # Build the HTML for the line.
-            html = []
+            html_parts = []
             for tok_type, tok_text in ldata.tokens:
                 if tok_type == "ws":
-                    html.append(escape(tok_text))
+                    html_parts.append(escape(tok_text))
                 else:
                     tok_html = escape(tok_text) or '&nbsp;'
-                    html.append(
+                    html_parts.append(
                         f'<span class="{tok_type}">{tok_html}</span>'
                     )
-            ldata.html = ''.join(html)
+            ldata.html = ''.join(html_parts)
 
             if ldata.short_annotations:
                 # 202F is NARROW NO-BREAK SPACE.
@@ -384,7 +406,9 @@ class HtmlReporter:
 
             css_classes = []
             if ldata.category:
-                css_classes.append(self.template_globals['category'][ldata.category])
+                css_classes.append(
+                    self.template_globals['category'][ldata.category]   # type: ignore[index]
+                )
             ldata.css_class = ' '.join(css_classes) or "pln"
 
         html_path = os.path.join(self.directory, ftr.html_filename)
@@ -396,7 +420,7 @@ class HtmlReporter:
         write_html(html_path, html)
 
         # Save this file's information for the index file.
-        index_info = {
+        index_info: IndexInfoDict = {
             'nums': ftr.analysis.numbers,
             'html_filename': ftr.html_filename,
             'relative_filename': ftr.fr.relative_filename(),
@@ -404,7 +428,7 @@ class HtmlReporter:
         self.file_summaries.append(index_info)
         self.incr.set_index_info(ftr.rootname, index_info)
 
-    def index_file(self, first_html, final_html):
+    def index_file(self, first_html: str, final_html: str) -> None:
         """Write the index.html file for this report."""
         self.make_directory()
         index_tmpl = Templite(read_data("index.html"), self.template_globals)
@@ -440,7 +464,6 @@ class IncrementalChecker:
     STATUS_FILE = "status.json"
     STATUS_FORMAT = 2
 
-    #           pylint: disable=wrong-spelling-in-comment,useless-suppression
     #  The data looks like:
     #
     #  {
@@ -468,14 +491,14 @@ class IncrementalChecker:
     #      }
     #  }
 
-    def __init__(self, directory):
+    def __init__(self, directory: str) -> None:
         self.directory = directory
         self.reset()
 
     def reset(self) -> None:
         """Initialize to empty. Causes all files to be reported."""
         self.globals = ''
-        self.files = {}
+        self.files: Dict[str, FileInfoDict] = {}
 
     def read(self) -> None:
         """Read the information we stored last time."""
@@ -507,7 +530,8 @@ class IncrementalChecker:
         status_file = os.path.join(self.directory, self.STATUS_FILE)
         files = {}
         for filename, fileinfo in self.files.items():
-            fileinfo['index']['nums'] = fileinfo['index']['nums'].init_args()
+            index = fileinfo['index']
+            index['nums'] = index['nums'].init_args()   # type: ignore[typeddict-item]
             files[filename] = fileinfo
 
         status = {
@@ -519,7 +543,7 @@ class IncrementalChecker:
         with open(status_file, "w") as fout:
             json.dump(status, fout, separators=(',', ':'))
 
-    def check_global_data(self, *data):
+    def check_global_data(self, *data: Any) -> None:
         """Check the global data that can affect incremental reporting."""
         m = Hasher()
         for d in data:
@@ -529,7 +553,7 @@ class IncrementalChecker:
             self.reset()
             self.globals = these_globals
 
-    def can_skip_file(self, data, fr, rootname):
+    def can_skip_file(self, data: CoverageData, fr: FileReporter, rootname: str) -> bool:
         """Can we skip reporting this file?
 
         `data` is a CoverageData object, `fr` is a `FileReporter`, and
@@ -549,26 +573,26 @@ class IncrementalChecker:
             self.set_file_hash(rootname, this_hash)
             return False
 
-    def file_hash(self, fname):
+    def file_hash(self, fname: str) -> str:
         """Get the hash of `fname`'s contents."""
-        return self.files.get(fname, {}).get('hash', '')
+        return self.files.get(fname, {}).get('hash', '')    # type: ignore[call-overload]
 
-    def set_file_hash(self, fname, val):
+    def set_file_hash(self, fname: str, val: str) -> None:
         """Set the hash of `fname`'s contents."""
-        self.files.setdefault(fname, {})['hash'] = val
+        self.files.setdefault(fname, {})['hash'] = val      # type: ignore[typeddict-item]
 
-    def index_info(self, fname):
+    def index_info(self, fname: str) -> IndexInfoDict:
         """Get the information for index.html for `fname`."""
-        return self.files.get(fname, {}).get('index', {})
+        return self.files.get(fname, {}).get('index', {})   # type: ignore
 
-    def set_index_info(self, fname, info):
+    def set_index_info(self, fname: str, info: IndexInfoDict) -> None:
         """Set the information for index.html for `fname`."""
-        self.files.setdefault(fname, {})['index'] = info
+        self.files.setdefault(fname, {})['index'] = info    # type: ignore[typeddict-item]
 
 
 # Helpers for templates and generating HTML
 
-def escape(t):
+def escape(t: str) -> str:
     """HTML-escape the text in `t`.
 
     This is only suitable for HTML text, not attributes.
@@ -578,6 +602,6 @@ def escape(t):
     return t.replace("&", "&amp;").replace("<", "&lt;")
 
 
-def pair(ratio):
+def pair(ratio: Tuple[int, int]) -> str:
     """Format a pair of numbers so JavaScript can read them in an attribute."""
     return "%s %s" % ratio
