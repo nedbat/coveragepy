@@ -8,12 +8,16 @@ from __future__ import annotations
 import atexit
 import dis
 import sys
+import threading
 
-from types import FrameType
-from typing import Any, Callable, Dict, Optional
+from types import FrameType, ModuleType
+from typing import Any, Callable, Dict, List, Optional, Set, Tuple, cast
 
 from coverage import env
-from coverage.types import TFileDisposition, TTraceData, TTraceFn, TTracer, TWarnFn
+from coverage.types import (
+    TArc, TFileDisposition, TLineNo, TTraceData, TTraceFileData, TTraceFn,
+    TTracer, TWarnFn,
+)
 
 # We need the YIELD_VALUE opcode below, in a comparison-friendly form.
 RESUME = dis.opmap.get('RESUME')
@@ -59,16 +63,16 @@ class PyTracer(TTracer):
         self.warn: TWarnFn
 
         # The threading module to use, if any.
-        self.threading = None
+        self.threading: Optional[ModuleType] = None
 
-        self.cur_file_data = None
-        self.last_line = 0          # int, but uninitialized.
+        self.cur_file_data: Optional[TTraceFileData] = None
+        self.last_line: TLineNo = 0
         self.cur_file_name: Optional[str] = None
         self.context: Optional[str] = None
         self.started_context = False
 
-        self.data_stack = []
-        self.thread = None
+        self.data_stack: List[Tuple[Optional[TTraceFileData], Optional[str], TLineNo, bool]] = []
+        self.thread: Optional[threading.Thread] = None
         self.stopped = False
         self._activity = False
 
@@ -78,7 +82,7 @@ class PyTracer(TTracer):
 
         # Cache a bound method on the instance, so that we don't have to
         # re-create a bound method object all the time.
-        self._cached_bound_method_trace = self._trace
+        self._cached_bound_method_trace: TTraceFn = self._trace
 
     def __repr__(self) -> str:
         me = id(self)
@@ -109,7 +113,13 @@ class PyTracer(TTracer):
                 f.write(stack)
             f.write("\n")
 
-    def _trace(self, frame: FrameType, event: str, arg_unused: Any) -> Optional[TTraceFn]:
+    def _trace(
+        self,
+        frame: FrameType,
+        event: str,
+        arg: Any,                               # pylint: disable=unused-argument
+        lineno: Optional[TLineNo] = None,       # pylint: disable=unused-argument
+    ) -> Optional[TTraceFn]:
         """The trace function passed to sys.settrace."""
 
         if THIS_FILE in frame.f_code.co_filename:
@@ -164,7 +174,7 @@ class PyTracer(TTracer):
             # Improve tracing performance: when calling a function, both caller
             # and callee are often within the same file. if that's the case, we
             # don't have to re-check whether to trace the corresponding
-            # function (which is a little bit espensive since it involves
+            # function (which is a little bit expensive since it involves
             # dictionary lookups). This optimization is only correct if we
             # didn't start a context.
             filename = frame.f_code.co_filename
@@ -180,7 +190,7 @@ class PyTracer(TTracer):
                     tracename = disp.source_filename
                     assert tracename is not None
                     if tracename not in self.data:
-                        self.data[tracename] = set()
+                        self.data[tracename] = set()    # type: ignore[assignment]
                     self.cur_file_data = self.data[tracename]
                 else:
                     frame.f_trace_lines = False
@@ -206,13 +216,13 @@ class PyTracer(TTracer):
         elif event == 'line':
             # Record an executed line.
             if self.cur_file_data is not None:
-                lineno = frame.f_lineno
+                flineno: TLineNo = frame.f_lineno
 
                 if self.trace_arcs:
-                    self.cur_file_data.add((self.last_line, lineno))
+                    cast(Set[TArc], self.cur_file_data).add((self.last_line, flineno))
                 else:
-                    self.cur_file_data.add(lineno)
-                self.last_line = lineno
+                    cast(Set[TLineNo], self.cur_file_data).add(flineno)
+                self.last_line = flineno
 
         elif event == 'return':
             if self.trace_arcs and self.cur_file_data:
@@ -240,7 +250,7 @@ class PyTracer(TTracer):
                         real_return = True
                 if real_return:
                     first = frame.f_code.co_firstlineno
-                    self.cur_file_data.add((self.last_line, -first))
+                    cast(Set[TArc], self.cur_file_data).add((self.last_line, -first))
 
             # Leaving this function, pop the filename stack.
             self.cur_file_data, self.cur_file_name, self.last_line, self.started_context = (
@@ -248,6 +258,7 @@ class PyTracer(TTracer):
             )
             # Leaving a context?
             if self.started_context:
+                assert self.switch_context is not None
                 self.context = None
                 self.switch_context(None)
         return self._cached_bound_method_trace
@@ -284,12 +295,14 @@ class PyTracer(TTracer):
         # right thread.
         self.stopped = True
 
-        if self.threading and self.thread.ident != self.threading.current_thread().ident:
-            # Called on a different thread than started us: we can't unhook
-            # ourselves, but we've set the flag that we should stop, so we
-            # won't do any more tracing.
-            #self.log("~", "stopping on different threads")
-            return
+        if self.threading:
+            assert self.thread is not None
+            if self.thread.ident != self.threading.current_thread().ident:
+                # Called on a different thread than started us: we can't unhook
+                # ourselves, but we've set the flag that we should stop, so we
+                # won't do any more tracing.
+                #self.log("~", "stopping on different threads")
+                return
 
         if self.warn:
             # PyPy clears the trace function before running atexit functions,

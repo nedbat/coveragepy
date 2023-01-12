@@ -232,7 +232,7 @@ class Collector:
     def reset(self) -> None:
         """Clear collected data, and prepare to collect more."""
         # The trace data we are collecting.
-        self.data: TTraceData = {}      # type: ignore[assignment]
+        self.data: TTraceData = {}
 
         # A dictionary mapping file names to file tracer plugin names that will
         # handle them.
@@ -310,12 +310,12 @@ class Collector:
     #
     # New in 3.12: threading.settrace_all_threads: https://github.com/python/cpython/pull/96681
 
-    def _installation_trace(self, frame: FrameType, event: str, arg: Any) -> TTraceFn:
+    def _installation_trace(self, frame: FrameType, event: str, arg: Any) -> Optional[TTraceFn]:
         """Called on new threads, installs the real tracer."""
         # Remove ourselves as the trace function.
         sys.settrace(None)
         # Install the real tracer.
-        fn = self._start_tracer()
+        fn: Optional[TTraceFn] = self._start_tracer()
         # Invoke the real trace function with the current event, to be sure
         # not to lose an event.
         if fn:

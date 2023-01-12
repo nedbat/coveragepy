@@ -32,8 +32,8 @@ class TTraceFn(Protocol):
         frame: FrameType,
         event: str,
         arg: Any,
-        lineno: Optional[int] = None  # Our own twist, see collector.py
-    ) -> TTraceFn:
+        lineno: Optional[TLineNo] = None  # Our own twist, see collector.py
+    ) -> Optional[TTraceFn]:
         ...
 
 ## Coverage.py tracing
@@ -63,11 +63,9 @@ class TFileDisposition(Protocol):
 # - If measuring arcs in the C tracer, the values are sets of packed arcs (two
 #   line numbers combined into one integer).
 
-TTraceData = Union[
-    Dict[str, Set[TLineNo]],
-    Dict[str, Set[TArc]],
-    Dict[str, Set[int]],
-]
+TTraceFileData = Union[Set[TLineNo], Set[TArc], Set[int]]
+
+TTraceData = Dict[str, TTraceFileData]
 
 class TTracer(Protocol):
     """Either CTracer or PyTracer."""
