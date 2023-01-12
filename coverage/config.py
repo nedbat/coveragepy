@@ -20,7 +20,8 @@ from coverage.exceptions import ConfigError
 from coverage.misc import isolate_module, human_sorted_items, substitute_variables
 from coverage.tomlconfig import TomlConfigParser, TomlDecodeError
 from coverage.types import (
-    TConfigurable, TConfigSectionIn, TConfigValueIn, TConfigSectionOut, TConfigValueOut,
+    TConfigurable, TConfigSectionIn, TConfigValueIn, TConfigSectionOut,
+    TConfigValueOut, TPluginConfig,
 )
 
 os = isolate_module(os)
@@ -166,7 +167,7 @@ DEFAULT_PARTIAL_ALWAYS = [
 ]
 
 
-class CoverageConfig(TConfigurable):
+class CoverageConfig(TConfigurable, TPluginConfig):
     """Coverage.py configuration.
 
     The attributes of this class are the various settings that control the

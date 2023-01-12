@@ -136,6 +136,13 @@ class TConfigurable(Protocol):
 
         """
 
+class TPluginConfig(Protocol):
+    """Something that can provide options to a plugin."""
+
+    def get_plugin_options(self, plugin: str) -> TConfigSectionOut:
+        """Get the options for a plugin."""
+
+
 ## Parsing
 
 TMorf = Union[ModuleType, str]

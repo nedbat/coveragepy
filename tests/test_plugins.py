@@ -3,10 +3,14 @@
 
 """Tests for plugins."""
 
+from __future__ import annotations
+
 import inspect
 import io
 import math
 import os.path
+
+from typing import Any, Dict, List
 from xml.etree import ElementTree
 
 import pytest
@@ -17,6 +21,7 @@ from coverage.control import Plugins
 from coverage.data import line_counts, sorted_lines
 from coverage.exceptions import CoverageWarning, NoSource, PluginError
 from coverage.misc import import_local_file
+from coverage.types import TConfigSectionOut, TPluginConfig
 
 import coverage.plugin
 
@@ -24,18 +29,18 @@ from tests.coveragetest import CoverageTest
 from tests.helpers import CheckUniqueFilenames, swallow_warnings
 
 
-class FakeConfig:
+class FakeConfig(TPluginConfig):
     """A fake config for use in tests."""
 
-    def __init__(self, plugin, options) -> None:
+    def __init__(self, plugin: str, options: Dict[str, Any]) -> None:
         self.plugin = plugin
         self.options = options
-        self.asked_for = []
+        self.asked_for: List[str] = []
 
-    def get_plugin_options(self, module):
-        """Just return the options for `module` if this is the right module."""
-        self.asked_for.append(module)
-        if module == self.plugin:
+    def get_plugin_options(self, plugin: str) -> TConfigSectionOut:
+        """Just return the options for `plugin` if this is the right module."""
+        self.asked_for.append(plugin)
+        if plugin == self.plugin:
             return self.options
         else:
             return {}

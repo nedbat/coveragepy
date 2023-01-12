@@ -12,11 +12,12 @@ import sys
 from types import FrameType
 from typing import Any, Dict, Iterable, Iterator, List, Optional, Set, Tuple, Union
 
-from coverage.config import CoverageConfig
 from coverage.exceptions import PluginError
 from coverage.misc import isolate_module
 from coverage.plugin import CoveragePlugin, FileTracer, FileReporter
-from coverage.types import TArc, TConfigurable, TDebugCtl, TLineNo, TSourceTokenLines
+from coverage.types import (
+    TArc, TConfigurable, TDebugCtl, TLineNo, TPluginConfig, TSourceTokenLines,
+)
 
 os = isolate_module(os)
 
@@ -38,7 +39,7 @@ class Plugins:
     def load_plugins(
         cls,
         modules: Iterable[str],
-        config: CoverageConfig,
+        config: TPluginConfig,
         debug: Optional[TDebugCtl] = None,
     ) -> Plugins:
         """Load plugins from `modules`.
