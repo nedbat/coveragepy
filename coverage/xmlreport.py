@@ -12,7 +12,7 @@ import time
 import xml.dom.minidom
 
 from dataclasses import dataclass
-from typing import Dict, IO, Iterable, Optional, TYPE_CHECKING, cast
+from typing import Any, Dict, IO, Iterable, Optional, TYPE_CHECKING, cast
 
 from coverage import __url__, __version__, files
 from coverage.misc import isolate_module, human_sorted, human_sorted_items
@@ -46,6 +46,11 @@ class PackageData:
     lines: int
     br_hits: int
     branches: int
+
+
+def appendChild(parent: Any, child: Any) -> None:
+    """Append a child to a parent, in a way mypy will shut up about."""
+    parent.appendChild(child)
 
 
 class XmlReporter:
@@ -103,9 +108,9 @@ class XmlReporter:
         # Populate the XML DOM with the source info.
         for path in human_sorted(self.source_paths):
             xsource = self.xml_out.createElement("source")
-            xsources.appendChild(xsource)
+            appendChild(xsources, xsource)
             txt = self.xml_out.createTextNode(path)
-            xsource.appendChild(txt)
+            appendChild(xsource, txt)
 
         lnum_tot, lhits_tot = 0, 0
         bnum_tot, bhits_tot = 0, 0
@@ -116,11 +121,11 @@ class XmlReporter:
         # Populate the XML DOM with the package info.
         for pkg_name, pkg_data in human_sorted_items(self.packages.items()):
             xpackage = self.xml_out.createElement("package")
-            xpackages.appendChild(xpackage)
+            appendChild(xpackages, xpackage)
             xclasses = self.xml_out.createElement("classes")
-            xpackage.appendChild(xclasses)
+            appendChild(xpackage, xclasses)
             for _, class_elt in human_sorted_items(pkg_data.elements.items()):
-                xclasses.appendChild(class_elt)
+                appendChild(xclasses, class_elt)
             xpackage.setAttribute("name", pkg_name.replace(os.sep, '.'))
             xpackage.setAttribute("line-rate", rate(pkg_data.hits, pkg_data.lines))
             if has_arcs:
@@ -187,10 +192,10 @@ class XmlReporter:
 
         xclass: xml.dom.minidom.Element = self.xml_out.createElement("class")
 
-        xclass.appendChild(self.xml_out.createElement("methods"))
+        appendChild(xclass, self.xml_out.createElement("methods"))
 
         xlines = self.xml_out.createElement("lines")
-        xclass.appendChild(xlines)
+        appendChild(xclass, xlines)
 
         xclass.setAttribute("name", os.path.relpath(rel_name, dirname))
         xclass.setAttribute("filename", rel_name.replace("\\", "/"))
@@ -219,7 +224,7 @@ class XmlReporter:
                 if line in missing_branch_arcs:
                     annlines = ["exit" if b < 0 else str(b) for b in missing_branch_arcs[line]]
                     xline.setAttribute("missing-branches", ",".join(annlines))
-            xlines.appendChild(xline)
+            appendChild(xlines, xline)
 
         class_lines = len(analysis.statements)
         class_hits = class_lines - len(analysis.missing)

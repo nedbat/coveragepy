@@ -35,6 +35,7 @@ def line_counts(data: CoverageData, fullpath: bool = False) -> Dict[str, int]:
 
     """
     summ = {}
+    filename_fn: Callable[[str], str]
     if fullpath:
         # pylint: disable=unnecessary-lambda-assignment
         filename_fn = lambda f: f
