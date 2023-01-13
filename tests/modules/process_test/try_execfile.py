@@ -20,17 +20,21 @@ differences and get a clean diff.
 
 """
 
+from __future__ import annotations
+
 import itertools
 import json
 import os
 import sys
+
+from typing import Any, List
 
 # sys.path varies by execution environments.  Coverage.py uses setuptools to
 # make console scripts, which means pkg_resources is imported.  pkg_resources
 # removes duplicate entries from sys.path.  So we do that too, since the extra
 # entries don't affect the running of the program.
 
-def same_file(p1, p2):
+def same_file(p1: str, p2: str) -> bool:
     """Determine if `p1` and `p2` refer to the same existing file."""
     if not p1:
         return not p2
@@ -45,9 +49,9 @@ def same_file(p1, p2):
         norm2 = os.path.normcase(os.path.normpath(p2))
         return norm1 == norm2
 
-def without_same_files(filenames):
+def without_same_files(filenames: List[str]) -> List[str]:
     """Return the list `filenames` with duplicates (by same_file) removed."""
-    reduced = []
+    reduced: List[str] = []
     for filename in filenames:
         if not any(same_file(filename, other) for other in reduced):
             reduced.append(filename)
@@ -59,7 +63,7 @@ DATA = "xyzzy"
 
 import __main__
 
-def my_function(a):
+def my_function(a: Any) -> str:
     """A function to force execution of module-level values."""
     return f"my_fn({a!r})"
 
@@ -71,7 +75,7 @@ spec = globals().get('__spec__')
 # A more compact ad-hoc grouped-by-first-letter list of builtins.
 CLUMPS = "ABC,DEF,GHI,JKLMN,OPQR,ST,U,VWXYZ_,ab,cd,efg,hij,lmno,pqr,stuvwxyz".split(",")
 
-def word_group(w):
+def word_group(w: str) -> int:
     """Figure out which CLUMP the first letter of w is in."""
     for i, clump in enumerate(CLUMPS):
         if w[0] in clump:

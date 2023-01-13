@@ -20,7 +20,7 @@ development at the same time, such as 4.5.x and 5.0.
 Unreleased
 ----------
 
-Nothing yet.
+- Typing: all product and test code has type annotations.
 
 
 .. _changes_7-0-5:

@@ -26,4 +26,5 @@ warn_unused_ignores = true
 
 exclude = """(?x)(
     ^coverage/fullcoverage/encodings\\.py$      # can't import things into it.
+    | ^tests/balance_xdist_plugin\\.py$         # not part of our test suite.
     )"""
