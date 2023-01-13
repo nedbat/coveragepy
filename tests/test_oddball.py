@@ -155,7 +155,7 @@ class MemoryLeakTest(CoverageTest):
     It may still fail occasionally, especially on PyPy.
 
     """
-    @flaky
+    @flaky      # type: ignore[misc]
     @pytest.mark.skipif(not env.C_TRACER, reason="Only the C tracer has refcounting issues")
     def test_for_leaks(self) -> None:
         # Our original bad memory leak only happened on line numbers > 255, so
