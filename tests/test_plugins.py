@@ -10,23 +10,29 @@ import io
 import math
 import os.path
 
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 from xml.etree import ElementTree
 
 import pytest
 
 import coverage
-from coverage import env
+from coverage import Coverage, env
 from coverage.control import Plugins
 from coverage.data import line_counts, sorted_lines
 from coverage.exceptions import CoverageWarning, NoSource, PluginError
 from coverage.misc import import_local_file
-from coverage.types import TConfigSectionOut, TPluginConfig
+from coverage.types import TConfigSectionOut, TLineNo, TPluginConfig
 
 import coverage.plugin
 
 from tests.coveragetest import CoverageTest
 from tests.helpers import CheckUniqueFilenames, swallow_warnings
+
+
+class NullConfig(TPluginConfig):
+    """A plugin configure thing when we don't really need one."""
+    def get_plugin_options(self, plugin: str) -> TConfigSectionOut:
+        return {}
 
 
 class FakeConfig(TPluginConfig):
@@ -84,8 +90,8 @@ class LoadPluginsTest(CoverageTest):
         plugins = list(Plugins.load_plugins(["plugin1"], config))
 
         assert len(plugins) == 1
-        assert plugins[0].this_is == "me"
-        assert plugins[0].options == {'a': 'hello'}
+        assert plugins[0].this_is == "me"                   # type: ignore
+        assert plugins[0].options == {'a': 'hello'}         # type: ignore
         assert config.asked_for == ['plugin1']
 
     def test_importing_and_configuring_more_than_one(self) -> None:
@@ -115,9 +121,9 @@ class LoadPluginsTest(CoverageTest):
         plugins = list(Plugins.load_plugins(["plugin1", "plugin2"], config))
 
         assert len(plugins) == 2
-        assert plugins[0].this_is == "me"
-        assert plugins[0].options == {'a': 'hello'}
-        assert plugins[1].options == {}
+        assert plugins[0].this_is == "me"                   # type: ignore
+        assert plugins[0].options == {'a': 'hello'}         # type: ignore
+        assert plugins[1].options == {}             # type: ignore
         assert config.asked_for == ['plugin1', 'plugin2']
 
         # The order matters...
@@ -125,13 +131,13 @@ class LoadPluginsTest(CoverageTest):
         plugins = list(Plugins.load_plugins(["plugin2", "plugin1"], config))
 
         assert len(plugins) == 2
-        assert plugins[0].options == {}
-        assert plugins[1].this_is == "me"
-        assert plugins[1].options == {'a': 'second'}
+        assert plugins[0].options == {}                     # type: ignore
+        assert plugins[1].this_is == "me"                   # type: ignore
+        assert plugins[1].options == {'a': 'second'}        # type: ignore
 
     def test_cant_import(self) -> None:
         with pytest.raises(ImportError, match="No module named '?plugin_not_there'?"):
-            _ = Plugins.load_plugins(["plugin_not_there"], None)
+            _ = Plugins.load_plugins(["plugin_not_there"], NullConfig())
 
     def test_plugin_must_define_coverage_init(self) -> None:
         self.make_file("no_plugin.py", """\
@@ -140,7 +146,7 @@ class LoadPluginsTest(CoverageTest):
             """)
         msg_pat = "Plugin module 'no_plugin' didn't define a coverage_init function"
         with pytest.raises(PluginError, match=msg_pat):
-            list(Plugins.load_plugins(["no_plugin"], None))
+            list(Plugins.load_plugins(["no_plugin"], NullConfig()))
 
 
 class PluginTest(CoverageTest):
@@ -316,7 +322,7 @@ class GoodFileTracerTest(FileTracerTest):
         _, statements, _, _ = cov.analysis(zzfile)
         assert statements == [105, 106, 107, 205, 206, 207]
 
-    def make_render_and_caller(self):
+    def make_render_and_caller(self) -> None:
         """Make the render.py and caller.py files we need."""
         # plugin2 emulates a dynamic tracing plugin: the caller's locals
         # are examined to determine the source file and line number.
@@ -352,7 +358,7 @@ class GoodFileTracerTest(FileTracerTest):
 
         # will try to read the actual source files, so make some
         # source files.
-        def lines(n):
+        def lines(n: int) -> str:
             """Make a string with n lines of text."""
             return "".join("line %d\n" % i for i in range(n))
 
@@ -582,7 +588,7 @@ class GoodFileTracerTest(FileTracerTest):
 class BadFileTracerTest(FileTracerTest):
     """Test error handling around file tracer plugins."""
 
-    def run_plugin(self, module_name):
+    def run_plugin(self, module_name: str) -> Coverage:
         """Run a plugin with the given module_name.
 
         Uses a few fixed Python files.
@@ -614,7 +620,14 @@ class BadFileTracerTest(FileTracerTest):
         cov.save()  # pytest-cov does a save after stop, so we'll do it too.
         return cov
 
-    def run_bad_plugin(self, module_name, plugin_name, our_error=True, excmsg=None, excmsgs=None):
+    def run_bad_plugin(
+        self,
+        module_name: str,
+        plugin_name: str,
+        our_error: bool = True,
+        excmsg: Optional[str] = None,
+        excmsgs: Optional[List[str]] = None,
+    ) -> None:
         """Run a file, and see that the plugin failed.
 
         `module_name` and `plugin_name` is the module and name of the plugin to
@@ -636,7 +649,7 @@ class BadFileTracerTest(FileTracerTest):
             self.run_plugin(module_name)
 
         stderr = self.stderr()
-        stderr += "".join(w.message.args[0] for w in warns)
+        stderr += "".join(str(w.message) for w in warns)
         if our_error:
             # The exception we're causing should only appear once.
             assert stderr.count("# Oh noes!") == 1
@@ -647,9 +660,9 @@ class BadFileTracerTest(FileTracerTest):
         # or:
         #   Disabling plug-in '...' due to an exception:
         print([str(w) for w in warns.list])
-        warns = [w for w in warns.list if issubclass(w.category, CoverageWarning)]
-        assert len(warns) == 1
-        warnmsg = warns[0].message.args[0]
+        warnings = [w for w in warns.list if issubclass(w.category, CoverageWarning)]
+        assert len(warnings) == 1
+        warnmsg = str(warnings[0].message)
         assert f"Disabling plug-in '{module_name}.{plugin_name}' due to " in warnmsg
 
         if excmsg:
@@ -943,6 +956,7 @@ class ConfigurerPluginTest(CoverageTest):
         cov.start()
         cov.stop()      # pragma: nested
         excluded = cov.get_option("report:exclude_lines")
+        assert isinstance(excluded, list)
         assert "pragma: custom" in excluded
         assert "pragma: or whatever" in excluded
 
@@ -950,7 +964,7 @@ class ConfigurerPluginTest(CoverageTest):
 class DynamicContextPluginTest(CoverageTest):
     """Tests of plugins that implement `dynamic_context`."""
 
-    def make_plugin_capitalized_testnames(self, filename):
+    def make_plugin_capitalized_testnames(self, filename: str) -> None:
         """Create a dynamic context plugin that capitalizes the part after 'test_'."""
         self.make_file(filename, """\
             from coverage import CoveragePlugin
@@ -967,7 +981,7 @@ class DynamicContextPluginTest(CoverageTest):
                 reg.add_dynamic_context(Plugin())
             """)
 
-    def make_plugin_track_render(self, filename):
+    def make_plugin_track_render(self, filename: str) -> None:
         """Make a dynamic context plugin that tracks 'render_' functions."""
         self.make_file(filename, """\
             from coverage import CoveragePlugin
@@ -1022,7 +1036,7 @@ class DynamicContextPluginTest(CoverageTest):
                 return html
             """)
 
-    def run_all_functions(self, cov, suite_name):           # pragma: nested
+    def run_all_functions(self, cov: Coverage, suite_name: str) -> None:    # pragma: nested
         """Run all functions in `suite_name` under coverage."""
         cov.start()
         suite = import_local_file(suite_name)
@@ -1104,7 +1118,7 @@ class DynamicContextPluginTest(CoverageTest):
         ]
         assert expected == sorted(data.measured_contexts())
 
-        def assert_context_lines(context, lines):
+        def assert_context_lines(context: str, lines: List[TLineNo]) -> None:
             data.set_query_context(context)
             assert lines == sorted_lines(data, filenames['rendering.py'])
 
@@ -1142,7 +1156,7 @@ class DynamicContextPluginTest(CoverageTest):
         ]
         assert expected == sorted(data.measured_contexts())
 
-        def assert_context_lines(context, lines):
+        def assert_context_lines(context: str, lines: List[TLineNo]) -> None:
             data.set_query_context(context)
             assert lines == sorted_lines(data, filenames['rendering.py'])
 
