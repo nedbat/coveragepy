@@ -61,11 +61,17 @@ Getting started is easy:
     For more details, see :ref:`install`.
 
 #.  Use ``coverage run`` to run your test suite and gather data. However you
-    normally run your test suite, you can run your test runner under coverage.
-    If your test runner command starts with "python", just replace the initial
-    "python" with "coverage run".
+    normally run your test suite, you can use your test runner under coverage.
 
-    Instructions for specific test runners:
+    .. tip::
+        If your test runner command starts with "python", just replace the initial
+        "python" with "coverage run".
+
+        ``python something.py`` becomes ``coverage run something.py``
+
+        ``python -m amodule`` becomes ``coverage run -m amodule``
+
+    Other instructions for specific test runners:
 
     - **pytest**
 
