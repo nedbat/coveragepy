@@ -99,7 +99,13 @@ upgrade: 				## Update the *.pip files with the latest packages satisfying *.in 
 	$(PIP_COMPILE) -o requirements/mypy.pip requirements/mypy.in
 
 diff_upgrade:				## Summarize the last `make upgrade`
-	@git diff -U0 | grep -v '^@' | grep == | sort -k1.2,1.99 -k1.1,1.1r -u
+	# The sort flags sort by the package name first, then by the -/+, and
+	# sort by version numbers, so we get a summary with lines like this:
+	#	-bashlex==0.16 \
+	#	+bashlex==0.17 \
+	#	-build==0.9.0 \
+	#	+build==0.10.0 \
+	@git diff -U0 | grep -v '^@' | grep == | sort -k1.2,1.99 -k1.1,1.1r -u -V
 
 ##@ Pre-builds for prepping the code
 
