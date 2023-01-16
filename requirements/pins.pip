@@ -10,3 +10,6 @@
 # https://github.com/rthalley/dnspython/issues/885
 # https://github.com/eventlet/eventlet/issues/781
 dnspython<2.3.0
+
+# https://github.com/tox-dev/tox/issues/2869
+tox<4.3.0

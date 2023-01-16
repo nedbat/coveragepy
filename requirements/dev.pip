@@ -480,9 +480,9 @@ tomlkit==0.11.6 \
     --hash=sha256:07de26b0d8cfc18f871aec595fda24d95b08fef89d147caa861939f37230bf4b \
     --hash=sha256:71b952e5721688937fb02cf9d354dbcf0785066149d2855e44531ebdd2b65d73
     # via pylint
-tox==4.3.1 \
-    --hash=sha256:3b4c8bb7f281989b5ea2c39e862711ef2dbd15fedbf0c5f64e7c04c7d8cd8957 \
-    --hash=sha256:df2bf3c8329d1bc23a618329480ddefc0400af42804f801599b2ec38914f6309
+tox==4.2.8 \
+    --hash=sha256:7c31940d755355210151e8bef23feab3d714a8a4795e513c454ff0baccd995b1 \
+    --hash=sha256:e9d5006a533d280e2ca26e3ca61052ffa55a65b683486f92d12563a14a9b7a4f
     # via
     #   -r requirements/tox.pip
     #   tox-gh
