@@ -24,9 +24,9 @@ certifi==2022.12.7 \
     --hash=sha256:35824b4c3a97115964b408844d64aa14db1cc518f6562e8d7261699d1350a9e3 \
     --hash=sha256:4ad3232f5e926d6718ec31cfc1fcadfde020920e278684144551c91769c7bc18
     # via cibuildwheel
-cibuildwheel==2.11.4 \
-    --hash=sha256:0252d41c0fb50d5e073c4c046582bc67b674ee0c6e3539e77d24af1fd779dffa \
-    --hash=sha256:1df40e26e7097a69db6b4cb1b4e89f26f89b20ef6e4c48cf598444d0b8c4c079
+cibuildwheel==2.12.0 \
+    --hash=sha256:3d75d58f8e9909f2c9fe4923d03682e9ae27a45d38deba2a76b757114bdcf361 \
+    --hash=sha256:510b13a5cc8d854a82c1a6fa819c874b1f6a3064b90e31fda7b7a649bc8e80af
     # via -r requirements/kit.in
 colorama==0.4.6 \
     --hash=sha256:08695f5cb7ed6e0531a20572697297273c47b8cae5a63ffc6d6ed5c201be6e44 \
