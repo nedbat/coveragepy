@@ -22,6 +22,7 @@ Unreleased
 
 - Typing: all product and test code has type annotations.
 
+.. scriv-start-here
 
 .. _changes_7-0-5:
 
@@ -965,7 +966,7 @@ Version 5.3 — 2020-09-13
 .. _issue 1011: https://github.com/nedbat/coveragepy/issues/1011
 
 
-.. endchangesinclude
+.. scriv-end-here
 
 Older changes
 -------------
