@@ -17,6 +17,7 @@ formats:
   - pdf
 
 python:
+  # PYVERSIONS
   version: 3.7
   install:
     - requirements: doc/requirements.pip
