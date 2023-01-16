@@ -633,9 +633,9 @@ tornado==6.2 \
     --hash=sha256:d3a2f5999215a3a06a4fc218026cd84c61b8b2b40ac5296a6db1f1451ef04c1e \
     --hash=sha256:e5f923aa6a47e133d1cf87d60700889d7eae68988704e20c75fb2d65677a8e4b
     # via livereload
-tox==4.2.8 \
-    --hash=sha256:7c31940d755355210151e8bef23feab3d714a8a4795e513c454ff0baccd995b1 \
-    --hash=sha256:e9d5006a533d280e2ca26e3ca61052ffa55a65b683486f92d12563a14a9b7a4f
+tox==4.3.2 \
+    --hash=sha256:59855a58c16b9f7b13d0ee96f74d6a9ce70368b54dca05f112aabaaa94ebc91d \
+    --hash=sha256:95bc7bf7d959563a29775a18a6fc5794724124d8212fa1ec3b81e0ff579fb710
     # via
     #   -r requirements/tox.pip
     #   tox-gh
