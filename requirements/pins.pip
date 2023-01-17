@@ -6,7 +6,3 @@
 # docutils has been going through some turmoil.  Different packages require it,
 # but have different pins.  This seems to satisfy them all:
 #docutils>=0.17,<0.18
-
-# https://github.com/rthalley/dnspython/issues/885
-# https://github.com/eventlet/eventlet/issues/781
-dnspython<2.3.0
