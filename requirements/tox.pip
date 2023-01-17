@@ -61,9 +61,9 @@ tomli==2.0.1 \
     # via
     #   pyproject-api
     #   tox
-tox==4.3.2 \
-    --hash=sha256:59855a58c16b9f7b13d0ee96f74d6a9ce70368b54dca05f112aabaaa94ebc91d \
-    --hash=sha256:95bc7bf7d959563a29775a18a6fc5794724124d8212fa1ec3b81e0ff579fb710
+tox==4.3.3 \
+    --hash=sha256:81a13521b3e32b30db4dafb746a34ccd39f78ad393c83760adb67b011b3ef96f \
+    --hash=sha256:9bb952285333da6ce5066f935e815ca8c11da6b67a6b732235be8213fbd10efb
     # via
     #   -r requirements/tox.in
     #   tox-gh
