@@ -188,9 +188,10 @@ Getting help
 ------------
 
 If the :ref:`FAQ <faq>` doesn't answer your question, you can discuss
-coverage.py or get help using it on the `Testing In Python`_ mailing list.
+coverage.py or get help using it on the `Python discussion forums`_.  If you
+ping me (``@nedbat``), there's a higher chance I'll see the post.
 
-.. _Testing In Python: http://lists.idyll.org/listinfo/testing-in-python
+.. _Python discussion forums: https://discuss.python.org/
 
 Bug reports are gladly accepted at the `GitHub issue tracker`_.
 GitHub also hosts the `code repository`_.

@@ -130,9 +130,9 @@ __ https://nedbatchelder.com/blog/200710/flaws_in_coverage_measurement.html
 
     .. _trialcoverage: https://pypi.org/project/trialcoverage/
 
-    - `pytest-coverage`_
+    - `pytest-cov`_
 
-    .. _pytest-coverage: https://pypi.org/project/pytest-coverage/
+    .. _pytest-cov: https://pypi.org/project/pytest-cov/
 
     - `django-coverage`_ for use with Django.
 
@@ -142,10 +142,11 @@ __ https://nedbatchelder.com/blog/200710/flaws_in_coverage_measurement.html
 Q: Where can I get more help with coverage.py?
 ..............................................
 
-You can discuss coverage.py or get help using it on the `Testing In Python`_
-mailing list.
+You can discuss coverage.py or get help using it on the `Python discussion
+forums`_.  If you ping me (``@nedbat``), there's a higher chance I'll see the
+post.
 
-.. _Testing In Python: http://lists.idyll.org/listinfo/testing-in-python
+.. _Python discussion forums: https://discuss.python.org/
 
 Bug reports are gladly accepted at the `GitHub issue tracker`_.
 
@@ -164,6 +165,6 @@ Coverage.py was originally written by `Gareth Rees`_.
 Since 2004, `Ned Batchelder`_ has extended and maintained it with the help of
 `many others`_.  The :ref:`change history <changes>` has all the details.
 
-.. _Gareth Rees:    http://garethrees.org/
+.. _Gareth Rees: http://garethrees.org/
 .. _Ned Batchelder: https://nedbatchelder.com
-.. _many others:    https://github.com/nedbat/coveragepy/blob/master/CONTRIBUTORS.txt
+.. _many others: https://github.com/nedbat/coveragepy/blob/master/CONTRIBUTORS.txt
