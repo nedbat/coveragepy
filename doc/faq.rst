@@ -11,6 +11,22 @@ FAQ and other help
 Frequently asked questions
 --------------------------
 
+Q: Why are some of my files not measured?
+.........................................
+
+Coverage.py has a number of mechanisms for deciding which files to measure and
+which to skip.  If your files aren't being measured, use the ``--debug=trace``
+:ref:`option <cmd_run_debug>`, also settable as ``[run] debug=trace`` in the
+:ref:`settings file <config_run_debug>`, or as ``COVERAGE_DEBUG=trace`` in an
+environment variable.
+
+This will write a line for each file considered, indicating whether it is
+traced or not, and if not, why not.  Be careful though: the output might be
+swallowed by your test runner.  If so, a ``COVERAGE_DEBUG_FILE=/tmp/cov.out``
+environemnt variable can direct the output to a file insttead to ensure you see
+everything.
+
+
 Q: Why do unexecutable lines show up as executed?
 .................................................
 

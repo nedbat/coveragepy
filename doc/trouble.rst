@@ -25,8 +25,8 @@ bug tracker`_ directly to see if there is some mention of it.
 Things that don't work
 ----------------------
 
-There are a number of popular modules, packages, and libraries that prevent
-coverage.py from working properly:
+There are a few modules or functions that prevent coverage.py from working
+properly:
 
 * `execv`_, or one of its variants.  These end the current program and replace
   it with a new one.  This doesn't save the collected coverage data, so your
