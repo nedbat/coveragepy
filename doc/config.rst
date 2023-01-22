@@ -203,6 +203,15 @@ include a short string at the end, the name of the warning. See
 <cmd_run_debug>` for details.
 
 
+.. _config_run_debug_file:
+
+[run] debug_file
+................
+
+(string) A file name to write debug output to.  See :ref:`the run --debug
+option <cmd_run_debug>` for details.
+
+
 .. _config_run_dynamic_context:
 
 [run] dynamic_context

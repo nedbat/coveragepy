@@ -39,7 +39,12 @@ class DebugControl:
 
     show_repr_attr = False      # For AutoReprMixin
 
-    def __init__(self, options: Iterable[str], output: Optional[IO[str]]) -> None:
+    def __init__(
+        self,
+        options: Iterable[str],
+        output: Optional[IO[str]],
+        file_name: Optional[str] = None,
+    ) -> None:
         """Configure the options and output file for debugging."""
         self.options = list(options) + FORCED_DEBUG
         self.suppress_callers = False
@@ -49,6 +54,7 @@ class DebugControl:
             filters.append(add_pid_and_tid)
         self.output = DebugOutputFile.get_one(
             output,
+            file_name=file_name,
             show_process=self.should('process'),
             filters=filters,
         )
@@ -306,13 +312,11 @@ class DebugOutputFile:                              # pragma: debugging
             if hasattr(os, 'getppid'):
                 self.write(f"New process: pid: {os.getpid()!r}, parent pid: {os.getppid()!r}\n")
 
-    SYS_MOD_NAME = '$coverage.debug.DebugOutputFile.the_one'
-    SINGLETON_ATTR = 'the_one_and_is_interim'
-
     @classmethod
     def get_one(
         cls,
         fileobj: Optional[IO[str]] = None,
+        file_name: Optional[str] = None,
         show_process: bool = True,
         filters: Iterable[Callable[[str], str]] = (),
         interim: bool = False,
@@ -321,9 +325,9 @@ class DebugOutputFile:                              # pragma: debugging
 
         If `fileobj` is provided, then a new DebugOutputFile is made with it.
 
-        If `fileobj` isn't provided, then a file is chosen
-        (COVERAGE_DEBUG_FILE, or stderr), and a process-wide singleton
-        DebugOutputFile is made.
+        If `fileobj` isn't provided, then a file is chosen (`file_name` if
+        provided, or COVERAGE_DEBUG_FILE, or stderr), and a process-wide
+        singleton DebugOutputFile is made.
 
         `show_process` controls whether the debug file adds process-level
         information, and filters is a list of other message filters to apply.
@@ -338,26 +342,48 @@ class DebugOutputFile:                              # pragma: debugging
             # Make DebugOutputFile around the fileobj passed.
             return cls(fileobj, show_process, filters)
 
-        # Because of the way igor.py deletes and re-imports modules,
-        # this class can be defined more than once. But we really want
-        # a process-wide singleton. So stash it in sys.modules instead of
-        # on a class attribute. Yes, this is aggressively gross.
-        singleton_module = sys.modules.get(cls.SYS_MOD_NAME)
-        the_one, is_interim = getattr(singleton_module, cls.SINGLETON_ATTR, (None, True))
+        the_one, is_interim = cls._get_singleton_data()
         if the_one is None or is_interim:
-            if fileobj is None:
-                debug_file_name = os.environ.get("COVERAGE_DEBUG_FILE", FORCED_DEBUG_FILE)
-                if debug_file_name in ("stdout", "stderr"):
-                    fileobj = getattr(sys, debug_file_name)
-                elif debug_file_name:
-                    fileobj = open(debug_file_name, "a")
+            if file_name is not None:
+                fileobj = open(file_name, "a", encoding="utf-8")
+            else:
+                file_name = os.environ.get("COVERAGE_DEBUG_FILE", FORCED_DEBUG_FILE)
+                if file_name in ("stdout", "stderr"):
+                    fileobj = getattr(sys, file_name)
+                elif file_name:
+                    fileobj = open(file_name, "a", encoding="utf-8")
                 else:
                     fileobj = sys.stderr
             the_one = cls(fileobj, show_process, filters)
-            singleton_module = types.ModuleType(cls.SYS_MOD_NAME)
-            setattr(singleton_module, cls.SINGLETON_ATTR, (the_one, interim))
-            sys.modules[cls.SYS_MOD_NAME] = singleton_module
+            cls._set_singleton_data(the_one, interim)
         return the_one
+
+    # Because of the way igor.py deletes and re-imports modules,
+    # this class can be defined more than once. But we really want
+    # a process-wide singleton. So stash it in sys.modules instead of
+    # on a class attribute. Yes, this is aggressively gross.
+
+    SYS_MOD_NAME = '$coverage.debug.DebugOutputFile.the_one'
+    SINGLETON_ATTR = 'the_one_and_is_interim'
+
+    @classmethod
+    def _set_singleton_data(cls, the_one: DebugOutputFile, interim: bool) -> None:
+        """Set the one DebugOutputFile to rule them all."""
+        singleton_module = types.ModuleType(cls.SYS_MOD_NAME)
+        setattr(singleton_module, cls.SINGLETON_ATTR, (the_one, interim))
+        sys.modules[cls.SYS_MOD_NAME] = singleton_module
+
+    @classmethod
+    def _get_singleton_data(cls) -> Tuple[Optional[DebugOutputFile], bool]:
+        """Get the one DebugOutputFile."""
+        singleton_module = sys.modules.get(cls.SYS_MOD_NAME)
+        return getattr(singleton_module, cls.SINGLETON_ATTR, (None, True))
+
+    @classmethod
+    def _del_singleton_data(cls) -> None:
+        """Delete the one DebugOutputFile, just for tests to use."""
+        if cls.SYS_MOD_NAME in sys.modules:
+            del sys.modules[cls.SYS_MOD_NAME]
 
     def write(self, text: str) -> None:
         """Just like file.write, but filter through all our filters."""

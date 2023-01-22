@@ -199,6 +199,7 @@ class CoverageConfig(TConfigurable, TPluginConfig):
         self.cover_pylib = False
         self.data_file = ".coverage"
         self.debug: List[str] = []
+        self.debug_file: Optional[str] = None
         self.disable_warnings: List[str] = []
         self.dynamic_context: Optional[str] = None
         self.parallel = False
@@ -375,6 +376,7 @@ class CoverageConfig(TConfigurable, TPluginConfig):
         ('cover_pylib', 'run:cover_pylib', 'boolean'),
         ('data_file', 'run:data_file'),
         ('debug', 'run:debug', 'list'),
+        ('debug_file', 'run:debug_file'),
         ('disable_warnings', 'run:disable_warnings', 'list'),
         ('dynamic_context', 'run:dynamic_context'),
         ('parallel', 'run:parallel', 'boolean'),

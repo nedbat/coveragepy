@@ -20,7 +20,13 @@ development at the same time, such as 4.5.x and 5.0.
 Unreleased
 ----------
 
+- Added: the debug output file can now be specified with ``[run] debug_file``
+  in the configuration file.  Closes `issue 1319`_.
+
 - Typing: all product and test code has type annotations.
+
+.. _issue 1319: https://github.com/nedbat/coveragepy/issues/1319
+
 
 .. scriv-start-here
 

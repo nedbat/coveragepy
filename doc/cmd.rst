@@ -1056,8 +1056,9 @@ Debug options can also be set with the ``COVERAGE_DEBUG`` environment variable,
 a comma-separated list of these options, or in the :ref:`config_run_debug`
 section of the .coveragerc file.
 
-The debug output goes to stderr, unless the ``COVERAGE_DEBUG_FILE`` environment
-variable names a different file, which will be appended to.  This can be useful
-because many test runners capture output, which could hide important details.
-``COVERAGE_DEBUG_FILE`` accepts the special names ``stdout`` and ``stderr`` to
-write to those destinations.
+The debug output goes to stderr, unless the :ref:`config_run_debug_file`
+setting or the ``COVERAGE_DEBUG_FILE`` environment variable names a different
+file, which will be appended to.  This can be useful because many test runners
+capture output, which could hide important details.  ``COVERAGE_DEBUG_FILE``
+accepts the special names ``stdout`` and ``stderr`` to write to those
+destinations.

@@ -17,8 +17,10 @@ import pytest
 
 import coverage
 from coverage import env
-from coverage.debug import filter_text, info_formatter, info_header, short_id, short_stack
-from coverage.debug import clipped_repr
+from coverage.debug import (
+    DebugOutputFile,
+    clipped_repr, filter_text, info_formatter, info_header, short_id, short_stack,
+)
 
 from tests.coveragetest import CoverageTest
 from tests.helpers import re_line, re_lines, re_lines_text
@@ -186,17 +188,7 @@ class DebugTraceTest(CoverageTest):
 
     def test_debug_sys(self) -> None:
         out_text = self.f1_debug_output(["sys"])
-
-        labels = """
-            coverage_version coverage_module coverage_paths stdlib_paths third_party_paths
-            tracer configs_attempted config_file configs_read data_file
-            python platform implementation executable
-            pid cwd path environment command_line cover_match pylib_match
-            """.split()
-        for label in labels:
-            label_pat = fr"^\s*{label}: "
-            msg = f"Incorrect lines for {label!r}"
-            assert 1 == len(re_lines(label_pat, out_text)), msg
+        assert_good_debug_sys(out_text)
 
     def test_debug_sys_ctracer(self) -> None:
         out_text = self.f1_debug_output(["sys"])
@@ -214,6 +206,54 @@ class DebugTraceTest(CoverageTest):
         pyversion = re_line(r" PYVERSION:", out_text)
         vtuple = ast.literal_eval(pyversion.partition(":")[-1].strip())
         assert vtuple[:5] == sys.version_info
+
+
+def assert_good_debug_sys(out_text: str) -> None:
+    """Assert that `str` is good output for debug=sys."""
+    labels = """
+        coverage_version coverage_module coverage_paths stdlib_paths third_party_paths
+        tracer configs_attempted config_file configs_read data_file
+        python platform implementation executable
+        pid cwd path environment command_line cover_match pylib_match
+        """.split()
+    for label in labels:
+        label_pat = fr"^\s*{label}: "
+        msg = f"Incorrect lines for {label!r}"
+        assert 1 == len(re_lines(label_pat, out_text)), msg
+
+
+class DebugOutputTest(CoverageTest):
+    """Tests that we can direct debug output where we want."""
+
+    def setUp(self) -> None:
+        super().setUp()
+        # DebugOutputFile aggressively tries to start just one output file. We
+        # need to manually force it to make a new one.
+        DebugOutputFile._del_singleton_data()
+
+    def debug_sys(self) -> None:
+        """Run just enough coverage to get full debug=sys output."""
+        cov = coverage.Coverage(debug=["sys"])
+        cov.start()
+        cov.stop()
+
+    def test_stderr_default(self) -> None:
+        self.debug_sys()
+        assert_good_debug_sys(self.stderr())
+
+    def test_envvar(self) -> None:
+        self.set_environ("COVERAGE_DEBUG_FILE", "debug.out")
+        self.debug_sys()
+        assert self.stderr() == ""
+        with open("debug.out") as f:
+            assert_good_debug_sys(f.read())
+
+    def test_config_file(self) -> None:
+        self.make_file(".coveragerc", "[run]\ndebug_file = lotsa_info.txt")
+        self.debug_sys()
+        assert self.stderr() == ""
+        with open("lotsa_info.txt") as f:
+            assert_good_debug_sys(f.read())
 
 
 def f_one(*args: Any, **kwargs: Any) -> str:

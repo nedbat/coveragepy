@@ -303,10 +303,8 @@ class Coverage(TConfigurable):
 
         self._inited = True
 
-        # Create and configure the debugging controller. COVERAGE_DEBUG_FILE
-        # is an environment variable, the name of a file to append debug logs
-        # to.
-        self._debug = DebugControl(self.config.debug, self._debug_file)
+        # Create and configure the debugging controller.
+        self._debug = DebugControl(self.config.debug, self._debug_file, self.config.debug_file)
 
         if "multiprocessing" in (self.config.concurrency or ()):
             # Multi-processing uses parallel for the subprocesses, so also use
