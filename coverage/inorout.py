@@ -313,7 +313,7 @@ class InOrOut:
             return disp
 
         if original_filename.startswith('<'):
-            return nope(disp, "not a real original file name")
+            return nope(disp, "original file name is not real")
 
         if frame is not None:
             # Compiled Python files have two file names: frame.f_code.co_filename is
@@ -345,7 +345,7 @@ class InOrOut:
             # file names like "<string>", "<doctest readme.txt[0]>", or
             # "<exec_function>".  Don't ever trace these executions, since we
             # can't do anything with the data later anyway.
-            return nope(disp, "not a real file name")
+            return nope(disp, "file name is not real")
 
         canonical = canonical_filename(filename)
         disp.canonical_filename = canonical
