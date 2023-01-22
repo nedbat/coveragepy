@@ -239,21 +239,30 @@ class DebugOutputTest(CoverageTest):
 
     def test_stderr_default(self) -> None:
         self.debug_sys()
-        assert_good_debug_sys(self.stderr())
+        out, err = self.stdouterr()
+        assert out == ""
+        assert_good_debug_sys(err)
 
     def test_envvar(self) -> None:
         self.set_environ("COVERAGE_DEBUG_FILE", "debug.out")
         self.debug_sys()
-        assert self.stderr() == ""
+        assert self.stdouterr() == ("", "")
         with open("debug.out") as f:
             assert_good_debug_sys(f.read())
 
     def test_config_file(self) -> None:
         self.make_file(".coveragerc", "[run]\ndebug_file = lotsa_info.txt")
         self.debug_sys()
-        assert self.stderr() == ""
+        assert self.stdouterr() == ("", "")
         with open("lotsa_info.txt") as f:
             assert_good_debug_sys(f.read())
+
+    def test_stdout_alias(self) -> None:
+        self.set_environ("COVERAGE_DEBUG_FILE", "stdout")
+        self.debug_sys()
+        out, err = self.stdouterr()
+        assert err == ""
+        assert_good_debug_sys(out)
 
 
 def f_one(*args: Any, **kwargs: Any) -> str:

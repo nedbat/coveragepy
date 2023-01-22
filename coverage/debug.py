@@ -279,7 +279,7 @@ def filter_text(text: str, filters: Iterable[Callable[[str], str]]) -> str:
     return text + ending
 
 
-class CwdTracker:                                   # pragma: debugging
+class CwdTracker:
     """A class to add cwd info to debug messages."""
     def __init__(self) -> None:
         self.cwd: Optional[str] = None
@@ -293,7 +293,7 @@ class CwdTracker:                                   # pragma: debugging
         return text
 
 
-class DebugOutputFile:                              # pragma: debugging
+class DebugOutputFile:
     """A file-like object that includes pid and cwd information."""
     def __init__(
         self,
