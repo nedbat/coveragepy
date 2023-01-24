@@ -142,7 +142,12 @@ class PyTracer(TTracer):
                     self.data_stack.pop()
                 )
             except IndexError:
-                self.log("Empty stack!", frame.f_code.co_filename, frame.f_lineno, frame.f_code.co_name)
+                self.log(
+                    "Empty stack!",
+                    frame.f_code.co_filename,
+                    frame.f_lineno,
+                    frame.f_code.co_name
+                )
             return None
 
         # if event != 'call' and frame.f_code.co_filename != self.cur_file_name:
