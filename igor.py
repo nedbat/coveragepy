@@ -163,6 +163,8 @@ def run_tests_with_coverage(tracer, *runner_args):
     os.environ['COVERAGE_HOME'] = os.getcwd()
     context = os.environ.get('COVERAGE_CONTEXT')
     if context:
+        if context[0] == "$":
+            context = os.environ[context[1:]]
         os.environ['COVERAGE_CONTEXT'] = context + "." + tracer
 
     # Create the .pth file that will let us measure coverage in sub-processes.
