@@ -20,13 +20,20 @@ development at the same time, such as 4.5.x and 5.0.
 Unreleased
 ----------
 
+- Performance: fixed a slow-down with dynamic contexts that appeared in 6.4.3,
+  closing `issue 1538`_.  Hopefully this doesn't break the `Cython change`_
+  that fixed `issue 972`_.  Thanks to Mathieu Kniewallner for the deep
+  investigative work and comprehensive issue report.
+
 - Added: the debug output file can now be specified with ``[run] debug_file``
   in the configuration file.  Closes `issue 1319`_.
 
 - Typing: all product and test code has type annotations.
 
+.. _Cython change: https://github.com/nedbat/coveragepy/pull/1347
+.. _issue 972: https://github.com/nedbat/coveragepy/issues/972
 .. _issue 1319: https://github.com/nedbat/coveragepy/issues/1319
-
+.. _issue 1538: https://github.com/nedbat/coveragepy/issues/1538
 
 .. scriv-start-here
 

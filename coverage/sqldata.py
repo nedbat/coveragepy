@@ -528,6 +528,8 @@ class CoverageData(AutoReprMixin):
         with self._connect() as con:
             self._set_context_id()
             for filename, arcs in arc_data.items():
+                if not arcs:
+                    continue
                 file_id = self._file_id(filename, add=True)
                 data = [(file_id, self._current_context_id, fromno, tono) for fromno, tono in arcs]
                 con.executemany_void(
@@ -571,12 +573,7 @@ class CoverageData(AutoReprMixin):
         self._start_using()
         with self._connect() as con:
             for filename, plugin_name in file_tracers.items():
-                file_id = self._file_id(filename)
-                if file_id is None:
-                    raise DataError(
-                        f"Can't add file tracer data for unmeasured file '{filename}'"
-                    )
-
+                file_id = self._file_id(filename, add=True)
                 existing_plugin = self.file_tracer(filename)
                 if existing_plugin:
                     if existing_plugin != plugin_name:
@@ -1213,10 +1210,9 @@ class SqliteDb(AutoReprMixin):
         else:
             raise AssertionError(f"SQL {sql!r} shouldn't return {len(rows)} rows")
 
-    def _executemany(self, sql: str, data: Iterable[Any]) -> sqlite3.Cursor:
+    def _executemany(self, sql: str, data: List[Any]) -> sqlite3.Cursor:
         """Same as :meth:`python:sqlite3.Connection.executemany`."""
         if self.debug.should("sql"):
-            data = list(data)
             final = ":" if self.debug.should("sqldata") else ""
             self.debug.write(f"Executing many {sql!r} with {len(data)} rows{final}")
             if self.debug.should("sqldata"):
@@ -1233,7 +1229,9 @@ class SqliteDb(AutoReprMixin):
 
     def executemany_void(self, sql: str, data: Iterable[Any]) -> None:
         """Same as :meth:`python:sqlite3.Connection.executemany` when you don't need the cursor."""
-        self._executemany(sql, data).close()
+        data = list(data)
+        if data:
+            self._executemany(sql, data).close()
 
     def executescript(self, script: str) -> None:
         """Same as :meth:`python:sqlite3.Connection.executescript`."""

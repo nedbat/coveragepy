@@ -187,6 +187,14 @@ class CoverageDataTest(CoverageTest):
         assert_line_counts(covdata, SUMMARY_3_4)
         assert_measured_files(covdata, MEASURED_FILES_3_4)
 
+    def test_ok_to_add_empty_arcs(self) -> None:
+        covdata = DebugCoverageData()
+        covdata.add_arcs(ARCS_3)
+        covdata.add_arcs(ARCS_4)
+        covdata.add_arcs(dict.fromkeys(ARCS_3, set()))
+        assert_line_counts(covdata, SUMMARY_3_4)
+        assert_measured_files(covdata, MEASURED_FILES_3_4)
+
     @pytest.mark.parametrize("klass", [CoverageData, DebugCoverageData])
     def test_cant_add_arcs_with_lines(self, klass: TCoverageData) -> None:
         covdata = klass()
@@ -349,16 +357,6 @@ class CoverageDataTest(CoverageTest):
         covdata.add_file_tracers({"p1.foo": "p1.plugin", "main.py": ""})
         assert covdata.file_tracer("p1.foo") == "p1.plugin"
         assert covdata.file_tracer("main.py") == ""
-
-    def test_cant_file_tracer_unmeasured_files(self) -> None:
-        covdata = DebugCoverageData()
-        msg = "Can't add file tracer data for unmeasured file 'p1.foo'"
-        with pytest.raises(DataError, match=msg):
-            covdata.add_file_tracers({"p1.foo": "p1.plugin"})
-
-        covdata.add_lines({"p2.html": [10, 11, 12]})
-        with pytest.raises(DataError, match=msg):
-            covdata.add_file_tracers({"p1.foo": "p1.plugin"})
 
     def test_cant_change_file_tracer_name(self) -> None:
         covdata = DebugCoverageData()
