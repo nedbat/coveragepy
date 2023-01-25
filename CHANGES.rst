@@ -17,16 +17,20 @@ development at the same time, such as 4.5.x and 5.0.
     ..  Version 9.8.1 — 2027-07-27
     ..  --------------------------
 
-Unreleased
-----------
+.. scriv-start-here
 
-- Performance: fixed a slow-down with dynamic contexts that appeared in 6.4.3,
-  closing `issue 1538`_.  Hopefully this doesn't break the `Cython change`_
-  that fixed `issue 972`_.  Thanks to Mathieu Kniewallner for the deep
-  investigative work and comprehensive issue report.
+.. _changes_7-1-0:
+
+Version 7.1.0 — 2023-01-24
+--------------------------
 
 - Added: the debug output file can now be specified with ``[run] debug_file``
   in the configuration file.  Closes `issue 1319`_.
+
+- Performance: fixed a slowdown with dynamic contexts that's been around since
+  6.4.3.  The fix closes `issue 1538`_.  Thankfully this doesn't break the
+  `Cython change`_ that fixed `issue 972`_.  Thanks to Mathieu Kniewallner for
+  the deep investigative work and comprehensive issue report.
 
 - Typing: all product and test code has type annotations.
 
@@ -34,8 +38,6 @@ Unreleased
 .. _issue 972: https://github.com/nedbat/coveragepy/issues/972
 .. _issue 1319: https://github.com/nedbat/coveragepy/issues/1319
 .. _issue 1538: https://github.com/nedbat/coveragepy/issues/1538
-
-.. scriv-start-here
 
 .. _changes_7-0-5:
 
