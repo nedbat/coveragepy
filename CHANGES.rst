@@ -20,9 +20,15 @@ development at the same time, such as 4.5.x and 5.0.
 Unreleased
 ----------
 
+- Fix: In some embedded environments, an IndexError could occur on stop() when
+  the originating thread exits before completion.  This is now fixed, thanks to
+  `Russell Keith-Magee <pull 1543_>`_, closing `issue 1542`_.
+
 - Added a ``py.typed`` file to announce our type-hintedness.  Thanks,
   `KotlinIsland <pull 1550_>`_.
 
+.. _issue 1542: https://github.com/nedbat/coveragepy/issues/1542
+.. _pull 1543: https://github.com/nedbat/coveragepy/pull/1543
 .. _pull 1550: https://github.com/nedbat/coveragepy/pull/1550
 
 
