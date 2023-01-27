@@ -31,14 +31,14 @@ from coverage.parser import PythonParser
         b"more random data"
     ]
 )
-def TestOneInput(data):
+def test_one_input(data):
     """Fuzzer for PythonParser."""
     fdp = atheris.FuzzedDataProvider(data)
-    
+
     t = fdp.ConsumeUnicodeNoSurrogates(1024)
     if not t:
         return
-    
+
     try:
         p = PythonParser(text = t)
         p.parse_source()
