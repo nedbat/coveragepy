@@ -4,10 +4,26 @@
 #
 #    make upgrade
 #
-astroid==2.13.2 \
-    --hash=sha256:3bc7834720e1a24ca797fd785d77efb14f7a28ee8e635ef040b6e2d80ccb3303 \
-    --hash=sha256:8f6a8d40c4ad161d6fc419545ae4b2f275ed86d1c989c97825772120842ee0d2
+astroid==2.13.3 \
+    --hash=sha256:14c1603c41cc61aae731cad1884a073c4645e26f126d13ac8346113c95577f3b \
+    --hash=sha256:6afc22718a48a689ca24a97981ad377ba7fb78c133f40335dfd16772f29bcfb1
     # via pylint
+atheris==2.2.2 \
+    --hash=sha256:0f02b03542266e438649e97ebbf5f96b94661cebca49a85420424cf65fdd1e87 \
+    --hash=sha256:13eb3154994fe6d1330d76d970eefe25b433af2d775e690992890b714d54b68e \
+    --hash=sha256:2087933ec91df9d3fb2ee22649c9811536515519d88bcc587d67018c3f0227f6 \
+    --hash=sha256:30f1255319fe87765639e451a178a4732b1185af43b5c9b842591f03830cf8ec \
+    --hash=sha256:33213d1f2e7f88d976c00dc3d19cc91e1304cd3d4dfba8f3ad5383093f7c55ab \
+    --hash=sha256:6606b443ddf3932333aa6854bad2c4a000a65f1faeb4f559e8ea376af255278b \
+    --hash=sha256:8e692836e6a8c41724c354a4f68fe35349bbc88af4708d835abef074ad5cb3f2 \
+    --hash=sha256:9fb4c5e6df23b6b3650e5cb8e4780d189ae34443a23339750742a0de92ea0101 \
+    --hash=sha256:ac727bcfc3345e2562722c517c836abe65ab8d7e4eaad1d792a6c85765868aff \
+    --hash=sha256:d06fdfe077d8188c5acdccb8d4cbb34a3fc2d6f84dbb7b807f523cc5f6e9b8a4 \
+    --hash=sha256:ebccc878ba5b958a42a97edcedff9ff46882b7c968e84cbf32632588457838f4 \
+    --hash=sha256:f305a4c95575e8372774d20c28f6345f21ab7d926da8ebdd1b92f92475f5ef0b \
+    --hash=sha256:fc0e4bf0830003bab8509147385184eae347a191e8f16e5e2d650aaafdcd5eb0 \
+    --hash=sha256:fd4d8050f548e2583ed4c4600211f341537f077bf54399f7b4f4d814b112f35b
+    # via -r requirements/pytest.pip
 attrs==22.2.0 \
     --hash=sha256:29e95c7f6778868dbd49170f98f8818f78f3dc5e0e37c0b1f474e3561b240836 \
     --hash=sha256:c9227bfc2f01993c03f68db37d1d15c9690188323c067c641f1a35ca58185f99
@@ -15,17 +31,17 @@ attrs==22.2.0 \
     #   -r requirements/pytest.pip
     #   hypothesis
     #   pytest
-bleach==5.0.1 \
-    --hash=sha256:085f7f33c15bd408dd9b17a4ad77c577db66d76203e5984b1bd59baeee948b2a \
-    --hash=sha256:0d03255c47eb9bd2f26aa9bb7f2107732e7e8fe195ca2f64709fcf3b0a4a085c
+bleach==6.0.0 \
+    --hash=sha256:1a1a85c1595e07d8db14c5f09f09e6433502c51c595970edc090551f0db99414 \
+    --hash=sha256:33c16e3353dbd13028ab4799a0f89a83f113405c766e9c122df8a06f5b85b3f4
     # via readme-renderer
 build==0.10.0 \
     --hash=sha256:af266720050a66c893a6096a2f410989eeac74ff9a68ba194b3f6473e8e26171 \
     --hash=sha256:d5b71264afdb5951d6704482aac78de887c80691c52b88a9ad195983ca2c9269
     # via check-manifest
-cachetools==5.2.1 \
-    --hash=sha256:5991bc0e08a1319bb618d3195ca5b6bc76646a49c21d55962977197b301cc1fe \
-    --hash=sha256:8462eebf3a6c15d25430a8c27c56ac61340b2ecf60c9ce57afc2b97e450e47da
+cachetools==5.3.0 \
+    --hash=sha256:13dfddc7b8df938c21a940dfa6557ce6e94a2f1cdfa58eb90c805721d58f2c14 \
+    --hash=sha256:429e1a1e845c008ea6c85aa35d4b98b65d6a9763eeef3e37e92728a12d1de9d4
     # via
     #   -r requirements/tox.pip
     #   tox
@@ -144,10 +160,6 @@ colorama==0.4.6 \
     #   -r requirements/pytest.pip
     #   -r requirements/tox.pip
     #   tox
-commonmark==0.9.1 \
-    --hash=sha256:452f9dc859be7f06631ddcb328b6919c67984aca654e5fefb3914d54691aed60 \
-    --hash=sha256:da2f38c92590f83de410ba1a3cbceafbc74fee9def35f9251ba9a971d6d66fd9
-    # via rich
 dill==0.3.6 \
     --hash=sha256:a07ffd2351b8c678dfc4a856a3005f8067aea51d6ba6c700796a4d9e280f39f0 \
     --hash=sha256:e5db55f3687856d8fbdab002ed78544e1c4559a130302693d839dfe8f93f2373
@@ -250,9 +262,9 @@ greenlet==2.0.1 \
     --hash=sha256:f6327b6907b4cb72f650a5b7b1be23a2aab395017aa6f1adb13069d66360eb3f \
     --hash=sha256:fb412b7db83fe56847df9c47b6fe3f13911b06339c2aa02dcc09dce8bbf582cd
     # via -r requirements/dev.in
-hypothesis==6.62.1 \
-    --hash=sha256:7d1e2f9871e6509662da317adf9b4aabd6b38280fb6c7930aa4f574d2ed25150 \
-    --hash=sha256:d00a4a9c54b0b8b4570fe1abe42395807a973b4a507e6718309800e6f84e160d
+hypothesis==6.65.1 \
+    --hash=sha256:4b7ae16db09151d17e5feebea07f4f84693cc1573c25e280bc92e619df24182b \
+    --hash=sha256:fb9757f4b556fc73c2eaa2c1b7d39d0184c75e4cb77dadaf6fa59373838bd629
     # via -r requirements/pytest.pip
 idna==3.4 \
     --hash=sha256:814f528e8dead7d329833b91c5faa87d60bf71824cd12a7530b5526063d02cb4 \
@@ -342,10 +354,18 @@ libsass==0.22.0 \
     --hash=sha256:89c5ce497fcf3aba1dd1b19aae93b99f68257e5f2026b731b00a872f13324c7f \
     --hash=sha256:f1efc1b612299c88aec9e39d6ca0c266d360daa5b19d9430bdeaffffa86993f9
     # via -r requirements/dev.in
+markdown-it-py==2.1.0 \
+    --hash=sha256:93de681e5c021a432c63147656fe21790bc01231e0cd2da73626f1aa3ac0fe27 \
+    --hash=sha256:cf7e59fed14b5ae17c0006eff14a2d9a00ed5f3a846148153899a0224e2c07da
+    # via rich
 mccabe==0.7.0 \
     --hash=sha256:348e0240c33b60bbdf4e523192ef919f28cb2c3d7d5c7794f74009290f236325 \
     --hash=sha256:6c2d30ab6be0e4a46919781807b4f0d834ebdd6c6e3dca0bda5a15f863427b6e
     # via pylint
+mdurl==0.1.2 \
+    --hash=sha256:84008a41e51615a49fc9966191ff91509e3c40b939176e643fd50a5c2196b8f8 \
+    --hash=sha256:bb413d29f5eea38f31dd4754dd7377d4465116fb207585f97bf925588687c1ba
+    # via markdown-it-py
 more-itertools==9.0.0 \
     --hash=sha256:250e83d7e81d0c87ca6bd942e6aeab8cc9daa6096d12c5308f3f92fa5e5c1f41 \
     --hash=sha256:5a6257e40878ef0520b1803990e3e22303a41b5714006c32a3fd8304b26ea1ab
@@ -404,9 +424,9 @@ pylint==2.15.10 \
     --hash=sha256:9df0d07e8948a1c3ffa3b6e2d7e6e63d9fb457c5da5b961ed63106594780cc7e \
     --hash=sha256:b3dc5ef7d33858f297ac0d06cc73862f01e4f2e74025ec3eff347ce0bc60baf5
     # via -r requirements/dev.in
-pyproject-api==1.4.0 \
-    --hash=sha256:ac85c1f82e0291dbae5a7739dbb9a990e11ee4034c9b5599ea714f07a24ecd71 \
-    --hash=sha256:c34226297781efdd1ba4dfb74ce21076d9a8360e2125ea31803c1a02c76b2460
+pyproject-api==1.5.0 \
+    --hash=sha256:0962df21f3e633b8ddb9567c011e6c1b3dcdfc31b7860c0ede7e24c5a1200fbe \
+    --hash=sha256:4c111277dfb96bcd562c6245428f27250b794bfe3e210b8714c4f893952f2c17
     # via
     #   -r requirements/tox.pip
     #   tox
@@ -445,13 +465,13 @@ rfc3986==2.0.0 \
     --hash=sha256:50b1502b60e289cb37883f3dfd34532b8873c7de9f49bb546641ce9cbd256ebd \
     --hash=sha256:97aacf9dbd4bfd829baad6e6309fa6573aaf1be3f6fa735c8ab05e46cecb261c
     # via twine
-rich==13.1.0 \
-    --hash=sha256:81c73a30b144bbcdedc13f4ea0b6ffd7fdc3b0d3cc259a9402309c8e4aee1964 \
-    --hash=sha256:f846bff22a43e8508aebf3f0f2410ce1c6f4cde429098bd58d91fde038c57299
+rich==13.2.0 \
+    --hash=sha256:7c963f0d03819221e9ac561e1bc866e3f95a02248c1234daa48954e6d381c003 \
+    --hash=sha256:f1a00cdd3eebf999a15d85ec498bfe0b1a77efe9b34f645768a54132ef444ac5
     # via twine
-setuptools==66.0.0 \
-    --hash=sha256:a78d01d1e2c175c474884671dde039962c9d74c7223db7369771fcf6e29ceeab \
-    --hash=sha256:bd6eb2d6722568de6d14b87c44a96fac54b2a45ff5e940e639979a3d1792adb6
+setuptools==66.1.1 \
+    --hash=sha256:6f590d76b713d5de4e49fe4fbca24474469f53c83632d5d0fd056f7ff7e8112b \
+    --hash=sha256:ac4008d396bc9cd983ea483cb7139c0240a07bbc74ffb6232fceffedc6cf03a8
     # via check-manifest
 six==1.16.0 \
     --hash=sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926 \
@@ -480,9 +500,9 @@ tomlkit==0.11.6 \
     --hash=sha256:07de26b0d8cfc18f871aec595fda24d95b08fef89d147caa861939f37230bf4b \
     --hash=sha256:71b952e5721688937fb02cf9d354dbcf0785066149d2855e44531ebdd2b65d73
     # via pylint
-tox==4.3.4 \
-    --hash=sha256:84ee61b27dc983cb5b5d9ef93af10ce54a0e3992df73335fcdf3e8a3d3453a93 \
-    --hash=sha256:f5ac33b55de2f8764cff260661eb1257107a21c4819714b04f14669991aa7772
+tox==4.4.2 \
+    --hash=sha256:258895ba5de919490c03ef97467c4c8c42954537dfd96ae72cc2fb63dac67cf0 \
+    --hash=sha256:3d8a8dd8a5afdc0d37af3e2b4959e427fe22530d0aa599baf0120e144b3defa3
     # via
     #   -r requirements/tox.pip
     #   tox-gh
@@ -528,6 +548,7 @@ typing-extensions==4.4.0 \
     #   -r requirements/pytest.pip
     #   astroid
     #   importlib-metadata
+    #   markdown-it-py
     #   platformdirs
     #   pylint
     #   rich
@@ -630,32 +651,4 @@ zipp==3.11.0 \
     #   -r requirements/pip.pip
     #   -r requirements/pytest.pip
     #   importlib-metadata
-<<<<<<< HEAD
     #   importlib-resources
-||||||| parent of 3ef3fd0c (test: add fuzzing set up)
-    #   pep517
-
-# The following packages are considered to be unsafe in a requirements file:
-pip==22.3.1 \
-    --hash=sha256:65fd48317359f3af8e593943e6ae1506b66325085ea64b706a998c6e83eeaf38 \
-    --hash=sha256:908c78e6bc29b676ede1c4d57981d490cb892eb45cd8c214ab6298125119e077
-    # via -r requirements/pip.pip
-setuptools==65.6.3 \
-    --hash=sha256:57f6f22bde4e042978bcd50176fdb381d7c21a9efa4041202288d3737a0c6a54 \
-    --hash=sha256:a7620757bf984b58deaf32fc8a4577a9bbc0850cf92c20e1ce41c38c19e5fb75
-    # via check-manifest
-=======
-    #   pep517
-
-# The following packages are considered to be unsafe in a requirements file:
-pip==22.3.1 \
-    --hash=sha256:65fd48317359f3af8e593943e6ae1506b66325085ea64b706a998c6e83eeaf38 \
-    --hash=sha256:908c78e6bc29b676ede1c4d57981d490cb892eb45cd8c214ab6298125119e077
-    # via -r requirements/pip.pip
-setuptools==65.6.3 \
-    --hash=sha256:57f6f22bde4e042978bcd50176fdb381d7c21a9efa4041202288d3737a0c6a54 \
-    --hash=sha256:a7620757bf984b58deaf32fc8a4577a9bbc0850cf92c20e1ce41c38c19e5fb75
-    # via check-manifest
-atheris==2.1.1 \
-    --hash=sha256:97d5111b9de4d581b8a51cac3ebcacd81b2d2a69661f99b9316194ea6a01f6c7
->>>>>>> 3ef3fd0c (test: add fuzzing set up)

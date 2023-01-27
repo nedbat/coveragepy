@@ -237,9 +237,9 @@ requests==2.28.2 \
     # via
     #   scriv
     #   sphinx
-scriv==1.1.0 \
-    --hash=sha256:1064101623e318d906d91f7e1405c97af414c67f0c7da8ee4d08eaa523b735eb \
-    --hash=sha256:f2670624b2c44cdf34224c8b032b71a00a41b78e9f587140da6dd0b010e66b75
+scriv==1.2.0 \
+    --hash=sha256:26b65a903da7d9aefc712a0d4150b8638302b4758bd428bbd773dd918c61c621 \
+    --hash=sha256:bb61c30fea73158a4d18c28bbb57821c308245683efb0d897bd45e4a7856b472
     # via -r doc/requirements.in
 six==1.16.0 \
     --hash=sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926 \
