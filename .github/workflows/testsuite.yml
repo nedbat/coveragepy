@@ -39,7 +39,7 @@ jobs:
           - macos
           - windows
         python-version:
-          # When changing this list, be sure to check the [gh-actions] list in
+          # When changing this list, be sure to check the [gh] list in
           # tox.ini so that tox will run properly. PYVERSIONS
           # Available versions:
           # https://github.com/actions/python-versions/blob/main/versions-manifest.json
