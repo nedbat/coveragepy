@@ -755,7 +755,7 @@ class ApiTest(CoverageTest):
         assert cast(str, d['data_file']).endswith(".coverage")
 
     def test_purge_filenames(self) -> None:
-        
+
         fn1 = self.make_file("mymain.py", """\
             import mymod
             a = 1
@@ -771,7 +771,7 @@ class ApiTest(CoverageTest):
         self.start_import_stop(cov, "mymain")
 
         data = cov.get_data()
-        
+
         # Initial measurement was for two files
         assert len(data.measured_files()) == 2
         assert [1, 2] == sorted_lines(data, fn1)
@@ -788,9 +788,9 @@ class ApiTest(CoverageTest):
         assert len(data.measured_files()) == 0
         assert [] == sorted_lines(data, fn1)
         assert [] == sorted_lines(data, fn2)
-        
+
     def test_purge_filenames_context(self) -> None:
-        
+
         fn1 = self.make_file("mymain.py", """\
             import mymod
             a = 1
@@ -804,7 +804,7 @@ class ApiTest(CoverageTest):
 
         def dummy_function():
             unused = 42
-            
+
         # Start/stop since otherwise cantext
         cov = coverage.Coverage()
         cov.start()
@@ -815,7 +815,7 @@ class ApiTest(CoverageTest):
         self.start_import_stop(cov, "mymain")
 
         data = cov.get_data()
-        
+
         # Initial measurement was for three files and two contexts
         assert len(data.measured_files()) == 3
         assert [1, 2] == sorted_lines(data, fn1)
@@ -851,7 +851,7 @@ class ApiTest(CoverageTest):
         assert [1,] == sorted_lines(data, fn2)
         assert len(sorted_lines(data, __file__)) == 0
         assert len(data.measured_contexts()) == 2
-        
+
         # Remove last file specifying correct context
         data.purge_files([fn2], 'testcontext')
         assert len(data.measured_files()) == 0
@@ -859,7 +859,7 @@ class ApiTest(CoverageTest):
         assert [] == sorted_lines(data, fn2)
         assert len(sorted_lines(data, __file__)) == 0
         assert len(data.measured_contexts()) == 2
- 
+
 
 class CurrentInstanceTest(CoverageTest):
     """Tests of Coverage.current()."""
