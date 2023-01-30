@@ -754,6 +754,112 @@ class ApiTest(CoverageTest):
         cov.stop()                      # pragma: nested
         assert cast(str, d['data_file']).endswith(".coverage")
 
+    def test_purge_filenames(self) -> None:
+        
+        fn1 = self.make_file("mymain.py", """\
+            import mymod
+            a = 1
+            """)
+        fn1 = os.path.join(self.temp_dir, fn1)
+
+        fn2 = self.make_file("mymod.py", """\
+            fooey = 17
+            """)
+        fn2 = os.path.join(self.temp_dir, fn2)
+
+        cov = coverage.Coverage()
+        self.start_import_stop(cov, "mymain")
+
+        data = cov.get_data()
+        
+        # Initial measurement was for two files
+        assert len(data.measured_files()) == 2
+        assert [1, 2] == sorted_lines(data, fn1)
+        assert [1,] == sorted_lines(data, fn2)
+
+        # Purge one file's data and one should remain
+        data.purge_files([fn1])
+        assert len(data.measured_files()) == 1
+        assert [] == sorted_lines(data, fn1)
+        assert [1,] == sorted_lines(data, fn2)
+
+        # Purge second file's data and none should remain
+        data.purge_files([fn2])
+        assert len(data.measured_files()) == 0
+        assert [] == sorted_lines(data, fn1)
+        assert [] == sorted_lines(data, fn2)
+        
+    def test_purge_filenames_context(self) -> None:
+        
+        fn1 = self.make_file("mymain.py", """\
+            import mymod
+            a = 1
+            """)
+        fn1 = os.path.join(self.temp_dir, fn1)
+
+        fn2 = self.make_file("mymod.py", """\
+            fooey = 17
+            """)
+        fn2 = os.path.join(self.temp_dir, fn2)
+
+        def dummy_function():
+            unused = 42
+            
+        # Start/stop since otherwise cantext
+        cov = coverage.Coverage()
+        cov.start()
+        cov.switch_context('initialcontext')
+        dummy_function()
+        cov.switch_context('testcontext')
+        cov.stop()
+        self.start_import_stop(cov, "mymain")
+
+        data = cov.get_data()
+        
+        # Initial measurement was for three files and two contexts
+        assert len(data.measured_files()) == 3
+        assert [1, 2] == sorted_lines(data, fn1)
+        assert [1,] == sorted_lines(data, fn2)
+        assert len(sorted_lines(data, __file__)) == 1
+        assert len(data.measured_contexts()) == 2
+
+        # Remove specifying wrong context should raise exception and not remove anything
+        try:
+            data.purge_files([fn1], 'wrongcontext')
+        except coverage.sqldata.DataError:
+            pass
+        else:
+            assert(0, "exception expected")
+        assert len(data.measured_files()) == 3
+        assert [1, 2] == sorted_lines(data, fn1)
+        assert [1,] == sorted_lines(data, fn2)
+        assert len(sorted_lines(data, __file__)) == 1
+        assert len(data.measured_contexts()) == 2
+
+        # Remove one file specifying correct context
+        data.purge_files([fn1], 'testcontext')
+        assert len(data.measured_files()) == 2
+        assert [] == sorted_lines(data, fn1)
+        assert [1,] == sorted_lines(data, fn2)
+        assert len(sorted_lines(data, __file__)) == 1
+        assert len(data.measured_contexts()) == 2
+
+        # Remove second file with other correct context
+        data.purge_files([__file__], 'initialcontext')
+        assert len(data.measured_files()) == 1
+        assert [] == sorted_lines(data, fn1)
+        assert [1,] == sorted_lines(data, fn2)
+        assert len(sorted_lines(data, __file__)) == 0
+        assert len(data.measured_contexts()) == 2
+        
+        # Remove last file specifying correct context
+        data.purge_files([fn2], 'testcontext')
+        assert len(data.measured_files()) == 0
+        assert [] == sorted_lines(data, fn1)
+        assert [] == sorted_lines(data, fn2)
+        assert len(sorted_lines(data, __file__)) == 0
+        assert len(data.measured_contexts()) == 2
+ 
 
 class CurrentInstanceTest(CoverageTest):
     """Tests of Coverage.current()."""
