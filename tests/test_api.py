@@ -829,7 +829,7 @@ class ApiTest(CoverageTest):
         except coverage.sqldata.DataError:
             pass
         else:
-            assert(0, "exception expected")
+            assert 0, "exception expected"
         assert len(data.measured_files()) == 3
         assert [1, 2] == sorted_lines(data, fn1)
         assert [1,] == sorted_lines(data, fn2)
