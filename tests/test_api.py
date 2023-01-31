@@ -802,7 +802,7 @@ class ApiTest(CoverageTest):
             """)
         fn2 = os.path.join(self.temp_dir, fn2)
 
-        def dummy_function():
+        def dummy_function() -> None:
             unused = 42
 
         # Start/stop since otherwise cantext

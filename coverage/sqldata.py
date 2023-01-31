@@ -615,7 +615,7 @@ class CoverageData(AutoReprMixin):
                     # Set the tracer for this file
                     self.add_file_tracers({filename: plugin_name})
 
-    def purge_files(self, filenames, context=None):
+    def purge_files(self, filenames: Iterable[str], context: Optional[str] = None) -> None:
         """Purge any existing coverage data for the given `filenames`.
 
         If `context` is given, purge only data associated with that measurement context.
