@@ -20,7 +20,10 @@ development at the same time, such as 4.5.x and 5.0.
 Unreleased
 ----------
 
-Nothing yet.
+- Added a ``py.typed`` file to announce our type-hintedness.  Thanks,
+  `KotlinIsland <pull 1550_>`_.
+
+.. _pull 1550: https://github.com/nedbat/coveragepy/pull/1550
 
 
 .. scriv-start-here
