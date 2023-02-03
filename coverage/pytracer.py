@@ -137,9 +137,17 @@ class PyTracer(TTracer):
                     self.log(">", f.f_code.co_filename, f.f_lineno, f.f_code.co_name, f.f_trace)
                     f = f.f_back
             sys.settrace(None)
-            self.cur_file_data, self.cur_file_name, self.last_line, self.started_context = (
-                self.data_stack.pop()
-            )
+            try:
+                self.cur_file_data, self.cur_file_name, self.last_line, self.started_context = (
+                    self.data_stack.pop()
+                )
+            except IndexError:
+                self.log(
+                    "Empty stack!",
+                    frame.f_code.co_filename,
+                    frame.f_lineno,
+                    frame.f_code.co_name
+                )
             return None
 
         # if event != 'call' and frame.f_code.co_filename != self.cur_file_name:
