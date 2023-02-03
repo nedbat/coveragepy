@@ -89,6 +89,7 @@ setup_args = dict(
         'coverage': [
             'htmlfiles/*.*',
             'fullcoverage/*.*',
+            'py.typed',
         ]
     },
 

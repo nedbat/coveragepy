@@ -3,7 +3,7 @@
 
 # Here's some random Python so that test_tokenize_myself will have some
 # stressful stuff to try.  This file is .tok instead of .py so pylint won't
-# complain about it, check_eol won't look at it, etc.
+# complain about it, editors won't mess with it, etc.
 # Some lines are here to reproduce fixed bugs in ast_dump also.
 
 first_back = """\

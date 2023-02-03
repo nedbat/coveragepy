@@ -10,7 +10,6 @@ of in shell scripts, batch files, or Makefiles.
 
 import contextlib
 import datetime
-import fnmatch
 import glob
 import inspect
 import os
@@ -275,77 +274,6 @@ def do_zip_mods():
 
     with zipfile.ZipFile("tests/covmain.zip", "w") as zf:
         zf.write("coverage/__main__.py", "__main__.py")
-
-
-def do_check_eol():
-    """Check files for incorrect newlines and trailing white space."""
-
-    ignore_dirs = [
-        '.svn', '.hg', '.git',
-        '.tox*',
-        '*.egg-info',
-        '_build',
-        '_spell',
-        'tmp',
-        'help',
-    ]
-    checked = set()
-
-    def check_file(fname, crlf=True, trail_white=True):
-        """Check a single file for white space abuse."""
-        fname = os.path.relpath(fname)
-        if fname in checked:
-            return
-        checked.add(fname)
-
-        line = None
-        with open(fname, "rb") as f:
-            for n, line in enumerate(f, start=1):
-                if crlf:
-                    if b"\r" in line:
-                        print(f"{fname}@{n}: CR found")
-                        return
-                if trail_white:
-                    line = line[:-1]
-                    if not crlf:
-                        line = line.rstrip(b'\r')
-                    if line.rstrip() != line:
-                        print(f"{fname}@{n}: trailing white space found")
-                        return
-
-        if line is not None and not line.strip():
-            print(f"{fname}: final blank line")
-
-    def check_files(root, patterns, **kwargs):
-        """Check a number of files for white space abuse."""
-        for where, dirs, files in os.walk(root):
-            for f in files:
-                fname = os.path.join(where, f)
-                for p in patterns:
-                    if fnmatch.fnmatch(fname, p):
-                        check_file(fname, **kwargs)
-                        break
-            for ignore_dir in ignore_dirs:
-                ignored = []
-                for dir_name in dirs:
-                    if fnmatch.fnmatch(dir_name, ignore_dir):
-                        ignored.append(dir_name)
-                for dir_name in ignored:
-                    dirs.remove(dir_name)
-
-    check_files("coverage", ["*.py"])
-    check_files("coverage/ctracer", ["*.c", "*.h"])
-    check_files("coverage/htmlfiles", ["*.html", "*.scss", "*.css", "*.js"])
-    check_files("tests", ["*.py"])
-    check_files("tests", ["*,cover"], trail_white=False)
-    check_files("tests/js", ["*.js", "*.html"])
-    check_file("setup.py")
-    check_file("igor.py")
-    check_file("Makefile")
-    check_files(".", ["*.rst", "*.txt"])
-    check_files(".", ["*.pip"])
-    check_files(".github", ["*"])
-    check_files("ci", ["*"])
 
 
 def print_banner(label):

@@ -103,7 +103,7 @@ class PhysTokensTest(CoverageTest):
         # Check the tokenization of the stress-test files.
         # And check that those files haven't been incorrectly "fixed".
         with warnings.catch_warnings():
-            warnings.filterwarnings("ignore", message=r".*invalid escape sequence",)
+            warnings.filterwarnings("ignore", message=r".*invalid escape sequence")
 
             stress = os.path.join(TESTS_DIR, fname)
             self.check_file_tokenization(stress)

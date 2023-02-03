@@ -533,7 +533,7 @@ def test_ast_dump() -> None:
             num_lines = len(source.splitlines())
             with warnings.catch_warnings():
                 # stress_phystoken.tok has deprecation warnings, suppress them.
-                warnings.filterwarnings("ignore", message=r".*invalid escape sequence",)
+                warnings.filterwarnings("ignore", message=r".*invalid escape sequence")
                 ast_root = ast.parse(source)
         result: List[str] = []
         ast_dump(ast_root, print=result.append)

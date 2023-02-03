@@ -161,7 +161,7 @@ class TPlugin(Protocol):
 
 class TWarnFn(Protocol):
     """A callable warn() function."""
-    def __call__(self, msg: str, slug: Optional[str] = None, once: bool = False,) -> None:
+    def __call__(self, msg: str, slug: Optional[str] = None, once: bool = False) -> None:
         ...
 
 

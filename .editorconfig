@@ -33,6 +33,12 @@ indent_size = 2
 [*.rst]
 max_line_length = 79
 
+[*.tok]
+trim_trailing_whitespace = false
+
+[*_dos.tok]
+end_of_line = crlf
+
 [Makefile]
 indent_style = tab
 indent_size = 8
