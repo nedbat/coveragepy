@@ -615,6 +615,42 @@ class CoverageData(AutoReprMixin):
                     # Set the tracer for this file
                     self.add_file_tracers({filename: plugin_name})
 
+    def purge_files(self, filenames: Iterable[str], context: Optional[str] = None) -> None:
+        """Purge any existing coverage data for the given `filenames`.
+
+        If `context` is given, purge only data associated with that measurement context.
+        """
+
+        if self._debug.should("dataop"):
+            self._debug.write(f"Purging {filenames!r} for context {context}")
+        self._start_using()
+        with self._connect() as con:
+
+            if context is not None:
+                context_id = self._context_id(context)
+                if context_id is None:
+                    raise DataError("Unknown context {context}")
+            else:
+                context_id = None
+
+            if self._has_lines:
+                table = 'line_bits'
+            elif self._has_arcs:
+                table = 'arcs'
+            else:
+                return
+
+            for filename in filenames:
+                file_id = self._file_id(filename, add=False)
+                if file_id is None:
+                    continue
+                self._file_map.pop(filename, None)
+                if context_id is None:
+                    q = f'delete from {table} where file_id={file_id}'
+                else:
+                    q = f'delete from {table} where file_id={file_id} and context_id={context_id}'
+                con.execute(q)
+
     def update(self, other_data: CoverageData, aliases: Optional[PathAliases] = None) -> None:
         """Update this data with data from several other :class:`CoverageData` instances.
 
