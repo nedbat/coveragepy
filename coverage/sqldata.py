@@ -596,7 +596,7 @@ class CoverageData(AutoReprMixin):
         """
         self.touch_files([filename], plugin_name)
 
-    def touch_files(self, filenames: Iterable[str], plugin_name: Optional[str] = None) -> None:
+    def touch_files(self, filenames: Collection[str], plugin_name: Optional[str] = None) -> None:
         """Ensure that `filenames` appear in the data, empty if needed.
 
         `plugin_name` is the name of the plugin responsible for these files.

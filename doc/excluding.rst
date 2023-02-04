@@ -95,6 +95,7 @@ For example, here's a list of exclusions I've used::
         raise NotImplementedError
         if 0:
         if __name__ == .__main__.:
+        if TYPE_CHECKING:
         class .*\bProtocol\):
         @(abc\.)?abstractmethod
 
