@@ -777,15 +777,16 @@ class ApiTest(CoverageTest):
         assert [1, 2] == sorted_lines(data, fn1)
         assert [1,] == sorted_lines(data, fn2)
 
-        # Purge one file's data and one should remain
+        # Purge one file's data and only the other should have data, but
+        # both are still listed as measured
         data.purge_files([fn1])
-        assert len(data.measured_files()) == 1
+        assert len(data.measured_files()) == 2
         assert [] == sorted_lines(data, fn1)
         assert [1,] == sorted_lines(data, fn2)
 
-        # Purge second file's data and none should remain
+        # Purge second file's data
         data.purge_files([fn2])
-        assert len(data.measured_files()) == 0
+        assert len(data.measured_files()) == 2
         assert [] == sorted_lines(data, fn1)
         assert [] == sorted_lines(data, fn2)
 
@@ -805,7 +806,7 @@ class ApiTest(CoverageTest):
         def dummy_function() -> None:
             unused = 42
 
-        # Start/stop since otherwise cantext
+        # Start/stop since otherwise context cannot be set
         cov = coverage.Coverage()
         cov.start()
         cov.switch_context('initialcontext')
@@ -823,38 +824,25 @@ class ApiTest(CoverageTest):
         assert len(sorted_lines(data, __file__)) == 1
         assert len(data.measured_contexts()) == 2
 
-        # Remove specifying wrong context should raise exception and not remove anything
-        try:
-            data.purge_files([fn1], 'wrongcontext')
-        except coverage.sqldata.DataError:
-            pass
-        else:
-            assert 0, "exception expected"
+        # Remove one file; measurements are gone but files and contexts remain registered
+        data.purge_files([fn1])
         assert len(data.measured_files()) == 3
-        assert [1, 2] == sorted_lines(data, fn1)
-        assert [1,] == sorted_lines(data, fn2)
-        assert len(sorted_lines(data, __file__)) == 1
-        assert len(data.measured_contexts()) == 2
-
-        # Remove one file specifying correct context
-        data.purge_files([fn1], 'testcontext')
-        assert len(data.measured_files()) == 2
         assert [] == sorted_lines(data, fn1)
         assert [1,] == sorted_lines(data, fn2)
         assert len(sorted_lines(data, __file__)) == 1
         assert len(data.measured_contexts()) == 2
 
-        # Remove second file with other correct context
-        data.purge_files([__file__], 'initialcontext')
-        assert len(data.measured_files()) == 1
+        # Remove second file
+        data.purge_files([__file__])
+        assert len(data.measured_files()) == 3
         assert [] == sorted_lines(data, fn1)
         assert [1,] == sorted_lines(data, fn2)
         assert len(sorted_lines(data, __file__)) == 0
         assert len(data.measured_contexts()) == 2
 
-        # Remove last file specifying correct context
-        data.purge_files([fn2], 'testcontext')
-        assert len(data.measured_files()) == 0
+        # Remove last file
+        data.purge_files([fn2])
+        assert len(data.measured_files()) == 3
         assert [] == sorted_lines(data, fn1)
         assert [] == sorted_lines(data, fn2)
         assert len(sorted_lines(data, __file__)) == 0
