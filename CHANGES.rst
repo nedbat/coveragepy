@@ -20,6 +20,9 @@ development at the same time, such as 4.5.x and 5.0.
 Unreleased
 ----------
 
+- Added a :meth:`.CoverageData.purge_files` method to remove recorded data for
+  a particular file.  Contributed by `Stephan Deibel <pull 1547_>`_.
+
 - Fix: In some embedded environments, an IndexError could occur on stop() when
   the originating thread exits before completion.  This is now fixed, thanks to
   `Russell Keith-Magee <pull 1543_>`_, closing `issue 1542`_.
@@ -29,6 +32,7 @@ Unreleased
 
 .. _issue 1542: https://github.com/nedbat/coveragepy/issues/1542
 .. _pull 1543: https://github.com/nedbat/coveragepy/pull/1543
+.. _pull 1547: https://github.com/nedbat/coveragepy/pull/1547
 .. _pull 1550: https://github.com/nedbat/coveragepy/pull/1550
 
 

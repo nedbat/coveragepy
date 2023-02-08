@@ -197,9 +197,11 @@ class CoverageData(AutoReprMixin):
 
     Write the data to its file with :meth:`write`.
 
-    You can clear the data in memory with :meth:`erase`.  Two data collections
-    can be combined by using :meth:`update` on one :class:`CoverageData`,
-    passing it the other.
+    You can clear the data in memory with :meth:`erase`.  Data for specific
+    files can be removed from the database with :meth:`purge_files`.
+
+    Two data collections can be combined by using :meth:`update` on one
+    :class:`CoverageData`, passing it the other.
 
     Data in a :class:`CoverageData` can be serialized and deserialized with
     :meth:`dumps` and :meth:`loads`.
@@ -615,41 +617,29 @@ class CoverageData(AutoReprMixin):
                     # Set the tracer for this file
                     self.add_file_tracers({filename: plugin_name})
 
-    def purge_files(self, filenames: Iterable[str], context: Optional[str] = None) -> None:
+    def purge_files(self, filenames: Collection[str]) -> None:
         """Purge any existing coverage data for the given `filenames`.
 
-        If `context` is given, purge only data associated with that measurement context.
-        """
+        .. versionadded:: 7.2
 
+        """
         if self._debug.should("dataop"):
-            self._debug.write(f"Purging {filenames!r} for context {context}")
+            self._debug.write(f"Purging data for {filenames!r}")
         self._start_using()
         with self._connect() as con:
 
-            if context is not None:
-                context_id = self._context_id(context)
-                if context_id is None:
-                    raise DataError("Unknown context {context}")
-            else:
-                context_id = None
-
             if self._has_lines:
-                table = 'line_bits'
+                sql = "delete from line_bits where file_id=?"
             elif self._has_arcs:
-                table = 'arcs'
+                sql = "delete from arc where file_id=?"
             else:
-                return
+                raise DataError("Can't purge files in an empty CoverageData")
 
             for filename in filenames:
                 file_id = self._file_id(filename, add=False)
                 if file_id is None:
                     continue
-                self._file_map.pop(filename, None)
-                if context_id is None:
-                    q = f'delete from {table} where file_id={file_id}'
-                else:
-                    q = f'delete from {table} where file_id={file_id} and context_id={context_id}'
-                con.execute(q)
+                con.execute_void(sql, (file_id,))
 
     def update(self, other_data: CoverageData, aliases: Optional[PathAliases] = None) -> None:
         """Update this data with data from several other :class:`CoverageData` instances.
@@ -868,7 +858,12 @@ class CoverageData(AutoReprMixin):
         return bool(self._has_arcs)
 
     def measured_files(self) -> Set[str]:
-        """A set of all files that had been measured."""
+        """A set of all files that have been measured.
+
+        Note that a file may be mentioned as measured even though no lines or
+        arcs for that file are present in the data.
+
+        """
         return set(self._file_map)
 
     def measured_contexts(self) -> Set[str]:

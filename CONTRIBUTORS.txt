@@ -149,6 +149,7 @@ Sigve Tjora
 Simon Willison
 Stan Hu
 Stefan Behnel
+Stephan Deibel
 Stephan Richter
 Stephen Finucane
 Steve Dower

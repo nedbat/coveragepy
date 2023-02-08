@@ -588,6 +588,35 @@ class CoverageDataTest(CoverageTest):
         assert_lines1_data(covdata)
         assert not exceptions
 
+    def test_purge_files_lines(self) -> None:
+        covdata = DebugCoverageData()
+        covdata.add_lines(LINES_1)
+        covdata.add_lines(LINES_2)
+        assert_line_counts(covdata, SUMMARY_1_2)
+        covdata.purge_files(["a.py", "b.py"])
+        assert_line_counts(covdata, {"a.py": 0, "b.py": 0, "c.py": 1})
+        covdata.purge_files(["c.py"])
+        assert_line_counts(covdata, {"a.py": 0, "b.py": 0, "c.py": 0})
+        # It's OK to "purge" a file that wasn't measured.
+        covdata.purge_files(["xyz.py"])
+        assert_line_counts(covdata, {"a.py": 0, "b.py": 0, "c.py": 0})
+
+    def test_purge_files_arcs(self) -> None:
+        covdata = CoverageData()
+        covdata.add_arcs(ARCS_3)
+        covdata.add_arcs(ARCS_4)
+        assert_line_counts(covdata, SUMMARY_3_4)
+        covdata.purge_files(["x.py", "y.py"])
+        assert_line_counts(covdata, {"x.py": 0, "y.py": 0, "z.py": 1})
+        covdata.purge_files(["z.py"])
+        assert_line_counts(covdata, {"x.py": 0, "y.py": 0, "z.py": 0})
+
+    def test_cant_purge_in_empty_data(self) -> None:
+        covdata = DebugCoverageData()
+        msg = "Can't purge files in an empty CoverageData"
+        with pytest.raises(DataError, match=msg):
+            covdata.purge_files(["abc.py"])
+
 
 class CoverageDataInTempDirTest(CoverageTest):
     """Tests of CoverageData that need a temporary directory to make files."""
