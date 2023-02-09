@@ -9,7 +9,7 @@ import os.path
 import types
 import zipimport
 
-from typing import cast, Dict, Iterable, Optional, Set, TYPE_CHECKING
+from typing import Dict, Iterable, Optional, Set, TYPE_CHECKING
 
 from coverage import env
 from coverage.exceptions import CoverageException, NoSource
@@ -89,8 +89,7 @@ def get_zip_bytes(filename: str) -> Optional[bytes]:
         except zipimport.ZipImportError:
             return None
         try:
-            # typeshed is wrong for get_data: https://github.com/python/typeshed/pull/9428
-            data = cast(bytes, zi.get_data(inner))
+            data = zi.get_data(inner)
         except OSError:
             return None
         return data
