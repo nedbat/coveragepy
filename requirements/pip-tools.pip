@@ -22,21 +22,21 @@ packaging==23.0 \
     --hash=sha256:714ac14496c3e68c99c29b00845f7a2b85f3bb6f1078fd9f72fd20f0570002b2 \
     --hash=sha256:b6ad297f8907de0fa2fe1ccbd26fdaf387f5f47c7275fedf8cce89f99446cf97
     # via build
-pip==22.3.1 \
-    --hash=sha256:65fd48317359f3af8e593943e6ae1506b66325085ea64b706a998c6e83eeaf38 \
-    --hash=sha256:908c78e6bc29b676ede1c4d57981d490cb892eb45cd8c214ab6298125119e077
+pip==23.0 \
+    --hash=sha256:aee438284e82c8def684b0bcc50b1f6ed5e941af97fa940e83e2e8ef1a59da9b \
+    --hash=sha256:b5f88adff801f5ef052bcdef3daa31b55eb67b0fccd6d0106c206fa248e0463c
     # via pip-tools
-pip-tools==6.12.1 \
-    --hash=sha256:88efb7b29a923ffeac0713e6f23ef8529cc6175527d42b93f73756cc94387293 \
-    --hash=sha256:f0c0c0ec57b58250afce458e2e6058b1f30a4263db895b7d72fd6311bf1dc6f7
+pip-tools==6.12.2 \
+    --hash=sha256:6a51f4fd67140d5e83703ebfa9610fb61398727151f56a1be02a972d062e4679 \
+    --hash=sha256:8b903696df4598b10d469026ef9995c5f9a874b416e88e7a214884ebe4a70245
     # via -r requirements/pip-tools.in
 pyproject-hooks==1.0.0 \
     --hash=sha256:283c11acd6b928d2f6a7c73fa0d01cb2bdc5f07c57a2eeb6e83d5e56b97976f8 \
     --hash=sha256:f271b298b97f5955d53fb12b72c1fb1948c22c1a6b70b315c54cedaca0264ef5
     # via build
-setuptools==66.0.0 \
-    --hash=sha256:a78d01d1e2c175c474884671dde039962c9d74c7223db7369771fcf6e29ceeab \
-    --hash=sha256:bd6eb2d6722568de6d14b87c44a96fac54b2a45ff5e940e639979a3d1792adb6
+setuptools==67.2.0 \
+    --hash=sha256:16ccf598aab3b506593c17378473978908a2734d7336755a8769b480906bec1c \
+    --hash=sha256:b440ee5f7e607bb8c9de15259dba2583dd41a38879a7abc1d43a71c59524da48
     # via pip-tools
 tomli==2.0.1 \
     --hash=sha256:939de3e7a6161af0c887ef91b7d41a53e7c5a1ca976325f429cb46ea9bc30ecc \
@@ -52,7 +52,7 @@ wheel==0.38.4 \
     --hash=sha256:965f5259b566725405b05e7cf774052044b1ed30119b5d586b2703aafe8719ac \
     --hash=sha256:b60533f3f5d530e971d6737ca6d58681ee434818fab630c83a734bb10c083ce8
     # via pip-tools
-zipp==3.11.0 \
-    --hash=sha256:83a28fcb75844b5c0cdaf5aa4003c2d728c77e05f5aeabe8e95e56727005fbaa \
-    --hash=sha256:a7a22e05929290a67401440b39690ae6563279bced5f314609d9d03798f56766
+zipp==3.12.1 \
+    --hash=sha256:6c4fe274b8f85ec73c37a8e4e3fa00df9fb9335da96fb789e3b96b318e5097b3 \
+    --hash=sha256:a3cac813d40993596b39ea9e93a18e8a2076d5c378b8bc88ec32ab264e04ad02
     # via importlib-metadata

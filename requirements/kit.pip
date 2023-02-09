@@ -8,9 +8,9 @@ auditwheel==5.3.0 \
     --hash=sha256:1da1af54de5badd10149250c257a799be003fd976794716f17914e3d4b4a9fc9 \
     --hash=sha256:d0be87b5b6fb767eacf1ea4afa3292574cb0f4473a3c0ba55bc9dff1d0b5a333
     # via -r requirements/kit.in
-bashlex==0.17 \
-    --hash=sha256:0ad04403637f64f7836da46c125f9023a2518be418595322309f20ddc1db6cc0 \
-    --hash=sha256:2aed062438e10ee89742bc80969793cd9ee4a3fab6cfb2365e43731aabd21010
+bashlex==0.18 \
+    --hash=sha256:5bb03a01c6d5676338c36fd1028009c8ad07e7d61d8a1ce3f513b7fff52796ee \
+    --hash=sha256:91d73a23a3e51711919c1c899083890cdecffc91d8c088942725ac13e9dcfffa
     # via cibuildwheel
 bracex==2.3.post1 \
     --hash=sha256:351b7f20d56fb9ea91f9b9e9e7664db466eb234188c175fd943f8f755c807e73 \
@@ -48,9 +48,9 @@ packaging==23.0 \
     # via
     #   build
     #   cibuildwheel
-platformdirs==2.6.2 \
-    --hash=sha256:83c8f6d04389165de7c9b6f0c682439697887bca0aa2f1c87ef1826be3584490 \
-    --hash=sha256:e1fea1fe471b9ff8332e229df3cb7de4f53eeea4998d3b6bfff542115e998bd2
+platformdirs==3.0.0 \
+    --hash=sha256:8a1228abb1ef82d788f74139988b137e78692984ec7b08eaa6c65f1723af28f9 \
+    --hash=sha256:b1d5eb14f221506f50d6604a561f4c5786d9e80355219694a1b244bcd96f4567
     # via cibuildwheel
 pyelftools==0.29 \
     --hash=sha256:519f38cf412f073b2d7393aa4682b0190fa901f7c3fa0bff2b82d537690c7fc1 \
@@ -60,9 +60,9 @@ pyproject-hooks==1.0.0 \
     --hash=sha256:283c11acd6b928d2f6a7c73fa0d01cb2bdc5f07c57a2eeb6e83d5e56b97976f8 \
     --hash=sha256:f271b298b97f5955d53fb12b72c1fb1948c22c1a6b70b315c54cedaca0264ef5
     # via build
-setuptools==66.0.0 \
-    --hash=sha256:a78d01d1e2c175c474884671dde039962c9d74c7223db7369771fcf6e29ceeab \
-    --hash=sha256:bd6eb2d6722568de6d14b87c44a96fac54b2a45ff5e940e639979a3d1792adb6
+setuptools==67.2.0 \
+    --hash=sha256:16ccf598aab3b506593c17378473978908a2734d7336755a8769b480906bec1c \
+    --hash=sha256:b440ee5f7e607bb8c9de15259dba2583dd41a38879a7abc1d43a71c59524da48
     # via -r requirements/kit.in
 tomli==2.0.1 \
     --hash=sha256:939de3e7a6161af0c887ef91b7d41a53e7c5a1ca976325f429cb46ea9bc30ecc \
@@ -82,7 +82,7 @@ wheel==0.38.4 \
     --hash=sha256:965f5259b566725405b05e7cf774052044b1ed30119b5d586b2703aafe8719ac \
     --hash=sha256:b60533f3f5d530e971d6737ca6d58681ee434818fab630c83a734bb10c083ce8
     # via -r requirements/kit.in
-zipp==3.11.0 \
-    --hash=sha256:83a28fcb75844b5c0cdaf5aa4003c2d728c77e05f5aeabe8e95e56727005fbaa \
-    --hash=sha256:a7a22e05929290a67401440b39690ae6563279bced5f314609d9d03798f56766
+zipp==3.12.1 \
+    --hash=sha256:6c4fe274b8f85ec73c37a8e4e3fa00df9fb9335da96fb789e3b96b318e5097b3 \
+    --hash=sha256:a3cac813d40993596b39ea9e93a18e8a2076d5c378b8bc88ec32ab264e04ad02
     # via importlib-metadata
