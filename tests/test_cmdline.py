@@ -1081,7 +1081,7 @@ class CmdMainTest(CoverageTest):
                 print("Hello, world!")
             elif argv[0] == 'raise':
                 try:
-                    raise Exception("oh noes!")
+                    raise RuntimeError("oh noes!")
                 except:
                     raise _ExceptionDuringRun(*sys.exc_info()) from None
             elif argv[0] == 'internalraise':
@@ -1111,8 +1111,8 @@ class CmdMainTest(CoverageTest):
         print(err)
         err_parts = err.splitlines(keepends=True)
         assert err_parts[0] == 'Traceback (most recent call last):\n'
-        assert '    raise Exception("oh noes!")\n' in err_parts
-        assert err_parts[-1] == 'Exception: oh noes!\n'
+        assert '    raise RuntimeError("oh noes!")\n' in err_parts
+        assert err_parts[-1] == 'RuntimeError: oh noes!\n'
 
     def test_internalraise(self) -> None:
         with pytest.raises(ValueError, match="coverage is broken"):

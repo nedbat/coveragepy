@@ -62,6 +62,7 @@ disable=
     broad-except,
     no-else-return,
     subprocess-run-check,
+    use-dict-literal,
 # Messages that may be silly:
     no-member,
     using-constant-test,

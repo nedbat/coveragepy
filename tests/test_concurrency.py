@@ -584,7 +584,7 @@ class MultiprocessingTest(CoverageTest):
             """)
         out = self.run_command("coverage run multi.py")
         assert "Exception during multiprocessing bootstrap init" in out
-        assert "Exception: Crashing because called by _bootstrap" in out
+        assert "RuntimeError: Crashing because called by _bootstrap" in out
 
     def test_bug_890(self) -> None:
         # chdir in multiprocessing shouldn't keep us from finding the

@@ -74,7 +74,7 @@ def sections(parsed_data):
         elif ttype == "text":
             text.append(ttext)
         else:
-            raise Exception(f"Don't know ttype {ttype!r}")
+            raise RuntimeError(f"Don't know ttype {ttype!r}")
     yield (*header, "\n".join(text))
 
 

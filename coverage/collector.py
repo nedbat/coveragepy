@@ -356,7 +356,7 @@ class Collector:
             try:
                 fn(frame, event, arg, lineno=lineno)
             except TypeError as ex:
-                raise Exception("fullcoverage must be run with the C trace function.") from ex
+                raise RuntimeError("fullcoverage must be run with the C trace function.") from ex
 
         # Install our installation tracer in threading, to jump-start other
         # threads.

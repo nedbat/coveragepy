@@ -821,7 +821,7 @@ class AstArcAnalyzer:
             # statement), or it's something we overlooked.
             if env.TESTING:
                 if node_name not in self.OK_TO_DEFAULT:
-                    raise Exception(f"*** Unhandled: {node}")       # pragma: only failure
+                    raise RuntimeError(f"*** Unhandled: {node}")        # pragma: only failure
 
             # Default for simple statements: one exit from this node.
             return {ArcStart(self.line_for_node(node))}
