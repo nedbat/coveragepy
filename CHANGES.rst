@@ -23,6 +23,10 @@ Unreleased
 - Added a :meth:`.CoverageData.purge_files` method to remove recorded data for
   a particular file.  Contributed by `Stephan Deibel <pull 1547_>`_.
 
+- Fix: when reporting commands fail, they will no longer congratulate
+  themselves with messages like "Wrote XML report to file.xml" before spewing a
+  traceback about their failure.
+
 - Fix: In some embedded environments, an IndexError could occur on stop() when
   the originating thread exits before completion.  This is now fixed, thanks to
   `Russell Keith-Magee <pull 1543_>`_, closing `issue 1542`_.

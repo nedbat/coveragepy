@@ -5,7 +5,7 @@
 
 from __future__ import annotations
 
-from typing import IO, Iterable, List, Optional
+from typing import IO, Iterable, List, Optional, Type
 
 import pytest
 
@@ -21,7 +21,7 @@ class FakeReporter:
 
     report_type = "fake report file"
 
-    def __init__(self, output: str = "", error: bool = False) -> None:
+    def __init__(self, output: str = "", error: Optional[Type[Exception]] = None) -> None:
         self.output = output
         self.error = error
         self.morfs: Optional[Iterable[TMorf]] = None
@@ -31,7 +31,7 @@ class FakeReporter:
         self.morfs = morfs
         outfile.write(self.output)
         if self.error:
-            raise CoverageException("You asked for it!")
+            raise self.error("You asked for it!")
         return 17.25
 
 
@@ -57,10 +57,11 @@ class RenderReportTest(CoverageTest):
             assert f.read().rstrip() == b"Gr\xc3\xa9\xc3\xa8tings!"
         assert msgs == ["Wrote fake report file to output.txt"]
 
-    def test_exception(self) -> None:
-        fake = FakeReporter(error=True)
+    @pytest.mark.parametrize("error", [CoverageException, ZeroDivisionError])
+    def test_exception(self, error: Type[Exception]) -> None:
+        fake = FakeReporter(error=error)
         msgs: List[str] = []
-        with pytest.raises(CoverageException, match="You asked for it!"):
+        with pytest.raises(error, match="You asked for it!"):
             render_report("output.txt", fake, [], msgs.append)
         assert self.stdout() == ""
         self.assert_doesnt_exist("output.txt")

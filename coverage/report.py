@@ -9,7 +9,7 @@ import sys
 
 from typing import Callable, Iterable, Iterator, IO, Optional, Tuple, TYPE_CHECKING
 
-from coverage.exceptions import CoverageException, NoDataError, NotPython
+from coverage.exceptions import NoDataError, NotPython
 from coverage.files import prep_patterns, GlobMatcher
 from coverage.misc import ensure_dir_for_file, file_be_gone
 from coverage.plugin import FileReporter
@@ -47,26 +47,25 @@ def render_report(
     if output_path == "-":
         outfile = sys.stdout
     else:
-        # Ensure that the output directory is created; done here
-        # because this report pre-opens the output file.
-        # HTMLReport does this using the Report plumbing because
-        # its task is more complex, being multiple files.
+        # Ensure that the output directory is created; done here because this
+        # report pre-opens the output file.  HtmlReporter does this on its own
+        # because its task is more complex, being multiple files.
         ensure_dir_for_file(output_path)
         outfile = open(output_path, "w", encoding="utf-8")
         file_to_close = outfile
+        delete_file = True
 
     try:
-        return reporter.report(morfs, outfile=outfile)
-    except CoverageException:
-        delete_file = True
-        raise
+        ret = reporter.report(morfs, outfile=outfile)
+        if file_to_close is not None:
+            msgfn(f"Wrote {reporter.report_type} to {output_path}")
+        delete_file = False
+        return ret
     finally:
-        if file_to_close:
+        if file_to_close is not None:
             file_to_close.close()
             if delete_file:
                 file_be_gone(output_path)           # pragma: part covered (doesn't return)
-            else:
-                msgfn(f"Wrote {reporter.report_type} to {output_path}")
 
 
 def get_analysis_to_report(
