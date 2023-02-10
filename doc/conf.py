@@ -43,6 +43,8 @@ extensions = [
     #'sphinx_tabs.tabs',
 ]
 
+autodoc_typehints = "description"
+
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
@@ -126,6 +128,10 @@ intersphinx_mapping = {
 nitpick_ignore = [
     ("py:class", "frame"),
     ("py:class", "module"),
+    ("py:class", "DefaultValue"),
+    ("py:class", "FilePath"),
+    ("py:class", "TWarnFn"),
+    ("py:class", "TDebugCtl"),
 ]
 
 nitpick_ignore_regex = [
