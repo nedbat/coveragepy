@@ -26,10 +26,10 @@ from typing import (
 from coverage import env
 from coverage.annotate import AnnotateReporter
 from coverage.collector import Collector, HAS_CTRACER
-from coverage.config import read_coverage_config
+from coverage.config import CoverageConfig, read_coverage_config
 from coverage.context import should_start_context_test_function, combine_context_switchers
 from coverage.data import CoverageData, combine_parallel_data
-from coverage.debug import DebugControl, short_stack, write_formatted_info
+from coverage.debug import DebugControl, NoDebugging, short_stack, write_formatted_info
 from coverage.disposition import disposition_debug_msg
 from coverage.exceptions import ConfigError, CoverageException, CoverageWarning, PluginError
 from coverage.files import PathAliases, abs_file, relative_filename, set_relative_directory
@@ -51,7 +51,6 @@ from coverage.types import (
     TFileDisposition, TLineNo, TMorf,
 )
 from coverage.xmlreport import XmlReporter
-
 
 os = isolate_module(os)
 
@@ -219,6 +218,10 @@ class Coverage(TConfigurable):
             The `messages` parameter.
 
         """
+        # Start self.config as a usable default configuration. It will soon be
+        # replaced with the real configuration.
+        self.config = CoverageConfig()
+
         # data_file=None means no disk file at all. data_file missing means
         # use the value from the config file.
         self._no_disk = data_file is None
@@ -241,14 +244,15 @@ class Coverage(TConfigurable):
         # A record of all the warnings that have been issued.
         self._warnings: List[str] = []
 
-        # Other instance attributes, set later.
-        self._debug: DebugControl
-        self._plugins: Plugins
-        self._inorout: InOrOut
-        self._data: CoverageData
-        self._collector: Collector
-        self._file_mapper: Callable[[str], str]
+        # Other instance attributes, set with placebos or placeholders.
+        # More useful objects will be created later.
+        self._debug: DebugControl = NoDebugging()
+        self._inorout: InOrOut = InOrOutPlacebo()
+        self._plugins: Plugins = Plugins()
+        self._data: CoverageData = CoverageDataPlacebo()
+        self._collector: Collector = CollectorPlacebo()
 
+        self._file_mapper: Callable[[str], str] = abs_file
         self._data_suffix = self._run_suffix = None
         self._exclude_re: Dict[str, str] = {}
         self._old_sigterm: Optional[Callable[[int, Optional[FrameType]], Any]] = None
@@ -315,7 +319,8 @@ class Coverage(TConfigurable):
         self._exclude_re = {}
 
         set_relative_directory()
-        self._file_mapper = relative_filename if self.config.relative_files else abs_file
+        if self.config.relative_files:
+            self._file_mapper = relative_filename
 
         # Load plugins
         self._plugins = Plugins.load_plugins(self.config.plugins, self.config, self._debug)
@@ -400,9 +405,7 @@ class Coverage(TConfigurable):
 
         """
         if not self._no_warn_slugs:
-            # _warn() can be called before self.config is set in __init__...
-            if hasattr(self, "config"):
-                self._no_warn_slugs = list(self.config.disable_warnings)
+            self._no_warn_slugs = list(self.config.disable_warnings)
 
         if slug in self._no_warn_slugs:
             # Don't issue the warning
@@ -411,7 +414,7 @@ class Coverage(TConfigurable):
         self._warnings.append(msg)
         if slug:
             msg = f"{msg} ({slug})"
-        if hasattr(self, "_debug") and self._debug.should('pid'):
+        if self._debug.should('pid'):
             msg = f"[{os.getpid()}] {msg}"
         warnings.warn(msg, category=CoverageWarning, stacklevel=2)
 
@@ -477,8 +480,7 @@ class Coverage(TConfigurable):
     def load(self) -> None:
         """Load previously-collected coverage data from the data file."""
         self._init()
-        if hasattr(self, "_collector"):
-            self._collector.reset()
+        self._collector.reset()
         should_skip = self.config.parallel and not os.path.exists(self.config.data_file)
         if not should_skip:
             self._init_data(suffix=None)
@@ -578,7 +580,7 @@ class Coverage(TConfigurable):
 
     def _init_data(self, suffix: Optional[Union[str, bool]]) -> None:
         """Create a data file if we don't have one yet."""
-        if not hasattr(self, "_data"):
+        if not self._data._real:
             # Create the data file.  We do this at construction time so that the
             # data file will be written into the directory where the process
             # started rather than wherever the process eventually chdir'd to.
@@ -658,11 +660,10 @@ class Coverage(TConfigurable):
         """
         self._init()
         self._post_init()
-        if hasattr(self, "_collector"):
-            self._collector.reset()
+        self._collector.reset()
         self._init_data(suffix=None)
         self._data.erase(parallel=self.config.parallel)
-        del self._data
+        self._data = CoverageDataPlacebo()
         self._inited_for_start = False
 
     def switch_context(self, new_context: str) -> None:
@@ -709,7 +710,6 @@ class Coverage(TConfigurable):
         """
         self._init()
         excl_list = getattr(self.config, which + "_list")
-        assert isinstance(regex, str)
         excl_list.append(regex)
         self._exclude_regex_stale()
 
@@ -814,7 +814,7 @@ class Coverage(TConfigurable):
             if not plugin._coverage_enabled:
                 self._collector.plugin_was_disabled(plugin)
 
-        if hasattr(self, "_collector") and self._collector.flush_data():
+        if self._collector.flush_data():
             self._post_save_work()
 
         return self._data
@@ -837,13 +837,12 @@ class Coverage(TConfigurable):
 
         # Touch all the files that could have executed, so that we can
         # mark completely un-executed files as 0% covered.
-        if self._data is not None:
-            file_paths = collections.defaultdict(list)
-            for file_path, plugin_name in self._inorout.find_possibly_unexecuted_files():
-                file_path = self._file_mapper(file_path)
-                file_paths[plugin_name].append(file_path)
-            for plugin_name, paths in file_paths.items():
-                self._data.touch_files(paths, plugin_name)
+        file_paths = collections.defaultdict(list)
+        for file_path, plugin_name in self._inorout.find_possibly_unexecuted_files():
+            file_path = self._file_mapper(file_path)
+            file_paths[plugin_name].append(file_path)
+        for plugin_name, paths in file_paths.items():
+            self._data.touch_files(paths, plugin_name)
 
     # Backward compatibility with version 1.
     def analysis(self, morf: TMorf) -> Tuple[str, List[TLineNo], List[TLineNo], str]:
@@ -1253,7 +1252,7 @@ class Coverage(TConfigurable):
         info = [
             ('coverage_version', covmod.__version__),
             ('coverage_module', covmod.__file__),
-            ('tracer', self._collector.tracer_name() if hasattr(self, "_collector") else "-none-"),
+            ('tracer', self._collector.tracer_name()),
             ('CTracer', 'available' if HAS_CTRACER else "unavailable"),
             ('plugins.file_tracers', plugin_info(self._plugins.file_tracers)),
             ('plugins.configurers', plugin_info(self._plugins.configurers)),
@@ -1264,7 +1263,7 @@ class Coverage(TConfigurable):
             ('config_contents',
                 repr(self.config._config_contents) if self.config._config_contents else '-none-'
             ),
-            ('data_file', self._data.data_filename() if hasattr(self, "_data") else "-none-"),
+            ('data_file', self._data.data_filename()),
             ('python', sys.version.replace('\n', '')),
             ('platform', platform.platform()),
             ('implementation', platform.python_implementation()),
@@ -1285,12 +1284,42 @@ class Coverage(TConfigurable):
             ('command_line', " ".join(getattr(sys, 'argv', ['-none-']))),
         ]
 
-        if hasattr(self, "_inorout"):
-            info.extend(self._inorout.sys_info())
-
+        info.extend(self._inorout.sys_info())
         info.extend(CoverageData.sys_info())
 
         return info
+
+
+class _Placebo:
+    """Base class for placebos, to prevent calling the real base class __init__."""
+    def __init__(self) -> None:
+        ...
+
+
+class CoverageDataPlacebo(_Placebo, CoverageData):
+    """Just enough of a CoverageData to be used when we don't have a real one."""
+    _real = False
+
+    def data_filename(self) -> str:
+        return "-none-"
+
+
+class CollectorPlacebo(_Placebo, Collector):
+    """Just enough of a Collector to be used when we don't have a real one."""
+    def reset(self) -> None:
+        ...
+
+    def flush_data(self) -> bool:
+        return False
+
+    def tracer_name(self) -> str:
+        return "-none-"
+
+
+class InOrOutPlacebo(_Placebo, InOrOut):
+    """Just enough of an InOrOut to be used when we don't have a real one."""
+    def sys_info(self) -> Iterable[Tuple[str, Any]]:
+        return []
 
 
 # Mega debugging...

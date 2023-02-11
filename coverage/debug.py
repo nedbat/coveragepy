@@ -105,9 +105,13 @@ class DebugControlString(DebugControl):
         return cast(str, self.raw_output.getvalue())        # type: ignore
 
 
-class NoDebugging:
+class NoDebugging(DebugControl):
     """A replacement for DebugControl that will never try to do anything."""
-    def should(self, option: str) -> bool:      # pylint: disable=unused-argument
+    def __init__(self) -> None:
+        # pylint: disable=super-init-not-called
+        ...
+
+    def should(self, option: str) -> bool:
         """Should we write debug messages?  Never."""
         return False
 
