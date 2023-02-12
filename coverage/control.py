@@ -249,10 +249,10 @@ class Coverage(TConfigurable):
         # Other instance attributes, set with placebos or placeholders.
         # More useful objects will be created later.
         self._debug: DebugControl = NoDebugging()
-        self._inorout: InOrOut = InOrOutPlacebo()
+        self._inorout: InOrOut = _InOrOutPlacebo()
         self._plugins: Plugins = Plugins()
-        self._data: CoverageData = CoverageDataPlacebo()
-        self._collector: Collector = CollectorPlacebo()
+        self._data: CoverageData = _CoverageDataPlacebo()
+        self._collector: Collector = _CollectorPlacebo()
 
         self._file_mapper: Callable[[str], str] = abs_file
         self._data_suffix = self._run_suffix = None
@@ -667,7 +667,7 @@ class Coverage(TConfigurable):
         self._collector.reset()
         self._init_data(suffix=None)
         self._data.erase(parallel=self.config.parallel)
-        self._data = CoverageDataPlacebo()
+        self._data = _CoverageDataPlacebo()
         self._inited_for_start = False
 
     def switch_context(self, new_context: str) -> None:
@@ -1300,7 +1300,7 @@ class _Placebo:
         ...
 
 
-class CoverageDataPlacebo(_Placebo, CoverageData):
+class _CoverageDataPlacebo(_Placebo, CoverageData):
     """Just enough of a CoverageData to be used when we don't have a real one."""
     _real = False
 
@@ -1308,7 +1308,7 @@ class CoverageDataPlacebo(_Placebo, CoverageData):
         return "-none-"
 
 
-class CollectorPlacebo(_Placebo, Collector):
+class _CollectorPlacebo(_Placebo, Collector):
     """Just enough of a Collector to be used when we don't have a real one."""
     def reset(self) -> None:
         ...
@@ -1320,7 +1320,7 @@ class CollectorPlacebo(_Placebo, Collector):
         return "-none-"
 
 
-class InOrOutPlacebo(_Placebo, InOrOut):
+class _InOrOutPlacebo(_Placebo, InOrOut):
     """Just enough of an InOrOut to be used when we don't have a real one."""
     def sys_info(self) -> Iterable[Tuple[str, Any]]:
         return []
