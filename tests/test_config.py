@@ -6,8 +6,8 @@
 from __future__ import annotations
 
 import sys
-
 from unittest import mock
+
 import pytest
 
 import coverage
@@ -15,6 +15,7 @@ from coverage import Coverage
 from coverage.config import HandyConfigParser
 from coverage.exceptions import ConfigError, CoverageWarning
 from coverage.tomlconfig import TomlConfigParser
+from coverage.types import FilePathClasses, FilePathType
 
 from tests.coveragetest import CoverageTest, UsingModulesMixin
 
@@ -50,7 +51,8 @@ class ConfigTest(CoverageTest):
         assert not cov.config.branch
         assert cov.config.data_file == ".hello_kitty.data"
 
-    def test_named_config_file(self) -> None:
+    @pytest.mark.parametrize("file_class", FilePathClasses)
+    def test_named_config_file(self, file_class: FilePathType) -> None:
         # You can name the config file what you like.
         self.make_file("my_cov.ini", """\
             [run]
@@ -58,7 +60,7 @@ class ConfigTest(CoverageTest):
             ; I wouldn't really use this as a data file...
             data_file = delete.me
             """)
-        cov = coverage.Coverage(config_file="my_cov.ini")
+        cov = coverage.Coverage(config_file=file_class("my_cov.ini"))
         assert cov.config.timid
         assert not cov.config.branch
         assert cov.config.data_file == "delete.me"

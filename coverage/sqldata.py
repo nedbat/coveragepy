@@ -31,7 +31,7 @@ from coverage.exceptions import CoverageException, DataError
 from coverage.files import PathAliases
 from coverage.misc import file_be_gone, isolate_module
 from coverage.numbits import numbits_to_nums, numbits_union, nums_to_numbits
-from coverage.types import TArc, TDebugCtl, TLineNo, TWarnFn
+from coverage.types import FilePath, TArc, TDebugCtl, TLineNo, TWarnFn
 from coverage.version import __version__
 
 os = isolate_module(os)
@@ -216,7 +216,7 @@ class CoverageData(AutoReprMixin):
 
     def __init__(
         self,
-        basename: Optional[str] = None,
+        basename: Optional[FilePath] = None,
         suffix: Optional[Union[str, bool]] = None,
         no_disk: bool = False,
         warn: Optional[TWarnFn] = None,

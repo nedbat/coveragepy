@@ -27,6 +27,11 @@ Unreleased
   themselves with messages like "Wrote XML report to file.xml" before spewing a
   traceback about their failure.
 
+- Fix: arguments in the public API that name file paths now accept pathlib.Path
+  objects.  This includes the ``data_file`` and ``config_file`` arguments to
+  the Coverage constructor and the ``basename`` argument to CoverageData.
+  Closes `issue 1552`_.
+
 - Fix: In some embedded environments, an IndexError could occur on stop() when
   the originating thread exits before completion.  This is now fixed, thanks to
   `Russell Keith-Magee <pull 1543_>`_, closing `issue 1542`_.
@@ -38,7 +43,7 @@ Unreleased
 .. _pull 1543: https://github.com/nedbat/coveragepy/pull/1543
 .. _pull 1547: https://github.com/nedbat/coveragepy/pull/1547
 .. _pull 1550: https://github.com/nedbat/coveragepy/pull/1550
-
+.. _issue 1552: https://github.com/nedbat/coveragepy/issues/1552
 
 .. scriv-start-here
 

@@ -24,7 +24,7 @@ from coverage.data import add_data_to_hash, line_counts
 from coverage.debug import DebugControlString
 from coverage.exceptions import DataError, NoDataError
 from coverage.files import PathAliases, canonical_filename
-from coverage.types import TArc, TLineNo
+from coverage.types import FilePathClasses, FilePathType, TArc, TLineNo
 
 from tests.coveragetest import CoverageTest
 from tests.helpers import assert_count_equal
@@ -621,10 +621,13 @@ class CoverageDataTest(CoverageTest):
 class CoverageDataInTempDirTest(CoverageTest):
     """Tests of CoverageData that need a temporary directory to make files."""
 
-    def test_read_write_lines(self) -> None:
-        covdata1 = DebugCoverageData("lines.dat")
+    @pytest.mark.parametrize("file_class", FilePathClasses)
+    def test_read_write_lines(self, file_class: FilePathType) -> None:
+        self.assert_doesnt_exist("lines.dat")
+        covdata1 = DebugCoverageData(file_class("lines.dat"))
         covdata1.add_lines(LINES_1)
         covdata1.write()
+        self.assert_exists("lines.dat")
 
         covdata2 = DebugCoverageData("lines.dat")
         covdata2.read()

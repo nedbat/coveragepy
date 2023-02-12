@@ -47,7 +47,7 @@ from coverage.report import render_report
 from coverage.results import Analysis
 from coverage.summary import SummaryReporter
 from coverage.types import (
-    TConfigurable, TConfigSectionIn, TConfigValueIn, TConfigValueOut,
+    FilePath, TConfigurable, TConfigSectionIn, TConfigValueIn, TConfigValueOut,
     TFileDisposition, TLineNo, TMorf,
 )
 from coverage.xmlreport import XmlReporter
@@ -113,13 +113,13 @@ class Coverage(TConfigurable):
 
     def __init__(                       # pylint: disable=too-many-arguments
         self,
-        data_file: Optional[Union[str, DefaultValue]] = DEFAULT_DATAFILE,
+        data_file: Optional[Union[FilePath, DefaultValue]] = DEFAULT_DATAFILE,
         data_suffix: Optional[Union[str, bool]] = None,
         cover_pylib: Optional[bool] = None,
         auto_data: bool = False,
         timid: Optional[bool] = None,
         branch: Optional[bool] = None,
-        config_file: Union[str, bool] = True,
+        config_file: Union[FilePath, bool] = True,
         source: Optional[Iterable[str]] = None,
         source_pkgs: Optional[Iterable[str]] = None,
         omit: Optional[Union[str, Iterable[str]]] = None,
@@ -227,6 +227,8 @@ class Coverage(TConfigurable):
         self._no_disk = data_file is None
         if isinstance(data_file, DefaultValue):
             data_file = None
+        if data_file is not None:
+            data_file = os.fspath(data_file)
 
         # This is injectable by tests.
         self._debug_file: Optional[IO[str]] = None
@@ -267,6 +269,8 @@ class Coverage(TConfigurable):
         self._should_write_debug = True
 
         # Build our configuration from a number of sources.
+        if not isinstance(config_file, bool):
+            config_file = os.fspath(config_file)
         self.config = read_coverage_config(
             config_file=config_file,
             warn=self._warn,

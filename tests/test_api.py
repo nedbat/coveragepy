@@ -25,7 +25,7 @@ from coverage.data import line_counts, sorted_lines
 from coverage.exceptions import CoverageException, DataError, NoDataError, NoSource
 from coverage.files import abs_file, relative_filename
 from coverage.misc import import_local_file
-from coverage.types import Protocol, TCovKwargs
+from coverage.types import FilePathClasses, FilePathType, Protocol, TCovKwargs
 
 from tests.coveragetest import CoverageTest, TESTS_DIR, UsingModulesMixin
 from tests.goldtest import contains, doesnt_contain
@@ -221,26 +221,28 @@ class ApiTest(CoverageTest):
         cov.save()
         self.assertFiles(["datatest1.py", ".coverage"])
 
-    def test_datafile_specified(self) -> None:
+    @pytest.mark.parametrize("file_class", FilePathClasses)
+    def test_datafile_specified(self, file_class: FilePathType) -> None:
         # You can specify the data file name.
         self.make_file("datatest2.py", """\
             fooey = 17
             """)
 
         self.assertFiles(["datatest2.py"])
-        cov = coverage.Coverage(data_file="cov.data")
+        cov = coverage.Coverage(data_file=file_class("cov.data"))
         self.start_import_stop(cov, "datatest2")
         cov.save()
         self.assertFiles(["datatest2.py", "cov.data"])
 
-    def test_datafile_and_suffix_specified(self) -> None:
+    @pytest.mark.parametrize("file_class", FilePathClasses)
+    def test_datafile_and_suffix_specified(self, file_class: FilePathType) -> None:
         # You can specify the data file name and suffix.
         self.make_file("datatest3.py", """\
             fooey = 17
             """)
 
         self.assertFiles(["datatest3.py"])
-        cov = coverage.Coverage(data_file="cov.data", data_suffix="14")
+        cov = coverage.Coverage(data_file=file_class("cov.data"), data_suffix="14")
         self.start_import_stop(cov, "datatest3")
         cov.save()
         self.assertFiles(["datatest3.py", "cov.data.14"])

@@ -7,9 +7,12 @@ Types for use throughout coverage.py.
 
 from __future__ import annotations
 
+import os
+import pathlib
+
 from types import FrameType, ModuleType
 from typing import (
-    Any, Callable, Dict, Iterable, List, Mapping, Optional, Set, Tuple, Union,
+    Any, Callable, Dict, Iterable, List, Mapping, Optional, Set, Tuple, Type, Union,
     TYPE_CHECKING,
 )
 
@@ -22,6 +25,14 @@ if TYPE_CHECKING:
 else:
     class Protocol:             # pylint: disable=missing-class-docstring
         pass
+
+## File paths
+
+# For arguments that are file paths:
+FilePath = Union[str, os.PathLike]
+# For testing FilePath arguments
+FilePathClasses = [str, pathlib.Path]
+FilePathType = Union[Type[str], Type[pathlib.Path]]
 
 ## Python tracing
 
