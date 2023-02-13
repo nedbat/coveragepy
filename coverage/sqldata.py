@@ -212,8 +212,6 @@ class CoverageData(AutoReprMixin):
 
     """
 
-    _real = True    # to distinguish from a placebo in control.py
-
     def __init__(
         self,
         basename: Optional[FilePath] = None,

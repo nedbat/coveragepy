@@ -249,10 +249,10 @@ class Coverage(TConfigurable):
         # Other instance attributes, set with placebos or placeholders.
         # More useful objects will be created later.
         self._debug: DebugControl = NoDebugging()
-        self._inorout: InOrOut = _InOrOutPlacebo()
+        self._inorout: Optional[InOrOut] = None
         self._plugins: Plugins = Plugins()
-        self._data: CoverageData = _CoverageDataPlacebo()
-        self._collector: Collector = _CollectorPlacebo()
+        self._data: Optional[CoverageData] = None
+        self._collector: Optional[Collector] = None
 
         self._file_mapper: Callable[[str], str] = abs_file
         self._data_suffix = self._run_suffix = None
@@ -378,6 +378,7 @@ class Coverage(TConfigurable):
         Calls `_should_trace_internal`, and returns the FileDisposition.
 
         """
+        assert self._inorout is not None
         disp = self._inorout.should_trace(filename, frame)
         if self._debug.should('trace'):
             self._debug.write(disposition_debug_msg(disp))
@@ -389,6 +390,7 @@ class Coverage(TConfigurable):
         Returns a boolean: True if the file should be traced, False if not.
 
         """
+        assert self._inorout is not None
         reason = self._inorout.check_include_omit_etc(filename, frame)
         if self._debug.should('trace'):
             if not reason:
@@ -484,12 +486,14 @@ class Coverage(TConfigurable):
     def load(self) -> None:
         """Load previously-collected coverage data from the data file."""
         self._init()
-        self._collector.reset()
+        if self._collector is not None:
+            self._collector.reset()
         should_skip = self.config.parallel and not os.path.exists(self.config.data_file)
         if not should_skip:
             self._init_data(suffix=None)
         self._post_init()
         if not should_skip:
+            assert self._data is not None
             self._data.read()
 
     def _init_for_start(self) -> None:
@@ -541,6 +545,7 @@ class Coverage(TConfigurable):
 
         self._init_data(suffix)
 
+        assert self._data is not None
         self._collector.use_data(self._data, self.config.context)
 
         # Early warning if we aren't going to be able to support plugins.
@@ -584,7 +589,7 @@ class Coverage(TConfigurable):
 
     def _init_data(self, suffix: Optional[Union[str, bool]]) -> None:
         """Create a data file if we don't have one yet."""
-        if not self._data._real:
+        if self._data is None:
             # Create the data file.  We do this at construction time so that the
             # data file will be written into the directory where the process
             # started rather than wherever the process eventually chdir'd to.
@@ -614,6 +619,9 @@ class Coverage(TConfigurable):
             self._init_for_start()
         self._post_init()
 
+        assert self._collector is not None
+        assert self._inorout is not None
+
         # Issue warnings for possible problems.
         self._inorout.warn_conflicting_settings()
 
@@ -635,6 +643,7 @@ class Coverage(TConfigurable):
             if self._instances[-1] is self:
                 self._instances.pop()
         if self._started:
+            assert self._collector is not None
             self._collector.stop()
         self._started = False
 
@@ -664,10 +673,12 @@ class Coverage(TConfigurable):
         """
         self._init()
         self._post_init()
-        self._collector.reset()
+        if self._collector is not None:
+            self._collector.reset()
         self._init_data(suffix=None)
+        assert self._data is not None
         self._data.erase(parallel=self.config.parallel)
-        self._data = _CoverageDataPlacebo()
+        self._data = None
         self._inited_for_start = False
 
     def switch_context(self, new_context: str) -> None:
@@ -686,6 +697,7 @@ class Coverage(TConfigurable):
         if not self._started:                           # pragma: part started
             raise CoverageException("Cannot switch context, coverage is not started")
 
+        assert self._collector is not None
         if self._collector.should_start_context:
             self._warn("Conflicting dynamic contexts", slug="dynamic-conflict", once=True)
 
@@ -791,6 +803,7 @@ class Coverage(TConfigurable):
         self._post_init()
         self.get_data()
 
+        assert self._data is not None
         combine_parallel_data(
             self._data,
             aliases=self._make_aliases(),
@@ -814,13 +827,15 @@ class Coverage(TConfigurable):
         self._init_data(suffix=None)
         self._post_init()
 
-        for plugin in self._plugins:
-            if not plugin._coverage_enabled:
-                self._collector.plugin_was_disabled(plugin)
+        if self._collector is not None:
+            for plugin in self._plugins:
+                if not plugin._coverage_enabled:
+                    self._collector.plugin_was_disabled(plugin)
 
-        if self._collector.flush_data():
-            self._post_save_work()
+            if self._collector.flush_data():
+                self._post_save_work()
 
+        assert self._data is not None
         return self._data
 
     def _post_save_work(self) -> None:
@@ -830,6 +845,9 @@ class Coverage(TConfigurable):
         Look for un-executed files.
 
         """
+        assert self._data is not None
+        assert self._inorout is not None
+
         # If there are still entries in the source_pkgs_unmatched list,
         # then we never encountered those packages.
         if self._warn_unimported_source:
@@ -903,6 +921,7 @@ class Coverage(TConfigurable):
 
     def _get_file_reporter(self, morf: TMorf) -> FileReporter:
         """Get a FileReporter for a module or file name."""
+        assert self._data is not None
         plugin = None
         file_reporter: Union[str, FileReporter] = "python"
 
@@ -938,6 +957,7 @@ class Coverage(TConfigurable):
         measured is used to find the FileReporters.
 
         """
+        assert self._data is not None
         if not morfs:
             morfs = self._data.measured_files()
 
@@ -952,7 +972,8 @@ class Coverage(TConfigurable):
         """Re-map data before reporting, to get implicit 'combine' behavior."""
         if self.config.paths:
             mapped_data = CoverageData(warn=self._warn, debug=self._debug, no_disk=True)
-            mapped_data.update(self._data, aliases=self._make_aliases())
+            if self._data is not None:
+                mapped_data.update(self._data, aliases=self._make_aliases())
             self._data = mapped_data
 
     def report(
@@ -1256,7 +1277,7 @@ class Coverage(TConfigurable):
         info = [
             ('coverage_version', covmod.__version__),
             ('coverage_module', covmod.__file__),
-            ('tracer', self._collector.tracer_name()),
+            ('tracer', self._collector.tracer_name() if self._collector is not None else "-none-"),
             ('CTracer', 'available' if HAS_CTRACER else "unavailable"),
             ('plugins.file_tracers', plugin_info(self._plugins.file_tracers)),
             ('plugins.configurers', plugin_info(self._plugins.configurers)),
@@ -1267,7 +1288,7 @@ class Coverage(TConfigurable):
             ('config_contents',
                 repr(self.config._config_contents) if self.config._config_contents else '-none-'
             ),
-            ('data_file', self._data.data_filename()),
+            ('data_file', self._data.data_filename() if self._data is not None else "-none-"),
             ('python', sys.version.replace('\n', '')),
             ('platform', platform.platform()),
             ('implementation', platform.python_implementation()),
@@ -1288,42 +1309,12 @@ class Coverage(TConfigurable):
             ('command_line', " ".join(getattr(sys, 'argv', ['-none-']))),
         ]
 
-        info.extend(self._inorout.sys_info())
+        if self._inorout is not None:
+            info.extend(self._inorout.sys_info())
+
         info.extend(CoverageData.sys_info())
 
         return info
-
-
-class _Placebo:
-    """Base class for placebos, to prevent calling the real base class __init__."""
-    def __init__(self) -> None:
-        ...
-
-
-class _CoverageDataPlacebo(_Placebo, CoverageData):
-    """Just enough of a CoverageData to be used when we don't have a real one."""
-    _real = False
-
-    def data_filename(self) -> str:
-        return "-none-"
-
-
-class _CollectorPlacebo(_Placebo, Collector):
-    """Just enough of a Collector to be used when we don't have a real one."""
-    def reset(self) -> None:
-        ...
-
-    def flush_data(self) -> bool:
-        return False
-
-    def tracer_name(self) -> str:
-        return "-none-"
-
-
-class _InOrOutPlacebo(_Placebo, InOrOut):
-    """Just enough of an InOrOut to be used when we don't have a real one."""
-    def sys_info(self) -> Iterable[Tuple[str, Any]]:
-        return []
 
 
 # Mega debugging...

@@ -124,6 +124,7 @@ class RecursionTest(CoverageTest):
         with swallow_warnings("Trace function changed, data is likely wrong: None"):
             self.start_import_stop(cov, "recur")
 
+        assert cov._collector is not None
         pytrace = (cov._collector.tracer_name() == "PyTracer")
         expected_missing = [3]
         if pytrace:                                 # pragma: no metacov
