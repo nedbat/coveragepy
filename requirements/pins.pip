@@ -10,4 +10,5 @@
 # Setuptools became stricter about version number syntax. But it shouldn't be
 # checking the Python version like that, should it?
 # https://github.com/pypa/packaging/issues/678
+# https://github.com/nedbat/coveragepy/issues/1556
 setuptools<66.0.0
