@@ -6,4 +6,5 @@
 # "make upgrade" turns this into requirements/pip.pip.
 
 pip
+setuptools
 virtualenv

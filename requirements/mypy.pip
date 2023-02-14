@@ -32,9 +32,9 @@ flaky==3.7.0 \
     --hash=sha256:3ad100780721a1911f57a165809b7ea265a7863305acb66708220820caf8aa0d \
     --hash=sha256:d6eda73cab5ae7364504b7c44670f70abed9e75f77dd116352f662817592ec9c
     # via -r requirements/pytest.pip
-hypothesis==6.68.0 \
-    --hash=sha256:064a5bf7a98cbdfa3589d8934a2c548524c6d108bfa368ec5ed8b09caa526108 \
-    --hash=sha256:8cfa1de15271debb2750545a460e58e3e84527d94157f38ab9309826953572f3
+hypothesis==6.68.1 \
+    --hash=sha256:3ff6076920e61d4e6362e93edaf09be3034ea7e39e3a75e731d4d1c525dafd84 \
+    --hash=sha256:b37bd77b4b7f404a59ff965e24be8aec4209323866e34ececdf416522c6d0854
     # via -r requirements/pytest.pip
 importlib-metadata==6.0.0 \
     --hash=sha256:7efb448ec9a5e313a57655d35aa54cd3e01b7e1fbcf72dce1bf06119420f5bad \
@@ -149,9 +149,9 @@ typing-extensions==4.4.0 \
     #   -r requirements/pytest.pip
     #   importlib-metadata
     #   mypy
-zipp==3.12.1 \
-    --hash=sha256:6c4fe274b8f85ec73c37a8e4e3fa00df9fb9335da96fb789e3b96b318e5097b3 \
-    --hash=sha256:a3cac813d40993596b39ea9e93a18e8a2076d5c378b8bc88ec32ab264e04ad02
+zipp==3.13.0 \
+    --hash=sha256:23f70e964bc11a34cef175bc90ba2914e1e4545ea1e3e2f67c079671883f9cb6 \
+    --hash=sha256:e8b2a36ea17df80ffe9e2c4fda3f693c3dad6df1697d3cd3af232db680950b0b
     # via
     #   -r requirements/pytest.pip
     #   importlib-metadata

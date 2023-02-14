@@ -241,10 +241,6 @@ scriv==1.2.0 \
     --hash=sha256:26b65a903da7d9aefc712a0d4150b8638302b4758bd428bbd773dd918c61c621 \
     --hash=sha256:bb61c30fea73158a4d18c28bbb57821c308245683efb0d897bd45e4a7856b472
     # via -r doc/requirements.in
-setuptools==67.2.0 \
-    --hash=sha256:16ccf598aab3b506593c17378473978908a2734d7336755a8769b480906bec1c \
-    --hash=sha256:b440ee5f7e607bb8c9de15259dba2583dd41a38879a7abc1d43a71c59524da48
-    # via sphinxcontrib-jquery
 six==1.16.0 \
     --hash=sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926 \
     --hash=sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254
@@ -327,7 +323,15 @@ urllib3==1.26.14 \
     --hash=sha256:076907bf8fd355cde77728471316625a4d2f7e713c125f51953bb5b3eecf4f72 \
     --hash=sha256:75edcdc2f7d85b137124a6c3c9fc3933cdeaa12ecb9a6a959f22797a0feca7e1
     # via requests
-zipp==3.12.1 \
-    --hash=sha256:6c4fe274b8f85ec73c37a8e4e3fa00df9fb9335da96fb789e3b96b318e5097b3 \
-    --hash=sha256:a3cac813d40993596b39ea9e93a18e8a2076d5c378b8bc88ec32ab264e04ad02
+zipp==3.13.0 \
+    --hash=sha256:23f70e964bc11a34cef175bc90ba2914e1e4545ea1e3e2f67c079671883f9cb6 \
+    --hash=sha256:e8b2a36ea17df80ffe9e2c4fda3f693c3dad6df1697d3cd3af232db680950b0b
     # via importlib-metadata
+
+# The following packages are considered to be unsafe in a requirements file:
+setuptools==65.7.0 \
+    --hash=sha256:4d3c92fac8f1118bb77a22181355e29c239cabfe2b9effdaa665c66b711136d7 \
+    --hash=sha256:8ab4f1dbf2b4a65f7eec5ad0c620e84c34111a68d3349833494b9088212214dd
+    # via
+    #   -c doc/../requirements/pins.pip
+    #   sphinxcontrib-jquery

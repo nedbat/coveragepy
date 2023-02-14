@@ -8,9 +8,9 @@ alabaster==0.7.13 \
     --hash=sha256:1ee19aca801bbabb5ba3f5f258e4422dfa86f82f3e9cefb0859b283cdd7f62a3 \
     --hash=sha256:a27a4a084d5e690e16e01e03ad2b2e552c61a65469419b907243193de1a84ae2
     # via sphinx
-astroid==2.14.1 \
-    --hash=sha256:23c718921acab5f08cbbbe9293967f1f8fec40c336d19cd75dc12a9ea31d2eb2 \
-    --hash=sha256:bd1aa4f9915c98e8aaebcd4e71930154d4e8c9aaf05d35ac0a63d1956091ae3f
+astroid==2.14.2 \
+    --hash=sha256:0e0e3709d64fbffd3037e4ff403580550f14471fd3eaae9fa11cc9a5c7901153 \
+    --hash=sha256:a3cf9f02c53dd259144a7e8f3ccd75d67c9a8c716ef183e0c1f291bc5d7bb3cf
     # via pylint
 attrs==22.2.0 \
     --hash=sha256:29e95c7f6778868dbd49170f98f8818f78f3dc5e0e37c0b1f474e3561b240836 \
@@ -271,9 +271,9 @@ greenlet==2.0.2 \
     --hash=sha256:f82d4d717d8ef19188687aa32b8363e96062911e63ba22a0cff7802a8e58e5f1 \
     --hash=sha256:fc3a569657468b6f3fb60587e48356fe512c1754ca05a564f11366ac9e306526
     # via -r requirements/dev.in
-hypothesis==6.68.0 \
-    --hash=sha256:064a5bf7a98cbdfa3589d8934a2c548524c6d108bfa368ec5ed8b09caa526108 \
-    --hash=sha256:8cfa1de15271debb2750545a460e58e3e84527d94157f38ab9309826953572f3
+hypothesis==6.68.1 \
+    --hash=sha256:3ff6076920e61d4e6362e93edaf09be3034ea7e39e3a75e731d4d1c525dafd84 \
+    --hash=sha256:b37bd77b4b7f404a59ff965e24be8aec4209323866e34ececdf416522c6d0854
     # via -r requirements/pytest.pip
 idna==3.4 \
     --hash=sha256:814f528e8dead7d329833b91c5faa87d60bf71824cd12a7530b5526063d02cb4 \
@@ -464,10 +464,6 @@ parso==0.8.3 \
     --hash=sha256:8c07be290bb59f03588915921e29e8a50002acaf2cdc5fa0e0114f91709fafa0 \
     --hash=sha256:c001d4636cd3aecdaf33cbb40aebb59b094be2a74c556778ef5576c175e19e75
     # via jedi
-pip==23.0 \
-    --hash=sha256:aee438284e82c8def684b0bcc50b1f6ed5e941af97fa940e83e2e8ef1a59da9b \
-    --hash=sha256:b5f88adff801f5ef052bcdef3daa31b55eb67b0fccd6d0106c206fa248e0463c
-    # via -r requirements/pip.pip
 pkginfo==1.9.6 \
     --hash=sha256:4b7a555a6d5a22169fcc9cf7bfd78d296b0361adad412a346c1226849af5e546 \
     --hash=sha256:8fd5896e8718a4372f0ea9cc9d96f6417c9b986e23a4d116dda26b62cc29d046
@@ -508,9 +504,9 @@ pygments==2.14.0 \
     #   readme-renderer
     #   rich
     #   sphinx
-pylint==2.16.1 \
-    --hash=sha256:bad9d7c36037f6043a1e848a43004dfd5ea5ceb05815d713ba56ca4503a9fe37 \
-    --hash=sha256:ffe7fa536bb38ba35006a7c8a6d2efbfdd3d95bbf21199cad31f76b1c50aaf30
+pylint==2.16.2 \
+    --hash=sha256:13b2c805a404a9bf57d002cd5f054ca4d40b0b87542bdaba5e05321ae8262c84 \
+    --hash=sha256:ff22dde9c2128cd257c145cfd51adeff0be7df4d80d669055f24a962b351bbe4
     # via -r requirements/dev.in
 pyproject-api==1.5.0 \
     --hash=sha256:0962df21f3e633b8ddb9567c011e6c1b3dcdfc31b7860c0ede7e24c5a1200fbe \
@@ -567,12 +563,6 @@ scriv==1.2.0 \
     --hash=sha256:26b65a903da7d9aefc712a0d4150b8638302b4758bd428bbd773dd918c61c621 \
     --hash=sha256:bb61c30fea73158a4d18c28bbb57821c308245683efb0d897bd45e4a7856b472
     # via -r doc/requirements.in
-setuptools==67.2.0 \
-    --hash=sha256:16ccf598aab3b506593c17378473978908a2734d7336755a8769b480906bec1c \
-    --hash=sha256:b440ee5f7e607bb8c9de15259dba2583dd41a38879a7abc1d43a71c59524da48
-    # via
-    #   check-manifest
-    #   sphinxcontrib-jquery
 six==1.16.0 \
     --hash=sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926 \
     --hash=sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254
@@ -816,11 +806,24 @@ wrapt==1.14.1 \
     --hash=sha256:ee6acae74a2b91865910eef5e7de37dc6895ad96fa23603d1d27ea69df545015 \
     --hash=sha256:ef3f72c9666bba2bab70d2a8b79f2c6d2c1a42a7f7e2b0ec83bb2f9e383950af
     # via astroid
-zipp==3.12.1 \
-    --hash=sha256:6c4fe274b8f85ec73c37a8e4e3fa00df9fb9335da96fb789e3b96b318e5097b3 \
-    --hash=sha256:a3cac813d40993596b39ea9e93a18e8a2076d5c378b8bc88ec32ab264e04ad02
+zipp==3.13.0 \
+    --hash=sha256:23f70e964bc11a34cef175bc90ba2914e1e4545ea1e3e2f67c079671883f9cb6 \
+    --hash=sha256:e8b2a36ea17df80ffe9e2c4fda3f693c3dad6df1697d3cd3af232db680950b0b
     # via
     #   -r requirements/pip.pip
     #   -r requirements/pytest.pip
     #   importlib-metadata
     #   importlib-resources
+
+# The following packages are considered to be unsafe in a requirements file:
+pip==23.0 \
+    --hash=sha256:aee438284e82c8def684b0bcc50b1f6ed5e941af97fa940e83e2e8ef1a59da9b \
+    --hash=sha256:b5f88adff801f5ef052bcdef3daa31b55eb67b0fccd6d0106c206fa248e0463c
+    # via -r requirements/pip.pip
+setuptools==65.7.0 \
+    --hash=sha256:4d3c92fac8f1118bb77a22181355e29c239cabfe2b9effdaa665c66b711136d7 \
+    --hash=sha256:8ab4f1dbf2b4a65f7eec5ad0c620e84c34111a68d3349833494b9088212214dd
+    # via
+    #   -r requirements/pip.pip
+    #   check-manifest
+    #   sphinxcontrib-jquery
