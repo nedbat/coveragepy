@@ -78,9 +78,6 @@
             - wait for the new tag build to finish successfully.
         - @ https://readthedocs.org/dashboard/coverage/advanced/
             - change the default version to the new version
-- Announce:
-    - twitter @coveragepy
-    - nedbatchelder.com blog post?
 - things to automate:
     - url to link to latest changes in docs
     - next version.py line

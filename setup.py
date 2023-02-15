@@ -127,8 +127,8 @@ setup_args = dict(
             '?utm_source=pypi-coverage&utm_medium=referral&utm_campaign=pypi'
         ),
         'Issues': 'https://github.com/nedbat/coveragepy/issues',
-        'Mastodon': 'https://hachyderm.io/@nedbat',
-        'Twitter': 'https://twitter.com/coveragepy',
+        'Mastodon': 'https://hachyderm.io/@coveragepy',
+        'Mastodon (nedbat)': 'https://hachyderm.io/@nedbat',
     },
     python_requires=">=3.7",    # minimum of PYVERSIONS
 )

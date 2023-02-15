@@ -18,7 +18,7 @@ Code coverage testing for Python.
 |  |kit| |downloads| |format| |repos|
 |  |stars| |forks| |contributors|
 |  |core-infrastructure| |open-ssf| |snyk|
-|  |tidelift| |sponsor| |twitter-coveragepy| |twitter-nedbat| |mastodon-nedbat|
+|  |tidelift| |sponsor| |mastodon-coveragepy| |mastodon-nedbat|
 
 Coverage.py measures code coverage, typically during test execution. It uses
 the code analysis tools and tracing hooks provided in the Python standard
@@ -166,12 +166,9 @@ Licensed under the `Apache 2.0 License`_.  For details, see `NOTICE.txt`_.
 .. |mastodon-nedbat| image:: https://img.shields.io/badge/dynamic/json?style=flat&labelColor=450657&logo=mastodon&logoColor=ffffff&link=https%3A%2F%2Fhachyderm.io%2F%40nedbat&url=https%3A%2F%2Fhachyderm.io%2Fusers%2Fnedbat%2Ffollowers.json&query=totalItems&label=Mastodon
     :target: https://hachyderm.io/@nedbat
     :alt: nedbat on Mastodon
-.. |twitter-coveragepy| image:: https://img.shields.io/twitter/follow/coveragepy.svg?label=coveragepy&style=flat&logo=twitter&logoColor=4FADFF
-    :target: https://twitter.com/coveragepy
-    :alt: coverage.py on Twitter
-.. |twitter-nedbat| image:: https://img.shields.io/twitter/follow/nedbat.svg?label=nedbat&style=flat&logo=twitter&logoColor=4FADFF
-    :target: https://twitter.com/nedbat
-    :alt: nedbat on Twitter
+.. |mastodon-coveragepy| image:: https://img.shields.io/badge/dynamic/json?style=flat&labelColor=450657&logo=mastodon&logoColor=ffffff&link=https%3A%2F%2Fhachyderm.io%2F%40coveragepy&url=https%3A%2F%2Fhachyderm.io%2Fusers%2Fcoveragepy%2Ffollowers.json&query=totalItems&label=Mastodon
+    :target: https://hachyderm.io/@coveragepy
+    :alt: coveragepy on Mastodon
 .. |sponsor| image:: https://img.shields.io/badge/%E2%9D%A4-Sponsor%20me-brightgreen?style=flat&logo=GitHub
     :target: https://github.com/sponsors/nedbat
     :alt: Sponsor me on GitHub

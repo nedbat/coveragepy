@@ -26,8 +26,8 @@ supported on:
     **This is a pre-release build.  The usual warnings about possible bugs
     apply.** The latest stable version is coverage.py 6.5.0, `described here`_.
 
-
 .. _described here: http://coverage.readthedocs.io/
+
 
 For Enterprise
 --------------
@@ -207,7 +207,10 @@ using coverage.py.
 
 .. _I can be reached: https://nedbatchelder.com/site/aboutned.html
 
+.. raw:: html
 
+    <p>For news and other chatter, follow the project on Mastodon:
+    <a rel="me" href="https://hachyderm.io/@coveragepy">@coveragepy@hachyderm.io</a>.</p>
 
 More information
 ----------------
