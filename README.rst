@@ -28,7 +28,7 @@ Coverage.py runs on these versions of Python:
 
 .. PYVERSIONS
 
-* CPython 3.7 through 3.12.0a3
+* CPython 3.7 through 3.12.0a5
 * PyPy3 7.3.11.
 
 Documentation is on `Read the Docs`_.  Code repository and issue tracker are on
@@ -39,7 +39,8 @@ Documentation is on `Read the Docs`_.  Code repository and issue tracker are on
 
 **New in 7.x:**
 improved data combining;
-``report --format=``.
+``report --format=``;
+type annotations.
 
 **New in 6.x:**
 dropped support for Python 2.7, 3.5, and 3.6;
@@ -163,10 +164,10 @@ Licensed under the `Apache 2.0 License`_.  For details, see `NOTICE.txt`_.
 .. |contributors| image:: https://img.shields.io/github/contributors/nedbat/coveragepy.svg?logo=github
     :target: https://github.com/nedbat/coveragepy/graphs/contributors
     :alt: Contributors
-.. |mastodon-nedbat| image:: https://img.shields.io/badge/dynamic/json?style=flat&labelColor=450657&logo=mastodon&logoColor=ffffff&link=https%3A%2F%2Fhachyderm.io%2F%40nedbat&url=https%3A%2F%2Fhachyderm.io%2Fusers%2Fnedbat%2Ffollowers.json&query=totalItems&label=Mastodon
+.. |mastodon-nedbat| image:: https://img.shields.io/badge/dynamic/json?style=flat&labelColor=450657&logo=mastodon&logoColor=ffffff&link=https%3A%2F%2Fhachyderm.io%2F%40nedbat&url=https%3A%2F%2Fhachyderm.io%2Fusers%2Fnedbat%2Ffollowers.json&query=totalItems&label=@nedbat
     :target: https://hachyderm.io/@nedbat
     :alt: nedbat on Mastodon
-.. |mastodon-coveragepy| image:: https://img.shields.io/badge/dynamic/json?style=flat&labelColor=450657&logo=mastodon&logoColor=ffffff&link=https%3A%2F%2Fhachyderm.io%2F%40coveragepy&url=https%3A%2F%2Fhachyderm.io%2Fusers%2Fcoveragepy%2Ffollowers.json&query=totalItems&label=Mastodon
+.. |mastodon-coveragepy| image:: https://img.shields.io/badge/dynamic/json?style=flat&labelColor=450657&logo=mastodon&logoColor=ffffff&link=https%3A%2F%2Fhachyderm.io%2F%40coveragepy&url=https%3A%2F%2Fhachyderm.io%2Fusers%2Fcoveragepy%2Ffollowers.json&query=totalItems&label=@coveragepy
     :target: https://hachyderm.io/@coveragepy
     :alt: coveragepy on Mastodon
 .. |sponsor| image:: https://img.shields.io/badge/%E2%9D%A4-Sponsor%20me-brightgreen?style=flat&logo=GitHub
