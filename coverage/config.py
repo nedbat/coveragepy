@@ -215,6 +215,7 @@ class CoverageConfig(TConfigurable, TPluginConfig):
 
         # Defaults for [report]
         self.exclude_list = DEFAULT_EXCLUDE[:]
+        self.exclude_also: List[str] = []
         self.fail_under = 0.0
         self.format: Optional[str] = None
         self.ignore_errors = False
@@ -392,6 +393,7 @@ class CoverageConfig(TConfigurable, TPluginConfig):
 
         # [report]
         ('exclude_list', 'report:exclude_lines', 'regexlist'),
+        ('exclude_also', 'report:exclude_also', 'regexlist'),
         ('fail_under', 'report:fail_under', 'float'),
         ('format', 'report:format', 'boolean'),
         ('ignore_errors', 'report:ignore_errors', 'boolean'),
@@ -523,6 +525,7 @@ class CoverageConfig(TConfigurable, TPluginConfig):
             (k, [self.post_process_file(f) for f in v])
             for k, v in self.paths.items()
         )
+        self.exclude_list += self.exclude_also
 
     def debug_info(self) -> List[Tuple[str, Any]]:
         """Make a list of (name, value) pairs for writing debug info."""

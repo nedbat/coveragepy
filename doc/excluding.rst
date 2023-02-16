@@ -101,7 +101,9 @@ For example, here's a list of exclusions I've used::
 
 Note that when using the ``exclude_lines`` option in a configuration file, you
 are taking control of the entire list of regexes, so you need to re-specify the
-default "pragma: no cover" match if you still want it to apply.
+default "pragma: no cover" match if you still want it to apply.  The
+``exclude_also`` option can be used instead to preserve the default
+exclusions while adding new ones.
 
 The regexes only have to match part of a line. Be careful not to over-match.  A
 value of ``...`` will match any line with more than three characters in it.
