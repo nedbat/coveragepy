@@ -381,7 +381,7 @@ Settings common to many kinds of reporting.
 ......................
 
 (multi-string) A list of regular expressions.  Any line of your source code
-containing a match for  one of these regexes is excluded from being reported as
+containing a match for one of these regexes is excluded from being reported as
 missing.  More details are in :ref:`excluding`.  If you use this option, you
 are replacing all the exclude regexes, so you'll need to also supply the
 "pragma: no cover" regex if you still want to use it.
@@ -395,12 +395,22 @@ you'll exclude any line with three or more of any character. If you write
 ``pass``, you'll also exclude the line ``my_pass="foo"``, and so on.
 
 
+.. _config_report_exclude_also:
+
+[report] exclude_also
+.....................
+
+(multi-string) A list of regular expressions.  This setting will preserve the
+default exclude pattern instead of overwriting it. See
+:ref:`config_report_exclude_lines` for details on exclusion regexes.
+
+
 .. _config_report_fail_under:
 
 [report] fail_under
 ...................
 
-(float) A target coverage percentage. If the total coverage measurement is
+(float) A target coverage percentage.  If the total coverage measurement is
 under this value, then exit with a status code of 2.  If you specify a
 non-integral value, you must also set ``[report] precision`` properly to make
 use of the decimal places.  A setting of 100 will fail any value under 100,

@@ -449,6 +449,15 @@ class ConfigTest(CoverageTest):
         with pytest.raises(ConfigError, match="No option 'foo' in section: 'xyzzy'"):
             config.get("xyzzy", "foo")
 
+    def test_exclude_also(self) -> None:
+        self.make_file("pyproject.toml", """\
+            [tool.coverage.report]
+            exclude_also = ["foobar"]
+            """)
+        cov = coverage.Coverage()
+
+        assert cov.config.exclude_list == coverage.config.DEFAULT_EXCLUDE + ["foobar"]
+
 
 class ConfigFileTest(UsingModulesMixin, CoverageTest):
     """Tests of the config file settings in particular."""
