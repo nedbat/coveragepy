@@ -20,6 +20,12 @@ development at the same time, such as 4.5.x and 5.0.
 Unreleased
 ----------
 
+- Fix: if a virtualenv was created inside a source directory, and a sourced
+  package was installed inside the virtualenv, then all of the third-party
+  packages inside the virtualenv would be measured.  This was incorrect, but
+  has now been fixed: only the specified packages will be measured, thanks to
+  `Manuel Jacob <pull 1560_>`_.
+
 - Fix: the ``coverage lcov`` command could create a .lcov file with incorrect
   LF (lines found) and LH (lines hit) totals.  This is now fixed, thanks to
   `Ian Moore <pull 1583_>`_.
@@ -28,6 +34,7 @@ Unreleased
   duplicate ``<package>`` elements. This is now fixed, thanks to `Benjamin
   Parzella <pull 1574_>`_, closing `issue 1573`_.
 
+.. _pull 1560: https://github.com/nedbat/coveragepy/pull/1560
 .. _issue 1573: https://github.com/nedbat/coveragepy/issues/1573
 .. _pull 1574: https://github.com/nedbat/coveragepy/pull/1574
 .. _pull 1583: https://github.com/nedbat/coveragepy/pull/1583

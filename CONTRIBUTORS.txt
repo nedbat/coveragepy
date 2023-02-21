@@ -107,6 +107,7 @@ Leonardo Pistone
 Lex Berezhny
 Loïc Dachary
 Lorenzo Micò
+Manuel Jacob
 Marc Abramowitz
 Marc Legendre
 Marcelo Trylesinski

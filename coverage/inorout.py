@@ -262,7 +262,7 @@ class InOrOut:
         # Check if the source we want to measure has been installed as a
         # third-party package.
         # Is the source inside a third-party area?
-        self.source_in_third = False
+        self.source_in_third_paths = set()
         with sys_modules_saved():
             for pkg in self.source_pkgs:
                 try:
@@ -274,22 +274,23 @@ class InOrOut:
                 if modfile:
                     if self.third_match.match(modfile):
                         _debug(
-                            f"Source is in third-party because of source_pkg {pkg!r} at {modfile!r}"
+                            f"Source in third-party: source_pkg {pkg!r} at {modfile!r}"
                         )
-                        self.source_in_third = True
+                        self.source_in_third_paths.add(canonical_path(source_for_file(modfile)))
                 else:
                     for pathdir in path:
                         if self.third_match.match(pathdir):
                             _debug(
-                                f"Source is in third-party because of {pkg!r} path directory " +
-                                f"at {pathdir!r}"
+                                f"Source in third-party: {pkg!r} path directory at {pathdir!r}"
                             )
-                            self.source_in_third = True
+                            self.source_in_third_paths.add(pathdir)
 
         for src in self.source:
             if self.third_match.match(src):
-                _debug(f"Source is in third-party because of source directory {src!r}")
-                self.source_in_third = True
+                _debug(f"Source in third-party: source directory {src!r}")
+                self.source_in_third_paths.add(src)
+        self.source_in_third_match = TreeMatcher(self.source_in_third_paths, "source_in_third")
+        _debug(f"Source in third-party matching: {self.source_in_third_match}")
 
         self.plugins: Plugins
         self.disp_class: Type[TFileDisposition] = FileDisposition
@@ -419,9 +420,8 @@ class InOrOut:
                     ok = True
             if not ok:
                 return extra + "falls outside the --source spec"
-            if not self.source_in_third:
-                if self.third_match.match(filename):
-                    return "inside --source, but is third-party"
+            if self.third_match.match(filename) and not self.source_in_third_match.match(filename):
+                return "inside --source, but is third-party"
         elif self.include_match:
             if not self.include_match.match(filename):
                 return "falls outside the --include trees"
@@ -576,12 +576,13 @@ class InOrOut:
             ("coverage_paths", self.cover_paths),
             ("stdlib_paths", self.pylib_paths),
             ("third_party_paths", self.third_paths),
+            ("source_in_third_party_paths", self.source_in_third_paths),
         ]
 
         matcher_names = [
             'source_match', 'source_pkgs_match',
             'include_match', 'omit_match',
-            'cover_match', 'pylib_match', 'third_match',
+            'cover_match', 'pylib_match', 'third_match', 'source_in_third_match',
         ]
 
         for matcher_name in matcher_names:
