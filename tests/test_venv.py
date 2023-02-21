@@ -198,8 +198,28 @@ class VirtualenvTest(CoverageTest):
         with open("debug_out.txt") as f:
             return f.read()
 
-    def test_third_party_venv_isnt_measured(self, coverage_command: str) -> None:
-        out = run_in_venv(coverage_command + " run --source=. myproduct.py")
+    @pytest.mark.parametrize('install_source_in_venv', [True, False])
+    def test_third_party_venv_isnt_measured(
+        self, coverage_command: str, install_source_in_venv: bool
+    ) -> None:
+        if install_source_in_venv:
+            make_file("setup.py", """\
+                import setuptools
+                setuptools.setup(
+                    name="myproduct",
+                    py_modules = ["myproduct"],
+                )
+                """)
+            try:
+                run_in_venv("python -m pip install .")
+            finally:
+                shutil.rmtree("build")
+                shutil.rmtree("myproduct.egg-info")
+            # Ensure that coverage doesn't run the non-installed module.
+            os.remove('myproduct.py')
+            out = run_in_venv(coverage_command + " run --source=.,myproduct -m myproduct")
+        else:
+            out = run_in_venv(coverage_command + " run --source=. myproduct.py")
         # In particular, this warning doesn't appear:
         # Already imported a file that will be measured: .../coverage/__main__.py
         assert out == self.expected_stdout
@@ -213,7 +233,7 @@ class VirtualenvTest(CoverageTest):
         )
         assert re_lines(r"^Tracing .*\bmyproduct.py", debug_out)
         assert re_lines(
-            r"^Not tracing .*\bcolorsys.py': falls outside the --source spec",
+            r"^Not tracing .*\bcolorsys.py': (module 'colorsys' |)?falls outside the --source spec",
             debug_out,
         )
 
