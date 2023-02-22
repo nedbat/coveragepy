@@ -17,8 +17,12 @@ development at the same time, such as 4.5.x and 5.0.
     ..  Version 9.8.1 — 2027-07-27
     ..  --------------------------
 
-Unreleased
-----------
+.. scriv-start-here
+
+.. _changes_7-2-0:
+
+Version 7.2.0 — 2023-02-22
+--------------------------
 
 - Added a new setting ``[report] exclude_also`` to let you add more exclusions
   without overwriting the defaults.  Thanks, `Alpha Chen <pull 1557_>`_,
@@ -51,8 +55,6 @@ Unreleased
 .. _issue 1552: https://github.com/nedbat/coveragepy/issues/1552
 .. _pull 1557: https://github.com/nedbat/coveragepy/pull/1557
 
-
-.. scriv-start-here
 
 .. _changes_7-1-0:
 
