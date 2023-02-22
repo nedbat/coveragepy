@@ -452,11 +452,12 @@ class ConfigTest(CoverageTest):
     def test_exclude_also(self) -> None:
         self.make_file("pyproject.toml", """\
             [tool.coverage.report]
-            exclude_also = ["foobar"]
+            exclude_also = ["foobar", "raise .*Error"]
             """)
         cov = coverage.Coverage()
 
-        assert cov.config.exclude_list == coverage.config.DEFAULT_EXCLUDE + ["foobar"]
+        expected = coverage.config.DEFAULT_EXCLUDE + ["foobar", "raise .*Error"]
+        assert cov.config.exclude_list == expected
 
 
 class ConfigFileTest(UsingModulesMixin, CoverageTest):

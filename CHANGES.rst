@@ -20,6 +20,10 @@ development at the same time, such as 4.5.x and 5.0.
 Unreleased
 ----------
 
+- Added a new setting ``[report] exclude_also`` to let you add more exclusions
+  without overwriting the defaults.  Thanks, `Alpha Chen <pull 1557_>`_,
+  closing `issue 1391_`.
+
 - Added a :meth:`.CoverageData.purge_files` method to remove recorded data for
   a particular file.  Contributed by `Stephan Deibel <pull 1547_>`_.
 
@@ -39,11 +43,14 @@ Unreleased
 - Added a ``py.typed`` file to announce our type-hintedness.  Thanks,
   `KotlinIsland <pull 1550_>`_.
 
+.. _issue 1391: https://github.com/nedbat/coveragepy/issues/1391
 .. _issue 1542: https://github.com/nedbat/coveragepy/issues/1542
 .. _pull 1543: https://github.com/nedbat/coveragepy/pull/1543
 .. _pull 1547: https://github.com/nedbat/coveragepy/pull/1547
 .. _pull 1550: https://github.com/nedbat/coveragepy/pull/1550
 .. _issue 1552: https://github.com/nedbat/coveragepy/issues/1552
+.. _pull 1557: https://github.com/nedbat/coveragepy/pull/1557
+
 
 .. scriv-start-here
 
