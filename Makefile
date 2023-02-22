@@ -131,7 +131,7 @@ prebuild: css workflows cogdoc		## One command for all source prep.
 
 _sample_cog_html: clean
 	python -m pip install -e .
-	cd ~/cog/trunk; \
+	cd ~/cog; \
 		rm -rf htmlcov; \
 		PYTEST_ADDOPTS= coverage run --branch --source=cogapp -m pytest -k CogTestsInMemory; \
 		coverage combine; \
@@ -139,12 +139,12 @@ _sample_cog_html: clean
 
 sample_html: _sample_cog_html		## Generate sample HTML report.
 	rm -f doc/sample_html/*.*
-	cp -r ~/cog/trunk/htmlcov/ doc/sample_html/
+	cp -r ~/cog/htmlcov/ doc/sample_html/
 	rm doc/sample_html/.gitignore
 
 sample_html_beta: _sample_cog_html	## Generate sample HTML report for a beta release.
 	rm -f doc/sample_html_beta/*.*
-	cp -r ~/cog/trunk/htmlcov/ doc/sample_html_beta/
+	cp -r ~/cog/htmlcov/ doc/sample_html_beta/
 	rm doc/sample_html_beta/.gitignore
 
 
