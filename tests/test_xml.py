@@ -465,7 +465,7 @@ def compare_xml(expected: str, actual: str, actual_extra: bool = False) -> None:
         (r' timestamp="\d+"', ' timestamp="TIMESTAMP"'),
         (r' version="[-.\w]+"', ' version="VERSION"'),
         (r'<source>\s*.*?\s*</source>', '<source>%s</source>' % re.escape(source_path)),
-        (r'/coverage.readthedocs.io/?[-.\w/]*', '/coverage.readthedocs.io/VER'),
+        (r'/coverage\.readthedocs\.io/?[-.\w/]*', '/coverage.readthedocs.io/VER'),
     ]
     compare(expected, actual, scrubs=scrubs, actual_extra=actual_extra)
 

@@ -663,8 +663,8 @@ def compare_html(
     """Specialized compare function for our HTML files."""
     __tracebackhide__ = True    # pytest, please don't show me this function.
     scrubs = [
-        (r'/coverage.readthedocs.io/?[-.\w/]*', '/coverage.readthedocs.io/VER'),
-        (r'coverage.py v[\d.abcdev]+', 'coverage.py vVER'),
+        (r'/coverage\.readthedocs\.io/?[-.\w/]*', '/coverage.readthedocs.io/VER'),
+        (r'coverage\.py v[\d.abcdev]+', 'coverage.py vVER'),
         (r'created at \d\d\d\d-\d\d-\d\d \d\d:\d\d [-+]\d\d\d\d', 'created at DATE'),
         (r'created at \d\d\d\d-\d\d-\d\d \d\d:\d\d', 'created at DATE'),
         # Occasionally an absolute path is in the HTML report.
