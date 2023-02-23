@@ -32,7 +32,7 @@ Version 7.2.0 — 2023-02-22
 
 - Added a new setting ``[report] exclude_also`` to let you add more exclusions
   without overwriting the defaults.  Thanks, `Alpha Chen <pull 1557_>`_,
-  closing `issue 1391_`.
+  closing `issue 1391`_.
 
 - Added a :meth:`.CoverageData.purge_files` method to remove recorded data for
   a particular file.  Contributed by `Stephan Deibel <pull 1547_>`_.
