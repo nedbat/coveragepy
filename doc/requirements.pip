@@ -237,9 +237,9 @@ requests==2.28.2 \
     # via
     #   scriv
     #   sphinx
-scriv==1.2.0 \
-    --hash=sha256:26b65a903da7d9aefc712a0d4150b8638302b4758bd428bbd773dd918c61c621 \
-    --hash=sha256:bb61c30fea73158a4d18c28bbb57821c308245683efb0d897bd45e4a7856b472
+scriv==1.2.1 \
+    --hash=sha256:0ceec6243ebf02f6a685507eec72f890ca9d9da4cafcfcfce640b1f027cec17d \
+    --hash=sha256:95edfd76642cf7ae6b5cd40975545d8af58f6398cabfe83ff755e8eedb8ddd4e
     # via -r doc/requirements.in
 six==1.16.0 \
     --hash=sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926 \
@@ -298,9 +298,9 @@ sphinxcontrib-serializinghtml==1.1.5 \
     --hash=sha256:352a9a00ae864471d3a7ead8d7d79f5fc0b57e8b3f95e9867eb9eb28999b92fd \
     --hash=sha256:aa5f6de5dfdf809ef505c4895e51ef5c9eac17d0f287933eb49ec495280b6952
     # via sphinx
-sphinxcontrib-spelling==7.7.0 \
-    --hash=sha256:56561c3f6a155b0946914e4de988729859315729dc181b5e4dc8a68fe78de35a \
-    --hash=sha256:95a0defef8ffec6526f9e83b20cc24b08c9179298729d87976891840e3aa3064
+sphinxcontrib-spelling==8.0.0 \
+    --hash=sha256:199d0a16902ad80c387c2966dc9eb10f565b1fb15ccce17210402db7c2443e5c \
+    --hash=sha256:b27e0a16aef00bcfc888a6490dc3f16651f901dc475446c6882834278c8dc7b3
     # via -r doc/requirements.in
 tornado==6.2 \
     --hash=sha256:1d54d13ab8414ed44de07efecb97d4ef7c39f7438cf5e976ccd356bebb1b5fca \
@@ -315,17 +315,17 @@ tornado==6.2 \
     --hash=sha256:d3a2f5999215a3a06a4fc218026cd84c61b8b2b40ac5296a6db1f1451ef04c1e \
     --hash=sha256:e5f923aa6a47e133d1cf87d60700889d7eae68988704e20c75fb2d65677a8e4b
     # via livereload
-typing-extensions==4.4.0 \
-    --hash=sha256:1511434bb92bf8dd198c12b1cc812e800d4181cfcb867674e0f8279cc93087aa \
-    --hash=sha256:16fa4864408f655d35ec496218b85f79b3437c829e93320c7c9215ccfd92489e
+typing-extensions==4.5.0 \
+    --hash=sha256:5cb5f4a79139d699607b3ef622a1dedafa84e115ab0024e0d9c044a9479ca7cb \
+    --hash=sha256:fb33085c39dd998ac16d1431ebc293a8b3eedd00fd4a32de0ff79002c19511b4
     # via importlib-metadata
 urllib3==1.26.14 \
     --hash=sha256:076907bf8fd355cde77728471316625a4d2f7e713c125f51953bb5b3eecf4f72 \
     --hash=sha256:75edcdc2f7d85b137124a6c3c9fc3933cdeaa12ecb9a6a959f22797a0feca7e1
     # via requests
-zipp==3.13.0 \
-    --hash=sha256:23f70e964bc11a34cef175bc90ba2914e1e4545ea1e3e2f67c079671883f9cb6 \
-    --hash=sha256:e8b2a36ea17df80ffe9e2c4fda3f693c3dad6df1697d3cd3af232db680950b0b
+zipp==3.14.0 \
+    --hash=sha256:188834565033387710d046e3fe96acfc9b5e86cbca7f39ff69cf21a4128198b7 \
+    --hash=sha256:9e5421e176ef5ab4c0ad896624e87a7b2f07aca746c9b2aa305952800cb8eecb
     # via importlib-metadata
 
 # The following packages are considered to be unsafe in a requirements file:
