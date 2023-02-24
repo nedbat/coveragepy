@@ -33,7 +33,8 @@ class VersionTest(CoverageTest):
         assert _make_version(5, 10, 2, 'candidate', 7, 3) == "5.10.2rc7.dev3"
 
     def test_make_url(self) -> None:
-        assert _make_url(4, 0, 0, 'final') == "https://coverage.readthedocs.io"
+        expected = "https://coverage.readthedocs.io/en/4.1.2"
+        assert _make_url(4, 1, 2, 'final') == expected
         expected = "https://coverage.readthedocs.io/en/4.1.2b3"
         assert _make_url(4, 1, 2, 'beta', 3) == expected
         expected = "https://coverage.readthedocs.io/en/4.1.2b3.dev17"

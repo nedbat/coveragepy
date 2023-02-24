@@ -40,11 +40,10 @@ def _make_url(
     dev: int = 0,
 ) -> str:
     """Make the URL people should start at for this version of coverage.py."""
-    url = "https://coverage.readthedocs.io"
-    if releaselevel != "final" or dev != 0:
-        # For pre-releases, use a version-specific URL.
-        url += "/en/" + _make_version(major, minor, micro, releaselevel, serial, dev)
-    return url
+    return (
+        "https://coverage.readthedocs.io/en/"
+        + _make_version(major, minor, micro, releaselevel, serial, dev)
+    )
 
 
 __version__ = _make_version(*version_info, _dev)

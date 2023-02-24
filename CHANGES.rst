@@ -20,7 +20,10 @@ development at the same time, such as 4.5.x and 5.0.
 Unreleased
 ----------
 
-Nothing yet.
+- Fix: the PyPI page had broken links to documentation pages, but no longer
+  does, closing `issue 1566`_.
+
+.. _issue 1566: https://github.com/nedbat/coveragepy/issues/1566
 
 
 .. scriv-start-here
