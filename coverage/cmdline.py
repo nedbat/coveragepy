@@ -27,6 +27,7 @@ from coverage.debug import info_header, short_stack, write_formatted_info
 from coverage.exceptions import _BaseCoverageException, _ExceptionDuringRun, NoSource
 from coverage.execfile import PyRunner
 from coverage.results import Numbers, should_fail_under
+from coverage.version import __url__
 
 # When adding to this file, alphabetization is important.  Look for
 # "alphabetize" comments throughout.
@@ -574,6 +575,7 @@ def show_help(
             program_name = program_name[:-len(auto_suffix)]
 
     help_params = dict(coverage.__dict__)
+    help_params["__url__"] = __url__
     help_params['program_name'] = program_name
     if HAS_CTRACER:
         help_params['extension_modifier'] = 'with C extension'

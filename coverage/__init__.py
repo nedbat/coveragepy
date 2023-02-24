@@ -9,15 +9,29 @@ https://coverage.readthedocs.io
 
 """
 
+# mypy's convention is that "import as" names are public from the module.
+# We import names as themselves to indicate that. Pylint sees it as pointless,
+# so disable its warning.
+# pylint: disable=useless-import-alias
+
 import sys
 
-from coverage.version import __version__, __url__, version_info
+from coverage.version import (
+    __version__ as __version__,
+    version_info as version_info,
+)
 
-from coverage.control import Coverage, process_startup
-from coverage.data import CoverageData
-from coverage.exceptions import CoverageException
-from coverage.plugin import CoveragePlugin, FileTracer, FileReporter
-from coverage.pytracer import PyTracer
+from coverage.control import (
+    Coverage as Coverage,
+    process_startup as process_startup,
+)
+from coverage.data import CoverageData as CoverageData
+from coverage.exceptions import CoverageException as CoverageException
+from coverage.plugin import (
+    CoveragePlugin as CoveragePlugin,
+    FileReporter as FileReporter,
+    FileTracer as FileTracer,
+)
 
 # Backward compatibility.
 coverage = Coverage

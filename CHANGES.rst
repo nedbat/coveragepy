@@ -23,6 +23,10 @@ Unreleased
 - Fix: the PyPI page had broken links to documentation pages, but no longer
   does, closing `issue 1566`_.
 
+- Fix: public members of the coverage module are now properly indicated so that
+  mypy will find them, fixing `issue 1564`_.
+
+.. _issue 1564: https://github.com/nedbat/coveragepy/issues/1564
 .. _issue 1566: https://github.com/nedbat/coveragepy/issues/1566
 
 

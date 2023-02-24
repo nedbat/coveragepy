@@ -24,6 +24,7 @@ from coverage.report import get_analysis_to_report
 from coverage.results import Analysis, Numbers
 from coverage.templite import Templite
 from coverage.types import TLineNo, TMorf
+from coverage.version import __url__
 
 
 if TYPE_CHECKING:
@@ -238,7 +239,7 @@ class HtmlReporter:
             'len': len,
 
             # Constants for this report.
-            '__url__': coverage.__url__,
+            '__url__': __url__,
             '__version__': coverage.__version__,
             'title': title,
             'time_stamp': format_local_datetime(datetime.datetime.now()),
