@@ -17,8 +17,12 @@ development at the same time, such as 4.5.x and 5.0.
     ..  Version 9.8.1 — 2027-07-27
     ..  --------------------------
 
-Unreleased
-----------
+.. scriv-start-here
+
+.. _changes_7-2-1:
+
+Version 7.2.1 — 2023-02-26
+--------------------------
 
 - Fix: the PyPI page had broken links to documentation pages, but no longer
   does, closing `issue 1566`_.
@@ -29,8 +33,6 @@ Unreleased
 .. _issue 1564: https://github.com/nedbat/coveragepy/issues/1564
 .. _issue 1566: https://github.com/nedbat/coveragepy/issues/1566
 
-
-.. scriv-start-here
 
 .. _changes_7-2-0:
 
