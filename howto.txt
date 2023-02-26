@@ -1,6 +1,7 @@
 * Release checklist
 
 - Check that the current virtualenv matches the current coverage branch.
+- start branch for release work
 - Version number in coverage/version.py
         version_info = (4, 0, 2, "alpha", 1)
         version_info = (4, 0, 2, "beta", 1)
@@ -32,7 +33,7 @@
         $ make sample_html
         check in the new sample html
 - Done with changes to source files
-    - check them in on a branch
+    - check them in on the release prep branch
     - wait for ci to finish
     - merge to master
     - git push
