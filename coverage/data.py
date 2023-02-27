@@ -145,11 +145,20 @@ def combine_parallel_data(
             # we print the original value of f instead of its relative path
             rel_file_name = f
 
-        with open(f, "rb") as fobj:
-            hasher = hashlib.new("sha3_256")
-            hasher.update(fobj.read())
-            sha = hasher.digest()
-            combine_this_one = sha not in file_hashes
+        try:
+            fobj = open(f, "rb")
+        except FileNotFoundError as exc:
+            if data._warn:
+                data._warn(str(exc))
+            if message:
+                message(f"Couldn't combine data file {rel_file_name}: {exc}")
+            combine_this_one = False
+        else:
+            with fobj:
+                hasher = hashlib.new("sha3_256")
+                hasher.update(fobj.read())
+                sha = hasher.digest()
+                combine_this_one = sha not in file_hashes
 
         delete_this_one = not keep
         if combine_this_one:
