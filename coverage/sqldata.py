@@ -1133,6 +1133,11 @@ class SqliteDb(AutoReprMixin):
         # PyPy needs the .close() calls here, or sqlite gets twisted up:
         # https://bitbucket.org/pypy/pypy/issues/2872/default-isolation-mode-is-different-on
         self.execute_void("pragma journal_mode=off")
+        if self.execute_one("pragma journal_mode") != ("off",):
+            # Some instances of Sqlite refuse to disable journal mode.
+            # Switching to memory mode prevents journal files from being written,
+            # even though we lose performance with unecessary rollback protection.
+            self.execute_void("pragma journal_mode=memory")
         # This pragma makes writing faster.
         self.execute_void("pragma synchronous=off")
 
