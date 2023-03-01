@@ -617,6 +617,38 @@ class CoverageDataTest(CoverageTest):
         with pytest.raises(DataError, match=msg):
             covdata.purge_files(["abc.py"])
 
+    def test_purge_contexts_lines(self) -> None:
+        covdata = DebugCoverageData()
+        covdata.set_context('context1')
+        covdata.add_lines(LINES_1)
+        covdata.set_context('context2')
+        covdata.add_lines(LINES_2)
+        assert_line_counts(covdata, SUMMARY_1_2)
+        covdata.purge_contexts(["context2"])
+        assert_line_counts(covdata, {'a.py': 2, 'b.py': 1, 'c.py': 0})
+        covdata.purge_contexts(["context1"])
+        assert_line_counts(covdata, {"a.py": 0, "b.py": 0, "c.py": 0})
+        # It's OK to "purge" a context that wasn't measured.
+        covdata.purge_contexts(["context3"])
+        assert_line_counts(covdata, {"a.py": 0, "b.py": 0, "c.py": 0})
+
+    def test_purge_contexts_arcs(self) -> None:
+        covdata = CoverageData()
+        covdata.set_context('context1')
+        covdata.add_arcs(ARCS_3)
+        covdata.set_context('context2')
+        covdata.add_arcs(ARCS_4)
+        assert_line_counts(covdata, SUMMARY_3_4)
+        covdata.purge_contexts(["context1"])
+        assert_line_counts(covdata,{'x.py': 2, 'y.py': 0, 'z.py': 1})
+        covdata.purge_contexts(["context2"])
+        assert_line_counts(covdata, {"x.py": 0, "y.py": 0, "z.py": 0})
+
+    def test_cant_purge_contexts_in_empty_data(self) -> None:
+        covdata = DebugCoverageData()
+        msg = "Can't purge contexts in an empty CoverageData"
+        with pytest.raises(DataError, match=msg):
+            covdata.purge_contexts(["context1"])
 
 class CoverageDataInTempDirTest(CoverageTest):
     """Tests of CoverageData that need a temporary directory to make files."""
