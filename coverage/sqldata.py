@@ -641,7 +641,7 @@ class CoverageData(AutoReprMixin):
                     continue
                 con.execute_void(sql, (file_id,))
 
-    def purge_contexts(self, contexts):
+    def purge_contexts(self, contexts: Collection[str]) -> None:
         """Purge any existing coverage data for the given `contexts`.
 
         This removes all coverage data for the contexts, but does not remove
