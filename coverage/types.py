@@ -29,7 +29,11 @@ else:
 ## File paths
 
 # For arguments that are file paths:
-FilePath = Union[str, os.PathLike]
+if TYPE_CHECKING:
+    FilePath = Union[str, os.PathLike[str]]
+else:
+    # PathLike < python3.9 doesn't support subscription
+    FilePath = Union[str, os.PathLike]
 # For testing FilePath arguments
 FilePathClasses = [str, pathlib.Path]
 FilePathType = Union[Type[str], Type[pathlib.Path]]
