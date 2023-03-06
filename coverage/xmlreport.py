@@ -182,7 +182,7 @@ class XmlReporter:
                 rel_name = filename[len(source_path)+1:]
                 break
         else:
-            rel_name = fr.relative_filename()
+            rel_name = fr.relative_filename().replace("\\", "/")
             self.source_paths.add(fr.filename[:-len(rel_name)].rstrip(r"\/"))
 
         dirname = os.path.dirname(rel_name) or "."
