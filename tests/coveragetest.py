@@ -293,7 +293,7 @@ class CoverageTest(
         def capture_warning(
             msg: str,
             slug: Optional[str] = None,
-            once: bool = False,               # pylint: disable=unused-argument
+            once: bool = False,                 # pylint: disable=unused-argument
         ) -> None:
             """A fake implementation of Coverage._warn, to capture warnings."""
             # NOTE: we don't implement `once`.
@@ -302,7 +302,7 @@ class CoverageTest(
             saved_warnings.append(msg)
 
         original_warn = cov._warn
-        cov._warn = capture_warning                 # type: ignore[assignment]
+        cov._warn = capture_warning             # type: ignore[method-assign]
 
         try:
             yield
@@ -327,7 +327,7 @@ class CoverageTest(
                 if saved_warnings:
                     assert False, f"Unexpected warnings: {saved_warnings!r}"
         finally:
-            cov._warn = original_warn               # type: ignore[assignment]
+            cov._warn = original_warn           # type: ignore[method-assign]
 
     def assert_same_files(self, flist1: Iterable[str], flist2: Iterable[str]) -> None:
         """Assert that `flist1` and `flist2` are the same set of file names."""
