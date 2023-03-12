@@ -202,7 +202,7 @@ class CoverageTest(
             if isinstance(lines[0], int):
                 # lines is just a list of numbers, it must match the statements
                 # found in the code.
-                assert statements == lines, f"{statements!r} != {lines!r}"
+                assert statements == lines, f"lines: {statements!r} != {lines!r}"
             else:
                 # lines is a list of possible line number lists, one of them
                 # must match.
@@ -214,7 +214,7 @@ class CoverageTest(
 
             missing_formatted = analysis.missing_formatted()
             if isinstance(missing, str):
-                msg = f"{missing_formatted!r} != {missing!r}"
+                msg = f"missing: {missing_formatted!r} != {missing!r}"
                 assert missing_formatted == missing, msg
             else:
                 for missing_list in missing:
