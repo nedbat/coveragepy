@@ -106,10 +106,16 @@ class PYBEHAVIOR:
 
     # Lines after break/continue/return/raise are no longer compiled into the
     # bytecode.  They used to be marked as missing, now they aren't executable.
-    omit_after_jump = pep626
+    omit_after_jump = (
+        pep626
+        or (PYPY and PYVERSION >= (3, 9) and PYPYVERSION >= (7, 3, 12))
+    )
 
     # PyPy has always omitted statements after return.
     omit_after_return = omit_after_jump or PYPY
+
+    # Optimize away unreachable try-else clauses.
+    optimize_unreachable_try_else = pep626
 
     # Modules used to have firstlineno equal to the line number of the first
     # real line of code.  Now they always start at 1.
