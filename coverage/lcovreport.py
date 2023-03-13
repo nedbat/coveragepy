@@ -81,8 +81,8 @@ class LcovReporter:
             hashed = base64.b64encode(md5(line).digest()).decode().rstrip("=")
             outfile.write(f"DA:{missed},0,{hashed}\n")
 
-        outfile.write(f"LF:{len(analysis.statements)}\n")
-        outfile.write(f"LH:{len(analysis.executed)}\n")
+        outfile.write(f"LF:{analysis.numbers.n_statements}\n")
+        outfile.write(f"LH:{analysis.numbers.n_executed}\n")
 
         # More information dense branch coverage data.
         missing_arcs = analysis.missing_branch_arcs()
