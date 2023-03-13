@@ -318,6 +318,36 @@ class XmlReportTest(XmlTestHelpers, CoverageTest):
             "name": "â",
         }
 
+    def test_no_duplicate_packages(self) -> None:
+        self.make_file("namespace/package/__init__.py", "from . import sample; from . import test; from .subpackage import test")
+        self.make_file("namespace/package/sample.py", "print('package.sample')")
+        self.make_file("namespace/package/test.py", "print('package.test')")
+        self.make_file("namespace/package/subpackage/test.py", "print('package.subpackage.test')")
+
+        # no source path passed to coverage!
+        # problem occurs when they are dynamically generated during xml report
+        cov = coverage.Coverage()
+
+        cov.start()
+        import_local_file("foo", "namespace/package/__init__.py")               # pragma: nested
+        cov.stop()                                                              # pragma: nested
+
+        cov.xml_report()
+
+        dom = ElementTree.parse("coverage.xml")
+
+        # only two packages should be present
+        packages = dom.findall(".//package")
+        assert len(packages) == 2
+
+        # one of them is namespace.package
+        named_package = dom.findall(".//package[@name='namespace.package']")
+        assert len(named_package) == 1
+
+        # the other one namespace.package.subpackage
+        named_sub_package = dom.findall(".//package[@name='namespace.package.subpackage']")
+        assert len(named_sub_package) == 1
+
 
 def unbackslash(v: Any) -> Any:
     """Find strings in `v`, and replace backslashes with slashes throughout."""
