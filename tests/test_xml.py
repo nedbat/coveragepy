@@ -319,7 +319,10 @@ class XmlReportTest(XmlTestHelpers, CoverageTest):
         }
 
     def test_no_duplicate_packages(self) -> None:
-        self.make_file("namespace/package/__init__.py", "from . import sample; from . import test; from .subpackage import test")
+        self.make_file(
+            "namespace/package/__init__.py", 
+            "from . import sample; from . import test; from .subpackage import test"
+        )
         self.make_file("namespace/package/sample.py", "print('package.sample')")
         self.make_file("namespace/package/test.py", "print('package.test')")
         self.make_file("namespace/package/subpackage/test.py", "print('package.subpackage.test')")
