@@ -48,7 +48,7 @@ these steps:
 
 #.  Install the requirements::
 
-    $ pip install -r requirements/dev.pip
+    $ python3 -m pip install -r requirements/dev.pip
 
 #.  Install a number of versions of Python.  Coverage.py supports a range
     of Python versions.  The more you can test with, the more easily your code

@@ -29,7 +29,7 @@ a coverage.py plug-in called ``something.plugin``.
 
    .. code-block:: sh
 
-    $ pip install something
+    $ python3 -m pip install something
 
 #. Configure coverage.py to use the plug-in.  You do this by editing (or
    creating) your .coveragerc file, as described in :ref:`config`.  The

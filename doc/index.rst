@@ -56,7 +56,7 @@ Getting started is easy:
 
 #.  Install coverage.py::
 
-        $ pip install coverage
+        $ python3 -m pip install coverage
 
     For more details, see :ref:`install`.
 
