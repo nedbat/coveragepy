@@ -24,9 +24,9 @@ certifi==2022.12.7 \
     --hash=sha256:35824b4c3a97115964b408844d64aa14db1cc518f6562e8d7261699d1350a9e3 \
     --hash=sha256:4ad3232f5e926d6718ec31cfc1fcadfde020920e278684144551c91769c7bc18
     # via cibuildwheel
-cibuildwheel==2.12.0 \
-    --hash=sha256:3d75d58f8e9909f2c9fe4923d03682e9ae27a45d38deba2a76b757114bdcf361 \
-    --hash=sha256:510b13a5cc8d854a82c1a6fa819c874b1f6a3064b90e31fda7b7a649bc8e80af
+cibuildwheel==2.12.1 \
+    --hash=sha256:ca0861f7c31c82c09daf4f80304341d93b0a2b35e6bde2f83c6ebde79a710f0d \
+    --hash=sha256:e2f9d88dda9542b5773434d0278ead954c43234c0486067bf5c218a60854487d
     # via -r requirements/kit.in
 colorama==0.4.6 \
     --hash=sha256:08695f5cb7ed6e0531a20572697297273c47b8cae5a63ffc6d6ed5c201be6e44 \
@@ -48,9 +48,9 @@ packaging==23.0 \
     # via
     #   build
     #   cibuildwheel
-platformdirs==3.1.0 \
-    --hash=sha256:13b08a53ed71021350c9e300d4ea8668438fb0046ab3937ac9a29913a1a1350a \
-    --hash=sha256:accc3665857288317f32c7bebb5a8e482ba717b474f3fc1d18ca7f9214be0cef
+platformdirs==3.1.1 \
+    --hash=sha256:024996549ee88ec1a9aa99ff7f8fc819bb59e2c3477b410d90a16d32d6e707aa \
+    --hash=sha256:e5986afb596e4bb5bde29a79ac9061aa955b94fca2399b7aaac4090860920dd8
     # via cibuildwheel
 pyelftools==0.29 \
     --hash=sha256:519f38cf412f073b2d7393aa4682b0190fa901f7c3fa0bff2b82d537690c7fc1 \

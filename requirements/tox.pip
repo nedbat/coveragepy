@@ -41,9 +41,9 @@ packaging==23.0 \
     # via
     #   pyproject-api
     #   tox
-platformdirs==3.1.0 \
-    --hash=sha256:13b08a53ed71021350c9e300d4ea8668438fb0046ab3937ac9a29913a1a1350a \
-    --hash=sha256:accc3665857288317f32c7bebb5a8e482ba717b474f3fc1d18ca7f9214be0cef
+platformdirs==3.1.1 \
+    --hash=sha256:024996549ee88ec1a9aa99ff7f8fc819bb59e2c3477b410d90a16d32d6e707aa \
+    --hash=sha256:e5986afb596e4bb5bde29a79ac9061aa955b94fca2399b7aaac4090860920dd8
     # via
     #   tox
     #   virtualenv
@@ -51,9 +51,9 @@ pluggy==1.0.0 \
     --hash=sha256:4224373bacce55f955a878bf9cfa763c1e360858e330072059e10bad68531159 \
     --hash=sha256:74134bbf457f031a36d68416e1509f34bd5ccc019f0bcc952c7b909d06b37bd3
     # via tox
-pyproject-api==1.5.0 \
-    --hash=sha256:0962df21f3e633b8ddb9567c011e6c1b3dcdfc31b7860c0ede7e24c5a1200fbe \
-    --hash=sha256:4c111277dfb96bcd562c6245428f27250b794bfe3e210b8714c4f893952f2c17
+pyproject-api==1.5.1 \
+    --hash=sha256:435f46547a9ff22cf4208ee274fca3e2869aeb062a4834adfc99a4dd64af3cf9 \
+    --hash=sha256:4698a3777c2e0f6b624f8a4599131e2a25376d90fe8d146d7ac74c67c6f97c43
     # via tox
 tomli==2.0.1 \
     --hash=sha256:939de3e7a6161af0c887ef91b7d41a53e7c5a1ca976325f429cb46ea9bc30ecc \
@@ -61,9 +61,9 @@ tomli==2.0.1 \
     # via
     #   pyproject-api
     #   tox
-tox==4.4.6 \
-    --hash=sha256:9786671d23b673ace7499c602c5746e2a225d1ecd9d9f624d0461303f40bd93b \
-    --hash=sha256:e3d4a65852f029e5ba441a01824d2d839d30bb8fb071635ef9cb53952698e6bf
+tox==4.4.7 \
+    --hash=sha256:52c92a96e2c3fd47c5301e9c26f5a871466133d5376958c1ed95ef4ff4629cbe \
+    --hash=sha256:da10ca1d809b99fae80b706b9dc9656b1daf505a395ac427d130a8a85502d08f
     # via
     #   -r requirements/tox.in
     #   tox-gh
@@ -78,9 +78,9 @@ typing-extensions==4.5.0 \
     #   importlib-metadata
     #   platformdirs
     #   tox
-virtualenv==20.20.0 \
-    --hash=sha256:3c22fa5a7c7aa106ced59934d2c20a2ecb7f49b4130b8bf444178a16b880fa45 \
-    --hash=sha256:a8a4b8ca1e28f864b7514a253f98c1d62b64e31e77325ba279248c65fb4fcef4
+virtualenv==20.21.0 \
+    --hash=sha256:31712f8f2a17bd06234fa97fdf19609e789dd4e3e4bf108c3da71d710651adbc \
+    --hash=sha256:f50e3e60f990a0757c9b68333c9fdaa72d7188caa417f96af9e52407831a3b68
     # via tox
 zipp==3.15.0 \
     --hash=sha256:112929ad649da941c23de50f356a2b5570c954b65150642bccdd66bf194d224b \
