@@ -79,6 +79,7 @@ Greg Rogers
 Guido van Rossum
 Guillaume Chazarain
 Hugo van Kemenade
+Ian Moore
 Ilia Meerovich
 Imri Goldberg
 Ionel Cristian Mărieș

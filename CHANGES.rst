@@ -20,7 +20,11 @@ development at the same time, such as 4.5.x and 5.0.
 Unreleased
 ----------
 
-Nothing yet.
+- Fix: the ``coverage lcov`` command could create a .lcov file with incorrect
+  LF (lines found) and LH (lines hit) totals.  This is now fixed, thanks to
+  `Ian Moore <pull 1583_>`_.
+
+.. _pull 1583: https://github.com/nedbat/coveragepy/pull/1583
 
 
 .. scriv-start-here
