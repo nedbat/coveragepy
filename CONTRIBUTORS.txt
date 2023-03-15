@@ -25,6 +25,7 @@ Arthur Deygin
 Arthur Rio
 Ben Carlsson
 Ben Finney
+Benjamin Parzella
 Benjamin Schubert
 Bernát Gábor
 Bill Hart

@@ -24,6 +24,12 @@ Unreleased
   LF (lines found) and LH (lines hit) totals.  This is now fixed, thanks to
   `Ian Moore <pull 1583_>`_.
 
+- Fix: the ``coverage xml`` command on Windows could create a .xml file with duplicate
+  ``<package>`` elements. This is now fixed, thanks to `Benjamin Parzella <pull
+  1574_>`_, closing `issue 1573`_.
+
+.. _issue 1573: https://github.com/nedbat/coveragepy/issues/1573
+.. _pull 1574: https://github.com/nedbat/coveragepy/pull/1574
 .. _pull 1583: https://github.com/nedbat/coveragepy/pull/1583
 
 
