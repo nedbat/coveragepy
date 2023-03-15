@@ -286,7 +286,7 @@ class LcovTest(CoverageTest):
                 SF:__init__.py
                 DA:1,1,1B2M2Y8AsgTpgAmY7PhCfg
                 LF:0
-                LH:1
+                LH:0
                 BRF:0
                 BRH:0
                 end_of_record

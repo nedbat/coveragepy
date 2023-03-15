@@ -202,7 +202,7 @@ class CoverageTest(
             if isinstance(lines[0], int):
                 # lines is just a list of numbers, it must match the statements
                 # found in the code.
-                assert statements == lines, f"{statements!r} != {lines!r}"
+                assert statements == lines, f"lines: {statements!r} != {lines!r}"
             else:
                 # lines is a list of possible line number lists, one of them
                 # must match.
@@ -214,7 +214,7 @@ class CoverageTest(
 
             missing_formatted = analysis.missing_formatted()
             if isinstance(missing, str):
-                msg = f"{missing_formatted!r} != {missing!r}"
+                msg = f"missing: {missing_formatted!r} != {missing!r}"
                 assert missing_formatted == missing, msg
             else:
                 for missing_list in missing:
@@ -293,7 +293,7 @@ class CoverageTest(
         def capture_warning(
             msg: str,
             slug: Optional[str] = None,
-            once: bool = False,               # pylint: disable=unused-argument
+            once: bool = False,                 # pylint: disable=unused-argument
         ) -> None:
             """A fake implementation of Coverage._warn, to capture warnings."""
             # NOTE: we don't implement `once`.
@@ -302,7 +302,7 @@ class CoverageTest(
             saved_warnings.append(msg)
 
         original_warn = cov._warn
-        cov._warn = capture_warning                 # type: ignore[assignment]
+        cov._warn = capture_warning             # type: ignore[method-assign]
 
         try:
             yield
@@ -327,7 +327,7 @@ class CoverageTest(
                 if saved_warnings:
                     assert False, f"Unexpected warnings: {saved_warnings!r}"
         finally:
-            cov._warn = original_warn               # type: ignore[assignment]
+            cov._warn = original_warn           # type: ignore[method-assign]
 
     def assert_same_files(self, flist1: Iterable[str], flist2: Iterable[str]) -> None:
         """Assert that `flist1` and `flist2` are the same set of file names."""

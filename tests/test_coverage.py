@@ -1121,7 +1121,7 @@ class CompoundStatementTest(CoverageTest):
         )
 
     def test_try_except_stranded_else(self) -> None:
-        if env.PYBEHAVIOR.omit_after_jump:
+        if env.PYBEHAVIOR.optimize_unreachable_try_else:
             # The else can't be reached because the try ends with a raise.
             lines = [1,2,3,4,5,6,9]
             missing = ""
@@ -1498,7 +1498,7 @@ class ExcludeTest(CoverageTest):
         )
 
     def test_excluding_try_except_stranded_else(self) -> None:
-        if env.PYBEHAVIOR.omit_after_jump:
+        if env.PYBEHAVIOR.optimize_unreachable_try_else:
             # The else can't be reached because the try ends with a raise.
             arcz = ".1 12 23 34 45 56 69 9."
             arcz_missing = ""
@@ -1801,7 +1801,7 @@ class Py25Test(CoverageTest):
         )
 
     def test_try_except_finally_stranded_else(self) -> None:
-        if env.PYBEHAVIOR.omit_after_jump:
+        if env.PYBEHAVIOR.optimize_unreachable_try_else:
             # The else can't be reached because the try ends with a raise.
             lines = [1,2,3,4,5,6,10,11]
             missing = ""

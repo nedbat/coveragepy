@@ -4,6 +4,6 @@
 -c pins.pip
 
 # So that we have pytest types.
--r pytest.pip
+-r pytest.in
 
 mypy

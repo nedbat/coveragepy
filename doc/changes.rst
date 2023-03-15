@@ -2234,9 +2234,10 @@ Version 3.4 — 2010-09-19
 Version 3.4b2 — 2010-09-06
 --------------------------
 
-- Completely un-executed files can now be included in coverage results, reported
-  as 0% covered.  This only happens if the --source option is specified, since
-  coverage.py needs guidance about where to look for source files.
+- Completely un-executed files can now be included in coverage results,
+  reported as 0% covered.  This only happens if the --source option is
+  specified, since coverage.py needs guidance about where to look for source
+  files.
 
 - The XML report output now properly includes a percentage for branch coverage,
   fixing `issue 65`_ and `issue 81`_.

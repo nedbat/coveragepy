@@ -24,9 +24,9 @@ certifi==2022.12.7 \
     --hash=sha256:35824b4c3a97115964b408844d64aa14db1cc518f6562e8d7261699d1350a9e3 \
     --hash=sha256:4ad3232f5e926d6718ec31cfc1fcadfde020920e278684144551c91769c7bc18
     # via cibuildwheel
-cibuildwheel==2.12.0 \
-    --hash=sha256:3d75d58f8e9909f2c9fe4923d03682e9ae27a45d38deba2a76b757114bdcf361 \
-    --hash=sha256:510b13a5cc8d854a82c1a6fa819c874b1f6a3064b90e31fda7b7a649bc8e80af
+cibuildwheel==2.12.1 \
+    --hash=sha256:ca0861f7c31c82c09daf4f80304341d93b0a2b35e6bde2f83c6ebde79a710f0d \
+    --hash=sha256:e2f9d88dda9542b5773434d0278ead954c43234c0486067bf5c218a60854487d
     # via -r requirements/kit.in
 colorama==0.4.6 \
     --hash=sha256:08695f5cb7ed6e0531a20572697297273c47b8cae5a63ffc6d6ed5c201be6e44 \
@@ -48,9 +48,9 @@ packaging==23.0 \
     # via
     #   build
     #   cibuildwheel
-platformdirs==3.0.0 \
-    --hash=sha256:8a1228abb1ef82d788f74139988b137e78692984ec7b08eaa6c65f1723af28f9 \
-    --hash=sha256:b1d5eb14f221506f50d6604a561f4c5786d9e80355219694a1b244bcd96f4567
+platformdirs==3.1.1 \
+    --hash=sha256:024996549ee88ec1a9aa99ff7f8fc819bb59e2c3477b410d90a16d32d6e707aa \
+    --hash=sha256:e5986afb596e4bb5bde29a79ac9061aa955b94fca2399b7aaac4090860920dd8
     # via cibuildwheel
 pyelftools==0.29 \
     --hash=sha256:519f38cf412f073b2d7393aa4682b0190fa901f7c3fa0bff2b82d537690c7fc1 \
@@ -78,9 +78,9 @@ wheel==0.38.4 \
     --hash=sha256:965f5259b566725405b05e7cf774052044b1ed30119b5d586b2703aafe8719ac \
     --hash=sha256:b60533f3f5d530e971d6737ca6d58681ee434818fab630c83a734bb10c083ce8
     # via -r requirements/kit.in
-zipp==3.14.0 \
-    --hash=sha256:188834565033387710d046e3fe96acfc9b5e86cbca7f39ff69cf21a4128198b7 \
-    --hash=sha256:9e5421e176ef5ab4c0ad896624e87a7b2f07aca746c9b2aa305952800cb8eecb
+zipp==3.15.0 \
+    --hash=sha256:112929ad649da941c23de50f356a2b5570c954b65150642bccdd66bf194d224b \
+    --hash=sha256:48904fc76a60e542af151aded95726c1a5c34ed43ab4134b597665c86d7ad556
     # via importlib-metadata
 
 # The following packages are considered to be unsafe in a requirements file:

@@ -25,6 +25,7 @@ Arthur Deygin
 Arthur Rio
 Ben Carlsson
 Ben Finney
+Benjamin Parzella
 Benjamin Schubert
 Bernát Gábor
 Bill Hart
@@ -79,6 +80,7 @@ Greg Rogers
 Guido van Rossum
 Guillaume Chazarain
 Hugo van Kemenade
+Ian Moore
 Ilia Meerovich
 Imri Goldberg
 Ionel Cristian Mărieș
@@ -105,6 +107,7 @@ Leonardo Pistone
 Lex Berezhny
 Loïc Dachary
 Lorenzo Micò
+Manuel Jacob
 Marc Abramowitz
 Marc Legendre
 Marcelo Trylesinski

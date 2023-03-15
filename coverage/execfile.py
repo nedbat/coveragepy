@@ -294,7 +294,7 @@ def make_code_from_py(filename: str) -> CodeType:
     except (OSError, NoSource) as exc:
         raise NoSource(f"No file to run: '{filename}'") from exc
 
-    return compile(source, filename, "exec", dont_inherit=True) # type: ignore[no-any-return]
+    return compile(source, filename, "exec", dont_inherit=True)
 
 
 def make_code_from_pyc(filename: str) -> CodeType:
