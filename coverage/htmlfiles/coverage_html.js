@@ -595,10 +595,31 @@ coverage.wire_up_sticky_header = function () {
     updateHeader();
 };
 
+coverage.showContexts = function (e) {
+  span = e.target.nextElementSibling.nextElementSibling;
+  span_text = span.textContent;
+
+  if (/^[0-9,]+$/.test(span_text))
+  {
+    span.textContent = "";
+    span_text.split(",").forEach(function(s) {
+      ctx = contexts[s];
+      span.appendChild(document.createTextNode(ctx));
+      span.appendChild(document.createElement("br"));
+    })
+  }
+};
+
 document.addEventListener("DOMContentLoaded", () => {
-    if (document.body.classList.contains("indexfile")) {
-        coverage.index_ready();
-    } else {
-        coverage.pyfile_ready();
-    }
+  cboxes = document.querySelectorAll('[id^=ctxs]')
+  cboxes.forEach(function(cbox) {
+    cbox.addEventListener("click", coverage.showContexts)
+  });
+
+  if (document.body.classList.contains("indexfile")) {
+    coverage.index_ready();
+  } else {
+    coverage.pyfile_ready();
+  }
+
 });
