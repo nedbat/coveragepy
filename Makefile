@@ -36,6 +36,7 @@ clean: clean_platform			## Remove artifacts of test execution, installation, etc
 
 sterile: clean				## Remove all non-controlled content, even if expensive.
 	rm -rf .tox
+	rm -f cheats.txt
 
 help:					## Show this help.
 	@# Adapted from https://www.thapaliya.com/en/writings/well-documented-makefiles/
@@ -157,6 +158,9 @@ REPO_OWNER = nedbat/coveragepy
 
 edit_for_release:			## Edit sources to insert release facts.
 	python igor.py edit_for_release
+
+cheats:					## Create some useful snippets for releasing.
+	python igor.py cheats | tee cheats.txt
 
 relbranch:				## Create the branch for releasing.
 	echo git switch -c nedbat/release-$$(date +%Y%m%d)

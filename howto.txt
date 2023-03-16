@@ -3,16 +3,17 @@
 - Check that the current virtualenv matches the current coverage branch.
 - start branch for release work
     $ make relbranch
-- Version number in coverage/version.py
+- Edit version number in coverage/version.py
         version_info = (4, 0, 2, "alpha", 1)
         version_info = (4, 0, 2, "beta", 1)
         version_info = (4, 0, 2, "candidate", 1)
         version_info = (4, 0, 2, "final", 0)
     - make sure: _dev = 0
-- Supported Python version numbers. Search for "PYVERSIONS".
+- Edit supported Python version numbers. Search for "PYVERSIONS".
 - Update source files with release facts:
     $ make edit_for_release
-- run `python igor.py cheats` to get useful snippets for next steps.
+- Get useful snippets for next steps, and beyond, in cheats.txt
+    $ make cheats
 - Look over CHANGES.rst
 - Update README.rst
     - "New in x.y:"

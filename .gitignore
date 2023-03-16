@@ -21,6 +21,7 @@ coverage.json
 # Stuff in the root.
 build
 *.egg-info
+cheats.txt
 dist
 htmlcov
 MANIFEST
