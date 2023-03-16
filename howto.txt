@@ -2,6 +2,7 @@
 
 - Check that the current virtualenv matches the current coverage branch.
 - start branch for release work
+    $ make relbranch
 - Version number in coverage/version.py
         version_info = (4, 0, 2, "alpha", 1)
         version_info = (4, 0, 2, "beta", 1)
@@ -26,12 +27,14 @@
     - Check that the docs build correctly:
         $ tox -e doc
 - commit the release-prep changes
+    $ make relcommit1
 - Generate new sample_html to get the latest, incl footer version number:
     - IF PRE-RELEASE:
         $ make sample_html_beta
     - IF NOT PRE-RELEASE:
         $ make sample_html
-        check in the new sample html
+        - check in the new sample html
+            $ make relcommit2
 - Done with changes to source files
     - check them in on the release prep branch
     - wait for ci to finish

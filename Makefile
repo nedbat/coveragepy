@@ -158,6 +158,15 @@ REPO_OWNER = nedbat/coveragepy
 edit_for_release:			## Edit sources to insert release facts.
 	python igor.py edit_for_release
 
+relbranch:				## Create the branch for releasing.
+	echo git switch -c nedbat/release-$$(date +%Y%m%d)
+
+relcommit1:				## Commit the first release changes.
+	git commit -am "docs: prep for $$(python setup.py --version)"
+
+relcommit2:				## Commit the latest sample HTML report.
+	git commit -am "docs: sample HTML for $$(python setup.py --version)"
+
 kit:					## Make the source distribution.
 	python -m build
 
