@@ -173,9 +173,9 @@ execnet==1.9.0 \
     --hash=sha256:8f694f3ba9cc92cab508b152dcfe322153975c29bda272e2fd7f3f00f36e47c5 \
     --hash=sha256:a295f7cc774947aac58dde7fdc85f4aa00c42adf5d8f5468fc630c1acf30a142
     # via pytest-xdist
-filelock==3.9.0 \
-    --hash=sha256:7b319f24340b51f55a2bf7a12ac0755a9b03e718311dac567a0f4f7fabd2f5de \
-    --hash=sha256:f58d535af89bb9ad5cd4df046f741f8553a418c01a7856bf0d173bbc9f6bd16d
+filelock==3.10.0 \
+    --hash=sha256:3199fd0d3faea8b911be52b663dfccceb84c95949dd13179aa21436d1a79c4ce \
+    --hash=sha256:e90b34656470756edf8b19656785c5fea73afa1953f3e1b0d645cef11cab3182
     # via
     #   tox
     #   virtualenv
@@ -245,9 +245,9 @@ greenlet==2.0.2 \
     --hash=sha256:f82d4d717d8ef19188687aa32b8363e96062911e63ba22a0cff7802a8e58e5f1 \
     --hash=sha256:fc3a569657468b6f3fb60587e48356fe512c1754ca05a564f11366ac9e306526
     # via -r requirements/dev.in
-hypothesis==6.68.2 \
-    --hash=sha256:2a41cc766cde52705895e54547374af89c617e8ec7bc4186cb7f03884a667d4e \
-    --hash=sha256:a7eb2b0c9a18560d8197fe35047ceb58e7e8ab7623a3e5a82613f6a2cd71cffa
+hypothesis==6.70.0 \
+    --hash=sha256:be395f71d6337a5e8ed2f695c568360a686056c3b00c98bd818874c674b24586 \
+    --hash=sha256:f5cae09417d0ffc7711f602cdcfa3b7baf344597a672a84658186605b04f4a4f
     # via -r requirements/pytest.in
 idna==3.4 \
     --hash=sha256:814f528e8dead7d329833b91c5faa87d60bf71824cd12a7530b5526063d02cb4 \
@@ -546,6 +546,7 @@ sphinx==5.3.0 \
     #   -r doc/requirements.in
     #   sphinx-autobuild
     #   sphinx-rtd-theme
+    #   sphinxcontrib-jquery
     #   sphinxcontrib-restbuilder
     #   sphinxcontrib-spelling
 sphinx-autobuild==2021.3.14 \
@@ -568,9 +569,9 @@ sphinxcontrib-htmlhelp==2.0.0 \
     --hash=sha256:d412243dfb797ae3ec2b59eca0e52dac12e75a241bf0e4eb861e450d06c6ed07 \
     --hash=sha256:f5f8bb2d0d629f398bf47d0d69c07bc13b65f75a81ad9e2f71a63d4b7a2f6db2
     # via sphinx
-sphinxcontrib-jquery==2.0.0 \
-    --hash=sha256:8fb65f6dba84bf7bcd1aea1f02ab3955ac34611d838bcc95d4983b805b234daa \
-    --hash=sha256:ed47fa425c338ffebe3c37e1cdb56e30eb806116b85f01055b158c7057fdb995
+sphinxcontrib-jquery==4.1 \
+    --hash=sha256:1620739f04e36a2c779f1a131a2dfd49b2fd07351bf1968ced074365933abc7a \
+    --hash=sha256:f936030d7d0147dd026a4f2b5a57343d233f1fc7b363f68b3d4f1cb0993878ae
     # via sphinx-rtd-theme
 sphinxcontrib-jsmath==1.0.1 \
     --hash=sha256:2ec2eaebfb78f3f2078e73666b1415417a116cc848b72e5172e596c871103178 \
@@ -791,4 +792,3 @@ setuptools==65.7.0 \
     #   -c requirements/pins.pip
     #   -r requirements/pip.in
     #   check-manifest
-    #   sphinxcontrib-jquery

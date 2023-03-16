@@ -28,9 +28,9 @@ flaky==3.7.0 \
     --hash=sha256:3ad100780721a1911f57a165809b7ea265a7863305acb66708220820caf8aa0d \
     --hash=sha256:d6eda73cab5ae7364504b7c44670f70abed9e75f77dd116352f662817592ec9c
     # via -r requirements/pytest.in
-hypothesis==6.68.2 \
-    --hash=sha256:2a41cc766cde52705895e54547374af89c617e8ec7bc4186cb7f03884a667d4e \
-    --hash=sha256:a7eb2b0c9a18560d8197fe35047ceb58e7e8ab7623a3e5a82613f6a2cd71cffa
+hypothesis==6.70.0 \
+    --hash=sha256:be395f71d6337a5e8ed2f695c568360a686056c3b00c98bd818874c674b24586 \
+    --hash=sha256:f5cae09417d0ffc7711f602cdcfa3b7baf344597a672a84658186605b04f4a4f
     # via -r requirements/pytest.in
 importlib-metadata==6.0.0 \
     --hash=sha256:7efb448ec9a5e313a57655d35aa54cd3e01b7e1fbcf72dce1bf06119420f5bad \
