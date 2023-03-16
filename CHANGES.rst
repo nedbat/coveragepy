@@ -17,8 +17,12 @@ development at the same time, such as 4.5.x and 5.0.
     ..  Version 9.8.1 — 2027-07-27
     ..  --------------------------
 
-Unreleased
-----------
+.. scriv-start-here
+
+.. _changes_7-2-2:
+
+Version 7.2.2 — 2023-03-16
+--------------------------
 
 - Fix: if a virtualenv was created inside a source directory, and a sourced
   package was installed inside the virtualenv, then all of the third-party
@@ -39,8 +43,6 @@ Unreleased
 .. _pull 1574: https://github.com/nedbat/coveragepy/pull/1574
 .. _pull 1583: https://github.com/nedbat/coveragepy/pull/1583
 
-
-.. scriv-start-here
 
 .. _changes_7-2-1:
 
