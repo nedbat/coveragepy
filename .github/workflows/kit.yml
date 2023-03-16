@@ -47,7 +47,7 @@ concurrency:
 
 jobs:
   wheels:
-    name: "Build ${{ matrix.os }} ${{ matrix.py }} ${{ matrix.arch }} wheels"
+    name: "${{ matrix.py }} ${{ matrix.os }} ${{ matrix.arch }} wheels"
     runs-on: ${{ matrix.os }}-latest
     strategy:
       matrix:
@@ -177,7 +177,7 @@ jobs:
           path: wheelhouse/*.whl
 
   sdist:
-    name: "Build source distribution"
+    name: "Source distribution"
     runs-on: ubuntu-latest
     steps:
       - name: "Check out the repo"
@@ -209,7 +209,7 @@ jobs:
           path: dist/*.tar.gz
 
   pypy:
-    name: "Build PyPy wheel"
+    name: "PyPy wheel"
     runs-on: ubuntu-latest
     steps:
       - name: "Check out the repo"
