@@ -212,6 +212,11 @@ coverage.index_ready = function () {
 coverage.LINE_FILTERS_STORAGE = "COVERAGE_LINE_FILTERS";
 
 coverage.pyfile_ready = function () {
+    cboxes = document.querySelectorAll('[id^=ctxs]')
+    cboxes.forEach(function(cbox) {
+        cbox.addEventListener("click", coverage.showContexts)
+    });
+
     // If we're directed to a particular line number, highlight the line.
     var frag = location.hash;
     if (frag.length > 2 && frag[1] === 't') {
@@ -596,30 +601,25 @@ coverage.wire_up_sticky_header = function () {
 };
 
 coverage.showContexts = function (e) {
-  span = e.target.nextElementSibling.nextElementSibling;
-  span_text = span.textContent;
+    span = e.target.nextElementSibling.nextElementSibling;
+    span_text = span.textContent;
 
-  if (/^[0-9,]+$/.test(span_text))
-  {
-    span.textContent = "";
-    span_text.split(",").forEach(function(s) {
-      ctx = contexts[s];
-      span.appendChild(document.createTextNode(ctx));
-      span.appendChild(document.createElement("br"));
-    })
-  }
+    if (/^[0-9,]+$/.test(span_text))
+    {
+        span.textContent = "";
+        span_text.split(",").forEach(function(s) {
+            ctx = contexts[s];
+            span.appendChild(document.createTextNode(ctx));
+            span.appendChild(document.createElement("br"));
+        })
+    }
 };
 
 document.addEventListener("DOMContentLoaded", () => {
-  cboxes = document.querySelectorAll('[id^=ctxs]')
-  cboxes.forEach(function(cbox) {
-    cbox.addEventListener("click", coverage.showContexts)
-  });
-
-  if (document.body.classList.contains("indexfile")) {
-    coverage.index_ready();
-  } else {
-    coverage.pyfile_ready();
-  }
+    if (document.body.classList.contains("indexfile")) {
+        coverage.index_ready();
+    } else {
+        coverage.pyfile_ready();
+    }
 
 });

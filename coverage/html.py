@@ -370,7 +370,7 @@ class HtmlReporter:
         # Write the HTML page for this file.
         file_data = self.datagen.data_for_file(ftr.fr, ftr.analysis)
 
-        contexts=Counter(c for cline in file_data.lines for c in cline.contexts)
+        contexts = Counter(c for cline in file_data.lines for c in cline.contexts)
         context_codes = {y: i for (i, y) in enumerate(x[0] for x in contexts.most_common())}
         contexts_json = json.dumps({v: k for (k, v) in context_codes.items()}, indent=2)
 
@@ -387,7 +387,7 @@ class HtmlReporter:
                     )
             ldata.html = ''.join(html_parts)
 
-            ldata.context_str = ",".join([str(context_codes[c_context]) for c_context in ldata.context_list])
+            ldata.context_str = ",".join(str(context_codes[c_context]) for c_context in ldata.context_list)
 
             if ldata.short_annotations:
                 # 202F is NARROW NO-BREAK SPACE.
@@ -421,14 +421,13 @@ class HtmlReporter:
                 )
             ldata.css_class = ' '.join(css_classes) or "pln"
 
-        di = file_data.__dict__
-        if contexts_json == "{}":
-            di["contexts_json"] = None
+        if context_codes:
+            file_data.__dict__["contexts_json"] = contexts_json
         else:
-            di["contexts_json"] = contexts_json
+            file_data.__dict__["contexts_json"] = None
         html_path = os.path.join(self.directory, ftr.html_filename)
         html = self.source_tmpl.render({
-            **di,
+            **file_data.__dict__,
             'prev_html': prev_html,
             'next_html': next_html,
         })
