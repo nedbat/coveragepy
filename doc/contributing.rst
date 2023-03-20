@@ -33,23 +33,19 @@ you frustration.
 Getting the code
 ----------------
 
-Fork the repo into your own github repository.  If you have not forked a
-repository before then please follow the `fork instructions`_ provided by
-github.
+The coverage.py code is hosted on a GitHub repository at
+https://github.com/nedbat/coveragepy.  To get a working environment, follow
+these steps:
 
-.. _fork instructions: https://docs.github.com/en/get-started/quickstart/fork-a-repo
+#.  `Fork the repo`__ into your own GitHub account.  The coverage.py code
+will then be copied into a GitHub repository at
+https://github.com/GITHUB_USER/coveragepy where GITHUB_USER is your GitHub
+username.
 
-The coverage.py code will then be copied into a GitHub repository at
-https://github.com/GITHUB_USER/coveragepy where GITHUB_USER is your github
-username.  To get a working development environment, follow these steps:
+__ https://docs.github.com/en/get-started/quickstart/fork-a-repo
 
-.. minimum of PYVERSIONS:
-
-#.  Create a virtualenv using one of the common virtualenv formats (conda,
-venv, pipenv, etc) and a version of python greater than 3.7 to work in, and
-activate it. Please follow your virtualenv format specific creation and 
-activation instructions.
-
+#.  (Optional) Create a virtualenv to work in, and activate it.  There
+are a number of ways to do this.  Use the method you are comfortable with.
 
 #.  Clone the repository::
 
@@ -58,27 +54,16 @@ activation instructions.
 
 #.  Install the requirements::
 
-    $ python3 -m pip install -r requirements/dev.pip
-
-    If this fails due to incorrect or missing hashes, use
-    ``dev.in`` instead::
-
     $ python3 -m pip install -r requirements/dev.in
-    
-    Note: You may need to upgrade pip to install the requirements.
 
-#.  (Optional) Install more versions of Python. By default, Coverage.py won't
-    run the tests on a version of python that isn't installed.  Coverage.py
-    supports a range of Python versions.  The more you can test with, the more
-    easily your code can be used as-is.  If you only have one version, that's
-    OK too, but may mean more work integrating your contribution.
+    Note: You may need to upgrade pip to install the requirements.
 
 
 Running the tests
 -----------------
 
 The tests are written mostly as standard unittest-style tests, and are run with
-pytest running under `tox`_ by using the command `python3 -m tox`::
+pytest running under `tox`_::
 
     % python3 -m tox
     ROOT: tox-gh won't override envlist because tox is not running in GitHub Actions
