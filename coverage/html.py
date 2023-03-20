@@ -10,7 +10,6 @@ import json
 import os
 import re
 import shutil
-import json
 from collections import Counter
 
 from dataclasses import dataclass
@@ -86,6 +85,7 @@ class LineData:
     short_annotations: List[str]
     long_annotations: List[str]
     html: str = ""
+    context_str: Optional[str] = None
     annotate: Optional[str] = None
     annotate_long: Optional[str] = None
     css_class: str = ""
@@ -387,7 +387,8 @@ class HtmlReporter:
                     )
             ldata.html = ''.join(html_parts)
 
-            ldata.context_str = ",".join(str(context_codes[c_context]) for c_context in ldata.context_list)
+            ldata.context_str = ",".join(
+                str(context_codes[c_context]) for c_context in ldata.context_list)
 
             if ldata.short_annotations:
                 # 202F is NARROW NO-BREAK SPACE.
