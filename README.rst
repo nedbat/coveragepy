@@ -70,9 +70,10 @@ For Enterprise
 Getting Started
 ---------------
 
-See the `Quick Start section`_ of the docs.
+Looking to run ``coverage`` on your current `pytest`_ suite(s)? See the `Quick Start section`_ of the docs.
 
 .. _Quick Start section: https://coverage.readthedocs.io/#quick-start
+.. _pytest: https://docs.pytest.org
 
 
 Change history
@@ -95,6 +96,8 @@ Community Code of Conduct`_.
 
 Contributing
 ------------
+
+Found a bug? Want to help improve the code or documentation?
 
 See the `Contributing section`_ of the docs.
 
