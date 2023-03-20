@@ -70,7 +70,8 @@ For Enterprise
 Getting Started
 ---------------
 
-See the `Quick Start section`_ of the docs.
+Looking to run ``coverage`` on your test suite? See the `Quick Start section`_
+of the docs.
 
 .. _Quick Start section: https://coverage.readthedocs.io/#quick-start
 
@@ -96,7 +97,8 @@ Community Code of Conduct`_.
 Contributing
 ------------
 
-See the `Contributing section`_ of the docs.
+Found a bug? Want to help improve the code or documentation? See the
+`Contributing section`_ of the docs.
 
 .. _Contributing section: https://coverage.readthedocs.io/en/latest/contributing.html
 
