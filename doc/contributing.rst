@@ -33,17 +33,27 @@ you frustration.
 Getting the code
 ----------------
 
-The coverage.py code is hosted on a GitHub repository at
-https://github.com/nedbat/coveragepy.  To get a working environment, follow
-these steps:
+Fork the repo into your own github repository.  If you have not forked a
+repository before then please follow the `fork instructions`_ provided by
+github.
+
+The coverage.py code will then be copied into a GitHub repository at
+https://github.com/{GITHUB_USER}/coveragepy where GITHUB_USER is your github
+username.  To get a working development environment, follow these steps:
 
 .. minimum of PYVERSIONS:
 
-#.  Create a Python 3.7 virtualenv to work in, and activate it.
+#.  Create a virtualenv using one of the common virtualenv formats (conda,
+venv, pipenv, etc) and a version of python greater than 3.7 to work in, and
+activate it. Example::
+
+    $ python3.7 -m venv venv
+    $ source venv/bin/activate
+
 
 #.  Clone the repository::
 
-    $ git clone https://github.com/nedbat/coveragepy
+    $ git clone https://github.com/{your_github}/coveragepy
     $ cd coveragepy
 
 #.  Install the requirements::
@@ -54,20 +64,23 @@ these steps:
     ``dev.in`` instead::
 
     $ python3 -m pip install -r requirements/dev.in
+    
+    Note: You may need to upgrade pip to install the requirements.
 
-#.  Install a number of versions of Python.  Coverage.py supports a range
-    of Python versions.  The more you can test with, the more easily your code
-    can be used as-is.  If you only have one version, that's OK too, but may
-    mean more work integrating your contribution.
+#.  (Optional) Install more versions of Python. By default, Coverage.py won't
+    run the tests on a version of python that isn't installed.  Coverage.py
+    supports a range of Python versions.  The more you can test with, the more
+    easily your code can be used as-is.  If you only have one version, that's
+    OK too, but may mean more work integrating your contribution.
 
 
 Running the tests
 -----------------
 
 The tests are written mostly as standard unittest-style tests, and are run with
-pytest running under `tox`_::
+pytest running under `tox`_ by using the command `python3 -m tox`::
 
-    % tox
+    % python3 -m tox
     ROOT: tox-gh won't override envlist because tox is not running in GitHub Actions
     .pkg: _optional_hooks> python /usr/local/virtualenvs/coverage/lib/python3.7/site-packages/pyproject_api/_backend.py True setuptools.build_meta
     .pkg: get_requires_for_build_editable> python /usr/local/virtualenvs/coverage/lib/python3.7/site-packages/pyproject_api/_backend.py True setuptools.build_meta
@@ -113,21 +126,21 @@ the second uses the Python implementation.
 
 To limit tox to just a few versions of Python, use the ``-e`` switch::
 
-    $ tox -e py37,py39
+    $ python3 -m tox -e py37,py39
 
 On the tox command line, options after ``--`` are passed to pytest.  To run
 just a few tests, you can use `pytest test selectors`_::
 
-    $ tox -- tests/test_misc.py
-    $ tox -- tests/test_misc.py::HasherTest
-    $ tox -- tests/test_misc.py::HasherTest::test_string_hashing
+    $ python3 -m tox -- tests/test_misc.py
+    $ python3 -m tox -- tests/test_misc.py::HasherTest
+    $ python3 -m tox -- tests/test_misc.py::HasherTest::test_string_hashing
 
 These commands run the tests in one file, one class, and just one test,
 respectively.  The pytest ``-k`` option selects tests based on a word in their
 name, which can be very convenient for ad-hoc test selection.  Of course you
 can combine tox and pytest options::
 
-    $ tox -q -e py37 -- -n 0 -vv -k hash
+    $ python3 -m tox -q -e py37 -- -n 0 -vv -k hash
     === CPython 3.7.15 with C tracer (.tox/py37/bin/python) ===
     ======================================= test session starts ========================================
     platform darwin -- Python 3.7.15, pytest-7.2.2, pluggy-1.0.0 -- /Users/nedbat/coverage/.tox/py37/bin/python
@@ -259,3 +272,4 @@ fixes.  If you need help writing tests, please ask.
 .. _tox: https://tox.readthedocs.io/
 .. _black: https://pypi.org/project/black/
 .. _set_env.py: https://nedbatchelder.com/blog/201907/set_envpy.html
+.. _fork_instructions: https://docs.github.com/en/get-started/quickstart/fork-a-repo
