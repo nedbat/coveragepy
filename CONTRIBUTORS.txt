@@ -99,6 +99,7 @@ Judson Neer
 Julian Berman
 Julien Voisin
 Justas Sadzevičius
+Kassandra Keeton
 Kjell Braden
 Krystian Kichewko
 Kyle Altendorf
@@ -127,6 +128,7 @@ Mickie Betz
 Mike Fiedler
 Nathan Land
 Naveen Yadav
+Neil Pilgrim
 Nikita Bloshchanevich
 Nils Kattenbeck
 Noel O'Boyle
@@ -138,6 +140,7 @@ Patrick Mezard
 Peter Baughman
 Peter Ebden
 Peter Portante
+Phebe Polk
 Reya B
 Rodrigue Cloutier
 Roger Hu
