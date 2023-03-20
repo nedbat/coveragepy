@@ -38,22 +38,20 @@ repository before then please follow the `fork instructions`_ provided by
 github.
 
 The coverage.py code will then be copied into a GitHub repository at
-https://github.com/{GITHUB_USER}/coveragepy where GITHUB_USER is your github
+https://github.com/GITHUB_USER/coveragepy where GITHUB_USER is your github
 username.  To get a working development environment, follow these steps:
 
 .. minimum of PYVERSIONS:
 
 #.  Create a virtualenv using one of the common virtualenv formats (conda,
 venv, pipenv, etc) and a version of python greater than 3.7 to work in, and
-activate it. Example::
-
-    $ python3.7 -m venv venv
-    $ source venv/bin/activate
+activate it. Please follow your virtualenv format specific creation and 
+activation instructions.
 
 
 #.  Clone the repository::
 
-    $ git clone https://github.com/{your_github}/coveragepy
+    $ git clone https://github.com/GITHUB_USER/coveragepy
     $ cd coveragepy
 
 #.  Install the requirements::
