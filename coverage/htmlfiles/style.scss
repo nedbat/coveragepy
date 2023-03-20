@@ -622,6 +622,7 @@ $border-indicator-width: .2em;
             @include background-dark($dark-context-bg-color);
             border-radius: .25em;
             margin-right: 1.75em;
+            text-align: right;
             span {
                 display: block;
                 text-align: right;
