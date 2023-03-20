@@ -125,15 +125,15 @@ Michał Bultrowicz
 Michał Górny
 Mickie Betz
 Mike Fiedler
-Naveen Yadav
 Nathan Land
+Naveen Yadav
 Nikita Bloshchanevich
 Nils Kattenbeck
 Noel O'Boyle
 Olivier Grisel
 Ori Avtalion
-Pankaj Pandey
 Pablo Carballo
+Pankaj Pandey
 Patrick Mezard
 Peter Baughman
 Peter Ebden
@@ -168,8 +168,8 @@ Thijs Triemstra
 Thomas Grainger
 Titus Brown
 Valentin Lab
-Vince Salvino
 Ville Skyttä
+Vince Salvino
 Xie Yanbo
 Yilei "Dolee" Yang
 Yury Selivanov
