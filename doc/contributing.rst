@@ -37,6 +37,8 @@ Fork the repo into your own github repository.  If you have not forked a
 repository before then please follow the `fork instructions`_ provided by
 github.
 
+.. _fork instructions: https://docs.github.com/en/get-started/quickstart/fork-a-repo
+
 The coverage.py code will then be copied into a GitHub repository at
 https://github.com/GITHUB_USER/coveragepy where GITHUB_USER is your github
 username.  To get a working development environment, follow these steps:
@@ -270,4 +272,3 @@ fixes.  If you need help writing tests, please ask.
 .. _tox: https://tox.readthedocs.io/
 .. _black: https://pypi.org/project/black/
 .. _set_env.py: https://nedbatchelder.com/blog/201907/set_envpy.html
-.. _fork_instructions: https://docs.github.com/en/get-started/quickstart/fork-a-repo
