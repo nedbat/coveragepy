@@ -9,16 +9,26 @@ these comparisons is in tests/goldtest.py.
 
 If gold tests are failing, you may need to update the gold files by copying the
 current output of the tests into the gold files. When a test fails, the actual
-output is in the tests/actual directory. Do not commit those files to git.
+output is in the tests/actual directory. Those files are ignored by git.
 
-You can run just the failed tests again with::
+There's a Makefile in the html directory for working with gold files and their
+associated support files.  If actual outputs have changed so that comparisons
+are failing, but the new output is correct, you can use "make update-gold" to
+copy the actual output as the new gold files.
+
+If you have added a gold test, you'll need to manually copy the tests/actual
+files to tests/gold.
+
+Once you've copied the actual results to the gold files, or to check your work
+again, you can run just the failed tests again with::
 
     tox -e py39 -- -n 0 --lf
 
 The saved HTML files in the html directories can't be viewed properly without
 the supporting CSS and Javascript files. But we don't want to save copies of
-those files in every subdirectory.  There's a Makefile in the html directory
-for working with the saved copies of the support files.
+those files in every subdirectory. The make target "make complete" in
+tests/gold/html will copy the support file so you can open the HTML files to
+see how they look.
 
 If the output files are correct, you can update the gold files with "make
 update-gold".  If there are version-specific gold files (for example,

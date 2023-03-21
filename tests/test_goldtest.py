@@ -13,7 +13,7 @@ import pytest
 from tests.coveragetest import CoverageTest, TESTS_DIR
 from tests.goldtest import compare, gold_path
 from tests.goldtest import contains, contains_any, contains_rx, doesnt_contain
-from tests.helpers import re_line, remove_tree
+from tests.helpers import os_sep, re_line, remove_tree
 
 GOOD_GETTY = """\
 Four score and seven years ago our fathers brought forth upon this continent, a
@@ -73,6 +73,10 @@ class CompareTest(CoverageTest):
         assert "+ Five score" in stdout
         assert re_line(rf"^:::: diff '.*{GOLD_PATH_RX}' and '{OUT_PATH_RX}'", stdout)
         assert re_line(rf"^:::: end diff '.*{GOLD_PATH_RX}' and '{OUT_PATH_RX}'", stdout)
+        assert (
+            os_sep(f"Saved actual output to '{ACTUAL_GETTY_FILE}': see tests/gold/README.rst")
+            in os_sep(stdout)
+        )
         assert "  D/D/D, Gxxx, Pennsylvania" in stdout
 
         # The actual file was saved.

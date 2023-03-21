@@ -46,6 +46,8 @@ def compare(
     """
     __tracebackhide__ = True    # pytest, please don't show me this function.
     assert os_sep("/gold/") in expected_dir
+    assert os.path.exists(actual_dir)
+    os.makedirs(expected_dir, exist_ok=True)
 
     dc = filecmp.dircmp(expected_dir, actual_dir)
     diff_files = _fnmatch_list(dc.diff_files, file_pattern)
@@ -56,9 +58,11 @@ def compare(
         """Save a mismatched result to tests/actual."""
         save_path = expected_dir.replace(os_sep("/gold/"), os_sep("/actual/"))
         os.makedirs(save_path, exist_ok=True)
-        with open(os.path.join(save_path, f), "w") as savef:
+        save_file = os.path.join(save_path, f)
+        with open(save_file, "w") as savef:
             with open(os.path.join(actual_dir, f)) as readf:
                 savef.write(readf.read())
+                print(os_sep(f"Saved actual output to '{save_file}': see tests/gold/README.rst"))
 
     # filecmp only compares in binary mode, but we want text mode.  So
     # look through the list of different files, and compare them
