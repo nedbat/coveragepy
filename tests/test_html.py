@@ -1199,6 +1199,9 @@ class HtmlWithContextsTest(HtmlTestHelpers, CoverageTest):
             ]
             assert sorted(expected) == sorted(actual)
 
+        cov.html_report(mod, directory="out/contexts")
+        compare_html(gold_path("html/contexts"), "out/contexts")
+
     def test_filtered_dynamic_contexts(self) -> None:
         self.make_file("two_tests.py", self.SOURCE)
         cov = coverage.Coverage(source=["."])
