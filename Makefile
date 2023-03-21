@@ -11,18 +11,18 @@
 
 clean_platform:
 	@rm -f *.so */*.so
+	@rm -f *.pyd */*.pyd
 	@rm -rf __pycache__ */__pycache__ */*/__pycache__ */*/*/__pycache__ */*/*/*/__pycache__ */*/*/*/*/__pycache__
 	@rm -f *.pyc */*.pyc */*/*.pyc */*/*/*.pyc */*/*/*/*.pyc */*/*/*/*/*.pyc
 	@rm -f *.pyo */*.pyo */*/*.pyo */*/*/*.pyo */*/*/*/*.pyo */*/*/*/*/*.pyo
+	@rm -f *$$py.class */*$$py.class */*/*$$py.class */*/*/*$$py.class */*/*/*/*$$py.class */*/*/*/*/*$$py.class
 
 clean: clean_platform			## Remove artifacts of test execution, installation, etc.
 	@echo "Cleaning..."
 	@-pip uninstall -yq coverage
-	@rm -f *.pyd */*.pyd
 	@chmod -R 777 build
 	@rm -rf build coverage.egg-info dist htmlcov
 	@rm -f *.bak */*.bak */*/*.bak */*/*/*.bak */*/*/*/*.bak */*/*/*/*/*.bak
-	@rm -f *$$py.class */*$$py.class */*/*$$py.class */*/*/*$$py.class */*/*/*/*$$py.class */*/*/*/*/*$$py.class
 	@rm -f coverage/*,cover
 	@rm -f MANIFEST
 	@rm -f .coverage .coverage.* coverage.xml coverage.json .metacov*
