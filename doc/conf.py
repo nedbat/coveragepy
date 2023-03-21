@@ -36,7 +36,6 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.todo',
     'sphinx.ext.ifconfig',
-    'sphinxcontrib.spelling',
     'sphinx.ext.intersphinx',
     'sphinxcontrib.restbuilder',
     'sphinx.ext.napoleon',
@@ -220,6 +219,9 @@ htmlhelp_basename = 'coveragepydoc'
 # -- Spelling ---
 
 if any("spell" in arg for arg in sys.argv):
+    # sphinxcontrib.spelling needs the native "enchant" library, which often is
+    # missing, so only use the extension if we are specifically spell-checking.
+    extensions += ['sphinxcontrib.spelling']
     names_file = tempfile.NamedTemporaryFile(mode='w', prefix="coverage_names_", suffix=".txt")
     with open("../CONTRIBUTORS.txt") as contributors:
         names = set(re.split(r"[^\w']", contributors.read()))
