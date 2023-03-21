@@ -19,6 +19,7 @@ clean: clean_platform			## Remove artifacts of test execution, installation, etc
 	@echo "Cleaning..."
 	@-pip uninstall -yq coverage
 	@rm -f *.pyd */*.pyd
+	@chmod -R 777 build
 	@rm -rf build coverage.egg-info dist htmlcov
 	@rm -f *.bak */*.bak */*/*.bak */*/*/*.bak */*/*/*/*.bak */*/*/*/*/*.bak
 	@rm -f *$$py.class */*$$py.class */*/*$$py.class */*/*/*$$py.class */*/*/*/*$$py.class */*/*/*/*/*$$py.class
