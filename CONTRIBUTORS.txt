@@ -116,6 +116,7 @@ Marcus Cobden
 Marius Gedminas
 Mark van der Wal
 Martin Fuzzey
+Mathieu Kniewallner
 Matt Bachmann
 Matthew Boehm
 Matthew Desmarais

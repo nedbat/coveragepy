@@ -23,7 +23,7 @@ environment variable.
 This will write a line for each file considered, indicating whether it is
 traced or not, and if not, why not.  Be careful though: the output might be
 swallowed by your test runner.  If so, a ``COVERAGE_DEBUG_FILE=/tmp/cov.out``
-environemnt variable can direct the output to a file insttead to ensure you see
+environment variable can direct the output to a file instead to ensure you see
 everything.
 
 

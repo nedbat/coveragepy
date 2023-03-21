@@ -24,6 +24,7 @@ api
 args
 argv
 ascii
+async
 basename
 basenames
 bitbucket
@@ -59,8 +60,11 @@ coveragepy
 coveragerc
 covhtml
 css
+dataio
 datetime
 deallocating
+debounce
+decodable
 dedent
 defaultdict
 deserialize
@@ -85,6 +89,7 @@ exec'ing
 execfile
 executability
 executable's
+execv
 expr
 extensibility
 favicon
@@ -106,6 +111,7 @@ github
 gitignore
 globals
 greenlet
+hintedness
 hotkey
 hotkeys
 html
@@ -143,8 +149,10 @@ monospaced
 morf
 morfs
 multi
+multiproc
 mumbo
 mycode
+mypy
 namespace
 namespaces
 nano
@@ -152,6 +160,8 @@ nbsp
 ned
 nedbat
 nedbatchelder
+newb
+nocover
 nosetests
 nullary
 num
@@ -167,6 +177,7 @@ overridable
 parallelizing
 parsable
 parsers
+pathlib
 pathnames
 plugin
 plugins
@@ -174,6 +185,7 @@ pragma
 pragma'd
 pragmas
 pre
+premain
 prepended
 prepending
 programmability
@@ -181,7 +193,9 @@ programmatically
 py
 py's
 pyc
+pyenv
 pyexpat
+pylib
 pylint
 pyproject
 pypy
@@ -191,6 +205,7 @@ pyw
 rcfile
 readme
 readthedocs
+realpath
 recordable
 refactored
 refactoring
@@ -199,9 +214,11 @@ regex
 regexes
 reimplemented
 renderer
+rootname
 runnable
 runtime
 scrollbar
+septatrix
 serializable
 settrace
 setuptools
@@ -250,6 +267,7 @@ unparsable
 unrunnable
 unsubscriptable
 untokenizable
+usecache
 username
 utf
 vendored
@@ -259,6 +277,7 @@ wikipedia
 wildcard
 wildcards
 www
+xdist
 xml
 xrange
 xyzzy
