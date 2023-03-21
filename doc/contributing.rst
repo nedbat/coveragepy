@@ -37,15 +37,13 @@ The coverage.py code is hosted on a GitHub repository at
 https://github.com/nedbat/coveragepy.  To get a working environment, follow
 these steps:
 
-#.  `Fork the repo`__ into your own GitHub account.  The coverage.py code
-will then be copied into a GitHub repository at
-https://github.com/GITHUB_USER/coveragepy where GITHUB_USER is your GitHub
-username.
-
-__ https://docs.github.com/en/get-started/quickstart/fork-a-repo
+#.  `Fork the repo`_ into your own GitHub account.  The coverage.py code will
+    then be copied into a GitHub repository at
+    ``https://github.com/GITHUB_USER/coveragepy`` where GITHUB_USER is your
+    GitHub username.
 
 #.  (Optional) Create a virtualenv to work in, and activate it.  There
-are a number of ways to do this.  Use the method you are comfortable with.
+    are a number of ways to do this.  Use the method you are comfortable with.
 
 #.  Clone the repository::
 
@@ -253,6 +251,7 @@ All contributions are expected to include tests for new functionality and
 fixes.  If you need help writing tests, please ask.
 
 
+.. _fork the repo: https://docs.github.com/en/get-started/quickstart/fork-a-repo
 .. _editorconfig.org: http://editorconfig.org
 .. _tox: https://tox.readthedocs.io/
 .. _black: https://pypi.org/project/black/
