@@ -357,7 +357,7 @@ def format_lines(
                     dest = (ex if ex > 0 else "exit")
                     line_items.append((line, f"{line}->{dest}"))
 
-    ret = ', '.join(t[-1] for t in sorted(line_items))
+    ret = ", ".join(t[-1] for t in sorted(line_items))
     return ret
 
 

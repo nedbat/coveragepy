@@ -114,7 +114,7 @@ class Plugins:
 
         """
         plugin_name = f"{self.current_module}.{plugin.__class__.__name__}"
-        if self.debug and self.debug.should('plugin'):
+        if self.debug and self.debug.should("plugin"):
             self.debug.write(f"Loaded plugin {self.current_module!r}: {plugin!r}")
             labelled = LabelledDebug(f"plugin {self.current_module!r}", self.debug)
             plugin = DebugPluginWrapper(plugin, labelled)
@@ -150,7 +150,7 @@ class LabelledDebug:
 
     def message_prefix(self) -> str:
         """The prefix to use on messages, combining the labels."""
-        prefixes = self.labels + ['']
+        prefixes = self.labels + [""]
         return ":\n".join("  "*i+label for i, label in enumerate(prefixes))
 
     def write(self, message: str) -> None:

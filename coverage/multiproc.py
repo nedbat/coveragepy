@@ -56,10 +56,10 @@ class Stowaway:
         self.rcfile = rcfile
 
     def __getstate__(self) -> Dict[str, str]:
-        return {'rcfile': self.rcfile}
+        return {"rcfile": self.rcfile}
 
     def __setstate__(self, state: Dict[str, str]) -> None:
-        patch_multiprocessing(state['rcfile'])
+        patch_multiprocessing(state["rcfile"])
 
 
 def patch_multiprocessing(rcfile: str) -> None:
@@ -96,7 +96,7 @@ def patch_multiprocessing(rcfile: str) -> None:
         def get_preparation_data_with_stowaway(name: str) -> Dict[str, Any]:
             """Get the original preparation data, and also insert our stowaway."""
             d = original_get_preparation_data(name)
-            d['stowaway'] = Stowaway(rcfile)
+            d["stowaway"] = Stowaway(rcfile)
             return d
 
         spawn.get_preparation_data = get_preparation_data_with_stowaway

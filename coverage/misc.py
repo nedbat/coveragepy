@@ -218,14 +218,14 @@ class Hasher:
                 self.update(v[k])
         else:
             for k in dir(v):
-                if k.startswith('__'):
+                if k.startswith("__"):
                     continue
                 a = getattr(v, k)
                 if inspect.isroutine(a):
                     continue
                 self.update(k)
                 self.update(a)
-        self.hash.update(b'.')
+        self.hash.update(b".")
 
     def hexdigest(self) -> str:
         """Retrieve the hex digest of the hash."""
@@ -292,7 +292,7 @@ def substitute_variables(text: str, variables: Mapping[str, str]) -> str:
         )
         """
 
-    dollar_groups = ('dollar', 'word1', 'word2')
+    dollar_groups = ("dollar", "word1", "word2")
 
     def dollar_replace(match: re.Match[str]) -> str:
         """Called for each $replacement."""
@@ -302,11 +302,11 @@ def substitute_variables(text: str, variables: Mapping[str, str]) -> str:
             return "$"
         elif word in variables:
             return variables[word]
-        elif match['strict']:
+        elif match["strict"]:
             msg = f"Variable {word} is undefined: {text!r}"
             raise CoverageException(msg)
         else:
-            return match['defval']
+            return match["defval"]
 
     text = re.sub(dollar_pattern, dollar_replace, text)
     return text
@@ -315,7 +315,7 @@ def substitute_variables(text: str, variables: Mapping[str, str]) -> str:
 def format_local_datetime(dt: datetime.datetime) -> str:
     """Return a string with local timezone representing the date.
     """
-    return dt.astimezone().strftime('%Y-%m-%d %H:%M %z')
+    return dt.astimezone().strftime("%Y-%m-%d %H:%M %z")
 
 
 def import_local_file(modname: str, modfile: Optional[str] = None) -> ModuleType:
@@ -327,7 +327,7 @@ def import_local_file(modname: str, modfile: Optional[str] = None) -> ModuleType
 
     """
     if modfile is None:
-        modfile = modname + '.py'
+        modfile = modname + ".py"
     spec = importlib.util.spec_from_file_location(modname, modfile)
     assert spec is not None
     mod = importlib.util.module_from_spec(spec)

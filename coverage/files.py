@@ -163,7 +163,7 @@ def zip_location(filename: str) -> Optional[Tuple[str, str]]:
     name is in the zipfile.
 
     """
-    for ext in ['.zip', '.whl', '.egg', '.pex']:
+    for ext in [".zip", ".whl", ".egg", ".pex"]:
         zipbase, extension, inner = filename.partition(ext + sep(filename))
         if extension:
             zipfile = zipbase + ext
@@ -273,7 +273,7 @@ class ModuleMatcher:
             if module_name.startswith(m):
                 if module_name == m:
                     return True
-                if module_name[len(m)] == '.':
+                if module_name[len(m)] == ".":
                     # This is a module in the package
                     return True
 
@@ -433,7 +433,7 @@ class PathAliases:
         # The pattern is meant to match a file path.  Let's make it absolute
         # unless it already is, or is meant to match any prefix.
         if not self.relative:
-            if not pattern.startswith('*') and not isabs_anywhere(pattern + pattern_sep):
+            if not pattern.startswith("*") and not isabs_anywhere(pattern + pattern_sep):
                 pattern = abs_file(pattern)
         if not pattern.endswith(pattern_sep):
             pattern += pattern_sep

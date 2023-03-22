@@ -57,7 +57,7 @@ def _phys_tokens(toks: TokenInfos) -> TokenInfos:
                 if last_ttext.endswith("\\"):
                     inject_backslash = False
                 elif ttype == token.STRING:
-                    if "\n" in ttext and ttext.split('\n', 1)[0][-1] == '\\':
+                    if "\n" in ttext and ttext.split("\n", 1)[0][-1] == "\\":
                         # It's a multi-line string and the first line ends with
                         # a backslash, so we don't need to inject another.
                         inject_backslash = False
@@ -113,7 +113,7 @@ def source_token_lines(source: str) -> TSourceTokenLines:
     line: List[Tuple[str, str]] = []
     col = 0
 
-    source = source.expandtabs(8).replace('\r\n', '\n')
+    source = source.expandtabs(8).replace("\r\n", "\n")
     tokgen = generate_tokens(source)
 
     if env.PYBEHAVIOR.soft_keywords:
@@ -121,13 +121,13 @@ def source_token_lines(source: str) -> TSourceTokenLines:
 
     for ttype, ttext, (sline, scol), (_, ecol), _ in _phys_tokens(tokgen):
         mark_start = True
-        for part in re.split('(\n)', ttext):
-            if part == '\n':
+        for part in re.split("(\n)", ttext):
+            if part == "\n":
                 yield line
                 line = []
                 col = 0
                 mark_end = False
-            elif part == '':
+            elif part == "":
                 mark_end = False
             elif ttype in ws_tokens:
                 mark_end = False
@@ -135,7 +135,7 @@ def source_token_lines(source: str) -> TSourceTokenLines:
                 if mark_start and scol > col:
                     line.append(("ws", " " * (scol - col)))
                     mark_start = False
-                tok_class = tokenize.tok_name.get(ttype, 'xx').lower()[:3]
+                tok_class = tokenize.tok_name.get(ttype, "xx").lower()[:3]
                 if ttype == token.NAME:
                     if keyword.iskeyword(ttext):
                         # Hard keywords are always keywords.

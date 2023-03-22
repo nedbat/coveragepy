@@ -63,12 +63,12 @@ def get_python_source(filename: str) -> str:
         raise NoSource(f"No source for code: '{filename}'.")
 
     # Replace \f because of http://bugs.python.org/issue19035
-    source_bytes = source_bytes.replace(b'\f', b' ')
+    source_bytes = source_bytes.replace(b"\f", b" ")
     source = source_bytes.decode(source_encoding(source_bytes), "replace")
 
     # Python code should always end with a line with a newline.
-    if source and source[-1] != '\n':
-        source += '\n'
+    if source and source[-1] != "\n":
+        source += "\n"
 
     return source
 
@@ -127,7 +127,7 @@ def source_for_file(filename: str) -> str:
 
 def source_for_morf(morf: TMorf) -> str:
     """Get the source filename for the module-or-file `morf`."""
-    if hasattr(morf, '__file__') and morf.__file__:
+    if hasattr(morf, "__file__") and morf.__file__:
         filename = morf.__file__
     elif isinstance(morf, types.ModuleType):
         # A module should have had .__file__, otherwise we can't use it.
@@ -157,9 +157,9 @@ class PythonFileReporter(FileReporter):
             fname = canonical_filename(filename)
         super().__init__(fname)
 
-        if hasattr(morf, '__name__'):
+        if hasattr(morf, "__name__"):
             name = morf.__name__.replace(".", os.sep)
-            if os.path.basename(filename).startswith('__init__.'):
+            if os.path.basename(filename).startswith("__init__."):
                 name += os.sep + "__init__"
             name += ".py"
         else:
@@ -183,7 +183,7 @@ class PythonFileReporter(FileReporter):
         if self._parser is None:
             self._parser = PythonParser(
                 filename=self.filename,
-                exclude=self.coverage._exclude_regex('exclude'),
+                exclude=self.coverage._exclude_regex("exclude"),
             )
             self._parser.parse_source()
         return self._parser
@@ -244,7 +244,7 @@ class PythonFileReporter(FileReporter):
         _, ext = os.path.splitext(self.filename)
 
         # Anything named *.py* should be Python.
-        if ext.startswith('.py'):
+        if ext.startswith(".py"):
             return True
         # A file with no extension should be Python.
         if not ext:

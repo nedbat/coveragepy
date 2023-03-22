@@ -84,7 +84,7 @@ class Coverage(TConfigurable):
         cov.start()
         #.. call your code ..
         cov.stop()
-        cov.html_report(directory='covhtml')
+        cov.html_report(directory="covhtml")
 
     Note: in keeping with Python custom, names starting with underscore are
     not part of the public API. They might stop working at any point.  Please
@@ -343,7 +343,7 @@ class Coverage(TConfigurable):
             self._should_write_debug = False
             self._write_startup_debug()
 
-        # '[run] _crash' will raise an exception if the value is close by in
+        # "[run] _crash" will raise an exception if the value is close by in
         # the call stack, for testing error handling.
         if self.config._crash and self.config._crash in short_stack(limit=4):
             raise RuntimeError(f"Crashing because called by {self.config._crash}")
@@ -380,7 +380,7 @@ class Coverage(TConfigurable):
         """
         assert self._inorout is not None
         disp = self._inorout.should_trace(filename, frame)
-        if self._debug.should('trace'):
+        if self._debug.should("trace"):
             self._debug.write(disposition_debug_msg(disp))
         return disp
 
@@ -392,7 +392,7 @@ class Coverage(TConfigurable):
         """
         assert self._inorout is not None
         reason = self._inorout.check_include_omit_etc(filename, frame)
-        if self._debug.should('trace'):
+        if self._debug.should("trace"):
             if not reason:
                 msg = f"Including {filename!r}"
             else:
@@ -420,7 +420,7 @@ class Coverage(TConfigurable):
         self._warnings.append(msg)
         if slug:
             msg = f"{msg} ({slug})"
-        if self._debug.should('pid'):
+        if self._debug.should("pid"):
             msg = f"[{os.getpid()}] {msg}"
         warnings.warn(msg, category=CoverageWarning, stacklevel=2)
 
@@ -566,7 +566,7 @@ class Coverage(TConfigurable):
         self._inorout = InOrOut(
             config=self.config,
             warn=self._warn,
-            debug=(self._debug if self._debug.should('trace') else None),
+            debug=(self._debug if self._debug.should("trace") else None),
             include_namespace_packages=self.config.include_namespace_packages,
         )
         self._inorout.plugins = self._plugins
@@ -703,13 +703,13 @@ class Coverage(TConfigurable):
 
         self._collector.switch_context(new_context)
 
-    def clear_exclude(self, which: str = 'exclude') -> None:
+    def clear_exclude(self, which: str = "exclude") -> None:
         """Clear the exclude list."""
         self._init()
         setattr(self.config, which + "_list", [])
         self._exclude_regex_stale()
 
-    def exclude(self, regex: str, which: str = 'exclude') -> None:
+    def exclude(self, regex: str, which: str = "exclude") -> None:
         """Exclude source lines from execution consideration.
 
         A number of lists of regular expressions are maintained.  Each list
@@ -740,7 +740,7 @@ class Coverage(TConfigurable):
             self._exclude_re[which] = join_regex(excl_list)
         return self._exclude_re[which]
 
-    def get_exclude_list(self, which: str = 'exclude') -> List[str]:
+    def get_exclude_list(self, which: str = "exclude") -> List[str]:
         """Return a list of excluded regex strings.
 
         `which` indicates which list is desired.  See :meth:`exclude` for the
@@ -969,7 +969,7 @@ class Coverage(TConfigurable):
         return file_reporters
 
     def _prepare_data_for_reporting(self) -> None:
-        """Re-map data before reporting, to get implicit 'combine' behavior."""
+        """Re-map data before reporting, to get implicit "combine" behavior."""
         if self.config.paths:
             mapped_data = CoverageData(warn=self._warn, debug=self._debug, no_disk=True)
             if self._data is not None:
@@ -1238,10 +1238,10 @@ class Coverage(TConfigurable):
     ) -> float:
         """Generate an LCOV report of coverage results.
 
-        Each module in 'morfs' is included in the report. 'outfile' is the
+        Each module in `morfs` is included in the report. `outfile` is the
         path to write the file to, "-" will write to stdout.
 
-        See :meth 'report' for other arguments.
+        See :meth:`report` for other arguments.
 
         .. versionadded:: 6.3
         """
@@ -1275,30 +1275,30 @@ class Coverage(TConfigurable):
             return entries
 
         info = [
-            ('coverage_version', covmod.__version__),
-            ('coverage_module', covmod.__file__),
-            ('tracer', self._collector.tracer_name() if self._collector is not None else "-none-"),
-            ('CTracer', 'available' if HAS_CTRACER else "unavailable"),
-            ('plugins.file_tracers', plugin_info(self._plugins.file_tracers)),
-            ('plugins.configurers', plugin_info(self._plugins.configurers)),
-            ('plugins.context_switchers', plugin_info(self._plugins.context_switchers)),
-            ('configs_attempted', self.config.attempted_config_files),
-            ('configs_read', self.config.config_files_read),
-            ('config_file', self.config.config_file),
-            ('config_contents',
-                repr(self.config._config_contents) if self.config._config_contents else '-none-'
+            ("coverage_version", covmod.__version__),
+            ("coverage_module", covmod.__file__),
+            ("tracer", self._collector.tracer_name() if self._collector is not None else "-none-"),
+            ("CTracer", "available" if HAS_CTRACER else "unavailable"),
+            ("plugins.file_tracers", plugin_info(self._plugins.file_tracers)),
+            ("plugins.configurers", plugin_info(self._plugins.configurers)),
+            ("plugins.context_switchers", plugin_info(self._plugins.context_switchers)),
+            ("configs_attempted", self.config.attempted_config_files),
+            ("configs_read", self.config.config_files_read),
+            ("config_file", self.config.config_file),
+            ("config_contents",
+                repr(self.config._config_contents) if self.config._config_contents else "-none-"
             ),
-            ('data_file', self._data.data_filename() if self._data is not None else "-none-"),
-            ('python', sys.version.replace('\n', '')),
-            ('platform', platform.platform()),
-            ('implementation', platform.python_implementation()),
-            ('executable', sys.executable),
-            ('def_encoding', sys.getdefaultencoding()),
-            ('fs_encoding', sys.getfilesystemencoding()),
-            ('pid', os.getpid()),
-            ('cwd', os.getcwd()),
-            ('path', sys.path),
-            ('environment', human_sorted(
+            ("data_file", self._data.data_filename() if self._data is not None else "-none-"),
+            ("python", sys.version.replace("\n", "")),
+            ("platform", platform.platform()),
+            ("implementation", platform.python_implementation()),
+            ("executable", sys.executable),
+            ("def_encoding", sys.getdefaultencoding()),
+            ("fs_encoding", sys.getfilesystemencoding()),
+            ("pid", os.getpid()),
+            ("cwd", os.getcwd()),
+            ("path", sys.path),
+            ("environment", human_sorted(
                 f"{k} = {v}"
                 for k, v in os.environ.items()
                 if (
@@ -1306,7 +1306,7 @@ class Coverage(TConfigurable):
                     (k in ("HOME", "TEMP", "TMP"))
                 )
             )),
-            ('command_line', " ".join(getattr(sys, 'argv', ['-none-']))),
+            ("command_line", " ".join(getattr(sys, "argv", ["-none-"]))),
         ]
 
         if self._inorout is not None:
@@ -1324,7 +1324,7 @@ if int(os.environ.get("COVERAGE_DEBUG_CALLS", 0)):              # pragma: debugg
 
     Coverage = decorate_methods(        # type: ignore[misc]
         show_calls(show_args=True),
-        butnot=['get_data']
+        butnot=["get_data"]
     )(Coverage)
 
 

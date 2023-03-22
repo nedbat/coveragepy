@@ -50,12 +50,12 @@ class DebugControl:
         self.suppress_callers = False
 
         filters = []
-        if self.should('pid'):
+        if self.should("pid"):
             filters.append(add_pid_and_tid)
         self.output = DebugOutputFile.get_one(
             output,
             file_name=file_name,
-            show_process=self.should('process'),
+            show_process=self.should("process"),
             filters=filters,
         )
         self.raw_output = self.output.outfile
@@ -86,11 +86,11 @@ class DebugControl:
 
         """
         self.output.write(msg+"\n")
-        if self.should('self'):
-            caller_self = inspect.stack()[1][0].f_locals.get('self')
+        if self.should("self"):
+            caller_self = inspect.stack()[1][0].f_locals.get("self")
             if caller_self is not None:
                 self.output.write(f"self: {caller_self!r}\n")
-        if self.should('callers'):
+        if self.should("callers"):
             dump_stack_frames(out=self.output, skip=1)
         self.output.flush()
 
@@ -228,7 +228,7 @@ def add_pid_and_tid(text: str) -> str:
 
 class AutoReprMixin:
     """A mixin implementing an automatic __repr__ for debugging."""
-    auto_repr_ignore = ['auto_repr_ignore', '$coverage.object_id']
+    auto_repr_ignore = ["auto_repr_ignore", "$coverage.object_id"]
 
     def __repr__(self) -> str:
         show_attrs = (
@@ -251,7 +251,7 @@ def simplify(v: Any) -> Any:                                # pragma: debugging
     elif isinstance(v, (list, tuple)):
         return type(v)(simplify(vv) for vv in v)
     elif hasattr(v, "__dict__"):
-        return simplify({'.'+k: v for k, v in v.__dict__.items()})
+        return simplify({"."+k: v for k, v in v.__dict__.items()})
     else:
         return v
 
@@ -312,8 +312,8 @@ class DebugOutputFile:
         if self.show_process:
             self.filters.insert(0, CwdTracker().filter)
             self.write(f"New process: executable: {sys.executable!r}\n")
-            self.write("New process: cmd: {!r}\n".format(getattr(sys, 'argv', None)))
-            if hasattr(os, 'getppid'):
+            self.write("New process: cmd: {!r}\n".format(getattr(sys, "argv", None)))
+            if hasattr(os, "getppid"):
                 self.write(f"New process: pid: {os.getpid()!r}, parent pid: {os.getppid()!r}\n")
 
     @classmethod
@@ -367,8 +367,8 @@ class DebugOutputFile:
     # a process-wide singleton. So stash it in sys.modules instead of
     # on a class attribute. Yes, this is aggressively gross.
 
-    SYS_MOD_NAME = '$coverage.debug.DebugOutputFile.the_one'
-    SINGLETON_ATTR = 'the_one_and_is_interim'
+    SYS_MOD_NAME = "$coverage.debug.DebugOutputFile.the_one"
+    SINGLETON_ATTR = "the_one_and_is_interim"
 
     @classmethod
     def _set_singleton_data(cls, the_one: DebugOutputFile, interim: bool) -> None:
@@ -485,7 +485,7 @@ def show_calls(
 def _clean_stack_line(s: str) -> str:                       # pragma: debugging
     """Simplify some paths in a stack trace, for compactness."""
     s = s.strip()
-    s = s.replace(os.path.dirname(__file__) + '/', '')
-    s = s.replace(os.path.dirname(os.__file__) + '/', '')
-    s = s.replace(sys.prefix + '/', '')
+    s = s.replace(os.path.dirname(__file__) + "/", "")
+    s = s.replace(os.path.dirname(os.__file__) + "/", "")
+    s = s.replace(sys.prefix + "/", "")
     return s

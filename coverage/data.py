@@ -133,7 +133,7 @@ def combine_parallel_data(
         if f == data.data_filename():
             # Sometimes we are combining into a file which is one of the
             # parallel files.  Skip that file.
-            if data._debug.should('dataio'):
+            if data._debug.should("dataio"):
                 data._debug.write(f"Skipping combining ourself: {f!r}")
             continue
 
@@ -153,7 +153,7 @@ def combine_parallel_data(
 
         delete_this_one = not keep
         if combine_this_one:
-            if data._debug.should('dataio'):
+            if data._debug.should("dataio"):
                 data._debug.write(f"Combining data file {f!r}")
             file_hashes.add(sha)
             try:
@@ -177,7 +177,7 @@ def combine_parallel_data(
                 message(f"Skipping duplicate data {rel_file_name}")
 
         if delete_this_one:
-            if data._debug.should('dataio'):
+            if data._debug.should("dataio"):
                 data._debug.write(f"Deleting data file {f!r}")
             file_be_gone(f)
 

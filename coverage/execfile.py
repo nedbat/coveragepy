@@ -172,7 +172,7 @@ class PyRunner:
         self._prepare2()
 
         # Create a module to serve as __main__
-        main_mod = ModuleType('__main__')
+        main_mod = ModuleType("__main__")
 
         from_pyc = self.arg0.endswith((".pyc", ".pyo"))
         main_mod.__file__ = self.arg0
@@ -184,9 +184,9 @@ class PyRunner:
         if self.spec is not None:
             main_mod.__spec__ = self.spec
 
-        main_mod.__builtins__ = sys.modules['builtins']     # type: ignore[attr-defined]
+        main_mod.__builtins__ = sys.modules["builtins"]     # type: ignore[attr-defined]
 
-        sys.modules['__main__'] = main_mod
+        sys.modules["__main__"] = main_mod
 
         # Set sys.argv properly.
         sys.argv = self.args
@@ -228,7 +228,7 @@ class PyRunner:
             # is non-None when the exception is reported at the upper layer,
             # and a nested exception is shown to the user.  This getattr fixes
             # it somehow? https://bitbucket.org/pypy/pypy/issue/1903
-            getattr(err, '__context__', None)
+            getattr(err, "__context__", None)
 
             # Call the excepthook.
             try:
@@ -311,7 +311,7 @@ def make_code_from_pyc(filename: str) -> CodeType:
         if magic != PYC_MAGIC_NUMBER:
             raise NoCode(f"Bad magic number in .pyc file: {magic!r} != {PYC_MAGIC_NUMBER!r}")
 
-        flags = struct.unpack('<L', fpyc.read(4))[0]
+        flags = struct.unpack("<L", fpyc.read(4))[0]
         hash_based = flags & 0x01
         if hash_based:
             fpyc.read(8)    # Skip the hash.

@@ -114,8 +114,8 @@ class HandyConfigParser(configparser.ConfigParser):
         """
         value_list = self.get(section, option)
         values = []
-        for value_line in value_list.split('\n'):
-            for value in value_line.split(','):
+        for value_line in value_list.split("\n"):
+            for value in value_line.split(","):
                 value = value.strip()
                 if value:
                     values.append(value)
@@ -150,20 +150,20 @@ TConfigParser = Union[HandyConfigParser, TomlConfigParser]
 
 # The default line exclusion regexes.
 DEFAULT_EXCLUDE = [
-    r'#\s*(pragma|PRAGMA)[:\s]?\s*(no|NO)\s*(cover|COVER)',
+    r"#\s*(pragma|PRAGMA)[:\s]?\s*(no|NO)\s*(cover|COVER)",
 ]
 
 # The default partial branch regexes, to be modified by the user.
 DEFAULT_PARTIAL = [
-    r'#\s*(pragma|PRAGMA)[:\s]?\s*(no|NO)\s*(branch|BRANCH)',
+    r"#\s*(pragma|PRAGMA)[:\s]?\s*(no|NO)\s*(branch|BRANCH)",
 ]
 
 # The default partial branch regexes, based on Python semantics.
 # These are any Python branching constructs that can't actually execute all
 # their branches.
 DEFAULT_PARTIAL_ALWAYS = [
-    'while (True|1|False|0):',
-    'if (True|1|False|0):',
+    "while (True|1|False|0):",
+    "if (True|1|False|0):",
 ]
 
 
@@ -286,7 +286,7 @@ class CoverageConfig(TConfigurable, TPluginConfig):
         """
         _, ext = os.path.splitext(filename)
         cp: TConfigParser
-        if ext == '.toml':
+        if ext == ".toml":
             cp = TomlConfigParser(our_file)
         else:
             cp = HandyConfigParser(our_file)
@@ -328,9 +328,9 @@ class CoverageConfig(TConfigurable, TPluginConfig):
                     )
 
         # [paths] is special
-        if cp.has_section('paths'):
-            for option in cp.options('paths'):
-                self.paths[option] = cp.getlist('paths', option)
+        if cp.has_section("paths"):
+            for option in cp.options("paths"):
+                self.paths[option] = cp.getlist("paths", option)
                 any_set = True
 
         # plugins can have options
@@ -370,64 +370,64 @@ class CoverageConfig(TConfigurable, TPluginConfig):
         #       configuration value from the file.
 
         # [run]
-        ('branch', 'run:branch', 'boolean'),
-        ('command_line', 'run:command_line'),
-        ('concurrency', 'run:concurrency', 'list'),
-        ('context', 'run:context'),
-        ('cover_pylib', 'run:cover_pylib', 'boolean'),
-        ('data_file', 'run:data_file'),
-        ('debug', 'run:debug', 'list'),
-        ('debug_file', 'run:debug_file'),
-        ('disable_warnings', 'run:disable_warnings', 'list'),
-        ('dynamic_context', 'run:dynamic_context'),
-        ('parallel', 'run:parallel', 'boolean'),
-        ('plugins', 'run:plugins', 'list'),
-        ('relative_files', 'run:relative_files', 'boolean'),
-        ('run_include', 'run:include', 'list'),
-        ('run_omit', 'run:omit', 'list'),
-        ('sigterm', 'run:sigterm', 'boolean'),
-        ('source', 'run:source', 'list'),
-        ('source_pkgs', 'run:source_pkgs', 'list'),
-        ('timid', 'run:timid', 'boolean'),
-        ('_crash', 'run:_crash'),
+        ("branch", "run:branch", "boolean"),
+        ("command_line", "run:command_line"),
+        ("concurrency", "run:concurrency", "list"),
+        ("context", "run:context"),
+        ("cover_pylib", "run:cover_pylib", "boolean"),
+        ("data_file", "run:data_file"),
+        ("debug", "run:debug", "list"),
+        ("debug_file", "run:debug_file"),
+        ("disable_warnings", "run:disable_warnings", "list"),
+        ("dynamic_context", "run:dynamic_context"),
+        ("parallel", "run:parallel", "boolean"),
+        ("plugins", "run:plugins", "list"),
+        ("relative_files", "run:relative_files", "boolean"),
+        ("run_include", "run:include", "list"),
+        ("run_omit", "run:omit", "list"),
+        ("sigterm", "run:sigterm", "boolean"),
+        ("source", "run:source", "list"),
+        ("source_pkgs", "run:source_pkgs", "list"),
+        ("timid", "run:timid", "boolean"),
+        ("_crash", "run:_crash"),
 
         # [report]
-        ('exclude_list', 'report:exclude_lines', 'regexlist'),
-        ('exclude_also', 'report:exclude_also', 'regexlist'),
-        ('fail_under', 'report:fail_under', 'float'),
-        ('format', 'report:format', 'boolean'),
-        ('ignore_errors', 'report:ignore_errors', 'boolean'),
-        ('include_namespace_packages', 'report:include_namespace_packages', 'boolean'),
-        ('partial_always_list', 'report:partial_branches_always', 'regexlist'),
-        ('partial_list', 'report:partial_branches', 'regexlist'),
-        ('precision', 'report:precision', 'int'),
-        ('report_contexts', 'report:contexts', 'list'),
-        ('report_include', 'report:include', 'list'),
-        ('report_omit', 'report:omit', 'list'),
-        ('show_missing', 'report:show_missing', 'boolean'),
-        ('skip_covered', 'report:skip_covered', 'boolean'),
-        ('skip_empty', 'report:skip_empty', 'boolean'),
-        ('sort', 'report:sort'),
+        ("exclude_list", "report:exclude_lines", "regexlist"),
+        ("exclude_also", "report:exclude_also", "regexlist"),
+        ("fail_under", "report:fail_under", "float"),
+        ("format", "report:format", "boolean"),
+        ("ignore_errors", "report:ignore_errors", "boolean"),
+        ("include_namespace_packages", "report:include_namespace_packages", "boolean"),
+        ("partial_always_list", "report:partial_branches_always", "regexlist"),
+        ("partial_list", "report:partial_branches", "regexlist"),
+        ("precision", "report:precision", "int"),
+        ("report_contexts", "report:contexts", "list"),
+        ("report_include", "report:include", "list"),
+        ("report_omit", "report:omit", "list"),
+        ("show_missing", "report:show_missing", "boolean"),
+        ("skip_covered", "report:skip_covered", "boolean"),
+        ("skip_empty", "report:skip_empty", "boolean"),
+        ("sort", "report:sort"),
 
         # [html]
-        ('extra_css', 'html:extra_css'),
-        ('html_dir', 'html:directory'),
-        ('html_skip_covered', 'html:skip_covered', 'boolean'),
-        ('html_skip_empty', 'html:skip_empty', 'boolean'),
-        ('html_title', 'html:title'),
-        ('show_contexts', 'html:show_contexts', 'boolean'),
+        ("extra_css", "html:extra_css"),
+        ("html_dir", "html:directory"),
+        ("html_skip_covered", "html:skip_covered", "boolean"),
+        ("html_skip_empty", "html:skip_empty", "boolean"),
+        ("html_title", "html:title"),
+        ("show_contexts", "html:show_contexts", "boolean"),
 
         # [xml]
-        ('xml_output', 'xml:output'),
-        ('xml_package_depth', 'xml:package_depth', 'int'),
+        ("xml_output", "xml:output"),
+        ("xml_package_depth", "xml:package_depth", "int"),
 
         # [json]
-        ('json_output', 'json:output'),
-        ('json_pretty_print', 'json:pretty_print', 'boolean'),
-        ('json_show_contexts', 'json:show_contexts', 'boolean'),
+        ("json_output", "json:output"),
+        ("json_pretty_print", "json:pretty_print", "boolean"),
+        ("json_show_contexts", "json:show_contexts", "boolean"),
 
         # [lcov]
-        ('lcov_output', 'lcov:output'),
+        ("lcov_output", "lcov:output"),
     ]
 
     def _set_attr_from_config_option(
@@ -435,7 +435,7 @@ class CoverageConfig(TConfigurable, TPluginConfig):
         cp: TConfigParser,
         attr: str,
         where: str,
-        type_: str = '',
+        type_: str = "",
     ) -> bool:
         """Set an attribute on self if it exists in the ConfigParser.
 
@@ -444,7 +444,7 @@ class CoverageConfig(TConfigurable, TPluginConfig):
         """
         section, option = where.split(":")
         if cp.has_option(section, option):
-            method = getattr(cp, 'get' + type_)
+            method = getattr(cp, "get" + type_)
             setattr(self, attr, method(section, option))
             return True
         return False
@@ -548,7 +548,7 @@ def config_files_to_try(config_file: Union[bool, str]) -> List[Tuple[str, bool, 
     specified_file = (config_file is not True)
     if not specified_file:
         # No file was specified. Check COVERAGE_RCFILE.
-        rcfile = os.environ.get('COVERAGE_RCFILE')
+        rcfile = os.environ.get("COVERAGE_RCFILE")
         if rcfile:
             config_file = rcfile
             specified_file = True
@@ -602,10 +602,10 @@ def read_coverage_config(
 
     # $set_env.py: COVERAGE_DEBUG - Options for --debug.
     # 3) from environment variables:
-    env_data_file = os.environ.get('COVERAGE_FILE')
+    env_data_file = os.environ.get("COVERAGE_FILE")
     if env_data_file:
         config.data_file = env_data_file
-    debugs = os.environ.get('COVERAGE_DEBUG')
+    debugs = os.environ.get("COVERAGE_DEBUG")
     if debugs:
         config.debug.extend(d.strip() for d in debugs.split(","))
 

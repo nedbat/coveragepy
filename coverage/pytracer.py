@@ -20,11 +20,11 @@ from coverage.types import (
 )
 
 # We need the YIELD_VALUE opcode below, in a comparison-friendly form.
-RESUME = dis.opmap.get('RESUME')
-RETURN_VALUE = dis.opmap['RETURN_VALUE']
+RESUME = dis.opmap.get("RESUME")
+RETURN_VALUE = dis.opmap["RETURN_VALUE"]
 if RESUME is None:
-    YIELD_VALUE = dis.opmap['YIELD_VALUE']
-    YIELD_FROM = dis.opmap['YIELD_FROM']
+    YIELD_VALUE = dis.opmap["YIELD_VALUE"]
+    YIELD_FROM = dis.opmap["YIELD_FROM"]
     YIELD_FROM_OFFSET = 0 if env.PYPY else 2
 
 # When running meta-coverage, this file can try to trace itself, which confuses
@@ -78,7 +78,7 @@ class PyTracer(TTracer):
 
         self.in_atexit = False
         # On exit, self.in_atexit = True
-        atexit.register(setattr, self, 'in_atexit', True)
+        atexit.register(setattr, self, "in_atexit", True)
 
         # Cache a bound method on the instance, so that we don't have to
         # re-create a bound method object all the time.
@@ -150,10 +150,10 @@ class PyTracer(TTracer):
                 )
             return None
 
-        # if event != 'call' and frame.f_code.co_filename != self.cur_file_name:
+        # if event != "call" and frame.f_code.co_filename != self.cur_file_name:
         #     self.log("---\n*", frame.f_code.co_filename, self.cur_file_name, frame.f_lineno)
 
-        if event == 'call':
+        if event == "call":
             # Should we start a new context?
             if self.should_start_context and self.context is None:
                 context_maybe = self.should_start_context(frame)
@@ -215,13 +215,13 @@ class PyTracer(TTracer):
                 oparg = frame.f_code.co_code[frame.f_lasti + 1]
                 real_call = (oparg == 0)
             else:
-                real_call = (getattr(frame, 'f_lasti', -1) < 0)
+                real_call = (getattr(frame, "f_lasti", -1) < 0)
             if real_call:
                 self.last_line = -frame.f_code.co_firstlineno
             else:
                 self.last_line = frame.f_lineno
 
-        elif event == 'line':
+        elif event == "line":
             # Record an executed line.
             if self.cur_file_data is not None:
                 flineno: TLineNo = frame.f_lineno
@@ -232,7 +232,7 @@ class PyTracer(TTracer):
                     cast(Set[TLineNo], self.cur_file_data).add(flineno)
                 self.last_line = flineno
 
-        elif event == 'return':
+        elif event == "return":
             if self.trace_arcs and self.cur_file_data:
                 # Record an arc leaving the function, but beware that a
                 # "return" event might just mean yielding from a generator.

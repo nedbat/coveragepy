@@ -83,20 +83,20 @@ def name_for_module(filename: str, frame: Optional[FrameType]) -> str:
 
     """
     module_globals = frame.f_globals if frame is not None else {}
-    dunder_name: str = module_globals.get('__name__', None)
+    dunder_name: str = module_globals.get("__name__", None)
 
-    if isinstance(dunder_name, str) and dunder_name != '__main__':
+    if isinstance(dunder_name, str) and dunder_name != "__main__":
         # This is the usual case: an imported module.
         return dunder_name
 
-    loader = module_globals.get('__loader__', None)
-    for attrname in ('fullname', 'name'):   # attribute renamed in py3.2
+    loader = module_globals.get("__loader__", None)
+    for attrname in ("fullname", "name"):   # attribute renamed in py3.2
         if hasattr(loader, attrname):
             fullname = getattr(loader, attrname)
         else:
             continue
 
-        if isinstance(fullname, str) and fullname != '__main__':
+        if isinstance(fullname, str) and fullname != "__main__":
             # Module loaded via: runpy -m
             return fullname
 
@@ -110,12 +110,12 @@ def name_for_module(filename: str, frame: Optional[FrameType]) -> str:
 
 def module_is_namespace(mod: ModuleType) -> bool:
     """Is the module object `mod` a PEP420 namespace module?"""
-    return hasattr(mod, '__path__') and getattr(mod, '__file__', None) is None
+    return hasattr(mod, "__path__") and getattr(mod, "__file__", None) is None
 
 
 def module_has_file(mod: ModuleType) -> bool:
     """Does the module object `mod` have an existing __file__ ?"""
-    mod__file__ = getattr(mod, '__file__', None)
+    mod__file__ = getattr(mod, "__file__", None)
     if mod__file__ is None:
         return False
     return os.path.exists(mod__file__)
@@ -313,7 +313,7 @@ class InOrOut:
             disp.reason = reason
             return disp
 
-        if original_filename.startswith('<'):
+        if original_filename.startswith("<"):
             return nope(disp, "original file name is not real")
 
         if frame is not None:
@@ -323,10 +323,10 @@ class InOrOut:
             # .pyc files can be moved after compilation (for example, by being
             # installed), we look for __file__ in the frame and prefer it to the
             # co_filename value.
-            dunder_file = frame.f_globals and frame.f_globals.get('__file__')
+            dunder_file = frame.f_globals and frame.f_globals.get("__file__")
             if dunder_file:
                 filename = source_for_file(dunder_file)
-                if original_filename and not original_filename.startswith('<'):
+                if original_filename and not original_filename.startswith("<"):
                     orig = os.path.basename(original_filename)
                     if orig != os.path.basename(filename):
                         # Files shouldn't be renamed when moved. This happens when
@@ -338,10 +338,10 @@ class InOrOut:
             # Empty string is pretty useless.
             return nope(disp, "empty string isn't a file name")
 
-        if filename.startswith('memory:'):
+        if filename.startswith("memory:"):
             return nope(disp, "memory isn't traceable")
 
-        if filename.startswith('<'):
+        if filename.startswith("<"):
             # Lots of non-file execution is represented with artificial
             # file names like "<string>", "<doctest readme.txt[0]>", or
             # "<exec_function>".  Don't ever trace these executions, since we
@@ -484,7 +484,7 @@ class InOrOut:
                     msg = f"Already imported a file that will be measured: {filename}"
                     self.warn(msg, slug="already-imported")
                     warned.add(filename)
-                elif self.debug and self.debug.should('trace'):
+                elif self.debug and self.debug.should("trace"):
                     self.debug.write(
                         "Didn't trace already imported file {!r}: {}".format(
                             disp.original_filename, disp.reason
@@ -580,9 +580,9 @@ class InOrOut:
         ]
 
         matcher_names = [
-            'source_match', 'source_pkgs_match',
-            'include_match', 'omit_match',
-            'cover_match', 'pylib_match', 'third_match', 'source_in_third_match',
+            "source_match", "source_pkgs_match",
+            "include_match", "omit_match",
+            "cover_match", "pylib_match", "third_match", "source_in_third_match",
         ]
 
         for matcher_name in matcher_names:
@@ -590,7 +590,7 @@ class InOrOut:
             if matcher:
                 matcher_info = matcher.info()
             else:
-                matcher_info = '-none-'
+                matcher_info = "-none-"
             info.append((matcher_name, matcher_info))
 
         return info

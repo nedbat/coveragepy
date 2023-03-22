@@ -519,29 +519,29 @@ class FileReporter(CoveragePluginBase):
 
         Each line is a list of pairs, each pair is a token::
 
-            [('key', 'def'), ('ws', ' '), ('nam', 'hello'), ('op', '('), ... ]
+            [("key", "def"), ("ws", " "), ("nam", "hello"), ("op", "("), ... ]
 
         Each pair has a token class, and the token text.  The token classes
         are:
 
-        * ``'com'``: a comment
-        * ``'key'``: a keyword
-        * ``'nam'``: a name, or identifier
-        * ``'num'``: a number
-        * ``'op'``: an operator
-        * ``'str'``: a string literal
-        * ``'ws'``: some white space
-        * ``'txt'``: some other kind of text
+        * ``"com"``: a comment
+        * ``"key"``: a keyword
+        * ``"nam"``: a name, or identifier
+        * ``"num"``: a number
+        * ``"op"``: an operator
+        * ``"str"``: a string literal
+        * ``"ws"``: some white space
+        * ``"txt"``: some other kind of text
 
         If you concatenate all the token texts, and then join them with
         newlines, you should have your original source back.
 
         The default implementation simply returns each line tagged as
-        ``'txt'``.
+        ``"txt"``.
 
         """
         for line in self.source().splitlines():
-            yield [('txt', line)]
+            yield [("txt", line)]
 
     def __eq__(self, other: Any) -> bool:
         return isinstance(other, FileReporter) and self.filename == other.filename

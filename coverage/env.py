@@ -40,7 +40,7 @@ class PYBEHAVIOR:
 
     # Does Python conform to PEP626, Precise line numbers for debugging and other tools.
     # https://www.python.org/dev/peps/pep-0626
-    pep626 = CPYTHON and (PYVERSION > (3, 10, 0, 'alpha', 4))
+    pep626 = CPYTHON and (PYVERSION > (3, 10, 0, "alpha", 4))
 
     # Is "if __debug__" optimized away?
     if PYPY:
@@ -60,7 +60,7 @@ class PYBEHAVIOR:
         else:
             optimize_if_not_debug = 1
     else:
-        if PYVERSION >= (3, 8, 0, 'beta', 1):
+        if PYVERSION >= (3, 8, 0, "beta", 1):
             optimize_if_not_debug = 2
         else:
             optimize_if_not_debug = 1
@@ -69,7 +69,7 @@ class PYBEHAVIOR:
     negative_lnotab = not (PYPY and PYPYVERSION < (7, 2))
 
     # 3.7 changed how functions with only docstrings are numbered.
-    docstring_only_function = (not PYPY) and ((3, 7, 0, 'beta', 5) <= PYVERSION <= (3, 10))
+    docstring_only_function = (not PYPY) and ((3, 7, 0, "beta", 5) <= PYVERSION <= (3, 10))
 
     # When a break/continue/return statement in a try block jumps to a finally
     # block, does the finally block do the break/continue/return (pre-3.8), or
@@ -93,7 +93,7 @@ class PYBEHAVIOR:
 
     # CPython 3.11 now jumps to the decorator line again while executing
     # the decorator.
-    trace_decorator_line_again = (CPYTHON and PYVERSION > (3, 11, 0, 'alpha', 3, 0))
+    trace_decorator_line_again = (CPYTHON and PYVERSION > (3, 11, 0, "alpha", 3, 0))
 
     # Are while-true loops optimized into absolute jumps with no loop setup?
     nix_while_true = (PYVERSION >= (3, 8))
@@ -125,7 +125,7 @@ class PYBEHAVIOR:
     keep_constant_test = pep626
 
     # When leaving a with-block, do we visit the with-line again for the exit?
-    exit_through_with = (PYVERSION >= (3, 10, 0, 'beta'))
+    exit_through_with = (PYVERSION >= (3, 10, 0, "beta"))
 
     # Match-case construct.
     match_case = (PYVERSION >= (3, 10))
@@ -135,20 +135,20 @@ class PYBEHAVIOR:
 
     # Modules start with a line numbered zero. This means empty modules have
     # only a 0-number line, which is ignored, giving a truly empty module.
-    empty_is_empty = (PYVERSION >= (3, 11, 0, 'beta', 4))
+    empty_is_empty = (PYVERSION >= (3, 11, 0, "beta", 4))
 
 # Coverage.py specifics.
 
 # Are we using the C-implemented trace function?
-C_TRACER = os.getenv('COVERAGE_TEST_TRACER', 'c') == 'c'
+C_TRACER = os.getenv("COVERAGE_TEST_TRACER", "c") == "c"
 
 # Are we coverage-measuring ourselves?
-METACOV = os.getenv('COVERAGE_COVERAGE', '') != ''
+METACOV = os.getenv("COVERAGE_COVERAGE", "") != ""
 
 # Are we running our test suite?
 # Even when running tests, you can use COVERAGE_TESTING=0 to disable the
 # test-specific behavior like AST checking.
-TESTING = os.getenv('COVERAGE_TESTING', '') == 'True'
+TESTING = os.getenv("COVERAGE_TESTING", "") == "True"
 
 
 def debug_info() -> Iterable[Tuple[str, Any]]:

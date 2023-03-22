@@ -60,7 +60,7 @@ class PythonParser:
         self.exclude = exclude
 
         # The text lines of the parsed code.
-        self.lines: List[str] = self.text.split('\n')
+        self.lines: List[str] = self.text.split("\n")
 
         # The normalized line numbers of the statements in the code. Exclusions
         # are taken into account, and statements are adjusted to their first
@@ -149,13 +149,13 @@ class PythonParser:
             elif toktype == token.DEDENT:
                 indent -= 1
             elif toktype == token.NAME:
-                if ttext == 'class':
+                if ttext == "class":
                     # Class definitions look like branches in the bytecode, so
                     # we need to exclude them.  The simplest way is to note the
-                    # lines with the 'class' keyword.
+                    # lines with the "class" keyword.
                     self.raw_classdefs.add(slineno)
             elif toktype == token.OP:
-                if ttext == ':' and nesting == 0:
+                if ttext == ":" and nesting == 0:
                     should_exclude = (elineno in self.raw_excluded) or excluding_decorators
                     if not excluding and should_exclude:
                         # Start excluding a suite.  We trigger off of the colon
@@ -165,7 +165,7 @@ class PythonParser:
                         exclude_indent = indent
                         excluding = True
                         excluding_decorators = False
-                elif ttext == '@' and first_on_line:
+                elif ttext == "@" and first_on_line:
                     # A decorator.
                     if elineno in self.raw_excluded:
                         excluding_decorators = True
@@ -763,7 +763,7 @@ class AstArcAnalyzer:
             if node.keys[0] is not None:
                 return node.keys[0].lineno
             else:
-                # Unpacked dict literals `{**{'a':1}}` have None as the key,
+                # Unpacked dict literals `{**{"a":1}}` have None as the key,
                 # use the value in that case.
                 return node.values[0].lineno
         else:

@@ -109,11 +109,11 @@ class Templite:
                 <p>You are interested in {{topic}}.</p>
             {% endif %}
             ''',
-            {'upper': str.upper},
+            {"upper": str.upper},
         )
         text = templite.render({
-            'name': "Ned",
-            'topics': ['Python', 'Geometry', 'Juggling'],
+            "name": "Ned",
+            "topics": ["Python", "Geometry", "Juggling"],
         })
 
     """
@@ -161,37 +161,37 @@ class Templite:
         squash = in_joined = False
 
         for token in tokens:
-            if token.startswith('{'):
+            if token.startswith("{"):
                 start, end = 2, -2
-                squash = (token[-3] == '-')
+                squash = (token[-3] == "-")
                 if squash:
                     end = -3
 
-                if token.startswith('{#'):
+                if token.startswith("{#"):
                     # Comment: ignore it and move on.
                     continue
-                elif token.startswith('{{'):
+                elif token.startswith("{{"):
                     # An expression to evaluate.
                     expr = self._expr_code(token[start:end].strip())
                     buffered.append("to_str(%s)" % expr)
                 else:
-                    # token.startswith('{%')
+                    # token.startswith("{%")
                     # Action tag: split into words and parse further.
                     flush_output()
 
                     words = token[start:end].strip().split()
-                    if words[0] == 'if':
+                    if words[0] == "if":
                         # An if statement: evaluate the expression to determine if.
                         if len(words) != 2:
                             self._syntax_error("Don't understand if", token)
-                        ops_stack.append('if')
+                        ops_stack.append("if")
                         code.add_line("if %s:" % self._expr_code(words[1]))
                         code.indent()
-                    elif words[0] == 'for':
+                    elif words[0] == "for":
                         # A loop: iterate over expression result.
-                        if len(words) != 4 or words[2] != 'in':
+                        if len(words) != 4 or words[2] != "in":
                             self._syntax_error("Don't understand for", token)
-                        ops_stack.append('for')
+                        ops_stack.append("for")
                         self._variable(words[1], self.loop_vars)
                         code.add_line(
                             "for c_{} in {}:".format(
@@ -200,10 +200,10 @@ class Templite:
                             )
                         )
                         code.indent()
-                    elif words[0] == 'joined':
-                        ops_stack.append('joined')
+                    elif words[0] == "joined":
+                        ops_stack.append("joined")
                         in_joined = True
-                    elif words[0].startswith('end'):
+                    elif words[0].startswith("end"):
                         # Endsomething.  Pop the ops stack.
                         if len(words) != 1:
                             self._syntax_error("Don't understand end", token)
@@ -213,7 +213,7 @@ class Templite:
                         start_what = ops_stack.pop()
                         if start_what != end_what:
                             self._syntax_error("Mismatched end tag", end_what)
-                        if end_what == 'joined':
+                        if end_what == "joined":
                             in_joined = False
                         else:
                             code.dedent()
@@ -236,14 +236,14 @@ class Templite:
         for var_name in self.all_vars - self.loop_vars:
             vars_code.add_line(f"c_{var_name} = context[{var_name!r}]")
 
-        code.add_line('return "".join(result)')
+        code.add_line("return ''.join(result)")
         code.dedent()
         self._render_function = cast(
             Callable[
                 [Dict[str, Any], Callable[..., Any]],
                 str
             ],
-            code.get_globals()['render_function'],
+            code.get_globals()["render_function"],
         )
 
     def _expr_code(self, expr: str) -> str:

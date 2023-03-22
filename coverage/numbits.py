@@ -36,7 +36,7 @@ def nums_to_numbits(nums: Iterable[int]) -> bytes:
         nbytes = max(nums) // 8 + 1
     except ValueError:
         # nums was empty.
-        return b''
+        return b""
     b = bytearray(nbytes)
     for num in nums:
         b[num//8] |= 1 << num % 8
@@ -82,7 +82,7 @@ def numbits_intersection(numbits1: bytes, numbits2: bytes) -> bytes:
     """
     byte_pairs = zip_longest(numbits1, numbits2, fillvalue=0)
     intersection_bytes = bytes(b1 & b2 for b1, b2 in byte_pairs)
-    return intersection_bytes.rstrip(b'\0')
+    return intersection_bytes.rstrip(b"\0")
 
 
 def numbits_any_intersection(numbits1: bytes, numbits2: bytes) -> bool:
@@ -130,7 +130,7 @@ def register_sqlite_functions(connection: sqlite3.Connection) -> None:
         import sqlite3
         from coverage.numbits import register_sqlite_functions
 
-        conn = sqlite3.connect('example.db')
+        conn = sqlite3.connect("example.db")
         register_sqlite_functions(conn)
         c = conn.cursor()
         # Kind of a nonsense query:
