@@ -166,7 +166,7 @@ coverage.wire_up_filter = function () {
 
     // Trigger change event on setup, to force filter on page refresh
     // (filter value may still be present).
-    document.getElementById("filter").dispatchEvent(new Event("change"));
+    document.getElementById("filter").dispatchEvent(new Event("input"));
 };
 
 coverage.INDEX_SORT_STORAGE = "COVERAGE_INDEX_SORT_2";
@@ -212,6 +212,11 @@ coverage.index_ready = function () {
 coverage.LINE_FILTERS_STORAGE = "COVERAGE_LINE_FILTERS";
 
 coverage.pyfile_ready = function () {
+    cboxes = document.querySelectorAll('[id^=ctxs]')
+    cboxes.forEach(function(cbox) {
+        cbox.addEventListener("click", coverage.showContexts)
+    });
+
     // If we're directed to a particular line number, highlight the line.
     var frag = location.hash;
     if (frag.length > 2 && frag[1] === 't') {
@@ -553,7 +558,7 @@ coverage.build_scroll_markers = function () {
         'p.show_run, p.show_mis, p.show_exc, p.show_exc, p.show_par'
     ).forEach(element => {
         const line_top = Math.floor(element.offsetTop * marker_scale);
-        const line_number = parseInt(element.id.substr(1));
+        const line_number = parseInt(element.querySelector(".n a").id.substr(1));
 
         if (line_number === previous_line + 1) {
             // If this solid missed block just make previous mark higher.
@@ -595,10 +600,25 @@ coverage.wire_up_sticky_header = function () {
     updateHeader();
 };
 
+coverage.showContexts = function (e) {
+    span = e.target.nextElementSibling.nextElementSibling;
+    span_text = span.textContent;
+
+    if (/^[0-9,]+$/.test(span_text)) {
+        span.textContent = "";
+        span_text.split(",").forEach(function(s) {
+            ctx = contexts[s];
+            span.appendChild(document.createTextNode(ctx));
+            span.appendChild(document.createElement("br"));
+        })
+    }
+};
+
 document.addEventListener("DOMContentLoaded", () => {
     if (document.body.classList.contains("indexfile")) {
         coverage.index_ready();
     } else {
         coverage.pyfile_ready();
     }
+
 });

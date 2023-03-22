@@ -5,12 +5,12 @@
 
 from __future__ import annotations
 
+import collections
 import datetime
 import json
 import os
 import re
 import shutil
-from collections import Counter
 
 from dataclasses import dataclass
 from typing import Any, Dict, Iterable, List, Optional, Tuple, TYPE_CHECKING, cast
@@ -370,9 +370,12 @@ class HtmlReporter:
         # Write the HTML page for this file.
         file_data = self.datagen.data_for_file(ftr.fr, ftr.analysis)
 
-        contexts = Counter(c for cline in file_data.lines for c in cline.contexts)
+        contexts = collections.Counter(c for cline in file_data.lines for c in cline.contexts)
         context_codes = {y: i for (i, y) in enumerate(x[0] for x in contexts.most_common())}
-        contexts_json = json.dumps({v: k for (k, v) in context_codes.items()}, indent=2)
+        if context_codes:
+            contexts_json = json.dumps({v: k for (k, v) in context_codes.items()}, indent=2)
+        else:
+            contexts_json = None
 
         for ldata in file_data.lines:
             # Build the HTML for the line.
@@ -382,13 +385,11 @@ class HtmlReporter:
                     html_parts.append(escape(tok_text))
                 else:
                     tok_html = escape(tok_text) or '&nbsp;'
-                    html_parts.append(
-                        f'<span class="{tok_type}">{tok_html}</span>'
-                    )
+                    html_parts.append(f'<span class="{tok_type}">{tok_html}</span>')
             ldata.html = ''.join(html_parts)
-
             ldata.context_str = ",".join(
-                str(context_codes[c_context]) for c_context in ldata.context_list)
+                str(context_codes[c_context]) for c_context in ldata.context_list
+            )
 
             if ldata.short_annotations:
                 # 202F is NARROW NO-BREAK SPACE.
@@ -422,13 +423,10 @@ class HtmlReporter:
                 )
             ldata.css_class = ' '.join(css_classes) or "pln"
 
-        if context_codes:
-            file_data.__dict__["contexts_json"] = contexts_json
-        else:
-            file_data.__dict__["contexts_json"] = None
         html_path = os.path.join(self.directory, ftr.html_filename)
         html = self.source_tmpl.render({
             **file_data.__dict__,
+            "contexts_json": contexts_json,
             'prev_html': prev_html,
             'next_html': next_html,
         })

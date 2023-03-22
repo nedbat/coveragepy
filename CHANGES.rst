@@ -20,9 +20,10 @@ development at the same time, such as 4.5.x and 5.0.
 Unreleased
 ----------
 
-- Performance: HTML reports with context information are now much more compact,
-  with file sizes typically as small as one-third the previous size.  This
-  closes `issue 1584`_ thanks to `Oleh Krehel <pull 1587_>`_.
+- Performance: HTML reports with context information are now much more compact.
+  File sizes are typically as small as one-third the previous size, but can be
+  dramatically smaller. This closes `issue 1584`_ thanks to `Oleh Krehel
+  <pull 1587_>`_.
 
 .. _issue 1584: https://github.com/nedbat/coveragepy/issues/1584
 .. _pull 1587: https://github.com/nedbat/coveragepy/pull/1587

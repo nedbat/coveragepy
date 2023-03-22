@@ -604,8 +604,7 @@ coverage.showContexts = function (e) {
     span = e.target.nextElementSibling.nextElementSibling;
     span_text = span.textContent;
 
-    if (/^[0-9,]+$/.test(span_text))
-    {
+    if (/^[0-9,]+$/.test(span_text)) {
         span.textContent = "";
         span_text.split(",").forEach(function(s) {
             ctx = contexts[s];

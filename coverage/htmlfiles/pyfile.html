@@ -14,7 +14,7 @@
 
     {% if contexts_json %}
     <script type="text/javascript">
-      contexts = {{ contexts_json }}
+        contexts = {{ contexts_json }}
     </script>
     {% endif %}
 
@@ -125,9 +125,7 @@
             </span>
             {# Things that should appear below the line. #}
             {% if line.context_str %}
-                <span class="ctxs">
-                  {{ line.context_str }}
-                </span>
+                <span class="ctxs">{{ line.context_str }}</span>
             {% endif %}
         </p>
         {% endjoined %}
