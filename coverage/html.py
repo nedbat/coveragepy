@@ -10,6 +10,7 @@ import json
 import os
 import re
 import shutil
+from collections import Counter
 
 from dataclasses import dataclass
 from typing import Any, Dict, Iterable, List, Optional, Tuple, TYPE_CHECKING, cast
@@ -84,6 +85,7 @@ class LineData:
     short_annotations: List[str]
     long_annotations: List[str]
     html: str = ""
+    context_str: Optional[str] = None
     annotate: Optional[str] = None
     annotate_long: Optional[str] = None
     css_class: str = ""
@@ -367,6 +369,11 @@ class HtmlReporter:
 
         # Write the HTML page for this file.
         file_data = self.datagen.data_for_file(ftr.fr, ftr.analysis)
+
+        contexts = Counter(c for cline in file_data.lines for c in cline.contexts)
+        context_codes = {y: i for (i, y) in enumerate(x[0] for x in contexts.most_common())}
+        contexts_json = json.dumps({v: k for (k, v) in context_codes.items()}, indent=2)
+
         for ldata in file_data.lines:
             # Build the HTML for the line.
             html_parts = []
@@ -379,6 +386,9 @@ class HtmlReporter:
                         f'<span class="{tok_type}">{tok_html}</span>'
                     )
             ldata.html = ''.join(html_parts)
+
+            ldata.context_str = ",".join(
+                str(context_codes[c_context]) for c_context in ldata.context_list)
 
             if ldata.short_annotations:
                 # 202F is NARROW NO-BREAK SPACE.
@@ -412,6 +422,10 @@ class HtmlReporter:
                 )
             ldata.css_class = ' '.join(css_classes) or "pln"
 
+        if context_codes:
+            file_data.__dict__["contexts_json"] = contexts_json
+        else:
+            file_data.__dict__["contexts_json"] = None
         html_path = os.path.join(self.directory, ftr.html_filename)
         html = self.source_tmpl.render({
             **file_data.__dict__,

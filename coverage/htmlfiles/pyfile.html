@@ -11,6 +11,13 @@
     {% if extra_css %}
         <link rel="stylesheet" href="{{ extra_css }}" type="text/css">
     {% endif %}
+
+    {% if contexts_json %}
+    <script type="text/javascript">
+      contexts = {{ contexts_json }}
+    </script>
+    {% endif %}
+
     <script type="text/javascript" src="coverage_html.js" defer></script>
 </head>
 <body class="pyfile">
@@ -117,11 +124,9 @@
                 {% endif %}
             </span>
             {# Things that should appear below the line. #}
-            {% if line.context_list %}
+            {% if line.context_str %}
                 <span class="ctxs">
-                    {% for context in line.context_list %}
-                        <span>{{context}}</span>
-                    {% endfor %}
+                  {{ line.context_str }}
                 </span>
             {% endif %}
         </p>
