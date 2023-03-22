@@ -33,7 +33,7 @@ class LcovReporter:
     def report(self, morfs: Optional[Iterable[TMorf]], outfile: IO[str]) -> float:
         """Renders the full lcov report.
 
-        'morfs' is a list of modules or filenames
+        `morfs` is a list of modules or filenames
 
         outfile is the file object to write the file into.
         """

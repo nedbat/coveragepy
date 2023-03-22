@@ -28,7 +28,7 @@ if TYPE_CHECKING:
 os = isolate_module(os)
 
 
-DTD_URL = 'https://raw.githubusercontent.com/cobertura/web/master/htdocs/xml/coverage-04.dtd'
+DTD_URL = "https://raw.githubusercontent.com/cobertura/web/master/htdocs/xml/coverage-04.dtd"
 
 
 def rate(hit: int, num: int) -> str:
@@ -127,7 +127,7 @@ class XmlReporter:
             appendChild(xpackage, xclasses)
             for _, class_elt in human_sorted_items(pkg_data.elements.items()):
                 appendChild(xclasses, class_elt)
-            xpackage.setAttribute("name", pkg_name.replace(os.sep, '.'))
+            xpackage.setAttribute("name", pkg_name.replace(os.sep, "."))
             xpackage.setAttribute("line-rate", rate(pkg_data.hits, pkg_data.lines))
             if has_arcs:
                 branch_rate = rate(pkg_data.br_hits, pkg_data.branches)
@@ -172,7 +172,7 @@ class XmlReporter:
             if analysis.numbers.n_statements == 0:
                 return
 
-        # Create the 'lines' and 'package' XML elements, which
+        # Create the "lines" and "package" XML elements, which
         # are populated later.  Note that a package == a directory.
         filename = fr.filename.replace("\\", "/")
         for source_path in self.source_paths:
@@ -205,7 +205,7 @@ class XmlReporter:
         branch_stats = analysis.branch_stats()
         missing_branch_arcs = analysis.missing_branch_arcs()
 
-        # For each statement, create an XML 'line' element.
+        # For each statement, create an XML "line" element.
         for line in sorted(analysis.statements):
             xline = self.xml_out.createElement("line")
             xline.setAttribute("number", str(line))

@@ -60,20 +60,20 @@ class JsonReporter:
         self.report_data["files"] = measured_files
 
         self.report_data["totals"] = {
-            'covered_lines': self.total.n_executed,
-            'num_statements': self.total.n_statements,
-            'percent_covered': self.total.pc_covered,
-            'percent_covered_display': self.total.pc_covered_str,
-            'missing_lines': self.total.n_missing,
-            'excluded_lines': self.total.n_excluded,
+            "covered_lines": self.total.n_executed,
+            "num_statements": self.total.n_statements,
+            "percent_covered": self.total.pc_covered,
+            "percent_covered_display": self.total.pc_covered_str,
+            "missing_lines": self.total.n_missing,
+            "excluded_lines": self.total.n_excluded,
         }
 
         if coverage_data.has_arcs():
             self.report_data["totals"].update({
-                'num_branches': self.total.n_branches,
-                'num_partial_branches': self.total.n_partial_branches,
-                'covered_branches': self.total.n_executed_branches,
-                'missing_branches': self.total.n_missing_branches,
+                "num_branches": self.total.n_branches,
+                "num_partial_branches": self.total.n_partial_branches,
+                "covered_branches": self.total.n_executed_branches,
+                "missing_branches": self.total.n_missing_branches,
             })
 
         json.dump(
@@ -89,32 +89,32 @@ class JsonReporter:
         nums = analysis.numbers
         self.total += nums
         summary = {
-            'covered_lines': nums.n_executed,
-            'num_statements': nums.n_statements,
-            'percent_covered': nums.pc_covered,
-            'percent_covered_display': nums.pc_covered_str,
-            'missing_lines': nums.n_missing,
-            'excluded_lines': nums.n_excluded,
+            "covered_lines": nums.n_executed,
+            "num_statements": nums.n_statements,
+            "percent_covered": nums.pc_covered,
+            "percent_covered_display": nums.pc_covered_str,
+            "missing_lines": nums.n_missing,
+            "excluded_lines": nums.n_excluded,
         }
         reported_file = {
-            'executed_lines': sorted(analysis.executed),
-            'summary': summary,
-            'missing_lines': sorted(analysis.missing),
-            'excluded_lines': sorted(analysis.excluded),
+            "executed_lines": sorted(analysis.executed),
+            "summary": summary,
+            "missing_lines": sorted(analysis.missing),
+            "excluded_lines": sorted(analysis.excluded),
         }
         if self.config.json_show_contexts:
-            reported_file['contexts'] = analysis.data.contexts_by_lineno(analysis.filename)
+            reported_file["contexts"] = analysis.data.contexts_by_lineno(analysis.filename)
         if coverage_data.has_arcs():
             summary.update({
-                'num_branches': nums.n_branches,
-                'num_partial_branches': nums.n_partial_branches,
-                'covered_branches': nums.n_executed_branches,
-                'missing_branches': nums.n_missing_branches,
+                "num_branches": nums.n_branches,
+                "num_partial_branches": nums.n_partial_branches,
+                "covered_branches": nums.n_executed_branches,
+                "missing_branches": nums.n_missing_branches,
             })
-            reported_file['executed_branches'] = list(
+            reported_file["executed_branches"] = list(
                 _convert_branch_arcs(analysis.executed_branch_arcs())
             )
-            reported_file['missing_branches'] = list(
+            reported_file["missing_branches"] = list(
                 _convert_branch_arcs(analysis.missing_branch_arcs())
             )
         return reported_file

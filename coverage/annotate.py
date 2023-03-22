@@ -40,8 +40,8 @@ class AnnotateReporter:
 
         > h(2)
 
-    Executed lines use '>', lines not executed use '!', lines excluded from
-    consideration use '-'.
+    Executed lines use ">", lines not executed use "!", lines excluded from
+    consideration use "-".
 
     """
 
@@ -83,7 +83,7 @@ class AnnotateReporter:
         else:
             dest_file = fr.filename + ",cover"
 
-        with open(dest_file, 'w', encoding='utf-8') as dest:
+        with open(dest_file, "w", encoding="utf-8") as dest:
             i = j = 0
             covered = True
             source = fr.source()
@@ -95,20 +95,20 @@ class AnnotateReporter:
                 if i < len(statements) and statements[i] == lineno:
                     covered = j >= len(missing) or missing[j] > lineno
                 if self.blank_re.match(line):
-                    dest.write('  ')
+                    dest.write("  ")
                 elif self.else_re.match(line):
-                    # Special logic for lines containing only 'else:'.
+                    # Special logic for lines containing only "else:".
                     if j >= len(missing):
-                        dest.write('> ')
+                        dest.write("> ")
                     elif statements[i] == missing[j]:
-                        dest.write('! ')
+                        dest.write("! ")
                     else:
-                        dest.write('> ')
+                        dest.write("> ")
                 elif lineno in excluded:
-                    dest.write('- ')
+                    dest.write("- ")
                 elif covered:
-                    dest.write('> ')
+                    dest.write("> ")
                 else:
-                    dest.write('! ')
+                    dest.write("! ")
 
                 dest.write(line)

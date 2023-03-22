@@ -69,7 +69,7 @@ def write_html(fname: str, html: str) -> None:
     """Write `html` to `fname`, properly encoded."""
     html = re.sub(r"(\A\s+)|(\s+$)", "", html, flags=re.MULTILINE) + "\n"
     with open(fname, "wb") as fout:
-        fout.write(html.encode('ascii', 'xmlcharrefreplace'))
+        fout.write(html.encode("ascii", "xmlcharrefreplace"))
 
 
 @dataclass
@@ -132,11 +132,11 @@ class HtmlDataGeneration:
             long_annotations = []
 
             if lineno in analysis.excluded:
-                category = 'exc'
+                category = "exc"
             elif lineno in analysis.missing:
-                category = 'mis'
+                category = "mis"
             elif self.has_arcs and lineno in missing_branch_arcs:
-                category = 'par'
+                category = "par"
                 for b in missing_branch_arcs[lineno]:
                     if b < 0:
                         short_annotations.append("exit")
@@ -144,7 +144,7 @@ class HtmlDataGeneration:
                         short_annotations.append(str(b))
                     long_annotations.append(fr.missing_arc_description(lineno, b, arcs_executed))
             elif lineno in analysis.statements:
-                category = 'run'
+                category = "run"
 
             contexts = []
             contexts_label = ""
@@ -236,26 +236,26 @@ class HtmlReporter:
 
         self.template_globals = {
             # Functions available in the templates.
-            'escape': escape,
-            'pair': pair,
-            'len': len,
+            "escape": escape,
+            "pair": pair,
+            "len": len,
 
             # Constants for this report.
-            '__url__': __url__,
-            '__version__': coverage.__version__,
-            'title': title,
-            'time_stamp': format_local_datetime(datetime.datetime.now()),
-            'extra_css': self.extra_css,
-            'has_arcs': self.has_arcs,
-            'show_contexts': self.config.show_contexts,
+            "__url__": __url__,
+            "__version__": coverage.__version__,
+            "title": title,
+            "time_stamp": format_local_datetime(datetime.datetime.now()),
+            "extra_css": self.extra_css,
+            "has_arcs": self.has_arcs,
+            "show_contexts": self.config.show_contexts,
 
             # Constants for all reports.
             # These css classes determine which lines are highlighted by default.
-            'category': {
-                'exc': 'exc show_exc',
-                'mis': 'mis show_mis',
-                'par': 'par run show_par',
-                'run': 'run',
+            "category": {
+                "exc": "exc show_exc",
+                "mis": "mis show_mis",
+                "par": "par run show_par",
+                "run": "run",
             },
         }
         self.pyfile_html_source = read_data("pyfile.html")
@@ -384,9 +384,9 @@ class HtmlReporter:
                 if tok_type == "ws":
                     html_parts.append(escape(tok_text))
                 else:
-                    tok_html = escape(tok_text) or '&nbsp;'
+                    tok_html = escape(tok_text) or "&nbsp;"
                     html_parts.append(f'<span class="{tok_type}">{tok_html}</span>')
-            ldata.html = ''.join(html_parts)
+            ldata.html = "".join(html_parts)
             ldata.context_str = ",".join(
                 str(context_codes[c_context]) for c_context in ldata.context_list
             )
@@ -419,24 +419,24 @@ class HtmlReporter:
             css_classes = []
             if ldata.category:
                 css_classes.append(
-                    self.template_globals['category'][ldata.category]   # type: ignore[index]
+                    self.template_globals["category"][ldata.category]   # type: ignore[index]
                 )
-            ldata.css_class = ' '.join(css_classes) or "pln"
+            ldata.css_class = " ".join(css_classes) or "pln"
 
         html_path = os.path.join(self.directory, ftr.html_filename)
         html = self.source_tmpl.render({
             **file_data.__dict__,
             "contexts_json": contexts_json,
-            'prev_html': prev_html,
-            'next_html': next_html,
+            "prev_html": prev_html,
+            "next_html": next_html,
         })
         write_html(html_path, html)
 
         # Save this file's information for the index file.
         index_info: IndexInfoDict = {
-            'nums': ftr.analysis.numbers,
-            'html_filename': ftr.html_filename,
-            'relative_filename': ftr.fr.relative_filename(),
+            "nums": ftr.analysis.numbers,
+            "html_filename": ftr.html_filename,
+            "relative_filename": ftr.fr.relative_filename(),
         }
         self.file_summaries.append(index_info)
         self.incr.set_index_info(ftr.rootname, index_info)
@@ -455,12 +455,12 @@ class HtmlReporter:
             skipped_empty_msg = f"{n} empty file{plural(n)} skipped."
 
         html = index_tmpl.render({
-            'files': self.file_summaries,
-            'totals': self.totals,
-            'skipped_covered_msg': skipped_covered_msg,
-            'skipped_empty_msg': skipped_empty_msg,
-            'first_html': first_html,
-            'final_html': final_html,
+            "files": self.file_summaries,
+            "totals": self.totals,
+            "skipped_covered_msg": skipped_covered_msg,
+            "skipped_empty_msg": skipped_empty_msg,
+            "first_html": first_html,
+            "final_html": final_html,
         })
 
         index_file = os.path.join(self.directory, "index.html")
@@ -510,7 +510,7 @@ class IncrementalChecker:
 
     def reset(self) -> None:
         """Initialize to empty. Causes all files to be reported."""
-        self.globals = ''
+        self.globals = ""
         self.files: Dict[str, FileInfoDict] = {}
 
     def read(self) -> None:
@@ -524,17 +524,17 @@ class IncrementalChecker:
             usable = False
         else:
             usable = True
-            if status['format'] != self.STATUS_FORMAT:
+            if status["format"] != self.STATUS_FORMAT:
                 usable = False
-            elif status['version'] != coverage.__version__:
+            elif status["version"] != coverage.__version__:
                 usable = False
 
         if usable:
             self.files = {}
-            for filename, fileinfo in status['files'].items():
-                fileinfo['index']['nums'] = Numbers(*fileinfo['index']['nums'])
+            for filename, fileinfo in status["files"].items():
+                fileinfo["index"]["nums"] = Numbers(*fileinfo["index"]["nums"])
                 self.files[filename] = fileinfo
-            self.globals = status['globals']
+            self.globals = status["globals"]
         else:
             self.reset()
 
@@ -543,18 +543,18 @@ class IncrementalChecker:
         status_file = os.path.join(self.directory, self.STATUS_FILE)
         files = {}
         for filename, fileinfo in self.files.items():
-            index = fileinfo['index']
-            index['nums'] = index['nums'].init_args()   # type: ignore[typeddict-item]
+            index = fileinfo["index"]
+            index["nums"] = index["nums"].init_args()   # type: ignore[typeddict-item]
             files[filename] = fileinfo
 
         status = {
-            'format': self.STATUS_FORMAT,
-            'version': coverage.__version__,
-            'globals': self.globals,
-            'files': files,
+            "format": self.STATUS_FORMAT,
+            "version": coverage.__version__,
+            "globals": self.globals,
+            "files": files,
         }
         with open(status_file, "w") as fout:
-            json.dump(status, fout, separators=(',', ':'))
+            json.dump(status, fout, separators=(",", ":"))
 
     def check_global_data(self, *data: Any) -> None:
         """Check the global data that can affect incremental reporting."""
@@ -573,7 +573,7 @@ class IncrementalChecker:
         `rootname` is the name being used for the file.
         """
         m = Hasher()
-        m.update(fr.source().encode('utf-8'))
+        m.update(fr.source().encode("utf-8"))
         add_data_to_hash(data, fr.filename, m)
         this_hash = m.hexdigest()
 
@@ -588,19 +588,19 @@ class IncrementalChecker:
 
     def file_hash(self, fname: str) -> str:
         """Get the hash of `fname`'s contents."""
-        return self.files.get(fname, {}).get('hash', '')    # type: ignore[call-overload]
+        return self.files.get(fname, {}).get("hash", "")    # type: ignore[call-overload]
 
     def set_file_hash(self, fname: str, val: str) -> None:
         """Set the hash of `fname`'s contents."""
-        self.files.setdefault(fname, {})['hash'] = val      # type: ignore[typeddict-item]
+        self.files.setdefault(fname, {})["hash"] = val      # type: ignore[typeddict-item]
 
     def index_info(self, fname: str) -> IndexInfoDict:
         """Get the information for index.html for `fname`."""
-        return self.files.get(fname, {}).get('index', {})   # type: ignore
+        return self.files.get(fname, {}).get("index", {})   # type: ignore
 
     def set_index_info(self, fname: str, info: IndexInfoDict) -> None:
         """Set the information for index.html for `fname`."""
-        self.files.setdefault(fname, {})['index'] = info    # type: ignore[typeddict-item]
+        self.files.setdefault(fname, {})["index"] = info    # type: ignore[typeddict-item]
 
 
 # Helpers for templates and generating HTML

@@ -39,130 +39,130 @@ class Opts:
     # appears on the command line.
 
     append = optparse.make_option(
-        '-a', '--append', action='store_true',
+        "-a", "--append", action="store_true",
         help="Append coverage data to .coverage, otherwise it starts clean each time.",
     )
     keep = optparse.make_option(
-        '', '--keep', action='store_true',
+        "", "--keep", action="store_true",
         help="Keep original coverage files, otherwise they are deleted.",
     )
     branch = optparse.make_option(
-        '', '--branch', action='store_true',
+        "", "--branch", action="store_true",
         help="Measure branch coverage in addition to statement coverage.",
     )
     concurrency = optparse.make_option(
-        '', '--concurrency', action='store', metavar="LIBS",
+        "", "--concurrency", action="store", metavar="LIBS",
         help=(
             "Properly measure code using a concurrency library. " +
             "Valid values are: {}, or a comma-list of them."
         ).format(", ".join(sorted(CoverageConfig.CONCURRENCY_CHOICES))),
     )
     context = optparse.make_option(
-        '', '--context', action='store', metavar="LABEL",
+        "", "--context", action="store", metavar="LABEL",
         help="The context label to record for this coverage run.",
     )
     contexts = optparse.make_option(
-        '', '--contexts', action='store', metavar="REGEX1,REGEX2,...",
+        "", "--contexts", action="store", metavar="REGEX1,REGEX2,...",
         help=(
             "Only display data from lines covered in the given contexts. " +
             "Accepts Python regexes, which must be quoted."
         ),
     )
     combine_datafile = optparse.make_option(
-        '', '--data-file', action='store', metavar="DATAFILE",
+        "", "--data-file", action="store", metavar="DATAFILE",
         help=(
             "Base name of the data files to operate on. " +
             "Defaults to '.coverage'. [env: COVERAGE_FILE]"
         ),
     )
     input_datafile = optparse.make_option(
-        '', '--data-file', action='store', metavar="INFILE",
+        "", "--data-file", action="store", metavar="INFILE",
         help=(
             "Read coverage data for report generation from this file. " +
             "Defaults to '.coverage'. [env: COVERAGE_FILE]"
         ),
     )
     output_datafile = optparse.make_option(
-        '', '--data-file', action='store', metavar="OUTFILE",
+        "", "--data-file", action="store", metavar="OUTFILE",
         help=(
             "Write the recorded coverage data to this file. " +
             "Defaults to '.coverage'. [env: COVERAGE_FILE]"
         ),
     )
     debug = optparse.make_option(
-        '', '--debug', action='store', metavar="OPTS",
+        "", "--debug", action="store", metavar="OPTS",
         help="Debug options, separated by commas. [env: COVERAGE_DEBUG]",
     )
     directory = optparse.make_option(
-        '-d', '--directory', action='store', metavar="DIR",
+        "-d", "--directory", action="store", metavar="DIR",
         help="Write the output files to DIR.",
     )
     fail_under = optparse.make_option(
-        '', '--fail-under', action='store', metavar="MIN", type="float",
+        "", "--fail-under", action="store", metavar="MIN", type="float",
         help="Exit with a status of 2 if the total coverage is less than MIN.",
     )
     format = optparse.make_option(
-        '', '--format', action='store', metavar="FORMAT",
+        "", "--format", action="store", metavar="FORMAT",
         help="Output format, either text (default), markdown, or total.",
     )
     help = optparse.make_option(
-        '-h', '--help', action='store_true',
+        "-h", "--help", action="store_true",
         help="Get help on this command.",
     )
     ignore_errors = optparse.make_option(
-        '-i', '--ignore-errors', action='store_true',
+        "-i", "--ignore-errors", action="store_true",
         help="Ignore errors while reading source files.",
     )
     include = optparse.make_option(
-        '', '--include', action='store', metavar="PAT1,PAT2,...",
+        "", "--include", action="store", metavar="PAT1,PAT2,...",
         help=(
             "Include only files whose paths match one of these patterns. " +
             "Accepts shell-style wildcards, which must be quoted."
         ),
     )
     pylib = optparse.make_option(
-        '-L', '--pylib', action='store_true',
+        "-L", "--pylib", action="store_true",
         help=(
             "Measure coverage even inside the Python installed library, " +
             "which isn't done by default."
         ),
     )
     show_missing = optparse.make_option(
-        '-m', '--show-missing', action='store_true',
+        "-m", "--show-missing", action="store_true",
         help="Show line numbers of statements in each module that weren't executed.",
     )
     module = optparse.make_option(
-        '-m', '--module', action='store_true',
+        "-m", "--module", action="store_true",
         help=(
             "<pyfile> is an importable Python module, not a script path, " +
             "to be run as 'python -m' would run it."
         ),
     )
     omit = optparse.make_option(
-        '', '--omit', action='store', metavar="PAT1,PAT2,...",
+        "", "--omit", action="store", metavar="PAT1,PAT2,...",
         help=(
             "Omit files whose paths match one of these patterns. " +
             "Accepts shell-style wildcards, which must be quoted."
         ),
     )
     output_xml = optparse.make_option(
-        '-o', '', action='store', dest="outfile", metavar="OUTFILE",
+        "-o", "", action="store", dest="outfile", metavar="OUTFILE",
         help="Write the XML report to this file. Defaults to 'coverage.xml'",
     )
     output_json = optparse.make_option(
-        '-o', '', action='store', dest="outfile", metavar="OUTFILE",
+        "-o", "", action="store", dest="outfile", metavar="OUTFILE",
         help="Write the JSON report to this file. Defaults to 'coverage.json'",
     )
     output_lcov = optparse.make_option(
-        '-o', '', action='store', dest='outfile', metavar="OUTFILE",
+        "-o", "", action="store", dest="outfile", metavar="OUTFILE",
         help="Write the LCOV report to this file. Defaults to 'coverage.lcov'",
     )
     json_pretty_print = optparse.make_option(
-        '', '--pretty-print', action='store_true',
+        "", "--pretty-print", action="store_true",
         help="Format the JSON for human readers.",
     )
     parallel_mode = optparse.make_option(
-        '-p', '--parallel-mode', action='store_true',
+        "-p", "--parallel-mode", action="store_true",
         help=(
             "Append the machine name, process id and random number to the " +
             "data file name to simplify collecting data from " +
@@ -170,18 +170,18 @@ class Opts:
         ),
     )
     precision = optparse.make_option(
-        '', '--precision', action='store', metavar='N', type=int,
+        "", "--precision", action="store", metavar="N", type=int,
         help=(
             "Number of digits after the decimal point to display for " +
             "reported coverage percentages."
         ),
     )
     quiet = optparse.make_option(
-        '-q', '--quiet', action='store_true',
+        "-q", "--quiet", action="store_true",
         help="Don't print messages about what is happening.",
     )
     rcfile = optparse.make_option(
-        '', '--rcfile', action='store',
+        "", "--rcfile", action="store",
         help=(
             "Specify configuration file. " +
             "By default '.coveragerc', 'setup.cfg', 'tox.ini', and " +
@@ -189,45 +189,45 @@ class Opts:
         ),
     )
     show_contexts = optparse.make_option(
-        '--show-contexts', action='store_true',
+        "--show-contexts", action="store_true",
         help="Show contexts for covered lines.",
     )
     skip_covered = optparse.make_option(
-        '--skip-covered', action='store_true',
+        "--skip-covered", action="store_true",
         help="Skip files with 100% coverage.",
     )
     no_skip_covered = optparse.make_option(
-        '--no-skip-covered', action='store_false', dest='skip_covered',
+        "--no-skip-covered", action="store_false", dest="skip_covered",
         help="Disable --skip-covered.",
     )
     skip_empty = optparse.make_option(
-        '--skip-empty', action='store_true',
+        "--skip-empty", action="store_true",
         help="Skip files with no code.",
     )
     sort = optparse.make_option(
-        '--sort', action='store', metavar='COLUMN',
+        "--sort", action="store", metavar="COLUMN",
         help=(
             "Sort the report by the named column: name, stmts, miss, branch, brpart, or cover. " +
              "Default is name."
         ),
     )
     source = optparse.make_option(
-        '', '--source', action='store', metavar="SRC1,SRC2,...",
+        "", "--source", action="store", metavar="SRC1,SRC2,...",
         help="A list of directories or importable names of code to measure.",
     )
     timid = optparse.make_option(
-        '', '--timid', action='store_true',
+        "", "--timid", action="store_true",
         help=(
             "Use a simpler but slower trace method. Try this if you get " +
             "seemingly impossible results!"
         ),
     )
     title = optparse.make_option(
-        '', '--title', action='store', metavar="TITLE",
+        "", "--title", action="store", metavar="TITLE",
         help="A text string to use as the title on the HTML.",
     )
     version = optparse.make_option(
-        '', '--version', action='store_true',
+        "", "--version", action="store_true",
         help="Display version information and exit.",
     )
 
@@ -369,7 +369,7 @@ GLOBAL_ARGS = [
 ]
 
 COMMANDS = {
-    'annotate': CmdOptionParser(
+    "annotate": CmdOptionParser(
         "annotate",
         [
             Opts.directory,
@@ -385,7 +385,7 @@ COMMANDS = {
         ),
     ),
 
-    'combine': CmdOptionParser(
+    "combine": CmdOptionParser(
         "combine",
         [
             Opts.append,
@@ -404,7 +404,7 @@ COMMANDS = {
         ),
     ),
 
-    'debug': CmdOptionParser(
+    "debug": CmdOptionParser(
         "debug", GLOBAL_ARGS,
         usage="<topic>",
         description=(
@@ -419,7 +419,7 @@ COMMANDS = {
         ),
     ),
 
-    'erase': CmdOptionParser(
+    "erase": CmdOptionParser(
         "erase",
         [
             Opts.combine_datafile
@@ -427,13 +427,13 @@ COMMANDS = {
         description="Erase previously collected coverage data.",
     ),
 
-    'help': CmdOptionParser(
+    "help": CmdOptionParser(
         "help", GLOBAL_ARGS,
         usage="[command]",
         description="Describe how to use coverage.py",
     ),
 
-    'html': CmdOptionParser(
+    "html": CmdOptionParser(
         "html",
         [
             Opts.contexts,
@@ -459,7 +459,7 @@ COMMANDS = {
         ),
     ),
 
-    'json': CmdOptionParser(
+    "json": CmdOptionParser(
         "json",
         [
             Opts.contexts,
@@ -477,7 +477,7 @@ COMMANDS = {
         description="Generate a JSON report of coverage results.",
     ),
 
-    'lcov': CmdOptionParser(
+    "lcov": CmdOptionParser(
         "lcov",
         [
             Opts.input_datafile,
@@ -492,7 +492,7 @@ COMMANDS = {
         description="Generate an LCOV report of coverage results.",
     ),
 
-    'report': CmdOptionParser(
+    "report": CmdOptionParser(
         "report",
         [
             Opts.contexts,
@@ -513,7 +513,7 @@ COMMANDS = {
         description="Report coverage statistics on modules.",
     ),
 
-    'run': CmdOptionParser(
+    "run": CmdOptionParser(
         "run",
         [
             Opts.append,
@@ -533,7 +533,7 @@ COMMANDS = {
         description="Run a Python program, measuring code execution.",
     ),
 
-    'xml': CmdOptionParser(
+    "xml": CmdOptionParser(
         "xml",
         [
             Opts.input_datafile,
@@ -560,12 +560,12 @@ def show_help(
     assert error or topic or parser
 
     program_path = sys.argv[0]
-    if program_path.endswith(os.path.sep + '__main__.py'):
+    if program_path.endswith(os.path.sep + "__main__.py"):
         # The path is the main module of a package; get that path instead.
         program_path = os.path.dirname(program_path)
     program_name = os.path.basename(program_path)
     if env.WINDOWS:
-        # entry_points={'console_scripts':...} on Windows makes files
+        # entry_points={"console_scripts":...} on Windows makes files
         # called coverage.exe, coverage3.exe, and coverage-3.5.exe. These
         # invoke coverage-script.py, coverage3-script.py, and
         # coverage-3.5-script.py.  argv[0] is the .py file, but we want to
@@ -576,11 +576,11 @@ def show_help(
 
     help_params = dict(coverage.__dict__)
     help_params["__url__"] = __url__
-    help_params['program_name'] = program_name
+    help_params["program_name"] = program_name
     if HAS_CTRACER:
-        help_params['extension_modifier'] = 'with C extension'
+        help_params["extension_modifier"] = "with C extension"
     else:
-        help_params['extension_modifier'] = 'without C extension'
+        help_params["extension_modifier"] = "without C extension"
 
     if error:
         print(error, file=sys.stderr)
@@ -590,7 +590,7 @@ def show_help(
         print()
     else:
         assert topic is not None
-        help_msg = textwrap.dedent(HELP_TOPICS.get(topic, '')).strip()
+        help_msg = textwrap.dedent(HELP_TOPICS.get(topic, "")).strip()
         if help_msg:
             print(help_msg.format(**help_params))
         else:
@@ -618,13 +618,13 @@ class CoverageScript:
         """
         # Collect the command-line options.
         if not argv:
-            show_help(topic='minimum_help')
+            show_help(topic="minimum_help")
             return OK
 
         # The command syntax we parse depends on the first argument.  Global
         # switch syntax always starts with an option.
         parser: Optional[optparse.OptionParser]
-        self.global_option = argv[0].startswith('-')
+        self.global_option = argv[0].startswith("-")
         if self.global_option:
             parser = GlobalOptionParser()
         else:
@@ -702,7 +702,7 @@ class CoverageScript:
 
         # We need to be able to import from the current directory, because
         # plugins may try to, for example, to read Django settings.
-        sys.path.insert(0, '')
+        sys.path.insert(0, "")
 
         self.coverage.load()
 
@@ -786,7 +786,7 @@ class CoverageScript:
         # Handle help.
         if options.help:
             if self.global_option:
-                show_help(topic='help')
+                show_help(topic="help")
             else:
                 show_help(parser=parser)
             return True
@@ -800,12 +800,12 @@ class CoverageScript:
                     else:
                         show_help(topic=a)
             else:
-                show_help(topic='help')
+                show_help(topic="help")
             return True
 
         # Handle version.
         if options.version:
-            show_help(topic='version')
+            show_help(topic="version")
             return True
 
         return False
@@ -835,7 +835,7 @@ class CoverageScript:
         if options.concurrency == "multiprocessing":
             # Can't set other run-affecting command line options with
             # multiprocessing.
-            for opt_name in ['branch', 'include', 'omit', 'pylib', 'source', 'timid']:
+            for opt_name in ["branch", "include", "omit", "pylib", "source", "timid"]:
                 # As it happens, all of these options have no default, meaning
                 # they will be None if they have not been specified.
                 if getattr(options, opt_name) is not None:
@@ -913,7 +913,7 @@ def unshell_list(s: str) -> Optional[List[str]]:
         # line, but (not) helpfully, the single quotes are included in the
         # argument, so we have to strip them off here.
         s = s.strip("'")
-    return s.split(',')
+    return s.split(",")
 
 
 def unglob_args(args: List[str]) -> List[str]:
@@ -921,7 +921,7 @@ def unglob_args(args: List[str]) -> List[str]:
     if env.WINDOWS:
         globbed = []
         for arg in args:
-            if '?' in arg or '*' in arg:
+            if "?" in arg or "*" in arg:
                 globbed.extend(glob.glob(arg))
             else:
                 globbed.append(arg)
@@ -930,7 +930,7 @@ def unglob_args(args: List[str]) -> List[str]:
 
 
 HELP_TOPICS = {
-    'help': """\
+    "help": """\
         Coverage.py, version {__version__} {extension_modifier}
         Measure, collect, and report on code coverage in Python programs.
 
@@ -952,11 +952,11 @@ HELP_TOPICS = {
         Use "{program_name} help <command>" for detailed help on any command.
     """,
 
-    'minimum_help': """\
+    "minimum_help": """\
         Code coverage for Python, version {__version__} {extension_modifier}.  Use '{program_name} help' for help.
     """,
 
-    'version': """\
+    "version": """\
         Coverage.py, version {__version__} {extension_modifier}
     """,
 }
@@ -1008,6 +1008,6 @@ if _profile:                                                # pragma: debugging
         try:
             return original_main(argv)
         finally:
-            data, _ = profiler.query(re_filter='coverage', max_records=100)
-            print(profiler.show(query=data, limit=100, sep='', col=''))
+            data, _ = profiler.query(re_filter="coverage", max_records=100)
+            print(profiler.show(query=data, limit=100, sep="", col=""))
             profiler.cancel()

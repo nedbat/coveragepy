@@ -137,8 +137,8 @@ class SummaryReporter:
         max_n = max(len(total_line[header.index("Cover")]) + 6, len(" Cover "))
         header_items = [formats[item].format(item, name_len=max_name, n=max_n) for item in header]
         header_str = "".join(header_items)
-        rule_str = "|" + " ".join(["- |".rjust(len(header_items[0])-1, '-')] +
-            ["-: |".rjust(len(item)-1, '-') for item in header_items[1:]]
+        rule_str = "|" + " ".join(["- |".rjust(len(header_items[0])-1, "-")] +
+            ["-: |".rjust(len(item)-1, "-") for item in header_items[1:]]
         )
 
         # Write the header
@@ -223,10 +223,10 @@ class SummaryReporter:
         # Line sorting.
         sort_option = (self.config.sort or "name").lower()
         reverse = False
-        if sort_option[0] == '-':
+        if sort_option[0] == "-":
             reverse = True
             sort_option = sort_option[1:]
-        elif sort_option[0] == '+':
+        elif sort_option[0] == "+":
             sort_option = sort_option[1:]
         sort_idx = column_order.get(sort_option)
         if sort_idx is None:
@@ -250,12 +250,12 @@ class SummaryReporter:
         # Create other final lines.
         end_lines = []
         if self.config.skip_covered and self.skipped_count:
-            file_suffix = 's' if self.skipped_count>1 else ''
+            file_suffix = "s" if self.skipped_count>1 else ""
             end_lines.append(
                 f"\n{self.skipped_count} file{file_suffix} skipped due to complete coverage."
             )
         if self.config.skip_empty and self.empty_count:
-            file_suffix = 's' if self.empty_count > 1 else ''
+            file_suffix = "s" if self.empty_count > 1 else ""
             end_lines.append(f"\n{self.empty_count} empty file{file_suffix} skipped.")
 
         if self.output_format == "markdown":
