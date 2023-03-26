@@ -698,7 +698,6 @@ CTracer_handle_return(CTracer *self, PyFrameObject *frame)
     PyObject * pCode = NULL;
 
     STATS( self->stats.returns++; )
-    /* A near-copy of this code is above in the missing-return handler. */
     if (CTracer_set_pdata_stack(self) < 0) {
         goto error;
     }
