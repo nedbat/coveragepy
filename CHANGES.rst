@@ -25,8 +25,11 @@ Unreleased
   dramatically smaller. This closes `issue 1584`_ thanks to `Oleh Krehel
   <pull 1587_>`_.
 
+- Development dependencies no longer use hashed pins, closing `issue 1592`_.
+
 .. _issue 1584: https://github.com/nedbat/coveragepy/issues/1584
 .. _pull 1587: https://github.com/nedbat/coveragepy/pull/1587
+.. _issue 1592: https://github.com/nedbat/coveragepy/issues/1592
 
 
 .. scriv-start-here

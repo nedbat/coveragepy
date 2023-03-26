@@ -81,7 +81,7 @@ jobs:
 
       - name: "Install dependencies"
         run: |
-          python -m pip install --require-hashes -r requirements/tox.pip
+          python -m pip install -r requirements/tox.pip
 
       - name: "Run tox"
         run: |

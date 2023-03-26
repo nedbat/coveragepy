@@ -46,7 +46,7 @@ jobs:
 
       - name: "Install dependencies"
         run: |
-          python -m pip install --require-hashes -r requirements/tox.pip
+          python -m pip install -r requirements/tox.pip
 
       - name: "Tox lint"
         run: |
@@ -97,7 +97,7 @@ jobs:
           set -xe
           python -VV
           python -m site
-          python -m pip install --require-hashes -r requirements/tox.pip
+          python -m pip install -r requirements/tox.pip
 
       - name: "Tox doc"
         run: |

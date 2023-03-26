@@ -73,7 +73,7 @@ jobs:
           set -xe
           python -VV
           python -m site
-          python -m pip install --require-hashes -r requirements/tox.pip
+          python -m pip install -r requirements/tox.pip
           # For extreme debugging:
           # python -c "import urllib.request as r; exec(r.urlopen('https://bit.ly/pydoctor').read())"
 

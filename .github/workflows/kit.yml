@@ -155,7 +155,7 @@ jobs:
 
       - name: "Install tools"
         run: |
-          python -m pip install --require-hashes -r requirements/kit.pip
+          python -m pip install -r requirements/kit.pip
 
       - name: "Build wheels"
         env:
@@ -192,7 +192,7 @@ jobs:
 
       - name: "Install tools"
         run: |
-          python -m pip install --require-hashes -r requirements/kit.pip
+          python -m pip install -r requirements/kit.pip
 
       - name: "Build sdist"
         run: |
