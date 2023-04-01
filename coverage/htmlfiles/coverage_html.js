@@ -219,7 +219,7 @@ coverage.pyfile_ready = function () {
 
     // If we're directed to a particular line number, highlight the line.
     var frag = location.hash;
-    if (frag.length > 2 && frag[1] === 't') {
+    if (frag.length > 2 && frag[1] === "t") {
         document.querySelector(frag).closest(".n").classList.add("highlight");
         coverage.set_sel(parseInt(frag.substr(2), 10));
     } else {
@@ -533,14 +533,14 @@ coverage.scroll_window = function (to_pos) {
 
 coverage.init_scroll_markers = function () {
     // Init some variables
-    coverage.lines_len = document.querySelectorAll('#source > p').length;
+    coverage.lines_len = document.querySelectorAll("#source > p").length;
 
     // Build html
     coverage.build_scroll_markers();
 };
 
 coverage.build_scroll_markers = function () {
-    const temp_scroll_marker = document.getElementById('scroll_marker')
+    const temp_scroll_marker = document.getElementById("scroll_marker")
     if (temp_scroll_marker) temp_scroll_marker.remove();
     // Don't build markers if the window has no scroll bar.
     if (document.body.scrollHeight <= window.innerHeight) {
@@ -554,8 +554,8 @@ coverage.build_scroll_markers = function () {
 
     const scroll_marker = document.createElement("div");
     scroll_marker.id = "scroll_marker";
-    document.getElementById('source').querySelectorAll(
-        'p.show_run, p.show_mis, p.show_exc, p.show_exc, p.show_par'
+    document.getElementById("source").querySelectorAll(
+        "p.show_run, p.show_mis, p.show_exc, p.show_exc, p.show_par"
     ).forEach(element => {
         const line_top = Math.floor(element.offsetTop * marker_scale);
         const line_number = parseInt(element.querySelector(".n a").id.substr(1));
@@ -582,21 +582,21 @@ coverage.build_scroll_markers = function () {
 };
 
 coverage.wire_up_sticky_header = function () {
-    const header = document.querySelector('header');
+    const header = document.querySelector("header");
     const header_bottom = (
-        header.querySelector('.content h2').getBoundingClientRect().top -
+        header.querySelector(".content h2").getBoundingClientRect().top -
         header.getBoundingClientRect().top
     );
 
     function updateHeader() {
         if (window.scrollY > header_bottom) {
-            header.classList.add('sticky');
+            header.classList.add("sticky");
         } else {
-            header.classList.remove('sticky');
+            header.classList.remove("sticky");
         }
     }
 
-    window.addEventListener('scroll', updateHeader);
+    window.addEventListener("scroll", updateHeader);
     updateHeader();
 };
 
