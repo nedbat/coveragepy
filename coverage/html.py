@@ -7,10 +7,12 @@ from __future__ import annotations
 
 import collections
 import datetime
+import functools
 import json
 import os
 import re
 import shutil
+import string  # pylint: disable=deprecated-module
 
 from dataclasses import dataclass
 from typing import Any, Dict, Iterable, List, Optional, Tuple, TYPE_CHECKING, cast
@@ -185,6 +187,21 @@ class FileToReport:
         self.analysis = analysis
         self.rootname = flat_rootname(fr.relative_filename())
         self.html_filename = self.rootname + ".html"
+
+
+HTML_SAFE = string.ascii_letters + string.digits + "!#$%'()*+,-./:;=?@[]^_`{|}~"
+
+@functools.lru_cache(maxsize=None)
+def encode_int(n: int) -> str:
+    """Create a short HTML-safe string from an integer, using HTML_SAFE."""
+    if n == 0:
+        return HTML_SAFE[0]
+
+    r = []
+    while n:
+        n, t = divmod(n, len(HTML_SAFE))
+        r.append(HTML_SAFE[t])
+    return "".join(r)
 
 
 class HtmlReporter:
@@ -373,7 +390,10 @@ class HtmlReporter:
         contexts = collections.Counter(c for cline in file_data.lines for c in cline.contexts)
         context_codes = {y: i for (i, y) in enumerate(x[0] for x in contexts.most_common())}
         if context_codes:
-            contexts_json = json.dumps({v: k for (k, v) in context_codes.items()}, indent=2)
+            contexts_json = json.dumps(
+                {encode_int(v): k for (k, v) in context_codes.items()},
+                indent=2,
+            )
         else:
             contexts_json = None
 
@@ -387,9 +407,17 @@ class HtmlReporter:
                     tok_html = escape(tok_text) or "&nbsp;"
                     html_parts.append(f'<span class="{tok_type}">{tok_html}</span>')
             ldata.html = "".join(html_parts)
-            ldata.context_str = ",".join(
-                str(context_codes[c_context]) for c_context in ldata.context_list
-            )
+            if ldata.context_list:
+                encoded_contexts = [
+                    encode_int(context_codes[c_context]) for c_context in ldata.context_list
+                ]
+                code_width = max(len(ec) for ec in encoded_contexts)
+                ldata.context_str = (
+                    str(code_width)
+                    + "".join(ec.ljust(code_width) for ec in encoded_contexts)
+                )
+            else:
+                ldata.context_str = ""
 
             if ldata.short_annotations:
                 # 202F is NARROW NO-BREAK SPACE.

@@ -212,14 +212,9 @@ coverage.index_ready = function () {
 coverage.LINE_FILTERS_STORAGE = "COVERAGE_LINE_FILTERS";
 
 coverage.pyfile_ready = function () {
-    cboxes = document.querySelectorAll('[id^=ctxs]')
-    cboxes.forEach(function(cbox) {
-        cbox.addEventListener("click", coverage.showContexts)
-    });
-
     // If we're directed to a particular line number, highlight the line.
     var frag = location.hash;
-    if (frag.length > 2 && frag[1] === 't') {
+    if (frag.length > 2 && frag[1] === "t") {
         document.querySelector(frag).closest(".n").classList.add("highlight");
         coverage.set_sel(parseInt(frag.substr(2), 10));
     } else {
@@ -261,6 +256,10 @@ coverage.pyfile_ready = function () {
     coverage.assign_shortkeys();
     coverage.init_scroll_markers();
     coverage.wire_up_sticky_header();
+
+    document.querySelectorAll("[id^=ctxs]").forEach(
+        cbox => cbox.addEventListener("click", coverage.expand_contexts)
+    );
 
     // Rebuild scroll markers when the window height changes.
     window.addEventListener("resize", coverage.build_scroll_markers);
@@ -533,14 +532,14 @@ coverage.scroll_window = function (to_pos) {
 
 coverage.init_scroll_markers = function () {
     // Init some variables
-    coverage.lines_len = document.querySelectorAll('#source > p').length;
+    coverage.lines_len = document.querySelectorAll("#source > p").length;
 
     // Build html
     coverage.build_scroll_markers();
 };
 
 coverage.build_scroll_markers = function () {
-    const temp_scroll_marker = document.getElementById('scroll_marker')
+    const temp_scroll_marker = document.getElementById("scroll_marker")
     if (temp_scroll_marker) temp_scroll_marker.remove();
     // Don't build markers if the window has no scroll bar.
     if (document.body.scrollHeight <= window.innerHeight) {
@@ -554,8 +553,8 @@ coverage.build_scroll_markers = function () {
 
     const scroll_marker = document.createElement("div");
     scroll_marker.id = "scroll_marker";
-    document.getElementById('source').querySelectorAll(
-        'p.show_run, p.show_mis, p.show_exc, p.show_exc, p.show_par'
+    document.getElementById("source").querySelectorAll(
+        "p.show_run, p.show_mis, p.show_exc, p.show_exc, p.show_par"
     ).forEach(element => {
         const line_top = Math.floor(element.offsetTop * marker_scale);
         const line_number = parseInt(element.querySelector(".n a").id.substr(1));
@@ -582,35 +581,37 @@ coverage.build_scroll_markers = function () {
 };
 
 coverage.wire_up_sticky_header = function () {
-    const header = document.querySelector('header');
+    const header = document.querySelector("header");
     const header_bottom = (
-        header.querySelector('.content h2').getBoundingClientRect().top -
+        header.querySelector(".content h2").getBoundingClientRect().top -
         header.getBoundingClientRect().top
     );
 
     function updateHeader() {
         if (window.scrollY > header_bottom) {
-            header.classList.add('sticky');
+            header.classList.add("sticky");
         } else {
-            header.classList.remove('sticky');
+            header.classList.remove("sticky");
         }
     }
 
-    window.addEventListener('scroll', updateHeader);
+    window.addEventListener("scroll", updateHeader);
     updateHeader();
 };
 
-coverage.showContexts = function (e) {
-    span = e.target.nextElementSibling.nextElementSibling;
-    span_text = span.textContent;
+coverage.expand_contexts = function (e) {
+    var ctxs = e.target.parentNode.querySelector(".ctxs");
 
-    if (/^[0-9,]+$/.test(span_text)) {
-        span.textContent = "";
-        span_text.split(",").forEach(function(s) {
-            ctx = contexts[s];
-            span.appendChild(document.createTextNode(ctx));
-            span.appendChild(document.createElement("br"));
-        })
+    if (!ctxs.classList.contains("expanded")) {
+        var ctxs_text = ctxs.textContent;
+        var width = Number(ctxs_text[0]);
+        ctxs.textContent = "";
+        for (var i = 1; i < ctxs_text.length; i += width) {
+            key = ctxs_text.substring(i, i + width).trim();
+            ctxs.appendChild(document.createTextNode(contexts[key]));
+            ctxs.appendChild(document.createElement("br"));
+        }
+        ctxs.classList.add("expanded");
     }
 };
 
@@ -620,5 +621,4 @@ document.addEventListener("DOMContentLoaded", () => {
     } else {
         coverage.pyfile_ready();
     }
-
 });
