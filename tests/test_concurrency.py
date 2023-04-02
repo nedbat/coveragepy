@@ -768,7 +768,10 @@ class SigtermTest(CoverageTest):
             sigterm = true
             """)
         out = self.run_command("coverage run handler.py")
-        assert out == "START\nSIGTERM\nTerminated\n"
+        if env.LINUX:
+            assert out == "START\nSIGTERM\nTerminated\n"
+        else:
+            assert out == "START\nSIGTERM\n"
         out = self.run_command("coverage report -m")
         expected = "handler.py 5 1 80% 6"
         assert self.squeezed_lines(out)[2] == expected
