@@ -653,7 +653,7 @@ class Coverage(TConfigurable):
             self._debug.write(f"{event}: pid: {os.getpid()}, instance: {self!r}")
         if self._started:
             self.stop()
-        if self._auto_save:
+        if self._auto_save or event == "sigterm":
             self.save()
 
     def _on_sigterm(self, signum_unused: int, frame_unused: Optional[FrameType]) -> None:
