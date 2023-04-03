@@ -6,7 +6,7 @@
 #
 alabaster==0.7.13
     # via sphinx
-astroid==2.15.0
+astroid==2.15.1
     # via pylint
 attrs==22.2.0
     # via
@@ -60,7 +60,7 @@ exceptiongroup==1.1.1
     #   pytest
 execnet==1.9.0
     # via pytest-xdist
-filelock==3.10.6
+filelock==3.10.7
     # via
     #   tox
     #   virtualenv
@@ -68,7 +68,7 @@ flaky==3.7.0
     # via -r requirements/pytest.in
 greenlet==2.0.2
     # via -r requirements/dev.in
-hypothesis==6.70.0
+hypothesis==6.70.2
     # via -r requirements/pytest.in
 idna==3.4
     # via requests
@@ -163,7 +163,7 @@ pytest==7.2.2
     #   pytest-xdist
 pytest-xdist==3.2.1
     # via -r requirements/pytest.in
-pytz==2023.2
+pytz==2023.3
     # via babel
 readme-renderer==37.3
     # via
@@ -180,7 +180,7 @@ requests-toolbelt==0.10.1
     # via twine
 rfc3986==2.0.0
     # via twine
-rich==13.3.2
+rich==13.3.3
     # via twine
 scriv==1.2.1
     # via -r doc/requirements.in
@@ -231,11 +231,11 @@ tomli==2.0.1
     #   pyproject-hooks
     #   pytest
     #   tox
-tomlkit==0.11.6
+tomlkit==0.11.7
     # via pylint
 tornado==6.2
     # via livereload
-tox==4.4.7
+tox==4.4.8
     # via
     #   -r requirements/tox.in
     #   tox-gh

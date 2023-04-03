@@ -18,7 +18,7 @@ cibuildwheel==2.12.1
     # via -r requirements/kit.in
 colorama==0.4.6
     # via -r requirements/kit.in
-filelock==3.10.6
+filelock==3.10.7
     # via cibuildwheel
 importlib-metadata==6.1.0
     # via
