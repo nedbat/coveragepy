@@ -164,7 +164,7 @@ cheats:					## Create some useful snippets for releasing.
 	python igor.py cheats | tee cheats.txt
 
 relbranch:				## Create the branch for releasing.
-	echo git switch -c nedbat/release-$$(date +%Y%m%d)
+	git switch -c nedbat/release-$$(date +%Y%m%d)
 
 relcommit1:				## Commit the first release changes.
 	git commit -am "docs: prep for $$(python setup.py --version)"

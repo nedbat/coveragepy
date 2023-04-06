@@ -17,8 +17,12 @@ development at the same time, such as 4.5.x and 5.0.
     ..  Version 9.8.1 — 2027-07-27
     ..  --------------------------
 
-Unreleased
-----------
+.. scriv-start-here
+
+.. _changes_7-2-3:
+
+Version 7.2.3 — 2023-04-06
+--------------------------
 
 - Fix: the :ref:`config_run_sigterm` setting was meant to capture data if a
   process was terminated with a SIGTERM signal, but it didn't always.  This was
@@ -37,8 +41,6 @@ Unreleased
 .. _issue 1599: https://github.com/nedbat/coveragepy/issues/1599
 .. _pull 1600: https://github.com/nedbat/coveragepy/pull/1600
 
-
-.. scriv-start-here
 
 .. _changes_7-2-2:
 
