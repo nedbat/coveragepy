@@ -20,6 +20,7 @@ clean_platform:
 clean: clean_platform			## Remove artifacts of test execution, installation, etc.
 	@echo "Cleaning..."
 	@-pip uninstall -yq coverage
+	@mkdir -p build	# so the chmod won't fail if build doesn't exist
 	@chmod -R 777 build
 	@rm -rf build coverage.egg-info dist htmlcov
 	@rm -f *.bak */*.bak */*/*.bak */*/*/*.bak */*/*/*/*.bak */*/*/*/*/*.bak

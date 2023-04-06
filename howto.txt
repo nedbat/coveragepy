@@ -83,6 +83,7 @@
             - wait for the new tag build to finish successfully.
         - @ https://readthedocs.org/dashboard/coverage/advanced/
             - change the default version to the new version
+- Don't forget to merge the bump-version branch
 - things to automate:
     - url to link to latest changes in docs
     - next version.py line
