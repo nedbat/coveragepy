@@ -705,7 +705,7 @@ class SigtermTest(CoverageTest):
     """Tests of our handling of SIGTERM."""
 
     @pytest.mark.parametrize("sigterm", [False, True])
-    def test_sigterm_saves_data(self, sigterm: bool) -> None:
+    def test_sigterm_multiprocessing_saves_data(self, sigterm: bool) -> None:
         # A terminated process should save its coverage data.
         self.make_file("clobbered.py", """\
             import multiprocessing
@@ -749,6 +749,31 @@ class SigtermTest(CoverageTest):
             expected = "clobbered.py 17 1 94% 6"
         else:
             expected = "clobbered.py 17 5 71% 5-10"
+        assert self.squeezed_lines(out)[2] == expected
+
+    def test_sigterm_threading_saves_data(self) -> None:
+        # A terminated process should save its coverage data.
+        self.make_file("handler.py", """\
+            import os, signal
+
+            print("START", flush=True)
+            print("SIGTERM", flush=True)
+            os.kill(os.getpid(), signal.SIGTERM)
+            print("NOT HERE", flush=True)
+            """)
+        self.make_file(".coveragerc", """\
+            [run]
+            # The default concurrency option.
+            concurrency = thread
+            sigterm = true
+            """)
+        out = self.run_command("coverage run handler.py")
+        if env.LINUX:
+            assert out == "START\nSIGTERM\nTerminated\n"
+        else:
+            assert out == "START\nSIGTERM\n"
+        out = self.run_command("coverage report -m")
+        expected = "handler.py 5 1 80% 6"
         assert self.squeezed_lines(out)[2] == expected
 
     def test_sigterm_still_runs(self) -> None:
