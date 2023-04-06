@@ -105,6 +105,7 @@ Krystian Kichewko
 Kyle Altendorf
 Lars Hupfeldt Nielsen
 Leonardo Pistone
+Lewis Gaul
 Lex Berezhny
 Loïc Dachary
 Lorenzo Micò

@@ -20,6 +20,10 @@ development at the same time, such as 4.5.x and 5.0.
 Unreleased
 ----------
 
+- Fix: the :ref:`config_run_sigterm` setting was meant to capture data if a
+  process was terminated with a SIGTERM signal, but it didn't always.  This was
+  fixed thanks to `Lewis Gaul <pull 1600_>`_, closing `issue 1599`_.
+
 - Performance: HTML reports with context information are now much more compact.
   File sizes are typically as small as one-third the previous size, but can be
   dramatically smaller. This closes `issue 1584`_ thanks to `Oleh Krehel
@@ -30,6 +34,8 @@ Unreleased
 .. _issue 1584: https://github.com/nedbat/coveragepy/issues/1584
 .. _pull 1587: https://github.com/nedbat/coveragepy/pull/1587
 .. _issue 1592: https://github.com/nedbat/coveragepy/issues/1592
+.. _issue 1599: https://github.com/nedbat/coveragepy/issues/1599
+.. _pull 1600: https://github.com/nedbat/coveragepy/pull/1600
 
 
 .. scriv-start-here
