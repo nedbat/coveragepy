@@ -12,6 +12,7 @@ import contextlib
 import datetime
 import glob
 import inspect
+import itertools
 import os
 import platform
 import pprint
@@ -77,10 +78,11 @@ def do_remove_extension(*args):
             "-c",
             "import coverage; print(coverage.__file__)"
         ], encoding="utf-8").strip())
+        roots = [root]
     else:
-        root = "coverage"
+        roots = ["coverage", "build/*/coverage"]
 
-    for pattern in so_patterns:
+    for root, pattern in itertools.product(roots, so_patterns):
         pattern = os.path.join(root, pattern.strip())
         if VERBOSITY:
             print(f"Searching for {pattern}")
