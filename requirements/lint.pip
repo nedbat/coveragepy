@@ -6,12 +6,11 @@
 #
 alabaster==0.7.13
     # via sphinx
-astroid==2.15.1
+astroid==2.15.2
     # via pylint
 attrs==22.2.0
     # via
     #   hypothesis
-    #   pytest
     #   scriv
 babel==2.12.1
     # via sphinx
@@ -60,7 +59,7 @@ exceptiongroup==1.1.1
     #   pytest
 execnet==1.9.0
     # via pytest-xdist
-filelock==3.10.7
+filelock==3.11.0
     # via
     #   tox
     #   virtualenv
@@ -68,13 +67,13 @@ flaky==3.7.0
     # via -r requirements/pytest.in
 greenlet==2.0.2
     # via -r requirements/dev.in
-hypothesis==6.70.2
+hypothesis==6.71.0
     # via -r requirements/pytest.in
 idna==3.4
     # via requests
 imagesize==1.4.1
     # via sphinx
-importlib-metadata==6.1.0
+importlib-metadata==6.3.0
     # via
     #   build
     #   click
@@ -118,7 +117,7 @@ mdurl==0.1.2
     # via markdown-it-py
 more-itertools==9.1.0
     # via jaraco-classes
-packaging==23.0
+packaging==23.1
     # via
     #   build
     #   pudb
@@ -145,19 +144,19 @@ pyenchant==3.2.2
     # via
     #   -r doc/requirements.in
     #   sphinxcontrib-spelling
-pygments==2.14.0
+pygments==2.15.0
     # via
     #   pudb
     #   readme-renderer
     #   rich
     #   sphinx
-pylint==2.17.1
+pylint==2.17.2
     # via -r requirements/dev.in
 pyproject-api==1.5.1
     # via tox
 pyproject-hooks==1.0.0
     # via build
-pytest==7.2.2
+pytest==7.3.1
     # via
     #   -r requirements/pytest.in
     #   pytest-xdist
@@ -180,7 +179,7 @@ requests-toolbelt==0.10.1
     # via twine
 rfc3986==2.0.0
     # via twine
-rich==13.3.3
+rich==13.3.4
     # via twine
 scriv==1.2.1
     # via -r doc/requirements.in
@@ -235,7 +234,7 @@ tomlkit==0.11.7
     # via pylint
 tornado==6.2
     # via livereload
-tox==4.4.8
+tox==4.4.12
     # via
     #   -r requirements/tox.in
     #   tox-gh

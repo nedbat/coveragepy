@@ -6,9 +6,9 @@
 #
 distlib==0.3.6
     # via virtualenv
-filelock==3.10.7
+filelock==3.11.0
     # via virtualenv
-importlib-metadata==6.1.0
+importlib-metadata==6.3.0
     # via virtualenv
 platformdirs==3.2.0
     # via virtualenv

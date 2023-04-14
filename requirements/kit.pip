@@ -18,13 +18,13 @@ cibuildwheel==2.12.1
     # via -r requirements/kit.in
 colorama==0.4.6
     # via -r requirements/kit.in
-filelock==3.10.7
+filelock==3.11.0
     # via cibuildwheel
-importlib-metadata==6.1.0
+importlib-metadata==6.3.0
     # via
     #   auditwheel
     #   build
-packaging==23.0
+packaging==23.1
     # via
     #   build
     #   cibuildwheel
