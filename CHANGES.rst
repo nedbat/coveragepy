@@ -20,6 +20,10 @@ development at the same time, such as 4.5.x and 5.0.
 Unreleased
 ----------
 
+- Fix: with ``relative_files = true``, specifying a specific file to include or
+  omit wouldn't work correctly (`issue 1604`_).  This is now fixed, with
+  testing help by `Marc Gibbons <pull 1608_>`_.
+
 - Fix: the XML report would have an incorrect ``<source>`` element when using
   relative files and the source option ended with a slash (`issue 1541`_).
   This is now fixed, thanks to `Kevin Brown-Silva <pull 1608_>`_.
@@ -35,7 +39,9 @@ Unreleased
 
 .. _issue 1523: https://github.com/nedbat/coveragepy/issues/1523
 .. _issue 1541: https://github.com/nedbat/coveragepy/issues/1541
+.. _issue 1604: https://github.com/nedbat/coveragepy/issues/1604
 .. _pull 1608: https://github.com/nedbat/coveragepy/pull/1608
+.. _pull 1609: https://github.com/nedbat/coveragepy/pull/1609
 .. _pull 1610: https://github.com/nedbat/coveragepy/pull/1610
 .. _pull 1613: https://github.com/nedbat/coveragepy/pull/1613
 
