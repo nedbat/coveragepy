@@ -209,9 +209,8 @@ def prep_patterns(patterns: Iterable[str]) -> List[str]:
     """
     prepped = []
     for p in patterns or []:
-        if p.startswith(("*", "?")):
-            prepped.append(p)
-        else:
+        prepped.append(p)
+        if not p.startswith(("*", "?")):
             prepped.append(abs_file(p))
     return prepped
 
