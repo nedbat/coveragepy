@@ -116,8 +116,12 @@ def venv_world_fixture(tmp_path_factory: pytest.TempPathFactory) -> Path:
                 __path__ = extend_path(__path__, __name__)
             """)
         make_file("bug888/app/testcov/main.py", """\
-            import pkg_resources
-            for entry_point in pkg_resources.iter_entry_points('plugins'):
+            try:  # pragma: no cover
+                entry_points = __import__("pkg_resources").iter_entry_points('plugins')
+            except ImportError:  # pragma: no cover
+                import importlib.metadata
+                entry_points = importlib.metadata.entry_points(group="plugins")
+            for entry_point in entry_points:
                 entry_point.load()()
             """)
         make_file("bug888/plugin/setup.py", """\
