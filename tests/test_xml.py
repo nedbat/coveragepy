@@ -320,7 +320,7 @@ class XmlReportTest(XmlTestHelpers, CoverageTest):
 
     def test_no_duplicate_packages(self) -> None:
         self.make_file(
-            "namespace/package/__init__.py", 
+            "namespace/package/__init__.py",
             "from . import sample; from . import test; from .subpackage import test"
         )
         self.make_file("namespace/package/sample.py", "print('package.sample')")
@@ -479,6 +479,19 @@ class XmlPackageStructureTest(XmlTestHelpers, CoverageTest):
     def test_relative_source(self) -> None:
         self.make_file("src/mod.py", "print(17)")
         cov = coverage.Coverage(source=["src"])
+        cov.set_option("run:relative_files", True)
+        self.start_import_stop(cov, "mod", modfile="src/mod.py")
+        cov.xml_report()
+
+        with open("coverage.xml") as x:
+            print(x.read())
+        dom = ElementTree.parse("coverage.xml")
+        elts = dom.findall(".//sources/source")
+        assert [elt.text for elt in elts] == ["src"]
+
+    def test_relative_source_trailing_slash(self) -> None:
+        self.make_file("src/mod.py", "print(17)")
+        cov = coverage.Coverage(source=["src/"])
         cov.set_option("run:relative_files", True)
         self.start_import_stop(cov, "mod", modfile="src/mod.py")
         cov.xml_report()
