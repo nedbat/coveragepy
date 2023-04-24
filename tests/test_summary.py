@@ -142,6 +142,59 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         assert "mycode.py " in report
         assert self.last_line_squeezed(report) == "TOTAL 4 0 100%"
 
+    def test_report_include_relative_files_and_path(self) -> None:
+        """
+        Test that when relative_files is True and a relative path to a module
+        is included, coverage is reported for the module.
+
+        Ref: https://github.com/nedbat/coveragepy/issues/1604
+        """
+        self.make_mycode()
+        self.make_file(".coveragerc", """\
+            [run]
+            relative_files = true
+            """)
+        self.make_file("submodule/mycode.py", "import mycode")
+
+        cov = coverage.Coverage()
+        self.start_import_stop(cov, "submodule/mycode")
+        report = self.get_report(cov, include="submodule/mycode.py")
+
+        # Name                Stmts   Miss  Cover
+        # ---------------------------------------
+        # submodule/mycode.py 1       0     100%
+        # ---------------------------------------
+        # TOTAL               1       0     100%
+
+        assert "submodule/mycode.py " in report
+        assert self.last_line_squeezed(report) == "TOTAL 1 0 100%"
+
+    def test_report_include_relative_files_and_wildcard_path(self) -> None:
+        self.make_mycode()
+        self.make_file(".coveragerc", """\
+            [run]
+            relative_files = true
+            """)
+        self.make_file("submodule/mycode.py", "import nested.submodule.mycode")
+        self.make_file("nested/submodule/mycode.py", "import mycode")
+
+        cov = coverage.Coverage()
+        self.start_import_stop(cov, "submodule/mycode")
+        report = self.get_report(cov, include="*/submodule/mycode.py")
+
+        # Name                          Stmts   Miss  Cover
+        # -------------------------------------------------
+        # nested/submodule/mycode.py    1       0     100%
+        # submodule/mycode.py           1       0     100%
+        # -------------------------------------------------
+        # TOTAL                         2       0     100%
+
+        reported_files = [line.split()[0] for line in report.splitlines()[2:4]]
+        assert reported_files == [
+            "nested/submodule/mycode.py",
+            "submodule/mycode.py",
+        ]
+
     def test_omit_files_here(self) -> None:
         # https://github.com/nedbat/coveragepy/issues/1407
         self.make_file("foo.py", "")
