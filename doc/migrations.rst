@@ -21,7 +21,7 @@ Migrating 6.5.x — 7.0.x
     to be changed to ``*/tests/*``.
 
   - ``**`` now matches any number of nested directories. If you wish to retain the behavior of
-  ``**/tests/*`` in previous versions then  ``*/**/tests/*`` can be used instead.
+    ``**/tests/*`` in previous versions then  ``*/**/tests/*`` can be used instead.
 
 - When remapping file paths with ``[paths]``, a path will be remapped only if
   the resulting path exists. Ensure that remapped ``[paths]`` exist when upgrading
