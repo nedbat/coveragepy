@@ -234,4 +234,5 @@ More information
     trouble
     faq
     Change history <changes>
+    Migrating version notes <migrations>
     sleepy
