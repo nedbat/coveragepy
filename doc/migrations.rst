@@ -19,9 +19,6 @@ Migrating 6.x.x — 7.x.x
   - Previously, ``*`` would incorrectly match directory separators, making
     precise matching difficult. This requires ``[paths]`` such as ``*tests/*``
     to be changed to ``*/tests/*``.
-  
-  - A file path setting like ``*/foo`` will now match ``foo/bar.py`` so that
-    relative file paths can be combined more easily.
 
 - When remapping file paths with ``[paths]``, a path will be remapped only if
   the resulting path exists. Ensure that remapped ``[paths]`` exist when upgrading
