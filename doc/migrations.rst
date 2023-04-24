@@ -14,10 +14,10 @@ Migrating between versions
 
 Migrating 6.5.x — 7.0.x
 --------------------------
-- The way that wildcards when specifing file paths work in certain caseshas changed in 7.x:
+- The way that wildcards when specifing file paths work in certain caseshas changed in 7.0.x:
 
   - Previously, ``*`` would incorrectly match directory separators, making
-    precise matching difficult. This requires ``[paths]`` such as ``*tests/*``
+    precise matching difficult. This requires patterns such as ``*tests/*``
     to be changed to ``*/tests/*``.
 
   - ``**`` now matches any number of nested directories. If you wish to retain the behavior of
@@ -26,4 +26,3 @@ Migrating 6.5.x — 7.0.x
 - When remapping file paths with ``[paths]``, a path will be remapped only if
   the resulting path exists. Ensure that remapped ``[paths]`` exist when upgrading
   as this is now being enforced.
-
