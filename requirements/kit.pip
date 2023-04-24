@@ -14,13 +14,13 @@ build==0.10.0
     # via -r requirements/kit.in
 certifi==2022.12.7
     # via cibuildwheel
-cibuildwheel==2.12.1
+cibuildwheel==2.12.3
     # via -r requirements/kit.in
 colorama==0.4.6
     # via -r requirements/kit.in
-filelock==3.11.0
+filelock==3.12.0
     # via cibuildwheel
-importlib-metadata==6.3.0
+importlib-metadata==6.6.0
     # via
     #   auditwheel
     #   build
