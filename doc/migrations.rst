@@ -13,8 +13,8 @@ Migrating between versions
 .. _migrating_6x_7x:
 
 Migrating 6.5.x — 7.0.x
---------------------------
-- The way that wildcards when specifing file paths work in certain cases has changed in 7.0.x:
+-----------------------
+- The way that wildcards when specifying file paths work in certain cases has changed in 7.0.x:
 
   - Previously, ``*`` would incorrectly match directory separators, making
     precise matching difficult. This requires patterns such as ``*tests/*``
