@@ -5,6 +5,7 @@
 
 from __future__ import annotations
 
+import os
 import sys
 
 from typing import Callable, Iterable, Iterator, IO, Optional, Tuple, TYPE_CHECKING
@@ -58,7 +59,12 @@ def render_report(
     try:
         ret = reporter.report(morfs, outfile=outfile)
         if file_to_close is not None:
-            msgfn(f"Wrote {reporter.report_type} to {output_path}")
+            if os.isatty(sys.stdout.fileno()):
+                file_path = f"file://{os.path.abspath(output_path)}"
+                print_path = f"\033]8;;{file_path}\a{output_path}\033]8;;\a"
+            else:
+                print_path = output_path
+            msgfn(f"Wrote {reporter.report_type} to {print_path}")
         delete_file = False
         return ret
     finally:
