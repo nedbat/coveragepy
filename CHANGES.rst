@@ -20,8 +20,11 @@ development at the same time, such as 4.5.x and 5.0.
 Unreleased
 ----------
 
-Nothing yet.
+- Docs: a new :ref:`Migrating page <migrating>` with details about how to
+  migrate between major versions of coverage.py.  It currently covers the
+  wildcard changes in 7.x.  Thanks, `Brian Grohe <pull 1610_>`_.
 
+.. _pull 1610: https://github.com/nedbat/coveragepy/pull/1610
 
 .. scriv-start-here
 
