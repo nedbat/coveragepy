@@ -59,7 +59,7 @@ def render_report(
     try:
         ret = reporter.report(morfs, outfile=outfile)
         if file_to_close is not None:
-            if os.isatty(sys.stdout.fileno()):
+            if sys.stdout.isatty():
                 file_path = f"file://{os.path.abspath(output_path)}"
                 print_path = f"\033]8;;{file_path}\a{output_path}\033]8;;\a"
             else:

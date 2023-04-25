@@ -495,7 +495,7 @@ class HtmlReporter:
         index_file = os.path.join(self.directory, "index.html")
         write_html(index_file, html)
 
-        if os.isatty(sys.stdout.fileno()):
+        if sys.stdout.isatty():
             file_path = f"file://{os.path.abspath(index_file)}"
             print_path = f"\033]8;;{file_path}\a{index_file}\033]8;;\a"
         else:
