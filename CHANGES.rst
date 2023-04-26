@@ -20,11 +20,18 @@ development at the same time, such as 4.5.x and 5.0.
 Unreleased
 ----------
 
+- When the HTML report location is printed to the terminal, it's now a
+  terminal-compatible URL, so that you can click the location to open the HTML
+  file in your browser.  Finishes `issue 1523`_ thanks to `Ricardo Newbery
+  <pull 1613_>`_.
+
 - Docs: a new :ref:`Migrating page <migrating>` with details about how to
   migrate between major versions of coverage.py.  It currently covers the
   wildcard changes in 7.x.  Thanks, `Brian Grohe <pull 1610_>`_.
 
+.. _issue 1523: https://github.com/nedbat/coveragepy/issues/1523
 .. _pull 1610: https://github.com/nedbat/coveragepy/pull/1610
+.. _pull 1613: https://github.com/nedbat/coveragepy/pull/1613
 
 .. scriv-start-here
 
