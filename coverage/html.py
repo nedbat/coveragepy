@@ -13,6 +13,7 @@ import os
 import re
 import shutil
 import string  # pylint: disable=deprecated-module
+import sys
 
 from dataclasses import dataclass
 from typing import Any, Dict, Iterable, List, Optional, Tuple, TYPE_CHECKING, cast
@@ -493,7 +494,14 @@ class HtmlReporter:
 
         index_file = os.path.join(self.directory, "index.html")
         write_html(index_file, html)
-        self.coverage._message(f"Wrote HTML report to {index_file}")
+
+        if sys.stdout.isatty():
+            file_path = f"file://{os.path.abspath(index_file)}"
+            print_path = f"\033]8;;{file_path}\a{index_file}\033]8;;\a"
+        else:
+            print_path = index_file
+
+        self.coverage._message(f"Wrote HTML report to {print_path}")
 
         # Write the latest hashes for next time.
         self.incr.write()
