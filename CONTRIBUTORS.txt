@@ -46,12 +46,12 @@ Chris Adams
 Chris Jerdonek
 Chris Rose
 Chris Warrick
-Christopher Pickering
 Christian Clauss
 Christian Heimes
 Christine Lytwynec
 Christoph Blessing
 Christoph Zwerschke
+Christopher Pickering
 Clément Pit-Claudel
 Conrad Ho
 Cosimo Lupo
@@ -93,10 +93,10 @@ Ilia Meerovich
 Imri Goldberg
 Ionel Cristian Mărieș
 Ivan Ciuvalschii
-Jakub Wilk
-Janakarajan Natarajan
 J. M. F. Tsang
 JT Olds
+Jakub Wilk
+Janakarajan Natarajan
 Jerin Peter George
 Jessamyn Smith
 Joe Doherty
@@ -132,9 +132,9 @@ Marc Gibbons
 Marc Legendre
 Marcelo Trylesinski
 Marcus Cobden
+Mariatta
 Marius Gedminas
 Mark van der Wal
-Mariatta
 Martin Fuzzey
 Mathieu Kniewallner
 Matt Bachmann
@@ -155,8 +155,8 @@ Naveen Yadav
 Neil Pilgrim
 Nicholas Nadeau
 Nikita Bloshchanevich
-Nils Kattenbeck
 Nikita Sobolev
+Nils Kattenbeck
 Noel O'Boyle
 Oleg Höfling
 Oleh Krehel
@@ -178,6 +178,7 @@ Roland Illig
 Ross Lawley
 Roy Williams
 Russell Keith-Magee
+S. Y. Lee
 Salvatore Zagaria
 Sandra Martocchia
 Scott Belden
@@ -197,7 +198,6 @@ Steve Leonard
 Steve Oswald
 Steve Peak
 Sviatoslav Sydorenko
-S. Y. Lee
 Teake Nutma
 Ted Wexler
 Thijs Triemstra
