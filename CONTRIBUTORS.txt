@@ -23,6 +23,7 @@ Aron Griffis
 Artem Dayneko
 Arthur Deygin
 Arthur Rio
+Asher Foa
 Ben Carlsson
 Ben Finney
 Benjamin Parzella
@@ -33,8 +34,10 @@ Bradley Burns
 Brandon Rhodes
 Brett Cannon
 Brian Grohe
+Bruno Oliveira
 Bruno P. Kinoshita
 Buck Evan
+Buck Golemon
 Calen Pennington
 Carl Friedrich Bolz-Tereick
 Carl Gieringer
@@ -43,6 +46,8 @@ Chris Adams
 Chris Jerdonek
 Chris Rose
 Chris Warrick
+Christopher Pickering
+Christian Clauss
 Christian Heimes
 Christine Lytwynec
 Christoph Blessing
@@ -60,6 +65,7 @@ David Christian
 David MacIver
 David Stanek
 David Szotten
+Dennis Sweeney
 Detlev Offenbach
 Devin Jeanpierre
 Dirk Thomas
@@ -80,18 +86,22 @@ George-Cristian Bîrzan
 Greg Rogers
 Guido van Rossum
 Guillaume Chazarain
+Holger Krekel
 Hugo van Kemenade
 Ian Moore
 Ilia Meerovich
 Imri Goldberg
 Ionel Cristian Mărieș
 Ivan Ciuvalschii
+Jakub Wilk
+Janakarajan Natarajan
 J. M. F. Tsang
 JT Olds
 Jerin Peter George
 Jessamyn Smith
 Joe Doherty
 Joe Jevnik
+John Vandenberg
 Jon Chappell
 Jon Dufresne
 Joseph Tate
@@ -100,17 +110,22 @@ Judson Neer
 Julian Berman
 Julien Voisin
 Justas Sadzevičius
+Karthikeyan Singaravelan
 Kassandra Keeton
 Kevin Brown-Silva
 Kjell Braden
 Krystian Kichewko
 Kyle Altendorf
 Lars Hupfeldt Nielsen
+Latrice Wilgus
 Leonardo Pistone
 Lewis Gaul
 Lex Berezhny
 Loïc Dachary
 Lorenzo Micò
+Louis Heredero
+Luis Nell
+Łukasz Stolcman
 Manuel Jacob
 Marc Abramowitz
 Marc Gibbons
@@ -119,6 +134,7 @@ Marcelo Trylesinski
 Marcus Cobden
 Marius Gedminas
 Mark van der Wal
+Mariatta
 Martin Fuzzey
 Mathieu Kniewallner
 Matt Bachmann
@@ -126,23 +142,30 @@ Matthew Boehm
 Matthew Desmarais
 Matus Valo
 Max Linke
+Mayank Singhal
 Michael Krebs
 Michał Bultrowicz
 Michał Górny
 Mickie Betz
 Mike Fiedler
+Min ho Kim
 Nathan Land
+Naveen Srinivasan
 Naveen Yadav
 Neil Pilgrim
+Nicholas Nadeau
 Nikita Bloshchanevich
 Nils Kattenbeck
+Nikita Sobolev
 Noel O'Boyle
+Oleg Höfling
 Oleh Krehel
 Olivier Grisel
 Ori Avtalion
 Pablo Carballo
 Pankaj Pandey
 Patrick Mezard
+Pavel Tsialnou
 Peter Baughman
 Peter Ebden
 Peter Portante
@@ -151,6 +174,7 @@ Reya B
 Ricardo Newbery
 Rodrigue Cloutier
 Roger Hu
+Roland Illig
 Ross Lawley
 Roy Williams
 Russell Keith-Magee
@@ -159,9 +183,11 @@ Sandra Martocchia
 Scott Belden
 Sebastián Ramírez
 Sergey B Kirpichev
+Shantanu
 Sigve Tjora
 Simon Willison
 Stan Hu
+Stanisław Pitucha
 Stefan Behnel
 Stephan Deibel
 Stephan Richter
@@ -176,10 +202,13 @@ Teake Nutma
 Ted Wexler
 Thijs Triemstra
 Thomas Grainger
+Timo Furrer
 Titus Brown
+Tom Gurion
 Valentin Lab
 Ville Skyttä
 Vince Salvino
+Wonwin McBrootles
 Xie Yanbo
 Yilei "Dolee" Yang
 Yury Selivanov
