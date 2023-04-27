@@ -69,6 +69,8 @@ class XmlReporter:
                 if os.path.exists(src):
                     if not self.config.relative_files:
                         src = files.canonical_filename(src)
+                    else:
+                        src = src.rstrip(r"\/")
                     self.source_paths.add(src)
         self.packages: Dict[str, PackageData] = {}
         self.xml_out: xml.dom.minidom.Document
