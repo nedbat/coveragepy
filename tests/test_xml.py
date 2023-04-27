@@ -15,7 +15,7 @@ from xml.etree import ElementTree
 import pytest
 
 import coverage
-from coverage import Coverage
+from coverage import Coverage, env
 from coverage.exceptions import NoDataError
 from coverage.files import abs_file
 from coverage.misc import import_local_file
@@ -476,28 +476,16 @@ class XmlPackageStructureTest(XmlTestHelpers, CoverageTest):
         dom = ElementTree.parse("coverage.xml")
         self.assert_source(dom, "src")
 
-    def test_relative_source(self) -> None:
+    @pytest.mark.parametrize("trail", ["", "/", "\\"])
+    def test_relative_source(self, trail: str) -> None:
+        if trail == "\\" and not env.WINDOWS:
+            pytest.skip("trailing backslash is only for Windows")
         self.make_file("src/mod.py", "print(17)")
-        cov = coverage.Coverage(source=["src"])
+        cov = coverage.Coverage(source=[f"src{trail}"])
         cov.set_option("run:relative_files", True)
         self.start_import_stop(cov, "mod", modfile="src/mod.py")
         cov.xml_report()
 
-        with open("coverage.xml") as x:
-            print(x.read())
-        dom = ElementTree.parse("coverage.xml")
-        elts = dom.findall(".//sources/source")
-        assert [elt.text for elt in elts] == ["src"]
-
-    def test_relative_source_trailing_slash(self) -> None:
-        self.make_file("src/mod.py", "print(17)")
-        cov = coverage.Coverage(source=["src/"])
-        cov.set_option("run:relative_files", True)
-        self.start_import_stop(cov, "mod", modfile="src/mod.py")
-        cov.xml_report()
-
-        with open("coverage.xml") as x:
-            print(x.read())
         dom = ElementTree.parse("coverage.xml")
         elts = dom.findall(".//sources/source")
         assert [elt.text for elt in elts] == ["src"]

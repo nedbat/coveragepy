@@ -67,10 +67,10 @@ class XmlReporter:
         if self.config.source:
             for src in self.config.source:
                 if os.path.exists(src):
-                    if not self.config.relative_files:
-                        src = files.canonical_filename(src)
-                    else:
+                    if self.config.relative_files:
                         src = src.rstrip(r"\/")
+                    else:
+                        src = files.canonical_filename(src)
                     self.source_paths.add(src)
         self.packages: Dict[str, PackageData] = {}
         self.xml_out: xml.dom.minidom.Document
