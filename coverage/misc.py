@@ -386,3 +386,15 @@ def plural(n: int, thing: str = "", things: str = "") -> str:
         return thing
     else:
         return things or (thing + "s")
+
+
+def stdout_link(text: str, url: str) -> str:
+    """Format text+url as a clickable link for stdout.
+
+    If attached to a terminal, use escape sequences. Otherwise, just return
+    the text.
+    """
+    if sys.stdout.isatty():
+        return f"\033]8;;{url}\a{text}\033]8;;\a"
+    else:
+        return text

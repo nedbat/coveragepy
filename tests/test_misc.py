@@ -6,13 +6,14 @@
 from __future__ import annotations
 
 import sys
+from unittest import mock
 
 import pytest
 
 from coverage.exceptions import CoverageException
 from coverage.misc import file_be_gone
 from coverage.misc import Hasher, substitute_variables, import_third_party
-from coverage.misc import human_sorted, human_sorted_items
+from coverage.misc import human_sorted, human_sorted_items, stdout_link
 
 from tests.coveragetest import CoverageTest
 
@@ -153,3 +154,14 @@ def test_human_sorted_items(words: str, ordered: str) -> None:
     oitems = [(k, v) for k in okeys for v in [1, 2]]
     assert human_sorted_items(items) == oitems
     assert human_sorted_items(items, reverse=True) == oitems[::-1]
+
+
+def test_stdout_link_tty() -> None:
+    with mock.patch.object(sys.stdout, "isatty", lambda:True):
+        link = stdout_link("some text", "some url")
+    assert link == "\033]8;;some url\asome text\033]8;;\a"
+
+
+def test_stdout_link_not_tty() -> None:
+    # Without mocking isatty, it reports False in a pytest suite.
+    assert stdout_link("some text", "some url") == "some text"

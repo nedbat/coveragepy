@@ -13,7 +13,6 @@ import os
 import re
 import shutil
 import string  # pylint: disable=deprecated-module
-import sys
 
 from dataclasses import dataclass
 from typing import Any, Dict, Iterable, List, Optional, Tuple, TYPE_CHECKING, cast
@@ -23,7 +22,7 @@ from coverage.data import CoverageData, add_data_to_hash
 from coverage.exceptions import NoDataError
 from coverage.files import flat_rootname
 from coverage.misc import ensure_dir, file_be_gone, Hasher, isolate_module, format_local_datetime
-from coverage.misc import human_sorted, plural
+from coverage.misc import human_sorted, plural, stdout_link
 from coverage.report import get_analysis_to_report
 from coverage.results import Analysis, Numbers
 from coverage.templite import Templite
@@ -495,13 +494,8 @@ class HtmlReporter:
         index_file = os.path.join(self.directory, "index.html")
         write_html(index_file, html)
 
-        if sys.stdout.isatty():
-            file_path = f"file://{os.path.abspath(index_file)}"
-            print_path = f"\033]8;;{file_path}\a{index_file}\033]8;;\a"
-        else:
-            print_path = index_file
-
-        self.coverage._message(f"Wrote HTML report to {print_path}")
+        print_href = stdout_link(index_file, f"file://{os.path.abspath(index_file)}")
+        self.coverage._message(f"Wrote HTML report to {print_href}")
 
         # Write the latest hashes for next time.
         self.incr.write()
