@@ -221,6 +221,10 @@ def do_combine_html():
     cov.load()
     cov.combine()
     cov.save()
+    # A new Coverage to turn on messages. Better would be to have tighter
+    # control over message verbosity...
+    cov = coverage.Coverage(config_file="metacov.ini", messages=True)
+    cov.load()
     show_contexts = bool(os.environ.get('COVERAGE_DYNCTX') or os.environ.get('COVERAGE_CONTEXT'))
     cov.html_report(show_contexts=show_contexts)
 
