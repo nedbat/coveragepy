@@ -89,6 +89,7 @@ metasmoke:
 PIP_COMPILE = pip-compile --upgrade --allow-unsafe --resolver=backtracking
 upgrade: export CUSTOM_COMPILE_COMMAND=make upgrade
 upgrade: 				## Update the *.pip files with the latest packages satisfying *.in files.
+	git switch -c nedbat/upgrade-$$(date +%Y%m%d)
 	pip install -q -r requirements/pip-tools.pip
 	$(PIP_COMPILE) -o requirements/pip-tools.pip requirements/pip-tools.in
 	$(PIP_COMPILE) -o requirements/pip.pip requirements/pip.in
@@ -100,6 +101,7 @@ upgrade: 				## Update the *.pip files with the latest packages satisfying *.in 
 	$(PIP_COMPILE) -o doc/requirements.pip doc/requirements.in
 	$(PIP_COMPILE) -o requirements/lint.pip doc/requirements.in requirements/dev.in
 	$(PIP_COMPILE) -o requirements/mypy.pip requirements/mypy.in
+	git commit -am "chore: make upgrade"
 
 diff_upgrade:				## Summarize the last `make upgrade`
 	@# The sort flags sort by the package name first, then by the -/+, and
