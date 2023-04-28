@@ -17,8 +17,14 @@ development at the same time, such as 4.5.x and 5.0.
     ..  Version 9.8.1 — 2027-07-27
     ..  --------------------------
 
-Unreleased
-----------
+.. scriv-start-here
+
+.. _changes_7-2-4:
+
+Version 7.2.4 — 2023-04-28
+--------------------------
+
+PyCon 2023 sprint fixes!
 
 - Fix: with ``relative_files = true``, specifying a specific file to include or
   omit wouldn't work correctly (`issue 1604`_).  This is now fixed, with
@@ -45,7 +51,6 @@ Unreleased
 .. _pull 1610: https://github.com/nedbat/coveragepy/pull/1610
 .. _pull 1613: https://github.com/nedbat/coveragepy/pull/1613
 
-.. scriv-start-here
 
 .. _changes_7-2-3:
 
