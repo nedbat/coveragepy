@@ -28,7 +28,7 @@ packaging==23.1
     # via
     #   build
     #   cibuildwheel
-platformdirs==3.2.0
+platformdirs==3.5.0
     # via cibuildwheel
 pyelftools==0.29
     # via auditwheel

@@ -10,19 +10,19 @@ filelock==3.12.0
     # via virtualenv
 importlib-metadata==6.6.0
     # via virtualenv
-platformdirs==3.2.0
+platformdirs==3.5.0
     # via virtualenv
 typing-extensions==4.5.0
     # via
     #   importlib-metadata
     #   platformdirs
-virtualenv==20.22.0
+virtualenv==20.23.0
     # via -r requirements/pip.in
 zipp==3.15.0
     # via importlib-metadata
 
 # The following packages are considered to be unsafe in a requirements file:
-pip==23.1.1
+pip==23.1.2
     # via -r requirements/pip.in
 setuptools==65.7.0
     # via -r requirements/pip.in
