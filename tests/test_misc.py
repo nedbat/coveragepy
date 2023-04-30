@@ -6,7 +6,6 @@
 from __future__ import annotations
 
 import sys
-from typing import Any
 from unittest import mock
 
 import pytest
@@ -170,15 +169,6 @@ def test_stdout_link_not_tty() -> None:
 
 def test_stdout_link_with_fake_stdout() -> None:
     # If stdout is another object, we should still be ok.
-    class FakeStdout:
-        """New stdout, has .write(), but not .isatty()."""
-        def __init__(self, f: Any) -> None:
-            self.f = f
-
-        def write(self, data: str) -> Any:
-            """Write through to the underlying file."""
-            return self.f.write(data)
-
-    with mock.patch.object(sys, "stdout", FakeStdout(sys.stdout)):
+    with mock.patch.object(sys, "stdout", object()):
         link = stdout_link("some text", "some url")
     assert link == "some text"
