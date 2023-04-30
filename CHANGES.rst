@@ -20,7 +20,9 @@ development at the same time, such as 4.5.x and 5.0.
 Unreleased
 ----------
 
-Nothing yet.
+- Fix: ``html_report()`` could fail with an AttributeError on ``isatty`` if run
+  in an unusual environment where sys.stdout had been replaced.  This is now
+  fixed.
 
 
 .. scriv-start-here

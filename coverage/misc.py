@@ -394,7 +394,7 @@ def stdout_link(text: str, url: str) -> str:
     If attached to a terminal, use escape sequences. Otherwise, just return
     the text.
     """
-    if sys.stdout.isatty():
+    if hasattr(sys.stdout, "isatty") and sys.stdout.isatty():
         return f"\033]8;;{url}\a{text}\033]8;;\a"
     else:
         return text
