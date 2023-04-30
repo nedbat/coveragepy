@@ -17,15 +17,17 @@ development at the same time, such as 4.5.x and 5.0.
     ..  Version 9.8.1 — 2027-07-27
     ..  --------------------------
 
-Unreleased
-----------
+.. scriv-start-here
+
+.. _changes_7-2-5:
+
+Version 7.2.5 — 2023-04-30
+--------------------------
 
 - Fix: ``html_report()`` could fail with an AttributeError on ``isatty`` if run
   in an unusual environment where sys.stdout had been replaced.  This is now
   fixed.
 
-
-.. scriv-start-here
 
 .. _changes_7-2-4:
 
