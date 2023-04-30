@@ -384,7 +384,9 @@ Settings common to many kinds of reporting.
 containing a match for one of these regexes is excluded from being reported as
 missing.  More details are in :ref:`excluding`.  If you use this option, you
 are replacing all the exclude regexes, so you'll need to also supply the
-"pragma: no cover" regex if you still want to use it.
+"pragma: no cover" regex if you still want to use it.  The
+:ref:`config_report_exclude_also` setting can be used to specify patterns
+without overwriting the default set.
 
 You can exclude lines introducing blocks, and the entire block is excluded. If
 you exclude a ``def`` line or decorator line, the entire function is excluded.
@@ -400,10 +402,10 @@ you'll exclude any line with three or more of any character. If you write
 [report] exclude_also
 .....................
 
-(multi-string) A list of regular expressions.  This setting is the same as
-:ref:`config_report_exclude_lines`: it adds patterns for lines to exclude from
-reporting.  This setting will preserve the default exclude patterns instead of
-overwriting them.
+(multi-string) A list of regular expressions.  This setting is similar to
+:ref:`config_report_exclude_lines`: it specifies patterns for lines to exclude
+from reporting.  The difference is this setting will preserve the default
+exclude patterns instead of overwriting them.
 
 .. versionadded:: 7.2.0
 
