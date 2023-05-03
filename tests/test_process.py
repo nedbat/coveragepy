@@ -8,6 +8,7 @@ from __future__ import annotations
 import glob
 import os
 import os.path
+import platform
 import re
 import stat
 import sys
@@ -837,6 +838,12 @@ class EnvironmentTest(CoverageTest):
         assert "hello-xyzzy" in out
 
     @pytest.mark.skipif(env.WINDOWS, reason="Windows can't make symlinks")
+    @pytest.mark.skipif(
+        platform.python_version().endswith("+"),
+        reason="setuptools barfs on dev versions: https://github.com/pypa/packaging/issues/678"
+        # https://github.com/nedbat/coveragepy/issues/1556
+        # TODO: get rid of pkg_resources
+    )
     def test_bug_862(self) -> None:
         # This simulates how pyenv and pyenv-virtualenv end up creating the
         # coverage executable.
