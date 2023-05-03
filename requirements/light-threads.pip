@@ -27,9 +27,8 @@ zope-interface==6.0
     # via gevent
 
 # The following packages are considered to be unsafe in a requirements file:
-setuptools==65.7.0
+setuptools==67.7.2
     # via
-    #   -c requirements/pins.pip
     #   gevent
     #   zope-event
     #   zope-interface
