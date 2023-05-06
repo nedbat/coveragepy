@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import collections
 import contextlib
+import dis
 import os
 import os.path
 import re
@@ -63,6 +64,9 @@ def run_command(cmd: str) -> Tuple[int, str]:
     return status, output_str
 
 
+# $set_env.py: COVERAGE_DIS - Disassemble test code to /tmp/dis
+SHOW_DIS = bool(int(os.environ.get("COVERAGE_DIS", 0)))
+
 def make_file(
     filename: str,
     text: str = "",
@@ -94,13 +98,26 @@ def make_file(
         data = text.encode("utf-8")
 
     # Make sure the directories are available.
-    dirs, _ = os.path.split(filename)
-    if dirs and not os.path.exists(dirs):
-        os.makedirs(dirs)
+    dirs, basename = os.path.split(filename)
+    if dirs:
+        os.makedirs(dirs, exist_ok=True)
 
     # Create the file.
     with open(filename, 'wb') as f:
         f.write(data)
+
+    if text and basename.endswith(".py") and SHOW_DIS:      # pragma: debugging
+        os.makedirs("/tmp/dis", exist_ok=True)
+        with open(f"/tmp/dis/{basename}.dis", "w") as fdis:
+            print(f"# {os.path.abspath(filename)}", file=fdis)
+            cur_test = os.environ.get("PYTEST_CURRENT_TEST", "unknown")
+            print(f"# PYTEST_CURRENT_TEST = {cur_test}", file=fdis)
+            try:
+                dis.dis(text, file=fdis)
+            except Exception as exc:
+                # Some tests make .py files that aren't Python, so dis will
+                # fail, which is expected.
+                print(f"#! {exc!r}", file=fdis)
 
     # For debugging, enable this to show the contents of files created.
     if 0:  # pragma: debugging
