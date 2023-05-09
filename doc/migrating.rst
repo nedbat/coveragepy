@@ -27,3 +27,10 @@ Migrating from 6.x to 7.x
 - When remapping file paths with ``[paths]``, a path will be remapped only if
   the resulting path exists. Ensure that remapped ``[paths]`` exist when upgrading
   as this is now being enforced.
+
+- The :ref:`config_report_exclude_also` setting is new in 7.2.0.  It adds
+  exclusion regexes while keeping the default built-in set. It's better than
+  the older :ref:`config_report_exclude_lines` setting, which overwrote the
+  entire list.  Newer versions of coverage.py will be adding to the default set
+  of exclusions.  Using ``exclude_also`` will let you benefit from those
+  updates.

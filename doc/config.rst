@@ -79,10 +79,7 @@ Here's a sample configuration file::
 
     [report]
     # Regexes for lines to exclude from consideration
-    exclude_lines =
-        # Have to re-enable the standard pragma
-        pragma: no cover
-
+    exclude_also =
         # Don't complain about missing debug-only code:
         def __repr__
         if self\.debug
@@ -375,6 +372,19 @@ See :ref:`cmd_combine_remapping` and :ref:`source_glob` for more information.
 Settings common to many kinds of reporting.
 
 
+.. _config_report_exclude_also:
+
+[report] exclude_also
+.....................
+
+(multi-string) A list of regular expressions.  This setting is similar to
+:ref:`config_report_exclude_lines`: it specifies patterns for lines to exclude
+from reporting.  This setting is preferred, because it will preserve the
+default exclude patterns instead of overwriting them.
+
+.. versionadded:: 7.2.0
+
+
 .. _config_report_exclude_lines:
 
 [report] exclude_lines
@@ -395,19 +405,6 @@ Be careful when writing this setting: the values are regular expressions that
 only have to match a portion of the line. For example, if you write ``...``,
 you'll exclude any line with three or more of any character. If you write
 ``pass``, you'll also exclude the line ``my_pass="foo"``, and so on.
-
-
-.. _config_report_exclude_also:
-
-[report] exclude_also
-.....................
-
-(multi-string) A list of regular expressions.  This setting is similar to
-:ref:`config_report_exclude_lines`: it specifies patterns for lines to exclude
-from reporting.  The difference is this setting will preserve the default
-exclude patterns instead of overwriting them.
-
-.. versionadded:: 7.2.0
 
 
 .. _config_report_fail_under:
