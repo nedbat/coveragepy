@@ -18,7 +18,6 @@ from coverage.types import TMorf
 
 if TYPE_CHECKING:
     from coverage import Coverage
-    from coverage.data import CoverageData
 
 
 class LcovReporter:

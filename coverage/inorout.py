@@ -528,7 +528,7 @@ class InOrOut:
         Yields pairs: file path, and responsible plug-in name.
         """
         for pkg in self.source_pkgs:
-            if (not pkg in sys.modules or
+            if (pkg not in sys.modules or
                 not module_has_file(sys.modules[pkg])):
                 continue
             pkg_file = source_for_file(cast(str, sys.modules[pkg].__file__))

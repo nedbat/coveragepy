@@ -952,13 +952,12 @@ HELP_TOPICS = {
         Use "{program_name} help <command>" for detailed help on any command.
     """,
 
-    "minimum_help": """\
-        Code coverage for Python, version {__version__} {extension_modifier}.  Use '{program_name} help' for help.
-    """,
+    "minimum_help": (
+        "Code coverage for Python, version {__version__} {extension_modifier}.  " +
+        "Use '{program_name} help' for help."
+    ),
 
-    "version": """\
-        Coverage.py, version {__version__} {extension_modifier}
-    """,
+    "version": "Coverage.py, version {__version__} {extension_modifier}",
 }
 
 

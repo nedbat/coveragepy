@@ -14,8 +14,6 @@ https://coverage.readthedocs.io
 # so disable its warning.
 # pylint: disable=useless-import-alias
 
-import sys
-
 from coverage.version import (
     __version__ as __version__,
     version_info as version_info,

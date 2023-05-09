@@ -54,6 +54,9 @@ balanced_clumps = [
     "GetZipBytesTest",
 ]
 
+[tool.ruff]
+line-length = 100
+
 [tool.scriv]
 # Changelog management: https://pypi.org/project/scriv/
 format = "rst"
