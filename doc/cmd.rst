@@ -624,9 +624,10 @@ Here's a `sample report`__.
 
 __ https://nedbatchelder.com/files/sample_coverage_html/index.html
 
-Lines are highlighted green for executed, red for missing, and gray for
-excluded.  The counts at the top of the file are buttons to turn on and off
-the highlighting.
+Lines are highlighted: green for executed, red for missing, and gray for
+excluded.  If you've used branch coverage, partial branches are yellow.  The
+colored counts at the top of the file are buttons to turn on and off the
+highlighting.
 
 A number of keyboard shortcuts are available for navigating the report.
 Click the keyboard icon in the upper right to see the complete list.
