@@ -1343,9 +1343,10 @@ class AstArcAnalyzer:
 
     _code_object__Lambda = _make_expression_code_method("lambda")
     _code_object__GeneratorExp = _make_expression_code_method("generator expression")
-    _code_object__DictComp = _make_expression_code_method("dictionary comprehension")
-    _code_object__SetComp = _make_expression_code_method("set comprehension")
-    _code_object__ListComp = _make_expression_code_method("list comprehension")
+    if env.PYBEHAVIOR.comprehensions_are_functions:
+        _code_object__DictComp = _make_expression_code_method("dictionary comprehension")
+        _code_object__SetComp = _make_expression_code_method("set comprehension")
+        _code_object__ListComp = _make_expression_code_method("list comprehension")
 
 
 # Code only used when dumping the AST for debugging.

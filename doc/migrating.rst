@@ -39,3 +39,16 @@ Consider these changes when migrating to coverage.py 7.x:
   entire list.  Newer versions of coverage.py will be adding to the default set
   of exclusions.  Using ``exclude_also`` will let you benefit from those
   updates.
+
+
+.. _migrating_py312:
+
+Migrating to Python 3.12
+------------------------
+
+Keep these things in mind when running under Python 3.12:
+
+- Python 3.12 now inlines list, dict, and set comprehensions.  Previously, they
+  were compiled as functions that were called internally.  Coverage.py would
+  warn you if comprehensions weren't fully completed, but this no longer
+  happens with Python 3.12.

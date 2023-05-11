@@ -322,10 +322,11 @@ class ParserMissingArcDescriptionTest(CoverageTest):
         assert expected == parser.missing_arc_description(2, -2)
         expected = "line 3 didn't finish the generator expression on line 3"
         assert expected == parser.missing_arc_description(3, -3)
-        expected = "line 4 didn't finish the dictionary comprehension on line 4"
-        assert expected == parser.missing_arc_description(4, -4)
-        expected = "line 5 didn't finish the set comprehension on line 5"
-        assert expected == parser.missing_arc_description(5, -5)
+        if env.PYBEHAVIOR.comprehensions_are_functions:
+            expected = "line 4 didn't finish the dictionary comprehension on line 4"
+            assert expected == parser.missing_arc_description(4, -4)
+            expected = "line 5 didn't finish the set comprehension on line 5"
+            assert expected == parser.missing_arc_description(5, -5)
 
     def test_missing_arc_descriptions_for_exceptions(self) -> None:
         parser = self.parse_text("""\

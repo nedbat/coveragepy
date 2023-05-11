@@ -137,6 +137,10 @@ class PYBEHAVIOR:
     # only a 0-number line, which is ignored, giving a truly empty module.
     empty_is_empty = (PYVERSION >= (3, 11, 0, "beta", 4))
 
+    # Are comprehensions inlined (new) or compiled as called functions (old)?
+    # Changed in https://github.com/python/cpython/pull/101441
+    comprehensions_are_functions = (PYVERSION <= (3, 12, 0, "alpha", 7, 0))
+
 # Coverage.py specifics.
 
 # Are we using the C-implemented trace function?

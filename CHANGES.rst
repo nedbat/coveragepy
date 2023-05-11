@@ -20,7 +20,9 @@ development at the same time, such as 4.5.x and 5.0.
 Unreleased
 ----------
 
-Nothing yet.
+- Python 3.12 beta 1 now inlines comprehensions.  Previously they were compiled
+  as invisible functions and coverage.py would warn you if they weren't
+  completely executed.  This no longer happens under Python 3.12.
 
 
 .. scriv-start-here

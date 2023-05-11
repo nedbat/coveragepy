@@ -559,6 +559,10 @@ class LoopArcTest(CoverageTest):
         )
 
     def test_confusing_for_loop_bug_175(self) -> None:
+        if env.PYBEHAVIOR.comprehensions_are_functions:
+            extra_arcz = " -22 2-2"
+        else:
+            extra_arcz = ""
         self.check_coverage("""\
             o = [(1,2), (3,4)]
             o = [a for a in o]
@@ -566,7 +570,7 @@ class LoopArcTest(CoverageTest):
                 x = tup[0]
                 y = tup[1]
             """,
-            arcz=".1 -22 2-2 12 23 34 45 53 3.",
+            arcz=".1 12 23 34 45 53 3." + extra_arcz,
         )
         self.check_coverage("""\
             o = [(1,2), (3,4)]
@@ -574,7 +578,7 @@ class LoopArcTest(CoverageTest):
                 x = tup[0]
                 y = tup[1]
             """,
-            arcz=".1 12 -22 2-2 23 34 42 2.",
+            arcz=".1 12 23 34 42 2." + extra_arcz,
         )
 
     # https://bugs.python.org/issue44672
@@ -639,6 +643,10 @@ class LoopArcTest(CoverageTest):
         )
 
     def test_other_comprehensions(self) -> None:
+        if env.PYBEHAVIOR.comprehensions_are_functions:
+            extra_arcz = " -22 2-2"
+        else:
+            extra_arcz = ""
         # Set comprehension:
         self.check_coverage("""\
             o = ((1,2), (3,4))
@@ -647,7 +655,7 @@ class LoopArcTest(CoverageTest):
                 x = tup[0]
                 y = tup[1]
             """,
-            arcz=".1 -22 2-2 12 23 34 45 53 3.",
+            arcz=".1 12 23 34 45 53 3." + extra_arcz,
         )
         # Dict comprehension:
         self.check_coverage("""\
@@ -657,10 +665,14 @@ class LoopArcTest(CoverageTest):
                 x = tup[0]
                 y = tup[1]
             """,
-            arcz=".1 -22 2-2 12 23 34 45 53 3.",
+            arcz=".1 12 23 34 45 53 3." + extra_arcz,
         )
 
     def test_multiline_dict_comp(self) -> None:
+        if env.PYBEHAVIOR.comprehensions_are_functions:
+            extra_arcz = " 2-2"
+        else:
+            extra_arcz = ""
         # Multiline dict comp:
         self.check_coverage("""\
             # comment
@@ -675,7 +687,7 @@ class LoopArcTest(CoverageTest):
             }
             x = 11
             """,
-            arcz="-22 2B B-2   2-2"
+            arcz="-22 2B B-2" + extra_arcz,
         )
         # Multi dict comp:
         self.check_coverage("""\
@@ -695,7 +707,7 @@ class LoopArcTest(CoverageTest):
             }
             x = 15
             """,
-            arcz="-22 2F F-2   2-2"
+            arcz="-22 2F F-2" + extra_arcz,
         )
 
 
