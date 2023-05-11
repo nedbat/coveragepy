@@ -40,7 +40,7 @@ def set_warnings() -> None:
     warnings.simplefilter("once", DeprecationWarning)
 
     # Warnings to suppress:
-    # How come these warnings are successfully suppressed here, but not in setup.cfg??
+    # How come these warnings are successfully suppressed here, but not in pyproject.toml??
 
     warnings.filterwarnings(
         "ignore",
@@ -52,6 +52,13 @@ def set_warnings() -> None:
         "ignore",
         category=DeprecationWarning,
         message=r"module 'sre_constants' is deprecated",
+    )
+
+    # From _pytest/assertion/rewrite.py
+    warnings.filterwarnings(
+        "ignore",
+        category=DeprecationWarning,
+        message=r"is deprecated and will be removed in Python 3.14; use ast.Constant instead",
     )
 
     warnings.filterwarnings(

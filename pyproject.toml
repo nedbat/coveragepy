@@ -40,6 +40,7 @@ filterwarnings = [
     "ignore:the imp module is deprecated in favour of importlib:DeprecationWarning",
     "ignore:distutils Version classes are deprecated:DeprecationWarning",
     "ignore:The distutils package is deprecated and slated for removal in Python 3.12:DeprecationWarning",
+    "ignore:is deprecated and will be removed in Python 3.14; use ast.Constant instead:DeprecationWarning",
 ]
 
 # xfail tests that pass should fail the test suite
