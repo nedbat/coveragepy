@@ -53,6 +53,7 @@ jobs:
           - "pypy-3.7-nightly"
           - "pypy-3.8-nightly"
           - "pypy-3.9-nightly"
+          - "pypy-3.10-nightly"
       fail-fast: false
 
     steps:
