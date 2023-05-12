@@ -40,13 +40,10 @@ class PYBEHAVIOR:
 
     # Does Python conform to PEP626, Precise line numbers for debugging and other tools.
     # https://www.python.org/dev/peps/pep-0626
-    pep626 = CPYTHON and (PYVERSION > (3, 10, 0, "alpha", 4))
+    pep626 = (PYVERSION > (3, 10, 0, "alpha", 4))
 
     # Is "if __debug__" optimized away?
-    if PYPY:
-        optimize_if_debug = True
-    else:
-        optimize_if_debug = not pep626
+    optimize_if_debug = not pep626
 
     # Is "if not __debug__" optimized away? The exact details have changed
     # across versions.

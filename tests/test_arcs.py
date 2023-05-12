@@ -24,6 +24,10 @@ xfail_pypy_3882 = pytest.mark.xfail(
     reason="https://foss.heptapod.net/pypy/pypy/-/issues/3882",
 )
 
+xfail_pypy_3936 = pytest.mark.xfail(
+    env.PYPY and env.PYVERSION[:2] >= (3, 10),
+    reason="https://foss.heptapod.net/pypy/pypy/-/issues/3936",
+)
 
 class SimpleArcTest(CoverageTest):
     """Tests for coverage.py's arc measurement."""
@@ -1325,6 +1329,7 @@ class YieldTest(CoverageTest):
 @pytest.mark.skipif(not env.PYBEHAVIOR.match_case, reason="Match-case is new in 3.10")
 class MatchCaseTest(CoverageTest):
     """Tests of match-case."""
+    @xfail_pypy_3936
     def test_match_case_with_default(self) -> None:
         self.check_coverage("""\
             for command in ["huh", "go home", "go n"]:
@@ -1341,6 +1346,7 @@ class MatchCaseTest(CoverageTest):
         )
         assert self.stdout() == "default\nno go\ngo: n\n"
 
+    @xfail_pypy_3936
     def test_match_case_with_wildcard(self) -> None:
         self.check_coverage("""\
             for command in ["huh", "go home", "go n"]:
@@ -1357,6 +1363,7 @@ class MatchCaseTest(CoverageTest):
         )
         assert self.stdout() == "default: ['huh']\nno go\ngo: n\n"
 
+    @xfail_pypy_3936
     def test_match_case_without_wildcard(self) -> None:
         self.check_coverage("""\
             match = None
@@ -1701,6 +1708,10 @@ class DecoratorArcTest(CoverageTest):
         )
 
     @xfail_pypy38
+    @pytest.mark.xfail(
+        env.PYPY and env.PYVERSION[:2] >= (3, 10),
+        reason="https://foss.heptapod.net/pypy/pypy/-/issues/3937",
+    )
     def test_class_decorator(self) -> None:
         arcz = (
             ".1 16 67 6D 7A AE E. "     # main line
