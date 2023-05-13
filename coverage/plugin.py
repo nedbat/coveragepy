@@ -274,7 +274,9 @@ class FileTracer(CoveragePluginBase):
 
     """
 
-    def source_filename(self) -> str:       # type: ignore[return]
+    trace = True
+
+    def source_filename(self) -> Optional[str]:
         """The source file name for this file.
 
         This may be any file name you like.  A key responsibility of a plug-in
@@ -287,7 +289,7 @@ class FileTracer(CoveragePluginBase):
         Returns the file name to credit with this execution.
 
         """
-        _needs_to_implement(self, "source_filename")
+        return None
 
     def has_dynamic_source_filename(self) -> bool:
         """Does this FileTracer have dynamic source file names?

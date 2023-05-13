@@ -357,21 +357,24 @@ class InOrOut:
             if not plugin._coverage_enabled:
                 continue
 
+            plugin_name = plugin._coverage_plugin_name
             try:
                 file_tracer = plugin.file_tracer(canonical)
                 if file_tracer is not None:
                     file_tracer._coverage_plugin = plugin
-                    disp.trace = True
                     disp.file_tracer = file_tracer
                     if file_tracer.has_dynamic_source_filename():
                         disp.has_dynamic_filename = True
                     else:
                         disp.source_filename = canonical_filename(
-                            file_tracer.source_filename()
+                            file_tracer.source_filename() or
+                            canonical
                         )
+                    if not file_tracer.trace:
+                        return nope(disp, f"plugin {plugin_name!r} claimed it as untraced")
+                    disp.trace = True
                     break
             except Exception:
-                plugin_name = plugin._coverage_plugin_name
                 tb = traceback.format_exc()
                 self.warn(f"Disabling plug-in {plugin_name!r} due to an exception:\n{tb}")
                 plugin._coverage_enabled = False
@@ -388,7 +391,7 @@ class InOrOut:
                 )
             reason = self.check_include_omit_etc(disp.source_filename, frame)
             if reason:
-                nope(disp, reason)
+                return nope(disp, reason)
 
         return disp
 
