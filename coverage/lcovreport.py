@@ -5,9 +5,9 @@
 
 from __future__ import annotations
 
-import sys
 import base64
-from hashlib import md5
+import hashlib
+import sys
 
 from typing import IO, Iterable, Optional, TYPE_CHECKING
 
@@ -18,6 +18,12 @@ from coverage.types import TMorf
 
 if TYPE_CHECKING:
     from coverage import Coverage
+
+
+def line_hash(line: str) -> str:
+    """Produce a hash of a source line for use in the LCOV file."""
+    hashed = hashlib.md5(line.encode("utf-8")).digest()
+    return base64.b64encode(hashed).decode("ascii").rstrip("=")
 
 
 class LcovReporter:
@@ -68,17 +74,15 @@ class LcovReporter:
             # characters of the encoding ("==") are removed from the hash to
             # allow genhtml to run on the resulting lcov file.
             if source_lines:
-                line = source_lines[covered-1].encode("utf-8")
+                line = source_lines[covered-1]
             else:
-                line = b""
-            hashed = base64.b64encode(md5(line).digest()).decode().rstrip("=")
-            outfile.write(f"DA:{covered},1,{hashed}\n")
+                line = ""
+            outfile.write(f"DA:{covered},1,{line_hash(line)}\n")
 
         for missed in sorted(analysis.missing):
             assert source_lines
-            line = source_lines[missed-1].encode("utf-8")
-            hashed = base64.b64encode(md5(line).digest()).decode().rstrip("=")
-            outfile.write(f"DA:{missed},0,{hashed}\n")
+            line = source_lines[missed-1]
+            outfile.write(f"DA:{missed},0,{line_hash(line)}\n")
 
         outfile.write(f"LF:{analysis.numbers.n_statements}\n")
         outfile.write(f"LH:{analysis.numbers.n_executed}\n")

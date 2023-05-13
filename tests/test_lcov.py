@@ -52,8 +52,8 @@ class LcovTest(CoverageTest):
             return file.read()
 
     def test_lone_file(self) -> None:
-        """For a single file with a couple of functions, the lcov should cover
-        the function definitions themselves, but not the returns."""
+        # For a single file with a couple of functions, the lcov should cover
+        # the function definitions themselves, but not the returns.
         self.make_file("main_file.py", """\
             #!/usr/bin/env python3
 
@@ -83,8 +83,8 @@ class LcovTest(CoverageTest):
         assert expected_result == actual_result
 
     def test_simple_line_coverage_two_files(self) -> None:
-        """Test that line coverage is created when coverage is run,
-        and matches the output of the file below."""
+        # Test that line coverage is created when coverage is run,
+        # and matches the output of the file below.
         self.create_initial_files()
         self.assert_doesnt_exist(".coverage")
         self.make_file(".coveragerc", "[lcov]\noutput = data.lcov\n")
@@ -121,7 +121,7 @@ class LcovTest(CoverageTest):
         assert expected_result == actual_result
 
     def test_branch_coverage_one_file(self) -> None:
-        """Test that the reporter produces valid branch coverage."""
+        # Test that the reporter produces valid branch coverage.
         self.make_file("main_file.py", """\
             #!/usr/bin/env python3
 
@@ -156,8 +156,8 @@ class LcovTest(CoverageTest):
         assert expected_result == actual_result
 
     def test_branch_coverage_two_files(self) -> None:
-        """Test that valid branch coverage is generated
-        in the case of two files."""
+        # Test that valid branch coverage is generated
+        # in the case of two files.
         self.make_file("main_file.py", """\
             #!/usr/bin/env python3
 
@@ -217,9 +217,8 @@ class LcovTest(CoverageTest):
         assert actual_result == expected_result
 
     def test_half_covered_branch(self) -> None:
-        """Test that for a given branch that is only half covered,
-        the block numbers remain the same, and produces valid lcov.
-        """
+        # Test that for a given branch that is only half covered,
+        # the block numbers remain the same, and produces valid lcov.
         self.make_file("main_file.py", """\
             something = True
 
@@ -253,14 +252,13 @@ class LcovTest(CoverageTest):
         assert actual_result == expected_result
 
     def test_empty_init_files(self) -> None:
-        """Test that in the case of an empty __init__.py file, the lcov
-        reporter will note that the file is there, and will note the empty
-        line. It will also note the lack of branches, and the checksum for
-        the line.
-
-        Although there are no lines found, it will note one line as hit in
-        old Pythons, and no lines hit in newer Pythons.
-        """
+        # Test that in the case of an empty __init__.py file, the lcov
+        # reporter will note that the file is there, and will note the empty
+        # line. It will also note the lack of branches, and the checksum for
+        # the line.
+        #
+        # Although there are no lines found, it will note one line as hit in
+        # old Pythons, and no lines hit in newer Pythons.
 
         self.make_file("__init__.py", "")
         self.assert_doesnt_exist(".coverage")
