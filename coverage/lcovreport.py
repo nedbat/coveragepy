@@ -12,7 +12,7 @@ from hashlib import md5
 from typing import IO, Iterable, Optional, TYPE_CHECKING
 
 from coverage.plugin import FileReporter
-from coverage.report import get_analysis_to_report
+from coverage.report_core import get_analysis_to_report
 from coverage.results import Analysis, Numbers
 from coverage.types import TMorf
 

@@ -24,7 +24,7 @@ from coverage import env, Coverage
 from coverage.exceptions import NoDataError, NotPython, NoSource
 from coverage.files import abs_file, flat_rootname
 import coverage.html
-from coverage.report import get_analysis_to_report
+from coverage.report_core import get_analysis_to_report
 from coverage.types import TLineNo, TMorf
 
 from tests.coveragetest import CoverageTest, TESTS_DIR

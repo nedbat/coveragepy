@@ -43,9 +43,9 @@ from coverage.multiproc import patch_multiprocessing
 from coverage.plugin import FileReporter
 from coverage.plugin_support import Plugins
 from coverage.python import PythonFileReporter
-from coverage.report import render_report
+from coverage.report import SummaryReporter
+from coverage.report_core import render_report
 from coverage.results import Analysis
-from coverage.summary import SummaryReporter
 from coverage.types import (
     FilePath, TConfigurable, TConfigSectionIn, TConfigValueIn, TConfigValueOut,
     TFileDisposition, TLineNo, TMorf,

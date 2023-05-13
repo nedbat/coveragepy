@@ -13,7 +13,7 @@ from typing import Iterable, Optional, TYPE_CHECKING
 from coverage.files import flat_rootname
 from coverage.misc import ensure_dir, isolate_module
 from coverage.plugin import FileReporter
-from coverage.report import get_analysis_to_report
+from coverage.report_core import get_analysis_to_report
 from coverage.results import Analysis
 from coverage.types import TMorf
 

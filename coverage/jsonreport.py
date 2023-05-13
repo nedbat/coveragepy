@@ -12,7 +12,7 @@ import sys
 from typing import Any, Dict, IO, Iterable, List, Optional, Tuple, TYPE_CHECKING
 
 from coverage import __version__
-from coverage.report import get_analysis_to_report
+from coverage.report_core import get_analysis_to_report
 from coverage.results import Analysis, Numbers
 from coverage.types import TMorf, TLineNo
 
