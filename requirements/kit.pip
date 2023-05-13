@@ -12,7 +12,7 @@ bracex==2.3.post1
     # via cibuildwheel
 build==0.10.0
     # via -r requirements/kit.in
-certifi==2022.12.7
+certifi==2023.5.7
     # via cibuildwheel
 cibuildwheel==2.12.3
     # via -r requirements/kit.in
@@ -28,7 +28,7 @@ packaging==23.1
     # via
     #   build
     #   cibuildwheel
-platformdirs==3.5.0
+platformdirs==3.5.1
     # via cibuildwheel
 pyelftools==0.29
     # via auditwheel
