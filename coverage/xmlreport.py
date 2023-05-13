@@ -12,7 +12,7 @@ import time
 import xml.dom.minidom
 
 from dataclasses import dataclass
-from typing import Any, Dict, IO, Iterable, Optional, TYPE_CHECKING, cast
+from typing import Any, Dict, IO, Iterable, Optional, TYPE_CHECKING
 
 from coverage import __version__, files
 from coverage.misc import isolate_module, human_sorted, human_sorted_items
@@ -257,4 +257,4 @@ class XmlReporter:
 
 def serialize_xml(dom: xml.dom.minidom.Document) -> str:
     """Serialize a minidom node to XML."""
-    return cast(str, dom.toprettyxml())
+    return dom.toprettyxml()
