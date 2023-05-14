@@ -20,9 +20,15 @@ development at the same time, such as 4.5.x and 5.0.
 Unreleased
 ----------
 
+- Fix: the ``lcov`` command could raise an IndexError exception if a file is
+  translated to Python but then executed under its own name.  Jinja2 does this
+  when rendering templates.  Fixes `issue 1553`_.
+
 - Python 3.12 beta 1 now inlines comprehensions.  Previously they were compiled
   as invisible functions and coverage.py would warn you if they weren't
   completely executed.  This no longer happens under Python 3.12.
+
+.. _issue 1553: https://github.com/nedbat/coveragepy/issues/1553
 
 
 .. scriv-start-here

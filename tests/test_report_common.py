@@ -8,6 +8,7 @@ from __future__ import annotations
 import textwrap
 
 import coverage
+from coverage import env
 from coverage.files import abs_file
 
 from tests.coveragetest import CoverageTest
@@ -156,3 +157,127 @@ class ReportMapsPathsTest(CoverageTest):
         cov.lcov_report()
         contains("coverage.lcov", os_sep("src/program.py"))
         doesnt_contain("coverage.lcov", os_sep("ver1/program.py"), os_sep("ver2/program.py"))
+
+
+class ReportWithJinjaTest(CoverageTest):
+    """Tests of Jinja-like behavior.
+
+    Jinja2 compiles a template into Python code, and then runs the Python code
+    to render the template.  But during rendering, it uses the template name
+    (for example, "template.j2") as the file name, not the Python code file
+    name.  Then during reporting, we will try to parse template.j2 as Python
+    code.
+
+    If the file can be parsed, it's included in the report (as a Python file!).
+    If it can't be parsed, then it's not included in the report.
+
+    These tests confirm that code doesn't raise an exception (as reported in
+    #1553), and that the current (incorrect) behavior remains stable.  Ideally,
+    good.j2 wouldn't be listed at all, since we can't report on it accurately.
+
+    See https://github.com/nedbat/coveragepy/issues/1553 for more detail, and
+    https://github.com/nedbat/coveragepy/issues/1623 for an issue about this
+    behavior.
+
+    """
+
+    def make_files(self) -> None:
+        """Create test files: two Jinja templates, and data from rendering them."""
+        # A Jinja2 file that is syntactically acceptable Python (though it wont run).
+        self.make_file("good.j2", """\
+            {{ data }}
+            line2
+            line3
+            """)
+        # A Jinja2 file that is a Python syntax error.
+        self.make_file("bad.j2", """\
+            This is data: {{ data }}.
+            line 2
+            line 3
+            """)
+        self.make_data_file(
+            lines={
+                abs_file("good.j2"): [1, 3, 5, 7, 9],
+                abs_file("bad.j2"): [1, 3, 5, 7, 9],
+            }
+        )
+
+    def test_report(self) -> None:
+        self.make_files()
+        cov = coverage.Coverage()
+        cov.load()
+        cov.report(show_missing=True)
+        expected = textwrap.dedent("""\
+            Name      Stmts   Miss  Cover   Missing
+            ---------------------------------------
+            good.j2       3      1    67%   2
+            ---------------------------------------
+            TOTAL         3      1    67%
+            """)
+        assert expected == self.stdout()
+
+    def test_html(self) -> None:
+        self.make_files()
+        cov = coverage.Coverage()
+        cov.load()
+        cov.html_report()
+        contains("htmlcov/index.html", """\
+        <tbody>
+            <tr class="file">
+                <td class="name left"><a href="good_j2.html">good.j2</a></td>
+                <td>3</td>
+                <td>1</td>
+                <td>0</td>
+                <td class="right" data-ratio="2 3">67%</td>
+            </tr>
+        </tbody>"""
+        )
+        doesnt_contain("htmlcov/index.html", "bad.j2")
+
+    def test_xml(self) -> None:
+        self.make_files()
+        cov = coverage.Coverage()
+        cov.load()
+        cov.xml_report()
+        contains("coverage.xml", 'filename="good.j2"')
+        if env.PYVERSION >= (3, 8):     # Py3.7 puts attributes in the other order.
+            contains("coverage.xml",
+                '<line number="1" hits="1"/>',
+                '<line number="2" hits="0"/>',
+                '<line number="3" hits="1"/>',
+            )
+        doesnt_contain("coverage.xml", 'filename="bad.j2"')
+        if env.PYVERSION >= (3, 8):     # Py3.7 puts attributes in the other order.
+            doesnt_contain("coverage.xml", '<line number="4"',)
+
+    def test_json(self) -> None:
+        self.make_files()
+        cov = coverage.Coverage()
+        cov.load()
+        cov.json_report()
+        contains("coverage.json",
+            # Notice the .json report claims lines in good.j2 executed that
+            # don't even exist in good.j2...
+            '"files": {"good.j2": {"executed_lines": [1, 3, 5, 7, 9], ' +
+                '"summary": {"covered_lines": 2, "num_statements": 3',
+        )
+        doesnt_contain("coverage.json", "bad.j2")
+
+    def test_lcov(self) -> None:
+        self.make_files()
+        cov = coverage.Coverage()
+        cov.load()
+        cov.lcov_report()
+        with open("coverage.lcov") as lcov:
+            actual = lcov.read()
+        expected = textwrap.dedent("""\
+            TN:
+            SF:good.j2
+            DA:1,1,FHs1rDakj9p/NAzMCu3Kgw
+            DA:3,1,DGOyp8LEgI+3CcdFYw9uKQ
+            DA:2,0,5iUbzxp9w7peeTPjJbvmBQ
+            LF:3
+            LH:2
+            end_of_record
+            """)
+        assert expected == actual

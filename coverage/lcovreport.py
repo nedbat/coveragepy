@@ -74,6 +74,8 @@ class LcovReporter:
             # characters of the encoding ("==") are removed from the hash to
             # allow genhtml to run on the resulting lcov file.
             if source_lines:
+                if covered-1 >= len(source_lines):
+                    break
                 line = source_lines[covered-1]
             else:
                 line = ""
