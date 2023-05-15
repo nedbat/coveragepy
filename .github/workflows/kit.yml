@@ -149,6 +149,7 @@ jobs:
       - name: "Install Python 3.8"
         uses: actions/setup-python@v4
         with:
+          # PYVERSIONS
           python-version: "3.8"
           cache: pip
           cache-dependency-path: 'requirements/*.pip'
@@ -175,6 +176,7 @@ jobs:
         with:
           name: dist
           path: wheelhouse/*.whl
+          retention-days: 7
 
   sdist:
     name: "Source distribution"
@@ -186,6 +188,7 @@ jobs:
       - name: "Install Python 3.8"
         uses: actions/setup-python@v4
         with:
+          # PYVERSIONS
           python-version: "3.8"
           cache: pip
           cache-dependency-path: 'requirements/*.pip'
@@ -207,6 +210,7 @@ jobs:
         with:
           name: dist
           path: dist/*.tar.gz
+          retention-days: 7
 
   pypy:
     name: "PyPy wheel"
@@ -241,3 +245,40 @@ jobs:
         with:
           name: dist
           path: dist/*.whl
+          retention-days: 7
+
+  sign:
+    # This signs our artifacts, but we don't use the signatures for anything
+    # yet.  Someday maybe PyPI will have a way to upload and verify them.
+    name: "Sign artifacts"
+    needs:
+      - wheels
+      - sdist
+      - pypy
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+    steps:
+      - name: "Download artifacts"
+        uses: actions/download-artifact@v3
+        with:
+          name: dist
+
+      - name: "Sign artifacts"
+        uses: sigstore/gh-action-sigstore-python@v1.2.3
+        with:
+          inputs: coverage-*.*
+
+      - name: "List files"
+        run: |
+          ls -alR
+
+      - name: "Upload signatures"
+        uses: actions/upload-artifact@v3
+        with:
+          name: signatures
+          path: |
+            *.crt
+            *.sig
+            *.sigstore
+          retention-days: 7
