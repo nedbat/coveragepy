@@ -12,16 +12,18 @@ import io
 import itertools
 import os
 import pprint
+import re
 import reprlib
 import sys
 import types
 import _thread
 
 from typing import (
-    Any, Callable, IO, Iterable, Iterator, Optional, List, Tuple, cast,
+    cast,
+    Any, Callable, IO, Iterable, Iterator, Mapping, Optional, List, Tuple,
 )
 
-from coverage.misc import isolate_module
+from coverage.misc import human_sorted_items, isolate_module
 from coverage.types import TWritable
 
 os = isolate_module(os)
@@ -489,3 +491,34 @@ def _clean_stack_line(s: str) -> str:                       # pragma: debugging
     s = s.replace(os.path.dirname(os.__file__) + "/", "")
     s = s.replace(sys.prefix + "/", "")
     return s
+
+
+def relevant_environment_display(env: Mapping[str, str]) -> List[Tuple[str, str]]:
+    """Filter environment variables for a debug display.
+
+    Select variables to display (with COV or PY in the name, or HOME, TEMP, or
+    TMP), and also cloak sensitive values with asterisks.
+
+    Arguments:
+        env: a dict of environment variable names and values.
+
+    Returns:
+        A list of pairs (name, value) to show.
+
+    """
+    slugs = {"COV", "PY"}
+    include = {"HOME", "TEMP", "TMP"}
+    cloak = {"API", "TOKEN", "KEY", "SECRET", "PASS", "SIGNATURE"}
+
+    to_show = []
+    for name, val in env.items():
+        keep = False
+        if name in include:
+            keep = True
+        elif any(slug in name for slug in slugs):
+            keep = True
+        if keep:
+            if any(slug in name for slug in cloak):
+                val = re.sub(r"\w", "*", val)
+            to_show.append((name, val))
+    return human_sorted_items(to_show)

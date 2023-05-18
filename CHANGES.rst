@@ -28,7 +28,12 @@ Unreleased
   as invisible functions and coverage.py would warn you if they weren't
   completely executed.  This no longer happens under Python 3.12.
 
+- Fix: the ``coverage debug sys`` command includes some environment variables
+  in its output.  This could have included sensitive data.  Those values are
+  now hidden with asterisks, closing `issue 1628`_.
+
 .. _issue 1553: https://github.com/nedbat/coveragepy/issues/1553
+.. _issue 1628: https://github.com/nedbat/coveragepy/issues/1628
 
 
 .. scriv-start-here

@@ -19,7 +19,8 @@ import coverage
 from coverage import env
 from coverage.debug import (
     DebugOutputFile,
-    clipped_repr, filter_text, info_formatter, info_header, short_id, short_stack,
+    clipped_repr, filter_text, info_formatter, info_header, relevant_environment_display,
+    short_id, short_stack,
 )
 
 from tests.coveragetest import CoverageTest
@@ -297,3 +298,22 @@ class ShortStackTest(CoverageTest):
     def test_short_stack_skip(self) -> None:
         stack = f_one(skip=1).splitlines()
         assert "f_two" in stack[-1]
+
+
+def test_relevant_environment_display() -> None:
+    env_vars = {
+        "HOME": "my home",
+        "HOME_DIR": "other place",
+        "XYZ_NEVER_MIND": "doesn't matter",
+        "SOME_PYOTHER": "xyz123",
+        "COVERAGE_THING": "abcd",
+        "MY_PYPI_TOKEN": "secret.something",
+        "TMP": "temporary",
+    }
+    assert relevant_environment_display(env_vars) == [
+        ("COVERAGE_THING", "abcd"),
+        ("HOME", "my home"),
+        ("MY_PYPI_TOKEN", "******.*********"),
+        ("SOME_PYOTHER", "xyz123"),
+        ("TMP", "temporary"),
+    ]

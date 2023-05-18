@@ -29,7 +29,9 @@ from coverage.collector import Collector, HAS_CTRACER
 from coverage.config import CoverageConfig, read_coverage_config
 from coverage.context import should_start_context_test_function, combine_context_switchers
 from coverage.data import CoverageData, combine_parallel_data
-from coverage.debug import DebugControl, NoDebugging, short_stack, write_formatted_info
+from coverage.debug import (
+    DebugControl, NoDebugging, short_stack, write_formatted_info, relevant_environment_display
+)
 from coverage.disposition import disposition_debug_msg
 from coverage.exceptions import ConfigError, CoverageException, CoverageWarning, PluginError
 from coverage.files import PathAliases, abs_file, relative_filename, set_relative_directory
@@ -37,7 +39,7 @@ from coverage.html import HtmlReporter
 from coverage.inorout import InOrOut
 from coverage.jsonreport import JsonReporter
 from coverage.lcovreport import LcovReporter
-from coverage.misc import bool_or_none, join_regex, human_sorted
+from coverage.misc import bool_or_none, join_regex
 from coverage.misc import DefaultValue, ensure_dir_for_file, isolate_module
 from coverage.multiproc import patch_multiprocessing
 from coverage.plugin import FileReporter
@@ -1298,14 +1300,7 @@ class Coverage(TConfigurable):
             ("pid", os.getpid()),
             ("cwd", os.getcwd()),
             ("path", sys.path),
-            ("environment", human_sorted(
-                f"{k} = {v}"
-                for k, v in os.environ.items()
-                if (
-                    any(slug in k for slug in ("COV", "PY")) or
-                    (k in ("HOME", "TEMP", "TMP"))
-                )
-            )),
+            ("environment", [f"{k} = {v}" for k, v in relevant_environment_display(os.environ)]),
             ("command_line", " ".join(getattr(sys, "argv", ["-none-"]))),
         ]
 
