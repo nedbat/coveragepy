@@ -32,7 +32,7 @@ clean: clean_platform			## Remove artifacts of test execution, installation, etc
 	@rm -f tests/covmain.zip tests/zipmods.zip tests/zip1.zip
 	@rm -rf doc/_build doc/_spell doc/sample_html_beta
 	@rm -rf tmp
-	@rm -rf .cache .hypothesis .mypy_cache .pytest_cache
+	@rm -rf .cache .hypothesis .*_cache
 	@rm -rf tests/actual
 	@-make -C tests/gold/html clean
 
