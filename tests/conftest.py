@@ -54,13 +54,6 @@ def set_warnings() -> None:
         message=r"module 'sre_constants' is deprecated",
     )
 
-    # From _pytest/assertion/rewrite.py
-    warnings.filterwarnings(
-        "ignore",
-        category=DeprecationWarning,
-        message=r"is deprecated and will be removed in Python 3.14; use ast.Constant instead",
-    )
-
     warnings.filterwarnings(
         "ignore",
         category=pytest.PytestRemovedIn8Warning,
