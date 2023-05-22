@@ -251,7 +251,7 @@ class PythonParser:
         """
         try:
             self._raw_parse()
-        except (tokenize.TokenError, IndentationError) as err:
+        except (tokenize.TokenError, IndentationError, SyntaxError) as err:
             if hasattr(err, "lineno"):
                 lineno = err.lineno         # IndentationError
             else:

@@ -128,7 +128,7 @@ class PythonParserTest(CoverageTest):
     def test_indentation_error(self) -> None:
         msg = (
             "Couldn't parse '<code>' as Python source: " +
-            "'unindent does not match any outer indentation level' at line 3"
+            "'unindent does not match any outer indentation level.*' at line 3"
         )
         with pytest.raises(NotPython, match=msg):
             _ = self.parse_source("""\
@@ -138,11 +138,17 @@ class PythonParserTest(CoverageTest):
                 """)
 
     def test_token_error(self) -> None:
-        msg = "Couldn't parse '<code>' as Python source: 'EOF in multi-line string' at line 1"
+        submsgs = [
+            r"EOF in multi-line string",                                        # before 3.12.0b1
+            r"unterminated triple-quoted string literal .detected at line 1.",  # after 3.12.0b1
+        ]
+        msg = (
+            r"Couldn't parse '<code>' as Python source: '"
+            + r"(" + "|".join(submsgs) + ")"
+            + r"' at line 1"
+        )
         with pytest.raises(NotPython, match=msg):
-            _ = self.parse_source("""\
-                '''
-                """)
+            _ = self.parse_source("'''")
 
     @xfail_pypy38
     def test_decorator_pragmas(self) -> None:
@@ -254,7 +260,10 @@ class PythonParserTest(CoverageTest):
     def test_fuzzed_double_parse(self) -> None:
         # https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=50381
         # The second parse used to raise `TypeError: 'NoneType' object is not iterable`
-        msg = "EOF in multi-line statement"
+        msg = (
+            r"(EOF in multi-line statement)"        # before 3.12.0b1
+            + r"|(unmatched ']')"                   # after 3.12.0b1
+        )
         with pytest.raises(NotPython, match=msg):
             self.parse_source("]")
         with pytest.raises(NotPython, match=msg):
