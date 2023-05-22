@@ -1700,10 +1700,6 @@ class DecoratorArcTest(CoverageTest):
         )
 
     @xfail_pypy38
-    @pytest.mark.xfail(
-        env.PYVERSION > (3, 12, 0, "alpha", 7, 0),
-        reason="Pending bug https://github.com/python/cpython/issues/104686"
-    )
     def test_class_decorator(self) -> None:
         arcz = (
             ".1 16 67 6D 7A AE E. "     # main line
