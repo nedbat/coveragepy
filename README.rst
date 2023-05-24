@@ -39,6 +39,7 @@ Documentation is on `Read the Docs`_.  Code repository and issue tracker are on
 
 **New in 7.x:**
 improved data combining;
+``[run] exclude_also`` setting;
 ``report --format=``;
 type annotations.
 

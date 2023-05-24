@@ -10,6 +10,7 @@
         version_info = (4, 0, 2, "final", 0)
     - make sure: _dev = 0
 - Edit supported Python version numbers. Search for "PYVERSIONS".
+    - Especially README.rst and doc/index.rst
 - Update source files with release facts:
     $ make edit_for_release
 - Get useful snippets for next steps, and beyond, in cheats.txt
@@ -17,9 +18,7 @@
 - Look over CHANGES.rst
 - Update README.rst
     - "New in x.y:"
-    - Python versions supported
 - Update docs
-    - Python versions in doc/index.rst
     - IF PRE-RELEASE:
         - Version of latest stable release in doc/index.rst
     - Make sure the docs are cogged:
@@ -49,6 +48,7 @@
         $ make publishbeta
     - ELSE:
         $ make publish
+    - commit and publish nedbatchelder.com
 - Kits:
     - Wait for kits to finish:
         - https://github.com/nedbat/coveragepy/actions/workflows/kit.yml
@@ -83,10 +83,9 @@
             - wait for the new tag build to finish successfully.
         - @ https://readthedocs.org/dashboard/coverage/advanced/
             - change the default version to the new version
-- Don't forget to merge the bump-version branch
+- Once CI passes, merge the bump-version branch to master and push it
+
 - things to automate:
-    - url to link to latest changes in docs
-    - next version.py line
     - readthedocs api to do the readthedocs changes
 
 
