@@ -17,8 +17,12 @@ development at the same time, such as 4.5.x and 5.0.
     ..  Version 9.8.1 — 2027-07-27
     ..  --------------------------
 
-Unreleased
-----------
+.. scriv-start-here
+
+.. _changes_7-2-6:
+
+Version 7.2.6 — 2023-05-23
+--------------------------
 
 - Fix: the ``lcov`` command could raise an IndexError exception if a file is
   translated to Python but then executed under its own name.  Jinja2 does this
@@ -35,8 +39,6 @@ Unreleased
 .. _issue 1553: https://github.com/nedbat/coveragepy/issues/1553
 .. _issue 1628: https://github.com/nedbat/coveragepy/issues/1628
 
-
-.. scriv-start-here
 
 .. _changes_7-2-5:
 
