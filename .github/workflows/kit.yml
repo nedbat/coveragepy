@@ -79,7 +79,7 @@ jobs:
           #   # https://github.com/actions/python-versions/blob/main/versions-manifest.json
           #   # Include prereleases if they are at rc stage.
           #   # PyPy versions are handled further below in the "pypy" step.
-          #   pys = ["cp37", "cp38", "cp39", "cp310", "cp311"]
+          #   pys = ["cp37", "cp38", "cp39", "cp310", "cp311", "cp312"]
           #
           #   # Some OS/arch combinations need overrides for the Python versions:
           #   os_arch_pys = {
