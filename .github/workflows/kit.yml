@@ -77,7 +77,6 @@ jobs:
           #   }
           #   # PYVERSIONS. Available versions:
           #   # https://github.com/actions/python-versions/blob/main/versions-manifest.json
-          #   # Include prereleases if they are at rc stage.
           #   # PyPy versions are handled further below in the "pypy" step.
           #   pys = ["cp37", "cp38", "cp39", "cp310", "cp311", "cp312"]
           #
@@ -104,16 +103,19 @@ jobs:
           - {"os": "ubuntu", "py": "cp39", "arch": "x86_64"}
           - {"os": "ubuntu", "py": "cp310", "arch": "x86_64"}
           - {"os": "ubuntu", "py": "cp311", "arch": "x86_64"}
+          - {"os": "ubuntu", "py": "cp312", "arch": "x86_64"}
           - {"os": "ubuntu", "py": "cp37", "arch": "i686"}
           - {"os": "ubuntu", "py": "cp38", "arch": "i686"}
           - {"os": "ubuntu", "py": "cp39", "arch": "i686"}
           - {"os": "ubuntu", "py": "cp310", "arch": "i686"}
           - {"os": "ubuntu", "py": "cp311", "arch": "i686"}
+          - {"os": "ubuntu", "py": "cp312", "arch": "i686"}
           - {"os": "ubuntu", "py": "cp37", "arch": "aarch64"}
           - {"os": "ubuntu", "py": "cp38", "arch": "aarch64"}
           - {"os": "ubuntu", "py": "cp39", "arch": "aarch64"}
           - {"os": "ubuntu", "py": "cp310", "arch": "aarch64"}
           - {"os": "ubuntu", "py": "cp311", "arch": "aarch64"}
+          - {"os": "ubuntu", "py": "cp312", "arch": "aarch64"}
           - {"os": "macos", "py": "cp38", "arch": "arm64"}
           - {"os": "macos", "py": "cp39", "arch": "arm64"}
           - {"os": "macos", "py": "cp310", "arch": "arm64"}
@@ -123,17 +125,20 @@ jobs:
           - {"os": "macos", "py": "cp39", "arch": "x86_64"}
           - {"os": "macos", "py": "cp310", "arch": "x86_64"}
           - {"os": "macos", "py": "cp311", "arch": "x86_64"}
+          - {"os": "macos", "py": "cp312", "arch": "x86_64"}
           - {"os": "windows", "py": "cp37", "arch": "x86"}
           - {"os": "windows", "py": "cp38", "arch": "x86"}
           - {"os": "windows", "py": "cp39", "arch": "x86"}
           - {"os": "windows", "py": "cp310", "arch": "x86"}
           - {"os": "windows", "py": "cp311", "arch": "x86"}
+          - {"os": "windows", "py": "cp312", "arch": "x86"}
           - {"os": "windows", "py": "cp37", "arch": "AMD64"}
           - {"os": "windows", "py": "cp38", "arch": "AMD64"}
           - {"os": "windows", "py": "cp39", "arch": "AMD64"}
           - {"os": "windows", "py": "cp310", "arch": "AMD64"}
           - {"os": "windows", "py": "cp311", "arch": "AMD64"}
-        # [[[end]]] (checksum: ded8a9f214bf59776562d91ae6828863)
+          - {"os": "windows", "py": "cp312", "arch": "AMD64"}
+        # [[[end]]] (checksum: 5e62f362263935c1e3a21299f8a1b649)
       fail-fast: false
 
     steps:
@@ -163,6 +168,7 @@ jobs:
           CIBW_BUILD: ${{ matrix.py }}-*
           CIBW_ARCHS: ${{ matrix.arch }}
           CIBW_ENVIRONMENT: PIP_DISABLE_PIP_VERSION_CHECK=1
+          CIBW_PRERELEASE_PYTHONS: True
           CIBW_TEST_COMMAND: python -c "from coverage.tracer import CTracer; print('CTracer OK!')"
         run: |
           python -m cibuildwheel --output-dir wheelhouse
