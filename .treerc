@@ -14,5 +14,5 @@ ignore =
     *.gz *.zip
     _build _spell
     *.egg *.egg-info
-    .mypy_cache
+    .*_cache
     tmp
