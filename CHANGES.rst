@@ -209,6 +209,7 @@ Version 7.1.0 — 2023-01-24
 .. _issue 1319: https://github.com/nedbat/coveragepy/issues/1319
 .. _issue 1538: https://github.com/nedbat/coveragepy/issues/1538
 
+
 .. _changes_7-0-5:
 
 Version 7.0.5 — 2023-01-10
@@ -420,7 +421,6 @@ update your settings.
 .. _issue 1483: https://github.com/nedbat/coveragepy/issues/1483
 .. _pull 1387: https://github.com/nedbat/coveragepy/pull/1387
 .. _pull 1479: https://github.com/nedbat/coveragepy/pull/1479
-
 
 
 .. _changes_6-6-0b1:
@@ -1131,6 +1131,7 @@ Version 5.3.1 — 2020-12-19
 .. _issue 1037: https://github.com/nedbat/coveragepy/issues/1037
 .. _issue 1010: https://github.com/nedbat/coveragepy/issues/1010
 .. _pull request 1066: https://github.com/nedbat/coveragepy/pull/1066
+
 
 .. _changes_53:
 
