@@ -56,7 +56,7 @@ pygments==2.15.1
     # via sphinx
 pytz==2023.3
     # via babel
-requests==2.30.0
+requests==2.31.0
     # via
     #   scriv
     #   sphinx
@@ -76,7 +76,7 @@ sphinx==5.3.0
     #   sphinxcontrib-spelling
 sphinx-autobuild==2021.3.14
     # via -r doc/requirements.in
-sphinx-rtd-theme==1.2.0
+sphinx-rtd-theme==1.2.1
     # via -r doc/requirements.in
 sphinxcontrib-applehelp==1.0.2
     # via sphinx
@@ -98,7 +98,7 @@ sphinxcontrib-spelling==8.0.0
     # via -r doc/requirements.in
 tornado==6.2
     # via livereload
-typing-extensions==4.5.0
+typing-extensions==4.6.2
     # via importlib-metadata
 urllib3==2.0.2
     # via requests

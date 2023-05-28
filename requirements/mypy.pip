@@ -16,7 +16,7 @@ execnet==1.9.0
     # via pytest-xdist
 flaky==3.7.0
     # via -r requirements/pytest.in
-hypothesis==6.75.2
+hypothesis==6.75.6
     # via -r requirements/pytest.in
 importlib-metadata==6.6.0
     # via
@@ -37,7 +37,7 @@ pytest==7.3.1
     # via
     #   -r requirements/pytest.in
     #   pytest-xdist
-pytest-xdist==3.3.0
+pytest-xdist==3.3.1
     # via -r requirements/pytest.in
 sortedcontainers==2.4.0
     # via hypothesis
@@ -47,7 +47,7 @@ tomli==2.0.1
     #   pytest
 typed-ast==1.5.4
     # via mypy
-typing-extensions==4.5.0
+typing-extensions==4.6.2
     # via
     #   importlib-metadata
     #   mypy

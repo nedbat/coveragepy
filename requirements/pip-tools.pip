@@ -22,7 +22,7 @@ tomli==2.0.1
     # via
     #   build
     #   pyproject-hooks
-typing-extensions==4.5.0
+typing-extensions==4.6.2
     # via importlib-metadata
 wheel==0.40.0
     # via pip-tools
@@ -32,5 +32,5 @@ zipp==3.15.0
 # The following packages are considered to be unsafe in a requirements file:
 pip==23.1.2
     # via pip-tools
-setuptools==67.7.2
+setuptools==67.8.0
     # via pip-tools
