@@ -20,7 +20,14 @@ development at the same time, such as 4.5.x and 5.0.
 Unreleased
 ----------
 
-Nothing yet.
+- Fix: reverted a `change from 6.4.3 <pull 1347_>`_ that helped Cython, but
+  also increased the size of data files when using dynamic contexts, as
+  described in the now-fixed `issue 1586`_. The problem is now avoided due to a
+  recent change (`issue 1538`_).  Thanks to `Anders Kaseorg <pull 1629_>`_
+  and David Szotten for persisting with problem reports and detailed diagnoses.
+
+.. _issue 1586: https://github.com/nedbat/coveragepy/issues/1586
+.. _pull 1629: https://github.com/nedbat/coveragepy/pull/1629
 
 
 .. scriv-start-here
