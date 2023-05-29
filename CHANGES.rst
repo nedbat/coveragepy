@@ -20,7 +20,9 @@ development at the same time, such as 4.5.x and 5.0.
 Unreleased
 ----------
 
-Nothing yet.
+- Fix: add ``nosemgrep`` comments to our JavaScript code so that semgrep-based
+  SAST security checks won't raise false alarms about security problems that
+  aren't problems.
 
 
 .. scriv-start-here
