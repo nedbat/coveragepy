@@ -456,7 +456,7 @@ class Collector:
             assert isinstance(runtime_err, Exception)
             raise runtime_err
 
-        return {self.cached_mapped_file(k): v for k, v in items}
+        return {self.cached_mapped_file(k): v for k, v in items if v}
 
     def plugin_was_disabled(self, plugin: CoveragePlugin) -> None:
         """Record that `plugin` was disabled during the run."""
