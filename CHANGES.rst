@@ -17,8 +17,12 @@ development at the same time, such as 4.5.x and 5.0.
     ..  Version 9.8.1 — 2027-07-27
     ..  --------------------------
 
-Unreleased
-----------
+.. scriv-start-here
+
+.. _changes_7-2-7:
+
+Version 7.2.7 — 2023-05-29
+--------------------------
 
 - Fix: reverted a `change from 6.4.3 <pull 1347_>`_ that helped Cython, but
   also increased the size of data files when using dynamic contexts, as
@@ -26,11 +30,11 @@ Unreleased
   recent change (`issue 1538`_).  Thanks to `Anders Kaseorg <pull 1629_>`_
   and David Szotten for persisting with problem reports and detailed diagnoses.
 
+- Wheels are now provided for CPython 3.12.
+
 .. _issue 1586: https://github.com/nedbat/coveragepy/issues/1586
 .. _pull 1629: https://github.com/nedbat/coveragepy/pull/1629
 
-
-.. scriv-start-here
 
 .. _changes_7-2-6:
 
