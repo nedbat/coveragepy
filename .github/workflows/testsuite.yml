@@ -31,7 +31,8 @@ jobs:
   tests:
     name: "${{ matrix.python-version }} on ${{ matrix.os }}"
     runs-on: "${{ matrix.os }}-latest"
-
+    # Don't run tests if the branch name includes "-notests"
+    if: "!contains(github.ref, '-notests')"
     strategy:
       matrix:
         os:
@@ -94,7 +95,8 @@ jobs:
   # https://github.com/orgs/community/discussions/33579
   success:
     name: Tests successful
-    if: always()
+    # The tests didn't run if the branch name includes "-notests"
+    if: "!contains(github.ref, '-notests')"
     needs:
       - tests
     runs-on: ubuntu-latest
