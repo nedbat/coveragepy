@@ -26,17 +26,6 @@ img.tideliftlogo {
     margin-bottom: 12px;
 }
 
-/* sphinx-code-tabs */
-
-.tabs.container {
-    margin-bottom: 1em;
-}
-
-.tab.selected {
-    border: 1px solid #ccc;
-    border-radius: 0 .5em .5em .5em;
-}
-
 .ui.menu {
     font-family: Helvetica;
     min-height: 0;
@@ -75,4 +64,40 @@ img.tideliftlogo {
     overflow: auto;
     color: #404040;
     background: #efc;
+}
+
+/* sphinx-code-tabs */
+
+/* Some selectors here are extra-specific (.container) because this file comes
+ * before code-tabs.css, so we need the specificity to override it.
+ */
+
+div.tabs.container > ul.tabbar > li.tabbutton {
+    color: #666;
+    background-color: #ddd;
+    border-color: #aaa;
+}
+
+div.tabs.container > ul.tabbar > li.tabbutton:hover {
+	background-color: #eee;
+}
+
+div.tabs.container > ul.tabbar > li.tabbutton.selected {
+    color: black;
+    background-color: #fff;
+    border-color: #aaa;
+    border-bottom-color: #fff;
+}
+
+div.tabs.container > ul.tabbar > li.tabbutton.selected:hover {
+    background-color: #fff;
+}
+
+div.tabs.container {
+    margin-bottom: 1em;
+}
+
+div.tab.selected {
+    border: 1px solid #ccc;
+    border-radius: 0 .5em .5em .5em;
 }
