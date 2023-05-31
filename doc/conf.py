@@ -39,13 +39,14 @@ extensions = [
     'sphinx.ext.intersphinx',
     'sphinxcontrib.restbuilder',
     'sphinx.ext.napoleon',
-    #'sphinx_tabs.tabs',
+    'sphinx_code_tabs',
+    'sphinx_rtd_theme',
 ]
 
 autodoc_typehints = "description"
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
+templates_path = []
 
 # The suffix of source filenames.
 source_suffix = '.rst'
@@ -141,15 +142,7 @@ nitpick_ignore_regex = [
 
 # The theme to use for HTML and HTML Help pages.  Major themes that come with
 # Sphinx are currently 'default' and 'sphinxdoc'.
-#html_theme = 'default'
-
-if not on_rtd:  # only import and set the theme if we're building docs locally
-    import sphinx_rtd_theme
-    html_theme = 'sphinx_rtd_theme'
-    html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
-
-# otherwise, readthedocs.org uses their theme by default, so no need to specify it
-
+html_theme = 'sphinx_rtd_theme'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -159,7 +152,7 @@ if not on_rtd:  # only import and set the theme if we're building docs locally
 #html_add_permalinks = ""
 
 # Add any paths that contain custom themes here, relative to this directory.
-html_theme_path = ['_templates']
+#html_theme_path = ['_templates']
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".

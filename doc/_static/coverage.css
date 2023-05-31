@@ -26,7 +26,16 @@ img.tideliftlogo {
     margin-bottom: 12px;
 }
 
-/* Tabs */
+/* sphinx-code-tabs */
+
+.tabs.container {
+    margin-bottom: 1em;
+}
+
+.tab.selected {
+    border: 1px solid #ccc;
+    border-radius: 0 .5em .5em .5em;
+}
 
 .ui.menu {
     font-family: Helvetica;
@@ -39,10 +48,6 @@ img.tideliftlogo {
 
 .ui.menu .item {
     padding: 0;
-}
-
-.sphinx-tabs {
-    margin-bottom: 1em;
 }
 
 .sig {

@@ -59,7 +59,7 @@ smoke: 					## Run tests quickly with the C tracer in the lowest supported Pytho
 
 
 ##@ Metacov: coverage measurement of coverage.py itself
-# 	See metacov.ini for details.
+# See metacov.ini for details.
 
 .PHONY: metacov metahtml metasmoke
 
@@ -84,7 +84,9 @@ metasmoke:
 # in requirements/pins.pip, and search for "windows" in .in files to find pins
 # and extra requirements that have been needed, but might be obsolete.
 
-.PHONY: upgrade
+.PHONY: upgrade doc_upgrade diff_upgrade
+
+DOCBIN = .tox/doc/bin
 
 PIP_COMPILE = pip-compile --upgrade --allow-unsafe --resolver=backtracking
 upgrade: export CUSTOM_COMPILE_COMMAND=make upgrade
@@ -97,9 +99,13 @@ upgrade: 				## Update the *.pip files with the latest packages satisfying *.in 
 	$(PIP_COMPILE) -o requirements/tox.pip requirements/tox.in
 	$(PIP_COMPILE) -o requirements/dev.pip requirements/dev.in
 	$(PIP_COMPILE) -o requirements/light-threads.pip requirements/light-threads.in
-	$(PIP_COMPILE) -o doc/requirements.pip doc/requirements.in
 	$(PIP_COMPILE) -o requirements/lint.pip doc/requirements.in requirements/dev.in
 	$(PIP_COMPILE) -o requirements/mypy.pip requirements/mypy.in
+
+doc_upgrade: export CUSTOM_COMPILE_COMMAND=make doc_upgrade
+doc_upgrade: $(DOCBIN)			## Update the doc/requirements.pip file
+	$(DOCBIN)/pip install -q -r requirements/pip-tools.pip
+	$(DOCBIN)/$(PIP_COMPILE) -o doc/requirements.pip doc/requirements.in
 
 diff_upgrade:				## Summarize the last `make upgrade`
 	@# The sort flags sort by the package name first, then by the -/+, and
@@ -219,7 +225,6 @@ bump_version:				## Edit sources to bump the version after a release.
 
 .PHONY: cogdoc dochtml docdev docspell
 
-DOCBIN = .tox/doc/bin
 SPHINXOPTS = -aE
 SPHINXBUILD = $(DOCBIN)/sphinx-build $(SPHINXOPTS)
 SPHINXAUTOBUILD = $(DOCBIN)/sphinx-autobuild --port 9876 --ignore '.git/**' --open-browser

@@ -2,17 +2,19 @@
 # For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
 
 # PyPI requirements input for building documentation for coverage.py
-# "make upgrade" turns this into doc/requirements.pip
+# "make doc_upgrade" turns this into doc/requirements.pip
 
 -c ../requirements/pins.pip
 
 cogapp
-#doc8
-pyenchant
 scriv       # for writing GitHub releases
 sphinx
 sphinx-autobuild
 sphinx_rtd_theme
-#sphinx-tabs
+sphinx-code-tabs
 sphinxcontrib-restbuilder
-sphinxcontrib-spelling
+
+# These aren't compatible atm with other library versions:
+#doc8
+#pyenchant
+#sphinxcontrib-spelling
