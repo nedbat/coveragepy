@@ -5,9 +5,15 @@
 
 .DEFAULT_GOAL := help
 
+
 ##@ Utilities
 
 .PHONY: help clean_platform clean sterile
+
+help:					## Show this help.
+	@# Adapted from https://www.thapaliya.com/en/writings/well-documented-makefiles/
+	@echo Available targets:
+	@awk -F ':.*##' '/^[^: ]+:.*##/{printf "  \033[1m%-20s\033[m %s\n",$$1,$$2} /^##@/{printf "\n%s\n",substr($$0,5)}' $(MAKEFILE_LIST)
 
 clean_platform:
 	@rm -f *.so */*.so
@@ -40,10 +46,6 @@ sterile: clean				## Remove all non-controlled content, even if expensive.
 	rm -rf .tox
 	rm -f cheats.txt
 
-help:					## Show this help.
-	@# Adapted from https://www.thapaliya.com/en/writings/well-documented-makefiles/
-	@echo Available targets:
-	@awk -F ':.*##' '/^[^: ]+:.*##/{printf "  \033[1m%-20s\033[m %s\n",$$1,$$2} /^##@/{printf "\n%s\n",substr($$0,5)}' $(MAKEFILE_LIST)
 
 ##@ Tests and quality checks
 
@@ -116,6 +118,7 @@ diff_upgrade:				## Summarize the last `make upgrade`
 	@#	+build==0.10.0
 	@git diff -U0 | grep -v '^@' | grep == | sort -k1.2,1.99 -k1.1,1.1r -u -V
 
+
 ##@ Pre-builds for prepping the code
 
 .PHONY: css workflows prebuild
@@ -159,8 +162,9 @@ sample_html_beta: _sample_cog_html	## Generate sample HTML report for a beta rel
 
 ##@ Kitting: making releases
 
-.PHONY: kit kit_upload test_upload kit_local build_kits download_kits check_kits tag
-.PHONY: update_stable comment_on_fixes
+.PHONY: edit_for_release cheats relbranch relcommit1 relcommit2
+.PHONY: kit kit_upload test_upload kit_local build_kits download_kits check_kits
+.PHONY: tag update_stable bump_version
 
 REPO_OWNER = nedbat/coveragepy
 
@@ -228,9 +232,6 @@ bump_version:				## Edit sources to bump the version after a release.
 SPHINXOPTS = -aE
 SPHINXBUILD = $(DOCBIN)/sphinx-build $(SPHINXOPTS)
 SPHINXAUTOBUILD = $(DOCBIN)/sphinx-autobuild --port 9876 --ignore '.git/**' --open-browser
-WEBHOME = ~/web/stellated
-WEBSAMPLE = $(WEBHOME)/files/sample_coverage_html
-WEBSAMPLEBETA = $(WEBHOME)/files/sample_coverage_html_beta
 
 $(DOCBIN):
 	tox -q -e doc --notest
@@ -250,7 +251,11 @@ docspell: $(DOCBIN)			## Run the spell checker on the docs.
 
 ##@ Publishing docs
 
-.PHONY: publish publishbeta relnotes_json github_releases
+.PHONY: publish publishbeta relnotes_json github_releases comment_on_fixes
+
+WEBHOME = ~/web/stellated
+WEBSAMPLE = $(WEBHOME)/files/sample_coverage_html
+WEBSAMPLEBETA = $(WEBHOME)/files/sample_coverage_html_beta
 
 publish:				## Publish the sample HTML report.
 	rm -f $(WEBSAMPLE)/*.*
