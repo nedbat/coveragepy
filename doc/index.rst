@@ -100,8 +100,8 @@ Getting started is easy:
 
         .. tab:: nosetest
 
-            *Nose has been unmaintained for a long time. You should seriously
-            consider adopting a different test runner.*
+            .. note:: Nose has been `unmaintained since at least 2015 <nose state_>`_.
+                *You should seriously consider using a different test runner.*
 
             Change this::
 
@@ -143,6 +143,7 @@ Getting started is easy:
 
 .. _report like this: https://nedbatchelder.com/files/sample_coverage_html/index.html
 .. _report like this one: https://nedbatchelder.com/files/sample_coverage_html_beta/index.html
+.. _nose state: https://github.com/nose-devs/nose/commit/0f40fa995384afad77e191636c89eb7d5b8870ca
 
 
 Capabilities
