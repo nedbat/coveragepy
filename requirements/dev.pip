@@ -49,7 +49,7 @@ flaky==3.7.0
     # via -r requirements/pytest.in
 greenlet==2.0.2
     # via -r requirements/dev.in
-hypothesis==6.75.7
+hypothesis==6.75.9
     # via -r requirements/pytest.in
 idna==3.4
     # via requests
@@ -139,7 +139,7 @@ requests-toolbelt==1.0.0
     # via twine
 rfc3986==2.0.0
     # via twine
-rich==13.3.5
+rich==13.4.1
     # via twine
 six==1.16.0
     # via bleach

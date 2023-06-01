@@ -16,7 +16,7 @@ execnet==1.9.0
     # via pytest-xdist
 flaky==3.7.0
     # via -r requirements/pytest.in
-hypothesis==6.75.7
+hypothesis==6.75.9
     # via -r requirements/pytest.in
 importlib-metadata==6.6.0
     # via
