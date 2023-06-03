@@ -37,6 +37,7 @@ jobs:
     # because jammy ships 3.10, and deadsnakes doesn't want to clobber it.
     # https://launchpad.net/~deadsnakes/+archive/ubuntu/nightly/+packages
     # https://github.com/deadsnakes/issues/issues/234
+    # bionic: 18, focal: 20, jammy: 22
     runs-on: ubuntu-20.04
 
     strategy:
@@ -46,7 +47,6 @@ jobs:
           # tox.ini so that tox will run properly. PYVERSIONS
           # Available versions:
           # https://launchpad.net/~deadsnakes/+archive/ubuntu/nightly/+packages
-          - "3.10-dev"
           - "3.11-dev"
           - "3.12-dev"
           # https://github.com/actions/setup-python#available-versions-of-pypy
