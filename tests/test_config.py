@@ -322,6 +322,12 @@ class ConfigTest(CoverageTest):
                 "~/data.file",
                 "~joe/html_dir",
             ]
+
+            [tool.coverage.paths]
+            mapping = [
+                "~/src",
+                "~joe/source",
+            ]
             """)
         def expanduser(s: str) -> str:
             """Fake tilde expansion"""
@@ -335,6 +341,7 @@ class ConfigTest(CoverageTest):
         assert cov.config.html_dir == "/Users/joe/html_dir"
         assert cov.config.xml_output == "/Users/me/somewhere/xml.out"
         assert cov.config.exclude_list == ["~/data.file", "~joe/html_dir"]
+        assert cov.config.paths == {'mapping': ['/Users/me/src', '/Users/joe/source']}
 
     def test_tweaks_after_constructor(self) -> None:
         # set_option can be used after construction to affect the config.
