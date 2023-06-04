@@ -27,7 +27,7 @@ specification of options that are otherwise only available in the
 Configuration files also make it easier to get coverage testing of spawned
 sub-processes.  See :ref:`subprocess` for more details.
 
-The default name for configuration files is ``.coveragerc``, in the same
+The default name for the configuration file is ``.coveragerc``, in the same
 directory coverage.py is being run in.  Most of the settings in the
 configuration file are tied to your source code and how it should be measured,
 so it should be stored with your source, and checked into source control,
@@ -46,13 +46,17 @@ prefixed, so the ``[run]`` options described below will be found in the
 Coverage.py will read from "pyproject.toml" if TOML support is available,
 either because you are running on Python 3.11 or later, or because you
 installed with the ``toml`` extra (``pip install coverage[toml]``).
-Configuration must be within the ``[tool.coverage]`` section, for example,
-``[tool.coverage.run]``.  Environment variable expansion in values is
-available, but only within quoted strings, even for non-string values.
 
 
 Syntax
 ------
+
+The specific syntax of a configuration file depends on what type it is.
+All configuration files are assumed to be in INI format, unless their file
+extension is .toml, which are TOML.
+
+INI Syntax
+..........
 
 A coverage.py configuration file is in classic .ini file format: sections are
 introduced by a ``[section]`` header, and contain ``name = value`` entries.
@@ -63,6 +67,22 @@ values on multiple lines.
 
 Boolean values can be specified as ``on``, ``off``, ``true``, ``false``, ``1``,
 or ``0`` and are case-insensitive.
+
+TOML Syntax
+...........
+
+`TOML syntax`_ uses explicit lists with brackets, and strings with quotes.
+Booleans are in ``true`` or ``false``.
+
+Configuration must be within the ``[tool.coverage]`` section, for example,
+``[tool.coverage.run]``.  Environment variable expansion in values is
+available, but only within quoted strings, even for non-string values.
+
+.. _TOML syntax: https://toml.io
+
+
+Environment variables
+.....................
 
 Environment variables can be substituted in by using dollar signs: ``$WORD``
 or ``${WORD}`` will be replaced with the value of ``WORD`` in the environment.
@@ -78,10 +98,11 @@ control what happens if the variable isn't defined in the environment:
 - Otherwise, missing environment variables will result in empty strings with no
   error.
 
-Many sections and settings correspond roughly to commands and options in
-the :ref:`command-line interface <cmd>`.
 
-Here's a sample configuration file:
+Sample file
+...........
+
+Here's a sample configuration file, in each syntax:
 
 .. [[[cog
     show_configs(
@@ -234,6 +255,11 @@ Here's a sample configuration file:
         directory = coverage_html_report
 
 .. [[[end]]] (checksum: 75c6c0c2ee170424cc1c18710e2b4919)
+
+
+The specific configuration settings are described below.  Many sections and
+settings correspond roughly to commands and options in the :ref:`command-line
+interface <cmd>`.
 
 
 .. _config_run:
