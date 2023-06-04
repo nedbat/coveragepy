@@ -1,34 +1,12 @@
 .. Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
 .. For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
 
-.. This file is meant to be processed with cog to insert the latest command
+.. This file is processed with cog to insert the latest command
    help into the docs. If it's out of date, the quality checks will fail.
    Running "make prebuild" will bring it up to date.
 
 .. [[[cog
-    # optparse wraps help to the COLUMNS value.  Set it here to be sure it's
-    # consistent regardless of the environment.  Has to be set before we
-    # import cmdline.py, which creates the optparse objects.
-    import os
-    os.environ["COLUMNS"] = "80"
-
-    import contextlib
-    import io
-    import re
-    import textwrap
-    from coverage.cmdline import CoverageScript
-
-    def show_help(cmd):
-        with contextlib.redirect_stdout(io.StringIO()) as stdout:
-            CoverageScript().command_line([cmd, "--help"])
-        help = stdout.getvalue()
-        help = help.replace("__main__.py", "coverage")
-        help = re.sub(r"(?m)^Full doc.*$", "", help)
-        help = help.rstrip()
-
-        print(".. code::\n")
-        print(f"    $ coverage {cmd} --help")
-        print(textwrap.indent(help, "    "))
+    from cog_helpers import show_help
 .. ]]]
 .. [[[end]]] (checksum: d41d8cd98f00b204e9800998ecf8427e)
 

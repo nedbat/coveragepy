@@ -5,13 +5,41 @@
 Functions for use with cog in the documentation.
 """
 
+# For help text in doc/cmd.rst:
+# optparse wraps help to the COLUMNS value.  Set it here to be sure it's
+# consistent regardless of the environment.  Has to be set before we
+# import cmdline.py, which creates the optparse objects.
+
+# pylint: disable=wrong-import-position
 import os
+os.environ["COLUMNS"] = "80"
+
+import contextlib
+import io
 import re
 import textwrap
 
 import cog              # pylint: disable=import-error
 
+from coverage.cmdline import CoverageScript
 from coverage.config import read_coverage_config
+
+
+def show_help(cmd):
+    """
+    Insert the help output from a command.
+    """
+    with contextlib.redirect_stdout(io.StringIO()) as stdout:
+        CoverageScript().command_line([cmd, "--help"])
+    help_text = stdout.getvalue()
+    help_text = help_text.replace("__main__.py", "coverage")
+    help_text = re.sub(r"(?m)^Full doc.*$", "", help_text)
+    help_text = help_text.rstrip()
+
+    print(".. code::\n")
+    print(f"    $ coverage {cmd} --help")
+    print(textwrap.indent(help_text, "    "))
+
 
 def _read_config(text, fname):
     """
