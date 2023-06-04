@@ -1,6 +1,16 @@
 .. Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
 .. For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
 
+.. This file is processed with cog to create the tabbed multi-syntax
+   configuration examples.  If those are wrong, the quality checks will fail.
+   Running "make prebuild" checks them and produces the output.
+
+.. [[[cog
+    from cog_helpers import show_configs
+.. ]]]
+.. [[[end]]] (checksum: d41d8cd98f00b204e9800998ecf8427e)
+
+
 .. _config:
 
 =======================
@@ -71,34 +81,159 @@ control what happens if the variable isn't defined in the environment:
 Many sections and settings correspond roughly to commands and options in
 the :ref:`command-line interface <cmd>`.
 
-Here's a sample configuration file::
+Here's a sample configuration file:
 
-    # .coveragerc to control coverage.py
-    [run]
-    branch = True
+.. [[[cog
+    show_configs(
+        rc=r"""
+            [run]
+            branch = True
 
-    [report]
-    # Regexes for lines to exclude from consideration
-    exclude_also =
-        # Don't complain about missing debug-only code:
-        def __repr__
-        if self\.debug
+            [report]
+            ; Regexes for lines to exclude from consideration
+            exclude_also =
+                ; Don't complain about missing debug-only code:
+                def __repr__
+                if self\.debug
 
-        # Don't complain if tests don't hit defensive assertion code:
-        raise AssertionError
-        raise NotImplementedError
+                ; Don't complain if tests don't hit defensive assertion code:
+                raise AssertionError
+                raise NotImplementedError
 
-        # Don't complain if non-runnable code isn't run:
-        if 0:
-        if __name__ == .__main__.:
+                ; Don't complain if non-runnable code isn't run:
+                if 0:
+                if __name__ == .__main__.:
 
-        # Don't complain about abstract methods, they aren't run:
-        @(abc\.)?abstractmethod
+                ; Don't complain about abstract methods, they aren't run:
+                @(abc\.)?abstractmethod
 
-    ignore_errors = True
+            ignore_errors = True
 
-    [html]
-    directory = coverage_html_report
+            [html]
+            directory = coverage_html_report
+            """,
+        toml=r"""
+            [tool.coverage.run]
+            branch = true
+
+            [tool.coverage.report]
+            # Regexes for lines to exclude from consideration
+            exclude_also = [
+                # Don't complain about missing debug-only code:
+                "def __repr__",
+                "if self\\.debug",
+
+                # Don't complain if tests don't hit defensive assertion code:
+                "raise AssertionError",
+                "raise NotImplementedError",
+
+                # Don't complain if non-runnable code isn't run:
+                "if 0:",
+                "if __name__ == .__main__.:",
+
+                # Don't complain about abstract methods, they aren't run:
+                "@(abc\\.)?abstractmethod",
+                ]
+
+            ignore_errors = true
+
+            [tool.coverage.html]
+            directory = "coverage_html_report"
+            """,
+        )
+.. ]]]
+
+.. tabs::
+
+    .. code-tab:: ini
+        :caption: .coveragerc
+
+        [run]
+        branch = True
+
+        [report]
+        ; Regexes for lines to exclude from consideration
+        exclude_also =
+            ; Don't complain about missing debug-only code:
+            def __repr__
+            if self\.debug
+
+            ; Don't complain if tests don't hit defensive assertion code:
+            raise AssertionError
+            raise NotImplementedError
+
+            ; Don't complain if non-runnable code isn't run:
+            if 0:
+            if __name__ == .__main__.:
+
+            ; Don't complain about abstract methods, they aren't run:
+            @(abc\.)?abstractmethod
+
+        ignore_errors = True
+
+        [html]
+        directory = coverage_html_report
+
+    .. code-tab:: toml
+        :caption: pyproject.toml
+
+        [tool.coverage.run]
+        branch = true
+
+        [tool.coverage.report]
+        # Regexes for lines to exclude from consideration
+        exclude_also = [
+            # Don't complain about missing debug-only code:
+            "def __repr__",
+            "if self\\.debug",
+
+            # Don't complain if tests don't hit defensive assertion code:
+            "raise AssertionError",
+            "raise NotImplementedError",
+
+            # Don't complain if non-runnable code isn't run:
+            "if 0:",
+            "if __name__ == .__main__.:",
+
+            # Don't complain about abstract methods, they aren't run:
+            "@(abc\\.)?abstractmethod",
+            ]
+
+        ignore_errors = true
+
+        [tool.coverage.html]
+        directory = "coverage_html_report"
+
+    .. code-tab:: ini
+        :caption: setup.cfg, tox.ini
+
+        [coverage:run]
+        branch = True
+
+        [coverage:report]
+        ; Regexes for lines to exclude from consideration
+        exclude_also =
+            ; Don't complain about missing debug-only code:
+            def __repr__
+            if self\.debug
+
+            ; Don't complain if tests don't hit defensive assertion code:
+            raise AssertionError
+            raise NotImplementedError
+
+            ; Don't complain if non-runnable code isn't run:
+            if 0:
+            if __name__ == .__main__.:
+
+            ; Don't complain about abstract methods, they aren't run:
+            @(abc\.)?abstractmethod
+
+        ignore_errors = True
+
+        [coverage:html]
+        directory = coverage_html_report
+
+.. [[[end]]] (checksum: 75c6c0c2ee170424cc1c18710e2b4919)
 
 
 .. _config_run:

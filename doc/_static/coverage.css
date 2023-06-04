@@ -101,3 +101,7 @@ div.tab.selected {
     border: 1px solid #ccc;
     border-radius: 0 .5em .5em .5em;
 }
+
+div.tab.codetab.selected {
+    border: none;
+}
