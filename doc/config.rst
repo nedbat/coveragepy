@@ -462,13 +462,60 @@ Try this if you get seemingly impossible results.
 -------
 
 The entries in this section are lists of file paths that should be considered
-equivalent when combining data from different machines::
+equivalent when combining data from different machines:
 
-    [paths]
-    source =
-        src/
-        /jenkins/build/*/src
-        c:\myproj\src
+.. [[[cog
+    show_configs(
+        rc=r"""
+            [paths]
+            source =
+                src/
+                /jenkins/build/*/src
+                c:\myproj\src
+            """,
+        toml=r"""
+            [tool.coverage.paths]
+            source = [
+                "src/",
+                "/jenkins/build/*/src",
+                "c:\\myproj\\src",
+                ]
+            """,
+        )
+.. ]]]
+
+.. tabs::
+
+    .. code-tab:: ini
+        :caption: .coveragerc
+
+        [paths]
+        source =
+            src/
+            /jenkins/build/*/src
+            c:\myproj\src
+
+    .. code-tab:: toml
+        :caption: pyproject.toml
+
+        [tool.coverage.paths]
+        source = [
+            "src/",
+            "/jenkins/build/*/src",
+            "c:\\myproj\\src",
+            ]
+
+    .. code-tab:: ini
+        :caption: setup.cfg, tox.ini
+
+        [coverage:paths]
+        source =
+            src/
+            /jenkins/build/*/src
+            c:\myproj\src
+
+.. [[[end]]] (checksum: cf06ac36436db0c87be15a85223900d0)
+
 
 The names of the entries ("source" in this example) are ignored, you may choose
 any name that you like.  The value is a list of strings.  When combining data

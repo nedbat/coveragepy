@@ -6,7 +6,7 @@
    Running "make prebuild" will bring it up to date.
 
 .. [[[cog
-    from cog_helpers import show_help
+    from cog_helpers import show_configs, show_help
 .. ]]]
 .. [[[end]]] (checksum: d41d8cd98f00b204e9800998ecf8427e)
 
@@ -271,15 +271,42 @@ Conflicting dynamic contexts (dynamic-conflict)
 
 Individual warnings can be disabled with the :ref:`disable_warnings
 <config_run_disable_warnings>` configuration setting.  To silence "No data was
-collected," add this to your .coveragerc file::
+collected," add this to your configuration file:
 
-    [run]
-    disable_warnings = no-data-collected
+.. [[[cog
+    show_configs(
+        rc=r"""
+            [run]
+            disable_warnings = no-data-collected
+            """,
+        toml=r"""
+            [tool.coverage.run]
+            disable_warnings = ["no-data-collected"]
+            """,
+        )
+.. ]]]
 
-or pyproject.toml::
+.. tabs::
 
-    [tool.coverage.run]
-    disable_warnings = ['no-data-collected']
+    .. code-tab:: ini
+        :caption: .coveragerc
+
+        [run]
+        disable_warnings = no-data-collected
+
+    .. code-tab:: toml
+        :caption: pyproject.toml
+
+        [tool.coverage.run]
+        disable_warnings = ["no-data-collected"]
+
+    .. code-tab:: ini
+        :caption: setup.cfg, tox.ini
+
+        [coverage:run]
+        disable_warnings = no-data-collected
+
+.. [[[end]]] (checksum: 66c0c28e863c2a44218190a8a6a3f707)
 
 
 .. _cmd_datafile:

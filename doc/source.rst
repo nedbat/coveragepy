@@ -1,6 +1,16 @@
 .. Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
 .. For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
 
+.. This file is processed with cog to create the tabbed multi-syntax
+   configuration examples.  If those are wrong, the quality checks will fail.
+   Running "make prebuild" checks them and produces the output.
+
+.. [[[cog
+    from cog_helpers import show_configs
+.. ]]]
+.. [[[end]]] (checksum: d41d8cd98f00b204e9800998ecf8427e)
+
+
 .. _source:
 
 =======================
@@ -62,16 +72,74 @@ removed from the set.
 The ``include`` and ``omit`` file name patterns follow common shell syntax,
 described below in :ref:`source_glob`.  Patterns that start with a wildcard
 character are used as-is, other patterns are interpreted relative to the
-current directory::
+current directory:
 
-    [run]
-    omit =
-        # omit anything in a .local directory anywhere
-        */.local/*
-        # omit everything in /usr
-        /usr/*
-        # omit this single file
-        utils/tirefire.py
+.. [[[cog
+    show_configs(
+        rc=r"""
+            [run]
+            omit =
+                # omit anything in a .local directory anywhere
+                */.local/*
+                # omit everything in /usr
+                /usr/*
+                # omit this single file
+                utils/tirefire.py
+            """,
+        toml=r"""
+            [tool.coverage.run]
+            omit = [
+                # omit anything in a .local directory anywhere
+                "*/.local/*",
+                # omit everything in /usr
+                "/usr/*",
+                # omit this single file
+                "utils/tirefire.py",
+                ]
+            """,
+        )
+.. ]]]
+
+.. tabs::
+
+    .. code-tab:: ini
+        :caption: .coveragerc
+
+        [run]
+        omit =
+            # omit anything in a .local directory anywhere
+            */.local/*
+            # omit everything in /usr
+            /usr/*
+            # omit this single file
+            utils/tirefire.py
+
+    .. code-tab:: toml
+        :caption: pyproject.toml
+
+        [tool.coverage.run]
+        omit = [
+            # omit anything in a .local directory anywhere
+            "*/.local/*",
+            # omit everything in /usr
+            "/usr/*",
+            # omit this single file
+            "utils/tirefire.py",
+            ]
+
+    .. code-tab:: ini
+        :caption: setup.cfg, tox.ini
+
+        [coverage:run]
+        omit =
+            # omit anything in a .local directory anywhere
+            */.local/*
+            # omit everything in /usr
+            /usr/*
+            # omit this single file
+            utils/tirefire.py
+
+.. [[[end]]] (checksum: 9fa764509b4c484ea613298a20d4b577)
 
 The ``source``, ``include``, and ``omit`` values all work together to determine
 the source that will be measured.

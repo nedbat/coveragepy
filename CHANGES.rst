@@ -38,6 +38,9 @@ Version 7.2.7 — 2023-05-29
   recent change (`issue 1538`_).  Thanks to `Anders Kaseorg <pull 1629_>`_
   and David Szotten for persisting with problem reports and detailed diagnoses.
 
+- Docs: examples of configuration files now include separate examples for the
+  different syntaxes: .coveragerc, pyproject.toml, setup.cfg, and tox.ini.
+
 - Wheels are now provided for CPython 3.12.
 
 .. _issue 1586: https://github.com/nedbat/coveragepy/issues/1586

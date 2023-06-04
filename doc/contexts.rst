@@ -1,6 +1,16 @@
 .. Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
 .. For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
 
+.. This file is processed with cog to create the tabbed multi-syntax
+   configuration examples.  If those are wrong, the quality checks will fail.
+   Running "make prebuild" checks them and produces the output.
+
+.. [[[cog
+    from cog_helpers import show_configs
+.. ]]]
+.. [[[end]]] (checksum: d41d8cd98f00b204e9800998ecf8427e)
+
+
 .. _contexts:
 
 ====================
@@ -63,10 +73,42 @@ There are three ways to enable dynamic contexts:
 .. highlight:: ini
 
 The ``[run] dynamic_context`` setting has only one option now.  Set it to
-``test_function`` to start a new dynamic context for every test function::
+``test_function`` to start a new dynamic context for every test function:
 
-    [run]
-    dynamic_context = test_function
+.. [[[cog
+    show_configs(
+        rc=r"""
+            [run]
+            dynamic_context = test_function
+            """,
+        toml=r"""
+            [tool.coverage.run]
+            dynamic_context = "test_function"
+            """,
+        )
+.. ]]]
+
+.. tabs::
+
+    .. code-tab:: ini
+        :caption: .coveragerc
+
+        [run]
+        dynamic_context = test_function
+
+    .. code-tab:: toml
+        :caption: pyproject.toml
+
+        [tool.coverage.run]
+        dynamic_context = "test_function"
+
+    .. code-tab:: ini
+        :caption: setup.cfg, tox.ini
+
+        [coverage:run]
+        dynamic_context = test_function
+
+.. [[[end]]] (checksum: 5c5d120ee876e5fe26e573e1a5e8551d)
 
 Each test function you run will be considered a separate dynamic context, and
 coverage data will be segregated for each.  A test function is any function
