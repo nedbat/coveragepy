@@ -24,12 +24,8 @@ cogapp==3.3.0
     # via -r doc/requirements.in
 colorama==0.4.6
     # via sphinx-autobuild
-doc8==0.11.2
-    # via -r doc/requirements.in
 docutils==0.18.1
     # via
-    #   doc8
-    #   restructuredtext-lint
     #   sphinx
     #   sphinx-rtd-theme
 idna==3.4
@@ -42,22 +38,16 @@ jinja2==3.1.2
     #   sphinx
 livereload==2.6.3
     # via sphinx-autobuild
-markupsafe==2.1.2
+markupsafe==2.1.3
     # via jinja2
 packaging==23.1
     # via sphinx
-pbr==5.11.1
-    # via stevedore
 pygments==2.15.1
-    # via
-    #   doc8
-    #   sphinx
+    # via sphinx
 requests==2.31.0
     # via
     #   scriv
     #   sphinx
-restructuredtext-lint==1.4.0
-    # via doc8
 scriv==1.3.1
     # via -r doc/requirements.in
 six==1.16.0
@@ -94,8 +84,6 @@ sphinxcontrib-restbuilder==0.3
     # via -r doc/requirements.in
 sphinxcontrib-serializinghtml==1.1.5
     # via sphinx
-stevedore==5.1.0
-    # via doc8
 tornado==6.3.2
     # via livereload
 urllib3==2.0.2
