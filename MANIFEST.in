@@ -24,7 +24,7 @@ include setup.py
 include tox.ini
 include .editorconfig
 include .git-blame-ignore-revs
-include .readthedocs.yml
+include .readthedocs.yaml
 
 recursive-include ci *
 recursive-include lab *
