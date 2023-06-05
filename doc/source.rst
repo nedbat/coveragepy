@@ -76,7 +76,7 @@ current directory:
 
 .. [[[cog
     show_configs(
-        rc=r"""
+        ini=r"""
             [run]
             omit =
                 # omit anything in a .local directory anywhere

@@ -91,7 +91,7 @@ all of them by adding a regex to the exclusion list:
 
 .. [[[cog
     show_configs(
-        rc=r"""
+        ini=r"""
             [report]
             exclude_also =
                 def __repr__
@@ -135,7 +135,7 @@ For example, here's a list of exclusions I've used:
 
 .. [[[cog
     show_configs(
-        rc=r"""
+        ini=r"""
             [report]
             exclude_also =
                 def __repr__

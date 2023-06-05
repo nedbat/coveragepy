@@ -275,7 +275,7 @@ collected," add this to your configuration file:
 
 .. [[[cog
     show_configs(
-        rc=r"""
+        ini=r"""
             [run]
             disable_warnings = no-data-collected
             """,

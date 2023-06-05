@@ -48,7 +48,7 @@ a coverage.py plug-in called ``something.plugin``.
 
    .. [[[cog
         show_configs(
-            rc=r"""
+            ini=r"""
                 [run]
                 plugins =
                     something.plugin
@@ -89,7 +89,7 @@ a coverage.py plug-in called ``something.plugin``.
 
    .. [[[cog
         show_configs(
-            rc=r"""
+            ini=r"""
                 [something.plugin]
                 option1 = True
                 option2 = abc.foo

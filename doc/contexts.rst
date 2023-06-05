@@ -77,7 +77,7 @@ The ``[run] dynamic_context`` setting has only one option now.  Set it to
 
 .. [[[cog
     show_configs(
-        rc=r"""
+        ini=r"""
             [run]
             dynamic_context = test_function
             """,

@@ -106,7 +106,7 @@ Here's a sample configuration file, in each syntax:
 
 .. [[[cog
     show_configs(
-        rc=r"""
+        ini=r"""
             [run]
             branch = True
 
@@ -492,7 +492,7 @@ equivalent when combining data from different machines:
 
 .. [[[cog
     show_configs(
-        rc=r"""
+        ini=r"""
             [paths]
             source =
                 src/

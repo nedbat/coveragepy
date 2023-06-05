@@ -67,29 +67,29 @@ def _read_config(text, fname):
     return text, values
 
 
-def show_configs(rc, toml):
+def show_configs(ini, toml):
     """
     Show configuration text in a tabbed box.
 
-    `rc` is the ini-file syntax, `toml` is the equivalent TOML syntax.
+    `ini` is the ini-file syntax, `toml` is the equivalent TOML syntax.
     The equivalence is checked for accuracy, and the process fails if there's
     a mismtach.
 
     A three-tabbed box will be produced.
     """
-    rc, rc_vals = _read_config(rc, "covrc")
+    ini, ini_vals = _read_config(ini, "covrc")
     toml, toml_vals = _read_config(toml, "covrc.toml")
-    for key, val in rc_vals.items():
+    for key, val in ini_vals.items():
         if val != toml_vals[key]:
             cog.error(f"Mismatch! {key}: {val!r} vs {toml_vals[key]!r}")
 
-    ini = re.sub(r"(?m)^\[", "[coverage:", rc)
+    ini2 = re.sub(r"(?m)^\[", "[coverage:", ini)
     print()
     print(".. tabs::\n")
     for name, syntax, text in [
-        (".coveragerc", "ini", rc),
+        (".coveragerc", "ini", ini),
         ("pyproject.toml", "toml", toml),
-        ("setup.cfg, tox.ini", "ini", ini),
+        ("setup.cfg, tox.ini", "ini", ini2),
     ]:
         print(f"    .. code-tab:: {syntax}")
         print(f"        :caption: {name}")
