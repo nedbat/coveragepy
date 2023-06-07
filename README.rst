@@ -160,10 +160,10 @@ Licensed under the `Apache 2.0 License`_.  For details, see `NOTICE.txt`_.
     :alt: Tidelift
 .. |stars| image:: https://img.shields.io/github/stars/nedbat/coveragepy.svg?logo=github
     :target: https://github.com/nedbat/coveragepy/stargazers
-    :alt: Github stars
+    :alt: GitHub stars
 .. |forks| image:: https://img.shields.io/github/forks/nedbat/coveragepy.svg?logo=github
     :target: https://github.com/nedbat/coveragepy/network/members
-    :alt: Github forks
+    :alt: GitHub forks
 .. |contributors| image:: https://img.shields.io/github/contributors/nedbat/coveragepy.svg?logo=github
     :target: https://github.com/nedbat/coveragepy/graphs/contributors
     :alt: Contributors
