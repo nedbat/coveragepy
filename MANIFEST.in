@@ -8,6 +8,7 @@
 # .tar.gz source distribution would give you everything needed to continue
 # developing the project.  "pip install" will not install many of these files.
 
+include CITATION.cff
 include CONTRIBUTORS.txt
 include CHANGES.rst
 include LICENSE.txt
