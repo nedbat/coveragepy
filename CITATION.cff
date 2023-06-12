@@ -4,6 +4,9 @@ message: >-
   If you use this software, please cite it using the metadata from this file.
 type: software
 authors:
+  - family-names: Batchelder
+    given-names: Ned
+    orcid: https://orcid.org/0009-0006-2659-884X
   - name: "Contributors to Coverage.py"
 repository-code: "https://github.com/nedbat/coveragepy"
 url: "https://coverage.readthedocs.io/"
