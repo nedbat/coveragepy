@@ -23,7 +23,7 @@ from coverage import env
 from coverage.files import set_relative_directory
 
 # Pytest will rewrite assertions in test modules, but not elsewhere.
-# This tells pytest to also rewrite assertions in coveragetest.py.
+# This tells pytest to also rewrite assertions in these files:
 pytest.register_assert_rewrite("tests.coveragetest")
 pytest.register_assert_rewrite("tests.helpers")
 
