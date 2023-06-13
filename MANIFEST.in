@@ -8,9 +8,12 @@
 # .tar.gz source distribution would give you everything needed to continue
 # developing the project.  "pip install" will not install many of these files.
 
+include .editorconfig
+include .git-blame-ignore-revs
+include .readthedocs.yaml
+include CHANGES.rst
 include CITATION.cff
 include CONTRIBUTORS.txt
-include CHANGES.rst
 include LICENSE.txt
 include MANIFEST.in
 include Makefile
@@ -23,9 +26,6 @@ include metacov.ini
 include pylintrc
 include setup.py
 include tox.ini
-include .editorconfig
-include .git-blame-ignore-revs
-include .readthedocs.yaml
 
 recursive-include ci *
 recursive-include lab *

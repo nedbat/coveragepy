@@ -20,9 +20,13 @@ development at the same time, such as 4.5.x and 5.0.
 Unreleased
 ----------
 
-- Fix: add ``nosemgrep`` comments to our JavaScript code so that semgrep-based
-  SAST security checks won't raise false alarms about security problems that
-  aren't problems.
+- Fix: added ``nosemgrep`` comments to our JavaScript code so that
+  semgrep-based SAST security checks won't raise false alarms about security
+  problems that aren't problems.
+
+- Added a CITATION.cff file, thanks to `Ken Schackart <pull 1641_>`_.
+
+.. _pull 1641: https://github.com/nedbat/coveragepy/pull/1641
 
 
 .. scriv-start-here
