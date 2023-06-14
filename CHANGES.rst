@@ -20,6 +20,9 @@ development at the same time, such as 4.5.x and 5.0.
 Unreleased
 ----------
 
+- Docs: examples of configuration files now include separate examples for the
+  different syntaxes: .coveragerc, pyproject.toml, setup.cfg, and tox.ini.
+
 - Fix: added ``nosemgrep`` comments to our JavaScript code so that
   semgrep-based SAST security checks won't raise false alarms about security
   problems that aren't problems.
@@ -41,9 +44,6 @@ Version 7.2.7 — 2023-05-29
   described in the now-fixed `issue 1586`_. The problem is now avoided due to a
   recent change (`issue 1538`_).  Thanks to `Anders Kaseorg <pull 1629_>`_
   and David Szotten for persisting with problem reports and detailed diagnoses.
-
-- Docs: examples of configuration files now include separate examples for the
-  different syntaxes: .coveragerc, pyproject.toml, setup.cfg, and tox.ini.
 
 - Wheels are now provided for CPython 3.12.
 
