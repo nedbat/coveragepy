@@ -16,7 +16,7 @@ not.
 The latest version is coverage.py |release|, released |release_date|.  It is
 supported on:
 
-* Python versions 3.7 through 3.12.0b1.
+* Python versions 3.8 through 3.12.0b2.
 * PyPy3 7.3.11.
 
 .. PYVERSIONS

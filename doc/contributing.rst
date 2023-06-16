@@ -218,7 +218,7 @@ files.  These are created by running ``make upgrade``.
 
 .. minimum of PYVERSIONS:
 
-It's important to use Python 3.7 to run ``make upgrade`` so that the pinned
+It's important to use Python 3.8 to run ``make upgrade`` so that the pinned
 versions will work on all of the Python versions currently supported by
 coverage.py.
 

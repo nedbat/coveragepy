@@ -21,8 +21,8 @@ Command line usage
 When you install coverage.py, a command-line script called ``coverage`` is
 placed on your path.  To help with multi-version installs, it will also create
 a ``coverage3`` alias, and a ``coverage-X.Y`` alias, depending on the version
-of Python you're using.  For example, when installing on Python 3.7, you will
-be able to use ``coverage``, ``coverage3``, or ``coverage-3.7`` on the command
+of Python you're using.  For example, when installing on Python 3.10, you will
+be able to use ``coverage``, ``coverage3``, or ``coverage-3.10`` on the command
 line.
 
 Coverage.py has a number of commands:

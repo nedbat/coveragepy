@@ -40,7 +40,7 @@ jobs:
       - name: "Install Python"
         uses: "actions/setup-python@v4"
         with:
-          python-version: "3.7" # Minimum of PYVERSIONS
+          python-version: "3.8" # Minimum of PYVERSIONS
           cache: pip
           cache-dependency-path: 'requirements/*.pip'
 

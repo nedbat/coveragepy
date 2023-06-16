@@ -20,6 +20,8 @@ development at the same time, such as 4.5.x and 5.0.
 Unreleased
 ----------
 
+- Dropped support for Python 3.7.
+
 - Docs: examples of configuration files now include separate examples for the
   different syntaxes: .coveragerc, pyproject.toml, setup.cfg, and tox.ini.
 

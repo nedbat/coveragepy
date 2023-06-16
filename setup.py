@@ -26,7 +26,6 @@ License :: OSI Approved :: Apache Software License
 Operating System :: OS Independent
 Programming Language :: Python
 Programming Language :: Python :: 3
-Programming Language :: Python :: 3.7
 Programming Language :: Python :: 3.8
 Programming Language :: Python :: 3.9
 Programming Language :: Python :: 3.10
@@ -131,7 +130,7 @@ setup_args = dict(
         'Mastodon': 'https://hachyderm.io/@coveragepy',
         'Mastodon (nedbat)': 'https://hachyderm.io/@nedbat',
     },
-    python_requires=">=3.7",    # minimum of PYVERSIONS
+    python_requires=">=3.8",    # minimum of PYVERSIONS
 )
 
 # A replacement for the build_ext command which raises a single exception
