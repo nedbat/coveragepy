@@ -213,8 +213,6 @@ jobs:
           # Make the commit message.
           echo "${{ env.total }}% - $COMMIT_MESSAGE" > commit.txt
           echo "" >> commit.txt
-          echo "[View the report](${{ env.url }})" >> commit.txt
-          echo "" >> commit.txt
           echo "${{ env.url }}" >> commit.txt
           echo "${{ env.sha10 }}: ${{ env.branch }}" >> commit.txt
           # Commit.
