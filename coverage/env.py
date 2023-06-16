@@ -52,15 +52,10 @@ class PYBEHAVIOR:
     elif PYPY:
         if PYVERSION >= (3, 9):
             optimize_if_not_debug = 2
-        elif PYVERSION[:2] == (3, 8):
+        else:
             optimize_if_not_debug = 3
-        else:
-            optimize_if_not_debug = 1
     else:
-        if PYVERSION >= (3, 8, 0, "beta", 1):
-            optimize_if_not_debug = 2
-        else:
-            optimize_if_not_debug = 1
+        optimize_if_not_debug = 2
 
     # Can co_lnotab have negative deltas?
     negative_lnotab = not (PYPY and PYPYVERSION < (7, 2))
@@ -76,24 +71,9 @@ class PYBEHAVIOR:
     if PYPY and PYPYVERSION < (7, 3, 7):
         finally_jumps_back = False
 
-    # When a function is decorated, does the trace function get called for the
-    # @-line and also the def-line (new behavior in 3.8)? Or just the @-line
-    # (old behavior)?
-    trace_decorated_def = (
-        (PYVERSION >= (3, 8)) and
-        (CPYTHON or (PYVERSION > (3, 8)) or (PYPYVERSION > (7, 3, 9)))
-    )
-
-    # Functions are no longer claimed to start at their earliest decorator even though
-    # the decorators are traced?
-    def_ast_no_decorator = (PYPY and PYVERSION >= (3, 9))
-
     # CPython 3.11 now jumps to the decorator line again while executing
     # the decorator.
     trace_decorator_line_again = (CPYTHON and PYVERSION > (3, 11, 0, "alpha", 3, 0))
-
-    # Are while-true loops optimized into absolute jumps with no loop setup?
-    nix_while_true = (PYVERSION >= (3, 8))
 
     # CPython 3.9a1 made sys.argv[0] and other reported files absolute paths.
     report_absolute_files = (

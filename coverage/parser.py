@@ -747,10 +747,10 @@ class AstArcAnalyzer:
 
     def _line_decorated(self, node: ast.FunctionDef) -> TLineNo:
         """Compute first line number for things that can be decorated (classes and functions)."""
-        lineno = node.lineno
-        if env.PYBEHAVIOR.trace_decorated_def or env.PYBEHAVIOR.def_ast_no_decorator:
-            if node.decorator_list:
-                lineno = node.decorator_list[0].lineno
+        if node.decorator_list:
+            lineno = node.decorator_list[0].lineno
+        else:
+            lineno = node.lineno
         return lineno
 
     def _line__Assign(self, node: ast.Assign) -> TLineNo:
@@ -1007,17 +1007,15 @@ class AstArcAnalyzer:
         last: Optional[TLineNo] = node.lineno
         decs = node.decorator_list
         if decs:
-            if env.PYBEHAVIOR.trace_decorated_def or env.PYBEHAVIOR.def_ast_no_decorator:
-                last = None
+            last = None
             for dec_node in decs:
                 dec_start = self.line_for_node(dec_node)
-                if last is not None and dec_start != last:
-                    self.add_arc(last, dec_start)
+                if last is not None and dec_start != last:  # type: ignore[unreachable]
+                    self.add_arc(last, dec_start)           # type: ignore[unreachable]
                 last = dec_start
             assert last is not None
-            if env.PYBEHAVIOR.trace_decorated_def:
-                self.add_arc(last, main_line)
-                last = main_line
+            self.add_arc(last, main_line)
+            last = main_line
             if env.PYBEHAVIOR.trace_decorator_line_again:
                 for top, bot in zip(decs, decs[1:]):
                     self.add_arc(self.line_for_node(bot), self.line_for_node(top))
@@ -1030,10 +1028,10 @@ class AstArcAnalyzer:
             if node.body:
                 body_start = self.line_for_node(node.body[0])
                 body_start = self.multiline.get(body_start, body_start)
-                for lineno in range(last+1, body_start):
-                    if lineno in self.statements:
-                        self.add_arc(last, lineno)
-                        last = lineno
+                # for lineno in range(last+1, body_start):
+                #     if lineno in self.statements:
+                #         self.add_arc(last, lineno)
+                #         last = lineno
         # The body is handled in collect_arcs.
         assert last is not None
         return {ArcStart(last)}

@@ -180,9 +180,7 @@ class PythonParserTest(CoverageTest):
             def func(x=25):
                 return 26
             """)
-        raw_statements = {3, 4, 5, 6, 8, 9, 10, 13, 15, 16, 17, 20, 22, 23, 25, 26}
-        if env.PYBEHAVIOR.trace_decorated_def:
-            raw_statements.update({11, 19})
+        raw_statements = {3, 4, 5, 6, 8, 9, 10, 11, 13, 15, 16, 17, 19, 20, 22, 23, 25, 26}
         assert parser.raw_statements == raw_statements
         assert parser.statements == {8}
 
@@ -201,9 +199,7 @@ class PythonParserTest(CoverageTest):
             def g():
                 x = 9
             """)
-        raw_statements = {1, 2, 4, 6, 7, 9}
-        if env.PYBEHAVIOR.trace_decorated_def:
-            raw_statements.update({3, 8})
+        raw_statements = {1, 2, 3, 4, 6, 7, 8, 9}
         assert parser.raw_statements == raw_statements
         assert parser.statements == set()
 
@@ -235,14 +231,9 @@ class PythonParserTest(CoverageTest):
                 pass
             """)
 
-        if env.PYBEHAVIOR.trace_decorated_def:
-            expected_statements = {1, 2, 4, 5, 8, 9, 10}
-            expected_arcs = set(arcz_to_arcs(".1 14 45 58 89 9.  .2 2.  -8A A-8"))
-            expected_exits = {1: 1, 2: 1, 4: 1, 5: 1, 8: 1, 9: 1, 10: 1}
-        else:
-            expected_statements = {1, 2, 4, 8, 10}
-            expected_arcs = set(arcz_to_arcs(".1 14 48 8.  .2 2.  -8A A-8"))
-            expected_exits = {1: 1, 2: 1, 4: 1, 8: 1, 10: 1}
+        expected_statements = {1, 2, 4, 5, 8, 9, 10}
+        expected_arcs = set(arcz_to_arcs(".1 14 45 58 89 9.  .2 2.  -8A A-8"))
+        expected_exits = {1: 1, 2: 1, 4: 1, 5: 1, 8: 1, 9: 1, 10: 1}
 
         if env.PYBEHAVIOR.docstring_only_function:
             # 3.7 changed how functions with only docstrings are numbered.

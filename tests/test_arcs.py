@@ -419,10 +419,8 @@ class LoopArcTest(CoverageTest):
         # With "while 1", the loop knows it's constant.
         if env.PYBEHAVIOR.keep_constant_test:
             arcz = ".1 12 23 34 45 36 62 57 7."
-        elif env.PYBEHAVIOR.nix_while_true:
-            arcz = ".1 13 34 45 36 63 57 7."
         else:
-            arcz = ".1 12 23 34 45 36 63 57 7."
+            arcz = ".1 13 34 45 36 63 57 7."
         self.check_coverage("""\
             a, i = 1, 0
             while 1:
@@ -440,10 +438,8 @@ class LoopArcTest(CoverageTest):
         # 3.x thinks it's constant.
         if env.PYBEHAVIOR.keep_constant_test:
             arcz = ".1 12 23 34 45 36 62 57 7."
-        elif env.PYBEHAVIOR.nix_while_true:
-            arcz = ".1 13 34 45 36 63 57 7."
         else:
-            arcz = ".1 12 23 34 45 36 63 57 7."
+            arcz = ".1 13 34 45 36 63 57 7."
         self.check_coverage("""\
             a, i = 1, 0
             while True:
@@ -469,10 +465,8 @@ class LoopArcTest(CoverageTest):
         assert self.stdout() == 'done\n'
         if env.PYBEHAVIOR.keep_constant_test:
             num_stmts = 3
-        elif env.PYBEHAVIOR.nix_while_true:
-            num_stmts = 2
         else:
-            num_stmts = 3
+            num_stmts = 2
         expected = "zero.py {n} {n} 0 0 0% 1-3".format(n=num_stmts)
         report = self.get_report(cov, show_missing=True)
         squeezed = self.squeezed_lines(report)
@@ -483,10 +477,8 @@ class LoopArcTest(CoverageTest):
         # A continue in a while-true needs to jump to the right place.
         if env.PYBEHAVIOR.keep_constant_test:
             arcz = ".1 12 23 34 45 52 46 67 7."
-        elif env.PYBEHAVIOR.nix_while_true:
-            arcz = ".1 13 34 45 53 46 67 7."
         else:
-            arcz = ".1 12 23 34 45 53 46 67 7."
+            arcz = ".1 13 34 45 53 46 67 7."
         self.check_coverage("""\
             up = iter('ta')
             while True:
@@ -1730,9 +1722,7 @@ class DecoratorArcTest(CoverageTest):
     def test_bug_466a(self) -> None:
         # A bad interaction between decorators and multi-line list assignments,
         # believe it or not...!
-        arcz = ".1 1A A.  13 3.     -35 58 8-3 "
-        if env.PYBEHAVIOR.trace_decorated_def:
-            arcz = arcz.replace("3.", "34 4.")
+        arcz = ".1 1A A.  13 34 4.  -35 58 8-3 "
         if env.PYBEHAVIOR.trace_decorator_line_again:
             arcz += "43 "
         # This example makes more sense when considered in tandem with 466b below.
@@ -1754,9 +1744,7 @@ class DecoratorArcTest(CoverageTest):
     def test_bug_466b(self) -> None:
         # A bad interaction between decorators and multi-line list assignments,
         # believe it or not...!
-        arcz = ".1 1A A.  13 3.     -35 58 8-3 "
-        if env.PYBEHAVIOR.trace_decorated_def:
-            arcz = arcz.replace("3.", "34 4.")
+        arcz = ".1 1A A.  13 34 4.  -35 58 8-3 "
         if env.PYBEHAVIOR.trace_decorator_line_again:
             arcz += "43 "
         self.check_coverage("""\
@@ -1943,9 +1931,7 @@ class AsyncTest(CoverageTest):
         )
 
     def test_async_decorator(self) -> None:
-        arcz = ".1 14 4.     .2 2.  -46 6-4 "
-        if env.PYBEHAVIOR.trace_decorated_def:
-            arcz = arcz.replace("4.", "45 5.")
+        arcz = ".1 14 45 5.  .2 2.  -46 6-4 "
         if env.PYBEHAVIOR.trace_decorator_line_again:
             arcz += "54 "
         self.check_coverage("""\

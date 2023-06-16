@@ -8,7 +8,6 @@ from __future__ import annotations
 import textwrap
 
 import coverage
-from coverage import env
 from coverage.files import abs_file
 
 from tests.coveragetest import CoverageTest
@@ -240,15 +239,13 @@ class ReportWithJinjaTest(CoverageTest):
         cov.load()
         cov.xml_report()
         contains("coverage.xml", 'filename="good.j2"')
-        if env.PYVERSION >= (3, 8):     # Py3.7 puts attributes in the other order.
-            contains("coverage.xml",
-                '<line number="1" hits="1"/>',
-                '<line number="2" hits="0"/>',
-                '<line number="3" hits="1"/>',
-            )
+        contains("coverage.xml",
+            '<line number="1" hits="1"/>',
+            '<line number="2" hits="0"/>',
+            '<line number="3" hits="1"/>',
+        )
         doesnt_contain("coverage.xml", 'filename="bad.j2"')
-        if env.PYVERSION >= (3, 8):     # Py3.7 puts attributes in the other order.
-            doesnt_contain("coverage.xml", '<line number="4"',)
+        doesnt_contain("coverage.xml", '<line number="4"',)
 
     def test_json(self) -> None:
         self.make_files()
