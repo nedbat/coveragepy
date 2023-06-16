@@ -817,7 +817,7 @@ class NamespaceModuleTest(UsingModulesMixin, CoverageTest):
 class CoverageUsePkgs(Protocol):
     """A number of test classes have the same helper method."""
     def coverage_usepkgs(
-        self,                       # pylint: disable=unused-argument
+        self,
         **kwargs: TCovKwargs,
     ) -> Iterable[str]:
         """Run coverage on usepkgs, return a line summary. kwargs are for Coverage(**kwargs)."""

@@ -52,7 +52,6 @@ class PyTracer(TTracer):
     # used to force the use of this tracer.
 
     def __init__(self) -> None:
-        # pylint: disable=super-init-not-called
         # Attributes set from the collector:
         self.data: TTraceData
         self.trace_arcs = False
