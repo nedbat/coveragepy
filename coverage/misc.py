@@ -60,7 +60,7 @@ os = isolate_module(os)
 
 class SysModuleSaver:
     """Saves the contents of sys.modules, and removes new modules later."""
-    def __init__(self) -> None:
+    def __init__(self):
         self.old_modules = set(sys.modules)
 
     def restore(self) -> None:
