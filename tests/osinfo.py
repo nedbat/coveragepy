@@ -13,12 +13,14 @@ if sys.platform == "win32":
     def process_ram() -> int:
         """How much RAM is this process using? (Windows)"""
         import ctypes
+        from ctypes import wintypes
         # From: http://lists.ubuntu.com/archives/bazaar-commits/2009-February/011990.html
+        # Updated from: https://stackoverflow.com/a/16204942/14343
         class PROCESS_MEMORY_COUNTERS_EX(ctypes.Structure):
             """Used by GetProcessMemoryInfo"""
             _fields_ = [
-                ('cb', ctypes.c_ulong),
-                ('PageFaultCount', ctypes.c_ulong),
+                ('cb', wintypes.DWORD),
+                ('PageFaultCount', wintypes.DWORD),
                 ('PeakWorkingSetSize', ctypes.c_size_t),
                 ('WorkingSetSize', ctypes.c_size_t),
                 ('QuotaPeakPagedPoolUsage', ctypes.c_size_t),
@@ -30,15 +32,27 @@ if sys.platform == "win32":
                 ('PrivateUsage', ctypes.c_size_t),
             ]
 
-        mem_struct = PROCESS_MEMORY_COUNTERS_EX()
-        ret = ctypes.windll.psapi.GetProcessMemoryInfo(
-            ctypes.windll.kernel32.GetCurrentProcess(),
-            ctypes.byref(mem_struct),
-            ctypes.sizeof(mem_struct)
+        GetProcessMemoryInfo = ctypes.windll.psapi.GetProcessMemoryInfo
+        GetProcessMemoryInfo.argtypes = [
+            wintypes.HANDLE,
+            ctypes.POINTER(PROCESS_MEMORY_COUNTERS_EX),
+            wintypes.DWORD,
+        ]
+        GetProcessMemoryInfo.restype = wintypes.BOOL
+
+        GetCurrentProcess = ctypes.windll.kernel32.GetCurrentProcess
+        GetCurrentProcess.argtypes = []
+        GetCurrentProcess.restype = wintypes.HANDLE
+
+        counters = PROCESS_MEMORY_COUNTERS_EX()
+        ret = GetProcessMemoryInfo(
+            GetCurrentProcess(),
+            ctypes.byref(counters),
+            ctypes.sizeof(counters),
         )
         if not ret:                 # pragma: part covered
             return 0                # pragma: cant happen
-        return mem_struct.PrivateUsage
+        return counters.PrivateUsage
 
 elif sys.platform.startswith("linux"):
     # Linux implementation
