@@ -87,7 +87,7 @@ builtin_dir = [" ".join(s) for _, s in itertools.groupby(dir(__builtins__), key=
 globals_to_check = {
     'os.getcwd': os.getcwd(),
     '__name__': __name__,
-    '__file__': __file__,
+    '__file__': os.path.normcase(__file__),
     '__doc__': __doc__,
     '__builtins__.has_open': hasattr(__builtins__, 'open'),
     '__builtins__.dir': builtin_dir,

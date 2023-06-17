@@ -688,6 +688,14 @@ class EnvironmentTest(CoverageTest):
         actual = self.run_command("coverage run sub/overthere/prog.py")
         self.assert_tryexecfile_output(expected, actual)
 
+    @pytest.mark.skipif(not env.WINDOWS, reason="This is about Windows paths")
+    def test_coverage_run_far_away_is_like_python_windows(self) -> None:
+        with open(TRY_EXECFILE) as f:
+            self.make_file("sub/overthere/prog.py", f.read())
+        expected = self.run_command("python sub\\overthere\\prog.py")
+        actual = self.run_command("coverage run sub\\overthere\\prog.py")
+        self.assert_tryexecfile_output(expected, actual)
+
     def test_coverage_run_dashm_is_like_python_dashm(self) -> None:
         # These -m commands assume the coverage tree is on the path.
         expected = self.run_command("python -m process_test.try_execfile")
