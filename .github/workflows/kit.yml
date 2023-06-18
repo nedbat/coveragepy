@@ -234,7 +234,7 @@ jobs:
         run: |
           # One wheel works for all PyPy versions. PYVERSIONS
           # yes, this is weird syntax: https://github.com/pypa/build/issues/202
-          pypy3 -m build -w -C="--global-option=--python-tag" -C="--global-option=pp38.pp39"
+          pypy3 -m build -w -C="--global-option=--python-tag" -C="--global-option=pp38.pp39.pp310"
 
       - name: "List wheels"
         run: |
