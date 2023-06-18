@@ -1028,10 +1028,6 @@ class AstArcAnalyzer:
             if node.body:
                 body_start = self.line_for_node(node.body[0])
                 body_start = self.multiline.get(body_start, body_start)
-                # for lineno in range(last+1, body_start):
-                #     if lineno in self.statements:
-                #         self.add_arc(last, lineno)
-                #         last = lineno
         # The body is handled in collect_arcs.
         assert last is not None
         return {ArcStart(last)}
