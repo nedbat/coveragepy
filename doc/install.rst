@@ -84,6 +84,6 @@ You can also invoke coverage.py as a module:
 
 .. parsed-literal::
 
-    $ python -m coverage --version
+    $ python3 -m coverage --version
     Coverage.py, version |release| with C extension
     Documentation at |doc-url|

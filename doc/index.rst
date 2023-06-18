@@ -17,7 +17,7 @@ The latest version is coverage.py |release|, released |release_date|.  It is
 supported on:
 
 * Python versions 3.8 through 3.12.0b2.
-* PyPy3 7.3.11.
+* PyPy3 versions 3.8 through 3.10.
 
 .. PYVERSIONS
 
@@ -92,7 +92,7 @@ Getting started is easy:
 
             Change "python" to "coverage run", so this::
 
-                $ python -m unittest discover
+                $ python3 -m unittest discover
 
             becomes::
 

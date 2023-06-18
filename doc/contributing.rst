@@ -1,6 +1,8 @@
 .. Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
 .. For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
 
+.. Command samples here were made with a 100-column terminal.
+
 .. _contributing:
 
 ===========================
@@ -9,9 +11,10 @@ Contributing to coverage.py
 
 .. highlight:: console
 
-I welcome contributions to coverage.py.  Over the years, dozens of people have
-provided patches of various sizes to add features or fix bugs.  This page
-should have all the information you need to make a contribution.
+I welcome contributions to coverage.py.  Over the years, hundreds of people
+have provided contributions of various sizes to add features, fix bugs, or just
+help diagnose thorny issues.  This page should have all the information you
+need to make a contribution.
 
 One source of history or ideas are the `bug reports`_ against coverage.py.
 There you can find ideas for requested features, or the remains of rejected
@@ -63,45 +66,64 @@ Running the tests
 The tests are written mostly as standard unittest-style tests, and are run with
 pytest running under `tox`_::
 
-    % python -m tox -e py38
+    $ python3 -m tox -e py38
     ROOT: tox-gh won't override envlist because tox is not running in GitHub Actions
+    py38: wheel-0.40.0-py3-none-any.whl already present in /Users/nedbatchelder/Library/Application Support/virtualenv/wheel/3.8/embed/3/wheel.json
+    py38: pip-23.1.2-py3-none-any.whl already present in /Users/nedbatchelder/Library/Application Support/virtualenv/wheel/3.8/embed/3/pip.json
+    py38: setuptools-67.8.0-py3-none-any.whl already present in /Users/nedbatchelder/Library/Application Support/virtualenv/wheel/3.8/embed/3/setuptools.json
+    py38: install_deps> python -m pip install -U -r requirements/pip.pip -r requirements/pytest.pip -r requirements/light-threads.pip
+    .pkg: install_requires> python -I -m pip install setuptools
     .pkg: _optional_hooks> python /usr/local/virtualenvs/coverage/lib/python3.8/site-packages/pyproject_api/_backend.py True setuptools.build_meta
     .pkg: get_requires_for_build_editable> python /usr/local/virtualenvs/coverage/lib/python3.8/site-packages/pyproject_api/_backend.py True setuptools.build_meta
+    .pkg: install_requires_for_build_editable> python -I -m pip install wheel
     .pkg: build_editable> python /usr/local/virtualenvs/coverage/lib/python3.8/site-packages/pyproject_api/_backend.py True setuptools.build_meta
-    py38: install_package> python -m pip install -U --force-reinstall --no-deps .tox/.tmp/package/53/coverage-7.2.8a0.dev1-0.editable-cp38-cp38-macosx_13_0_x86_64.whl
+    py38: install_package_deps> python -m pip install -U 'tomli; python_full_version <= "3.11.0a6"'
+    py38: install_package> python -m pip install -U --force-reinstall --no-deps .tox/.tmp/package/1/coverage-7.2.8a0.dev1-0.editable-cp38-cp38-macosx_13_0_x86_64.whl
     py38: commands[0]> python igor.py zip_mods
     py38: commands[1]> python setup.py --quiet build_ext --inplace
     py38: commands[2]> python -m pip install -q -e .
     py38: commands[3]> python igor.py test_with_tracer c
     === CPython 3.8.17 with C tracer (.tox/py38/bin/python) ===
     bringing up nodes...
-    s................................................................................................................x..................ss..x................. [ 11%]
-    ............s....................s........................................................................................................................ [ 22%]
-    .......................................................................................................................................................... [ 34%]
-    .....................................................................................................................................s.................... [ 45%]
-    .......................................................................................s.................................................................. [ 57%]
-    .....................................................................s.................................................................................... [ 68%]
-    ..........s..........................................................s.................................................................................... [ 79%]
-    .............................................................................s............................................s...s........................... [ 91%]
-    ...................................................................................................s................                                       [100%]
-    1332 passed, 14 skipped, 2 xfailed in 35.46s
+    ............................................................................................ [  6%]
+    ...................................x.....x...............s..s..s.s.......................... [ 13%]
+    ............................................................................................ [ 20%]
+    ............................................................................................ [ 27%]
+    ............................................................................................ [ 34%]
+    ............................................................................................ [ 41%]
+    ............................................................................................ [ 47%]
+    ............................................................................................ [ 54%]
+    ........................................................s...........s....................... [ 61%]
+    ............................................................................................ [ 68%]
+    ..........s...........................s...........s......................................... [ 75%]
+    ..................s...................s..............................................s...... [ 82%]
+    ...............................s............................................................ [ 88%]
+    ............................................................................................ [ 95%]
+    .............................s.............................                                  [100%]
+    1332 passed, 14 skipped, 2 xfailed in 60.54s (0:01:00)
     py38: commands[4]> python igor.py remove_extension
     py38: commands[5]> python igor.py test_with_tracer py
     === CPython 3.8.17 with Python tracer (.tox/py38/bin/python) ===
     bringing up nodes...
-    .................................................................................................x...x..............................ss.................... [ 11%]
-    ..................................s..................................s..........................s.ss.....ss.............s.s............s..s.............s. [ 22%]
-    .......................................................................................................................................................... [ 34%]
-    .................................s...........ss..s........................................................................................................ [ 45%]
-    ...s.......................................................................................s...........................................................s.. [ 57%]
-    ......s......................................................ss.s.........................................................................s..............s [ 68%]
-    ................ssss...................sss.ss..........................................................................................sssss.sss.......... [ 80%]
-    .....................................................................................................................s........s........................... [ 91%]
-    ......................................s.....................................................................ss......                                       [100%]
-    1297 passed, 49 skipped, 2 xfailed in 35.68s
+    ............................................................................................ [  6%]
+    .............................x.............................................................. [ 13%]
+    ..ss...................................x.....................................ss............. [ 20%]
+    ..........s.....................................ss...................s.................sss.. [ 27%]
+    .ss.....s................................................................................... [ 34%]
+    ............................................................................................ [ 41%]
+    ....................................................................s....................... [ 47%]
+    .....................................................................s..s.ss................ [ 54%]
+    ...ss.sss.......................................................s........s........sss....... [ 61%]
+    .ss...............s.s..................s.................s.s................................ [ 68%]
+    ...........................................................................................s [ 75%]
+    ........................................................s.......................s........... [ 82%]
+    ....................ss.s........................ssss........................................ [ 88%]
+    ............................................................................................ [ 95%]
+    ................................s...............ss.........                                  [100%]
+    1297 passed, 49 skipped, 2 xfailed in 44.59s
     .pkg: _exit> python /usr/local/virtualenvs/coverage/lib/python3.8/site-packages/pyproject_api/_backend.py True setuptools.build_meta
-      py38: OK (88.47=setup[3.68]+cmd[0.38,1.11,5.89,38.63,0.26,38.53] seconds)
-      congratulations :) (89.51 seconds)
+      py38: OK (143.82=setup[23.23]+cmd[0.29,1.60,8.43,61.64,0.34,48.28] seconds)
+      congratulations :) (144.93 seconds)
 
 Tox runs the complete test suite twice for each version of Python you have
 installed.  The first run uses the C implementation of the trace function,
@@ -109,7 +131,7 @@ the second uses the Python implementation.
 
 To limit tox to just a few versions of Python, use the ``-e`` switch::
 
-    $ python3 -m tox -e py37,py39
+    $ python3 -m tox -e py38,py39
 
 On the tox command line, options after ``--`` are passed to pytest.  To run
 just a few tests, you can use `pytest test selectors`_::
@@ -123,14 +145,16 @@ respectively.  The pytest ``-k`` option selects tests based on a word in their
 name, which can be very convenient for ad-hoc test selection.  Of course you
 can combine tox and pytest options::
 
-    $ python3 -m tox -q -e py37 -- -n 0 -vv -k hash
-    === CPython 3.7.15 with C tracer (.tox/py37/bin/python) ===
+    $ python3 -m tox -q -e py310 -- -n 0 -vv -k hash
+    === CPython 3.10.12 with C tracer (.tox/py310/bin/python) ===
     ======================================= test session starts ========================================
-    platform darwin -- Python 3.7.15, pytest-7.2.2, pluggy-1.0.0 -- /Users/nedbat/coverage/.tox/py37/bin/python
-    cachedir: .tox/py37/.pytest_cache
-    rootdir: /Users/nedbat/coverage, configfile: setup.cfg
-    plugins: flaky-3.7.0, hypothesis-6.70.0, xdist-3.2.1
-    collected 1330 items / 1320 deselected / 10 selected
+    platform darwin -- Python 3.10.12, pytest-7.3.2, pluggy-1.0.0 -- /Users/nedbatchelder/coverage/trunk/.tox/py310/bin/python
+    cachedir: .tox/py310/.pytest_cache
+    hypothesis profile 'default' -> database=DirectoryBasedExampleDatabase('/Users/nedbatchelder/coverage/trunk/.hypothesis/examples')
+    rootdir: /Users/nedbatchelder/coverage/trunk
+    configfile: pyproject.toml
+    plugins: hypothesis-6.78.3, flaky-3.7.0, xdist-3.3.1
+    collected 1348 items / 1338 deselected / 10 selected
     run-last-failure: no previously failed tests, not deselecting items.
 
     tests/test_data.py::CoverageDataTest::test_add_to_hash_with_lines PASSED                     [ 10%]
@@ -144,10 +168,10 @@ can combine tox and pytest options::
     tests/test_misc.py::HasherTest::test_dict_hashing PASSED                                     [ 90%]
     tests/test_misc.py::HasherTest::test_dict_collision PASSED                                   [100%]
 
-    =============================== 10 passed, 1320 deselected in 1.88s ================================
+    =============================== 10 passed, 1338 deselected in 2.24s ================================
     Skipping tests with Python tracer: Only one tracer: no Python tracer for CPython
-      py37: OK (12.22=setup[2.19]+cmd[0.20,0.36,6.57,2.51,0.20,0.19] seconds)
-      congratulations :) (13.10 seconds)
+      py310: OK (17.99 seconds)
+      congratulations :) (19.09 seconds)
 
 You can also affect the test runs with environment variables. Define any of
 these as 1 to use them:
