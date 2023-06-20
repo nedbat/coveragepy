@@ -787,14 +787,8 @@ class HtmlGoldTest(CoverageTest):
 \xef\xbb\xbf# A Python source file in utf-8, with BOM.
 math = "3\xc3\x974 = 12, \xc3\xb72 = 6\xc2\xb10"
 
-import sys
-
-if sys.version_info >= (3, 0):
-    assert len(math) == 18
-    assert len(math.encode('utf-8')) == 21
-else:
-    assert len(math) == 21
-    assert len(math.decode('utf-8')) == 18
+assert len(math) == 18
+assert len(math.encode('utf-8')) == 21
 """.replace(b"\n", b"\r\n"))
 
         # It's important that the source file really have a BOM, which can
@@ -803,7 +797,7 @@ else:
         with open("bom.py", "rb") as f:
             data = f.read()
             assert data[:3] == b"\xef\xbb\xbf"
-            assert data.count(b"\r\n") == 11
+            assert data.count(b"\r\n") == 5
 
         cov = coverage.Coverage()
         bom = self.start_import_stop(cov, "bom")
