@@ -26,7 +26,7 @@ from typing import (
     Optional, Sequence, Set, Tuple, TypeVar, Union,
 )
 
-from coverage.debug import NoDebugging, AutoReprMixin, clipped_repr
+from coverage.debug import NoDebugging, AutoReprMixin, clipped_repr, exc_one_line
 from coverage.exceptions import CoverageException, DataError
 from coverage.files import PathAliases
 from coverage.misc import file_be_gone, isolate_module
@@ -1130,11 +1130,11 @@ class SqliteDb(AutoReprMixin):
         self.con.create_function("REGEXP", 2, lambda txt, pat: re.search(txt, pat) is not None)
 
         # This pragma makes writing faster. It disables rollbacks, but we never need them.
-        # PyPy needs the .close() calls here, or sqlite gets twisted up:
-        # https://bitbucket.org/pypy/pypy/issues/2872/default-isolation-mode-is-different-on
         self.execute_void("pragma journal_mode=off")
-        # This pragma makes writing faster.
-        self.execute_void("pragma synchronous=off")
+        # This pragma makes writing faster. It can fail in unusual situations
+        # (https://github.com/nedbat/coveragepy/issues/1646), so use fail_ok=True
+        # to keep things going.
+        self.execute_void("pragma synchronous=off", fail_ok=True)
 
     def close(self) -> None:
         """If needed, close the connection."""
@@ -1159,7 +1159,7 @@ class SqliteDb(AutoReprMixin):
                 self.close()
             except Exception as exc:
                 if self.debug.should("sql"):
-                    self.debug.write(f"EXCEPTION from __exit__: {exc}")
+                    self.debug.write(f"EXCEPTION from __exit__: {exc_one_line(exc)}")
                 raise DataError(f"Couldn't end data file {self.filename!r}: {exc}") from exc
 
     def _execute(self, sql: str, parameters: Iterable[Any]) -> sqlite3.Cursor:
@@ -1191,7 +1191,7 @@ class SqliteDb(AutoReprMixin):
             except Exception:   # pragma: cant happen
                 pass
             if self.debug.should("sql"):
-                self.debug.write(f"EXCEPTION from execute: {msg}")
+                self.debug.write(f"EXCEPTION from execute: {exc_one_line(exc)}")
             raise DataError(f"Couldn't use data file {self.filename!r}: {msg}") from exc
 
     @contextlib.contextmanager
@@ -1210,9 +1210,18 @@ class SqliteDb(AutoReprMixin):
         finally:
             cur.close()
 
-    def execute_void(self, sql: str, parameters: Iterable[Any] = ()) -> None:
-        """Same as :meth:`python:sqlite3.Connection.execute` when you don't need the cursor."""
-        self._execute(sql, parameters).close()
+    def execute_void(self, sql: str, parameters: Iterable[Any] = (), fail_ok: bool = False) -> None:
+        """Same as :meth:`python:sqlite3.Connection.execute` when you don't need the cursor.
+
+        If `fail_ok` is True, then SQLite errors are ignored.
+        """
+        try:
+            # PyPy needs the .close() calls here, or sqlite gets twisted up:
+            # https://bitbucket.org/pypy/pypy/issues/2872/default-isolation-mode-is-different-on
+            self._execute(sql, parameters).close()
+        except DataError:
+            if not fail_ok:
+                raise
 
     def execute_for_rowid(self, sql: str, parameters: Iterable[Any] = ()) -> int:
         """Like execute, but returns the lastrowid."""

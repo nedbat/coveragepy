@@ -22,6 +22,11 @@ Unreleased
 
 - Dropped support for Python 3.7.
 
+- Fix: in unusual circumstances, SQLite cannot be set to asynchronous mode.
+  Coverage.py would fail with the error ``Safety level may not be changed
+  inside a transaction.`` This is now avoided, closing `issue 1646`_.  Thanks
+  to Michael Bell for the detailed bug report.
+
 - Docs: examples of configuration files now include separate examples for the
   different syntaxes: .coveragerc, pyproject.toml, setup.cfg, and tox.ini.
 
@@ -32,6 +37,7 @@ Unreleased
 - Added a CITATION.cff file, thanks to `Ken Schackart <pull 1641_>`_.
 
 .. _pull 1641: https://github.com/nedbat/coveragepy/pull/1641
+.. _issue 1646: https://github.com/nedbat/coveragepy/issues/1646
 
 
 .. scriv-start-here

@@ -19,9 +19,10 @@ import coverage
 from coverage import env
 from coverage.debug import (
     DebugOutputFile,
-    clipped_repr, filter_text, info_formatter, info_header, relevant_environment_display,
-    short_id, short_stack,
+    clipped_repr, exc_one_line, filter_text, info_formatter, info_header,
+    relevant_environment_display, short_id, short_stack,
 )
+from coverage.exceptions import DataError
 
 from tests.coveragetest import CoverageTest
 from tests.helpers import re_line, re_lines, re_lines_text
@@ -317,3 +318,10 @@ def test_relevant_environment_display() -> None:
         ("SOME_PYOTHER", "xyz123"),
         ("TMP", "temporary"),
     ]
+
+
+def test_exc_one_line() -> None:
+    try:
+        raise DataError("wtf?")
+    except Exception as exc:
+        assert exc_one_line(exc) == "coverage.exceptions.DataError: wtf?"

@@ -147,6 +147,7 @@ Matthew Desmarais
 Matus Valo
 Max Linke
 Mayank Singhal
+Michael Bell
 Michael Krebs
 Michał Bultrowicz
 Michał Górny
