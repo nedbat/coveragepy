@@ -17,7 +17,7 @@ import warnings
 
 from pathlib import Path
 from typing import (
-    Any, Callable, Iterable, Iterator, List, Optional, Set, Tuple, Type,
+    Any, Callable, Iterable, Iterator, List, NoReturn, Optional, Set, Tuple, Type,
     TypeVar, Union, cast,
 )
 
@@ -337,3 +337,32 @@ xfail_pypy38 = pytest.mark.xfail(
     env.PYPY and env.PYVERSION[:2] == (3, 8) and env.PYPYVERSION < (7, 3, 11),
     reason="These tests fail on older PyPy 3.8",
 )
+
+
+class FailingProxy:
+    """A proxy for another object, but one method will fail a few times before working."""
+    def __init__(self, obj: Any, methname: str, fails: List[Exception]) -> None:
+        """Create the failing proxy.
+
+        `obj` is the object to proxy.  `methname` is the method that will fail
+        a few times.  `fails` are the exceptions to fail with. Once used up,
+        the method will proxy correctly.
+
+        """
+        self.obj = obj
+        self.methname = methname
+        self.fails = fails
+
+    def __getattr__(self, name: str) -> Any:
+        if name == self.methname and self.fails:
+            meth = self._make_failing_method(self.fails[0])
+            del self.fails[0]
+        else:
+            meth = getattr(self.obj, name)
+        return meth
+
+    def _make_failing_method(self, exc: Exception) -> Callable[..., NoReturn]:
+        """Return a function that will raise `exc`."""
+        def _meth(*args: Any, **kwargs: Any) -> NoReturn:
+            raise exc
+        return _meth

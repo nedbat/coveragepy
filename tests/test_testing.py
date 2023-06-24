@@ -22,8 +22,9 @@ from coverage.types import TArc
 
 from tests.coveragetest import CoverageTest
 from tests.helpers import (
+    CheckUniqueFilenames, FailingProxy,
     arcs_to_arcz_repr, arcz_to_arcs, assert_count_equal, assert_coverage_warnings,
-    CheckUniqueFilenames, re_lines, re_lines_text, re_line,
+    re_lines, re_lines_text, re_line,
 )
 
 
@@ -448,3 +449,26 @@ class AssertCoverageWarningsTest(CoverageTest):
             warnings.warn("The first", category=CoverageWarning)
         with pytest.raises(AssertionError):
             assert_coverage_warnings(warns, re.compile("second"))
+
+
+def test_failing_proxy() -> None:
+    class Arithmetic:
+        """Sample class to test FailingProxy."""
+        # pylint: disable=missing-function-docstring
+        def add(self, a, b):                    # type: ignore[no-untyped-def]
+            return a + b
+
+        def subtract(self, a, b):               # type: ignore[no-untyped-def]
+            return a - b
+
+    proxy = FailingProxy(Arithmetic(), "add", [RuntimeError("First"), RuntimeError("Second")])
+    # add fails the first time
+    with pytest.raises(RuntimeError, match="First"):
+        proxy.add(1, 2)
+    # subtract always works
+    assert proxy.subtract(10, 3) == 7
+    # add fails the second time
+    with pytest.raises(RuntimeError, match="Second"):
+        proxy.add(3, 4)
+    # then add starts working
+    assert proxy.add(5, 6) == 11
