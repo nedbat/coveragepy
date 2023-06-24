@@ -1,7 +1,7 @@
 # Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
 # For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
 
-"""Tests for coverage.data"""
+"""Tests for coverage.data, and coverage.sqldata."""
 
 from __future__ import annotations
 
@@ -72,13 +72,17 @@ def DebugCoverageData(*args: Any, **kwargs: Any) -> CoverageData:
     any assertions about the debug output, but at least we can know that they
     execute successfully, and they won't be marked as distracting missing
     lines in our coverage reports.
+
+    In the tests in this file, we usually use DebugCoverageData, but sometimes
+    a plain CoverageData, and some tests are parameterized to run once with each
+    so that we have a mix of debugging or not.
     """
     assert "debug" not in kwargs
     options = ["dataio", "dataop", "sql"]
     if kwargs:
-        # There's no reason kwargs should imply sqldata debugging.
-        # This is a way to get a mix of debug options across the tests.
-        options.extend(["sqldata"])
+        # There's no logical reason kwargs should imply sqldata debugging.
+        # This is just a way to get a mix of debug options across the tests.
+        options.append("sqldata")
     debug = DebugControlString(options=options)
     return CoverageData(*args, debug=debug, **kwargs)   # type: ignore[misc]
 
