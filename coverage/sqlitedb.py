@@ -113,7 +113,7 @@ class SqliteDb(AutoReprMixin):
                                 "Looks like a coverage 4.x data file. " +
                                 "Are you mixing versions of coverage?"
                             )
-                except Exception:   # pragma: cant happen
+                except Exception:
                     pass
             if self.debug.should("sql"):
                 self.debug.write(f"EXCEPTION from execute: {exc_one_line(exc)}")
@@ -186,7 +186,7 @@ class SqliteDb(AutoReprMixin):
         assert self.con is not None
         try:
             return self.con.executemany(sql, data)
-        except Exception:   # pragma: cant happen
+        except Exception:
             # In some cases, an error might happen that isn't really an
             # error.  Try again immediately.
             # https://github.com/nedbat/coveragepy/issues/1010
