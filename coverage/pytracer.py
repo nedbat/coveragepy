@@ -315,7 +315,7 @@ class PyTracer(TTracer):
             # PyPy clears the trace function before running atexit functions,
             # so don't warn if we are in atexit on PyPy and the trace function
             # has changed to None.
-            dont_warn = (env.PYPY and env.PYPYVERSION >= (5, 4) and self.in_atexit and tf is None)
+            dont_warn = (env.PYPY and self.in_atexit and tf is None)
             if (not dont_warn) and tf != self._cached_bound_method_trace:   # pylint: disable=comparison-with-callable
                 self.warn(
                     "Trace function changed, data is likely wrong: " +

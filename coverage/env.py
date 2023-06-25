@@ -57,9 +57,6 @@ class PYBEHAVIOR:
     else:
         optimize_if_not_debug = 2
 
-    # Can co_lnotab have negative deltas?
-    negative_lnotab = not (PYPY and PYPYVERSION < (7, 2))
-
     # 3.7 changed how functions with only docstrings are numbered.
     docstring_only_function = (not PYPY) and ((3, 7, 0, "beta", 5) <= PYVERSION <= (3, 10))
 
@@ -68,8 +65,6 @@ class PYBEHAVIOR:
     # does the finally jump back to the break/continue/return (3.8) to do the
     # work?
     finally_jumps_back = ((3, 8) <= PYVERSION < (3, 10))
-    if PYPY and PYPYVERSION < (7, 3, 7):
-        finally_jumps_back = False
 
     # CPython 3.11 now jumps to the decorator line again while executing
     # the decorator.
