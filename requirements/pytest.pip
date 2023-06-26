@@ -16,15 +16,15 @@ execnet==1.9.0
     # via pytest-xdist
 flaky==3.7.0
     # via -r requirements/pytest.in
-hypothesis==6.78.3
+hypothesis==6.79.3
     # via -r requirements/pytest.in
 iniconfig==2.0.0
     # via pytest
 packaging==23.1
     # via pytest
-pluggy==1.0.0
+pluggy==1.2.0
     # via pytest
-pytest==7.3.2
+pytest==7.4.0
     # via
     #   -r requirements/pytest.in
     #   pytest-xdist

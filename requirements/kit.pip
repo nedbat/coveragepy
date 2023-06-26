@@ -24,7 +24,7 @@ packaging==23.1
     # via
     #   build
     #   cibuildwheel
-platformdirs==3.5.3
+platformdirs==3.8.0
     # via cibuildwheel
 pyelftools==0.29
     # via auditwheel
@@ -41,5 +41,5 @@ wheel==0.40.0
     # via -r requirements/kit.in
 
 # The following packages are considered to be unsafe in a requirements file:
-setuptools==67.8.0
+setuptools==68.0.0
     # via -r requirements/kit.in

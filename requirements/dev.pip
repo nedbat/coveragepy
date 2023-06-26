@@ -49,11 +49,11 @@ flaky==3.7.0
     # via -r requirements/pytest.in
 greenlet==2.0.2
     # via -r requirements/dev.in
-hypothesis==6.78.3
+hypothesis==6.79.3
     # via -r requirements/pytest.in
 idna==3.4
     # via requests
-importlib-metadata==6.6.0
+importlib-metadata==6.7.0
     # via
     #   keyring
     #   twine
@@ -67,7 +67,7 @@ jaraco-classes==3.2.3
     # via keyring
 jedi==0.18.2
     # via pudb
-keyring==23.13.1
+keyring==24.2.0
     # via twine
 lazy-object-proxy==1.9.0
     # via astroid
@@ -92,12 +92,12 @@ parso==0.8.3
     # via jedi
 pkginfo==1.9.6
     # via twine
-platformdirs==3.5.3
+platformdirs==3.8.0
     # via
     #   pylint
     #   tox
     #   virtualenv
-pluggy==1.0.0
+pluggy==1.2.0
     # via
     #   pytest
     #   tox
@@ -114,13 +114,13 @@ pyproject-api==1.5.2
     # via tox
 pyproject-hooks==1.0.0
     # via build
-pytest==7.3.2
+pytest==7.4.0
     # via
     #   -r requirements/pytest.in
     #   pytest-xdist
 pytest-xdist==3.3.1
     # via -r requirements/pytest.in
-readme-renderer==37.3
+readme-renderer==40.0
     # via
     #   -r requirements/dev.in
     #   twine
@@ -150,7 +150,7 @@ tomli==2.0.1
     #   tox
 tomlkit==0.11.8
     # via pylint
-tox==4.6.1
+tox==4.6.3
     # via
     #   -r requirements/tox.in
     #   tox-gh
@@ -173,7 +173,7 @@ urwid==2.1.2
     #   urwid-readline
 urwid-readline==0.13
     # via pudb
-virtualenv==20.23.0
+virtualenv==20.23.1
     # via
     #   -r requirements/pip.in
     #   tox
@@ -189,7 +189,7 @@ zipp==3.15.0
 # The following packages are considered to be unsafe in a requirements file:
 pip==23.1.2
     # via -r requirements/pip.in
-setuptools==67.8.0
+setuptools==68.0.0
     # via
     #   -r requirements/pip.in
     #   check-manifest
