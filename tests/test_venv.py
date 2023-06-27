@@ -105,23 +105,20 @@ def venv_world_fixture(tmp_path_factory: pytest.TempPathFactory) -> Path:
             setup(
                 name='testcov',
                 packages=['testcov'],
-                namespace_packages=['testcov'],
             )
             """)
+        # https://packaging.python.org/en/latest/guides/packaging-namespace-packages/#pkgutil-style-namespace-packages
         make_file("bug888/app/testcov/__init__.py", """\
-            try:  # pragma: no cover
-                __import__('pkg_resources').declare_namespace(__name__)
-            except ImportError:  # pragma: no cover
-                from pkgutil import extend_path
-                __path__ = extend_path(__path__, __name__)
+            __path__ = __import__('pkgutil').extend_path(__path__, __name__)
             """)
-        make_file("bug888/app/testcov/main.py", """\
-            try:  # pragma: no cover
-                entry_points = __import__("pkg_resources").iter_entry_points('plugins')
-            except ImportError:  # pragma: no cover
-                import importlib.metadata
-                entry_points = importlib.metadata.entry_points(group="plugins")
-            for entry_point in entry_points:
+        if env.PYVERSION < (3, 10):
+            get_plugins = "entry_points['plugins']"
+        else:
+            get_plugins = "entry_points.select(group='plugins')"
+        make_file("bug888/app/testcov/main.py", f"""\
+            import importlib.metadata
+            entry_points = importlib.metadata.entry_points()
+            for entry_point in {get_plugins}:
                 entry_point.load()()
             """)
         make_file("bug888/plugin/setup.py", """\
@@ -129,16 +126,12 @@ def venv_world_fixture(tmp_path_factory: pytest.TempPathFactory) -> Path:
             setup(
                 name='testcov-plugin',
                 packages=['testcov'],
-                namespace_packages=['testcov'],
                 entry_points={'plugins': ['testp = testcov.plugin:testp']},
             )
             """)
+        # https://packaging.python.org/en/latest/guides/packaging-namespace-packages/#pkgutil-style-namespace-packages
         make_file("bug888/plugin/testcov/__init__.py", """\
-            try:  # pragma: no cover
-                __import__('pkg_resources').declare_namespace(__name__)
-            except ImportError:  # pragma: no cover
-                from pkgutil import extend_path
-                __path__ = extend_path(__path__, __name__)
+            __path__ = __import__('pkgutil').extend_path(__path__, __name__)
             """)
         make_file("bug888/plugin/testcov/plugin.py", """\
             def testp():

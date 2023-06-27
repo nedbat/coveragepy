@@ -29,8 +29,7 @@ import sys
 
 from typing import Any, List
 
-# sys.path varies by execution environments.  Coverage.py uses setuptools to
-# make console scripts, which means pkg_resources is imported.  pkg_resources
+# sys.path varies by execution environments.  Some installation libraries
 # removes duplicate entries from sys.path.  So we do that too, since the extra
 # entries don't affect the running of the program.
 

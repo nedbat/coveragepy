@@ -850,16 +850,19 @@ class EnvironmentTest(CoverageTest):
         platform.python_version().endswith("+"),
         reason="setuptools barfs on dev versions: https://github.com/pypa/packaging/issues/678"
         # https://github.com/nedbat/coveragepy/issues/1556
-        # TODO: get rid of pkg_resources
     )
     def test_bug_862(self) -> None:
-        # This simulates how pyenv and pyenv-virtualenv end up creating the
-        # coverage executable.
-        self.make_file("elsewhere/bin/fake-coverage", """\
-            #!{executable}
-            import sys, pkg_resources
-            sys.exit(pkg_resources.load_entry_point('coverage', 'console_scripts', 'coverage')())
-            """.format(executable=sys.executable))
+        # This used to simulate how pyenv and pyenv-virtualenv create the
+        # coverage executable.  Now the code shows how venv does it.
+        self.make_file("elsewhere/bin/fake-coverage", f"""\
+            #!{sys.executable}
+            import re
+            import sys
+            from coverage.cmdline import main
+            if __name__ == '__main__':
+                sys.argv[0] = re.sub(r'(-script\\.pyw|\\.exe)?$', '', sys.argv[0])
+                sys.exit(main())
+            """)
         os.chmod("elsewhere/bin/fake-coverage", stat.S_IREAD | stat.S_IEXEC)
         os.symlink("elsewhere", "somewhere")
         self.make_file("foo.py", "print('inside foo')")
