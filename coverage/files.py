@@ -73,7 +73,7 @@ def canonical_filename(filename: str) -> str:
         if not os.path.isabs(filename):
             for path in [os.curdir] + sys.path:
                 if path is None:
-                    continue # type: ignore
+                    continue # type: ignore[unreachable]
                 f = os.path.join(path, filename)
                 try:
                     exists = os.path.exists(f)

@@ -105,7 +105,7 @@ class DebugControlString(DebugControl):
 
     def get_output(self) -> str:
         """Get the output text from the `DebugControl`."""
-        return cast(str, self.raw_output.getvalue())        # type: ignore
+        return cast(str, self.raw_output.getvalue())        # type: ignore[union-attr]
 
 
 class NoDebugging(DebugControl):
@@ -424,7 +424,7 @@ def decorate_methods(
     private: bool = False,
 ) -> Callable[..., Any]:                                    # pragma: debugging
     """A class decorator to apply a decorator to methods."""
-    def _decorator(cls):                                    # type: ignore
+    def _decorator(cls):                                    # type: ignore[no-untyped-def]
         for name, meth in inspect.getmembers(cls, inspect.isroutine):
             if name not in cls.__dict__:
                 continue

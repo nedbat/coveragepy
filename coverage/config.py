@@ -465,7 +465,7 @@ class CoverageConfig(TConfigurable, TPluginConfig):
         """
         # Special-cased options.
         if option_name == "paths":
-            self.paths = value  # type: ignore
+            self.paths = value  # type: ignore[assignment]
             return
 
         # Check all the hard-coded options.
@@ -478,7 +478,7 @@ class CoverageConfig(TConfigurable, TPluginConfig):
         # See if it's a plugin option.
         plugin_name, _, key = option_name.partition(":")
         if key and plugin_name in self.plugins:
-            self.plugin_options.setdefault(plugin_name, {})[key] = value # type: ignore
+            self.plugin_options.setdefault(plugin_name, {})[key] = value # type: ignore[index]
             return
 
         # If we get here, we didn't find the option.
@@ -496,13 +496,13 @@ class CoverageConfig(TConfigurable, TPluginConfig):
         """
         # Special-cased options.
         if option_name == "paths":
-            return self.paths  # type: ignore
+            return self.paths  # type: ignore[return-value]
 
         # Check all the hard-coded options.
         for option_spec in self.CONFIG_FILE_OPTIONS:
             attr, where = option_spec[:2]
             if where == option_name:
-                return getattr(self, attr)  # type: ignore
+                return getattr(self, attr)  # type: ignore[no-any-return]
 
         # See if it's a plugin option.
         plugin_name, _, key = option_name.partition(":")
