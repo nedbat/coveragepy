@@ -1214,6 +1214,7 @@ class FailUnderTest(CoverageTest):
             "Coverage failure: total of 20.5 is less than fail-under=20.6\n"),
         (20.12345, "report --fail-under=20.1235 --precision=5", 2,
             "Coverage failure: total of 20.12345 is less than fail-under=20.12350\n"),
+        (20.12339, "report --fail-under=20.1234 --precision=4", 0, ""),
     ])
     def test_fail_under_with_precision(self, result: float, cmd: str, ret: int, msg: str) -> None:
         cov = CoverageReportingFake(report_result=result)
