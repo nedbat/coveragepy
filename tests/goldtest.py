@@ -99,9 +99,9 @@ def compare(
 
     assert not text_diff, "Files differ: " + "\n".join(text_diff)
 
-    assert not expected_only, f"Files in {expected_dir} only: {expected_only}"
+    assert not expected_only, f"Files in {os.path.abspath(expected_dir)} only: {expected_only}"
     if not actual_extra:
-        assert not actual_only, f"Files in {actual_dir} only: {actual_only}"
+        assert not actual_only, f"Files in {os.path.abspath(actual_dir)} only: {actual_only}"
 
 
 def contains(filename: str, *strlist: str) -> None:

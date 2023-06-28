@@ -32,7 +32,8 @@ clean: clean_platform			## Remove artifacts of test execution, installation, etc
 	@rm -f *.bak */*.bak */*/*.bak */*/*/*.bak */*/*/*/*.bak */*/*/*/*/*.bak
 	@rm -f coverage/*,cover
 	@rm -f MANIFEST
-	@rm -f .coverage .coverage.* coverage.xml coverage.json .metacov*
+	@rm -f .coverage .coverage.* .metacov*
+	@rm -f coverage.xml coverage.json
 	@rm -f .tox/*/lib/*/site-packages/zzz_metacov.pth
 	@rm -f */.coverage */*/.coverage */*/*/.coverage */*/*/*/.coverage */*/*/*/*/.coverage */*/*/*/*/*/.coverage
 	@rm -f tests/covmain.zip tests/zipmods.zip tests/zip1.zip

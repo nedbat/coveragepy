@@ -105,7 +105,8 @@ class CompareTest(CoverageTest):
         compare(gold_path("testing/getty"), "out", scrubs=SCRUBS, actual_extra=True)
 
         # But not without it:
-        msg = r"Files in out only: \['another.more'\]"
+        # (test output is in files like /tmp/pytest-of-user/pytest-0/popen-gw3/t76/out)
+        msg = r"Files in .*[/\\]t\d+[/\\]out only: \['another.more'\]"
         with pytest.raises(AssertionError, match=msg):
             compare(gold_path("testing/getty"), "out", scrubs=SCRUBS)
         self.assert_exists(os.path.join(TESTS_DIR, "actual/testing/getty/another.more"))
