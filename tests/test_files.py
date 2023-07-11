@@ -348,6 +348,7 @@ class MatcherTest(CoverageTest):
             (self.make_file("sub/file1.py"), True),
             (self.make_file("sub/file2.c"), False),
             (self.make_file("sub2/file3.h"), True),
+            (self.make_file("sub2/sub/file3.h"), True),
             (self.make_file("sub3/file4.py"), True),
             (self.make_file("sub3/file5.c"), False),
         ]
