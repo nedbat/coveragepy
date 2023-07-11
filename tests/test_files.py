@@ -348,11 +348,14 @@ class MatcherTest(CoverageTest):
             (self.make_file("sub/file1.py"), True),
             (self.make_file("sub/file2.c"), False),
             (self.make_file("sub2/file3.h"), True),
+            (self.make_file("sub2/sub/file3.h"), False),
             (self.make_file("sub3/file4.py"), True),
             (self.make_file("sub3/file5.c"), False),
+            (self.make_file("sub4/file3.h"), True),
+            (self.make_file("sub4/sub/file3.h"), True),
         ]
-        fnm = GlobMatcher(["*.py", "*/sub2/*"])
-        assert fnm.info() == ["*.py", "*/sub2/*"]
+        fnm = GlobMatcher(["*.py", "*/sub2/*", "*/sub4/**"])
+        assert fnm.info() == ["*.py", "*/sub2/*", "*/sub4/**"]
         for filepath, matches in matches_to_try:
             self.assertMatches(fnm, filepath, matches)
 
