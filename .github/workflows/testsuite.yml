@@ -82,9 +82,12 @@ jobs:
 
       - name: "Retry tox for ${{ matrix.python-version }}"
         if: failure()
-        run: |
-          # `exit 1` makes sure that the job remains red with flaky runs
-          python -m tox -- -rfsEX --lf -vvvvv && exit 1
+        # `exit 1` makes sure that the job remains red with flaky runs;
+        # Removing `tox-gh` makes all verbose output easily accessible.
+        run: >-
+          python -m pip uninstall --yes tox-gh
+          && python -m tox -- -rfsEX --lf -vvvvv
+          && exit 1
 
   # This job aggregates test results. It's the required check for branch protection.
   # https://github.com/marketplace/actions/alls-green#why
