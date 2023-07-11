@@ -107,7 +107,7 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         self.make_mycode()
         cov = coverage.Coverage()
         self.start_import_stop(cov, "mycode")
-        report = self.get_report(cov, omit=[f"{TESTS_DIR}/*", "*/site-packages/*"])
+        report = self.get_report(cov, omit=[f"{TESTS_DIR}/**", "*/site-packages/**"])
 
         # Name        Stmts   Miss  Cover
         # -------------------------------

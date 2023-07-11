@@ -316,7 +316,7 @@ G2RX_TOKENS = [(re.compile(rx), sub) for rx, sub in [
     (r"\*\*+[^/]+", None),          # Can't have **x
     (r"\*\*/\*\*", None),           # Can't have **/**
     (r"^\*+/", r"(.*[/\\\\])?"),    # ^*/ matches any prefix-slash, or nothing.
-    (r"/\*+$", r"[/\\\\].*"),       # /*$ matches any slash-suffix.
+    (r"/\*\*+$", r"[/\\\\].*"),       # /**$ matches any slash-suffix.
     (r"\*\*/", r"(.*[/\\\\])?"),    # **/ matches any subdirs, including none
     (r"/", r"[/\\\\]"),             # / matches either slash or backslash
     (r"\*", r"[^/\\\\]*"),          # * matches any number of non slash-likes
