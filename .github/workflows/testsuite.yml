@@ -28,6 +28,12 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  linters:
+    name: Quality
+    # Don't run linters if the branch name includes "-notests"
+    if: "!contains(github.ref, '-notests')"
+    uses: ./.github/workflows/reusable-quality.yml
+
   tests:
     name: "${{ matrix.python-version }} on ${{ matrix.os }}"
     runs-on: "${{ matrix.os }}-latest"
@@ -94,6 +100,7 @@ jobs:
     # The tests didn't run if the branch name includes "-notests"
     if: "!contains(github.ref, '-notests')"
     needs:
+      - linters
       - tests
     runs-on: ubuntu-latest
     steps:

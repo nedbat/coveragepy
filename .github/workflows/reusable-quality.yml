@@ -4,12 +4,7 @@
 name: "Quality"
 
 on:
-  push:
-    branches:
-      - master
-      - nedbat/*
-  pull_request:
-  workflow_dispatch:
+  workflow_call:
 
 defaults:
   run:
@@ -20,10 +15,6 @@ env:
 
 permissions:
   contents: read
-
-concurrency:
-  group: "${{ github.workflow }}-${{ github.ref }}"
-  cancel-in-progress: true
 
 jobs:
   lint:
