@@ -131,7 +131,7 @@ class PythonParser:
         excluding = False
         excluding_decorators = False
         prev_toktype = token.INDENT
-        first_line = None
+        first_line: Optional[TLineNo] = None
         empty = True
         first_on_line = True
         nesting = 0
@@ -182,11 +182,11 @@ class PythonParser:
                 # http://stackoverflow.com/questions/1769332/x/1769794#1769794
                 self.raw_docstrings.update(range(slineno, elineno+1))
             elif toktype == token.NEWLINE:
-                if first_line is not None and elineno != first_line:    # type: ignore[unreachable]
+                if first_line is not None and elineno != first_line:
                     # We're at the end of a line, and we've ended on a
                     # different line than the first line of the statement,
                     # so record a multi-line range.
-                    for l in range(first_line, elineno+1):              # type: ignore[unreachable]
+                    for l in range(first_line, elineno+1):
                         self._multiline[l] = first_line
                 first_line = None
                 first_on_line = True
@@ -416,7 +416,7 @@ class ByteParser:
             byte_increments = self.code.co_lnotab[0::2]
             line_increments = self.code.co_lnotab[1::2]
 
-            last_line_num = None
+            last_line_num: Optional[TLineNo] = None
             line_num = self.code.co_firstlineno
             byte_num = 0
             for byte_incr, line_incr in zip(byte_increments, line_increments):
