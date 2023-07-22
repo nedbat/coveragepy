@@ -21,7 +21,7 @@ import types
 
 from types import ModuleType
 from typing import (
-    Any, Callable, Dict, IO, Iterable, Iterator, List, Mapping, Optional,
+    Any, Callable, Dict, IO, Iterable, Iterator, List, Mapping, NoReturn, Optional,
     Sequence, Tuple, TypeVar, Union,
 )
 
@@ -232,7 +232,7 @@ class Hasher:
         return self.hash.hexdigest()[:32]
 
 
-def _needs_to_implement(that: Any, func_name: str) -> None:
+def _needs_to_implement(that: Any, func_name: str) -> NoReturn:
     """Helper to raise NotImplementedError in interface stubs."""
     if hasattr(that, "_coverage_plugin_name"):
         thing = "Plugin"

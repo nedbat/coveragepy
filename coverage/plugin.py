@@ -170,7 +170,7 @@ class CoveragePlugin:
         """
         return None
 
-    def file_reporter(                  # type: ignore[return]
+    def file_reporter(
         self,
         filename: str,                  # pylint: disable=unused-argument
     ) -> Union[FileReporter, str]:      # str should be Literal["python"]
@@ -274,7 +274,7 @@ class FileTracer(CoveragePluginBase):
 
     """
 
-    def source_filename(self) -> str:       # type: ignore[return]
+    def source_filename(self) -> str:
         """The source file name for this file.
 
         This may be any file name you like.  A key responsibility of a plug-in
@@ -395,7 +395,7 @@ class FileReporter(CoveragePluginBase):
         with open(self.filename, encoding="utf-8") as f:
             return f.read()
 
-    def lines(self) -> Set[TLineNo]:    # type: ignore[return]
+    def lines(self) -> Set[TLineNo]:
         """Get the executable lines in this file.
 
         Your plug-in must determine which lines in the file were possibly
