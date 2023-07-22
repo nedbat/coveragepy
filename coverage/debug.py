@@ -21,7 +21,7 @@ import _thread
 
 from typing import (
     cast,
-    Any, Callable, IO, Iterable, Iterator, Mapping, Optional, List, Tuple,
+    Any, Callable, Final, IO, Iterable, Iterator, Mapping, Optional, List, Tuple,
 )
 
 from coverage.misc import human_sorted_items, isolate_module
@@ -376,8 +376,8 @@ class DebugOutputFile:
     # a process-wide singleton. So stash it in sys.modules instead of
     # on a class attribute. Yes, this is aggressively gross.
 
-    SYS_MOD_NAME = "$coverage.debug.DebugOutputFile.the_one"
-    SINGLETON_ATTR = "the_one_and_is_interim"
+    SYS_MOD_NAME: Final[str] = "$coverage.debug.DebugOutputFile.the_one"
+    SINGLETON_ATTR: Final[str] = "the_one_and_is_interim"
 
     @classmethod
     def _set_singleton_data(cls, the_one: DebugOutputFile, interim: bool) -> None:
