@@ -8,15 +8,15 @@ attrs==23.1.0
     # via hypothesis
 colorama==0.4.6
     # via -r requirements/pytest.in
-exceptiongroup==1.1.1
+exceptiongroup==1.1.2
     # via
     #   hypothesis
     #   pytest
-execnet==1.9.0
+execnet==2.0.2
     # via pytest-xdist
 flaky==3.7.0
     # via -r requirements/pytest.in
-hypothesis==6.79.3
+hypothesis==6.82.0
     # via -r requirements/pytest.in
 iniconfig==2.0.0
     # via pytest
