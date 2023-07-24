@@ -24,7 +24,7 @@ from typing import (
     Optional, Sequence, Set, Tuple, TypeVar, Union,
 )
 
-from coverage.debug import NoDebugging, AutoReprMixin
+from coverage.debug import NoDebugging, auto_repr
 from coverage.exceptions import CoverageException, DataError
 from coverage.files import PathAliases
 from coverage.misc import file_be_gone, isolate_module
@@ -126,7 +126,7 @@ def _locked(method: TMethod) -> TMethod:
     return _wrapped     # type: ignore[return-value]
 
 
-class CoverageData(AutoReprMixin):
+class CoverageData:
     """Manages collected coverage data, including file storage.
 
     This class is the public supported API to the data that coverage.py
@@ -257,6 +257,8 @@ class CoverageData(AutoReprMixin):
         self._current_context: Optional[str] = None
         self._current_context_id: Optional[int] = None
         self._query_context_ids: Optional[List[int]] = None
+
+    __repr__ = auto_repr
 
     def _choose_filename(self) -> None:
         """Set self._filename based on inited attributes."""

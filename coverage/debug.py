@@ -40,7 +40,7 @@ FORCED_DEBUG_FILE = None
 class DebugControl:
     """Control and output for debugging."""
 
-    show_repr_attr = False      # For AutoReprMixin
+    show_repr_attr = False      # For auto_repr
 
     def __init__(
         self,
@@ -235,22 +235,21 @@ def add_pid_and_tid(text: str) -> str:
     return text
 
 
-class AutoReprMixin:
-    """A mixin implementing an automatic __repr__ for debugging."""
-    auto_repr_ignore = ["auto_repr_ignore", "$coverage.object_id"]
+AUTO_REPR_IGNORE = {"$coverage.object_id"}
 
-    def __repr__(self) -> str:
-        show_attrs = (
-            (k, v) for k, v in self.__dict__.items()
-            if getattr(v, "show_repr_attr", True)
-            and not callable(v)
-            and k not in self.auto_repr_ignore
-        )
-        return "<{klass} @0x{id:x} {attrs}>".format(
-            klass=self.__class__.__name__,
-            id=id(self),
-            attrs=" ".join(f"{k}={v!r}" for k, v in show_attrs),
-        )
+def auto_repr(self: Any) -> str:
+    """A function implementing an automatic __repr__ for debugging."""
+    show_attrs = (
+        (k, v) for k, v in self.__dict__.items()
+        if getattr(v, "show_repr_attr", True)
+        and not callable(v)
+        and k not in AUTO_REPR_IGNORE
+    )
+    return "<{klass} @0x{id:x} {attrs}>".format(
+        klass=self.__class__.__name__,
+        id=id(self),
+        attrs=" ".join(f"{k}={v!r}" for k, v in show_attrs),
+    )
 
 
 def simplify(v: Any) -> Any:                                # pragma: debugging

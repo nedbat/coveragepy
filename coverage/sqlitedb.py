@@ -11,12 +11,12 @@ import sqlite3
 
 from typing import cast, Any, Iterable, Iterator, List, Optional, Tuple
 
-from coverage.debug import AutoReprMixin, clipped_repr, exc_one_line
+from coverage.debug import auto_repr, clipped_repr, exc_one_line
 from coverage.exceptions import DataError
 from coverage.types import TDebugCtl
 
 
-class SqliteDb(AutoReprMixin):
+class SqliteDb:
     """A simple abstraction over a SQLite database.
 
     Use as a context manager, then you can use it like a
@@ -33,6 +33,8 @@ class SqliteDb(AutoReprMixin):
         self.filename = filename
         self.nest = 0
         self.con: Optional[sqlite3.Connection] = None
+
+    __repr__ = auto_repr
 
     def _connect(self) -> None:
         """Connect to the db and do universal initialization."""

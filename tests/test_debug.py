@@ -19,7 +19,8 @@ import coverage
 from coverage import env
 from coverage.debug import (
     DebugOutputFile,
-    clipped_repr, exc_one_line, filter_text, info_formatter, info_header,
+    auto_repr, clipped_repr, exc_one_line, filter_text,
+    info_formatter, info_header,
     relevant_environment_display, short_id, short_stack,
 )
 from coverage.exceptions import DataError
@@ -325,3 +326,15 @@ def test_exc_one_line() -> None:
         raise DataError("wtf?")
     except Exception as exc:
         assert exc_one_line(exc) == "coverage.exceptions.DataError: wtf?"
+
+
+def test_auto_repr() -> None:
+    class MyStuff:
+        """Random class to test auto_repr."""
+        def __init__(self) -> None:
+            self.x = 17
+            self.y = "hello"
+        __repr__ = auto_repr
+    stuff = MyStuff()
+    setattr(stuff, "$coverage.object_id", 123456)
+    assert re.match(r"<MyStuff @0x[a-f\d]+ x=17 y='hello'>", repr(stuff))

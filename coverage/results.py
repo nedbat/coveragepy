@@ -9,7 +9,7 @@ import collections
 
 from typing import Callable, Dict, Iterable, List, Optional, Tuple, TYPE_CHECKING
 
-from coverage.debug import AutoReprMixin
+from coverage.debug import auto_repr
 from coverage.exceptions import ConfigError
 from coverage.misc import nice_pair
 from coverage.types import TArc, TLineNo
@@ -178,7 +178,7 @@ class Analysis:
         return stats
 
 
-class Numbers(AutoReprMixin):
+class Numbers:
     """The numerical results of measuring coverage.
 
     This holds the basic statistics from `Analysis`, and is used to roll
@@ -208,6 +208,8 @@ class Numbers(AutoReprMixin):
         self.n_branches = n_branches
         self.n_partial_branches = n_partial_branches
         self.n_missing_branches = n_missing_branches
+
+    __repr__ = auto_repr
 
     def init_args(self) -> List[int]:
         """Return a list for __init__(*args) to recreate this object."""
