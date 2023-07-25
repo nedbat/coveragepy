@@ -4,18 +4,14 @@
 #
 #    make upgrade
 #
-anyio==3.7.1
-    # via httpcore
-certifi==2023.7.22
-    # via httpcore
 cffi==1.15.1
     # via -r requirements/light-threads.in
-dnspython==2.4.0
-    # via eventlet
+dnspython==2.3.0
+    # via
+    #   -c requirements/pins.pip
+    #   eventlet
 eventlet==0.33.3
     # via -r requirements/light-threads.in
-exceptiongroup==1.1.2
-    # via anyio
 gevent==23.7.0
     # via -r requirements/light-threads.in
 greenlet==2.0.2
@@ -23,21 +19,10 @@ greenlet==2.0.2
     #   -r requirements/light-threads.in
     #   eventlet
     #   gevent
-h11==0.14.0
-    # via httpcore
-httpcore==0.17.3
-    # via dnspython
-idna==3.4
-    # via anyio
 pycparser==2.21
     # via cffi
 six==1.16.0
     # via eventlet
-sniffio==1.3.0
-    # via
-    #   anyio
-    #   dnspython
-    #   httpcore
 zope-event==5.0
     # via gevent
 zope-interface==6.0

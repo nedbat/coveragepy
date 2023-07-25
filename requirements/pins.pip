@@ -6,3 +6,6 @@
 # sphinx-rtd-theme wants <7
 # https://github.com/readthedocs/sphinx_rtd_theme/issues/1463
 Sphinx<7
+
+# https://github.com/rthalley/dnspython/issues/957
+dnspython<2.4.0

@@ -79,7 +79,7 @@ mccabe==0.7.0
     # via pylint
 mdurl==0.1.2
     # via markdown-it-py
-more-itertools==9.1.0
+more-itertools==10.0.0
     # via jaraco-classes
 packaging==23.1
     # via
@@ -173,7 +173,7 @@ urwid==2.1.2
     #   urwid-readline
 urwid-readline==0.13
     # via pudb
-virtualenv==20.24.1
+virtualenv==20.24.2
     # via
     #   -r requirements/pip.in
     #   tox
