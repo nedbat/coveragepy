@@ -117,6 +117,7 @@ jobs:
           - {"os": "macos", "py": "cp39", "arch": "arm64"}
           - {"os": "macos", "py": "cp310", "arch": "arm64"}
           - {"os": "macos", "py": "cp311", "arch": "arm64"}
+          - {"os": "macos", "py": "cp312", "arch": "arm64"}
           - {"os": "macos", "py": "cp38", "arch": "x86_64"}
           - {"os": "macos", "py": "cp39", "arch": "x86_64"}
           - {"os": "macos", "py": "cp310", "arch": "x86_64"}
