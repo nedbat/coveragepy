@@ -6,10 +6,8 @@
 #
 cffi==1.15.1
     # via -r requirements/light-threads.in
-dnspython==2.3.0
-    # via
-    #   -c requirements/pins.pip
-    #   eventlet
+dnspython==2.4.1
+    # via eventlet
 eventlet==0.33.3
     # via -r requirements/light-threads.in
 gevent==23.7.0
