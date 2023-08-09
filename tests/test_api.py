@@ -15,7 +15,7 @@ import shutil
 import sys
 import textwrap
 
-from typing import cast, Callable, Dict, Iterable, List, Optional, Protocol, Set
+from typing import cast, Callable, Dict, Iterable, List, Optional, Set
 
 import pytest
 
@@ -814,18 +814,13 @@ class NamespaceModuleTest(UsingModulesMixin, CoverageTest):
             cov.report()
 
 
-class CoverageUsePkgs(Protocol):
-    """A number of test classes have the same helper method."""
-    def coverage_usepkgs(
-        self,
-        **kwargs: TCovKwargs,
-    ) -> Iterable[str]:
-        """Run coverage on usepkgs, return a line summary. kwargs are for Coverage(**kwargs)."""
-        return ""
-
-
-class IncludeOmitTestsMixin(CoverageUsePkgs, UsingModulesMixin, CoverageTest):
+class IncludeOmitTestsMixin(UsingModulesMixin, CoverageTest):
     """Test methods for coverage methods taking include and omit."""
+
+    # An abstract method for subclasses to define, to appease mypy.
+    def coverage_usepkgs(self, **kwargs_unused: TCovKwargs) -> Iterable[str]:
+        """Run coverage on usepkgs, return a line summary. kwargs are for Coverage(**kwargs)."""
+        raise NotImplementedError()
 
     def filenames_in(self, summary: Iterable[str], filenames: str) -> None:
         """Assert the `filenames` are in the `summary`."""
