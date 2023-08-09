@@ -15,7 +15,7 @@ import shutil
 import sys
 import textwrap
 
-from typing import cast, Callable, Dict, Iterable, List, Optional, Set
+from typing import cast, Callable, Dict, Iterable, List, Optional, Protocol, Set
 
 import pytest
 
@@ -25,7 +25,7 @@ from coverage.data import line_counts, sorted_lines
 from coverage.exceptions import CoverageException, DataError, NoDataError, NoSource
 from coverage.files import abs_file, relative_filename
 from coverage.misc import import_local_file
-from coverage.types import FilePathClasses, FilePathType, Protocol, TCovKwargs
+from coverage.types import FilePathClasses, FilePathType, TCovKwargs
 
 from tests.coveragetest import CoverageTest, TESTS_DIR, UsingModulesMixin
 from tests.helpers import assert_count_equal, assert_coverage_warnings

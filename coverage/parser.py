@@ -15,7 +15,8 @@ import tokenize
 
 from types import CodeType
 from typing import (
-    cast, Any, Callable, Dict, Iterable, List, Optional, Sequence, Set, Tuple,
+    cast, Any, Callable, Dict, Iterable, List, Optional, Protocol, Sequence,
+    Set, Tuple,
 )
 
 from coverage import env
@@ -24,7 +25,7 @@ from coverage.debug import short_stack
 from coverage.exceptions import NoSource, NotPython
 from coverage.misc import join_regex, nice_pair
 from coverage.phystokens import generate_tokens
-from coverage.types import Protocol, TArc, TLineNo
+from coverage.types import TArc, TLineNo
 
 
 class PythonParser:

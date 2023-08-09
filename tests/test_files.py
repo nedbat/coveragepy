@@ -10,7 +10,7 @@ import os
 import os.path
 import re
 
-from typing import Any, Iterable, Iterator, List
+from typing import Any, Iterable, Iterator, List, Protocol
 from unittest import mock
 
 import pytest
@@ -21,7 +21,6 @@ from coverage.files import (
     GlobMatcher, ModuleMatcher, PathAliases, TreeMatcher, abs_file,
     actual_path, find_python_files, flat_rootname, globs_to_regex,
 )
-from coverage.types import Protocol
 
 from tests.coveragetest import CoverageTest
 from tests.helpers import os_sep

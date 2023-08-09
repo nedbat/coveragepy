@@ -12,19 +12,12 @@ import pathlib
 
 from types import FrameType, ModuleType
 from typing import (
-    Any, Callable, Dict, Iterable, List, Mapping, Optional, Set, Tuple, Type, Union,
-    TYPE_CHECKING,
+    Any, Callable, Dict, Iterable, List, Mapping, Optional, Protocol,
+    Set, Tuple, Type, Union, TYPE_CHECKING,
 )
 
 if TYPE_CHECKING:
-    # Protocol is new in 3.8.  PYVERSIONS
-    from typing import Protocol
-
     from coverage.plugin import FileTracer
-
-else:
-    class Protocol:             # pylint: disable=missing-class-docstring
-        pass
 
 ## File paths
 
