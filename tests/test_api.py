@@ -283,7 +283,7 @@ class ApiTest(CoverageTest):
         def run_one_function(f: Callable[[], None]) -> None:
             cov.erase()
             cov.start()
-            f()
+            f()                 # pragma: nested
             cov.stop()
 
             fs = cov.get_data().measured_files()
@@ -367,7 +367,7 @@ class ApiTest(CoverageTest):
         import_local_file("code1")                                     # pragma: nested
         cov.save()                                                     # pragma: nested
         import_local_file("code2")                                     # pragma: nested
-        cov.stop()                                                     # pragma: nested
+        cov.stop()
         self.check_code1_code2(cov)
 
     def test_start_save_nostop(self) -> None:
@@ -379,14 +379,14 @@ class ApiTest(CoverageTest):
         import_local_file("code2")                                     # pragma: nested
         self.check_code1_code2(cov)                                    # pragma: nested
         # Then stop it, or the test suite gets out of whack.
-        cov.stop()                                                     # pragma: nested
+        cov.stop()
 
     def test_two_getdata_only_warn_once(self) -> None:
         self.make_code1_code2()
         cov = coverage.Coverage(source=["."], omit=["code1.py"])
         cov.start()
         import_local_file("code1")                                     # pragma: nested
-        cov.stop()                                                     # pragma: nested
+        cov.stop()
         # We didn't collect any data, so we should get a warning.
         with self.assert_warnings(cov, ["No data was collected"]):
             cov.get_data()
@@ -408,7 +408,7 @@ class ApiTest(CoverageTest):
         with self.assert_warnings(cov, ["No data was collected"]):     # pragma: nested
             cov.get_data()                                             # pragma: nested
         # Then stop it, or the test suite gets out of whack.
-        cov.stop()                                                     # pragma: nested
+        cov.stop()
 
     def make_good_data_files(self) -> None:
         """Make some good data files."""
@@ -705,11 +705,11 @@ class ApiTest(CoverageTest):
         cov = coverage.Coverage(source=["."])
         cov.set_option("run:dynamic_context", "test_function")
         cov.start()
-        with pytest.warns(Warning) as warns:
+        with pytest.warns(Warning) as warns:            # pragma: nested
             # Switch twice, but only get one warning.
-            cov.switch_context("test1")                                 # pragma: nested
-            cov.switch_context("test2")                                 # pragma: nested
-        cov.stop()                                                      # pragma: nested
+            cov.switch_context("test1")
+            cov.switch_context("test2")
+        cov.stop()
         assert_coverage_warnings(warns, "Conflicting dynamic contexts (dynamic-conflict)")
 
     def test_unknown_dynamic_context(self) -> None:
@@ -728,7 +728,7 @@ class ApiTest(CoverageTest):
         cov.start()
         cov.switch_context("test2")                                     # pragma: nested
 
-        cov.stop()                                                      # pragma: nested
+        cov.stop()
         with pytest.raises(CoverageException, match=msg):
             cov.switch_context("test3")
 
@@ -752,7 +752,7 @@ class ApiTest(CoverageTest):
         cov = coverage.Coverage()
         cov.start()
         d = dict(cov.sys_info())        # pragma: nested
-        cov.stop()                      # pragma: nested
+        cov.stop()
         assert cast(str, d['data_file']).endswith(".coverage")
 
 
@@ -902,7 +902,7 @@ class SourceIncludeOmitTest(IncludeOmitTestsMixin, CoverageTest):
         cov = coverage.Coverage(**kwargs)
         cov.start()
         import usepkgs  # pragma: nested   # pylint: disable=import-error, unused-import
-        cov.stop()      # pragma: nested
+        cov.stop()
         with self.assert_warnings(cov, []):
             data = cov.get_data()
         summary = line_counts(data)
@@ -919,7 +919,7 @@ class SourceIncludeOmitTest(IncludeOmitTestsMixin, CoverageTest):
         cov = coverage.Coverage(source=["pkg1"], include=["pkg2"])
         with self.assert_warnings(cov, ["--include is ignored because --source is set"]):
             cov.start()
-        cov.stop()      # pragma: nested
+        cov.stop()
 
     def test_source_package_as_package(self) -> None:
         assert not os.path.isdir("pkg1")
@@ -995,7 +995,7 @@ class ReportIncludeOmitTest(IncludeOmitTestsMixin, CoverageTest):
         cov = coverage.Coverage()
         cov.start()
         import usepkgs  # pragma: nested   # pylint: disable=import-error, unused-import
-        cov.stop()      # pragma: nested
+        cov.stop()
         report = io.StringIO()
         cov.report(file=report, **kwargs)
         return report.getvalue()
@@ -1014,7 +1014,7 @@ class XmlIncludeOmitTest(IncludeOmitTestsMixin, CoverageTest):
         cov = coverage.Coverage()
         cov.start()
         import usepkgs  # pragma: nested   # pylint: disable=import-error, unused-import
-        cov.stop()      # pragma: nested
+        cov.stop()
         cov.xml_report(outfile="-", **kwargs)
         return self.stdout()
 
