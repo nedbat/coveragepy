@@ -820,7 +820,7 @@ class IncludeOmitTestsMixin(UsingModulesMixin, CoverageTest):
     # An abstract method for subclasses to define, to appease mypy.
     def coverage_usepkgs(self, **kwargs_unused: TCovKwargs) -> Iterable[str]:
         """Run coverage on usepkgs, return a line summary. kwargs are for Coverage(**kwargs)."""
-        raise NotImplementedError()
+        raise NotImplementedError()     # pragma: not covered
 
     def filenames_in(self, summary: Iterable[str], filenames: str) -> None:
         """Assert the `filenames` are in the `summary`."""
