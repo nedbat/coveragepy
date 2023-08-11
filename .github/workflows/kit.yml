@@ -266,7 +266,7 @@ jobs:
           name: dist
 
       - name: "Sign artifacts"
-        uses: sigstore/gh-action-sigstore-python@v2.0.0
+        uses: sigstore/gh-action-sigstore-python@v2.0.1
         with:
           inputs: coverage-*.*
 
