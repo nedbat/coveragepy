@@ -231,8 +231,8 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         # It should be OK to use that configuration.
         cov = coverage.Coverage()
         with self.assert_warnings(cov, []):
-            cov.start()
-            cov.stop()                                                  # pragma: nested
+            with cov.collect():
+                pass
 
     def test_run_omit_vs_report_omit(self) -> None:
         # https://github.com/nedbat/coveragepy/issues/622
@@ -796,9 +796,8 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
             """)
         cov = coverage.Coverage()
         # start_import_stop can't import the .pyw file, so use the long form.
-        cov.start()
-        import start    # pragma: nested # pylint: disable=import-error, unused-import
-        cov.stop()      # pragma: nested
+        with cov.collect():
+            import start    # pylint: disable=import-error, unused-import
 
         report = self.get_report(cov)
         assert "NoSource" not in report
@@ -853,9 +852,8 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         # Shows that empty files like __init__.py are listed as having zero
         # statements, not one statement.
         cov = coverage.Coverage(branch=True)
-        cov.start()
-        import usepkgs  # pragma: nested # pylint: disable=import-error, unused-import
-        cov.stop()      # pragma: nested
+        with cov.collect():
+            import usepkgs  # pylint: disable=import-error, unused-import
         report = self.get_report(cov)
         assert "tests/modules/pkg1/__init__.py 1 0 0 0 100%" in report
         assert "tests/modules/pkg2/__init__.py 0 0 0 0 100%" in report

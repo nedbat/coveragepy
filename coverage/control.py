@@ -88,6 +88,13 @@ class Coverage(TConfigurable):
         cov.stop()
         cov.html_report(directory="covhtml")
 
+    A context manager is available to do the same thing::
+
+        cov = Coverage()
+        with cov.collect():
+            #.. call your code ..
+        cov.html_report(directory="covhtml")
+
     Note: in keeping with Python custom, names starting with underscore are
     not part of the public API. They might stop working at any point.  Please
     limit yourself to documented methods to avoid problems.
@@ -607,12 +614,15 @@ class Coverage(TConfigurable):
     def start(self) -> None:
         """Start measuring code coverage.
 
-        Coverage measurement only occurs in functions called after
+        Coverage measurement is only collected in functions called after
         :meth:`start` is invoked.  Statements in the same scope as
         :meth:`start` won't be measured.
 
         Once you invoke :meth:`start`, you must also call :meth:`stop`
         eventually, or your process might not shut down cleanly.
+
+        The :meth:`collect` method is a context manager to handle both
+        starting and stopping collection.
 
         """
         self._init()
@@ -648,6 +658,19 @@ class Coverage(TConfigurable):
             assert self._collector is not None
             self._collector.stop()
         self._started = False
+
+    @contextlib.contextmanager
+    def collect(self) -> Iterator[None]:
+        """A context manager to start/stop coverage measurement collection.
+
+        .. versionadded:: 7.3
+
+        """
+        self.start()
+        try:
+            yield
+        finally:
+            self.stop()
 
     def _atexit(self, event: str = "atexit") -> None:
         """Clean up on process shutdown."""

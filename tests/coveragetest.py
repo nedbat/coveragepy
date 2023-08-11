@@ -87,14 +87,9 @@ class CoverageTest(
         The imported module is returned.
 
         """
-        cov.start()
-        try:                                    # pragma: nested
+        with cov.collect():
             # Import the Python file, executing it.
-            mod = import_local_file(modname, modfile)
-        finally:                                # pragma: nested
-            # Stop coverage.py.
-            cov.stop()
-        return mod
+            return import_local_file(modname, modfile)
 
     def get_report(self, cov: Coverage, squeeze: bool = True, **kwargs: Any) -> str:
         """Get the report from `cov`, and canonicalize it."""

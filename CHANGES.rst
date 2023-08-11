@@ -20,6 +20,9 @@ development at the same time, such as 4.5.x and 5.0.
 Unreleased
 ----------
 
+- Added a :meth:`.Coverage.collect` context manager to start and stop coverage
+  data collection.
+  
 - Dropped support for Python 3.7.
 
 - Fix: in unusual circumstances, SQLite cannot be set to asynchronous mode.

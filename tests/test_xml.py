@@ -235,11 +235,12 @@ class XmlReportTest(XmlTestHelpers, CoverageTest):
         # https://github.com/nedbat/coveragepy/issues/439
         self.make_file("src/main/foo.py", "a = 1")
         self.make_file("also/over/there/bar.py", "b = 2")
+
         cov = coverage.Coverage(source=["src/main", "also/over/there", "not/really"])
-        cov.start()
-        mod_foo = import_local_file("foo", "src/main/foo.py")                   # pragma: nested
-        mod_bar = import_local_file("bar", "also/over/there/bar.py")            # pragma: nested
-        cov.stop()                                                              # pragma: nested
+        with cov.collect():
+            mod_foo = import_local_file("foo", "src/main/foo.py")
+            mod_bar = import_local_file("bar", "also/over/there/bar.py")
+
         with pytest.warns(Warning) as warns:
             cov.xml_report([mod_foo, mod_bar])
         assert_coverage_warnings(
@@ -330,10 +331,8 @@ class XmlReportTest(XmlTestHelpers, CoverageTest):
         # no source path passed to coverage!
         # problem occurs when they are dynamically generated during xml report
         cov = coverage.Coverage()
-
-        cov.start()
-        import_local_file("foo", "namespace/package/__init__.py")               # pragma: nested
-        cov.stop()                                                              # pragma: nested
+        with cov.collect():
+            import_local_file("foo", "namespace/package/__init__.py")
 
         cov.xml_report()
 

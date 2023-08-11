@@ -38,6 +38,8 @@ Documentation is on `Read the Docs`_.  Code repository and issue tracker are on
 .. _GitHub: https://github.com/nedbat/coveragepy
 
 **New in 7.x:**
+dropped support for Python 3.7;
+added ``Coverage.collect()`` context manager;
 improved data combining;
 ``[run] exclude_also`` setting;
 ``report --format=``;

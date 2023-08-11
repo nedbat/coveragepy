@@ -374,11 +374,10 @@ class ExceptionTest(CoverageTest):
             calls = [getattr(sys.modules[cn], cn) for cn in callnames_list]
 
             cov = coverage.Coverage()
-            cov.start()
-            # Call our list of functions: invoke the first, with the rest as
-            # an argument.
-            calls[0](calls[1:])     # pragma: nested
-            cov.stop()              # pragma: nested
+            with cov.collect():
+                # Call our list of functions: invoke the first, with the rest as
+                # an argument.
+                calls[0](calls[1:])
 
             # Clean the line data and compare to expected results.
             # The file names are absolute, so keep just the base.

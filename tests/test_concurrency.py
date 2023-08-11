@@ -624,13 +624,11 @@ def test_coverage_stop_in_threads() -> None:
         has_stopped_coverage.append(ident)
 
     cov = coverage.Coverage()
-    cov.start()
+    with cov.collect():
+        t = threading.Thread(target=run_thread)
+        t.start()
 
-    t = threading.Thread(target=run_thread)             # pragma: nested
-    t.start()                                           # pragma: nested
-
-    time.sleep(0.1)                                     # pragma: nested
-    cov.stop()                                          # pragma: nested
+        time.sleep(0.1)
     t.join()
 
     assert has_started_coverage == [t.ident]
@@ -672,16 +670,13 @@ def test_thread_safe_save_data(tmp_path: pathlib.Path) -> None:
         duration = 0.01
         for _ in range(3):
             cov = coverage.Coverage()
-            cov.start()
+            with cov.collect():
+                threads = [threading.Thread(target=random_load) for _ in range(10)]
+                should_run[0] = True
+                for t in threads:
+                    t.start()
 
-            threads = [threading.Thread(target=random_load) for _ in range(10)]     # pragma: nested
-            should_run[0] = True                    # pragma: nested
-            for t in threads:                       # pragma: nested
-                t.start()
-
-            time.sleep(duration)                    # pragma: nested
-
-            cov.stop()                              # pragma: nested
+                time.sleep(duration)
 
             # The following call used to crash with running background threads.
             cov.get_data()
