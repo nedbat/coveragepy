@@ -34,7 +34,7 @@ function on_click(sel, fn) {
 
 // Helpers for table sorting
 function getCellValue(row, column = 0) {
-    const cell = row.cells[column]
+    const cell = row.cells[column]  // nosemgrep: eslint.detect-object-injection
     if (cell.childElementCount == 1) {
         const child = cell.firstElementChild
         if (child instanceof HTMLTimeElement && child.dateTime) {
@@ -100,7 +100,7 @@ coverage.wire_up_filter = function () {
         // Keep running total of each metric, first index contains number of shown rows
         const totals = new Array(table.rows[0].cells.length).fill(0);
         // Accumulate the percentage as fraction
-        totals[totals.length - 1] = { "numer": 0, "denom": 0 };
+        totals[totals.length - 1] = { "numer": 0, "denom": 0 };  // nosemgrep: eslint.detect-object-injection
 
         // Hide / show elements.
         table_body_rows.forEach(row => {
@@ -116,14 +116,14 @@ coverage.wire_up_filter = function () {
 
             for (let column = 1; column < totals.length; column++) {
                 // Accumulate dynamic totals
-                cell = row.cells[column]
+                cell = row.cells[column]  // nosemgrep: eslint.detect-object-injection
                 if (column === totals.length - 1) {
                     // Last column contains percentage
                     const [numer, denom] = cell.dataset.ratio.split(" ");
-                    totals[column]["numer"] += parseInt(numer, 10);
-                    totals[column]["denom"] += parseInt(denom, 10);
+                    totals[column]["numer"] += parseInt(numer, 10);  // nosemgrep: eslint.detect-object-injection
+                    totals[column]["denom"] += parseInt(denom, 10);  // nosemgrep: eslint.detect-object-injection
                 } else {
-                    totals[column] += parseInt(cell.textContent, 10);
+                    totals[column] += parseInt(cell.textContent, 10);  // nosemgrep: eslint.detect-object-injection
                 }
             }
         });
@@ -144,7 +144,7 @@ coverage.wire_up_filter = function () {
         // Calculate new dynamic sum values based on visible rows.
         for (let column = 1; column < totals.length; column++) {
             // Get footer cell element.
-            const cell = footer.cells[column];
+            const cell = footer.cells[column];  // nosemgrep: eslint.detect-object-injection
 
             // Set value into dynamic footer cell element.
             if (column === totals.length - 1) {
@@ -152,14 +152,14 @@ coverage.wire_up_filter = function () {
                 // and adapts to the number of decimal places.
                 const match = /\.([0-9]+)/.exec(cell.textContent);
                 const places = match ? match[1].length : 0;
-                const { numer, denom } = totals[column];
+                const { numer, denom } = totals[column];  // nosemgrep: eslint.detect-object-injection
                 cell.dataset.ratio = `${numer} ${denom}`;
                 // Check denom to prevent NaN if filtered files contain no statements
                 cell.textContent = denom
                     ? `${(numer * 100 / denom).toFixed(places)}%`
                     : `${(100).toFixed(places)}%`;
             } else {
-                cell.textContent = totals[column];
+                cell.textContent = totals[column];  // nosemgrep: eslint.detect-object-injection
             }
         }
     }));
@@ -184,7 +184,7 @@ coverage.index_ready = function () {
 
     if (stored_list) {
         const {column, direction} = JSON.parse(stored_list);
-        const th = document.querySelector("[data-sortable]").tHead.rows[0].cells[column];
+        const th = document.querySelector("[data-sortable]").tHead.rows[0].cells[column];  // nosemgrep: eslint.detect-object-injection
         th.setAttribute("aria-sort", direction === "ascending" ? "descending" : "ascending");
         th.click()
     }
@@ -250,7 +250,7 @@ coverage.pyfile_ready = function () {
     }
 
     for (cls in coverage.filters) {
-        coverage.set_line_visibilty(cls, coverage.filters[cls]);
+        coverage.set_line_visibilty(cls, coverage.filters[cls]);  // nosemgrep: eslint.detect-object-injection
     }
 
     coverage.assign_shortkeys();
