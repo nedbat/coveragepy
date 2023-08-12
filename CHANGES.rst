@@ -17,8 +17,12 @@ development at the same time, such as 4.5.x and 5.0.
     ..  Version 9.8.1 — 2027-07-27
     ..  --------------------------
 
-Unreleased
-----------
+.. scriv-start-here
+
+.. _changes_7-3-0:
+
+Version 7.3.0 — 2023-08-12
+--------------------------
 
 - Added a :meth:`.Coverage.collect` context manager to start and stop coverage
   data collection.
@@ -42,8 +46,6 @@ Unreleased
 .. _pull 1641: https://github.com/nedbat/coveragepy/pull/1641
 .. _issue 1646: https://github.com/nedbat/coveragepy/issues/1646
 
-
-.. scriv-start-here
 
 .. _changes_7-2-7:
 
