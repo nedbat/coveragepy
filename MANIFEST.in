@@ -23,7 +23,6 @@ include __main__.py
 include howto.txt
 include igor.py
 include metacov.ini
-include pylintrc
 include setup.py
 include tox.ini
 

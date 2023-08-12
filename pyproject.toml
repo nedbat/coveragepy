@@ -5,6 +5,8 @@
 requires = ['setuptools']
 build-backend = 'setuptools.build_meta'
 
+## MYPY
+
 [tool.mypy]
 check_untyped_defs = true
 disallow_any_generics = true
@@ -27,6 +29,84 @@ exclude = """(?x)(
     ^coverage/fullcoverage/encodings\\.py$      # can't import things into it.
     | ^tests/balance_xdist_plugin\\.py$         # not part of our test suite.
     )"""
+
+## PYLINT
+
+[tool.pylint.basic]
+no-docstring-rgx = "__.*__|test[A-Z_].*|setUp|_decorator|_wrapper|_.*__.*"
+
+[tool.pylint.classes]
+defining-attr-methods = [
+    "__init__",
+    "__new__",
+    "setUp",
+    "reset",
+]
+
+[tool.pylint.design]
+max-args = 15
+max-attributes = 40
+max-bool-expr = 5
+max-branches = 50
+max-locals = 50
+max-parents = 12
+max-public-methods = 500
+max-returns = 20
+max-statements = 150
+min-public-methods = 0
+
+[tool.pylint.main]
+extension-pkg-whitelist = ["greenlet"]
+
+[tool.pylint."messages control"]
+enable = [
+    "useless-suppression",
+]
+
+disable = [
+    "spelling",
+    # Messages that are just silly:
+    "locally-disabled",
+    "exec-used",
+    "global-statement",
+    "broad-except",
+    "no-else-return",
+    "subprocess-run-check",
+    "use-dict-literal",
+    # Messages that may be silly:
+    "no-member",
+    "using-constant-test",
+    "too-many-nested-blocks",
+    "too-many-ancestors",
+    "unnecessary-pass",
+    "no-else-break",
+    "no-else-continue",
+    # Questionable things, but it's ok, I don't need to be told:
+    "import-outside-toplevel",
+    "self-assigning-variable",
+    "consider-using-with",
+    "missing-timeout",
+    "too-many-lines",
+    "use-implicit-booleaness-not-comparison",
+    # Formatting stuff
+    "superfluous-parens",
+    # Messages that are noisy for now, eventually maybe we'll turn them on:
+    "invalid-name",
+    "protected-access",
+    "unspecified-encoding",
+    "consider-using-f-string",
+    "duplicate-code",
+    "cyclic-import",
+]
+
+[tool.pylint.reports]
+score = false
+
+[tool.pylint.variables]
+dummy-variables-rgx = "_|unused|.*_unused"
+ignored-argument-names = "_|unused|.*_unused"
+
+## PYTEST
 
 [tool.pytest.ini_options]
 addopts = "-q -n auto -p no:legacypath --strict-markers --no-flaky-report -rfEX --failed-first"
@@ -56,8 +136,7 @@ balanced_clumps = [
     "GetZipBytesTest",
 ]
 
-[tool.ruff]
-line-length = 100
+## SCRIV
 
 [tool.scriv]
 # Changelog management: https://pypi.org/project/scriv/

@@ -12,7 +12,7 @@ import json
 import os
 import re
 import shutil
-import string  # pylint: disable=deprecated-module
+import string
 
 from dataclasses import dataclass
 from typing import Any, Dict, Iterable, List, Optional, Tuple, TYPE_CHECKING, cast
