@@ -13,12 +13,9 @@ Code coverage testing for Python.
 
 -------------
 
-|  |license| |versions| |status|
+|  |kit| |license| |versions|
 |  |test-status| |quality-status| |docs| |metacov|
-|  |kit| |downloads| |format| |repos|
-|  |stars| |forks| |contributors|
-|  |core-infrastructure| |open-ssf| |snyk|
-|  |tidelift| |sponsor| |mastodon-coveragepy| |mastodon-nedbat|
+|  |tidelift| |sponsor| |stars| |mastodon-coveragepy| |mastodon-nedbat|
 
 Coverage.py measures code coverage, typically during test execution. It uses
 the code analysis tools and tracing hooks provided in the Python standard
@@ -136,39 +133,21 @@ Licensed under the `Apache 2.0 License`_.  For details, see `NOTICE.txt`_.
 .. |kit| image:: https://badge.fury.io/py/coverage.svg
     :target: https://pypi.org/project/coverage/
     :alt: PyPI status
-.. |format| image:: https://img.shields.io/pypi/format/coverage.svg
-    :target: https://pypi.org/project/coverage/
-    :alt: Kit format
-.. |downloads| image:: https://img.shields.io/pypi/dw/coverage.svg
-    :target: https://pypi.org/project/coverage/
-    :alt: Weekly PyPI downloads
 .. |versions| image:: https://img.shields.io/pypi/pyversions/coverage.svg?logo=python&logoColor=FBE072
     :target: https://pypi.org/project/coverage/
     :alt: Python versions supported
-.. |status| image:: https://img.shields.io/pypi/status/coverage.svg
-    :target: https://pypi.org/project/coverage/
-    :alt: Package stability
 .. |license| image:: https://img.shields.io/pypi/l/coverage.svg
     :target: https://pypi.org/project/coverage/
     :alt: License
 .. |metacov| image:: https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/nedbat/8c6980f77988a327348f9b02bbaf67f5/raw/metacov.json
     :target: https://nedbat.github.io/coverage-reports/latest.html
     :alt: Coverage reports
-.. |repos| image:: https://repology.org/badge/tiny-repos/python:coverage.svg
-    :target: https://repology.org/project/python:coverage/versions
-    :alt: Packaging status
 .. |tidelift| image:: https://tidelift.com/badges/package/pypi/coverage
     :target: https://tidelift.com/subscription/pkg/pypi-coverage?utm_source=pypi-coverage&utm_medium=referral&utm_campaign=readme
     :alt: Tidelift
 .. |stars| image:: https://img.shields.io/github/stars/nedbat/coveragepy.svg?logo=github
     :target: https://github.com/nedbat/coveragepy/stargazers
     :alt: GitHub stars
-.. |forks| image:: https://img.shields.io/github/forks/nedbat/coveragepy.svg?logo=github
-    :target: https://github.com/nedbat/coveragepy/network/members
-    :alt: GitHub forks
-.. |contributors| image:: https://img.shields.io/github/contributors/nedbat/coveragepy.svg?logo=github
-    :target: https://github.com/nedbat/coveragepy/graphs/contributors
-    :alt: Contributors
 .. |mastodon-nedbat| image:: https://img.shields.io/badge/dynamic/json?style=flat&labelColor=450657&logo=mastodon&logoColor=ffffff&link=https%3A%2F%2Fhachyderm.io%2F%40nedbat&url=https%3A%2F%2Fhachyderm.io%2Fusers%2Fnedbat%2Ffollowers.json&query=totalItems&label=@nedbat
     :target: https://hachyderm.io/@nedbat
     :alt: nedbat on Mastodon
@@ -178,12 +157,3 @@ Licensed under the `Apache 2.0 License`_.  For details, see `NOTICE.txt`_.
 .. |sponsor| image:: https://img.shields.io/badge/%E2%9D%A4-Sponsor%20me-brightgreen?style=flat&logo=GitHub
     :target: https://github.com/sponsors/nedbat
     :alt: Sponsor me on GitHub
-.. |core-infrastructure| image:: https://bestpractices.coreinfrastructure.org/projects/6412/badge
-    :target: https://bestpractices.coreinfrastructure.org/projects/6412
-    :alt: Core Infrastructure Initiative: passing
-.. |open-ssf| image:: https://api.securityscorecards.dev/projects/github.com/nedbat/coveragepy/badge
-    :target: https://deps.dev/pypi/coverage
-    :alt: OpenSSF Scorecard
-.. |snyk| image:: https://snyk.io/advisor/python/coverage/badge.svg
-    :target: https://snyk.io/advisor/python/coverage
-    :alt: Snyk package health
