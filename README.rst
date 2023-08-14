@@ -130,7 +130,7 @@ Licensed under the `Apache 2.0 License`_.  For details, see `NOTICE.txt`_.
 .. |docs| image:: https://readthedocs.org/projects/coverage/badge/?version=latest&style=flat
     :target: https://coverage.readthedocs.io/
     :alt: Documentation
-.. |kit| image:: https://badge.fury.io/py/coverage.svg
+.. |kit| image:: https://img.shields.io/pypi/v/coverage
     :target: https://pypi.org/project/coverage/
     :alt: PyPI status
 .. |versions| image:: https://img.shields.io/pypi/pyversions/coverage.svg?logo=python&logoColor=FBE072
