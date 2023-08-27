@@ -37,9 +37,9 @@ tomli==2.0.1
     #   pyproject-hooks
 typing-extensions==4.7.1
     # via cibuildwheel
-wheel==0.41.1
+wheel==0.41.2
     # via -r requirements/kit.in
 
 # The following packages are considered to be unsafe in a requirements file:
-setuptools==68.0.0
+setuptools==68.1.2
     # via -r requirements/kit.in
