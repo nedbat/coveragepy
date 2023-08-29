@@ -20,8 +20,15 @@ development at the same time, such as 4.5.x and 5.0.
 Unreleased
 ----------
 
-Nothing yet.
+- The semantics of stars in file patterns has been clarified in the docs.  A
+  leading or trailing star matches any number of path components, like a double
+  star would.  This is different than the behavior of a star in the middle of a
+  pattern.  This discrepancy was `identified by Sviatoslav Sydorenko
+  <starbad_>`_, who `provided patient detailed diagnosis <pull 1650_>`_ and
+  graciously agreed to a pragmatic resolution.
 
+.. _starbad: https://github.com/nedbat/coveragepy/issues/1407#issuecomment-1631085209
+.. _pull 1650: https://github.com/nedbat/coveragepy/pull/1650
 
 .. scriv-start-here
 
@@ -32,7 +39,7 @@ Version 7.3.0 — 2023-08-12
 
 - Added a :meth:`.Coverage.collect` context manager to start and stop coverage
   data collection.
-  
+
 - Dropped support for Python 3.7.
 
 - Fix: in unusual circumstances, SQLite cannot be set to asynchronous mode.
