@@ -44,9 +44,7 @@ def parse_md(lines):
     buffer = TextChunkBuffer()
 
     for line in lines:
-        header_match = re.search(r"^(#+) (.+)$", line)
-        is_header = bool(header_match)
-        if is_header:
+        if header_match := re.search(r"^(#+) (.+)$", line):
             yield from buffer.flush()
             hashes, text = header_match.groups()
             yield (f"h{len(hashes)}", text)
@@ -80,8 +78,7 @@ def sections(parsed_data):
 
 def refind(regex, text):
     """Find a regex in some text, and return the matched text, or None."""
-    m = re.search(regex, text)
-    if m:
+    if m := re.search(regex, text):
         return m.group()
     else:
         return None

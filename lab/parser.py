@@ -61,8 +61,7 @@ class ParserMain:
         # `filename` can have a line number suffix. In that case, extract those
         # lines, dedent them, and use that.  This is for trying test cases
         # embedded in the test files.
-        match = re.search(r"^(.*):(\d+)-(\d+)$", filename)
-        if match:
+        if match := re.search(r"^(.*):(\d+)-(\d+)$", filename):
             filename, start, end = match.groups()
             start, end = int(start), int(end)
         else:

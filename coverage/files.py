@@ -300,8 +300,7 @@ class GlobMatcher:
 
 def sep(s: str) -> str:
     """Find the path separator used in this string, or os.sep if none."""
-    sep_match = re.search(r"[\\/]", s)
-    if sep_match:
+    if sep_match := re.search(r"[\\/]", s):
         the_sep = sep_match[0]
     else:
         the_sep = os.sep
@@ -337,8 +336,7 @@ def _glob_to_regex(pattern: str) -> str:
     pos = 0
     while pos < len(pattern):
         for rx, sub in G2RX_TOKENS:                     # pragma: always breaks
-            m = rx.match(pattern, pos=pos)
-            if m:
+            if m := rx.match(pattern, pos=pos):
                 if sub is None:
                     raise ConfigError(f"File pattern can't include {m[0]!r}")
                 path_rx.append(m.expand(sub))
@@ -469,8 +467,7 @@ class PathAliases:
             self.pprinted = True
 
         for original_pattern, regex, result in self.aliases:
-            m = regex.match(path)
-            if m:
+            if m := regex.match(path):
                 new = path.replace(m[0], result)
                 new = new.replace(sep(path), sep(result))
                 if not self.relative:
