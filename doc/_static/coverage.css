@@ -66,6 +66,16 @@ img.tideliftlogo {
     background: #efc;
 }
 
+/* I'm not sure why I had to make this so specific to get it to take effect... */
+div.rst-content div.document div.wy-table-responsive table.docutils.align-default tbody tr td {
+    vertical-align: top !important;
+}
+
+/* And this doesn't work, and I guess I just have to live with it. */
+div.rst-content div.document div.wy-table-responsive table.docutils.align-default tbody tr td .line-block {
+    margin-bottom: 0 !important;
+}
+
 /* sphinx-code-tabs */
 
 /* Some selectors here are extra-specific (.container) because this file comes

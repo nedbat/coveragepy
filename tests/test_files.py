@@ -235,8 +235,23 @@ def globs_to_regex_params(
         ),
         globs_to_regex_params(
             ["*/foo"], case_insensitive=False, partial=True,
-            matches=["abc/foo/hi.py", "foo/hi.py"],
+            matches=["abc/foo/hi.py", "foo/hi.py", "abc/def/foo/hi.py"],
             nomatches=["abc/xfoo/hi.py"],
+        ),
+        globs_to_regex_params(
+            ["*c/foo"], case_insensitive=False, partial=True,
+            matches=["abc/foo/hi.py"],
+            nomatches=["abc/xfoo/hi.py", "foo/hi.py", "def/abc/foo/hi.py"],
+        ),
+        globs_to_regex_params(
+            ["foo/x*"], case_insensitive=False, partial=True,
+            matches=["foo/x", "foo/xhi.py", "foo/x/hi.py"],
+            nomatches=[],
+        ),
+        globs_to_regex_params(
+            ["foo/x*"], case_insensitive=False, partial=False,
+            matches=["foo/x", "foo/xhi.py"],
+            nomatches=["foo/x/hi.py"],
         ),
         globs_to_regex_params(
             ["**/foo"],

@@ -178,15 +178,67 @@ individual source lines.  See :ref:`excluding` for details.
 File patterns
 -------------
 
-File path patterns are used for include and omit, and for combining path
-remapping.  They follow common shell syntax:
-
-- ``*`` matches any number of file name characters, not including the directory
-  separator.
+File path patterns are used for :ref:`include <config_run_include>` and
+:ref:`omit <config_run_omit>`, and for :ref:`combining path remapping
+<cmd_combine_remapping>`.  They follow common shell syntax:
 
 - ``?`` matches a single file name character.
 
-- ``**`` matches any number of nested directory names, including none.
+- ``*`` matches any number of file name characters, not including the directory
+  separator.  As a special case, if a pattern starts with ``*/``, it is treated
+  as ``**/``, and if a pattern ends with ``/*``, it is treated as ``/**``.
+
+- ``**`` matches any number of nested directory names, including none. It must
+  be used as a full component of the path, not as part of a word: ``/**/`` is
+  allowed, but ``/a**/`` is not.
 
 - Both ``/`` and ``\`` will match either a slash or a backslash, to make
   cross-platform matching easier.
+
+- A pattern with no directory separators matches the file name in any
+  directory.
+
+Some examples:
+
+.. list-table::
+    :widths: 20 20 20
+    :header-rows: 1
+
+    * - Pattern
+      - Matches
+      - Doesn't Match
+    * - ``a*.py``
+      - | anything.py
+        | sub1/sub2/another.py
+      - | cat.py
+    * - ``sub/*/*.py``
+      - | sub/a/main.py
+        | sub/b/another.py
+      - | sub/foo.py
+        | sub/m1/m2/foo.py
+    * - ``sub/**/*.py``
+      - | sub/something.py
+        | sub/a/main.py
+        | sub/b/another.py
+        | sub/m1/m2/foo.py
+      - | sub1/anything.py
+        | sub1/more/code/main.py
+    * - ``*/sub/*``
+      - | some/where/sub/more/something.py
+        | sub/hello.py
+      - | sub1/anything.py
+    * - ``*/sub*/*``
+      - | some/where/sub/more/something.py
+        | sub/hello.py
+        | sub1/anything.py
+      - | some/more/something.py
+    * - ``*/*sub/test_*.py``
+      - | some/where/sub/test_everything.py
+        | moresub/test_things.py
+      - | some/where/sub/more/test_everything.py
+        | more/test_things.py
+    * - ``*/*sub/*sub/**``
+      - | sub/sub/something.py
+        | asub/bsub/more/thing.py
+        | code/sub/sub/code.py
+      - | sub/something.py
