@@ -3,6 +3,8 @@
 
 """Tests for coverage.py's improved tokenizer."""
 
+from __future__ import annotations
+
 import os.path
 import re
 import textwrap

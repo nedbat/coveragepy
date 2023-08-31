@@ -3,6 +3,8 @@
 
 """Monkey-patching to add multiprocessing support for coverage.py"""
 
+from __future__ import annotations
+
 import multiprocessing
 import multiprocessing.process
 import os

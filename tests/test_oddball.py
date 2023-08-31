@@ -3,6 +3,8 @@
 
 """Oddball cases for testing coverage.py"""
 
+from __future__ import annotations
+
 import os.path
 import re
 import sys
