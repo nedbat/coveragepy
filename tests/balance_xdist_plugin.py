@@ -117,7 +117,7 @@ class BalanceXdistPlugin:       # pragma: debugging
         clumped = set()
         clumps = config.getini("balanced_clumps")
         for i, clump_word in enumerate(clumps):
-            clump_nodes = set(nodeid for nodeid in self.times.keys() if clump_word in nodeid)
+            clump_nodes = {nodeid for nodeid in self.times.keys() if clump_word in nodeid}
             i %= nchunks
             tests[i].update(clump_nodes)
             totals[i] += sum(self.times[nodeid] for nodeid in clump_nodes)

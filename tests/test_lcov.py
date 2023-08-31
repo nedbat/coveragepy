@@ -44,7 +44,7 @@ class LcovTest(CoverageTest):
 
     def get_lcov_report_content(self, filename: str = "coverage.lcov") -> str:
         """Return the content of an LCOV report."""
-        with open(filename, "r") as file:
+        with open(filename) as file:
             return file.read()
 
     def test_lone_file(self) -> None:

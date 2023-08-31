@@ -521,10 +521,10 @@ class CoverageConfig(TConfigurable, TPluginConfig):
         self.data_file = self.post_process_file(self.data_file)
         self.html_dir = self.post_process_file(self.html_dir)
         self.xml_output = self.post_process_file(self.xml_output)
-        self.paths = dict(
-            (k, [self.post_process_file(f) for f in v])
+        self.paths = {
+            k: [self.post_process_file(f) for f in v]
             for k, v in self.paths.items()
-        )
+        }
         self.exclude_list += self.exclude_also
 
     def debug_info(self) -> List[Tuple[str, Any]]:
