@@ -17,8 +17,12 @@ development at the same time, such as 4.5.x and 5.0.
     ..  Version 9.8.1 — 2027-07-27
     ..  --------------------------
 
-Unreleased
-----------
+.. scriv-start-here
+
+.. _changes_7-3-1:
+
+Version 7.3.1 — 2023-09-06
+--------------------------
 
 - The semantics of stars in file patterns has been clarified in the docs.  A
   leading or trailing star matches any number of path components, like a double
@@ -33,8 +37,6 @@ Unreleased
 .. _apidocs: https://coverage.readthedocs.io/en/latest/api_coverage.html
 .. _starbad: https://github.com/nedbat/coveragepy/issues/1407#issuecomment-1631085209
 .. _pull 1650: https://github.com/nedbat/coveragepy/pull/1650
-
-.. scriv-start-here
 
 .. _changes_7-3-0:
 
