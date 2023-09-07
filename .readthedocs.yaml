@@ -22,3 +22,5 @@ formats: all
 python:
   install:
     - requirements: doc/requirements.pip
+    - method: pip
+      path: .

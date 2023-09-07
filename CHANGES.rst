@@ -20,6 +20,16 @@ development at the same time, such as 4.5.x and 5.0.
 Unreleased
 ----------
 
+Nothing yet.
+
+
+.. scriv-start-here
+
+.. _changes_7-3-1:
+
+Version 7.3.1 — 2023-09-06
+--------------------------
+
 - The semantics of stars in file patterns has been clarified in the docs.  A
   leading or trailing star matches any number of path components, like a double
   star would.  This is different than the behavior of a star in the middle of a
@@ -27,10 +37,12 @@ Unreleased
   <starbad_>`_, who `provided patient detailed diagnosis <pull 1650_>`_ and
   graciously agreed to a pragmatic resolution.
 
+- The API docs were missing from the last version. They are now `restored
+  <apidocs_>`_.
+
+.. _apidocs: https://coverage.readthedocs.io/en/latest/api_coverage.html
 .. _starbad: https://github.com/nedbat/coveragepy/issues/1407#issuecomment-1631085209
 .. _pull 1650: https://github.com/nedbat/coveragepy/pull/1650
-
-.. scriv-start-here
 
 .. _changes_7-3-0:
 
