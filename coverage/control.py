@@ -880,7 +880,7 @@ class Coverage(TConfigurable):
 
         # Find out if we got any data.
         if not self._data and self._warn_no_data:
-            self._warn("No data was collected.", slug="no-data-collected")
+            self._warn("No data were collected.", slug="no-data-collected")
 
         # Touch all the files that could have executed, so that we can
         # mark completely un-executed files as 0% covered.
