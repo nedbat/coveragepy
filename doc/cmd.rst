@@ -239,7 +239,7 @@ Module XXX was never imported (module-not-imported)
   You asked coverage.py to measure module XXX, but it was never imported by
   your program.
 
-No data was collected (no-data-collected)
+No data were collected (no-data-collected)
   Coverage.py ran your program, but didn't measure any lines as executed.
   This could be because you asked to measure only modules that never ran,
   or for other reasons.

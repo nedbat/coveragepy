@@ -311,7 +311,7 @@ class ApiTest(CoverageTest):
             cov = coverage.Coverage(source=["foo"])
             self.start_import_stop(cov, "test")
             cov.report()
-        assert_coverage_warnings(warns, "No data was collected. (no-data-collected)")
+        assert_coverage_warnings(warns, "No data were collected. (no-data-collected)")
         # Name         Stmts   Miss  Cover
         # --------------------------------
         # foo/bar.py       1      1     0%
@@ -383,7 +383,7 @@ class ApiTest(CoverageTest):
         with cov.collect():
             import_local_file("code1")
         # We didn't collect any data, so we should get a warning.
-        with self.assert_warnings(cov, ["No data was collected"]):
+        with self.assert_warnings(cov, ["No data were collected"]):
             cov.get_data()
         # But calling get_data a second time with no intervening activity
         # won't make another warning.
@@ -396,11 +396,11 @@ class ApiTest(CoverageTest):
         with cov.collect():
             import_local_file("code1")
             # We didn't collect any data, so we should get a warning.
-            with self.assert_warnings(cov, ["No data was collected"]):
+            with self.assert_warnings(cov, ["No data were collected"]):
                 cov.save()
             import_local_file("code2")
             # Calling get_data a second time after tracing some more will warn again.
-            with self.assert_warnings(cov, ["No data was collected"]):
+            with self.assert_warnings(cov, ["No data were collected"]):
                 cov.get_data()
 
     def make_good_data_files(self) -> None:
@@ -541,7 +541,7 @@ class ApiTest(CoverageTest):
             "Module sys has no Python source. (module-not-python)",
             "Module xyzzy was never imported. (module-not-imported)",
             "Module quux was never imported. (module-not-imported)",
-            "No data was collected. (no-data-collected)",
+            "No data were collected. (no-data-collected)",
         )
 
     def test_warnings_suppressed(self) -> None:
@@ -1240,7 +1240,7 @@ class RelativePathTest(CoverageTest):
         # The warning isn't the point of this test, but suppress it.
         with pytest.warns(Warning) as warns:
             cov.combine()
-        assert_coverage_warnings(warns, "No data was collected. (no-data-collected)")
+        assert_coverage_warnings(warns, "No data were collected. (no-data-collected)")
         cov.save()
         self.assert_file_count(".coverage.*", 0)
         self.assert_exists(".coverage")
