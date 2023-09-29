@@ -202,7 +202,7 @@ class LcovTest(CoverageTest):
             end_of_record
             """)
         actual_result = self.get_lcov_report_content()
-        assert actual_result == expected_result
+        assert expected_result == actual_result
 
     def test_half_covered_branch(self) -> None:
         # Test that for a given branch that is only half covered,
@@ -237,7 +237,7 @@ class LcovTest(CoverageTest):
             end_of_record
             """)
         actual_result = self.get_lcov_report_content()
-        assert actual_result == expected_result
+        assert expected_result == actual_result
 
     def test_empty_init_files(self) -> None:
         # Test that in the case of an empty __init__.py file, the lcov
@@ -278,4 +278,4 @@ class LcovTest(CoverageTest):
                 end_of_record
                 """)
         actual_result = self.get_lcov_report_content()
-        assert actual_result == expected_result
+        assert expected_result == actual_result
