@@ -2,6 +2,12 @@
 # For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
 
 # Version pins, for use as a constraints file.
+# gevent depends on greenlet>=3.0rc3, which causes problems:
+#   The conflict is caused by:
+#       The user requested greenlet==2.0.2
+#       eventlet 0.33.3 depends on greenlet>=0.3
+#       gevent 23.9.1 depends on greenlet>=3.0rc3; platform_python_implementation == "CPython" and python_version >= "3.11"
+gevent<23.9
 
 # sphinx-rtd-theme wants <7
 # https://github.com/readthedocs/sphinx_rtd_theme/issues/1463
