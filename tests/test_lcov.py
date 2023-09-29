@@ -279,3 +279,39 @@ class LcovTest(CoverageTest):
                 """)
         actual_result = self.get_lcov_report_content()
         assert expected_result == actual_result
+
+    def test_excluded_lines(self) -> None:
+        self.make_file(".coveragerc", """\
+            [report]
+            exclude_lines = foo
+            """)
+        self.make_file("runme.py", """\
+            s = "Hello 1"
+            t = "foo is ignored 2"
+            if s.upper() == "BYE 3":
+                i_am_missing_4()
+                foo_is_missing_5()
+            print("Done 6")
+            # foo 7
+            # line 8
+            """)
+        cov = coverage.Coverage(source=".", branch=True)
+        self.start_import_stop(cov, "runme")
+        cov.lcov_report()
+        expected_result = textwrap.dedent("""\
+            TN:
+            SF:runme.py
+            DA:1,1,nWfwsz0pRTEJrInVF+xNvQ
+            DA:3,1,uV4NoIauDo5LCti6agX9sg
+            DA:6,1,+PfQRgSChjQOGkA6MArMDg
+            DA:4,0,GR4ThLStnqpcZvm3alfRaA
+            LF:4
+            LH:3
+            BRDA:4,0,0,-
+            BRDA:6,0,1,1
+            BRF:2
+            BRH:1
+            end_of_record
+            """)
+        actual_result = self.get_lcov_report_content()
+        assert expected_result == actual_result

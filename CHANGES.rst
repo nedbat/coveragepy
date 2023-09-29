@@ -20,7 +20,12 @@ development at the same time, such as 4.5.x and 5.0.
 Unreleased
 ----------
 
-Nothing yet.
+- The ``coverage lcov`` command ignored the ``[report] exclude_lines`` and
+  ``[report] exclude_also`` settings (`issue 1684`_).  This is now fixed,
+  thanks `Jacqueline Lee <pull 1685_>`_.
+
+.. _issue 1684: https://github.com/nedbat/coveragepy/issues/1684
+.. _pull 1685: https://github.com/nedbat/coveragepy/pull/1685
 
 
 .. scriv-start-here

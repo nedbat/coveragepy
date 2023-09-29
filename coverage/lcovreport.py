@@ -62,9 +62,8 @@ class LcovReporter:
         outfile.write("TN:\n")
         outfile.write(f"SF:{fr.relative_filename()}\n")
         source_lines = fr.source().splitlines()
-        sorted_excluded = sorted(analysis.excluded)
         for covered in sorted(analysis.executed):
-            if covered in sorted_excluded:
+            if covered in analysis.excluded:
                 # Do not report excluded as executed
                 continue
             # Note: Coverage.py currently only supports checking *if* a line
@@ -85,9 +84,8 @@ class LcovReporter:
             outfile.write(f"DA:{covered},1,{line_hash(line)}\n")
 
         for missed in sorted(analysis.missing):
-            if missed in sorted_excluded:
-                # Do not report excluded as missing
-                continue
+            # We don't have to skip excluded lines here, because `missing`
+            # already doesn't have them.
             assert source_lines
             line = source_lines[missed-1]
             outfile.write(f"DA:{missed},0,{line_hash(line)}\n")
