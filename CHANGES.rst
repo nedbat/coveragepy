@@ -24,6 +24,12 @@ Unreleased
   ``[report] exclude_also`` settings (`issue 1684`_).  This is now fixed,
   thanks `Jacqueline Lee <pull 1685_>`_.
 
+- Sometimes SQLite will create journal files alongside the coverage.py database
+  files.  These are ephemeral, but could be mistakenly included when combining
+  data files.  Now they are always ignored, fixing `issue 1605`_. Thanks to
+  Brad Smith for suggesting fixes and providing detailed debugging.
+
+.. _issue 1605: https://github.com/nedbat/coveragepy/pull/1605
 .. _issue 1684: https://github.com/nedbat/coveragepy/issues/1684
 .. _pull 1685: https://github.com/nedbat/coveragepy/pull/1685
 

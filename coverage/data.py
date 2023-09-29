@@ -83,6 +83,11 @@ def combinable_files(data_file: str, data_paths: Optional[Iterable[str]] = None)
             files_to_combine.extend(glob.glob(pattern))
         else:
             raise NoDataError(f"Couldn't combine from non-existent path '{p}'")
+
+    # SQLite might have made journal files alongside our database files.
+    # We never want to combine those.
+    files_to_combine = [fnm for fnm in files_to_combine if not fnm.endswith("-journal")]
+
     return files_to_combine
 
 

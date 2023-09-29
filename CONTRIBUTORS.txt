@@ -31,6 +31,7 @@ Benjamin Parzella
 Benjamin Schubert
 Bernát Gábor
 Bill Hart
+Brad Smith
 Bradley Burns
 Brandon Rhodes
 Brett Cannon

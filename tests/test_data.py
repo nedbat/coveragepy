@@ -887,6 +887,9 @@ class CoverageDataFilesTest(CoverageTest):
         covdata1.add_lines(LINES_1)
         covdata1.write()
 
+        # Journal files should never be included in the combining.
+        self.make_file("cov1/.coverage.1-journal", "xyzzy")
+
         os.makedirs('cov2')
         covdata2 = DebugCoverageData('cov2/.coverage.2')
         covdata2.add_lines(LINES_2)
