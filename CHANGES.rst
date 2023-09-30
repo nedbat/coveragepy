@@ -29,6 +29,9 @@ Unreleased
   data files.  Now they are always ignored, fixing `issue 1605`_. Thanks to
   Brad Smith for suggesting fixes and providing detailed debugging.
 
+- On Python 3.12+, we now disable SQLite writing journal files, which should be
+  a little faster.
+
 .. _issue 1605: https://github.com/nedbat/coveragepy/pull/1605
 .. _issue 1684: https://github.com/nedbat/coveragepy/issues/1684
 .. _pull 1685: https://github.com/nedbat/coveragepy/pull/1685

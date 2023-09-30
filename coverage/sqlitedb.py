@@ -55,8 +55,18 @@ class SqliteDb:
 
         self.con.create_function("REGEXP", 2, lambda txt, pat: re.search(txt, pat) is not None)
 
+        # Turning off journal_mode can speed up writing. It can't always be
+        # disabled, so we have to be prepared for *-journal files elsewhere.
+        # In Python 3.12+, we can change the config to allow journal_mode=off.
+        if hasattr(sqlite3, "SQLITE_DBCONFIG_DEFENSIVE"):
+            # Turn off defensive mode, so that journal_mode=off can succeed.
+            self.con.setconfig(     # type: ignore[attr-defined]
+                sqlite3.SQLITE_DBCONFIG_DEFENSIVE, False
+            )
+
         # This pragma makes writing faster. It disables rollbacks, but we never need them.
         self.execute_void("pragma journal_mode=off")
+
         # This pragma makes writing faster. It can fail in unusual situations
         # (https://github.com/nedbat/coveragepy/issues/1646), so use fail_ok=True
         # to keep things going.
