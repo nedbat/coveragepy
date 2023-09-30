@@ -77,19 +77,25 @@ def _phys_tokens(toks: TokenInfos) -> TokenInfos:
         last_lineno = elineno
 
 
-class MatchCaseFinder(ast.NodeVisitor):
-    """Helper for finding match/case lines."""
+class SoftKeywordFinder(ast.NodeVisitor):
+    """Helper for finding lines with soft keywords, like match/case lines."""
     def __init__(self, source: str) -> None:
-        # This will be the set of line numbers that start match or case statements.
-        self.match_case_lines: Set[TLineNo] = set()
+        # This will be the set of line numbers that start with a soft keyword.
+        self.soft_key_lines: Set[TLineNo] = set()
         self.visit(ast.parse(source))
 
     if sys.version_info >= (3, 10):
         def visit_Match(self, node: ast.Match) -> None:
             """Invoked by ast.NodeVisitor.visit"""
-            self.match_case_lines.add(node.lineno)
+            self.soft_key_lines.add(node.lineno)
             for case in node.cases:
-                self.match_case_lines.add(case.pattern.lineno)
+                self.soft_key_lines.add(case.pattern.lineno)
+            self.generic_visit(node)
+
+    if sys.version_info >= (3, 12):
+        def visit_TypeAlias(self, node: ast.TypeAlias) -> None:
+            """Invoked by ast.NodeVisitor.visit"""
+            self.soft_key_lines.add(node.lineno)
             self.generic_visit(node)
 
 
@@ -117,7 +123,7 @@ def source_token_lines(source: str) -> TSourceTokenLines:
     tokgen = generate_tokens(source)
 
     if env.PYBEHAVIOR.soft_keywords:
-        match_case_lines = MatchCaseFinder(source).match_case_lines
+        soft_key_lines = SoftKeywordFinder(source).soft_key_lines
 
     for ttype, ttext, (sline, scol), (_, ecol), _ in _phys_tokens(tokgen):
         mark_start = True
@@ -152,7 +158,7 @@ def source_token_lines(source: str) -> TSourceTokenLines:
                                 is_start_of_line = True
                             else:
                                 is_start_of_line = False
-                            if is_start_of_line and sline in match_case_lines:
+                            if is_start_of_line and sline in soft_key_lines:
                                 tok_class = "key"
                 line.append((tok_class, part))
                 mark_end = True

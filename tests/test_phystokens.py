@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import os.path
 import re
+import sys
 import textwrap
 import warnings
 
@@ -118,7 +119,7 @@ class SoftKeywordTest(CoverageTest):
 
     run_in_temp_dir = False
 
-    def test_soft_keywords(self) -> None:
+    def test_soft_keywords_match_case(self) -> None:
         source = textwrap.dedent("""\
             match re.match(something):
                 case ["what"]:
@@ -146,6 +147,16 @@ class SoftKeywordTest(CoverageTest):
         assert tokens[9][2] == ("nam", "case")
         assert tokens[10][2] == ("nam", "match")
         assert tokens[11][3] == ("nam", "case")
+
+    @pytest.mark.skipif(sys.version_info < (3, 12), reason="type is a soft keyword in 3.12")
+    def test_soft_keyword_type(self) -> None:
+        source = textwrap.dedent("""\
+            type Point = tuple[float, float]
+            type(int)
+            """)
+        tokens = list(source_token_lines(source))
+        assert tokens[0][0] == ("key", "type")
+        assert tokens[1][0] == ("nam", "type")
 
 
 # The default source file encoding.

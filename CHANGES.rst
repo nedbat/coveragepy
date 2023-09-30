@@ -32,6 +32,8 @@ Unreleased
 - On Python 3.12+, we now disable SQLite writing journal files, which should be
   a little faster.
 
+- The new 3.12 soft keyword ``type`` is properly bolded in HTML reports.
+
 .. _issue 1605: https://github.com/nedbat/coveragepy/pull/1605
 .. _issue 1684: https://github.com/nedbat/coveragepy/issues/1684
 .. _pull 1685: https://github.com/nedbat/coveragepy/pull/1685
