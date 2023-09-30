@@ -25,9 +25,6 @@ pyint_as_int(PyObject * pyint, int *pint)
 
 /* Interned strings to speed GetAttr etc. */
 
-static PyObject *str_trace;
-static PyObject *str_file_tracer;
-static PyObject *str__coverage_enabled;
 static PyObject *str__coverage_plugin;
 static PyObject *str__coverage_plugin_name;
 static PyObject *str_dynamic_source_filename;
@@ -44,9 +41,6 @@ CTracer_intern_strings(void)
         goto error;                             \
     }
 
-    INTERN_STRING(str_trace, "trace")
-    INTERN_STRING(str_file_tracer, "file_tracer")
-    INTERN_STRING(str__coverage_enabled, "_coverage_enabled")
     INTERN_STRING(str__coverage_plugin, "_coverage_plugin")
     INTERN_STRING(str__coverage_plugin_name, "_coverage_plugin_name")
     INTERN_STRING(str_dynamic_source_filename, "dynamic_source_filename")
