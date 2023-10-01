@@ -31,7 +31,6 @@ recursive-include lab *
 recursive-include .github *
 
 recursive-include coverage *.pyi
-recursive-include coverage/fullcoverage *.py
 recursive-include coverage/ctracer *.c *.h
 
 recursive-include doc *.py *.in *.pip *.rst *.txt *.png

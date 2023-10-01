@@ -556,30 +556,6 @@ class ProcessTest(CoverageTest):
         )
         assert msg in out
 
-    @pytest.mark.expensive
-    @pytest.mark.skipif(not env.C_TRACER, reason="fullcoverage only works with the C tracer.")
-    @pytest.mark.skipif(env.METACOV, reason="Can't test fullcoverage when measuring ourselves")
-    def test_fullcoverage(self) -> None:
-        # fullcoverage is a trick to get stdlib modules measured from
-        # the very beginning of the process. Here we import os and
-        # then check how many lines are measured.
-        self.make_file("getenv.py", """\
-            import os
-            print("FOOEY == %s" % os.getenv("FOOEY"))
-            """)
-
-        fullcov = os.path.join(os.path.dirname(coverage.__file__), "fullcoverage")
-        self.set_environ("FOOEY", "BOO")
-        self.set_environ("PYTHONPATH", fullcov)
-        out = self.run_command("python -X frozen_modules=off -m coverage run -L getenv.py")
-        assert out == "FOOEY == BOO\n"
-        data = coverage.CoverageData()
-        data.read()
-        # The actual number of executed lines in os.py when it's
-        # imported is 120 or so.  Just running os.getenv executes
-        # about 5.
-        assert line_counts(data)['os.py'] > 50
-
     # Pypy passes locally, but fails in CI? Perhaps the version of macOS is
     # significant?  https://foss.heptapod.net/pypy/pypy/-/issues/3074
     @pytest.mark.skipif(env.PYPY, reason="PyPy is unreliable with this test")

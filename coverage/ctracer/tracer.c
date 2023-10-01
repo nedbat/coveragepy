@@ -857,14 +857,6 @@ cleanup:
  * means it must be callable to be used in sys.settrace().
  *
  * So we make ourself callable, equivalent to invoking our trace function.
- *
- * To help with the process of replaying stored frames, this function has an
- * optional keyword argument:
- *
- *      def CTracer_call(frame, event, arg, lineno=0)
- *
- * If provided, the lineno argument is used as the line number, and the
- * frame's f_lineno member is ignored.
  */
 static PyObject *
 CTracer_call(CTracer *self, PyObject *args, PyObject *kwds)
@@ -872,9 +864,7 @@ CTracer_call(CTracer *self, PyObject *args, PyObject *kwds)
     PyFrameObject *frame;
     PyObject *what_str;
     PyObject *arg;
-    int lineno = 0;
     int what;
-    int orig_lineno;
     PyObject *ret = NULL;
     PyObject * ascii = NULL;
 
@@ -888,10 +878,10 @@ CTracer_call(CTracer *self, PyObject *args, PyObject *kwds)
         NULL
         };
 
-    static char *kwlist[] = {"frame", "event", "arg", "lineno", NULL};
+    static char *kwlist[] = {"frame", "event", "arg", NULL};
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!O!O|i:Tracer_call", kwlist,
-            &PyFrame_Type, &frame, &PyUnicode_Type, &what_str, &arg, &lineno)) {
+            &PyFrame_Type, &frame, &PyUnicode_Type, &what_str, &arg)) {
         goto done;
     }
 
@@ -913,20 +903,11 @@ CTracer_call(CTracer *self, PyObject *args, PyObject *kwds)
     Py_DECREF(ascii);
     #endif
 
-    /* Save off the frame's lineno, and use the forced one, if provided. */
-    orig_lineno = frame->f_lineno;
-    if (lineno > 0) {
-        frame->f_lineno = lineno;
-    }
-
     /* Invoke the C function, and return ourselves. */
     if (CTracer_trace(self, frame, what, arg) == RET_OK) {
         Py_INCREF(self);
         ret = (PyObject *)self;
     }
-
-    /* Clean up. */
-    frame->f_lineno = orig_lineno;
 
     /* For better speed, install ourselves the C way so that future calls go
        directly to CTracer_trace, without this intermediate function.

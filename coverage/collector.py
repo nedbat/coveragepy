@@ -11,7 +11,7 @@ import sys
 
 from types import FrameType
 from typing import (
-    cast, Any, Callable, Dict, List, Mapping, Optional, Set, Tuple, Type, TypeVar,
+    cast, Any, Callable, Dict, List, Mapping, Optional, Set, Type, TypeVar,
 )
 
 from coverage import env
@@ -24,7 +24,7 @@ from coverage.misc import human_sorted_items, isolate_module
 from coverage.plugin import CoveragePlugin
 from coverage.pytracer import PyTracer
 from coverage.types import (
-    TArc, TFileDisposition, TLineNo, TTraceData, TTraceFn, TTracer, TWarnFn,
+    TArc, TFileDisposition, TTraceData, TTraceFn, TTracer, TWarnFn,
 )
 
 os = isolate_module(os)
@@ -330,18 +330,9 @@ class Collector:
 
         self.tracers = []
 
-        # Check to see whether we had a fullcoverage tracer installed. If so,
-        # get the stack frames it stashed away for us.
-        traces0: List[Tuple[Tuple[FrameType, str, Any], TLineNo]] = []
-        fn0 = sys.gettrace()
-        if fn0:
-            tracer0 = getattr(fn0, '__self__', None)
-            if tracer0:
-                traces0 = getattr(tracer0, 'traces', [])
-
         try:
             # Install the tracer on this thread.
-            fn = self._start_tracer()
+            self._start_tracer()
         except:
             if self._collectors:
                 self._collectors[-1].resume()
@@ -350,13 +341,6 @@ class Collector:
         # If _start_tracer succeeded, then we add ourselves to the global
         # stack of collectors.
         self._collectors.append(self)
-
-        # Replay all the events from fullcoverage into the new trace function.
-        for (frame, event, arg), lineno in traces0:
-            try:
-                fn(frame, event, arg, lineno=lineno)
-            except TypeError as ex:
-                raise RuntimeError("fullcoverage must be run with the C trace function.") from ex
 
         # Install our installation tracer in threading, to jump-start other
         # threads.
