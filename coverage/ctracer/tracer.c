@@ -508,15 +508,14 @@ CTracer_handle_call(CTracer *self, PyFrameObject *frame)
         Py_XDECREF(self->pcur_entry->file_data);
         self->pcur_entry->file_data = NULL;
         self->pcur_entry->file_tracer = Py_None;
-        frame->f_trace_lines = 0;
+        MyFrame_NoTraceLines(frame);
         SHOWLOG(PyFrame_GetLineNumber(frame), filename, "skipped");
     }
 
     self->pcur_entry->disposition = disposition;
 
     /* Make the frame right in case settrace(gettrace()) happens. */
-    Py_INCREF(self);
-    Py_XSETREF(frame->f_trace, (PyObject*)self);
+    MyFrame_SetTrace(frame, self);
 
     /* A call event is really a "start frame" event, and can happen for
      * re-entering a generator also.  How we tell the difference depends on
