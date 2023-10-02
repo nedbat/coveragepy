@@ -232,10 +232,13 @@ jobs:
           pypy3 -m pip install -r requirements/kit.pip
 
       - name: "Build wheel"
+        env:
+          DIST_EXTRA_CONFIG: extra.cfg
         run: |
           # One wheel works for all PyPy versions. PYVERSIONS
           # yes, this is weird syntax: https://github.com/pypa/build/issues/202
-          pypy3 -m build -w -C="--global-option=--python-tag" -C="--global-option=pp38.pp39.pp310"
+          echo -e "[bdist_wheel]\npython_tag=pp38.pp39.pp310" > $DIST_EXTRA_CONFIG
+          pypy3 -m build -w
 
       - name: "List wheels"
         run: |
