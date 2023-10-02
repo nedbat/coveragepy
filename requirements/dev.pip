@@ -4,7 +4,7 @@
 #
 #    make upgrade
 #
-astroid==2.15.8
+astroid==3.0.0
     # via pylint
 attrs==23.1.0
     # via hypothesis
@@ -16,7 +16,7 @@ certifi==2023.7.22
     # via requests
 chardet==5.2.0
     # via tox
-charset-normalizer==3.2.0
+charset-normalizer==3.3.0
     # via requests
 check-manifest==0.49
     # via -r requirements/dev.in
@@ -47,7 +47,7 @@ flaky==3.7.0
     # via -r requirements/pytest.in
 greenlet==2.0.2
     # via -r requirements/dev.in
-hypothesis==6.87.0
+hypothesis==6.87.1
     # via -r requirements/pytest.in
 idna==3.4
     # via requests
@@ -64,12 +64,10 @@ isort==5.12.0
     # via pylint
 jaraco-classes==3.3.0
     # via keyring
-jedi==0.19.0
+jedi==0.19.1
     # via pudb
 keyring==24.2.0
     # via twine
-lazy-object-proxy==1.9.0
-    # via astroid
 libsass==0.22.0
     # via -r requirements/dev.in
 markdown-it-py==3.0.0
@@ -82,7 +80,7 @@ more-itertools==10.1.0
     # via jaraco-classes
 nh3==0.2.14
     # via readme-renderer
-packaging==23.1
+packaging==23.2
     # via
     #   build
     #   pudb
@@ -93,7 +91,7 @@ parso==0.8.3
     # via jedi
 pkginfo==1.9.6
     # via twine
-platformdirs==3.10.0
+platformdirs==3.11.0
     # via
     #   pylint
     #   tox
@@ -109,7 +107,7 @@ pygments==2.16.1
     #   pudb
     #   readme-renderer
     #   rich
-pylint==2.17.6
+pylint==3.0.0
     # via -r requirements/dev.in
 pyproject-api==1.6.1
     # via tox
@@ -134,7 +132,7 @@ requests-toolbelt==1.0.0
     # via twine
 rfc3986==2.0.0
     # via twine
-rich==13.5.3
+rich==13.6.0
     # via twine
 sortedcontainers==2.4.0
     # via hypothesis
@@ -162,7 +160,7 @@ typing-extensions==4.8.0
     #   astroid
     #   pylint
     #   rich
-urllib3==2.0.5
+urllib3==2.0.6
     # via
     #   requests
     #   twine
@@ -176,8 +174,6 @@ virtualenv==20.24.5
     # via
     #   -r requirements/pip.in
     #   tox
-wrapt==1.15.0
-    # via astroid
 zipp==3.17.0
     # via
     #   importlib-metadata

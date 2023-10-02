@@ -8,7 +8,7 @@ distlib==0.3.7
     # via virtualenv
 filelock==3.12.4
     # via virtualenv
-platformdirs==3.10.0
+platformdirs==3.11.0
     # via virtualenv
 virtualenv==20.24.5
     # via -r requirements/pip.in

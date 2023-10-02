@@ -22,11 +22,11 @@ filelock==3.12.4
     # via cibuildwheel
 importlib-metadata==6.8.0
     # via build
-packaging==23.1
+packaging==23.2
     # via
     #   build
     #   cibuildwheel
-platformdirs==3.10.0
+platformdirs==3.11.0
     # via cibuildwheel
 pyelftools==0.30
     # via auditwheel
