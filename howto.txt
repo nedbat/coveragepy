@@ -69,7 +69,7 @@
     $ make clean github_releases
 - Visit the fixed issues on GitHub and mention the version it was fixed in.
     $ make comment_on_fixes
-- unopvars
+- deopvars
 - Bump version:
     $ make bump_version
 - Update readthedocs

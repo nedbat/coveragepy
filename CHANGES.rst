@@ -17,6 +17,12 @@ development at the same time, such as 4.5.x and 5.0.
     ..  Version 9.8.1 — 2027-07-27
     ..  --------------------------
 
+Unreleased
+----------
+
+Nothing yet.
+
+
 .. scriv-start-here
 
 .. _changes_7-3-2:
@@ -42,7 +48,7 @@ Version 7.3.2 — 2023-10-02
   early-imported standard library modules.  CPython `stopped using it
   <88054_>`_ in 2021, and it stopped working completely in Python 3.13.
 
-.. _issue 1605: https://github.com/nedbat/coveragepy/pull/1605
+.. _issue 1605: https://github.com/nedbat/coveragepy/issues/1605
 .. _issue 1684: https://github.com/nedbat/coveragepy/issues/1684
 .. _pull 1685: https://github.com/nedbat/coveragepy/pull/1685
 .. _88054: https://github.com/python/cpython/issues/88054
