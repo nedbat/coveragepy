@@ -17,8 +17,12 @@ development at the same time, such as 4.5.x and 5.0.
     ..  Version 9.8.1 — 2027-07-27
     ..  --------------------------
 
-Unreleased
-----------
+.. scriv-start-here
+
+.. _changes_7-3-2:
+
+Version 7.3.2 — 2023-10-02
+--------------------------
 
 - The ``coverage lcov`` command ignored the ``[report] exclude_lines`` and
   ``[report] exclude_also`` settings (`issue 1684`_).  This is now fixed,
@@ -43,8 +47,6 @@ Unreleased
 .. _pull 1685: https://github.com/nedbat/coveragepy/pull/1685
 .. _88054: https://github.com/python/cpython/issues/88054
 
-
-.. scriv-start-here
 
 .. _changes_7-3-1:
 
