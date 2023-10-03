@@ -66,6 +66,16 @@ def set_warnings() -> None:
         # pypy3 warns about unclosed files a lot.
         warnings.filterwarnings("ignore", r".*unclosed file", category=ResourceWarning)
 
+    # Don't warn about unclosed SQLite connections.
+    # We don't close ":memory:" databases because we don't have a way to connect
+    # to them more than once if we close them.  In real coverage.py uses, there
+    # are only a couple of them, but our test suite makes many and we get warned
+    # about them all.
+    # Python3.13 added this warning, but the behavior has been the same all along,
+    # without any reported problems, so just quiet the warning.
+    # https://github.com/python/cpython/issues/105539
+    warnings.filterwarnings("ignore", r"unclosed database", category=ResourceWarning)
+
 
 @pytest.fixture(autouse=True)
 def reset_sys_path() -> Iterator[None]:

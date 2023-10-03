@@ -53,6 +53,9 @@ class SqliteDb:
         except sqlite3.Error as exc:
             raise DataError(f"Couldn't use data file {self.filename!r}: {exc}") from exc
 
+        if self.debug.should("sql"):
+            self.debug.write(f"Connected to {self.filename!r} as {self.con!r}")
+
         self.con.create_function("REGEXP", 2, lambda txt, pat: re.search(txt, pat) is not None)
 
         # Turning off journal_mode can speed up writing. It can't always be
@@ -75,6 +78,8 @@ class SqliteDb:
     def close(self) -> None:
         """If needed, close the connection."""
         if self.con is not None and self.filename != ":memory:":
+            if self.debug.should("sql"):
+                self.debug.write(f"Closing {self.con!r} on {self.filename!r}")
             self.con.close()
             self.con = None
 
