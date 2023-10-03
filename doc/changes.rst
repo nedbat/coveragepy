@@ -6,7 +6,7 @@
 .. The recent changes from the top-level file:
 
 .. include:: ../CHANGES.rst
-    :end-before: endchangesinclude
+    :end-before: scriv-end-here
 
 .. Older changes here:
 
@@ -383,7 +383,7 @@ Version 5.0a6 — 2019-07-16
     argument, `no_disk` (default: False).  Setting it to True prevents writing
     any data to the disk.  This is useful for transient data objects.
 
-- Added the classmethod :meth:`.Coverage.current` to get the latest started
+- Added the class method :meth:`.Coverage.current` to get the latest started
   Coverage instance.
 
 - Multiprocessing support in Python 3.8 was broken, but is now fixed.  Closes
@@ -556,7 +556,7 @@ Version 5.0a2 — 2018-09-03
 
 - Development moved from `Bitbucket`_ to `GitHub`_.
 
-- HTML files no longer have trailing and extra whitespace.
+- HTML files no longer have trailing and extra white space.
 
 - The sort order in the HTML report is stored in local storage rather than
   cookies, closing `issue 611`_.  Thanks, Federico Bond.
@@ -794,7 +794,7 @@ Version 4.4b1 — 2017-04-04
   also continue measurement. Both `issue 79`_ and `issue 448`_ described this
   problem, and have been fixed.
 
-- Plugins can now find unexecuted files if they choose, by implementing the
+- Plugins can now find un-executed files if they choose, by implementing the
   `find_executable_files` method.  Thanks, Emil Madsen.
 
 - Minimal IronPython support. You should be able to run IronPython programs
@@ -1202,7 +1202,7 @@ Version 4.1b2 — 2016-01-23
 - The XML report now produces correct package names for modules found in
   directories specified with ``source=``.  Fixes `issue 465`_.
 
-- ``coverage report`` won't produce trailing whitespace.
+- ``coverage report`` won't produce trailing white space.
 
 .. _issue 465: https://github.com/nedbat/coveragepy/issues/465
 .. _issue 466: https://github.com/nedbat/coveragepy/issues/466
@@ -1532,7 +1532,7 @@ Version 4.0a6 — 2015-06-21
 - Files with incorrect encoding declaration comments are no longer ignored by
   the reporting commands, fixing `issue 351`_.
 
-- HTML reports now include a timestamp in the footer, closing `issue 299`_.
+- HTML reports now include a time stamp in the footer, closing `issue 299`_.
   Thanks, Conrad Ho.
 
 - HTML reports now begrudgingly use double-quotes rather than single quotes,
@@ -1685,7 +1685,7 @@ Version 4.0a2 — 2015-01-14
   `issue 328`_.  Thanks, Buck Evan.
 
 - The regex for matching exclusion pragmas has been fixed to allow more kinds
-  of whitespace, fixing `issue 334`_.
+  of white space, fixing `issue 334`_.
 
 - Made some PyPy-specific tweaks to improve speed under PyPy.  Thanks, Alex
   Gaynor.
@@ -1739,7 +1739,7 @@ Version 4.0a1 — 2014-09-27
   `issue 285`_.  Thanks, Chris Rose.
 
 - HTML reports no longer raise UnicodeDecodeError if a Python file has
-  undecodable characters, fixing `issue 303`_ and `issue 331`_.
+  un-decodable characters, fixing `issue 303`_ and `issue 331`_.
 
 - The annotate command will now annotate all files, not just ones relative to
   the current directory, fixing `issue 57`_.
@@ -1791,7 +1791,7 @@ Version 3.7 — 2013-10-06
 - Coverage.py properly supports .pyw files, fixing `issue 261`_.
 
 - Omitting files within a tree specified with the ``source`` option would
-  cause them to be incorrectly marked as unexecuted, as described in
+  cause them to be incorrectly marked as un-executed, as described in
   `issue 218`_.  This is now fixed.
 
 - When specifying paths to alias together during data combining, you can now
@@ -1802,7 +1802,7 @@ Version 3.7 — 2013-10-06
   (``build/$BUILDNUM/src``).
 
 - Trying to create an XML report with no files to report on, would cause a
-  ZeroDivideError, but no longer does, fixing `issue 250`_.
+  ZeroDivisionError, but no longer does, fixing `issue 250`_.
 
 - When running a threaded program under the Python tracer, coverage.py no
   longer issues a spurious warning about the trace function changing: "Trace
@@ -1905,7 +1905,7 @@ Version 3.6b1 — 2012-11-28
   Thanks, Marcus Cobden.
 
 - Coverage percentage metrics are now computed slightly differently under
-  branch coverage.  This means that completely unexecuted files will now
+  branch coverage.  This means that completely un-executed files will now
   correctly have 0% coverage, fixing `issue 156`_.  This also means that your
   total coverage numbers will generally now be lower if you are measuring
   branch coverage.
@@ -2068,7 +2068,7 @@ Version 3.5.2b1 — 2012-04-29
 - Now the exit status of your product code is properly used as the process
   status when running ``python -m coverage run ...``.  Thanks, JT Olds.
 
-- When installing into pypy, we no longer attempt (and fail) to compile
+- When installing into PyPy, we no longer attempt (and fail) to compile
   the C tracer function, closing `issue 166`_.
 
 .. _issue 142: https://github.com/nedbat/coveragepy/issues/142
@@ -2234,9 +2234,10 @@ Version 3.4 — 2010-09-19
 Version 3.4b2 — 2010-09-06
 --------------------------
 
-- Completely unexecuted files can now be included in coverage results, reported
-  as 0% covered.  This only happens if the --source option is specified, since
-  coverage.py needs guidance about where to look for source files.
+- Completely un-executed files can now be included in coverage results,
+  reported as 0% covered.  This only happens if the --source option is
+  specified, since coverage.py needs guidance about where to look for source
+  files.
 
 - The XML report output now properly includes a percentage for branch coverage,
   fixing `issue 65`_ and `issue 81`_.
@@ -2374,7 +2375,7 @@ Version 3.3 — 2010-02-24
   `config_file=False`.
 
 - Fixed a problem with nested loops having their branch possibilities
-  mischaracterized: `issue 39`_.
+  mis-characterized: `issue 39`_.
 
 - Added coverage.process_start to enable coverage measurement when Python
   starts.

@@ -14,20 +14,6 @@ from setuptools import setup
 from distutils.core import Extension                # pylint: disable=wrong-import-order
 from setuptools.command.build_ext import build_ext  # pylint: disable=wrong-import-order
 from distutils import errors                        # pylint: disable=wrong-import-order
-import distutils.log                                # pylint: disable=wrong-import-order
-
-# $set_env.py: COVERAGE_QUIETER - Set to remove some noise from test output.
-if bool(int(os.getenv("COVERAGE_QUIETER", "0"))):
-    # Distutils has its own mini-logging code, and it sets the level too high.
-    # When I ask for --quiet when running tests, I don't want to see warnings.
-    old_set_verbosity = distutils.log.set_verbosity
-    def better_set_verbosity(v):
-        """--quiet means no warnings!"""
-        if v <= 0:
-            distutils.log.set_threshold(distutils.log.ERROR)
-        else:
-            old_set_verbosity(v)
-    distutils.log.set_verbosity = better_set_verbosity
 
 # Get or massage our metadata.  We exec coverage/version.py so we can avoid
 # importing the product code into setup.py.
@@ -40,11 +26,11 @@ License :: OSI Approved :: Apache Software License
 Operating System :: OS Independent
 Programming Language :: Python
 Programming Language :: Python :: 3
-Programming Language :: Python :: 3.7
 Programming Language :: Python :: 3.8
 Programming Language :: Python :: 3.9
 Programming Language :: Python :: 3.10
 Programming Language :: Python :: 3.11
+Programming Language :: Python :: 3.12
 Programming Language :: Python :: Implementation :: CPython
 Programming Language :: Python :: Implementation :: PyPy
 Topic :: Software Development :: Quality Assurance
@@ -58,10 +44,19 @@ with open(cov_ver_py) as version_file:
     # Keep pylint happy.
     __version__ = __url__ = version_info = ""
     # Execute the code in version.py.
-    exec(compile(version_file.read(), cov_ver_py, 'exec'))
+    exec(compile(version_file.read(), cov_ver_py, 'exec', dont_inherit=True))
 
 with open("README.rst") as readme:
-    long_description = readme.read().replace("https://coverage.readthedocs.io", __url__)
+    readme_text = readme.read()
+
+temp_url = __url__.replace("readthedocs", "@@")
+assert "@@" not in readme_text
+long_description = (
+    readme_text
+    .replace("https://coverage.readthedocs.io/en/latest", temp_url)
+    .replace("https://coverage.readthedocs.io", temp_url)
+    .replace("@@", "readthedocs")
+)
 
 with open("CONTRIBUTORS.txt", "rb") as contributors:
     paras = contributors.read().split(b"\n\n")
@@ -92,7 +87,7 @@ setup_args = dict(
     package_data={
         'coverage': [
             'htmlfiles/**/*.*',
-            'fullcoverage/*.*',
+            'py.typed',
         ]
     },
 
@@ -120,7 +115,8 @@ setup_args = dict(
     long_description=long_description,
     long_description_content_type='text/x-rst',
     keywords='code coverage testing',
-    license='Apache 2.0',
+    license='Apache-2.0',
+    license_files=["LICENSE.txt"],
     classifiers=classifier_list,
     url="https://github.com/nedbat/coveragepy",
     project_urls={
@@ -130,9 +126,10 @@ setup_args = dict(
             '?utm_source=pypi-coverage&utm_medium=referral&utm_campaign=pypi'
         ),
         'Issues': 'https://github.com/nedbat/coveragepy/issues',
-        'Twitter': 'https://twitter.com/coveragepy',
+        'Mastodon': 'https://hachyderm.io/@coveragepy',
+        'Mastodon (nedbat)': 'https://hachyderm.io/@nedbat',
     },
-    python_requires=">=3.7",    # minimum of PYVERSIONS
+    python_requires=">=3.8",    # minimum of PYVERSIONS
 )
 
 # A replacement for the build_ext command which raises a single exception
@@ -184,10 +181,6 @@ class ve_build_ext(build_ext):
 # Figure out if we should attempt the C extension or not.
 
 compile_extension = True
-
-if sys.platform.startswith('java'):
-    # Jython can't compile C extensions
-    compile_extension = False
 
 if '__pypy__' in sys.builtin_module_names:
     # Pypy can't compile C extensions

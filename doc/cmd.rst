@@ -1,28 +1,12 @@
 .. Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
 .. For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
 
-.. This file is meant to be processed with cog to insert the latest command
+.. This file is processed with cog to insert the latest command
    help into the docs. If it's out of date, the quality checks will fail.
    Running "make prebuild" will bring it up to date.
 
 .. [[[cog
-    import contextlib
-    import io
-    import re
-    import textwrap
-    from coverage.cmdline import CoverageScript
-
-    def show_help(cmd):
-        with contextlib.redirect_stdout(io.StringIO()) as stdout:
-            CoverageScript().command_line([cmd, "--help"])
-        help = stdout.getvalue()
-        help = help.replace("__main__.py", "coverage")
-        help = re.sub(r"(?m)^Full doc.*$", "", help)
-        help = help.rstrip()
-
-        print(".. code::\n")
-        print(f"    $ coverage {cmd} --help")
-        print(textwrap.indent(help, "    "))
+    from cog_helpers import show_configs, show_help
 .. ]]]
 .. [[[end]]] (checksum: d41d8cd98f00b204e9800998ecf8427e)
 
@@ -37,8 +21,8 @@ Command line usage
 When you install coverage.py, a command-line script called ``coverage`` is
 placed on your path.  To help with multi-version installs, it will also create
 a ``coverage3`` alias, and a ``coverage-X.Y`` alias, depending on the version
-of Python you're using.  For example, when installing on Python 3.7, you will
-be able to use ``coverage``, ``coverage3``, or ``coverage-3.7`` on the command
+of Python you're using.  For example, when installing on Python 3.10, you will
+be able to use ``coverage``, ``coverage3``, or ``coverage-3.10`` on the command
 line.
 
 Coverage.py has a number of commands:
@@ -287,15 +271,42 @@ Conflicting dynamic contexts (dynamic-conflict)
 
 Individual warnings can be disabled with the :ref:`disable_warnings
 <config_run_disable_warnings>` configuration setting.  To silence "No data was
-collected," add this to your .coveragerc file::
+collected," add this to your configuration file:
 
-    [run]
-    disable_warnings = no-data-collected
+.. [[[cog
+    show_configs(
+        ini=r"""
+            [run]
+            disable_warnings = no-data-collected
+            """,
+        toml=r"""
+            [tool.coverage.run]
+            disable_warnings = ["no-data-collected"]
+            """,
+        )
+.. ]]]
 
-or pyproject.toml::
+.. tabs::
 
-    [tool.coverage.run]
-    disable_warnings = ['no-data-collected']
+    .. code-tab:: ini
+        :caption: .coveragerc
+
+        [run]
+        disable_warnings = no-data-collected
+
+    .. code-tab:: toml
+        :caption: pyproject.toml
+
+        [tool.coverage.run]
+        disable_warnings = ["no-data-collected"]
+
+    .. code-tab:: ini
+        :caption: setup.cfg, tox.ini
+
+        [coverage:run]
+        disable_warnings = no-data-collected
+
+.. [[[end]]] (checksum: 66c0c28e863c2a44218190a8a6a3f707)
 
 
 .. _cmd_datafile:
@@ -342,7 +353,7 @@ single directory, and use the **combine** command to combine them into one
 
     $ coverage combine
 
-You can also name directories or files on the command line::
+You can also name directories or files to be combined on the command line::
 
     $ coverage combine data1.dat windows_data_files/
 
@@ -364,19 +375,6 @@ An existing combined data file is ignored and re-written. If you want to use
 runs, use the ``--append`` switch on the **combine** command.  This behavior
 was the default before version 4.2.
 
-To combine data for a source file, coverage has to find its data in each of the
-data files.  Different test runs may run the same source file from different
-locations. For example, different operating systems will use different paths
-for the same file, or perhaps each Python version is run from a different
-subdirectory.  Coverage needs to know that different file paths are actually
-the same source file for reporting purposes.
-
-You can tell coverage.py how different source locations relate with a
-``[paths]`` section in your configuration file (see :ref:`config_paths`).
-It might be more convenient to use the ``[run] relative_files``
-setting to store relative file paths (see :ref:`relative_files
-<config_run_relative_files>`).
-
 If any of the data files can't be read, coverage.py will print a warning
 indicating the file and the problem.
 
@@ -389,11 +387,10 @@ want to keep those files, use the ``--keep`` command-line option.
     $ coverage combine --help
     Usage: coverage combine [options] <path1> <path2> ... <pathN>
 
-    Combine data from multiple coverage files collected with 'run -p'.  The
-    combined results are written to a single file representing the union of the
-    data. The positional arguments are data files or directories containing data
-    files. If no paths are provided, data files in the default data file's
-    directory are combined.
+    Combine data from multiple coverage files. The combined results are written to
+    a single file representing the union of the data. The positional arguments are
+    data files or directories containing data files. If no paths are provided,
+    data files in the default data file's directory are combined.
 
     Options:
       -a, --append          Append coverage data to .coverage, otherwise it starts
@@ -409,7 +406,29 @@ want to keep those files, use the ``--keep`` command-line option.
       --rcfile=RCFILE       Specify configuration file. By default '.coveragerc',
                             'setup.cfg', 'tox.ini', and 'pyproject.toml' are
                             tried. [env: COVERAGE_RCFILE]
-.. [[[end]]] (checksum: 0ac91b0781d7146b87953f09090dab92)
+.. [[[end]]] (checksum: 0bdd83f647ee76363c955bedd9ddf749)
+
+
+.. _cmd_combine_remapping:
+
+Re-mapping paths
+................
+
+To combine data for a source file, coverage has to find its data in each of the
+data files.  Different test runs may run the same source file from different
+locations. For example, different operating systems will use different paths
+for the same file, or perhaps each Python version is run from a different
+subdirectory.  Coverage needs to know that different file paths are actually
+the same source file for reporting purposes.
+
+You can tell coverage.py how different source locations relate with a
+``[paths]`` section in your configuration file (see :ref:`config_paths`).
+It might be more convenient to use the ``[run] relative_files``
+setting to store relative file paths (see :ref:`relative_files
+<config_run_relative_files>`).
+
+If data isn't combining properly, you can see details about the inner workings
+with ``--debug=pathmap``.
 
 
 .. _cmd_erase:
@@ -510,6 +529,8 @@ as a percentage.
                             file. Defaults to '.coverage'. [env: COVERAGE_FILE]
       --fail-under=MIN      Exit with a status of 2 if the total coverage is less
                             than MIN.
+      --format=FORMAT       Output format, either text (default), markdown, or
+                            total.
       -i, --ignore-errors   Ignore errors while reading source files.
       --include=PAT1,PAT2,...
                             Include only files whose paths match one of these
@@ -532,7 +553,7 @@ as a percentage.
       --rcfile=RCFILE       Specify configuration file. By default '.coveragerc',
                             'setup.cfg', 'tox.ini', and 'pyproject.toml' are
                             tried. [env: COVERAGE_RCFILE]
-.. [[[end]]] (checksum: 2f8dde61bab2f44fbfe837aeae87dfd2)
+.. [[[end]]] (checksum: 167272a29d9e7eb017a592a0e0747a06)
 
 The ``-m`` flag also shows the line numbers of missing statements::
 
@@ -583,6 +604,12 @@ decimal point in coverage percentages, defaulting to none.
 
 The ``--sort`` option is the name of a column to sort the report by.
 
+The ``--format`` option controls the style of the report.  ``--format=text``
+creates plain text tables as shown above.  ``--format=markdown`` creates
+Markdown tables.  ``--format=total`` writes out a single number, the total
+coverage percentage as shown at the end of the tables, but without a percent
+sign.
+
 Other common reporting options are described above in :ref:`cmd_reporting`.
 These options can also be set in your .coveragerc file. See
 :ref:`Configuration: [report] <config_report>`.
@@ -602,9 +629,10 @@ Here's a `sample report`__.
 
 __ https://nedbatchelder.com/files/sample_coverage_html/index.html
 
-Lines are highlighted green for executed, red for missing, and gray for
-excluded.  The counts at the top of the file are buttons to turn on and off
-the highlighting.
+Lines are highlighted: green for executed, red for missing, and gray for
+excluded.  If you've used branch coverage, partial branches are yellow.  The
+colored counts at the top of the file are buttons to turn on and off the
+highlighting.
 
 A number of keyboard shortcuts are available for navigating the report.
 Click the keyboard icon in the upper right to see the complete list.
@@ -1000,13 +1028,17 @@ of operation to log:
 
 * ``multiproc``: log the start and stop of multiprocessing processes.
 
+* ``pathmap``: log the remapping of paths that happens during ``coverage
+  combine``. See :ref:`config_paths`.
+
 * ``pid``: annotate all warnings and debug output with the process and thread
   ids.
 
 * ``plugin``: print information about plugin operations.
 
 * ``process``: show process creation information, and changes in the current
-  directory.
+  directory.  This also writes a time stamp and command arguments into the data
+  file.
 
 * ``pybehave``: show the values of `internal flags <env.py_>`_ describing the
   behavior of the current version of Python.
@@ -1030,7 +1062,9 @@ Debug options can also be set with the ``COVERAGE_DEBUG`` environment variable,
 a comma-separated list of these options, or in the :ref:`config_run_debug`
 section of the .coveragerc file.
 
-The debug output goes to stderr, unless the ``COVERAGE_DEBUG_FILE`` environment
-variable names a different file, which will be appended to.
-``COVERAGE_DEBUG_FILE`` accepts the special names ``stdout`` and ``stderr`` to
-write to those destinations.
+The debug output goes to stderr, unless the :ref:`config_run_debug_file`
+setting or the ``COVERAGE_DEBUG_FILE`` environment variable names a different
+file, which will be appended to.  This can be useful because many test runners
+capture output, which could hide important details.  ``COVERAGE_DEBUG_FILE``
+accepts the special names ``stdout`` and ``stderr`` to write to those
+destinations.

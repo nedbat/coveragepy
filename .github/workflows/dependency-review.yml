@@ -4,8 +4,15 @@
 #
 # Source repository: https://github.com/actions/dependency-review-action
 # Public documentation: https://docs.github.com/en/code-security/supply-chain-security/understanding-your-software-supply-chain/about-dependency-review#dependency-review-enforcement
+
 name: 'Dependency Review'
-on: [pull_request]
+on:
+  push:
+    branches:
+      - master
+      - nedbat/*
+  pull_request:
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -15,6 +22,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 'Checkout Repository'
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: 'Dependency Review'
-        uses: actions/dependency-review-action@v1
+        uses: actions/dependency-review-action@v3
+        with:
+          base-ref: ${{ github.event.pull_request.base.sha || 'master' }}
+          head-ref: ${{ github.event.pull_request.head.sha || github.ref }}

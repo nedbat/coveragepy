@@ -3,8 +3,11 @@
 
 -c pins.pip
 
-# The light-threads packages we test against
+# The light-threads packages we test against.
 
 eventlet
 gevent
 greenlet
+
+# gevent needs cffi, but only on Windows, not sure why.
+cffi>=1.12.2

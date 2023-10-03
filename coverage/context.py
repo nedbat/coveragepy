@@ -3,8 +3,15 @@
 
 """Determine contexts for coverage.py"""
 
+from __future__ import annotations
 
-def combine_context_switchers(context_switchers):
+from types import FrameType
+from typing import cast, Callable, Optional, Sequence
+
+
+def combine_context_switchers(
+    context_switchers: Sequence[Callable[[FrameType], Optional[str]]],
+) -> Optional[Callable[[FrameType], Optional[str]]]:
     """Create a single context switcher from multiple switchers.
 
     `context_switchers` is a list of functions that take a frame as an
@@ -23,7 +30,7 @@ def combine_context_switchers(context_switchers):
     if len(context_switchers) == 1:
         return context_switchers[0]
 
-    def should_start_context(frame):
+    def should_start_context(frame: FrameType) -> Optional[str]:
         """The combiner for multiple context switchers."""
         for switcher in context_switchers:
             new_context = switcher(frame)
@@ -34,7 +41,7 @@ def combine_context_switchers(context_switchers):
     return should_start_context
 
 
-def should_start_context_test_function(frame):
+def should_start_context_test_function(frame: FrameType) -> Optional[str]:
     """Is this frame calling a test_* function?"""
     co_name = frame.f_code.co_name
     if co_name.startswith("test") or co_name == "runTest":
@@ -42,7 +49,7 @@ def should_start_context_test_function(frame):
     return None
 
 
-def qualname_from_frame(frame):
+def qualname_from_frame(frame: FrameType) -> Optional[str]:
     """Get a qualified name for the code running in `frame`."""
     co = frame.f_code
     fname = co.co_name
@@ -55,11 +62,11 @@ def qualname_from_frame(frame):
         func = frame.f_globals.get(fname)
         if func is None:
             return None
-        return func.__module__ + "." + fname
+        return cast(str, func.__module__ + "." + fname)
 
     func = getattr(method, "__func__", None)
     if func is None:
         cls = self.__class__
-        return cls.__module__ + "." + cls.__name__ + "." + fname
+        return cast(str, cls.__module__ + "." + cls.__name__ + "." + fname)
 
-    return func.__module__ + "." + func.__qualname__
+    return cast(str, func.__module__ + "." + func.__qualname__)

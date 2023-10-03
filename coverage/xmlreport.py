@@ -3,28 +3,55 @@
 
 """XML reporting for coverage.py"""
 
+from __future__ import annotations
+
 import os
 import os.path
 import sys
 import time
 import xml.dom.minidom
 
-from coverage import __url__, __version__, files
+from dataclasses import dataclass
+from typing import Any, Dict, IO, Iterable, Optional, TYPE_CHECKING
+
+from coverage import __version__, files
 from coverage.misc import isolate_module, human_sorted, human_sorted_items
-from coverage.report import get_analysis_to_report
+from coverage.plugin import FileReporter
+from coverage.report_core import get_analysis_to_report
+from coverage.results import Analysis
+from coverage.types import TMorf
+from coverage.version import __url__
+
+if TYPE_CHECKING:
+    from coverage import Coverage
 
 os = isolate_module(os)
 
 
-DTD_URL = 'https://raw.githubusercontent.com/cobertura/web/master/htdocs/xml/coverage-04.dtd'
+DTD_URL = "https://raw.githubusercontent.com/cobertura/web/master/htdocs/xml/coverage-04.dtd"
 
 
-def rate(hit, num):
+def rate(hit: int, num: int) -> str:
     """Return the fraction of `hit`/`num`, as a string."""
     if num == 0:
         return "1"
     else:
-        return "%.4g" % (float(hit) / num)
+        return "%.4g" % (hit / num)
+
+
+@dataclass
+class PackageData:
+    """Data we keep about each "package" (in Java terms)."""
+    elements: Dict[str, xml.dom.minidom.Element]
+    hits: int
+    lines: int
+    br_hits: int
+    branches: int
+
+
+def appendChild(parent: Any, child: Any) -> None:
+    """Append a child to a parent, in a way mypy will shut up about."""
+    parent.appendChild(child)
 
 
 class XmlReporter:
@@ -32,7 +59,7 @@ class XmlReporter:
 
     report_type = "XML report"
 
-    def __init__(self, coverage):
+    def __init__(self, coverage: Coverage) -> None:
         self.coverage = coverage
         self.config = self.coverage.config
 
@@ -40,13 +67,15 @@ class XmlReporter:
         if self.config.source:
             for src in self.config.source:
                 if os.path.exists(src):
-                    if not self.config.relative_files:
+                    if self.config.relative_files:
+                        src = src.rstrip(r"\/")
+                    else:
                         src = files.canonical_filename(src)
                     self.source_paths.add(src)
-        self.packages = {}
-        self.xml_out = None
+        self.packages: Dict[str, PackageData] = {}
+        self.xml_out: xml.dom.minidom.Document
 
-    def report(self, morfs, outfile=None):
+    def report(self, morfs: Optional[Iterable[TMorf]], outfile: Optional[IO[str]] = None) -> float:
         """Generate a Cobertura-compatible XML report for `morfs`.
 
         `morfs` is a list of modules or file names.
@@ -60,6 +89,7 @@ class XmlReporter:
 
         # Create the DOM that will store the data.
         impl = xml.dom.minidom.getDOMImplementation()
+        assert impl is not None
         self.xml_out = impl.createDocument(None, "coverage", None)
 
         # Write header stuff.
@@ -81,9 +111,9 @@ class XmlReporter:
         # Populate the XML DOM with the source info.
         for path in human_sorted(self.source_paths):
             xsource = self.xml_out.createElement("source")
-            xsources.appendChild(xsource)
+            appendChild(xsources, xsource)
             txt = self.xml_out.createTextNode(path)
-            xsource.appendChild(txt)
+            appendChild(xsource, txt)
 
         lnum_tot, lhits_tot = 0, 0
         bnum_tot, bhits_tot = 0, 0
@@ -93,26 +123,25 @@ class XmlReporter:
 
         # Populate the XML DOM with the package info.
         for pkg_name, pkg_data in human_sorted_items(self.packages.items()):
-            class_elts, lhits, lnum, bhits, bnum = pkg_data
             xpackage = self.xml_out.createElement("package")
-            xpackages.appendChild(xpackage)
+            appendChild(xpackages, xpackage)
             xclasses = self.xml_out.createElement("classes")
-            xpackage.appendChild(xclasses)
-            for _, class_elt in human_sorted_items(class_elts.items()):
-                xclasses.appendChild(class_elt)
-            xpackage.setAttribute("name", pkg_name.replace(os.sep, '.'))
-            xpackage.setAttribute("line-rate", rate(lhits, lnum))
+            appendChild(xpackage, xclasses)
+            for _, class_elt in human_sorted_items(pkg_data.elements.items()):
+                appendChild(xclasses, class_elt)
+            xpackage.setAttribute("name", pkg_name.replace(os.sep, "."))
+            xpackage.setAttribute("line-rate", rate(pkg_data.hits, pkg_data.lines))
             if has_arcs:
-                branch_rate = rate(bhits, bnum)
+                branch_rate = rate(pkg_data.br_hits, pkg_data.branches)
             else:
                 branch_rate = "0"
             xpackage.setAttribute("branch-rate", branch_rate)
             xpackage.setAttribute("complexity", "0")
 
-            lnum_tot += lnum
-            lhits_tot += lhits
-            bnum_tot += bnum
-            bhits_tot += bhits
+            lhits_tot += pkg_data.hits
+            lnum_tot += pkg_data.lines
+            bhits_tot += pkg_data.br_hits
+            bnum_tot += pkg_data.branches
 
         xcoverage.setAttribute("lines-valid", str(lnum_tot))
         xcoverage.setAttribute("lines-covered", str(lhits_tot))
@@ -138,37 +167,38 @@ class XmlReporter:
             pct = 100.0 * (lhits_tot + bhits_tot) / denom
         return pct
 
-    def xml_file(self, fr, analysis, has_arcs):
+    def xml_file(self, fr: FileReporter, analysis: Analysis, has_arcs: bool) -> None:
         """Add to the XML report for a single file."""
 
         if self.config.skip_empty:
             if analysis.numbers.n_statements == 0:
                 return
 
-        # Create the 'lines' and 'package' XML elements, which
+        # Create the "lines" and "package" XML elements, which
         # are populated later.  Note that a package == a directory.
         filename = fr.filename.replace("\\", "/")
         for source_path in self.source_paths:
-            source_path = files.canonical_filename(source_path)
+            if not self.config.relative_files:
+                source_path = files.canonical_filename(source_path)
             if filename.startswith(source_path.replace("\\", "/") + "/"):
                 rel_name = filename[len(source_path)+1:]
                 break
         else:
-            rel_name = fr.relative_filename()
+            rel_name = fr.relative_filename().replace("\\", "/")
             self.source_paths.add(fr.filename[:-len(rel_name)].rstrip(r"\/"))
 
         dirname = os.path.dirname(rel_name) or "."
         dirname = "/".join(dirname.split("/")[:self.config.xml_package_depth])
         package_name = dirname.replace("/", ".")
 
-        package = self.packages.setdefault(package_name, [{}, 0, 0, 0, 0])
+        package = self.packages.setdefault(package_name, PackageData({}, 0, 0, 0, 0))
 
-        xclass = self.xml_out.createElement("class")
+        xclass: xml.dom.minidom.Element = self.xml_out.createElement("class")
 
-        xclass.appendChild(self.xml_out.createElement("methods"))
+        appendChild(xclass, self.xml_out.createElement("methods"))
 
         xlines = self.xml_out.createElement("lines")
-        xclass.appendChild(xlines)
+        appendChild(xclass, xlines)
 
         xclass.setAttribute("name", os.path.relpath(rel_name, dirname))
         xclass.setAttribute("filename", rel_name.replace("\\", "/"))
@@ -177,7 +207,7 @@ class XmlReporter:
         branch_stats = analysis.branch_stats()
         missing_branch_arcs = analysis.missing_branch_arcs()
 
-        # For each statement, create an XML 'line' element.
+        # For each statement, create an XML "line" element.
         for line in sorted(analysis.statements):
             xline = self.xml_out.createElement("line")
             xline.setAttribute("number", str(line))
@@ -197,7 +227,7 @@ class XmlReporter:
                 if line in missing_branch_arcs:
                     annlines = ["exit" if b < 0 else str(b) for b in missing_branch_arcs[line]]
                     xline.setAttribute("missing-branches", ",".join(annlines))
-            xlines.appendChild(xline)
+            appendChild(xlines, xline)
 
         class_lines = len(analysis.statements)
         class_hits = class_lines - len(analysis.missing)
@@ -207,8 +237,8 @@ class XmlReporter:
             missing_branches = sum(t - k for t, k in branch_stats.values())
             class_br_hits = class_branches - missing_branches
         else:
-            class_branches = 0.0
-            class_br_hits = 0.0
+            class_branches = 0
+            class_br_hits = 0
 
         # Finalize the statistics that are collected in the XML DOM.
         xclass.setAttribute("line-rate", rate(class_hits, class_lines))
@@ -218,13 +248,13 @@ class XmlReporter:
             branch_rate = "0"
         xclass.setAttribute("branch-rate", branch_rate)
 
-        package[0][rel_name] = xclass
-        package[1] += class_hits
-        package[2] += class_lines
-        package[3] += class_br_hits
-        package[4] += class_branches
+        package.elements[rel_name] = xclass
+        package.hits += class_hits
+        package.lines += class_lines
+        package.br_hits += class_br_hits
+        package.branches += class_branches
 
 
-def serialize_xml(dom):
+def serialize_xml(dom: xml.dom.minidom.Document) -> str:
     """Serialize a minidom node to XML."""
     return dom.toprettyxml()

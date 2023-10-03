@@ -29,6 +29,7 @@ import csv
 import os
 import shutil
 import time
+
 from pathlib import Path
 
 import pytest
@@ -64,7 +65,7 @@ class BalanceXdistPlugin:       # pragma: debugging
         if not self.running_all:
             return
 
-        tests_csv_dir = Path(session.startdir).resolve() / "tmp/tests_csv"
+        tests_csv_dir = session.startpath.resolve() / "tmp/tests_csv"
         self.tests_csv = tests_csv_dir / f"{self.worker}.csv"
 
         if self.worker == "none":
@@ -104,7 +105,7 @@ class BalanceXdistPlugin:       # pragma: debugging
         yield
         self.write_duration_row(item, "teardown", time.time() - start)
 
-    @pytest.mark.trylast
+    @pytest.hookimpl(trylast=True)
     def pytest_xdist_make_scheduler(self, config, log):
         """Create our BalancedScheduler using time data from the last run."""
         # Assign tests to chunks
@@ -116,7 +117,7 @@ class BalanceXdistPlugin:       # pragma: debugging
         clumped = set()
         clumps = config.getini("balanced_clumps")
         for i, clump_word in enumerate(clumps):
-            clump_nodes = set(nodeid for nodeid in self.times.keys() if clump_word in nodeid)
+            clump_nodes = {nodeid for nodeid in self.times.keys() if clump_word in nodeid}
             i %= nchunks
             tests[i].update(clump_nodes)
             totals[i] += sum(self.times[nodeid] for nodeid in clump_nodes)

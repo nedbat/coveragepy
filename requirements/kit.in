@@ -11,3 +11,9 @@ build
 cibuildwheel
 setuptools
 wheel
+
+# Build has a windows-only dependency on colorama:
+# https://github.com/pypa/build/blob/main/setup.cfg#L32
+#   colorama;os_name == "nt"
+# We copy it here so it can get pinned.
+colorama

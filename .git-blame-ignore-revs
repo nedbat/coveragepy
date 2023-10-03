@@ -1,0 +1,14 @@
+# Commits to ignore when doing git-blame.
+
+# 2023-01-05 style: use good style for annotated defaults parameters
+78444f4c06df6a634fa67dd99ee7c07b6b633d9e
+
+# 2023-01-06 style(perf): blacken lab/benchmark.py
+bf6c12f5da54db7c5c0cc47cbf22c70f686e8236
+
+# 2023-03-22 style: use double-quotes
+16abd82b6e87753184e8308c4b2606ff3979f8d3
+b7be64538aa480fce641349d3053e9a84862d571
+
+# 2023-04-01 style: use double-quotes in JavaScript
+b03ab92bae24c54f1d5a98baa3af6b9a18de4d36

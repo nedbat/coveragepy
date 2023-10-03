@@ -1,6 +1,8 @@
 .. Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
 .. For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
 
+.. Command samples here were made with a 100-column terminal.
+
 .. _contributing:
 
 ===========================
@@ -9,9 +11,10 @@ Contributing to coverage.py
 
 .. highlight:: console
 
-I welcome contributions to coverage.py.  Over the years, dozens of people have
-provided patches of various sizes to add features or fix bugs.  This page
-should have all the information you need to make a contribution.
+I welcome contributions to coverage.py.  Over the years, hundreds of people
+have provided contributions of various sizes to add features, fix bugs, or just
+help diagnose thorny issues.  This page should have all the information you
+need to make a contribution.
 
 One source of history or ideas are the `bug reports`_ against coverage.py.
 There you can find ideas for requested features, or the remains of rejected
@@ -37,24 +40,24 @@ The coverage.py code is hosted on a GitHub repository at
 https://github.com/nedbat/coveragepy.  To get a working environment, follow
 these steps:
 
-.. minimum of PYVERSIONS:
+#.  `Fork the repo`_ into your own GitHub account.  The coverage.py code will
+    then be copied into a GitHub repository at
+    ``https://github.com/GITHUB_USER/coveragepy`` where GITHUB_USER is your
+    GitHub username.
 
-#.  (Optional, but recommended) Create a Python 3.7 virtualenv to work in,
-    and activate it.
+#.  (Optional) Create a virtualenv to work in, and activate it.  There
+    are a number of ways to do this.  Use the method you are comfortable with.
 
 #.  Clone the repository::
 
-    $ git clone https://github.com/nedbat/coveragepy
+    $ git clone https://github.com/GITHUB_USER/coveragepy
     $ cd coveragepy
 
 #.  Install the requirements::
 
-    $ pip install -r requirements/dev.pip
+    $ python3 -m pip install -r requirements/dev.in
 
-#.  Install a number of versions of Python.  Coverage.py supports a range
-    of Python versions.  The more you can test with, the more easily your code
-    can be used as-is.  If you only have one version, that's OK too, but may
-    mean more work integrating your contribution.
+    Note: You may need to upgrade pip to install the requirements.
 
 
 Running the tests
@@ -63,73 +66,130 @@ Running the tests
 The tests are written mostly as standard unittest-style tests, and are run with
 pytest running under `tox`_::
 
-    $ tox
-    py37 create: /Users/nedbat/coverage/trunk/.tox/py37
-    py37 installdeps: -rrequirements/pip.pip, -rrequirements/pytest.pip, eventlet==0.25.1, greenlet==0.4.15
-    py37 develop-inst: /Users/nedbat/coverage/trunk
-    py37 installed: apipkg==1.5,appdirs==1.4.4,attrs==20.3.0,backports.functools-lru-cache==1.6.4,-e git+git@github.com:nedbat/coveragepy.git@36ef0e03c0439159c2245d38de70734fa08cddb4#egg=coverage,decorator==5.0.7,distlib==0.3.1,dnspython==2.1.0,eventlet==0.25.1,execnet==1.8.0,filelock==3.0.12,flaky==3.7.0,future==0.18.2,greenlet==0.4.15,hypothesis==6.10.1,importlib-metadata==4.0.1,iniconfig==1.1.1,monotonic==1.6,packaging==20.9,pluggy==0.13.1,py==1.10.0,PyContracts @ git+https://github.com/slorg1/contracts@c5a6da27d4dc9985f68e574d20d86000880919c3,pyparsing==2.4.7,pytest==6.2.3,pytest-forked==1.3.0,pytest-xdist==2.2.1,qualname==0.1.0,six==1.15.0,sortedcontainers==2.3.0,toml==0.10.2,typing-extensions==3.10.0.0,virtualenv==20.4.4,zipp==3.4.1
-    py37 run-test-pre: PYTHONHASHSEED='376882681'
-    py37 run-test: commands[0] | python setup.py --quiet clean develop
-    py37 run-test: commands[1] | python igor.py zip_mods remove_extension
-    py37 run-test: commands[2] | python igor.py test_with_tracer py
-    === CPython 3.7.10 with Python tracer (.tox/py37/bin/python) ===
+    $ python3 -m tox -e py38
+    ROOT: tox-gh won't override envlist because tox is not running in GitHub Actions
+    py38: wheel-0.40.0-py3-none-any.whl already present in /Users/nedbatchelder/Library/Application Support/virtualenv/wheel/3.8/embed/3/wheel.json
+    py38: pip-23.1.2-py3-none-any.whl already present in /Users/nedbatchelder/Library/Application Support/virtualenv/wheel/3.8/embed/3/pip.json
+    py38: setuptools-67.8.0-py3-none-any.whl already present in /Users/nedbatchelder/Library/Application Support/virtualenv/wheel/3.8/embed/3/setuptools.json
+    py38: install_deps> python -m pip install -U -r requirements/pip.pip -r requirements/pytest.pip -r requirements/light-threads.pip
+    .pkg: install_requires> python -I -m pip install setuptools
+    .pkg: _optional_hooks> python /usr/local/virtualenvs/coverage/lib/python3.8/site-packages/pyproject_api/_backend.py True setuptools.build_meta
+    .pkg: get_requires_for_build_editable> python /usr/local/virtualenvs/coverage/lib/python3.8/site-packages/pyproject_api/_backend.py True setuptools.build_meta
+    .pkg: install_requires_for_build_editable> python -I -m pip install wheel
+    .pkg: build_editable> python /usr/local/virtualenvs/coverage/lib/python3.8/site-packages/pyproject_api/_backend.py True setuptools.build_meta
+    py38: install_package_deps> python -m pip install -U 'tomli; python_full_version <= "3.11.0a6"'
+    py38: install_package> python -m pip install -U --force-reinstall --no-deps .tox/.tmp/package/1/coverage-7.2.8a0.dev1-0.editable-cp38-cp38-macosx_13_0_x86_64.whl
+    py38: commands[0]> python igor.py zip_mods
+    py38: commands[1]> python setup.py --quiet build_ext --inplace
+    py38: commands[2]> python -m pip install -q -e .
+    py38: commands[3]> python igor.py test_with_tracer c
+    === CPython 3.8.17 with C tracer (.tox/py38/bin/python) ===
     bringing up nodes...
-    ........................................................................................................................................................... [ 15%]
-    ........................................................................................................................................................... [ 31%]
-    ...........................................................................................................................................s............... [ 47%]
-    ...........................................s...................................................................................sss.sssssssssssssssssss..... [ 63%]
-    ........................................................................................................................................................s.. [ 79%]
-    ......................................s..................................s................................................................................. [ 95%]
-    ........................................ss......                                                                                                            [100%]
-    949 passed, 29 skipped in 40.56s
-    py37 run-test: commands[3] | python setup.py --quiet build_ext --inplace
-    py37 run-test: commands[4] | python igor.py test_with_tracer c
-    === CPython 3.7.10 with C tracer (.tox/py37/bin/python) ===
+    ............................................................................................ [  6%]
+    ...................................x.....x...............s..s..s.s.......................... [ 13%]
+    ............................................................................................ [ 20%]
+    ............................................................................................ [ 27%]
+    ............................................................................................ [ 34%]
+    ............................................................................................ [ 41%]
+    ............................................................................................ [ 47%]
+    ............................................................................................ [ 54%]
+    ........................................................s...........s....................... [ 61%]
+    ............................................................................................ [ 68%]
+    ..........s...........................s...........s......................................... [ 75%]
+    ..................s...................s..............................................s...... [ 82%]
+    ...............................s............................................................ [ 88%]
+    ............................................................................................ [ 95%]
+    .............................s.............................                                  [100%]
+    1332 passed, 14 skipped, 2 xfailed in 60.54s (0:01:00)
+    py38: commands[4]> python igor.py remove_extension
+    py38: commands[5]> python igor.py test_with_tracer py
+    === CPython 3.8.17 with Python tracer (.tox/py38/bin/python) ===
     bringing up nodes...
-    ........................................................................................................................................................... [ 15%]
-    ........................................................................................................................................................... [ 31%]
-    ......................................................................s.................................................................................... [ 47%]
-    ........................................................................................................................................................... [ 63%]
-    ..........................s................................................s............................................................................... [ 79%]
-    .................................................................................s......................................................................... [ 95%]
-    ......................................s.........                                                                                                            [100%]
-    973 passed, 5 skipped in 41.36s
-    ____________________________________________________________________________ summary _____________________________________________________________________________
-      py37: commands succeeded
-      congratulations :)
+    ............................................................................................ [  6%]
+    .............................x.............................................................. [ 13%]
+    ..ss...................................x.....................................ss............. [ 20%]
+    ..........s.....................................ss...................s.................sss.. [ 27%]
+    .ss.....s................................................................................... [ 34%]
+    ............................................................................................ [ 41%]
+    ....................................................................s....................... [ 47%]
+    .....................................................................s..s.ss................ [ 54%]
+    ...ss.sss.......................................................s........s........sss....... [ 61%]
+    .ss...............s.s..................s.................s.s................................ [ 68%]
+    ...........................................................................................s [ 75%]
+    ........................................................s.......................s........... [ 82%]
+    ....................ss.s........................ssss........................................ [ 88%]
+    ............................................................................................ [ 95%]
+    ................................s...............ss.........                                  [100%]
+    1297 passed, 49 skipped, 2 xfailed in 44.59s
+    .pkg: _exit> python /usr/local/virtualenvs/coverage/lib/python3.8/site-packages/pyproject_api/_backend.py True setuptools.build_meta
+      py38: OK (143.82=setup[23.23]+cmd[0.29,1.60,8.43,61.64,0.34,48.28] seconds)
+      congratulations :) (144.93 seconds)
 
 Tox runs the complete test suite twice for each version of Python you have
-installed.  The first run uses the Python implementation of the trace function,
-the second uses the C implementation.
+installed.  The first run uses the C implementation of the trace function,
+the second uses the Python implementation.
 
 To limit tox to just a few versions of Python, use the ``-e`` switch::
 
-    $ tox -e py37,py39
+    $ python3 -m tox -e py38,py39
 
-To run just a few tests, you can use `pytest test selectors`_::
+On the tox command line, options after ``--`` are passed to pytest.  To run
+just a few tests, you can use `pytest test selectors`_::
 
-    $ tox tests/test_misc.py
-    $ tox tests/test_misc.py::HasherTest
-    $ tox tests/test_misc.py::HasherTest::test_string_hashing
+    $ python3 -m tox -- tests/test_misc.py
+    $ python3 -m tox -- tests/test_misc.py::HasherTest
+    $ python3 -m tox -- tests/test_misc.py::HasherTest::test_string_hashing
 
-These command run the tests in one file, one class, and just one test,
-respectively.
+These commands run the tests in one file, one class, and just one test,
+respectively.  The pytest ``-k`` option selects tests based on a word in their
+name, which can be very convenient for ad-hoc test selection.  Of course you
+can combine tox and pytest options::
+
+    $ python3 -m tox -q -e py310 -- -n 0 -vv -k hash
+    === CPython 3.10.12 with C tracer (.tox/py310/bin/python) ===
+    ======================================= test session starts ========================================
+    platform darwin -- Python 3.10.12, pytest-7.3.2, pluggy-1.0.0 -- /Users/nedbatchelder/coverage/trunk/.tox/py310/bin/python
+    cachedir: .tox/py310/.pytest_cache
+    hypothesis profile 'default' -> database=DirectoryBasedExampleDatabase('/Users/nedbatchelder/coverage/trunk/.hypothesis/examples')
+    rootdir: /Users/nedbatchelder/coverage/trunk
+    configfile: pyproject.toml
+    plugins: hypothesis-6.78.3, flaky-3.7.0, xdist-3.3.1
+    collected 1348 items / 1338 deselected / 10 selected
+    run-last-failure: no previously failed tests, not deselecting items.
+
+    tests/test_data.py::CoverageDataTest::test_add_to_hash_with_lines PASSED                     [ 10%]
+    tests/test_data.py::CoverageDataTest::test_add_to_hash_with_arcs PASSED                      [ 20%]
+    tests/test_data.py::CoverageDataTest::test_add_to_lines_hash_with_missing_file PASSED        [ 30%]
+    tests/test_data.py::CoverageDataTest::test_add_to_arcs_hash_with_missing_file PASSED         [ 40%]
+    tests/test_execfile.py::RunPycFileTest::test_running_hashed_pyc PASSED                       [ 50%]
+    tests/test_misc.py::HasherTest::test_string_hashing PASSED                                   [ 60%]
+    tests/test_misc.py::HasherTest::test_bytes_hashing PASSED                                    [ 70%]
+    tests/test_misc.py::HasherTest::test_unicode_hashing PASSED                                  [ 80%]
+    tests/test_misc.py::HasherTest::test_dict_hashing PASSED                                     [ 90%]
+    tests/test_misc.py::HasherTest::test_dict_collision PASSED                                   [100%]
+
+    =============================== 10 passed, 1338 deselected in 2.24s ================================
+    Skipping tests with Python tracer: Only one tracer: no Python tracer for CPython
+      py310: OK (17.99 seconds)
+      congratulations :) (19.09 seconds)
 
 You can also affect the test runs with environment variables. Define any of
 these as 1 to use them:
 
-- COVERAGE_NO_PYTRACER: disables the Python tracer if you only want to run the
-  CTracer tests.
+- ``COVERAGE_NO_PYTRACER=1`` disables the Python tracer if you only want to
+  run the CTracer tests.
 
-- COVERAGE_NO_CTRACER: disables the C tracer if you only want to run the
+- ``COVERAGE_NO_CTRACER=1`` disables the C tracer if you only want to run the
   PyTracer tests.
 
-- COVERAGE_ONE_TRACER: only use one tracer for each Python version.  This will
-  use the C tracer if it is available, or the Python tracer if not.
+- ``COVERAGE_ONE_TRACER=1`` will use only one tracer for each Python version.
+  This will use the C tracer if it is available, or the Python tracer if not.
 
-- COVERAGE_AST_DUMP: will dump the AST tree as it is being used during code
-  parsing.
+- ``COVERAGE_AST_DUMP=1`` will dump the AST tree as it is being used during
+  code parsing.
 
+There are other environment variables that affect tests.  I use `set_env.py`_
+as a simple terminal interface to see and set them.
 
 Of course, run all the tests on every version of Python you have, before
 submitting a change.
@@ -140,24 +200,55 @@ submitting a change.
 Lint, etc
 ---------
 
-I try to keep the coverage.py as clean as possible.  I use pylint to alert me
-to possible problems::
+I try to keep the coverage.py source as clean as possible.  I use pylint to
+alert me to possible problems::
 
     $ make lint
-    pylint coverage setup.py tests
-    python -m tabnanny coverage setup.py tests
-    python igor.py check_eol
 
 The source is pylint-clean, even if it's because there are pragmas quieting
 some warnings.  Please try to keep it that way, but don't let pylint warnings
 keep you from sending patches.  I can clean them up.
 
 Lines should be kept to a 100-character maximum length.  I recommend an
-`editorconfig.org`_ plugin for your editor of choice.
+`editorconfig.org`_ plugin for your editor of choice, which will also help with
+indentation, line endings and so on.
 
 Other style questions are best answered by looking at the existing code.
 Formatting of docstrings, comments, long lines, and so on, should match the
 code that already exists.
+
+Many people love `black`_, but I would prefer not to run it on coverage.py.
+
+
+Continuous integration
+----------------------
+
+When you make a pull request, `GitHub actions`__ will run all of the tests and
+quality checks on your changes.  If any fail, either fix them or ask for help.
+
+__ https://github.com/nedbat/coveragepy/actions
+
+
+Dependencies
+------------
+
+Coverage.py has no direct runtime dependencies, and I would like to keep it
+that way.
+
+It has many development dependencies.  These are specified generically in the
+``requirements/*.in`` files.  The .in files should have no versions specified
+in them.  The specific versions to use are pinned in ``requirements/*.pip``
+files.  These are created by running ``make upgrade``.
+
+.. minimum of PYVERSIONS:
+
+It's important to use Python 3.8 to run ``make upgrade`` so that the pinned
+versions will work on all of the Python versions currently supported by
+coverage.py.
+
+If for some reason we need to constrain a version of a dependency, the
+constraint should be specified in the ``requirements/pins.pip`` file, with a
+detailed reason for the pin.
 
 
 Coverage testing coverage.py
@@ -180,6 +271,12 @@ When you are ready to contribute a change, any way you can get it to me is
 probably fine.  A pull request on GitHub is great, but a simple diff or
 patch works too.
 
+All contributions are expected to include tests for new functionality and
+fixes.  If you need help writing tests, please ask.
 
+
+.. _fork the repo: https://docs.github.com/en/get-started/quickstart/fork-a-repo
 .. _editorconfig.org: http://editorconfig.org
 .. _tox: https://tox.readthedocs.io/
+.. _black: https://pypi.org/project/black/
+.. _set_env.py: https://nedbatchelder.com/blog/201907/set_envpy.html

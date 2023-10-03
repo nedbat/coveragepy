@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Coverage for bom.py: 71%</title>
+    <title>Coverage for bom.py: 100%</title>
     <link rel="icon" sizes="32x32" href="favicon_32.png">
     <link rel="stylesheet" href="style.css" type="text/css">
     <script type="text/javascript" src="coverage_html.js" defer></script>
@@ -12,7 +12,7 @@
     <div class="content">
         <h1>
             <span class="text">Coverage for </span><b>bom.py</b>:
-            <span class="pc_cov">71%</span>
+            <span class="pc_cov">100%</span>
         </h1>
         <aside id="help_panel_wrapper">
             <input id="help_panel_state" type="checkbox">
@@ -54,9 +54,9 @@
             </div>
         </aside>
         <h2>
-            <span class="text">7 statements &nbsp;</span>
-            <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">5<span class="text"> run</span></button>
-            <button type="button" class="mis show_mis button_toggle_mis" value="mis" data-shortcut="m" title="Toggle lines missing">2<span class="text"> missing</span></button>
+            <span class="text">3 statements &nbsp;</span>
+            <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">3<span class="text"> run</span></button>
+            <button type="button" class="mis show_mis button_toggle_mis" value="mis" data-shortcut="m" title="Toggle lines missing">0<span class="text"> missing</span></button>
             <button type="button" class="exc show_exc button_toggle_exc" value="exc" data-shortcut="x" title="Toggle lines excluded">0<span class="text"> excluded</span></button>
         </h2>
         <p class="text">
@@ -64,8 +64,8 @@
             <a id="indexLink" class="nav" href="index.html">&Hat; index</a> &nbsp; &nbsp;
             <a id="nextFileLink" class="nav" href="index.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
-            <a class="nav" href="https://coverage.readthedocs.io/en/6.4a0">coverage.py v6.4a0</a>,
-            created at 2022-05-20 16:29 -0400
+            <a class="nav" href="https://coverage.readthedocs.io/en/7.2.8a0.dev1">coverage.py v7.2.8a0.dev1</a>,
+            created at 2023-06-19 21:52 -0400
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"/>
@@ -83,14 +83,8 @@
     <p class="pln"><span class="n"><a id="t1" href="#t1">1</a></span><span class="t"><span class="com"># A Python source file in utf-8, with BOM.</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t2" href="#t2">2</a></span><span class="t"><span class="nam">math</span> <span class="op">=</span> <span class="str">"3&#215;4 = 12, &#247;2 = 6&#177;0"</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t3" href="#t3">3</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t4" href="#t4">4</a></span><span class="t"><span class="key">import</span> <span class="nam">sys</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t5" href="#t5">5</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t6" href="#t6">6</a></span><span class="t"><span class="key">if</span> <span class="nam">sys</span><span class="op">.</span><span class="nam">version_info</span> <span class="op">>=</span> <span class="op">(</span><span class="num">3</span><span class="op">,</span> <span class="num">0</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t7" href="#t7">7</a></span><span class="t">    <span class="key">assert</span> <span class="nam">len</span><span class="op">(</span><span class="nam">math</span><span class="op">)</span> <span class="op">==</span> <span class="num">18</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t8" href="#t8">8</a></span><span class="t">    <span class="key">assert</span> <span class="nam">len</span><span class="op">(</span><span class="nam">math</span><span class="op">.</span><span class="nam">encode</span><span class="op">(</span><span class="str">'utf-8'</span><span class="op">)</span><span class="op">)</span> <span class="op">==</span> <span class="num">21</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t9" href="#t9">9</a></span><span class="t"><span class="key">else</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t10" href="#t10">10</a></span><span class="t">    <span class="key">assert</span> <span class="nam">len</span><span class="op">(</span><span class="nam">math</span><span class="op">)</span> <span class="op">==</span> <span class="num">21</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t11" href="#t11">11</a></span><span class="t">    <span class="key">assert</span> <span class="nam">len</span><span class="op">(</span><span class="nam">math</span><span class="op">.</span><span class="nam">decode</span><span class="op">(</span><span class="str">'utf-8'</span><span class="op">)</span><span class="op">)</span> <span class="op">==</span> <span class="num">18</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t4" href="#t4">4</a></span><span class="t"><span class="key">assert</span> <span class="nam">len</span><span class="op">(</span><span class="nam">math</span><span class="op">)</span> <span class="op">==</span> <span class="num">18</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t5" href="#t5">5</a></span><span class="t"><span class="key">assert</span> <span class="nam">len</span><span class="op">(</span><span class="nam">math</span><span class="op">.</span><span class="nam">encode</span><span class="op">(</span><span class="str">'utf-8'</span><span class="op">)</span><span class="op">)</span> <span class="op">==</span> <span class="num">21</span>&nbsp;</span><span class="r"></span></p>
 </main>
 <footer>
     <div class="content">
@@ -99,8 +93,8 @@
             <a id="indexLink" class="nav" href="index.html">&Hat; index</a> &nbsp; &nbsp;
             <a id="nextFileLink" class="nav" href="index.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
-            <a class="nav" href="https://coverage.readthedocs.io/en/6.4a0">coverage.py v6.4a0</a>,
-            created at 2022-05-20 16:29 -0400
+            <a class="nav" href="https://coverage.readthedocs.io/en/7.2.8a0.dev1">coverage.py v7.2.8a0.dev1</a>,
+            created at 2023-06-19 21:52 -0400
         </p>
     </div>
 </footer>

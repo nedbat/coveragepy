@@ -10,15 +10,21 @@ imports working.
 
 """
 
+from __future__ import annotations
+
 import glob
+import hashlib
 import os.path
 
+from typing import Callable, Dict, Iterable, List, Optional
+
 from coverage.exceptions import CoverageException, NoDataError
-from coverage.misc import file_be_gone, human_sorted, plural
+from coverage.files import PathAliases
+from coverage.misc import Hasher, file_be_gone, human_sorted, plural
 from coverage.sqldata import CoverageData
 
 
-def line_counts(data, fullpath=False):
+def line_counts(data: CoverageData, fullpath: bool = False) -> Dict[str, int]:
     """Return a dict summarizing the line coverage data.
 
     Keys are based on the file names, and values are the number of executed
@@ -29,17 +35,20 @@ def line_counts(data, fullpath=False):
 
     """
     summ = {}
+    filename_fn: Callable[[str], str]
     if fullpath:
         # pylint: disable=unnecessary-lambda-assignment
         filename_fn = lambda f: f
     else:
         filename_fn = os.path.basename
     for filename in data.measured_files():
-        summ[filename_fn(filename)] = len(data.lines(filename))
+        lines = data.lines(filename)
+        assert lines is not None
+        summ[filename_fn(filename)] = len(lines)
     return summ
 
 
-def add_data_to_hash(data, filename, hasher):
+def add_data_to_hash(data: CoverageData, filename: str, hasher: Hasher) -> None:
     """Contribute `filename`'s data to the `hasher`.
 
     `hasher` is a `coverage.misc.Hasher` instance to be updated with
@@ -50,11 +59,11 @@ def add_data_to_hash(data, filename, hasher):
     if data.has_arcs():
         hasher.update(sorted(data.arcs(filename) or []))
     else:
-        hasher.update(sorted(data.lines(filename) or []))
+        hasher.update(sorted_lines(data, filename))
     hasher.update(data.file_tracer(filename))
 
 
-def combinable_files(data_file, data_paths=None):
+def combinable_files(data_file: str, data_paths: Optional[Iterable[str]] = None) -> List[str]:
     """Make a list of data files to be combined.
 
     `data_file` is a path to a data file.  `data_paths` is a list of files or
@@ -70,16 +79,26 @@ def combinable_files(data_file, data_paths=None):
         if os.path.isfile(p):
             files_to_combine.append(os.path.abspath(p))
         elif os.path.isdir(p):
-            pattern = os.path.join(os.path.abspath(p), f"{local}.*")
+            pattern = glob.escape(os.path.join(os.path.abspath(p), local)) +".*"
             files_to_combine.extend(glob.glob(pattern))
         else:
             raise NoDataError(f"Couldn't combine from non-existent path '{p}'")
+
+    # SQLite might have made journal files alongside our database files.
+    # We never want to combine those.
+    files_to_combine = [fnm for fnm in files_to_combine if not fnm.endswith("-journal")]
+
     return files_to_combine
 
 
 def combine_parallel_data(
-    data, aliases=None, data_paths=None, strict=False, keep=False, message=None,
-):
+    data: CoverageData,
+    aliases: Optional[PathAliases] = None,
+    data_paths: Optional[Iterable[str]] = None,
+    strict: bool = False,
+    keep: bool = False,
+    message: Optional[Callable[[str], None]] = None,
+) -> None:
     """Combine a number of data files together.
 
     `data` is a CoverageData.
@@ -97,12 +116,14 @@ def combine_parallel_data(
     If `data_paths` is not provided, then the directory portion of
     `data.filename` is used as the directory to search for data files.
 
-    Unless `keep` is True every data file found and combined is then deleted from disk. If a file
-    cannot be read, a warning will be issued, and the file will not be
-    deleted.
+    Unless `keep` is True every data file found and combined is then deleted
+    from disk. If a file cannot be read, a warning will be issued, and the
+    file will not be deleted.
 
     If `strict` is true, and no files are found to combine, an error is
     raised.
+
+    `message` is a function to use for printing messages to the user.
 
     """
     files_to_combine = combinable_files(data.base_filename(), data_paths)
@@ -110,39 +131,66 @@ def combine_parallel_data(
     if strict and not files_to_combine:
         raise NoDataError("No data to combine")
 
-    files_combined = 0
+    file_hashes = set()
+    combined_any = False
+
     for f in files_to_combine:
         if f == data.data_filename():
             # Sometimes we are combining into a file which is one of the
             # parallel files.  Skip that file.
-            if data._debug.should('dataio'):
+            if data._debug.should("dataio"):
                 data._debug.write(f"Skipping combining ourself: {f!r}")
             continue
-        if data._debug.should('dataio'):
-            data._debug.write(f"Combining data file {f!r}")
-        try:
-            new_data = CoverageData(f, debug=data._debug)
-            new_data.read()
-        except CoverageException as exc:
-            if data._warn:
-                # The CoverageException has the file name in it, so just
-                # use the message as the warning.
-                data._warn(str(exc))
-        else:
-            data.update(new_data, aliases=aliases)
-            files_combined += 1
-            if message:
-                message(f"Combined data file {os.path.relpath(f)}")
-            if not keep:
-                if data._debug.should('dataio'):
-                    data._debug.write(f"Deleting combined data file {f!r}")
-                file_be_gone(f)
 
-    if strict and not files_combined:
+        try:
+            rel_file_name = os.path.relpath(f)
+        except ValueError:
+            # ValueError can be raised under Windows when os.getcwd() returns a
+            # folder from a different drive than the drive of f, in which case
+            # we print the original value of f instead of its relative path
+            rel_file_name = f
+
+        with open(f, "rb") as fobj:
+            hasher = hashlib.new("sha3_256")
+            hasher.update(fobj.read())
+            sha = hasher.digest()
+            combine_this_one = sha not in file_hashes
+
+        delete_this_one = not keep
+        if combine_this_one:
+            if data._debug.should("dataio"):
+                data._debug.write(f"Combining data file {f!r}")
+            file_hashes.add(sha)
+            try:
+                new_data = CoverageData(f, debug=data._debug)
+                new_data.read()
+            except CoverageException as exc:
+                if data._warn:
+                    # The CoverageException has the file name in it, so just
+                    # use the message as the warning.
+                    data._warn(str(exc))
+                if message:
+                    message(f"Couldn't combine data file {rel_file_name}: {exc}")
+                delete_this_one = False
+            else:
+                data.update(new_data, aliases=aliases)
+                combined_any = True
+                if message:
+                    message(f"Combined data file {rel_file_name}")
+        else:
+            if message:
+                message(f"Skipping duplicate data {rel_file_name}")
+
+        if delete_this_one:
+            if data._debug.should("dataio"):
+                data._debug.write(f"Deleting data file {f!r}")
+            file_be_gone(f)
+
+    if strict and not combined_any:
         raise NoDataError("No usable data files")
 
 
-def debug_data_file(filename):
+def debug_data_file(filename: str) -> None:
     """Implementation of 'coverage debug data'."""
     data = CoverageData(filename)
     filename = data.data_filename()
@@ -162,3 +210,9 @@ def debug_data_file(filename):
         if plugin:
             line += f" [{plugin}]"
         print(line)
+
+
+def sorted_lines(data: CoverageData, filename: str) -> List[int]:
+    """Get the sorted lines for a file, for tests."""
+    lines = data.lines(filename)
+    return sorted(lines or [])

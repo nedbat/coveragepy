@@ -3,6 +3,8 @@
 
 """Helpers for coverage.py tests."""
 
+from __future__ import annotations
+
 import collections
 import contextlib
 import os
@@ -13,16 +15,21 @@ import subprocess
 import textwrap
 import warnings
 
-from unittest import mock
+from pathlib import Path
+from typing import (
+    Any, Callable, Iterable, Iterator, List, NoReturn, Optional, Set, Tuple, Type,
+    TypeVar, Union, cast,
+)
 
 import pytest
 
 from coverage import env
 from coverage.exceptions import CoverageWarning
 from coverage.misc import output_encoding
+from coverage.types import TArc, TLineNo
 
 
-def run_command(cmd):
+def run_command(cmd: str) -> Tuple[int, str]:
     """Run a command in a sub-process.
 
     Returns the exit status code and the combined stdout and stderr.
@@ -30,8 +37,8 @@ def run_command(cmd):
     """
     # Subprocesses are expensive, but convenient, and so may be over-used in
     # the test suite.  Use these lines to get a list of the tests using them:
-    if 0:       # pragma: debugging
-        with open("/tmp/processes.txt", "a") as proctxt:
+    if 0:  # pragma: debugging
+        with open("/tmp/processes.txt", "a") as proctxt:  # type: ignore[unreachable]
             print(os.environ.get("PYTEST_CURRENT_TEST", "unknown"), file=proctxt, flush=True)
 
     # In some strange cases (PyPy3 in a virtualenv!?) the stdout encoding of
@@ -46,24 +53,29 @@ def run_command(cmd):
         env=sub_env,
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT
+        stderr=subprocess.STDOUT,
     )
     output, _ = proc.communicate()
     status = proc.returncode
 
     # Get the output, and canonicalize it to strings with newlines.
-    output = output.decode(output_encoding()).replace("\r", "")
-    return status, output
+    output_str = output.decode(output_encoding()).replace("\r", "")
+    return status, output_str
 
 
-def make_file(filename, text="", bytes=b"", newline=None):
+def make_file(
+    filename: str,
+    text: str = "",
+    bytes: bytes = b"",
+    newline: Optional[str] = None,
+) -> str:
     """Create a file for testing.
 
     `filename` is the relative path to the file, including directories if
     desired, which will be created if need be.
 
-    `text` is the content to create in the file, a native string (bytes in
-    Python 2, unicode in Python 3), or `bytes` are the bytes to write.
+    `text` is the text content to create in the file, or `bytes` are the
+    bytes to write.
 
     If `newline` is provided, it is a string that will be used as the line
     endings in the created file, otherwise the line endings are as provided
@@ -91,8 +103,8 @@ def make_file(filename, text="", bytes=b"", newline=None):
         f.write(data)
 
     # For debugging, enable this to show the contents of files created.
-    if 0:       # pragma: debugging
-        print(f"   ───┬──┤ {filename} ├───────────────────────")
+    if 0:  # pragma: debugging
+        print(f"   ───┬──┤ {filename} ├───────────────────────")  # type: ignore[unreachable]
         for lineno, line in enumerate(data.splitlines(), start=1):
             print(f"{lineno:6}│ {line.rstrip().decode()}")
         print()
@@ -100,25 +112,26 @@ def make_file(filename, text="", bytes=b"", newline=None):
     return filename
 
 
-def nice_file(*fparts):
+def nice_file(*fparts: str) -> str:
     """Canonicalize the file name composed of the parts in `fparts`."""
     fname = os.path.join(*fparts)
     return os.path.normcase(os.path.abspath(os.path.realpath(fname)))
 
 
-def os_sep(s):
+def os_sep(s: str) -> str:
     """Replace slashes in `s` with the correct separator for the OS."""
     return s.replace("/", os.sep)
 
 
 class CheckUniqueFilenames:
     """Asserts the uniqueness of file names passed to a function."""
-    def __init__(self, wrapped):
-        self.filenames = set()
+
+    def __init__(self, wrapped: Callable[..., Any]) -> None:
+        self.filenames: Set[str] = set()
         self.wrapped = wrapped
 
     @classmethod
-    def hook(cls, obj, method_name):
+    def hook(cls, obj: Any, method_name: str) -> CheckUniqueFilenames:
         """Replace a method with our checking wrapper.
 
         The method must take a string as a first argument. That argument
@@ -133,17 +146,16 @@ class CheckUniqueFilenames:
         setattr(obj, method_name, hook.wrapper)
         return hook
 
-    def wrapper(self, filename, *args, **kwargs):
+    def wrapper(self, filename: str, *args: Any, **kwargs: Any) -> Any:
         """The replacement method.  Check that we don't have dupes."""
         assert filename not in self.filenames, (
             f"File name {filename!r} passed to {self.wrapped!r} twice"
         )
         self.filenames.add(filename)
-        ret = self.wrapped(filename, *args, **kwargs)
-        return ret
+        return self.wrapped(filename, *args, **kwargs)
 
 
-def re_lines(pat, text, match=True):
+def re_lines(pat: str, text: str, match: bool = True) -> List[str]:
     """Return a list of lines selected by `pat` in the string `text`.
 
     If `match` is false, the selection is inverted: only the non-matching
@@ -156,12 +168,12 @@ def re_lines(pat, text, match=True):
     return [l for l in text.splitlines() if bool(re.search(pat, l)) == match]
 
 
-def re_lines_text(pat, text, match=True):
+def re_lines_text(pat: str, text: str, match: bool = True) -> str:
     """Return the multi-line text of lines selected by `pat`."""
     return "".join(l + "\n" for l in re_lines(pat, text, match=match))
 
 
-def re_line(pat, text):
+def re_line(pat: str, text: str) -> str:
     """Return the one line in `text` that matches regex `pat`.
 
     Raises an AssertionError if more than one, or less than one, line matches.
@@ -172,7 +184,7 @@ def re_line(pat, text):
     return lines[0]
 
 
-def remove_tree(dirname):
+def remove_tree(dirname: str) -> None:
     """Remove a directory tree.
 
     It's fine for the directory to not exist in the first place.
@@ -186,7 +198,8 @@ _arcz_map = {'.': -1}
 _arcz_map.update({c: ord(c) - ord('0') for c in '123456789'})
 _arcz_map.update({c: 10 + ord(c) - ord('A') for c in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'})
 
-def arcz_to_arcs(arcz):
+
+def arcz_to_arcs(arcz: str) -> List[TArc]:
     """Convert a compact textual representation of arcs to a list of pairs.
 
     The text has space-separated pairs of letters.  Period is -1, 1-9 are
@@ -200,19 +213,23 @@ def arcz_to_arcs(arcz):
     "-11, 12, 2-5" --> [(-1,1), (1,2), (2,-5)]
 
     """
+    # The `type: ignore[misc]` here are to suppress "Unpacking a string is
+    # disallowed".
+    a: str
+    b: str
     arcs = []
     for pair in arcz.split():
         asgn = bsgn = 1
         if len(pair) == 2:
-            a, b = pair
+            a, b = pair                 # type: ignore[misc]
         else:
             assert len(pair) == 3
-            if pair[0] == '-':
-                _, a, b = pair
+            if pair[0] == "-":
+                _, a, b = pair          # type: ignore[misc]
                 asgn = -1
             else:
-                assert pair[1] == '-'
-                a, _, b = pair
+                assert pair[1] == "-"
+                a, _, b = pair          # type: ignore[misc]
                 bsgn = -1
         arcs.append((asgn * _arcz_map[a], bsgn * _arcz_map[b]))
     return sorted(arcs)
@@ -220,7 +237,8 @@ def arcz_to_arcs(arcz):
 
 _arcz_unmap = {val: ch for ch, val in _arcz_map.items()}
 
-def _arcs_to_arcz_repr_one(num):
+
+def _arcs_to_arcz_repr_one(num: TLineNo) -> str:
     """Return an arcz form of the number `num`, or "?" if there is none."""
     if num == -1:
         return "."
@@ -232,7 +250,7 @@ def _arcs_to_arcz_repr_one(num):
     return z
 
 
-def arcs_to_arcz_repr(arcs):
+def arcs_to_arcz_repr(arcs: Optional[Iterable[TArc]]) -> str:
     """Convert a list of arcs to a readable multi-line form for asserting.
 
     Each pair is on its own line, with a comment showing the arcz form,
@@ -250,7 +268,7 @@ def arcs_to_arcz_repr(arcs):
 
 
 @contextlib.contextmanager
-def change_dir(new_dir):
+def change_dir(new_dir: Union[str, Path]) -> Iterator[None]:
     """Change directory, and then change back.
 
     Use as a context manager, it will return to the original
@@ -264,43 +282,37 @@ def change_dir(new_dir):
     finally:
         os.chdir(old_dir)
 
+T = TypeVar("T")
 
-def without_module(using_module, missing_module_name):
-    """
-    Hide a module for testing.
-
-    Use this in a test function to make an optional module unavailable during
-    the test::
-
-        with without_module(product.something, 'tomli'):
-            use_toml_somehow()
-
-    Arguments:
-        using_module: a module in which to hide `missing_module_name`.
-        missing_module_name (str): the name of the module to hide.
-
-    """
-    return mock.patch.object(using_module, missing_module_name, None)
-
-
-def assert_count_equal(a, b):
+def assert_count_equal(
+    a: Optional[Iterable[T]],
+    b: Optional[Iterable[T]],
+) -> None:
     """
     A pytest-friendly implementation of assertCountEqual.
 
     Assert that `a` and `b` have the same elements, but maybe in different order.
     This only works for hashable elements.
     """
+    assert a is not None
+    assert b is not None
     assert collections.Counter(list(a)) == collections.Counter(list(b))
 
 
-def assert_coverage_warnings(warns, *msgs):
+def assert_coverage_warnings(
+    warns: Iterable[warnings.WarningMessage],
+    *msgs: Union[str, re.Pattern[str]],
+) -> None:
     """
     Assert that the CoverageWarning's in `warns` have `msgs` as messages.
+
+    Each msg can be a string compared for equality, or a compiled regex used to
+    search the text.
     """
     assert msgs     # don't call this without some messages.
     warns = [w for w in warns if issubclass(w.category, CoverageWarning)]
     assert len(warns) == len(msgs)
-    for actual, expected in zip((w.message.args[0] for w in warns), msgs):
+    for actual, expected in zip((cast(Warning, w.message).args[0] for w in warns), msgs):
         if hasattr(expected, "search"):
             assert expected.search(actual), f"{actual!r} didn't match {expected!r}"
         else:
@@ -308,7 +320,10 @@ def assert_coverage_warnings(warns, *msgs):
 
 
 @contextlib.contextmanager
-def swallow_warnings(message=r".", category=CoverageWarning):
+def swallow_warnings(
+    message: str = r".",
+    category: Type[Warning] = CoverageWarning,
+) -> Iterator[None]:
     """Swallow particular warnings.
 
     It's OK if they happen, or if they don't happen. Just ignore them.
@@ -318,7 +333,36 @@ def swallow_warnings(message=r".", category=CoverageWarning):
         yield
 
 
-xfail_pypy_3749 = pytest.mark.xfail(
-    env.PYVERSION[:2] == (3, 8) and env.PYPY and env.PYPYVERSION >= (7, 3, 10),
-    reason="Avoid a PyPy bug: https://foss.heptapod.net/pypy/pypy/-/issues/3749"
+xfail_pypy38 = pytest.mark.xfail(
+    env.PYPY and env.PYVERSION[:2] == (3, 8) and env.PYPYVERSION < (7, 3, 11),
+    reason="These tests fail on older PyPy 3.8",
 )
+
+
+class FailingProxy:
+    """A proxy for another object, but one method will fail a few times before working."""
+    def __init__(self, obj: Any, methname: str, fails: List[Exception]) -> None:
+        """Create the failing proxy.
+
+        `obj` is the object to proxy.  `methname` is the method that will fail
+        a few times.  `fails` are the exceptions to fail with. Once used up,
+        the method will proxy correctly.
+
+        """
+        self.obj = obj
+        self.methname = methname
+        self.fails = fails
+
+    def __getattr__(self, name: str) -> Any:
+        if name == self.methname and self.fails:
+            meth = self._make_failing_method(self.fails[0])
+            del self.fails[0]
+        else:
+            meth = getattr(self.obj, name)
+        return meth
+
+    def _make_failing_method(self, exc: Exception) -> Callable[..., NoReturn]:
+        """Return a function that will raise `exc`."""
+        def _meth(*args: Any, **kwargs: Any) -> NoReturn:
+            raise exc
+        return _meth

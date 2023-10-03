@@ -8,10 +8,10 @@ on:
     branches:
       - "**/*nightly*"
   schedule:
-    # Run at 2:22am early Saturday morning Eastern time (6/7:22 UTC)
+    # Run at 2:22am early every morning Eastern time (6/7:22 UTC)
     # so that we get tips of CPython development tested.
-    # https://crontab.guru/#22_7_*_*_6
-    - cron: "22 7 * * 6"
+    # https://crontab.guru/#22_7_%2a_%2a_%2a
+    - cron: "22 7 * * *"
   workflow_dispatch:
 
 defaults:
@@ -22,33 +22,45 @@ env:
   PIP_DISABLE_PIP_VERSION_CHECK: 1
   COVERAGE_IGOR_VERBOSE: 1
 
+permissions:
+  contents: read
+
+concurrency:
+  group: "${{ github.workflow }}-${{ github.ref }}"
+  cancel-in-progress: true
+
 jobs:
   tests:
-    name: "Python ${{ matrix.python-version }}"
-    runs-on: ubuntu-latest
+    name: "${{ matrix.python-version }}"
+    # Choose a recent Ubuntu that deadsnakes still builds all the versions for.
+    # For example, deadsnakes doesn't provide 3.10 nightly for 22.04 (jammy)
+    # because jammy ships 3.10, and deadsnakes doesn't want to clobber it.
+    # https://launchpad.net/~deadsnakes/+archive/ubuntu/nightly/+packages
+    # https://github.com/deadsnakes/issues/issues/234
+    # bionic: 18, focal: 20, jammy: 22
+    runs-on: ubuntu-20.04
 
     strategy:
       matrix:
         python-version:
-          # When changing this list, be sure to check the [gh-actions] list in
+          # When changing this list, be sure to check the [gh] list in
           # tox.ini so that tox will run properly. PYVERSIONS
           # Available versions:
           # https://launchpad.net/~deadsnakes/+archive/ubuntu/nightly/+packages
-          - "3.9-dev"
-          - "3.10-dev"
           - "3.11-dev"
+          - "3.12-dev"
           # https://github.com/actions/setup-python#available-versions-of-pypy
-          - "pypy-3.7-nightly"
           - "pypy-3.8-nightly"
           - "pypy-3.9-nightly"
+          - "pypy-3.10-nightly"
       fail-fast: false
 
     steps:
       - name: "Check out the repo"
-        uses: "actions/checkout@v3"
+        uses: "actions/checkout@v4"
 
       - name: "Install ${{ matrix.python-version }} with deadsnakes"
-        uses: "deadsnakes/action@v2.1.1"
+        uses: deadsnakes/action@22cf137f64f4a2f53399fd7c1880a641bc473ca0
         if: "!startsWith(matrix.python-version, 'pypy-')"
         with:
           python-version: "${{ matrix.python-version }}"

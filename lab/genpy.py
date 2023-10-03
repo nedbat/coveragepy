@@ -231,7 +231,7 @@ def show_a_bunch():
         source = PythonSpinner.generate_python(maker.make_body("def"))
         try:
             print("-"*80, "\n", source, sep="")
-            compile(source, "<string>", "exec")
+            compile(source, "<string>", "exec", dont_inherit=True)
         except Exception as ex:
             print(f"Oops: {ex}\n{source}")
         if len(source) > len(longest):

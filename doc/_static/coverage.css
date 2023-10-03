@@ -26,8 +26,6 @@ img.tideliftlogo {
     margin-bottom: 12px;
 }
 
-/* Tabs */
-
 .ui.menu {
     font-family: Helvetica;
     min-height: 0;
@@ -39,10 +37,6 @@ img.tideliftlogo {
 
 .ui.menu .item {
     padding: 0;
-}
-
-.sphinx-tabs {
-    margin-bottom: 1em;
 }
 
 .sig {
@@ -70,4 +64,54 @@ img.tideliftlogo {
     overflow: auto;
     color: #404040;
     background: #efc;
+}
+
+/* I'm not sure why I had to make this so specific to get it to take effect... */
+div.rst-content div.document div.wy-table-responsive table.docutils.align-default tbody tr td {
+    vertical-align: top !important;
+}
+
+/* And this doesn't work, and I guess I just have to live with it. */
+div.rst-content div.document div.wy-table-responsive table.docutils.align-default tbody tr td .line-block {
+    margin-bottom: 0 !important;
+}
+
+/* sphinx-code-tabs */
+
+/* Some selectors here are extra-specific (.container) because this file comes
+ * before code-tabs.css, so we need the specificity to override it.
+ */
+
+div.tabs.container > ul.tabbar > li.tabbutton {
+    color: #666;
+    background-color: #ddd;
+    border-color: #aaa;
+}
+
+div.tabs.container > ul.tabbar > li.tabbutton:hover {
+	background-color: #eee;
+}
+
+div.tabs.container > ul.tabbar > li.tabbutton.selected {
+    color: black;
+    background-color: #fff;
+    border-color: #aaa;
+    border-bottom-color: #fff;
+}
+
+div.tabs.container > ul.tabbar > li.tabbutton.selected:hover {
+    background-color: #fff;
+}
+
+div.tabs.container {
+    margin-bottom: 1em;
+}
+
+div.tab.selected {
+    border: 1px solid #ccc;
+    border-radius: 0 .5em .5em .5em;
+}
+
+div.tab.codetab.selected {
+    border: none;
 }

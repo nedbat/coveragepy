@@ -21,6 +21,10 @@ env:
 permissions:
   contents: read
 
+concurrency:
+  group: "${{ github.workflow }}-${{ github.ref }}"
+  cancel-in-progress: true
+
 jobs:
   lint:
     name: "Pylint etc"
@@ -31,25 +35,47 @@ jobs:
 
     steps:
       - name: "Check out the repo"
-        uses: "actions/checkout@v3"
+        uses: "actions/checkout@v4"
 
       - name: "Install Python"
         uses: "actions/setup-python@v4"
         with:
-          python-version: "3.7" # Minimum of PYVERSIONS
+          python-version: "3.8" # Minimum of PYVERSIONS
           cache: pip
           cache-dependency-path: 'requirements/*.pip'
 
       - name: "Install dependencies"
         run: |
-          set -xe
-          python -VV
-          python -m site
           python -m pip install -r requirements/tox.pip
 
       - name: "Tox lint"
         run: |
           python -m tox -e lint
+
+  mypy:
+    name: "Check types"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: "Check out the repo"
+        uses: "actions/checkout@v4"
+
+      - name: "Install Python"
+        uses: "actions/setup-python@v4"
+        with:
+          python-version: "3.8" # Minimum of PYVERSIONS, but at least 3.8
+          cache: pip
+          cache-dependency-path: 'requirements/*.pip'
+
+      - name: "Install dependencies"
+        run: |
+          # We run on 3.8, but the pins were made on 3.7, so don't insist on
+          # hashes, which won't match.
+          python -m pip install -r requirements/tox.pip
+
+      - name: "Tox mypy"
+        run: |
+          python -m tox -e mypy
 
   doc:
     name: "Build docs"
@@ -57,12 +83,12 @@ jobs:
 
     steps:
       - name: "Check out the repo"
-        uses: "actions/checkout@v3"
+        uses: "actions/checkout@v4"
 
       - name: "Install Python"
         uses: "actions/setup-python@v4"
         with:
-          python-version: "3.7" # Minimum of PYVERSIONS
+          python-version: "3.11" # Doc version from PYVERSIONS
           cache: pip
           cache-dependency-path: 'requirements/*.pip'
 

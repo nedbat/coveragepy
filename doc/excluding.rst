@@ -1,11 +1,23 @@
 .. Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
 .. For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
 
+.. This file is processed with cog to create the tabbed multi-syntax
+   configuration examples.  If those are wrong, the quality checks will fail.
+   Running "make prebuild" checks them and produces the output.
+
+.. [[[cog
+    from cog_helpers import show_configs
+.. ]]]
+.. [[[end]]] (checksum: d41d8cd98f00b204e9800998ecf8427e)
+
+
 .. _excluding:
 
 ===============================
 Excluding code from coverage.py
 ===============================
+
+.. highlight:: python
 
 You may have code in your project that you know won't be executed, and you want
 to tell coverage.py to ignore it.  For example, you may have debugging-only
@@ -71,32 +83,147 @@ If the matched line introduces a block, the entire block is excluded from
 reporting.  Matching a ``def`` line or decorator line will exclude an entire
 function.
 
+.. highlight:: ini
+
 For example, you might decide that __repr__ functions are usually only used in
 debugging code, and are uninteresting to test themselves.  You could exclude
-all of them by adding a regex to the exclusion list::
+all of them by adding a regex to the exclusion list:
 
-    [report]
-    exclude_lines =
-        def __repr__
+.. [[[cog
+    show_configs(
+        ini=r"""
+            [report]
+            exclude_also =
+                def __repr__
+            """,
+        toml=r"""
+            [tool.coverage.report]
+            exclude_also = [
+                "def __repr__",
+                ]
+            """,
+        )
+.. ]]]
 
-For example, here's a list of exclusions I've used::
+.. tabs::
 
-    [report]
-    exclude_lines =
-        pragma: no cover
-        def __repr__
-        if self.debug:
-        if settings.DEBUG
-        raise AssertionError
-        raise NotImplementedError
-        if 0:
-        if __name__ == .__main__.:
-        class .*\bProtocol\):
-        @(abc\.)?abstractmethod
+    .. code-tab:: ini
+        :caption: .coveragerc
 
-Note that when using the ``exclude_lines`` option in a configuration file, you
-are taking control of the entire list of regexes, so you need to re-specify the
-default "pragma: no cover" match if you still want it to apply.
+        [report]
+        exclude_also =
+            def __repr__
+
+    .. code-tab:: toml
+        :caption: pyproject.toml
+
+        [tool.coverage.report]
+        exclude_also = [
+            "def __repr__",
+            ]
+
+    .. code-tab:: ini
+        :caption: setup.cfg, tox.ini
+
+        [coverage:report]
+        exclude_also =
+            def __repr__
+
+.. [[[end]]] (checksum: adc6406467518c89a5a6fe2c4b999416)
+
+For example, here's a list of exclusions I've used:
+
+.. [[[cog
+    show_configs(
+        ini=r"""
+            [report]
+            exclude_also =
+                def __repr__
+                if self.debug:
+                if settings.DEBUG
+                raise AssertionError
+                raise NotImplementedError
+                if 0:
+                if __name__ == .__main__.:
+                if TYPE_CHECKING:
+                class .*\bProtocol\):
+                @(abc\.)?abstractmethod
+            """,
+        toml=r"""
+            [tool.coverage.report]
+            exclude_also = [
+                "def __repr__",
+                "if self.debug:",
+                "if settings.DEBUG",
+                "raise AssertionError",
+                "raise NotImplementedError",
+                "if 0:",
+                "if __name__ == .__main__.:",
+                "if TYPE_CHECKING:",
+                "class .*\\bProtocol\\):",
+                "@(abc\\.)?abstractmethod",
+                ]
+            """,
+        )
+.. ]]]
+
+.. tabs::
+
+    .. code-tab:: ini
+        :caption: .coveragerc
+
+        [report]
+        exclude_also =
+            def __repr__
+            if self.debug:
+            if settings.DEBUG
+            raise AssertionError
+            raise NotImplementedError
+            if 0:
+            if __name__ == .__main__.:
+            if TYPE_CHECKING:
+            class .*\bProtocol\):
+            @(abc\.)?abstractmethod
+
+    .. code-tab:: toml
+        :caption: pyproject.toml
+
+        [tool.coverage.report]
+        exclude_also = [
+            "def __repr__",
+            "if self.debug:",
+            "if settings.DEBUG",
+            "raise AssertionError",
+            "raise NotImplementedError",
+            "if 0:",
+            "if __name__ == .__main__.:",
+            "if TYPE_CHECKING:",
+            "class .*\\bProtocol\\):",
+            "@(abc\\.)?abstractmethod",
+            ]
+
+    .. code-tab:: ini
+        :caption: setup.cfg, tox.ini
+
+        [coverage:report]
+        exclude_also =
+            def __repr__
+            if self.debug:
+            if settings.DEBUG
+            raise AssertionError
+            raise NotImplementedError
+            if 0:
+            if __name__ == .__main__.:
+            if TYPE_CHECKING:
+            class .*\bProtocol\):
+            @(abc\.)?abstractmethod
+
+.. [[[end]]] (checksum: ef1947821b8224c4f02d27f9514e5c5e)
+
+The :ref:`config_report_exclude_also` option adds regexes to the built-in
+default list so that you can add your own exclusions.  The older
+:ref:`config_report_exclude_lines` option completely overwrites the list of
+regexes.
 
 The regexes only have to match part of a line. Be careful not to over-match.  A
 value of ``...`` will match any line with more than three characters in it.

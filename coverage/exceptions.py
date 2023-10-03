@@ -3,6 +3,7 @@
 
 """Exceptions coverage.py can raise."""
 
+from __future__ import annotations
 
 class _BaseCoverageException(Exception):
     """The base-base of all Coverage exceptions."""
@@ -52,16 +53,6 @@ class _ExceptionDuringRun(CoverageException):
     """An exception happened while running customer code.
 
     Construct it with three arguments, the values from `sys.exc_info`.
-
-    """
-    pass
-
-
-class _StopEverything(_BaseCoverageException):
-    """An exception that means everything should stop.
-
-    The CoverageTest class converts these to SkipTest, so that when running
-    tests, raising this exception will automatically skip the test.
 
     """
     pass

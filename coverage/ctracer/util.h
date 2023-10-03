@@ -16,7 +16,10 @@
 // 3.11 moved f_lasti into an internal structure. This is totally the wrong way
 // to make this work, but it's all I've got until https://bugs.python.org/issue40421
 // is resolved.
+#if PY_VERSION_HEX < 0x030D0000
 #include <internal/pycore_frame.h>
+#endif
+
 #if PY_VERSION_HEX >= 0x030B00A7
 #define MyFrame_GetLasti(f)     (PyFrame_GetLasti(f))
 #else
@@ -28,6 +31,14 @@
 #define MyFrame_GetLasti(f)     ((f)->f_lasti * 2)
 #else
 #define MyFrame_GetLasti(f)     ((f)->f_lasti)
+#endif
+
+#if PY_VERSION_HEX >= 0x030D0000
+#define MyFrame_NoTraceLines(f) (PyObject_SetAttrString((PyObject*)(f), "f_trace_lines", Py_False))
+#define MyFrame_SetTrace(f, obj)    (PyObject_SetAttrString((PyObject*)(f), "f_trace", (PyObject*)(obj)))
+#else
+#define MyFrame_NoTraceLines(f) ((f)->f_trace_lines = 0)
+#define MyFrame_SetTrace(f, obj)    {Py_INCREF(obj); Py_XSETREF((f)->f_trace, (PyObject*)(obj));}
 #endif
 
 // Access f_code should be done through a helper starting in 3.9.

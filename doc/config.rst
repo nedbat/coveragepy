@@ -1,11 +1,23 @@
 .. Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
 .. For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
 
+.. This file is processed with cog to create the tabbed multi-syntax
+   configuration examples.  If those are wrong, the quality checks will fail.
+   Running "make prebuild" checks them and produces the output.
+
+.. [[[cog
+    from cog_helpers import show_configs
+.. ]]]
+.. [[[end]]] (checksum: d41d8cd98f00b204e9800998ecf8427e)
+
+
 .. _config:
 
 =======================
 Configuration reference
 =======================
+
+.. highlight:: ini
 
 Coverage.py options can be specified in a configuration file.  This makes it
 easier to re-run coverage.py with consistent settings, and also allows for
@@ -15,7 +27,7 @@ specification of options that are otherwise only available in the
 Configuration files also make it easier to get coverage testing of spawned
 sub-processes.  See :ref:`subprocess` for more details.
 
-The default name for configuration files is ``.coveragerc``, in the same
+The default name for the configuration file is ``.coveragerc``, in the same
 directory coverage.py is being run in.  Most of the settings in the
 configuration file are tied to your source code and how it should be measured,
 so it should be stored with your source, and checked into source control,
@@ -29,14 +41,22 @@ Coverage.py will read settings from other usual configuration files if no other
 configuration file is used.  It will automatically read from "setup.cfg" or
 "tox.ini" if they exist.  In this case, the section names have "coverage:"
 prefixed, so the ``[run]`` options described below will be found in the
-``[coverage:run]`` section of the file. If coverage.py is installed with the
-``toml`` extra (``pip install coverage[toml]``), it will automatically read
-from "pyproject.toml". Configuration must be within the ``[tool.coverage]``
-section, for example, ``[tool.coverage.run]``.
+``[coverage:run]`` section of the file.
+
+Coverage.py will read from "pyproject.toml" if TOML support is available,
+either because you are running on Python 3.11 or later, or because you
+installed with the ``toml`` extra (``pip install coverage[toml]``).
 
 
 Syntax
 ------
+
+The specific syntax of a configuration file depends on what type it is.
+All configuration files are assumed to be in INI format, unless their file
+extension is .toml, which are TOML.
+
+INI Syntax
+..........
 
 A coverage.py configuration file is in classic .ini file format: sections are
 introduced by a ``[section]`` header, and contain ``name = value`` entries.
@@ -47,6 +67,22 @@ values on multiple lines.
 
 Boolean values can be specified as ``on``, ``off``, ``true``, ``false``, ``1``,
 or ``0`` and are case-insensitive.
+
+TOML Syntax
+...........
+
+`TOML syntax`_ uses explicit lists with brackets, and strings with quotes.
+Booleans are in ``true`` or ``false``.
+
+Configuration must be within the ``[tool.coverage]`` section, for example,
+``[tool.coverage.run]``.  Environment variable expansion in values is
+available, but only within quoted strings, even for non-string values.
+
+.. _TOML syntax: https://toml.io
+
+
+Environment variables
+.....................
 
 Environment variables can be substituted in by using dollar signs: ``$WORD``
 or ``${WORD}`` will be replaced with the value of ``WORD`` in the environment.
@@ -62,40 +98,168 @@ control what happens if the variable isn't defined in the environment:
 - Otherwise, missing environment variables will result in empty strings with no
   error.
 
-Many sections and settings correspond roughly to commands and options in
-the :ref:`command-line interface <cmd>`.
 
-Here's a sample configuration file::
+Sample file
+...........
 
-    # .coveragerc to control coverage.py
-    [run]
-    branch = True
+Here's a sample configuration file, in each syntax:
 
-    [report]
-    # Regexes for lines to exclude from consideration
-    exclude_lines =
-        # Have to re-enable the standard pragma
-        pragma: no cover
+.. [[[cog
+    show_configs(
+        ini=r"""
+            [run]
+            branch = True
 
-        # Don't complain about missing debug-only code:
-        def __repr__
-        if self\.debug
+            [report]
+            ; Regexes for lines to exclude from consideration
+            exclude_also =
+                ; Don't complain about missing debug-only code:
+                def __repr__
+                if self\.debug
 
-        # Don't complain if tests don't hit defensive assertion code:
-        raise AssertionError
-        raise NotImplementedError
+                ; Don't complain if tests don't hit defensive assertion code:
+                raise AssertionError
+                raise NotImplementedError
 
-        # Don't complain if non-runnable code isn't run:
-        if 0:
-        if __name__ == .__main__.:
+                ; Don't complain if non-runnable code isn't run:
+                if 0:
+                if __name__ == .__main__.:
 
-        # Don't complain about abstract methods, they aren't run:
-        @(abc\.)?abstractmethod
+                ; Don't complain about abstract methods, they aren't run:
+                @(abc\.)?abstractmethod
 
-    ignore_errors = True
+            ignore_errors = True
 
-    [html]
-    directory = coverage_html_report
+            [html]
+            directory = coverage_html_report
+            """,
+        toml=r"""
+            [tool.coverage.run]
+            branch = true
+
+            [tool.coverage.report]
+            # Regexes for lines to exclude from consideration
+            exclude_also = [
+                # Don't complain about missing debug-only code:
+                "def __repr__",
+                "if self\\.debug",
+
+                # Don't complain if tests don't hit defensive assertion code:
+                "raise AssertionError",
+                "raise NotImplementedError",
+
+                # Don't complain if non-runnable code isn't run:
+                "if 0:",
+                "if __name__ == .__main__.:",
+
+                # Don't complain about abstract methods, they aren't run:
+                "@(abc\\.)?abstractmethod",
+                ]
+
+            ignore_errors = true
+
+            [tool.coverage.html]
+            directory = "coverage_html_report"
+            """,
+        )
+.. ]]]
+
+.. tabs::
+
+    .. code-tab:: ini
+        :caption: .coveragerc
+
+        [run]
+        branch = True
+
+        [report]
+        ; Regexes for lines to exclude from consideration
+        exclude_also =
+            ; Don't complain about missing debug-only code:
+            def __repr__
+            if self\.debug
+
+            ; Don't complain if tests don't hit defensive assertion code:
+            raise AssertionError
+            raise NotImplementedError
+
+            ; Don't complain if non-runnable code isn't run:
+            if 0:
+            if __name__ == .__main__.:
+
+            ; Don't complain about abstract methods, they aren't run:
+            @(abc\.)?abstractmethod
+
+        ignore_errors = True
+
+        [html]
+        directory = coverage_html_report
+
+    .. code-tab:: toml
+        :caption: pyproject.toml
+
+        [tool.coverage.run]
+        branch = true
+
+        [tool.coverage.report]
+        # Regexes for lines to exclude from consideration
+        exclude_also = [
+            # Don't complain about missing debug-only code:
+            "def __repr__",
+            "if self\\.debug",
+
+            # Don't complain if tests don't hit defensive assertion code:
+            "raise AssertionError",
+            "raise NotImplementedError",
+
+            # Don't complain if non-runnable code isn't run:
+            "if 0:",
+            "if __name__ == .__main__.:",
+
+            # Don't complain about abstract methods, they aren't run:
+            "@(abc\\.)?abstractmethod",
+            ]
+
+        ignore_errors = true
+
+        [tool.coverage.html]
+        directory = "coverage_html_report"
+
+    .. code-tab:: ini
+        :caption: setup.cfg, tox.ini
+
+        [coverage:run]
+        branch = True
+
+        [coverage:report]
+        ; Regexes for lines to exclude from consideration
+        exclude_also =
+            ; Don't complain about missing debug-only code:
+            def __repr__
+            if self\.debug
+
+            ; Don't complain if tests don't hit defensive assertion code:
+            raise AssertionError
+            raise NotImplementedError
+
+            ; Don't complain if non-runnable code isn't run:
+            if 0:
+            if __name__ == .__main__.:
+
+            ; Don't complain about abstract methods, they aren't run:
+            @(abc\.)?abstractmethod
+
+        ignore_errors = True
+
+        [coverage:html]
+        directory = coverage_html_report
+
+.. [[[end]]] (checksum: 75c6c0c2ee170424cc1c18710e2b4919)
+
+
+The specific configuration settings are described below.  Many sections and
+settings correspond roughly to commands and options in the :ref:`command-line
+interface <cmd>`.
 
 
 .. _config_run:
@@ -197,6 +361,15 @@ include a short string at the end, the name of the warning. See
 <cmd_run_debug>` for details.
 
 
+.. _config_run_debug_file:
+
+[run] debug_file
+................
+
+(string) A file name to write debug output to.  See :ref:`the run --debug
+option <cmd_run_debug>` for details.
+
+
 .. _config_run_dynamic_context:
 
 [run] dynamic_context
@@ -214,14 +387,6 @@ execution.  See :ref:`dynamic_contexts` for details.
 (multi-string) A list of file name patterns, the files to include in
 measurement or reporting.  Ignored if ``source`` is set.  See :ref:`source` for
 details.
-
-
-.. _config_run_note:
-
-[run] note
-..........
-
-(string) This is now obsolete.
 
 
 .. _config_run_omit:
@@ -257,9 +422,9 @@ information.
 [run] relative_files
 ....................
 
-(*experimental*, boolean, default False) store relative file paths in the data
-file.  This makes it easier to measure code in one (or multiple) environments,
-and then report in another. See :ref:`cmd_combine` for details.
+(boolean, default False) store relative file paths in the data file.  This
+makes it easier to measure code in one (or multiple) environments, and then
+report in another. See :ref:`cmd_combine` for details.
 
 Note that setting ``source`` has to be done in the configuration file rather
 than the command line for this option to work, since the reporting commands
@@ -323,13 +488,60 @@ Try this if you get seemingly impossible results.
 -------
 
 The entries in this section are lists of file paths that should be considered
-equivalent when combining data from different machines::
+equivalent when combining data from different machines:
 
-    [paths]
-    source =
-        src/
-        /jenkins/build/*/src
-        c:\myproj\src
+.. [[[cog
+    show_configs(
+        ini=r"""
+            [paths]
+            source =
+                src/
+                /jenkins/build/*/src
+                c:\myproj\src
+            """,
+        toml=r"""
+            [tool.coverage.paths]
+            source = [
+                "src/",
+                "/jenkins/build/*/src",
+                "c:\\myproj\\src",
+                ]
+            """,
+        )
+.. ]]]
+
+.. tabs::
+
+    .. code-tab:: ini
+        :caption: .coveragerc
+
+        [paths]
+        source =
+            src/
+            /jenkins/build/*/src
+            c:\myproj\src
+
+    .. code-tab:: toml
+        :caption: pyproject.toml
+
+        [tool.coverage.paths]
+        source = [
+            "src/",
+            "/jenkins/build/*/src",
+            "c:\\myproj\\src",
+            ]
+
+    .. code-tab:: ini
+        :caption: setup.cfg, tox.ini
+
+        [coverage:paths]
+        source =
+            src/
+            /jenkins/build/*/src
+            c:\myproj\src
+
+.. [[[end]]] (checksum: cf06ac36436db0c87be15a85223900d0)
+
 
 The names of the entries ("source" in this example) are ignored, you may choose
 any name that you like.  The value is a list of strings.  When combining data
@@ -346,9 +558,18 @@ combined with data for "c:\\myproj\\src\\module.py", and will be reported
 against the source file found at "src/module.py".
 
 If you specify more than one list of paths, they will be considered in order.
-The first list that has a match will be used.
+A file path will only be remapped if the result exists.  If a path matches a
+list, but the result doesn't exist, the next list will be tried.  The first
+list that has an existing result will be used.
 
-See :ref:`cmd_combine` for more information.
+Remapping will also be done during reporting, but only within the single data
+file being reported.  Combining multiple files requires the ``combine``
+command.
+
+The ``--debug=pathmap`` option can be used to log details of the re-mapping of
+paths.  See :ref:`the --debug option <cmd_run_debug>`.
+
+See :ref:`cmd_combine_remapping` and :ref:`source_glob` for more information.
 
 
 .. _config_report:
@@ -359,16 +580,31 @@ See :ref:`cmd_combine` for more information.
 Settings common to many kinds of reporting.
 
 
+.. _config_report_exclude_also:
+
+[report] exclude_also
+.....................
+
+(multi-string) A list of regular expressions.  This setting is similar to
+:ref:`config_report_exclude_lines`: it specifies patterns for lines to exclude
+from reporting.  This setting is preferred, because it will preserve the
+default exclude patterns instead of overwriting them.
+
+.. versionadded:: 7.2.0
+
+
 .. _config_report_exclude_lines:
 
 [report] exclude_lines
 ......................
 
 (multi-string) A list of regular expressions.  Any line of your source code
-containing a match for  one of these regexes is excluded from being reported as
+containing a match for one of these regexes is excluded from being reported as
 missing.  More details are in :ref:`excluding`.  If you use this option, you
 are replacing all the exclude regexes, so you'll need to also supply the
-"pragma: no cover" regex if you still want to use it.
+"pragma: no cover" regex if you still want to use it.  The
+:ref:`config_report_exclude_also` setting can be used to specify patterns
+without overwriting the default set.
 
 You can exclude lines introducing blocks, and the entire block is excluded. If
 you exclude a ``def`` line or decorator line, the entire function is excluded.
@@ -384,7 +620,7 @@ you'll exclude any line with three or more of any character. If you write
 [report] fail_under
 ...................
 
-(float) A target coverage percentage. If the total coverage measurement is
+(float) A target coverage percentage.  If the total coverage measurement is
 under this value, then exit with a status code of 2.  If you specify a
 non-integral value, you must also set ``[report] precision`` properly to make
 use of the decimal places.  A setting of 100 will fail any value under 100,
@@ -407,6 +643,20 @@ warning instead of an exception.
 
 (multi-string) A list of file name patterns, the files to include in reporting.
 See :ref:`source` for details.
+
+
+.. _config_include_namespace_packages:
+
+[report] include_namespace_packages
+...................................
+
+(boolean, default False) When searching for completely un-executed files,
+include directories without ``__init__.py`` files.  These are `implicit
+namespace packages`_, and are usually skipped.
+
+.. _implicit namespace packages: https://peps.python.org/pep-0420/
+
+.. versionadded:: 7.0
 
 
 .. _config_report_omit:
@@ -598,7 +848,7 @@ section also apply to JSON output, where appropriate.
 [json] pretty_print
 ...................
 
-(boolean, default false) Controls if the JSON is outputted with whitespace
+(boolean, default false) Controls if the JSON is outputted with white space
 formatted for human consumption (True) or for minimum file size (False).
 
 

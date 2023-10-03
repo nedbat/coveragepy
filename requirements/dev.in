@@ -5,17 +5,17 @@
 # "make upgrade" turns this into requirements/dev.pip.
 
 -c pins.pip
--r pip.pip
+-r pip.in
 
 # PyPI requirements for running tests.
-tox
--r pytest.pip
+-r tox.in
+-r pytest.in
 
 # for linting.
+check-manifest
 cogapp
 greenlet
 pylint
-check-manifest
 readme_renderer
 
 # for kitting.

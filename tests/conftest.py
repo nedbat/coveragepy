@@ -7,20 +7,23 @@ Pytest auto configuration.
 This module is run automatically by pytest, to define and enable fixtures.
 """
 
+from __future__ import annotations
+
 import os
 import sys
 import sysconfig
 import warnings
+
 from pathlib import Path
+from typing import Iterator, Optional
 
 import pytest
 
 from coverage import env
-from coverage.exceptions import _StopEverything
 from coverage.files import set_relative_directory
 
 # Pytest will rewrite assertions in test modules, but not elsewhere.
-# This tells pytest to also rewrite assertions in coveragetest.py.
+# This tells pytest to also rewrite assertions in these files:
 pytest.register_assert_rewrite("tests.coveragetest")
 pytest.register_assert_rewrite("tests.helpers")
 
@@ -31,13 +34,13 @@ pytest_plugins = "tests.balance_xdist_plugin"
 
 
 @pytest.fixture(autouse=True)
-def set_warnings():
+def set_warnings() -> None:
     """Configure warnings to show while running tests."""
     warnings.simplefilter("default")
     warnings.simplefilter("once", DeprecationWarning)
 
     # Warnings to suppress:
-    # How come these warnings are successfully suppressed here, but not in setup.cfg??
+    # How come these warnings are successfully suppressed here, but not in pyproject.toml??
 
     warnings.filterwarnings(
         "ignore",
@@ -62,7 +65,7 @@ def set_warnings():
 
 
 @pytest.fixture(autouse=True)
-def reset_sys_path():
+def reset_sys_path() -> Iterator[None]:
     """Clean up sys.path changes around every test."""
     sys_path = list(sys.path)
     yield
@@ -70,7 +73,7 @@ def reset_sys_path():
 
 
 @pytest.fixture(autouse=True)
-def reset_environment():
+def reset_environment() -> Iterator[None]:
     """Make sure a test setting an envvar doesn't leak into another test."""
     old_environ = os.environ.copy()
     yield
@@ -79,14 +82,14 @@ def reset_environment():
 
 
 @pytest.fixture(autouse=True)
-def reset_filesdotpy_globals():
+def reset_filesdotpy_globals() -> Iterator[None]:
     """coverage/files.py has some unfortunate globals. Reset them every test."""
     set_relative_directory()
     yield
 
 WORKER = os.environ.get("PYTEST_XDIST_WORKER", "none")
 
-def pytest_sessionstart():
+def pytest_sessionstart() -> None:
     """Run once at the start of the test session."""
     # Only in the main process...
     if WORKER == "none":
@@ -97,7 +100,7 @@ def pytest_sessionstart():
         # subcover.pth is deleted by pytest_sessionfinish below.
 
 
-def pytest_sessionfinish():
+def pytest_sessionfinish() -> None:
     """Hook the end of a test session, to clean up."""
     # This is called by each of the workers and by the main process.
     if WORKER == "none":
@@ -106,16 +109,8 @@ def pytest_sessionfinish():
             if pth_file.exists():
                 pth_file.unlink()
 
-@pytest.hookimpl(hookwrapper=True)
-def pytest_runtest_call(item):
-    """Run once for each test."""
-    # Convert _StopEverything into skipped tests.
-    outcome = yield
-    if outcome.excinfo and issubclass(outcome.excinfo[0], _StopEverything):  # pragma: only jython
-        pytest.skip(f"Skipping {item.nodeid} for _StopEverything: {outcome.excinfo[1]}")
 
-
-def possible_pth_dirs():
+def possible_pth_dirs() -> Iterator[Path]:
     """Produce a sequence of directories for trying to write .pth files."""
     # First look through sys.path, and if we find a .pth file, then it's a good
     # place to put ours.
@@ -129,7 +124,7 @@ def possible_pth_dirs():
     yield Path(sysconfig.get_path("purelib"))       # pragma: cant happen
 
 
-def find_writable_pth_directory():
+def find_writable_pth_directory() -> Optional[Path]:
     """Find a place to write a .pth file."""
     for pth_dir in possible_pth_dirs():             # pragma: part covered
         try_it = pth_dir / f"touch_{WORKER}.it"

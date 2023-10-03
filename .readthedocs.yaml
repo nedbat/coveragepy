@@ -6,20 +6,21 @@
 
 version: 2
 
+build:
+  os: ubuntu-22.04
+  tools:
+    # PYVERSIONS: the version we use for building docs. Check tox.ini[doc] also.
+    python: "3.11"
+
 sphinx:
   builder: html
   configuration: doc/conf.py
 
 # Build all the formats
-formats:
-  - epub
-  - htmlzip
-  - pdf
+formats: all
 
 python:
-  version: 3.7
   install:
     - requirements: doc/requirements.pip
     - method: pip
       path: .
-  system_packages: false

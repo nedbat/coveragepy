@@ -36,15 +36,17 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.todo',
     'sphinx.ext.ifconfig',
-    'sphinxcontrib.spelling',
     'sphinx.ext.intersphinx',
     'sphinxcontrib.restbuilder',
     'sphinx.ext.napoleon',
-    'sphinx_tabs.tabs',
+    'sphinx_code_tabs',
+    'sphinx_rtd_theme',
 ]
 
+autodoc_typehints = "description"
+
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
+templates_path = []
 
 # The suffix of source filenames.
 source_suffix = '.rst'
@@ -57,18 +59,20 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'Coverage.py'
-copyright = '2009\N{EN DASH}2022, Ned Batchelder'       # CHANGEME  # pylint: disable=redefined-builtin
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
 # built documents.
-#
-# The short X.Y.Z version.                                 # CHANGEME
-version = "6.4.1"
-# The full version, including alpha/beta/rc tags.          # CHANGEME
-release = "6.4.1"
-# The date of release, in "monthname day, year" format.    # CHANGEME
-release_date = "June 2, 2022"
+
+# @@@ editable
+copyright = "2009–2023, Ned Batchelder" # pylint: disable=redefined-builtin
+# The short X.Y.Z version.
+version = "7.3.2"
+# The full version, including alpha/beta/rc tags.
+release = "7.3.2"
+# The date of release, in "monthname day, year" format.
+release_date = "October 2, 2023"
+# @@@ end
 
 rst_epilog = """
 .. |release_date| replace:: {release_date}
@@ -121,19 +125,24 @@ intersphinx_mapping = {
     'python': ('https://docs.python.org/3', None),
 }
 
+nitpick_ignore = [
+    ("py:class", "frame"),
+    ("py:class", "module"),
+    ("py:class", "DefaultValue"),
+    ("py:class", "FilePath"),
+    ("py:class", "TWarnFn"),
+    ("py:class", "TDebugCtl"),
+]
+
+nitpick_ignore_regex = [
+    (r"py:class", r"coverage\..*\..*"),
+]
+
 # -- Options for HTML output ---------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  Major themes that come with
 # Sphinx are currently 'default' and 'sphinxdoc'.
-#html_theme = 'default'
-
-if not on_rtd:  # only import and set the theme if we're building docs locally
-    import sphinx_rtd_theme
-    html_theme = 'sphinx_rtd_theme'
-    html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
-
-# otherwise, readthedocs.org uses their theme by default, so no need to specify it
-
+html_theme = 'sphinx_rtd_theme'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -143,7 +152,7 @@ if not on_rtd:  # only import and set the theme if we're building docs locally
 #html_add_permalinks = ""
 
 # Add any paths that contain custom themes here, relative to this directory.
-html_theme_path = ['_templates']
+#html_theme_path = ['_templates']
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
@@ -203,6 +212,9 @@ htmlhelp_basename = 'coveragepydoc'
 # -- Spelling ---
 
 if any("spell" in arg for arg in sys.argv):
+    # sphinxcontrib.spelling needs the native "enchant" library, which often is
+    # missing, so only use the extension if we are specifically spell-checking.
+    extensions += ['sphinxcontrib.spelling']
     names_file = tempfile.NamedTemporaryFile(mode='w', prefix="coverage_names_", suffix=".txt")
     with open("../CONTRIBUTORS.txt") as contributors:
         names = set(re.split(r"[^\w']", contributors.read()))

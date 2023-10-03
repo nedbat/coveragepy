@@ -3,6 +3,8 @@
 
 """Monkey-patching to add multiprocessing support for coverage.py"""
 
+from __future__ import annotations
+
 import multiprocessing
 import multiprocessing.process
 import os
@@ -10,7 +12,8 @@ import os.path
 import sys
 import traceback
 
-from coverage.misc import contract
+from typing import Any, Dict
+
 
 # An attribute that will be set on the module to indicate that it has been
 # monkey-patched.
@@ -18,12 +21,12 @@ PATCHED_MARKER = "_coverage$patched"
 
 
 OriginalProcess = multiprocessing.process.BaseProcess
-original_bootstrap = OriginalProcess._bootstrap
+original_bootstrap = OriginalProcess._bootstrap     # type: ignore[attr-defined]
 
 class ProcessWithCoverage(OriginalProcess):         # pylint: disable=abstract-method
     """A replacement for multiprocess.Process that starts coverage."""
 
-    def _bootstrap(self, *args, **kwargs):
+    def _bootstrap(self, *args, **kwargs):          # type: ignore[no-untyped-def]
         """Wrapper around _bootstrap to start coverage."""
         try:
             from coverage import Coverage       # avoid circular import
@@ -31,6 +34,7 @@ class ProcessWithCoverage(OriginalProcess):         # pylint: disable=abstract-m
             cov._warn_preimported_source = False
             cov.start()
             debug = cov._debug
+            assert debug is not None
             if debug.should("multiproc"):
                 debug.write("Calling multiprocessing bootstrap")
         except Exception:
@@ -50,18 +54,17 @@ class ProcessWithCoverage(OriginalProcess):         # pylint: disable=abstract-m
 
 class Stowaway:
     """An object to pickle, so when it is unpickled, it can apply the monkey-patch."""
-    def __init__(self, rcfile):
+    def __init__(self, rcfile: str) -> None:
         self.rcfile = rcfile
 
-    def __getstate__(self):
-        return {'rcfile': self.rcfile}
+    def __getstate__(self) -> Dict[str, str]:
+        return {"rcfile": self.rcfile}
 
-    def __setstate__(self, state):
-        patch_multiprocessing(state['rcfile'])
+    def __setstate__(self, state: Dict[str, str]) -> None:
+        patch_multiprocessing(state["rcfile"])
 
 
-@contract(rcfile=str)
-def patch_multiprocessing(rcfile):
+def patch_multiprocessing(rcfile: str) -> None:
     """Monkey-patch the multiprocessing module.
 
     This enables coverage measurement of processes started by multiprocessing.
@@ -74,7 +77,7 @@ def patch_multiprocessing(rcfile):
     if hasattr(multiprocessing, PATCHED_MARKER):
         return
 
-    OriginalProcess._bootstrap = ProcessWithCoverage._bootstrap
+    OriginalProcess._bootstrap = ProcessWithCoverage._bootstrap     # type: ignore[attr-defined]
 
     # Set the value in ProcessWithCoverage that will be pickled into the child
     # process.
@@ -92,10 +95,10 @@ def patch_multiprocessing(rcfile):
     except (ImportError, AttributeError):
         pass
     else:
-        def get_preparation_data_with_stowaway(name):
+        def get_preparation_data_with_stowaway(name: str) -> Dict[str, Any]:
             """Get the original preparation data, and also insert our stowaway."""
             d = original_get_preparation_data(name)
-            d['stowaway'] = Stowaway(rcfile)
+            d["stowaway"] = Stowaway(rcfile)
             return d
 
         spawn.get_preparation_data = get_preparation_data_with_stowaway

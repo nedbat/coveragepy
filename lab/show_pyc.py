@@ -48,7 +48,7 @@ def show_py_file(fname):
     show_py_text(text, fname=fname)
 
 def show_py_text(text, fname="<string>"):
-    code = compile(text, fname, "exec")
+    code = compile(text, fname, "exec", dont_inherit=True)
     show_code(code)
 
 CO_FLAGS = [

@@ -3,11 +3,28 @@
 
 """Simple value objects for tracking what to do with files."""
 
+from __future__ import annotations
+
+from typing import Optional, Type, TYPE_CHECKING
+
+from coverage.types import TFileDisposition
+
+if TYPE_CHECKING:
+    from coverage.plugin import FileTracer
+
 
 class FileDisposition:
     """A simple value type for recording what to do with a file."""
 
-    def __repr__(self):
+    original_filename: str
+    canonical_filename: str
+    source_filename: Optional[str]
+    trace: bool
+    reason: str
+    file_tracer: Optional[FileTracer]
+    has_dynamic_filename: bool
+
+    def __repr__(self) -> str:
         return f"<FileDisposition {self.canonical_filename!r}: trace={self.trace}>"
 
 
@@ -15,7 +32,7 @@ class FileDisposition:
 # be implemented in either C or Python.  Acting on them is done with these
 # functions.
 
-def disposition_init(cls, original_filename):
+def disposition_init(cls: Type[TFileDisposition], original_filename: str) -> TFileDisposition:
     """Construct and initialize a new FileDisposition object."""
     disp = cls()
     disp.original_filename = original_filename
@@ -28,7 +45,7 @@ def disposition_init(cls, original_filename):
     return disp
 
 
-def disposition_debug_msg(disp):
+def disposition_debug_msg(disp: TFileDisposition) -> str:
     """Make a nice debug message of what the FileDisposition is doing."""
     if disp.trace:
         msg = f"Tracing {disp.original_filename!r}"

@@ -4,28 +4,47 @@
 """The version and URL for coverage.py"""
 # This file is exec'ed in setup.py, don't import anything!
 
-# Same semantics as sys.version_info.
-version_info = (6, 4, 2, "alpha", 0)
+from __future__ import annotations
+
+# version_info: same semantics as sys.version_info.
+# _dev: the .devN suffix if any.
+version_info = (7, 3, 3, "alpha", 0)
+_dev = 1
 
 
-def _make_version(major, minor, micro, releaselevel, serial):
+def _make_version(
+    major: int,
+    minor: int,
+    micro: int,
+    releaselevel: str = "final",
+    serial: int = 0,
+    dev: int = 0,
+) -> str:
     """Create a readable version string from version_info tuple components."""
-    assert releaselevel in ['alpha', 'beta', 'candidate', 'final']
+    assert releaselevel in ["alpha", "beta", "candidate", "final"]
     version = "%d.%d.%d" % (major, minor, micro)
-    if releaselevel != 'final':
-        short = {'alpha': 'a', 'beta': 'b', 'candidate': 'rc'}[releaselevel]
+    if releaselevel != "final":
+        short = {"alpha": "a", "beta": "b", "candidate": "rc"}[releaselevel]
         version += f"{short}{serial}"
+    if dev != 0:
+        version += f".dev{dev}"
     return version
 
 
-def _make_url(major, minor, micro, releaselevel, serial):
+def _make_url(
+    major: int,
+    minor: int,
+    micro: int,
+    releaselevel: str,
+    serial: int = 0,
+    dev: int = 0,
+) -> str:
     """Make the URL people should start at for this version of coverage.py."""
-    url = "https://coverage.readthedocs.io"
-    if releaselevel != 'final':
-        # For pre-releases, use a version-specific URL.
-        url += "/en/" + _make_version(major, minor, micro, releaselevel, serial)
-    return url
+    return (
+        "https://coverage.readthedocs.io/en/"
+        + _make_version(major, minor, micro, releaselevel, serial, dev)
+    )
 
 
-__version__ = _make_version(*version_info)
-__url__ = _make_url(*version_info)
+__version__ = _make_version(*version_info, _dev)
+__url__ = _make_url(*version_info, _dev)

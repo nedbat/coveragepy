@@ -3,13 +3,22 @@
 
 """Json reporting for coverage.py"""
 
+from __future__ import annotations
+
 import datetime
 import json
 import sys
 
+from typing import Any, Dict, IO, Iterable, List, Optional, Tuple, TYPE_CHECKING
+
 from coverage import __version__
-from coverage.report import get_analysis_to_report
-from coverage.results import Numbers
+from coverage.report_core import get_analysis_to_report
+from coverage.results import Analysis, Numbers
+from coverage.types import TMorf, TLineNo
+
+if TYPE_CHECKING:
+    from coverage import Coverage
+    from coverage.data import CoverageData
 
 
 class JsonReporter:
@@ -17,13 +26,13 @@ class JsonReporter:
 
     report_type = "JSON report"
 
-    def __init__(self, coverage):
+    def __init__(self, coverage: Coverage) -> None:
         self.coverage = coverage
         self.config = self.coverage.config
         self.total = Numbers(self.config.precision)
-        self.report_data = {}
+        self.report_data: Dict[str, Any] = {}
 
-    def report(self, morfs, outfile=None):
+    def report(self, morfs: Optional[Iterable[TMorf]], outfile: IO[str]) -> float:
         """Generate a json report for `morfs`.
 
         `morfs` is a list of modules or file names.
@@ -51,20 +60,20 @@ class JsonReporter:
         self.report_data["files"] = measured_files
 
         self.report_data["totals"] = {
-            'covered_lines': self.total.n_executed,
-            'num_statements': self.total.n_statements,
-            'percent_covered': self.total.pc_covered,
-            'percent_covered_display': self.total.pc_covered_str,
-            'missing_lines': self.total.n_missing,
-            'excluded_lines': self.total.n_excluded,
+            "covered_lines": self.total.n_executed,
+            "num_statements": self.total.n_statements,
+            "percent_covered": self.total.pc_covered,
+            "percent_covered_display": self.total.pc_covered_str,
+            "missing_lines": self.total.n_missing,
+            "excluded_lines": self.total.n_excluded,
         }
 
         if coverage_data.has_arcs():
             self.report_data["totals"].update({
-                'num_branches': self.total.n_branches,
-                'num_partial_branches': self.total.n_partial_branches,
-                'covered_branches': self.total.n_executed_branches,
-                'missing_branches': self.total.n_missing_branches,
+                "num_branches": self.total.n_branches,
+                "num_partial_branches": self.total.n_partial_branches,
+                "covered_branches": self.total.n_executed_branches,
+                "missing_branches": self.total.n_missing_branches,
             })
 
         json.dump(
@@ -75,31 +84,46 @@ class JsonReporter:
 
         return self.total.n_statements and self.total.pc_covered
 
-    def report_one_file(self, coverage_data, analysis):
+    def report_one_file(self, coverage_data: CoverageData, analysis: Analysis) -> Dict[str, Any]:
         """Extract the relevant report data for a single file."""
         nums = analysis.numbers
         self.total += nums
         summary = {
-            'covered_lines': nums.n_executed,
-            'num_statements': nums.n_statements,
-            'percent_covered': nums.pc_covered,
-            'percent_covered_display': nums.pc_covered_str,
-            'missing_lines': nums.n_missing,
-            'excluded_lines': nums.n_excluded,
+            "covered_lines": nums.n_executed,
+            "num_statements": nums.n_statements,
+            "percent_covered": nums.pc_covered,
+            "percent_covered_display": nums.pc_covered_str,
+            "missing_lines": nums.n_missing,
+            "excluded_lines": nums.n_excluded,
         }
         reported_file = {
-            'executed_lines': sorted(analysis.executed),
-            'summary': summary,
-            'missing_lines': sorted(analysis.missing),
-            'excluded_lines': sorted(analysis.excluded),
+            "executed_lines": sorted(analysis.executed),
+            "summary": summary,
+            "missing_lines": sorted(analysis.missing),
+            "excluded_lines": sorted(analysis.excluded),
         }
         if self.config.json_show_contexts:
-            reported_file['contexts'] = analysis.data.contexts_by_lineno(analysis.filename)
+            reported_file["contexts"] = analysis.data.contexts_by_lineno(analysis.filename)
         if coverage_data.has_arcs():
-            reported_file['summary'].update({
-                'num_branches': nums.n_branches,
-                'num_partial_branches': nums.n_partial_branches,
-                'covered_branches': nums.n_executed_branches,
-                'missing_branches': nums.n_missing_branches,
+            summary.update({
+                "num_branches": nums.n_branches,
+                "num_partial_branches": nums.n_partial_branches,
+                "covered_branches": nums.n_executed_branches,
+                "missing_branches": nums.n_missing_branches,
             })
+            reported_file["executed_branches"] = list(
+                _convert_branch_arcs(analysis.executed_branch_arcs())
+            )
+            reported_file["missing_branches"] = list(
+                _convert_branch_arcs(analysis.missing_branch_arcs())
+            )
         return reported_file
+
+
+def _convert_branch_arcs(
+    branch_arcs: Dict[TLineNo, List[TLineNo]],
+) -> Iterable[Tuple[TLineNo, TLineNo]]:
+    """Convert branch arcs to a list of two-element tuples."""
+    for source, targets in branch_arcs.items():
+        for target in targets:
+            yield source, target

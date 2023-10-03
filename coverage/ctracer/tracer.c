@@ -25,9 +25,6 @@ pyint_as_int(PyObject * pyint, int *pint)
 
 /* Interned strings to speed GetAttr etc. */
 
-static PyObject *str_trace;
-static PyObject *str_file_tracer;
-static PyObject *str__coverage_enabled;
 static PyObject *str__coverage_plugin;
 static PyObject *str__coverage_plugin_name;
 static PyObject *str_dynamic_source_filename;
@@ -44,9 +41,6 @@ CTracer_intern_strings(void)
         goto error;                             \
     }
 
-    INTERN_STRING(str_trace, "trace")
-    INTERN_STRING(str_file_tracer, "file_tracer")
-    INTERN_STRING(str__coverage_enabled, "_coverage_enabled")
     INTERN_STRING(str__coverage_plugin, "_coverage_plugin")
     INTERN_STRING(str__coverage_plugin_name, "_coverage_plugin_name")
     INTERN_STRING(str_dynamic_source_filename, "dynamic_source_filename")
@@ -514,15 +508,14 @@ CTracer_handle_call(CTracer *self, PyFrameObject *frame)
         Py_XDECREF(self->pcur_entry->file_data);
         self->pcur_entry->file_data = NULL;
         self->pcur_entry->file_tracer = Py_None;
-        frame->f_trace_lines = 0;
+        MyFrame_NoTraceLines(frame);
         SHOWLOG(PyFrame_GetLineNumber(frame), filename, "skipped");
     }
 
     self->pcur_entry->disposition = disposition;
 
     /* Make the frame right in case settrace(gettrace()) happens. */
-    Py_INCREF(self);
-    Py_XSETREF(frame->f_trace, (PyObject*)self);
+    MyFrame_SetTrace(frame, self);
 
     /* A call event is really a "start frame" event, and can happen for
      * re-entering a generator also.  How we tell the difference depends on
@@ -863,14 +856,6 @@ cleanup:
  * means it must be callable to be used in sys.settrace().
  *
  * So we make ourself callable, equivalent to invoking our trace function.
- *
- * To help with the process of replaying stored frames, this function has an
- * optional keyword argument:
- *
- *      def CTracer_call(frame, event, arg, lineno=0)
- *
- * If provided, the lineno argument is used as the line number, and the
- * frame's f_lineno member is ignored.
  */
 static PyObject *
 CTracer_call(CTracer *self, PyObject *args, PyObject *kwds)
@@ -878,9 +863,7 @@ CTracer_call(CTracer *self, PyObject *args, PyObject *kwds)
     PyFrameObject *frame;
     PyObject *what_str;
     PyObject *arg;
-    int lineno = 0;
     int what;
-    int orig_lineno;
     PyObject *ret = NULL;
     PyObject * ascii = NULL;
 
@@ -894,10 +877,10 @@ CTracer_call(CTracer *self, PyObject *args, PyObject *kwds)
         NULL
         };
 
-    static char *kwlist[] = {"frame", "event", "arg", "lineno", NULL};
+    static char *kwlist[] = {"frame", "event", "arg", NULL};
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!O!O|i:Tracer_call", kwlist,
-            &PyFrame_Type, &frame, &PyUnicode_Type, &what_str, &arg, &lineno)) {
+            &PyFrame_Type, &frame, &PyUnicode_Type, &what_str, &arg)) {
         goto done;
     }
 
@@ -919,20 +902,11 @@ CTracer_call(CTracer *self, PyObject *args, PyObject *kwds)
     Py_DECREF(ascii);
     #endif
 
-    /* Save off the frame's lineno, and use the forced one, if provided. */
-    orig_lineno = frame->f_lineno;
-    if (lineno > 0) {
-        frame->f_lineno = lineno;
-    }
-
     /* Invoke the C function, and return ourselves. */
     if (CTracer_trace(self, frame, what, arg) == RET_OK) {
         Py_INCREF(self);
         ret = (PyObject *)self;
     }
-
-    /* Clean up. */
-    frame->f_lineno = orig_lineno;
 
     /* For better speed, install ourselves the C way so that future calls go
        directly to CTracer_trace, without this intermediate function.

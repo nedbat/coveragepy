@@ -3,13 +3,18 @@
 
 """Tests for context support."""
 
+from __future__ import annotations
+
 import inspect
 import os.path
+
+from typing import Any, List, Optional, Tuple
 from unittest import mock
 
 import coverage
 from coverage.context import qualname_from_frame
-from coverage.data import CoverageData
+from coverage.data import CoverageData, sorted_lines
+from coverage.types import TArc, TCovKwargs, TLineNo
 
 from tests.coveragetest import CoverageTest
 from tests.helpers import assert_count_equal
@@ -18,14 +23,14 @@ from tests.helpers import assert_count_equal
 class StaticContextTest(CoverageTest):
     """Tests of the static context."""
 
-    def test_no_context(self):
+    def test_no_context(self) -> None:
         self.make_file("main.py", "a = 1")
         cov = coverage.Coverage()
         self.start_import_stop(cov, "main")
         data = cov.get_data()
         assert_count_equal(data.measured_contexts(), [""])
 
-    def test_static_context(self):
+    def test_static_context(self) -> None:
         self.make_file("main.py", "a = 1")
         cov = coverage.Coverage(context="gooey")
         self.start_import_stop(cov, "main")
@@ -42,7 +47,7 @@ class StaticContextTest(CoverageTest):
     LINES = [1, 2, 4]
     ARCS = [(-1, 1), (1, 2), (2, 4), (4, -1)]
 
-    def run_red_blue(self, **options):
+    def run_red_blue(self, **options: TCovKwargs) -> Tuple[CoverageData, CoverageData]:
         """Run red.py and blue.py, and return their CoverageData objects."""
         self.make_file("red.py", self.SOURCE)
         red_cov = coverage.Coverage(context="red", data_suffix="r", source=["."], **options)
@@ -58,7 +63,7 @@ class StaticContextTest(CoverageTest):
 
         return red_data, blue_data
 
-    def test_combining_line_contexts(self):
+    def test_combining_line_contexts(self) -> None:
         red_data, blue_data = self.run_red_blue()
         for datas in [[red_data, blue_data], [blue_data, red_data]]:
             combined = CoverageData(suffix="combined")
@@ -73,7 +78,7 @@ class StaticContextTest(CoverageTest):
             fred = full_names['red.py']
             fblue = full_names['blue.py']
 
-            def assert_combined_lines(filename, context, lines):
+            def assert_combined_lines(filename: str, context: str, lines: List[TLineNo]) -> None:
                 # pylint: disable=cell-var-from-loop
                 combined.set_query_context(context)
                 assert combined.lines(filename) == lines
@@ -83,7 +88,7 @@ class StaticContextTest(CoverageTest):
             assert_combined_lines(fblue, 'red', [])
             assert_combined_lines(fblue, 'blue', self.LINES)
 
-    def test_combining_arc_contexts(self):
+    def test_combining_arc_contexts(self) -> None:
         red_data, blue_data = self.run_red_blue(branch=True)
         for datas in [[red_data, blue_data], [blue_data, red_data]]:
             combined = CoverageData(suffix="combined")
@@ -98,7 +103,7 @@ class StaticContextTest(CoverageTest):
             fred = full_names['red.py']
             fblue = full_names['blue.py']
 
-            def assert_combined_lines(filename, context, lines):
+            def assert_combined_lines(filename: str, context: str, lines: List[TLineNo]) -> None:
                 # pylint: disable=cell-var-from-loop
                 combined.set_query_context(context)
                 assert combined.lines(filename) == lines
@@ -108,7 +113,7 @@ class StaticContextTest(CoverageTest):
             assert_combined_lines(fblue, 'red', [])
             assert_combined_lines(fblue, 'blue', self.LINES)
 
-            def assert_combined_arcs(filename, context, lines):
+            def assert_combined_arcs(filename: str, context: str, lines: List[TArc]) -> None:
                 # pylint: disable=cell-var-from-loop
                 combined.set_query_context(context)
                 assert combined.arcs(filename) == lines
@@ -149,7 +154,7 @@ class DynamicContextTest(CoverageTest):
     TEST_ONE_LINES = [5, 6, 2]
     TEST_TWO_LINES = [9, 10, 11, 13, 14, 15, 2]
 
-    def test_dynamic_alone(self):
+    def test_dynamic_alone(self) -> None:
         self.make_file("two_tests.py", self.SOURCE)
         cov = coverage.Coverage(source=["."])
         cov.set_option("run:dynamic_context", "test_function")
@@ -163,15 +168,15 @@ class DynamicContextTest(CoverageTest):
             ["", "two_tests.test_one", "two_tests.test_two"]
         )
 
-        def assert_context_lines(context, lines):
+        def assert_context_lines(context: str, lines: List[TLineNo]) -> None:
             data.set_query_context(context)
-            assert_count_equal(lines, data.lines(fname))
+            assert_count_equal(lines, sorted_lines(data, fname))
 
         assert_context_lines("", self.OUTER_LINES)
         assert_context_lines("two_tests.test_one", self.TEST_ONE_LINES)
         assert_context_lines("two_tests.test_two", self.TEST_TWO_LINES)
 
-    def test_static_and_dynamic(self):
+    def test_static_and_dynamic(self) -> None:
         self.make_file("two_tests.py", self.SOURCE)
         cov = coverage.Coverage(context="stat", source=["."])
         cov.set_option("run:dynamic_context", "test_function")
@@ -185,33 +190,33 @@ class DynamicContextTest(CoverageTest):
             ["stat", "stat|two_tests.test_one", "stat|two_tests.test_two"]
         )
 
-        def assert_context_lines(context, lines):
+        def assert_context_lines(context: str, lines: List[TLineNo]) -> None:
             data.set_query_context(context)
-            assert_count_equal(lines, data.lines(fname))
+            assert_count_equal(lines, sorted_lines(data, fname))
 
         assert_context_lines("stat", self.OUTER_LINES)
         assert_context_lines("stat|two_tests.test_one", self.TEST_ONE_LINES)
         assert_context_lines("stat|two_tests.test_two", self.TEST_TWO_LINES)
 
 
-def get_qualname():
+def get_qualname() -> Optional[str]:
     """Helper to return qualname_from_frame for the caller."""
     stack = inspect.stack()[1:]
     if any(sinfo[0].f_code.co_name == "get_qualname" for sinfo in stack):
         # We're calling ourselves recursively, maybe because we're testing
         # properties. Return an int to try to get back on track.
-        return 17
+        return 17       # type: ignore[return-value]
     caller_frame = stack[0][0]
     return qualname_from_frame(caller_frame)
 
 # pylint: disable=missing-class-docstring, missing-function-docstring, unused-argument
 
 class Parent:
-    def meth(self):
+    def meth(self) -> Optional[str]:
         return get_qualname()
 
     @property
-    def a_property(self):
+    def a_property(self) -> Optional[str]:
         return get_qualname()
 
 class Child(Parent):
@@ -223,16 +228,16 @@ class SomethingElse:
 class MultiChild(SomethingElse, Child):
     pass
 
-def no_arguments():
+def no_arguments() -> Optional[str]:
     return get_qualname()
 
-def plain_old_function(a, b):
+def plain_old_function(a: Any, b: Any) -> Optional[str]:
     return get_qualname()
 
-def fake_out(self):
+def fake_out(self: Any) -> Optional[str]:
     return get_qualname()
 
-def patch_meth(self):
+def patch_meth(self: Any) -> Optional[str]:
     return get_qualname()
 
 # pylint: enable=missing-class-docstring, missing-function-docstring, unused-argument
@@ -246,38 +251,38 @@ class QualnameTest(CoverageTest):
 
     run_in_temp_dir = False
 
-    def test_method(self):
+    def test_method(self) -> None:
         assert Parent().meth() == "tests.test_context.Parent.meth"
 
-    def test_inherited_method(self):
+    def test_inherited_method(self) -> None:
         assert Child().meth() == "tests.test_context.Parent.meth"
 
-    def test_mi_inherited_method(self):
+    def test_mi_inherited_method(self) -> None:
         assert MultiChild().meth() == "tests.test_context.Parent.meth"
 
-    def test_no_arguments(self):
+    def test_no_arguments(self) -> None:
         assert no_arguments() == "tests.test_context.no_arguments"
 
-    def test_plain_old_function(self):
+    def test_plain_old_function(self) -> None:
         assert plain_old_function(0, 1) == "tests.test_context.plain_old_function"
 
-    def test_fake_out(self):
+    def test_fake_out(self) -> None:
         assert fake_out(0) == "tests.test_context.fake_out"
 
-    def test_property(self):
+    def test_property(self) -> None:
         assert Parent().a_property == "tests.test_context.Parent.a_property"
 
-    def test_changeling(self):
+    def test_changeling(self) -> None:
         c = Child()
-        c.meth = patch_meth
-        assert c.meth(c) == "tests.test_context.patch_meth"
+        c.meth = patch_meth                                     # type: ignore[assignment]
+        assert c.meth(c) == "tests.test_context.patch_meth"     # type: ignore[call-arg]
 
-    def test_bug_829(self):
+    def test_bug_829(self) -> None:
         # A class with a name like a function shouldn't confuse qualname_from_frame.
         class test_something:               # pylint: disable=unused-variable
             assert get_qualname() is None
 
-    def test_bug_1210(self):
+    def test_bug_1210(self) -> None:
         # Under pyarmor (an obfuscator), a function can have a "self" argument,
         # but then not have a "self" local.
         co = mock.Mock(co_name="a_co_name", co_argcount=1, co_varnames=["self"])

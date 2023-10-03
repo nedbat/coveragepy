@@ -61,8 +61,7 @@ class ParserMain:
         # `filename` can have a line number suffix. In that case, extract those
         # lines, dedent them, and use that.  This is for trying test cases
         # embedded in the test files.
-        match = re.search(r"^(.*):(\d+)-(\d+)$", filename)
-        if match:
+        if match := re.search(r"^(.*):(\d+)-(\d+)$", filename):
             filename, start, end = match.groups()
             start, end = int(start), int(end)
         else:
@@ -108,6 +107,8 @@ class ParserMain:
                         marks[2] = str(exits)
                     if lineno in pyparser.raw_docstrings:
                         marks[3] = '"'
+                    if lineno in pyparser.raw_classdefs:
+                        marks[3] = 'C'
                     if lineno in pyparser.raw_excluded:
                         marks[4] = 'x'
 
@@ -175,7 +176,7 @@ def all_code_objects(code):
 def disassemble(pyparser):
     """Disassemble code, for ad-hoc experimenting."""
 
-    code = compile(pyparser.text, "", "exec")
+    code = compile(pyparser.text, "", "exec", dont_inherit=True)
     for code_obj in all_code_objects(code):
         if pyparser.text:
             srclines = pyparser.text.splitlines()

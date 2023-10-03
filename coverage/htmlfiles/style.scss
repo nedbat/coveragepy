@@ -622,10 +622,7 @@ $border-indicator-width: .2em;
             @include background-dark($dark-context-bg-color);
             border-radius: .25em;
             margin-right: 1.75em;
-            span {
-                display: block;
-                text-align: right;
-            }
+            text-align: right;
         }
     }
 }

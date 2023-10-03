@@ -10,15 +10,18 @@ of in shell scripts, batch files, or Makefiles.
 
 import contextlib
 import datetime
-import fnmatch
 import glob
 import inspect
+import itertools
 import os
 import platform
+import pprint
+import re
 import subprocess
 import sys
 import sysconfig
 import textwrap
+import types
 import warnings
 import zipfile
 
@@ -75,10 +78,11 @@ def do_remove_extension(*args):
             "-c",
             "import coverage; print(coverage.__file__)"
         ], encoding="utf-8").strip())
+        roots = [root]
     else:
-        root = "coverage"
+        roots = ["coverage", "build/*/coverage"]
 
-    for pattern in so_patterns:
+    for root, pattern in itertools.product(roots, so_patterns):
         pattern = os.path.join(root, pattern.strip())
         if VERBOSITY:
             print(f"Searching for {pattern}")
@@ -160,6 +164,8 @@ def run_tests_with_coverage(tracer, *runner_args):
     os.environ['COVERAGE_HOME'] = os.getcwd()
     context = os.environ.get('COVERAGE_CONTEXT')
     if context:
+        if context[0] == "$":
+            context = os.environ[context[1:]]
         os.environ['COVERAGE_CONTEXT'] = context + "." + tracer
 
     # Create the .pth file that will let us measure coverage in sub-processes.
@@ -203,25 +209,24 @@ def run_tests_with_coverage(tracer, *runner_args):
         cov.stop()
         os.remove(pth_path)
 
-    cov.combine()
     cov.save()
-
     return status
 
 
 def do_combine_html():
-    """Combine data from a meta-coverage run, and make the HTML and XML reports."""
+    """Combine data from a meta-coverage run, and make the HTML report."""
     import coverage
     os.environ['COVERAGE_HOME'] = os.getcwd()
-    os.environ['COVERAGE_METAFILE'] = os.path.abspath(".metacov")
     cov = coverage.Coverage(config_file="metacov.ini")
     cov.load()
     cov.combine()
     cov.save()
+    # A new Coverage to turn on messages. Better would be to have tighter
+    # control over message verbosity...
+    cov = coverage.Coverage(config_file="metacov.ini", messages=True)
+    cov.load()
     show_contexts = bool(os.environ.get('COVERAGE_DYNCTX') or os.environ.get('COVERAGE_CONTEXT'))
     cov.html_report(show_contexts=show_contexts)
-    cov.xml_report()
-    cov.json_report(pretty_print=True)
 
 
 def do_test_with_tracer(tracer, *runner_args):
@@ -277,78 +282,6 @@ def do_zip_mods():
         zf.write("coverage/__main__.py", "__main__.py")
 
 
-def do_check_eol():
-    """Check files for incorrect newlines and trailing whitespace."""
-
-    ignore_dirs = [
-        '.svn', '.hg', '.git',
-        '.tox*',
-        '*.egg-info',
-        '_build',
-        '_spell',
-        'tmp',
-        'help',
-    ]
-    checked = set()
-
-    def check_file(fname, crlf=True, trail_white=True):
-        """Check a single file for whitespace abuse."""
-        fname = os.path.relpath(fname)
-        if fname in checked:
-            return
-        checked.add(fname)
-
-        line = None
-        with open(fname, "rb") as f:
-            for n, line in enumerate(f, start=1):
-                if crlf:
-                    if b"\r" in line:
-                        print(f"{fname}@{n}: CR found")
-                        return
-                if trail_white:
-                    line = line[:-1]
-                    if not crlf:
-                        line = line.rstrip(b'\r')
-                    if line.rstrip() != line:
-                        print(f"{fname}@{n}: trailing whitespace found")
-                        return
-
-        if line is not None and not line.strip():
-            print(f"{fname}: final blank line")
-
-    def check_files(root, patterns, **kwargs):
-        """Check a number of files for whitespace abuse."""
-        for where, dirs, files in os.walk(root):
-            for f in files:
-                fname = os.path.join(where, f)
-                for p in patterns:
-                    if fnmatch.fnmatch(fname, p):
-                        check_file(fname, **kwargs)
-                        break
-            for ignore_dir in ignore_dirs:
-                ignored = []
-                for dir_name in dirs:
-                    if fnmatch.fnmatch(dir_name, ignore_dir):
-                        ignored.append(dir_name)
-                for dir_name in ignored:
-                    dirs.remove(dir_name)
-
-    check_files("coverage", ["*.py"])
-    check_files("coverage/ctracer", ["*.c", "*.h"])
-    check_files("coverage/htmlfiles", ["*.html", "*.scss", "*.css", "*.js"])
-    check_files("coverage/htmlfiles/themes", ["*.scss", "*.css"])
-    check_files("tests", ["*.py"])
-    check_files("tests", ["*,cover"], trail_white=False)
-    check_files("tests/js", ["*.js", "*.html"])
-    check_file("setup.py")
-    check_file("igor.py")
-    check_file("Makefile")
-    check_files(".", ["*.rst", "*.txt"])
-    check_files(".", ["*.pip"])
-    check_files(".github", ["*"])
-    check_files("ci", ["*"])
-
-
 def print_banner(label):
     """Print the version of Python."""
     try:
@@ -381,56 +314,113 @@ def do_quietly(command):
     return proc.returncode
 
 
+def get_release_facts():
+    """Return an object with facts about the current release."""
+    import coverage
+    import coverage.version
+    facts = types.SimpleNamespace()
+    facts.ver = coverage.__version__
+    mjr, mnr, mcr, rel, ser = facts.vi = coverage.version_info
+    facts.dev = coverage.version._dev
+    facts.shortver = f"{mjr}.{mnr}.{mcr}"
+    facts.anchor = facts.shortver.replace(".", "-")
+    if rel == "final":
+        facts.next_vi = (mjr, mnr, mcr+1, "alpha", 0)
+    else:
+        facts.anchor += f"{rel[0]}{ser}"
+        facts.next_vi = (mjr, mnr, mcr, rel, ser + 1)
+
+    facts.now = datetime.datetime.now()
+    facts.branch = subprocess.getoutput("git rev-parse --abbrev-ref @")
+    facts.sha = subprocess.getoutput("git rev-parse @")
+    return facts
+
+
+def update_file(fname, pattern, replacement):
+    """Update the contents of a file, replacing pattern with replacement."""
+    with open(fname) as fobj:
+        old_text = fobj.read()
+
+    new_text = re.sub(pattern, replacement, old_text, count=1)
+
+    if new_text != old_text:
+        print(f"Updating {fname}")
+        with open(fname, "w") as fobj:
+            fobj.write(new_text)
+
+UNRELEASED = "Unreleased\n----------"
+SCRIV_START = ".. scriv-start-here\n\n"
+
+def do_edit_for_release():
+    """Edit a few files in preparation for a release."""
+    facts = get_release_facts()
+
+    if facts.dev:
+        print(f"**\n** This is a dev release: {facts.ver}\n**\n\nNo edits")
+        return
+
+    # NOTICE.txt
+    update_file("NOTICE.txt", r"Copyright 2004.*? Ned", f"Copyright 2004-{facts.now:%Y} Ned")
+
+    # CHANGES.rst
+    title = f"Version {facts.ver} — {facts.now:%Y-%m-%d}"
+    rule = "-" * len(title)
+    new_head = f".. _changes_{facts.anchor}:\n\n{title}\n{rule}"
+
+    update_file("CHANGES.rst", re.escape(SCRIV_START), "")
+    update_file("CHANGES.rst", re.escape(UNRELEASED), SCRIV_START + new_head)
+
+    # doc/conf.py
+    new_conf = textwrap.dedent(f"""\
+        # @@@ editable
+        copyright = "2009\N{EN DASH}{facts.now:%Y}, Ned Batchelder" # pylint: disable=redefined-builtin
+        # The short X.Y.Z version.
+        version = "{facts.shortver}"
+        # The full version, including alpha/beta/rc tags.
+        release = "{facts.ver}"
+        # The date of release, in "monthname day, year" format.
+        release_date = "{facts.now:%B %-d, %Y}"
+        # @@@ end
+        """)
+    update_file("doc/conf.py", r"(?s)# @@@ editable\n.*# @@@ end\n", new_conf)
+
+
+def do_bump_version():
+    """Edit a few files right after a release to bump the version."""
+    facts = get_release_facts()
+
+    # CHANGES.rst
+    update_file(
+        "CHANGES.rst",
+        re.escape(SCRIV_START),
+        f"{UNRELEASED}\n\nNothing yet.\n\n\n" + SCRIV_START,
+    )
+
+    # coverage/version.py
+    next_version = f"version_info = {facts.next_vi}\n_dev = 1".replace("'", '"')
+    update_file("coverage/version.py", r"(?m)^version_info = .*\n_dev = \d+$", next_version)
+
+
 def do_cheats():
     """Show a cheatsheet of useful things during releasing."""
-    import coverage
-    ver = coverage.__version__
-    vi = coverage.version_info
-    shortver = f"{vi[0]}.{vi[1]}.{vi[2]}"
-    anchor = shortver.replace(".", "-")
-    if vi[3] != "final":
-        anchor += f"{vi[3][0]}{vi[4]}"
-    now = datetime.datetime.now()
-    branch = subprocess.getoutput("git rev-parse --abbrev-ref @")
-    print(f"Coverage version is {ver}")
-
-    print(f"pip install git+https://github.com/nedbat/coveragepy@{branch}")
-    print(f"https://coverage.readthedocs.io/en/{ver}/changes.html#changes-{anchor}")
-
-    print("\n## for CHANGES.rst before release:")
-    print(f".. _changes_{anchor}:")
+    facts = get_release_facts()
+    pprint.pprint(facts.__dict__)
     print()
-    head = f"Version {ver} — {now:%Y-%m-%d}"
-    print(head)
-    print("-" * len(head))
+    print(f"Coverage version is {facts.ver}")
 
-    print("\n## For doc/conf.py before release:")
-    print("\n".join([
-        '# The short X.Y.Z version.                                 # CHANGEME',
-        f'version = "{shortver}"',
-        '# The full version, including alpha/beta/rc tags.          # CHANGEME',
-        f'release = "{ver}"',
-        '# The date of release, in "monthname day, year" format.    # CHANGEME',
-        f'release_date = "{now:%B %-d, %Y}"',
-    ]))
+    egg = "egg=coverage==0.0"   # to force a re-install
+    if facts.branch == "master":
+        print(f"pip install git+https://github.com/nedbat/coveragepy#{egg}")
+    else:
+        print(f"pip install git+https://github.com/nedbat/coveragepy@{facts.branch}#{egg}")
+    print(f"pip install git+https://github.com/nedbat/coveragepy@{facts.sha}#{egg}")
+    print(f"https://coverage.readthedocs.io/en/{facts.ver}/changes.html#changes-{facts.anchor}")
 
     print(
         "\n## For GitHub commenting:\n" +
         "This is now released as part of " +
-        f"[coverage {ver}](https://pypi.org/project/coverage/{ver})."
+        f"[coverage {facts.ver}](https://pypi.org/project/coverage/{facts.ver})."
     )
-    print("\n## For version.py next:")
-    next_vi = (vi[0], vi[1], vi[2]+1, "alpha", 0)
-    print(f"version_info = {next_vi}".replace("'", '"'))
-    print("\n## For CHANGES.rst after release:")
-    print(textwrap.dedent("""\
-        Unreleased
-        ----------
-
-        Nothing yet.
-
-
-        """))
 
 
 def do_help():

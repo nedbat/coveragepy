@@ -3,10 +3,13 @@
 
 """Bytecode manipulation for coverage.py"""
 
-import types
+from __future__ import annotations
+
+from types import CodeType
+from typing import Iterator
 
 
-def code_objects(code):
+def code_objects(code: CodeType) -> Iterator[CodeType]:
     """Iterate over all the code objects in `code`."""
     stack = [code]
     while stack:
@@ -14,6 +17,6 @@ def code_objects(code):
         # push its children for later returning.
         code = stack.pop()
         for c in code.co_consts:
-            if isinstance(c, types.CodeType):
+            if isinstance(c, CodeType):
                 stack.append(c)
         yield code

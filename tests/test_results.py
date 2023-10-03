@@ -3,12 +3,17 @@
 
 """Tests for coverage.py's results analysis."""
 
+from __future__ import annotations
+
 import math
+
+from typing import Dict, Iterable, List, Tuple, cast
 
 import pytest
 
 from coverage.exceptions import ConfigError
 from coverage.results import format_lines, Numbers, should_fail_under
+from coverage.types import TLineNo
 
 from tests.coveragetest import CoverageTest
 
@@ -18,14 +23,14 @@ class NumbersTest(CoverageTest):
 
     run_in_temp_dir = False
 
-    def test_basic(self):
+    def test_basic(self) -> None:
         n1 = Numbers(n_files=1, n_statements=200, n_missing=20)
         assert n1.n_statements == 200
         assert n1.n_executed == 180
         assert n1.n_missing == 20
         assert n1.pc_covered == 90
 
-    def test_addition(self):
+    def test_addition(self) -> None:
         n1 = Numbers(n_files=1, n_statements=200, n_missing=20)
         n2 = Numbers(n_files=1, n_statements=10, n_missing=8)
         n3 = n1 + n2
@@ -35,10 +40,10 @@ class NumbersTest(CoverageTest):
         assert n3.n_missing == 28
         assert math.isclose(n3.pc_covered, 86.666666666)
 
-    def test_sum(self):
+    def test_sum(self) -> None:
         n1 = Numbers(n_files=1, n_statements=200, n_missing=20)
         n2 = Numbers(n_files=1, n_statements=10, n_missing=8)
-        n3 = sum([n1, n2])
+        n3 = cast(Numbers, sum([n1, n2]))
         assert n3.n_files == 2
         assert n3.n_statements == 210
         assert n3.n_executed == 182
@@ -55,7 +60,7 @@ class NumbersTest(CoverageTest):
         (dict(precision=1, n_files=1, n_statements=10000, n_missing=9999), "0.1"),
         (dict(precision=1, n_files=1, n_statements=10000, n_missing=10000), "0.0"),
     ])
-    def test_pc_covered_str(self, kwargs, res):
+    def test_pc_covered_str(self, kwargs: Dict[str, int], res: str) -> None:
         assert Numbers(**kwargs).pc_covered_str == res
 
     @pytest.mark.parametrize("prec, pc, res", [
@@ -64,7 +69,7 @@ class NumbersTest(CoverageTest):
         (0, 99.995, "99"),
         (2, 99.99995, "99.99"),
     ])
-    def test_display_covered(self, prec, pc, res):
+    def test_display_covered(self, prec: int, pc: float, res: str) -> None:
         assert Numbers(precision=prec).display_covered(pc) == res
 
     @pytest.mark.parametrize("prec, width", [
@@ -72,10 +77,10 @@ class NumbersTest(CoverageTest):
         (1, 5),     # 100.0
         (4, 8),     # 100.0000
     ])
-    def test_pc_str_width(self, prec, width):
+    def test_pc_str_width(self, prec: int, width: int) -> None:
         assert Numbers(precision=prec).pc_str_width() == width
 
-    def test_covered_ratio(self):
+    def test_covered_ratio(self) -> None:
         n = Numbers(n_files=1, n_statements=200, n_missing=47)
         assert n.ratio_covered == (153, 200)
 
@@ -111,11 +116,11 @@ class NumbersTest(CoverageTest):
     (99.999, 100, 2, True),
     (99.999, 100, 3, True),
 ])
-def test_should_fail_under(total, fail_under, precision, result):
+def test_should_fail_under(total: float, fail_under: float, precision: int, result: bool) -> None:
     assert should_fail_under(float(total), float(fail_under), precision) == result
 
 
-def test_should_fail_under_invalid_value():
+def test_should_fail_under_invalid_value() -> None:
     with pytest.raises(ConfigError, match=r"fail_under=101"):
         should_fail_under(100.0, 101, 0)
 
@@ -129,7 +134,11 @@ def test_should_fail_under_invalid_value():
     ([1, 2, 3, 4, 5], [], ""),
     ([1, 2, 3, 4, 5], [4], "4"),
 ])
-def test_format_lines(statements, lines, result):
+def test_format_lines(
+    statements: Iterable[TLineNo],
+    lines: Iterable[TLineNo],
+    result: str,
+) -> None:
     assert format_lines(statements, lines) == result
 
 
@@ -153,5 +162,10 @@ def test_format_lines(statements, lines, result):
         "1-2, 3->4, 99, 102-104"
     ),
 ])
-def test_format_lines_with_arcs(statements, lines, arcs, result):
+def test_format_lines_with_arcs(
+    statements: Iterable[TLineNo],
+    lines: Iterable[TLineNo],
+    arcs: Iterable[Tuple[TLineNo, List[TLineNo]]],
+    result: str,
+) -> None:
     assert format_lines(statements, lines, arcs) == result

@@ -3,6 +3,8 @@
 
 """Tests for FileReporters"""
 
+from __future__ import annotations
+
 import sys
 
 from coverage.plugin import FileReporter
@@ -20,7 +22,7 @@ class FileReporterTest(UsingModulesMixin, CoverageTest):
 
     run_in_temp_dir = False
 
-    def test_filenames(self):
+    def test_filenames(self) -> None:
         acu = PythonFileReporter("aa/afile.py")
         bcu = PythonFileReporter("aa/bb/bfile.py")
         ccu = PythonFileReporter("aa/bb/cc/cfile.py")
@@ -31,7 +33,7 @@ class FileReporterTest(UsingModulesMixin, CoverageTest):
         assert bcu.source() == "# bfile.py\n"
         assert ccu.source() == "# cfile.py\n"
 
-    def test_odd_filenames(self):
+    def test_odd_filenames(self) -> None:
         acu = PythonFileReporter("aa/afile.odd.py")
         bcu = PythonFileReporter("aa/bb/bfile.odd.py")
         b2cu = PythonFileReporter("aa/bb.odd/bfile.py")
@@ -42,7 +44,7 @@ class FileReporterTest(UsingModulesMixin, CoverageTest):
         assert bcu.source() == "# bfile.odd.py\n"
         assert b2cu.source() == "# bfile.py\n"
 
-    def test_modules(self):
+    def test_modules(self) -> None:
         import aa
         import aa.bb
         import aa.bb.cc
@@ -57,7 +59,7 @@ class FileReporterTest(UsingModulesMixin, CoverageTest):
         assert bcu.source() == "# bb\n"
         assert ccu.source() == ""  # yes, empty
 
-    def test_module_files(self):
+    def test_module_files(self) -> None:
         import aa.afile
         import aa.bb.bfile
         import aa.bb.cc.cfile
@@ -72,7 +74,7 @@ class FileReporterTest(UsingModulesMixin, CoverageTest):
         assert bcu.source() == "# bfile.py\n"
         assert ccu.source() == "# cfile.py\n"
 
-    def test_comparison(self):
+    def test_comparison(self) -> None:
         acu = FileReporter("aa/afile.py")
         acu2 = FileReporter("aa/afile.py")
         zcu = FileReporter("aa/zfile.py")
@@ -83,7 +85,7 @@ class FileReporterTest(UsingModulesMixin, CoverageTest):
         assert acu < bcu and acu <= bcu and acu != bcu
         assert bcu > acu and bcu >= acu and bcu != acu
 
-    def test_zipfile(self):
+    def test_zipfile(self) -> None:
         sys.path.append("tests/zip1.zip")
 
         # Test that we can get files out of zipfiles, and read their source files.
