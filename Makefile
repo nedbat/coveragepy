@@ -164,7 +164,7 @@ sample_html_beta: _sample_cog_html	## Generate sample HTML report for a beta rel
 
 .PHONY: edit_for_release cheats relbranch relcommit1 relcommit2
 .PHONY: kit kit_upload test_upload kit_local build_kits download_kits check_kits
-.PHONY: tag update_stable bump_version
+.PHONY: tag bump_version
 
 REPO_OWNER = nedbat/coveragepy
 
@@ -213,10 +213,6 @@ check_kits:				## Check that dist/* are well-formed.
 tag:					## Make a git tag with the version number.
 	git tag -a -m "Version $$(python setup.py --version)" $$(python setup.py --version)
 	git push --follow-tags
-
-update_stable:				## Set the stable branch to the latest release.
-	git branch -f stable $$(python setup.py --version)
-	git push origin stable
 
 bump_version:				## Edit sources to bump the version after a release.
 	git switch -c nedbat/bump-version

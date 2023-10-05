@@ -62,9 +62,6 @@
         $ make kit_upload
 - Tag the tree
     $ make tag
-    - IF NOT PRE-RELEASE:
-        - update git "stable" branch to point to latest release
-            $ make update_stable
 - Update GitHub releases:
     $ make clean github_releases
 - Visit the fixed issues on GitHub and mention the version it was fixed in.
