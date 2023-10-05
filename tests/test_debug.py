@@ -288,18 +288,24 @@ class ShortStackTest(CoverageTest):
 
     def test_short_stack(self) -> None:
         stack = f_one().splitlines()
-        assert len(stack) > 10
-        assert "f_three" in stack[-1]
-        assert "f_two" in stack[-2]
-        assert "f_one" in stack[-3]
+        assert len(stack) == 4
+        assert "test_short_stack" in stack[0]
+        assert "f_one" in stack[1]
+        assert "f_two" in stack[2]
+        assert "f_three" in stack[3]
 
     def test_short_stack_limit(self) -> None:
-        stack = f_one(limit=5).splitlines()
-        assert len(stack) == 5
+        stack = f_one(limit=2).splitlines()
+        assert len(stack) == 2
+        assert "f_two" in stack[0]
+        assert "f_three" in stack[1]
 
     def test_short_stack_skip(self) -> None:
         stack = f_one(skip=1).splitlines()
-        assert "f_two" in stack[-1]
+        assert len(stack) == 3
+        assert "test_short_stack" in stack[0]
+        assert "f_one" in stack[1]
+        assert "f_two" in stack[2]
 
 
 def test_relevant_environment_display() -> None:

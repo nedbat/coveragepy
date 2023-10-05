@@ -186,9 +186,9 @@ def short_stack(limit: Optional[int] = None, skip: int = 0) -> str:
     the function name, the file name, and the line number:
 
         ...
-        start_import_stop : /Users/ned/coverage/trunk/tests/coveragetest.py @95
-        import_local_file : /Users/ned/coverage/trunk/tests/coveragetest.py @81
-        import_local_file : /Users/ned/coverage/trunk/coverage/backward.py @159
+        start_import_stop : /Users/ned/coverage/trunk/tests/coveragetest.py:95
+        import_local_file : /Users/ned/coverage/trunk/tests/coveragetest.py:81
+        import_local_file : /Users/ned/coverage/trunk/coverage/backward.py:159
         ...
 
     `limit` is the number of frames to include, defaulting to all of them.
@@ -196,9 +196,23 @@ def short_stack(limit: Optional[int] = None, skip: int = 0) -> str:
     `skip` is the number of frames to skip, so that debugging functions can
     call this and not be included in the result.
 
+    Initial frames deemed uninteresting are automatically skipped.
+
     """
-    stack = inspect.stack()[limit:skip:-1]
-    return "\n".join("%30s : %s:%d" % (t[3], t[1], t[2]) for t in stack)
+    # Substrings in initial frames that we don't care about.
+    BORING_PRELUDE = [
+        "<string>",                         # pytest-xdist has string execution.
+        f"{os.sep}igor.py",                 # Our test runner.
+        f"{os.sep}site-packages{os.sep}",   # pytest etc getting to our tests.
+    ]
+
+    stack: Iterable[inspect.FrameInfo] = inspect.stack()[limit:skip:-1]
+    for snip in BORING_PRELUDE:
+        stack = itertools.dropwhile(
+            (lambda fi, snip=snip: snip in fi.filename),    # type: ignore[misc]
+            stack
+        )
+    return "\n".join(f"{fi.function:>30s} : {fi.filename}:{fi.lineno}" for fi in stack)
 
 
 def dump_stack_frames(
@@ -242,13 +256,13 @@ def auto_repr(self: Any) -> str:
     show_attrs = (
         (k, v) for k, v in self.__dict__.items()
         if getattr(v, "show_repr_attr", True)
-        and not callable(v)
+        and not inspect.ismethod(v)
         and k not in AUTO_REPR_IGNORE
     )
-    return "<{klass} @0x{id:x} {attrs}>".format(
+    return "<{klass} @0x{id:x}{attrs}>".format(
         klass=self.__class__.__name__,
         id=id(self),
-        attrs=" ".join(f"{k}={v!r}" for k, v in show_attrs),
+        attrs="".join(f" {k}={v!r}" for k, v in show_attrs),
     )
 
 
