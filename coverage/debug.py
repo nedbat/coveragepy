@@ -199,17 +199,17 @@ def short_stack(limit: Optional[int] = None, skip: int = 0) -> str:
     Initial frames deemed uninteresting are automatically skipped.
 
     """
-    # Substrings in initial frames that we don't care about.
+    # Regexes in initial frames that we don't care about.
     BORING_PRELUDE = [
-        "<string>",                         # pytest-xdist has string execution.
-        f"{os.sep}igor.py",                 # Our test runner.
-        f"{os.sep}site-packages{os.sep}",   # pytest etc getting to our tests.
+        "<string>",             # pytest-xdist has string execution.
+        r"\bigor.py$",          # Our test runner.
+        r"\bsite-packages\b",   # pytest etc getting to our tests.
     ]
 
     stack: Iterable[inspect.FrameInfo] = inspect.stack()[limit:skip:-1]
-    for snip in BORING_PRELUDE:
+    for pat in BORING_PRELUDE:
         stack = itertools.dropwhile(
-            (lambda fi, snip=snip: snip in fi.filename),    # type: ignore[misc]
+            (lambda fi, pat=pat: re.search(pat, fi.filename)),  # type: ignore[misc]
             stack
         )
     return "\n".join(f"{fi.function:>30s} : {fi.filename}:{fi.lineno}" for fi in stack)
