@@ -487,7 +487,7 @@ class CoverageData:
         """
         if self._debug.should("dataop"):
             self._debug.write("Adding lines: %d files, %d lines total" % (
-                len(line_data), sum(bool(len(lines)) for lines in line_data.values())
+                len(line_data), sum(len(lines) for lines in line_data.values())
             ))
         self._start_using()
         self._choose_lines_or_arcs(lines=True)
