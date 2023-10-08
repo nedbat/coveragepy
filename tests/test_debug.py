@@ -71,7 +71,7 @@ class InfoFormatterTest(CoverageTest):
     ("hello there",     "-- hello there -----------------------------------------------"),
 ])
 def test_info_header(label: str, header: str) -> None:
-    assert info_header(label) == header
+    assert header == info_header(label)
 
 
 @pytest.mark.parametrize("id64, id16", [
@@ -81,7 +81,7 @@ def test_info_header(label: str, header: str) -> None:
     (0x1234cba956780fed, 0x8008),
 ])
 def test_short_id(id64: int, id16: int) -> None:
-    assert short_id(id64) == id16
+    assert id16 == short_id(id64)
 
 
 @pytest.mark.parametrize("text, numchars, result", [
@@ -89,7 +89,7 @@ def test_short_id(id64: int, id16: int) -> None:
     ("0123456789abcdefghijklmnopqrstuvwxyz", 15, "'01234...vwxyz'"),
 ])
 def test_clipped_repr(text: str, numchars: int, result: str) -> None:
-    assert clipped_repr(text, numchars) == result
+    assert result == clipped_repr(text, numchars)
 
 
 @pytest.mark.parametrize("text, filters, result", [
@@ -104,7 +104,7 @@ def test_filter_text(
     filters: Iterable[Callable[[str], str]],
     result: str,
 ) -> None:
-    assert filter_text(text, filters) == result
+    assert result == filter_text(text, filters)
 
 
 class DebugTraceTest(CoverageTest):
@@ -243,20 +243,20 @@ class DebugOutputTest(CoverageTest):
     def test_stderr_default(self) -> None:
         self.debug_sys()
         out, err = self.stdouterr()
-        assert out == ""
+        assert "" == out
         assert_good_debug_sys(err)
 
     def test_envvar(self) -> None:
         self.set_environ("COVERAGE_DEBUG_FILE", "debug.out")
         self.debug_sys()
-        assert self.stdouterr() == ("", "")
+        assert ("", "") == self.stdouterr()
         with open("debug.out") as f:
             assert_good_debug_sys(f.read())
 
     def test_config_file(self) -> None:
         self.make_file(".coveragerc", "[run]\ndebug_file = lotsa_info.txt")
         self.debug_sys()
-        assert self.stdouterr() == ("", "")
+        assert ("", "") == self.stdouterr()
         with open("lotsa_info.txt") as f:
             assert_good_debug_sys(f.read())
 
@@ -264,7 +264,7 @@ class DebugOutputTest(CoverageTest):
         self.set_environ("COVERAGE_DEBUG_FILE", "stdout")
         self.debug_sys()
         out, err = self.stdouterr()
-        assert err == ""
+        assert "" == err
         assert_good_debug_sys(out)
 
 
@@ -288,7 +288,7 @@ class ShortStackTest(CoverageTest):
 
     def test_short_stack(self) -> None:
         stack = f_one().splitlines()
-        assert len(stack) == 4
+        assert 4 == len(stack)
         assert "test_short_stack" in stack[0]
         assert "f_one" in stack[1]
         assert "f_two" in stack[2]
@@ -296,13 +296,13 @@ class ShortStackTest(CoverageTest):
 
     def test_short_stack_limit(self) -> None:
         stack = f_one(limit=2).splitlines()
-        assert len(stack) == 2
+        assert 2 == len(stack)
         assert "f_two" in stack[0]
         assert "f_three" in stack[1]
 
     def test_short_stack_skip(self) -> None:
         stack = f_one(skip=1).splitlines()
-        assert len(stack) == 3
+        assert 3 == len(stack)
         assert "test_short_stack" in stack[0]
         assert "f_one" in stack[1]
         assert "f_two" in stack[2]
@@ -318,20 +318,21 @@ def test_relevant_environment_display() -> None:
         "MY_PYPI_TOKEN": "secret.something",
         "TMP": "temporary",
     }
-    assert relevant_environment_display(env_vars) == [
+    expected = [
         ("COVERAGE_THING", "abcd"),
         ("HOME", "my home"),
         ("MY_PYPI_TOKEN", "******.*********"),
         ("SOME_PYOTHER", "xyz123"),
         ("TMP", "temporary"),
     ]
+    assert expected == relevant_environment_display(env_vars)
 
 
 def test_exc_one_line() -> None:
     try:
         raise DataError("wtf?")
     except Exception as exc:
-        assert exc_one_line(exc) == "coverage.exceptions.DataError: wtf?"
+        assert "coverage.exceptions.DataError: wtf?" == exc_one_line(exc)
 
 
 def test_auto_repr() -> None:
