@@ -1043,6 +1043,8 @@ of operation to log:
 * ``pybehave``: show the values of `internal flags <env.py_>`_ describing the
   behavior of the current version of Python.
 
+* ``pytest``: indicate the name of the current pytest test when it changes.
+
 * ``self``: annotate each debug message with the object printing the message.
 
 * ``sql``: log the SQL statements used for recording data.

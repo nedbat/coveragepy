@@ -20,7 +20,8 @@ development at the same time, such as 4.5.x and 5.0.
 Unreleased
 ----------
 
-Nothing yet.
+- Added a new :ref:`debug option <cmd_run_debug>` ``pytest`` to write the 
+  pytest test name into the debug output.
 
 
 .. scriv-start-here

@@ -443,7 +443,7 @@ class CoverageData:
 
         """
         if self._debug.should("dataop"):
-            self._debug.write(f"Setting context: {context!r}")
+            self._debug.write(f"Setting coverage context: {context!r}")
         self._current_context = context
         self._current_context_id = None
 

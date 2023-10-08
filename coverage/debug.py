@@ -53,6 +53,8 @@ class DebugControl:
         self.suppress_callers = False
 
         filters = []
+        if self.should("pytest"):
+            filters.append(PytestTracker().filter)
         if self.should("pid"):
             filters.append(add_pid_and_tid)
         self.output = DebugOutputFile.get_one(
@@ -316,6 +318,20 @@ class CwdTracker:
         if cwd != self.cwd:
             text = f"cwd is now {cwd!r}\n" + text
             self.cwd = cwd
+        return text
+
+
+class PytestTracker:
+    """Track the current pytest test name to add to debug messages."""
+    def __init__(self) -> None:
+        self.test_name: Optional[str] = None
+
+    def filter(self, text: str) -> str:
+        """Add a message when the pytest test changes."""
+        test_name = os.environ.get("PYTEST_CURRENT_TEST")
+        if test_name != self.test_name:
+            text = f"Pytest context: {test_name}\n" + text
+            self.test_name = test_name
         return text
 
 
