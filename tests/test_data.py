@@ -82,7 +82,7 @@ def DebugCoverageData(*args: Any, **kwargs: Any) -> CoverageData:
     if kwargs:
         # There's no logical reason kwargs should imply sqldata debugging.
         # This is just a way to get a mix of debug options across the tests.
-        options.append("sqldata")
+        options.extend(["dataop2", "sqldata"])
     debug = DebugControlString(options=options)
     return CoverageData(*args, debug=debug, **kwargs)   # type: ignore[misc]
 

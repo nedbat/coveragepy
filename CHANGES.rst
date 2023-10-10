@@ -20,8 +20,11 @@ development at the same time, such as 4.5.x and 5.0.
 Unreleased
 ----------
 
-- Added a new :ref:`debug option <cmd_run_debug>` ``pytest`` to write the 
-  pytest test name into the debug output.
+- Added new :ref:`debug options <cmd_run_debug>`:
+
+  - ``pytest`` writes the pytest test name into the debug output.
+
+  - ``dataop2`` writes the full data being added to CoverageData objects.
 
 
 .. scriv-start-here

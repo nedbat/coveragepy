@@ -489,6 +489,9 @@ class CoverageData:
             self._debug.write("Adding lines: %d files, %d lines total" % (
                 len(line_data), sum(len(lines) for lines in line_data.values())
             ))
+            if self._debug.should("dataop2"):
+                for filename, linenos in sorted(line_data.items()):
+                    self._debug.write(f"  {filename}: {linenos}")
         self._start_using()
         self._choose_lines_or_arcs(lines=True)
         if not line_data:
@@ -524,6 +527,9 @@ class CoverageData:
             self._debug.write("Adding arcs: %d files, %d arcs total" % (
                 len(arc_data), sum(len(arcs) for arcs in arc_data.values())
             ))
+            if self._debug.should("dataop2"):
+                for filename, arcs in sorted(arc_data.items()):
+                    self._debug.write(f"  {filename}: {arcs}")
         self._start_using()
         self._choose_lines_or_arcs(arcs=True)
         if not arc_data:

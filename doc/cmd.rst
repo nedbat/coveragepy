@@ -1022,7 +1022,10 @@ of operation to log:
 
 * ``dataio``: log when reading or writing any data file.
 
-* ``dataop``: log when data is added to the CoverageData object.
+* ``dataop``: log a summary of data being added to CoverageData objects.
+
+* ``dataop2``: when used with ``debug=dataop``, log the actual data being added
+  to CoverageData objects.
 
 * ``lock``: log operations acquiring locks in the data layer.
 
