@@ -25,7 +25,7 @@ if 0:
     )
 
 
-if 1:
+if 0:
     run_experiment(
         py_versions=[
             Python(3, 9),
@@ -50,5 +50,26 @@ if 1:
             (".2 vs .1", "702", "701"),
             (".1 dynctx cost", "701.dynctx", "701"),
             (".2 dynctx cost", "702.dynctx", "702"),
+        ],
+    )
+
+
+if 1:
+    # Compare 3.11 vs 3.12
+    run_experiment(
+        py_versions=[
+            Python(3, 11),
+            Python(3, 12),
+        ],
+        cov_versions=[
+            Coverage("732", "coverage==7.3.2"),
+        ],
+        projects=[
+            ProjectDateutil(),
+        ],
+        rows=["cov", "proj"],
+        column="pyver",
+        ratios=[
+            ("3.12 vs 3.11", "python3.12", "python3.11"),
         ],
     )

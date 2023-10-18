@@ -144,6 +144,7 @@ class ProjectToTest:
         """
         pass
 
+    @contextlib.contextmanager
     def tweak_coverage_settings(
         self, settings: Iterable[Tuple[str, Any]]
     ) -> Iterator[None]:
@@ -151,6 +152,12 @@ class ProjectToTest:
 
         NOTE: This is not properly factored, and is only used by ToxProject now!!!
         """
+        yield
+
+    def pre_check(self, env):
+        pass
+
+    def post_check(self, env):
         pass
 
     def run_no_coverage(self, env):
