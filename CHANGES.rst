@@ -110,14 +110,17 @@ Version 7.3.0 — 2023-08-12
 Version 7.2.7 — 2023-05-29
 --------------------------
 
-- Fix: reverted a `change from 6.4.3 <pull 1347_>`_ that helped Cython, but
+- Fix: reverted a `change from 6.4.3 <pull 1347b_>`_ that helped Cython, but
   also increased the size of data files when using dynamic contexts, as
   described in the now-fixed `issue 1586`_. The problem is now avoided due to a
-  recent change (`issue 1538`_).  Thanks to `Anders Kaseorg <pull 1629_>`_
-  and David Szotten for persisting with problem reports and detailed diagnoses.
+  recent change (`issue 1538 <issue 1538b_>`_).  Thanks to `Anders Kaseorg
+  <pull 1629_>`_ and David Szotten for persisting with problem reports and
+  detailed diagnoses.
 
 - Wheels are now provided for CPython 3.12.
 
+.. _pull 1347b: https://github.com/nedbat/coveragepy/pull/1347
+.. _issue 1538b: https://github.com/nedbat/coveragepy/issues/1538
 .. _issue 1586: https://github.com/nedbat/coveragepy/issues/1586
 .. _pull 1629: https://github.com/nedbat/coveragepy/pull/1629
 
@@ -421,8 +424,10 @@ matching and path remapping with the ``[paths]`` setting (see
 :ref:`config_paths`).  These changes might affect you, and require you to
 update your settings.
 
-(This release includes the changes from `6.6.0b1 <changes_6-6-0b1_>`_, since
-6.6.0 was never released.)
+(This release includes the changes from `6.6.0b1`__, since 6.6.0 was never
+released.)
+
+__ https://coverage.readthedocs.io/en/latest/changes.html#changes-6-6-0b1
 
 - Changes to file pattern matching, which might require updating your
   configuration:
@@ -525,8 +530,9 @@ update your settings.
 Version 6.6.0b1 — 2022-10-31
 ----------------------------
 
-(Note: 6.6.0 final was never released. These changes are part of `7.0.0b1
-<changes_7-0-0b1_>`_.)
+(Note: 6.6.0 final was never released. These changes are part of `7.0.0b1`__.)
+
+__ https://coverage.readthedocs.io/en/latest/changes.html#changes-7-0-0b1
 
 - Changes to file pattern matching, which might require updating your
   configuration:
@@ -835,7 +841,8 @@ Version 6.2 — 2021-11-26
   early, preventing the exclusion of the decorated function. This is now fixed.
 
 - Fix: The HTML report now will not overwrite a .gitignore file that already
-  exists in the HTML output directory (follow-on for `issue 1244`_).
+  exists in the HTML output directory (follow-on for `issue 1244
+  <issue 1244b_>`_).
 
 - API: The exceptions raised by Coverage.py have been specialized, to provide
   finer-grained catching of exceptions by third-party code.
@@ -855,6 +862,7 @@ Version 6.2 — 2021-11-26
 .. _issue 1012: https://github.com/nedbat/coveragepy/issues/1012
 .. _issue 1082: https://github.com/nedbat/coveragepy/issues/1082
 .. _issue 1203: https://github.com/nedbat/coveragepy/issues/1203
+.. _issue 1244b: https://github.com/nedbat/coveragepy/issues/1244
 
 
 .. _changes_612:
@@ -878,7 +886,7 @@ Version 6.1.2 — 2021-11-10
   files (`django_coverage_plugin issue 78`_).
 
 - Fix: Removed another vestige of jQuery from the source tarball
-  (`issue 840`_).
+  (`issue 840 <issue 840b_>`_).
 
 - Fix: Added a default value for a new-to-6.x argument of an internal class.
   This unsupported class is being used by coveralls (`issue 1273`_). Although
@@ -886,6 +894,7 @@ Version 6.1.2 — 2021-11-10
   default value.
 
 .. _django_coverage_plugin issue 78: https://github.com/nedbat/django_coverage_plugin/issues/78
+.. _issue 840b: https://github.com/nedbat/coveragepy/issues/840
 .. _issue 1147: https://github.com/nedbat/coveragepy/issues/1147
 .. _issue 1270: https://github.com/nedbat/coveragepy/issues/1270
 .. _issue 1271: https://github.com/nedbat/coveragepy/issues/1271
@@ -1039,12 +1048,13 @@ Version 6.0 — 2021-10-03
   Fixes `issue 1205`_.
 
 - Fix another rarer instance of "Error binding parameter 0 - probably
-  unsupported type." (`issue 1010`_).
+  unsupported type." (`issue 1010 <issue 1010b_>`_).
 
 - Creating a directory for the coverage data file now is safer against
   conflicts when two coverage runs happen simultaneously (`pull 1220`_).
   Thanks, Clément Pit-Claudel.
 
+.. _issue 1010b: https://github.com/nedbat/coveragepy/issues/1010
 .. _issue 1035: https://github.com/nedbat/coveragepy/issues/1035
 .. _issue 1105: https://github.com/nedbat/coveragepy/issues/1105
 .. _issue 1163: https://github.com/nedbat/coveragepy/issues/1163
