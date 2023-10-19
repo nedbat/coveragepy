@@ -408,18 +408,29 @@ def do_cheats():
     print()
     print(f"Coverage version is {facts.ver}")
 
+    repo = "nedbat/coveragepy"
+    github = f"https://github.com/{repo}"
     egg = "egg=coverage==0.0"   # to force a re-install
-    if facts.branch == "master":
-        print(f"pip install git+https://github.com/nedbat/coveragepy#{egg}")
-    else:
-        print(f"pip install git+https://github.com/nedbat/coveragepy@{facts.branch}#{egg}")
-    print(f"pip install git+https://github.com/nedbat/coveragepy@{facts.sha}#{egg}")
     print(f"https://coverage.readthedocs.io/en/{facts.ver}/changes.html#changes-{facts.anchor}")
 
     print(
         "\n## For GitHub commenting:\n" +
         "This is now released as part of " +
         f"[coverage {facts.ver}](https://pypi.org/project/coverage/{facts.ver})."
+    )
+
+    print("\n## To run this code:")
+    if facts.branch == "master":
+        print(f"pip install git+{github}#{egg}")
+    else:
+        print(f"pip install git+{github}@{facts.branch}#{egg}")
+    print(f"pip install git+{github}@{facts.sha}#{egg}")
+
+    print(
+        "\n## For other collaborators:\n" +
+        f"git clone {github}\n" +
+        f"cd {repo.partition('/')[-1]}\n" +
+        f"git checkout {facts.sha}"
     )
 
 
