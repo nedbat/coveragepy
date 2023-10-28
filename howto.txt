@@ -79,7 +79,7 @@
         - @ https://readthedocs.org/projects/coverage/builds/
             - wait for the new tag build to finish successfully.
         - @ https://readthedocs.org/dashboard/coverage/advanced/
-            - change the default version to the new version
+            - change the default and latest versions to the new version
 - Once CI passes, merge the bump-version branch to master and push it
 
 - things to automate:
