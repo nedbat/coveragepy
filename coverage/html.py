@@ -217,6 +217,10 @@ class HtmlReporter:
         "favicon_32.png",
     ]
 
+    THEMES = {
+        "github_dark_dimmed": "github_dark_dimmed.css"
+    }
+
     def __init__(self, cov: Coverage) -> None:
         self.coverage = cov
         self.config = self.coverage.config
@@ -238,6 +242,15 @@ class HtmlReporter:
             self.extra_css = os.path.basename(self.config.extra_css)
         else:
             self.extra_css = None
+
+        self.theme = None
+
+        if self.config.theme in self.THEMES:
+            self.theme = self.THEMES[self.config.theme]
+
+        elif self.config.theme:
+            self.coverage._message(f"Unknown theme '{self.config.theme}'")
+            self.coverage._message(f"Available themes: {list(self.THEMES.keys())}")
 
         self.data = self.coverage.get_data()
         self.has_arcs = self.data.has_arcs()
@@ -263,6 +276,7 @@ class HtmlReporter:
             "title": title,
             "time_stamp": format_local_datetime(datetime.datetime.now()),
             "extra_css": self.extra_css,
+            "theme": self.theme,
             "has_arcs": self.has_arcs,
             "show_contexts": self.config.show_contexts,
 
@@ -339,6 +353,12 @@ class HtmlReporter:
         # The files we provide must always be copied.
         for static in self.STATIC_FILES:
             shutil.copyfile(data_filename(static), os.path.join(self.directory, static))
+
+        # If a theme is set, copy the corresponding css file
+        if self.theme:
+            shutil.copyfile(
+                data_filename(os.path.join("themes", self.theme)),
+                os.path.join(self.directory, self.theme))
 
         # Only write the .gitignore file if the directory was originally empty.
         # .gitignore can't be copied from the source tree because it would

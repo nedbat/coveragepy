@@ -238,6 +238,7 @@ class CoverageConfig(TConfigurable, TPluginConfig):
         self.html_skip_empty: Optional[bool] = None
         self.html_title = "Coverage report"
         self.show_contexts = False
+        self.theme = None
 
         # Defaults for [xml]
         self.xml_output = "coverage.xml"
@@ -411,6 +412,7 @@ class CoverageConfig(TConfigurable, TPluginConfig):
 
         # [html]
         ("extra_css", "html:extra_css"),
+        ("theme", "html:theme"),
         ("html_dir", "html:directory"),
         ("html_skip_covered", "html:skip_covered", "boolean"),
         ("html_skip_empty", "html:skip_empty", "boolean"),
