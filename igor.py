@@ -35,8 +35,9 @@ except ImportError:
 # that file here, it would be evaluated too early and not get the
 # settings we make in this file.
 
-CPYTHON = (platform.python_implementation() == "CPython")
-PYPY = (platform.python_implementation() == "PyPy")
+CPYTHON = platform.python_implementation() == "CPython"
+PYPY = platform.python_implementation() == "PyPy"
+
 
 @contextlib.contextmanager
 def ignore_warnings():
@@ -72,12 +73,17 @@ def do_remove_extension(*args):
     if "--from-install" in args:
         # Get the install location using a subprocess to avoid
         # locking the file we are about to delete
-        root = os.path.dirname(subprocess.check_output([
-            sys.executable,
-            "-Xutf8",
-            "-c",
-            "import coverage; print(coverage.__file__)"
-        ], encoding="utf-8").strip())
+        root = os.path.dirname(
+            subprocess.check_output(
+                [
+                    sys.executable,
+                    "-Xutf8",
+                    "-c",
+                    "import coverage; print(coverage.__file__)",
+                ],
+                encoding="utf-8",
+            ).strip()
+        )
         roots = [root]
     else:
         roots = ["coverage", "build/*/coverage"]
@@ -149,8 +155,8 @@ def make_env_id(tracer):
 
 def run_tests(tracer, *runner_args):
     """The actual running of tests."""
-    if 'COVERAGE_TESTING' not in os.environ:
-        os.environ['COVERAGE_TESTING'] = "True"
+    if "COVERAGE_TESTING" not in os.environ:
+        os.environ["COVERAGE_TESTING"] = "True"
     print_banner(label_for_tracer(tracer))
 
     return pytest.main(list(runner_args))
@@ -159,14 +165,14 @@ def run_tests(tracer, *runner_args):
 def run_tests_with_coverage(tracer, *runner_args):
     """Run tests, but with coverage."""
     # Need to define this early enough that the first import of env.py sees it.
-    os.environ['COVERAGE_TESTING'] = "True"
-    os.environ['COVERAGE_PROCESS_START'] = os.path.abspath('metacov.ini')
-    os.environ['COVERAGE_HOME'] = os.getcwd()
-    context = os.environ.get('COVERAGE_CONTEXT')
+    os.environ["COVERAGE_TESTING"] = "True"
+    os.environ["COVERAGE_PROCESS_START"] = os.path.abspath("metacov.ini")
+    os.environ["COVERAGE_HOME"] = os.getcwd()
+    context = os.environ.get("COVERAGE_CONTEXT")
     if context:
         if context[0] == "$":
             context = os.environ[context[1:]]
-        os.environ['COVERAGE_CONTEXT'] = context + "." + tracer
+        os.environ["COVERAGE_CONTEXT"] = context + "." + tracer
 
     # Create the .pth file that will let us measure coverage in sub-processes.
     # The .pth file seems to have to be alphabetically after easy-install.pth
@@ -178,9 +184,10 @@ def run_tests_with_coverage(tracer, *runner_args):
         pth_file.write("import coverage; coverage.process_startup()\n")
 
     suffix = f"{make_env_id(tracer)}_{platform.platform()}"
-    os.environ['COVERAGE_METAFILE'] = os.path.abspath(".metacov."+suffix)
+    os.environ["COVERAGE_METAFILE"] = os.path.abspath(".metacov." + suffix)
 
     import coverage
+
     cov = coverage.Coverage(config_file="metacov.ini")
     cov._warn_unimported_source = False
     cov._warn_preimported_source = False
@@ -195,11 +202,12 @@ def run_tests_with_coverage(tracer, *runner_args):
         # We have to make a list since we'll be deleting in the loop.
         modules = list(sys.modules.items())
         for name, mod in modules:
-            if name.startswith('coverage'):
-                if getattr(mod, '__file__', "??").startswith(covdir):
+            if name.startswith("coverage"):
+                if getattr(mod, "__file__", "??").startswith(covdir):
                     covmods[name] = mod
                     del sys.modules[name]
-        import coverage                         # pylint: disable=reimported
+        import coverage  # pylint: disable=reimported
+
         sys.modules.update(covmods)
 
         # Run tests, with the arguments from our command line.
@@ -216,7 +224,8 @@ def run_tests_with_coverage(tracer, *runner_args):
 def do_combine_html():
     """Combine data from a meta-coverage run, and make the HTML report."""
     import coverage
-    os.environ['COVERAGE_HOME'] = os.getcwd()
+
+    os.environ["COVERAGE_HOME"] = os.getcwd()
     cov = coverage.Coverage(config_file="metacov.ini")
     cov.load()
     cov.combine()
@@ -225,7 +234,9 @@ def do_combine_html():
     # control over message verbosity...
     cov = coverage.Coverage(config_file="metacov.ini", messages=True)
     cov.load()
-    show_contexts = bool(os.environ.get('COVERAGE_DYNCTX') or os.environ.get('COVERAGE_CONTEXT'))
+    show_contexts = bool(
+        os.environ.get("COVERAGE_DYNCTX") or os.environ.get("COVERAGE_CONTEXT")
+    )
     cov.html_report(show_contexts=show_contexts)
 
 
@@ -247,29 +258,30 @@ def do_test_with_tracer(tracer, *runner_args):
 def do_zip_mods():
     """Build the zip files needed for tests."""
     with zipfile.ZipFile("tests/zipmods.zip", "w") as zf:
-
         # Take some files from disk.
         zf.write("tests/covmodzip1.py", "covmodzip1.py")
 
         # The others will be various encodings.
-        source = textwrap.dedent("""\
+        source = textwrap.dedent(
+            """\
             # coding: {encoding}
             text = u"{text}"
             ords = {ords}
             assert [ord(c) for c in text] == ords
             print(u"All OK with {encoding}")
             encoding = "{encoding}"
-            """)
+            """
+        )
         # These encodings should match the list in tests/test_python.py
         details = [
-            ('utf-8', 'ⓗⓔⓛⓛⓞ, ⓦⓞⓡⓛⓓ'),
-            ('gb2312', '你好，世界'),
-            ('hebrew', 'שלום, עולם'),
-            ('shift_jis', 'こんにちは世界'),
-            ('cp1252', '“hi”'),
+            ("utf-8", "ⓗⓔⓛⓛⓞ, ⓦⓞⓡⓛⓓ"),
+            ("gb2312", "你好，世界"),
+            ("hebrew", "שלום, עולם"),
+            ("shift_jis", "こんにちは世界"),
+            ("cp1252", "“hi”"),
         ]
         for encoding, text in details:
-            filename = f'encoded_{encoding}.py'
+            filename = f"encoded_{encoding}.py"
             ords = [ord(c) for c in text]
             source_text = source.format(encoding=encoding, text=text, ords=ords)
             zf.writestr(filename, source_text.encode(encoding))
@@ -304,13 +316,15 @@ def print_banner(label):
         # On Windows having a python executable on a different drive
         # than the sources cannot be relative.
         which_python = sys.executable
-    print(f'=== {impl} {version} {label} ({which_python}) ===')
+    print(f"=== {impl} {version} {label} ({which_python}) ===")
     sys.stdout.flush()
 
 
 def do_quietly(command):
     """Run a command in a shell, and suppress all output."""
-    proc = subprocess.run(command, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    proc = subprocess.run(
+        command, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+    )
     return proc.returncode
 
 
@@ -318,6 +332,7 @@ def get_release_facts():
     """Return an object with facts about the current release."""
     import coverage
     import coverage.version
+
     facts = types.SimpleNamespace()
     facts.ver = coverage.__version__
     mjr, mnr, mcr, rel, ser = facts.vi = coverage.version_info
@@ -325,7 +340,7 @@ def get_release_facts():
     facts.shortver = f"{mjr}.{mnr}.{mcr}"
     facts.anchor = facts.shortver.replace(".", "-")
     if rel == "final":
-        facts.next_vi = (mjr, mnr, mcr+1, "alpha", 0)
+        facts.next_vi = (mjr, mnr, mcr + 1, "alpha", 0)
     else:
         facts.anchor += f"{rel[0]}{ser}"
         facts.next_vi = (mjr, mnr, mcr, rel, ser + 1)
@@ -348,8 +363,10 @@ def update_file(fname, pattern, replacement):
         with open(fname, "w") as fobj:
             fobj.write(new_text)
 
+
 UNRELEASED = "Unreleased\n----------"
 SCRIV_START = ".. scriv-start-here\n\n"
+
 
 def do_edit_for_release():
     """Edit a few files in preparation for a release."""
@@ -360,7 +377,9 @@ def do_edit_for_release():
         return
 
     # NOTICE.txt
-    update_file("NOTICE.txt", r"Copyright 2004.*? Ned", f"Copyright 2004-{facts.now:%Y} Ned")
+    update_file(
+        "NOTICE.txt", r"Copyright 2004.*? Ned", f"Copyright 2004-{facts.now:%Y} Ned"
+    )
 
     # CHANGES.rst
     title = f"Version {facts.ver} — {facts.now:%Y-%m-%d}"
@@ -371,7 +390,8 @@ def do_edit_for_release():
     update_file("CHANGES.rst", re.escape(UNRELEASED), SCRIV_START + new_head)
 
     # doc/conf.py
-    new_conf = textwrap.dedent(f"""\
+    new_conf = textwrap.dedent(
+        f"""\
         # @@@ editable
         copyright = "2009\N{EN DASH}{facts.now:%Y}, Ned Batchelder" # pylint: disable=redefined-builtin
         # The short X.Y.Z version.
@@ -381,7 +401,8 @@ def do_edit_for_release():
         # The date of release, in "monthname day, year" format.
         release_date = "{facts.now:%B %-d, %Y}"
         # @@@ end
-        """)
+        """
+    )
     update_file("doc/conf.py", r"(?s)# @@@ editable\n.*# @@@ end\n", new_conf)
 
 
@@ -398,7 +419,9 @@ def do_bump_version():
 
     # coverage/version.py
     next_version = f"version_info = {facts.next_vi}\n_dev = 1".replace("'", '"')
-    update_file("coverage/version.py", r"(?m)^version_info = .*\n_dev = \d+$", next_version)
+    update_file(
+        "coverage/version.py", r"(?m)^version_info = .*\n_dev = \d+$", next_version
+    )
 
 
 def do_cheats():
@@ -410,13 +433,15 @@ def do_cheats():
 
     repo = "nedbat/coveragepy"
     github = f"https://github.com/{repo}"
-    egg = "egg=coverage==0.0"   # to force a re-install
-    print(f"https://coverage.readthedocs.io/en/{facts.ver}/changes.html#changes-{facts.anchor}")
+    egg = "egg=coverage==0.0"  # to force a re-install
+    print(
+        f"https://coverage.readthedocs.io/en/{facts.ver}/changes.html#changes-{facts.anchor}"
+    )
 
     print(
-        "\n## For GitHub commenting:\n" +
-        "This is now released as part of " +
-        f"[coverage {facts.ver}](https://pypi.org/project/coverage/{facts.ver})."
+        "\n## For GitHub commenting:\n"
+        + "This is now released as part of "
+        + f"[coverage {facts.ver}](https://pypi.org/project/coverage/{facts.ver})."
     )
 
     print("\n## To run this code:")
@@ -427,10 +452,10 @@ def do_cheats():
     print(f"pip install git+{github}@{facts.sha}#{egg}")
 
     print(
-        "\n## For other collaborators:\n" +
-        f"git clone {github}\n" +
-        f"cd {repo.partition('/')[-1]}\n" +
-        f"git checkout {facts.sha}"
+        "\n## For other collaborators:\n"
+        + f"git clone {github}\n"
+        + f"cd {repo.partition('/')[-1]}\n"
+        + f"git checkout {facts.sha}"
     )
 
 
@@ -439,7 +464,7 @@ def do_help():
     items = list(globals().items())
     items.sort()
     for name, value in items:
-        if name.startswith('do_'):
+        if name.startswith("do_"):
             print(f"{name[3:]:<20}{value.__doc__}")
 
 
@@ -464,7 +489,7 @@ def main(args):
     """
     while args:
         verb = args.pop(0)
-        handler = globals().get('do_'+verb)
+        handler = globals().get("do_" + verb)
         if handler is None:
             print(f"*** No handler for {verb!r}")
             return 1
@@ -484,5 +509,5 @@ def main(args):
     return 0
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main(sys.argv[1:]))
