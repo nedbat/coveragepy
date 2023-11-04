@@ -12,3 +12,6 @@ b7be64538aa480fce641349d3053e9a84862d571
 
 # 2023-04-01 style: use double-quotes in JavaScript
 b03ab92bae24c54f1d5a98baa3af6b9a18de4d36
+
+# 2023-11-04 style: ruff format igor.py, setup.py, __main__.py
+acb80450d7c033a6ea6e06eb2e74d3590c268435
