@@ -42,10 +42,6 @@ class Opts:
         "-a", "--append", action="store_true",
         help="Append coverage data to .coverage, otherwise it starts clean each time.",
     )
-    keep = optparse.make_option(
-        "", "--keep", action="store_true",
-        help="Keep original coverage files, otherwise they are deleted.",
-    )
     branch = optparse.make_option(
         "", "--branch", action="store_true",
         help="Measure branch coverage in addition to statement coverage.",
@@ -68,21 +64,21 @@ class Opts:
             "Accepts Python regexes, which must be quoted."
         ),
     )
-    combine_datafile = optparse.make_option(
+    datafile = optparse.make_option(
         "", "--data-file", action="store", metavar="DATAFILE",
         help=(
             "Base name of the data files to operate on. " +
             "Defaults to '.coverage'. [env: COVERAGE_FILE]"
         ),
     )
-    input_datafile = optparse.make_option(
+    datafle_input = optparse.make_option(
         "", "--data-file", action="store", metavar="INFILE",
         help=(
             "Read coverage data for report generation from this file. " +
             "Defaults to '.coverage'. [env: COVERAGE_FILE]"
         ),
     )
-    output_datafile = optparse.make_option(
+    datafile_output = optparse.make_option(
         "", "--data-file", action="store", metavar="OUTFILE",
         help=(
             "Write the recorded coverage data to this file. " +
@@ -119,6 +115,10 @@ class Opts:
             "Include only files whose paths match one of these patterns. " +
             "Accepts shell-style wildcards, which must be quoted."
         ),
+    )
+    keep = optparse.make_option(
+        "", "--keep", action="store_true",
+        help="Keep original coverage files, otherwise they are deleted.",
     )
     pylib = optparse.make_option(
         "-L", "--pylib", action="store_true",
@@ -373,7 +373,7 @@ COMMANDS = {
         "annotate",
         [
             Opts.directory,
-            Opts.input_datafile,
+            Opts.datafle_input,
             Opts.ignore_errors,
             Opts.include,
             Opts.omit,
@@ -389,7 +389,7 @@ COMMANDS = {
         "combine",
         [
             Opts.append,
-            Opts.combine_datafile,
+            Opts.datafile,
             Opts.keep,
             Opts.quiet,
             ] + GLOBAL_ARGS,
@@ -422,7 +422,7 @@ COMMANDS = {
     "erase": CmdOptionParser(
         "erase",
         [
-            Opts.combine_datafile
+            Opts.datafile
             ] + GLOBAL_ARGS,
         description="Erase previously collected coverage data.",
     ),
@@ -438,7 +438,7 @@ COMMANDS = {
         [
             Opts.contexts,
             Opts.directory,
-            Opts.input_datafile,
+            Opts.datafle_input,
             Opts.fail_under,
             Opts.ignore_errors,
             Opts.include,
@@ -463,7 +463,7 @@ COMMANDS = {
         "json",
         [
             Opts.contexts,
-            Opts.input_datafile,
+            Opts.datafle_input,
             Opts.fail_under,
             Opts.ignore_errors,
             Opts.include,
@@ -480,7 +480,7 @@ COMMANDS = {
     "lcov": CmdOptionParser(
         "lcov",
         [
-            Opts.input_datafile,
+            Opts.datafle_input,
             Opts.fail_under,
             Opts.ignore_errors,
             Opts.include,
@@ -496,7 +496,7 @@ COMMANDS = {
         "report",
         [
             Opts.contexts,
-            Opts.input_datafile,
+            Opts.datafle_input,
             Opts.fail_under,
             Opts.format,
             Opts.ignore_errors,
@@ -520,7 +520,7 @@ COMMANDS = {
             Opts.branch,
             Opts.concurrency,
             Opts.context,
-            Opts.output_datafile,
+            Opts.datafile_output,
             Opts.include,
             Opts.module,
             Opts.omit,
@@ -536,7 +536,7 @@ COMMANDS = {
     "xml": CmdOptionParser(
         "xml",
         [
-            Opts.input_datafile,
+            Opts.datafle_input,
             Opts.fail_under,
             Opts.ignore_errors,
             Opts.include,
