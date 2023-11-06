@@ -37,14 +37,14 @@ try:
     HAS_CTRACER = True
 except ImportError:
     # Couldn't import the C extension, maybe it isn't built.
-    if os.getenv('COVERAGE_TEST_TRACER') == 'c':        # pragma: part covered
-        # During testing, we use the COVERAGE_TEST_TRACER environment variable
+    if os.getenv("COVERAGE_CORE") == "ctrace":      # pragma: part covered
+        # During testing, we use the COVERAGE_CORE environment variable
         # to indicate that we've fiddled with the environment to test this
         # fallback code.  If we thought we had a C tracer, but couldn't import
         # it, then exit quickly and clearly instead of dribbling confusing
         # errors. I'm using sys.exit here instead of an exception because an
         # exception here causes all sorts of other noise in unittest.
-        sys.stderr.write("*** COVERAGE_TEST_TRACER is 'c' but can't import CTracer!\n")
+        sys.stderr.write("*** COVERAGE_CORE is 'ctrace' but can't import CTracer!\n")
         sys.exit(1)
     HAS_CTRACER = False
 
@@ -141,28 +141,37 @@ class Collector:
         self._trace_class: Type[TTracer]
         self.file_disposition_class: Type[TFileDisposition]
 
-        use_ctracer = False
-        if HAS_CTRACER and not timid:
-            use_ctracer = True
+        core: Optional[str]
+        if timid:
+            core = "pytrace"
+        else:
+            core = os.getenv("COVERAGE_CORE")
+            if not core:
+                if env.PYBEHAVIOR.pep669 and self.should_start_context is None:
+                    core = "sysmon"
+                elif HAS_CTRACER:
+                    core = "ctrace"
 
-        if env.PYBEHAVIOR.pep669 and self.should_start_context is None:
+        if core == "sysmon":
             self._trace_class = Pep669Tracer
             self.file_disposition_class = FileDisposition
             self.supports_plugins = False
             self.packed_arcs = False
             self.systrace = False
-        elif use_ctracer:
+        elif core == "ctrace":
             self._trace_class = CTracer
             self.file_disposition_class = CFileDisposition
             self.supports_plugins = True
             self.packed_arcs = True
             self.systrace = True
-        else:
+        elif core == "pytrace":
             self._trace_class = PyTracer
             self.file_disposition_class = FileDisposition
             self.supports_plugins = False
             self.packed_arcs = False
             self.systrace = True
+        else:
+            raise ConfigError(f"Unknown core value: {core!r}")
 
         # We can handle a few concurrency options here, but only one at a time.
         concurrencies = set(self.concurrency)

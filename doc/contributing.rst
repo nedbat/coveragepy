@@ -173,6 +173,8 @@ can combine tox and pytest options::
       py310: OK (17.99 seconds)
       congratulations :) (19.09 seconds)
 
+TODO: Update this for CORE instead of TRACER
+
 You can also affect the test runs with environment variables. Define any of
 these as 1 to use them:
 
@@ -191,7 +193,7 @@ these as 1 to use them:
 There are other environment variables that affect tests.  I use `set_env.py`_
 as a simple terminal interface to see and set them.
 
-Of course, run all the tests on every version of Python you have, before
+Of course, run all the tests on every version of Python you have before
 submitting a change.
 
 .. _pytest test selectors: https://doc.pytest.org/en/stable/usage.html#specifying-which-tests-to-run

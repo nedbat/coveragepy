@@ -58,7 +58,7 @@ lint:					## Run linters and checkers.
 PYTEST_SMOKE_ARGS = -n auto -m "not expensive" --maxfail=3 $(ARGS)
 
 smoke: 					## Run tests quickly with the C tracer in the lowest supported Python versions.
-	COVERAGE_NO_PYTRACER=1 tox -q -e py38 -- $(PYTEST_SMOKE_ARGS)
+	COVERAGE_TEST_CORES=ctrace tox -q -e py38 -- $(PYTEST_SMOKE_ARGS)
 
 
 ##@ Metacov: coverage measurement of coverage.py itself
@@ -73,7 +73,7 @@ metahtml:				## Produce meta-coverage HTML reports.
 	python igor.py combine_html
 
 metasmoke:
-	COVERAGE_NO_PYTRACER=1 ARGS="-e py39" make metacov metahtml
+	COVERAGE_TEST_CORES=ctrace ARGS="-e py39" make metacov metahtml
 
 
 ##@ Requirements management
