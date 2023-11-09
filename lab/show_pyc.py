@@ -28,7 +28,7 @@ def show_pyc_file(fname):
         flags = struct.unpack('<L', f.read(4))[0]
         hash_based = bool(flags & 0x01)
         check_source = bool(flags & 0x02)
-        print(f"flags 0x{flags:08x}")
+        print(f"flags {flags:#08x}")
         if hash_based:
             source_hash = f.read(8)
             read_date_and_size = False

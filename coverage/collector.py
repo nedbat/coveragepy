@@ -206,7 +206,7 @@ class Collector:
         self.reset()
 
     def __repr__(self) -> str:
-        return f"<Collector at 0x{id(self):x}: {self.tracer_name()}>"
+        return f"<Collector at {id(self):#x}: {self.tracer_name()}>"
 
     def use_data(self, covdata: CoverageData, context: Optional[str]) -> None:
         """Use `covdata` for recording data."""

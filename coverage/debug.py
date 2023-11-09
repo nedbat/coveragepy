@@ -261,7 +261,7 @@ def auto_repr(self: Any) -> str:
         and not inspect.ismethod(v)
         and k not in AUTO_REPR_IGNORE
     )
-    return "<{klass} @0x{id:x}{attrs}>".format(
+    return "<{klass} @{id:#x}{attrs}>".format(
         klass=self.__class__.__name__,
         id=id(self),
         attrs="".join(f" {k}={v!r}" for k, v in show_attrs),

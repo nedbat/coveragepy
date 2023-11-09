@@ -84,10 +84,9 @@ class PyTracer(TTracer):
         self._cached_bound_method_trace: TTraceFn = self._trace
 
     def __repr__(self) -> str:
-        me = id(self)
         points = sum(len(v) for v in self.data.values())
         files = len(self.data)
-        return f"<PyTracer at 0x{me:x}: {points} data points in {files} files>"
+        return f"<PyTracer at {id(self):#x}: {points} data points in {files} files>"
 
     def log(self, marker: str, *args: Any) -> None:
         """For hard-core logging of what this tracer is doing."""
