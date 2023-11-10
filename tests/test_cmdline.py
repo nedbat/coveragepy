@@ -19,13 +19,13 @@ import pytest
 
 import coverage
 import coverage.cmdline
-from coverage import env
 from coverage.control import DEFAULT_DATAFILE
 from coverage.config import CoverageConfig
 from coverage.exceptions import _ExceptionDuringRun
 from coverage.types import TConfigValueIn, TConfigValueOut
 from coverage.version import __url__
 
+from tests import testenv
 from tests.coveragetest import CoverageTest, OK, ERR, command_line
 from tests.helpers import os_sep, re_line
 
@@ -1008,7 +1008,7 @@ class CmdLineStdoutTest(BaseCmdLineTest):
         self.command_line("--version")
         out = self.stdout()
         assert "ersion " in out
-        if env.C_TRACER:
+        if testenv.C_TRACER:
             assert "with C extension" in out
         else:
             assert "without C extension" in out

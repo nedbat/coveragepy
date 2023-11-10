@@ -16,6 +16,7 @@ import pytest
 
 from coverage import env
 
+from tests import testenv
 from tests.coveragetest import CoverageTest, COVERAGE_INSTALL_ARGS
 from tests.helpers import change_dir, make_file
 from tests.helpers import re_lines, run_command
@@ -282,7 +283,7 @@ class VirtualenvTest(CoverageTest):
         assert "coverage" not in out
         assert "colorsys" not in out
 
-    @pytest.mark.skipif(not env.C_TRACER, reason="Plugins are only supported with the C tracer.")
+    @pytest.mark.skipif(not testenv.C_TRACER, reason="Plugins are only supported with the C tracer.")
     def test_venv_with_dynamic_plugin(self, coverage_command: str) -> None:
         # https://github.com/nedbat/coveragepy/issues/1150
         # Django coverage plugin was incorrectly getting warnings:

@@ -28,6 +28,7 @@ from coverage.exceptions import ConfigError
 from coverage.files import abs_file
 from coverage.misc import import_local_file
 
+from tests import testenv
 from tests.coveragetest import CoverageTest
 
 
@@ -188,7 +189,7 @@ def cant_trace_msg(concurrency: str, the_module: Optional[ModuleType]) -> Option
         expected_out = (
             f"Couldn't trace with concurrency={concurrency}, the module isn't installed.\n"
         )
-    elif env.C_TRACER or concurrency == "thread" or concurrency == "":
+    elif testenv.C_TRACER or concurrency == "thread" or concurrency == "":
         expected_out = None
     else:
         expected_out = (
@@ -345,7 +346,7 @@ class ConcurrencyTest(CoverageTest):
                 "Couldn't trace with concurrency=gevent, the module isn't installed.\n"
             )
             pytest.skip("Can't run test without gevent installed.")
-        if not env.C_TRACER:
+        if not testenv.C_TRACER:
             assert out == (
                 "Can't support concurrency=gevent with PyTracer, only threads are supported.\n"
             )

@@ -18,9 +18,9 @@ from coverage.data import sorted_lines
 from coverage.files import abs_file
 from coverage.misc import import_local_file
 
+from tests import osinfo, testenv
 from tests.coveragetest import CoverageTest
 from tests.helpers import swallow_warnings
-from tests import osinfo
 
 
 class ThreadingTest(CoverageTest):
@@ -162,7 +162,7 @@ class MemoryLeakTest(CoverageTest):
 
     """
     @flaky      # type: ignore[misc]
-    @pytest.mark.skipif(not env.C_TRACER, reason="Only the C tracer has refcounting issues")
+    @pytest.mark.skipif(not testenv.C_TRACER, reason="Only the C tracer has refcounting issues")
     def test_for_leaks(self) -> None:
         # Our original bad memory leak only happened on line numbers > 255, so
         # make a code object with more lines than that.  Ugly string mumbo
@@ -209,7 +209,7 @@ class MemoryLeakTest(CoverageTest):
 class MemoryFumblingTest(CoverageTest):
     """Test that we properly manage the None refcount."""
 
-    @pytest.mark.skipif(not env.C_TRACER, reason="Only the C tracer has refcounting issues")
+    @pytest.mark.skipif(not testenv.C_TRACER, reason="Only the C tracer has refcounting issues")
     def test_dropping_none(self) -> None:                     # pragma: not covered
         # TODO: Mark this so it will only be run sometimes.
         pytest.skip("This is too expensive for now (30s)")

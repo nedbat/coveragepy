@@ -25,6 +25,7 @@ from coverage.debug import (
 )
 from coverage.exceptions import DataError
 
+from tests import testenv
 from tests.coveragetest import CoverageTest
 from tests.helpers import DebugControlString, re_line, re_lines, re_lines_text
 
@@ -196,7 +197,7 @@ class DebugTraceTest(CoverageTest):
     def test_debug_sys_ctracer(self) -> None:
         out_text = self.f1_debug_output(["sys"])
         tracer_line = re_line(r"CTracer:", out_text).strip()
-        if env.C_TRACER:
+        if testenv.C_TRACER:
             expected = "CTracer: available"
         else:
             expected = "CTracer: unavailable"

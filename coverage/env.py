@@ -115,10 +115,8 @@ class PYBEHAVIOR:
     # Changed in https://github.com/python/cpython/pull/101441
     comprehensions_are_functions = (PYVERSION <= (3, 12, 0, "alpha", 7, 0))
 
-# Coverage.py specifics.
 
-# Are we using the C-implemented trace function?
-C_TRACER = os.getenv("COVERAGE_TEST_TRACER", "c") == "c"
+# Coverage.py specifics, about testing scenarios. See tests/testenv.py also.
 
 # Are we coverage-measuring ourselves?
 METACOV = os.getenv("COVERAGE_COVERAGE") is not None

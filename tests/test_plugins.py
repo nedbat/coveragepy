@@ -16,7 +16,7 @@ from xml.etree import ElementTree
 import pytest
 
 import coverage
-from coverage import Coverage, env
+from coverage import Coverage
 from coverage.control import Plugins
 from coverage.data import line_counts, sorted_lines
 from coverage.exceptions import CoverageWarning, NoSource, PluginError
@@ -25,6 +25,7 @@ from coverage.types import TConfigSectionOut, TLineNo, TPluginConfig
 
 import coverage.plugin
 
+from tests import testenv
 from tests.coveragetest import CoverageTest
 from tests.helpers import CheckUniqueFilenames, swallow_warnings
 
@@ -212,7 +213,7 @@ class PluginTest(CoverageTest):
         cov.stop()      # pragma: nested
 
         out_lines = [line.strip() for line in debug_out.getvalue().splitlines()]
-        if env.C_TRACER:
+        if testenv.C_TRACER:
             assert 'plugins.file_tracers: plugin_sys_info.Plugin' in out_lines
         else:
             assert 'plugins.file_tracers: plugin_sys_info.Plugin (disabled)' in out_lines
@@ -272,7 +273,7 @@ class PluginTest(CoverageTest):
         assert out == ""
 
 
-@pytest.mark.skipif(env.C_TRACER, reason="This test is only about PyTracer.")
+@pytest.mark.skipif(testenv.C_TRACER, reason="This test is only about PyTracer.")
 class PluginWarningOnPyTracerTest(CoverageTest):
     """Test that we get a controlled exception with plugins on PyTracer."""
     def test_exception_if_plugins_on_pytracer(self) -> None:
@@ -288,7 +289,7 @@ class PluginWarningOnPyTracerTest(CoverageTest):
             self.start_import_stop(cov, "simple")
 
 
-@pytest.mark.skipif(not env.C_TRACER, reason="Plugins are only supported with the C tracer.")
+@pytest.mark.skipif(not testenv.C_TRACER, reason="Plugins are only supported with the C tracer.")
 class FileTracerTest(CoverageTest):
     """Tests of plugins that implement file_tracer."""
 
