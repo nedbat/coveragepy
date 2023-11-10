@@ -607,6 +607,7 @@ class MultiprocessingTest(CoverageTest):
         assert out.splitlines()[-1] == "ok"
 
 
+@pytest.mark.skipif(not testenv.SETTRACE_CORE, reason="gettrace is not supported with this core.")
 def test_coverage_stop_in_threads() -> None:
     has_started_coverage = []
     has_stopped_coverage = []

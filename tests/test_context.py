@@ -11,11 +11,14 @@ import os.path
 from typing import Any, List, Optional, Tuple
 from unittest import mock
 
+import pytest
+
 import coverage
 from coverage.context import qualname_from_frame
 from coverage.data import CoverageData, sorted_lines
 from coverage.types import TArc, TCovKwargs, TLineNo
 
+from tests import testenv
 from tests.coveragetest import CoverageTest
 from tests.helpers import assert_count_equal
 
@@ -124,6 +127,7 @@ class StaticContextTest(CoverageTest):
             assert_combined_arcs(fblue, 'blue', self.ARCS)
 
 
+@pytest.mark.skipif(not testenv.DYN_CONTEXTS, reason="No dynamic contexts with this core")
 class DynamicContextTest(CoverageTest):
     """Tests of dynamically changing contexts."""
 

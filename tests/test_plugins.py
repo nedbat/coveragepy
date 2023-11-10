@@ -207,7 +207,7 @@ class PluginTest(CoverageTest):
         cov._debug_file = debug_out
         cov.set_option("run:plugins", ["plugin_sys_info"])
         with swallow_warnings(
-            r"Plugin file tracers \(plugin_sys_info.Plugin\) aren't supported with PyTracer"
+            r"Plugin file tracers \(plugin_sys_info.Plugin\) aren't supported with .*"
         ):
             cov.start()
         cov.stop()      # pragma: nested
@@ -273,23 +273,28 @@ class PluginTest(CoverageTest):
         assert out == ""
 
 
-@pytest.mark.skipif(testenv.C_TRACER, reason="This test is only about PyTracer.")
+@pytest.mark.skipif(testenv.PLUGINS, reason="This core doesn't support plugins.")
 class PluginWarningOnPyTracerTest(CoverageTest):
-    """Test that we get a controlled exception with plugins on PyTracer."""
+    """Test that we get a controlled exception when plugins aren't supported."""
     def test_exception_if_plugins_on_pytracer(self) -> None:
         self.make_file("simple.py", "a = 1")
 
         cov = coverage.Coverage()
         cov.set_option("run:plugins", ["tests.plugin1"])
 
+        if testenv.PY_TRACER:
+            core = "PyTracer"
+        elif testenv.SYS_MON:
+            core = "Pep669Tracer"
+
         expected_warnings = [
-            r"Plugin file tracers \(tests.plugin1.Plugin\) aren't supported with PyTracer",
+            fr"Plugin file tracers \(tests.plugin1.Plugin\) aren't supported with {core}",
         ]
         with self.assert_warnings(cov, expected_warnings):
             self.start_import_stop(cov, "simple")
 
 
-@pytest.mark.skipif(not testenv.C_TRACER, reason="Plugins are only supported with the C tracer.")
+@pytest.mark.skipif(not testenv.PLUGINS, reason="Plugins are not supported with this core.")
 class FileTracerTest(CoverageTest):
     """Tests of plugins that implement file_tracer."""
 
@@ -962,6 +967,7 @@ class ConfigurerPluginTest(CoverageTest):
         assert "pragma: or whatever" in excluded
 
 
+@pytest.mark.skipif(not testenv.DYN_CONTEXTS, reason="No dynamic contexts with this core")
 class DynamicContextPluginTest(CoverageTest):
     """Tests of plugins that implement `dynamic_context`."""
 

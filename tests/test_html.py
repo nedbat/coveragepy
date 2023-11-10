@@ -27,6 +27,7 @@ import coverage.html
 from coverage.report_core import get_analysis_to_report
 from coverage.types import TLineNo, TMorf
 
+from tests import testenv
 from tests.coveragetest import CoverageTest, TESTS_DIR
 from tests.goldtest import gold_path
 from tests.goldtest import compare, contains, contains_rx, doesnt_contain, contains_any
@@ -1135,6 +1136,7 @@ assert len(math) == 18
         assert expected % os.sep in index
 
 
+@pytest.mark.skipif(not testenv.DYN_CONTEXTS, reason="No dynamic contexts with this core.")
 class HtmlWithContextsTest(HtmlTestHelpers, CoverageTest):
     """Tests of the HTML reports with shown contexts."""
 

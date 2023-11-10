@@ -539,6 +539,8 @@ class ProcessTest(CoverageTest):
             # If the C trace function is being tested, then regular running should have
             # the C function, which registers itself as f_trace.
             assert cov_out == "CTracer\n"
+        elif testenv.SYS_MON:
+            assert cov_out == "None\n"
         else:
             # If the Python trace function is being tested, then regular running will
             # also show the Python function.

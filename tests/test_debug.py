@@ -197,7 +197,7 @@ class DebugTraceTest(CoverageTest):
     def test_debug_sys_ctracer(self) -> None:
         out_text = self.f1_debug_output(["sys"])
         tracer_line = re_line(r"CTracer:", out_text).strip()
-        if testenv.C_TRACER:
+        if testenv.C_TRACER or testenv.SYS_MON:
             expected = "CTracer: available"
         else:
             expected = "CTracer: unavailable"

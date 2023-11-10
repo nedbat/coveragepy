@@ -474,21 +474,25 @@ class GettraceTest(CoverageTest):
 
     def test_setting_new_trace_function(self) -> None:
         # https://github.com/nedbat/coveragepy/issues/436
+        if testenv.SETTRACE_CORE:
+            missing = "5-7, 13-14"
+        else:
+            missing = "5-7"
         self.check_coverage('''\
             import os.path
             import sys
 
             def tracer(frame, event, arg):
-                filename = os.path.basename(frame.f_code.co_filename)
-                print(f"{event}: {filename} @ {frame.f_lineno}")
-                return tracer
+                filename = os.path.basename(frame.f_code.co_filename)   # 5
+                print(f"{event}: {filename} @ {frame.f_lineno}")        # 6
+                return tracer                                           # 7
 
             def begin():
                 sys.settrace(tracer)
 
             def collect():
-                t = sys.gettrace()
-                assert t is tracer, t
+                t = sys.gettrace()              # 13
+                assert t is tracer, t           # 14
 
             def test_unsets_trace() -> None:
                 begin()
@@ -501,7 +505,7 @@ class GettraceTest(CoverageTest):
             b = 22
             ''',
             lines=[1, 2, 4, 5, 6, 7, 9, 10, 12, 13, 14, 16, 17, 18, 20, 21, 22, 23, 24],
-            missing="5-7, 13-14",
+            missing=missing,
         )
 
         assert self.last_module_name is not None
