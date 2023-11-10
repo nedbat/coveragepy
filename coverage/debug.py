@@ -192,7 +192,7 @@ def short_filename(filename: None) -> None:
     pass
 
 def short_filename(filename: Optional[str]) -> Optional[str]:
-    """shorten a file name. Directories are replaced by prefixes like 'syspath:'"""
+    """Shorten a file name. Directories are replaced by prefixes like 'syspath:'"""
     if not _FILENAME_SUBS:
         for pathdir in sys.path:
             _FILENAME_SUBS.append((pathdir, "syspath:"))

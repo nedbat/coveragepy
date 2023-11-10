@@ -21,7 +21,7 @@ from coverage.debug import short_stack
 from coverage.disposition import FileDisposition
 from coverage.exceptions import ConfigError
 from coverage.misc import human_sorted_items, isolate_module
-from coverage.pep669_tracer import Pep669Tracer
+from coverage.pep669_monitor import Pep669Monitor
 from coverage.plugin import CoveragePlugin
 from coverage.pytracer import PyTracer
 from coverage.types import (
@@ -130,6 +130,8 @@ class Collector:
         self.concurrency = concurrency
         assert isinstance(self.concurrency, list), f"Expected a list: {self.concurrency!r}"
 
+        self.pid = os.getpid()
+
         self.covdata: CoverageData
         self.threading = None
         self.static_context: Optional[str] = None
@@ -153,7 +155,7 @@ class Collector:
                     core = "ctrace"
 
         if core == "sysmon":
-            self._trace_class = Pep669Tracer
+            self._trace_class = Pep669Monitor
             self.file_disposition_class = FileDisposition
             self.supports_plugins = False
             self.packed_arcs = False
@@ -343,6 +345,11 @@ class Collector:
 
     def start(self) -> None:
         """Start collecting trace information."""
+        # We may be a new collector in a forked process.  The old process' 
+        # collectors will be in self._collectors, but they won't be usable.
+        # Find them and discard them.
+        #self.__class__._collectors = [c for c in self._collectors if c.pid == self.pid]
+
         if self._collectors:
             self._collectors[-1].pause()
 
@@ -359,6 +366,10 @@ class Collector:
         # If _start_tracer succeeded, then we add ourselves to the global
         # stack of collectors.
         self._collectors.append(self)
+
+        with open("/tmp/foo.out", "a") as f:
+            print(f"pid={os.getpid()} start: {self._collectors = }", file=f)
+            print(f"start stack:\n{short_stack()}", file=f)
 
         # Install our installation tracer in threading, to jump-start other
         # threads.
@@ -380,6 +391,9 @@ class Collector:
 
         # Remove this Collector from the stack, and resume the one underneath
         # (if any).
+        with open("/tmp/foo.out", "a") as f:
+            print(f"pid={os.getpid()} stop: {self._collectors = }", file=f)
+            print(f"stop stack:\n{short_stack()}", file=f)
         self._collectors.pop()
         if self._collectors:
             self._collectors[-1].resume()

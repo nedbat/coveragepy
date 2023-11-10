@@ -434,7 +434,7 @@ MULTI_CODE = """
         for pid, sq in outputs:
             pids.add(pid)
             total += sq
-        print("%d pids, total = %d" % (len(pids), total))
+        print(f"{{len(pids)}} pids, {{total = }}")
         pool.close()
         pool.join()
     """
@@ -450,7 +450,7 @@ def start_method_fixture(request: pytest.FixtureRequest) -> str:
     return start_method
 
 
-@flaky(max_runs=30)         # Sometimes a test fails due to inherent randomness. Try more times.
+#@flaky(max_runs=30)         # Sometimes a test fails due to inherent randomness. Try more times.
 class MultiprocessingTest(CoverageTest):
     """Test support of the multiprocessing module."""
 
@@ -505,7 +505,7 @@ class MultiprocessingTest(CoverageTest):
         upto = 30
         code = (SQUARE_OR_CUBE_WORK + MULTI_CODE).format(NPROCS=nprocs, UPTO=upto)
         total = sum(x*x if x%2 else x*x*x for x in range(upto))
-        expected_out = f"{nprocs} pids, total = {total}"
+        expected_out = f"{nprocs} pids, {total = }"
         self.try_multiprocessing_code(
             code,
             expected_out,

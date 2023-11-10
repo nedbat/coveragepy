@@ -37,7 +37,9 @@ class ProcessWithCoverage(OriginalProcess):         # pylint: disable=abstract-m
             assert debug is not None
             if debug.should("multiproc"):
                 debug.write("Calling multiprocessing bootstrap")
-        except Exception:
+        except Exception as exc:
+            with open("/tmp/foo.out", "a") as f:
+                print(f"Exception during multiprocessing bootstrap init: {exc.__class__.__name__}: {exc}", file=f)
             print("Exception during multiprocessing bootstrap init:")
             traceback.print_exc(file=sys.stdout)
             sys.stdout.flush()
@@ -47,8 +49,18 @@ class ProcessWithCoverage(OriginalProcess):         # pylint: disable=abstract-m
         finally:
             if debug.should("multiproc"):
                 debug.write("Finished multiprocessing bootstrap")
-            cov.stop()
-            cov.save()
+            try:
+                cov.stop()
+            except Exception as exc:
+                with open("/tmp/foo.out", "a") as f:
+                    print(f"Exception during multiprocessing bootstrap finally stop: {exc = }", file=f)
+                raise
+            try:
+                cov.save()
+            except Exception as exc:
+                with open("/tmp/foo.out", "a") as f:
+                    print(f"Exception during multiprocessing bootstrap finally save: {exc = }", file=f)
+                raise
             if debug.should("multiproc"):
                 debug.write("Saved multiprocessing data")
 
@@ -86,7 +98,7 @@ def patch_multiprocessing(rcfile: str) -> None:
     # When spawning processes rather than forking them, we have no state in the
     # new process.  We sneak in there with a Stowaway: we stuff one of our own
     # objects into the data that gets pickled and sent to the sub-process. When
-    # the Stowaway is unpickled, it's __setstate__ method is called, which
+    # the Stowaway is unpickled, its __setstate__ method is called, which
     # re-applies the monkey-patch.
     # Windows only spawns, so this is needed to keep Windows working.
     try:
