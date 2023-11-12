@@ -892,7 +892,7 @@ class CoverageScript:
             write_formatted_info(print, "config", self.coverage.config.debug_info())
         elif args[0] == "premain":
             print(info_header("premain"))
-            print(short_stack())
+            print(short_stack(full=True))
         elif args[0] == "pybehave":
             write_formatted_info(print, "pybehave", env.debug_info())
         else:

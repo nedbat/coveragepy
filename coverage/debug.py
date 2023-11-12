@@ -20,7 +20,7 @@ import types
 import _thread
 
 from typing import (
-    cast,
+    cast, overload,
     Any, Callable, IO, Iterable, Iterator, Mapping, Optional, List, Tuple,
 )
 
@@ -181,7 +181,41 @@ def exc_one_line(exc: Exception) -> str:
     return "|".join(l.rstrip() for l in lines)
 
 
-def short_stack(limit: Optional[int] = None, skip: int = 0) -> str:
+_FILENAME_REGEXES: List[Tuple[str, str]] = [
+    (r".*[/\\]pytest-of-.*[/\\]pytest-\d+([/\\]popen-gw\d+)?", "tmp:"),
+]
+_FILENAME_SUBS: List[Tuple[str, str]] = []
+
+@overload
+def short_filename(filename: str) -> str:
+    pass
+
+@overload
+def short_filename(filename: None) -> None:
+    pass
+
+def short_filename(filename: Optional[str]) -> Optional[str]:
+    """shorten a file name. Directories are replaced by prefixes like 'syspath:'"""
+    if not _FILENAME_SUBS:
+        for pathdir in sys.path:
+            _FILENAME_SUBS.append((pathdir, "syspath:"))
+        import coverage
+        _FILENAME_SUBS.append((os.path.dirname(coverage.__file__), "cov:"))
+        _FILENAME_SUBS.sort(key=(lambda pair: len(pair[0])), reverse=True)
+    if filename is not None:
+        for pat, sub in _FILENAME_REGEXES:
+            filename = re.sub(pat, sub, filename)
+        for before, after in _FILENAME_SUBS:
+            filename = filename.replace(before, after)
+    return filename
+
+
+def short_stack(
+    skip: int = 0,
+    full: bool = False,
+    frame_ids: bool = False,
+    short_filenames: bool = False,
+) -> str:
     """Return a string summarizing the call stack.
 
     The string is multi-line, with one line per stack frame. Each line shows
@@ -193,12 +227,14 @@ def short_stack(limit: Optional[int] = None, skip: int = 0) -> str:
         import_local_file : /Users/ned/coverage/trunk/coverage/backward.py:159
         ...
 
-    `limit` is the number of frames to include, defaulting to all of them.
-
     `skip` is the number of frames to skip, so that debugging functions can
     call this and not be included in the result.
 
-    Initial frames deemed uninteresting are automatically skipped.
+    If `full` is true, then include all frames.  Otherwise, initial "boring"
+    frames (ones in site-packages and earlier) are omitted.
+
+    `short_filenames` will shorten filenames using `short_filename`, to reduce
+    the amount of repetitive noise in stack traces.
 
     """
     # Regexes in initial frames that we don't care about.
@@ -208,23 +244,33 @@ def short_stack(limit: Optional[int] = None, skip: int = 0) -> str:
         r"\bsite-packages\b",   # pytest etc getting to our tests.
     ]
 
-    stack: Iterable[inspect.FrameInfo] = inspect.stack()[limit:skip:-1]
-    for pat in BORING_PRELUDE:
-        stack = itertools.dropwhile(
-            (lambda fi, pat=pat: re.search(pat, fi.filename)),  # type: ignore[misc]
-            stack
-        )
-    return "\n".join(f"{fi.function:>30s} : {fi.filename}:{fi.lineno}" for fi in stack)
+    stack: Iterable[inspect.FrameInfo] = inspect.stack()[:skip:-1]
+    if not full:
+        for pat in BORING_PRELUDE:
+            stack = itertools.dropwhile(
+                (lambda fi, pat=pat: re.search(pat, fi.filename)),  # type: ignore[misc]
+                stack
+            )
+    lines = []
+    for frame_info in stack:
+        line = f"{frame_info.function:>30s} : "
+        if frame_ids:
+            line += f"{id(frame_info.frame):#x} "
+        filename = frame_info.filename
+        if short_filenames:
+            filename = short_filename(filename)
+        line += f"{filename}:{frame_info.lineno}"
+        lines.append(line)
+    return "\n".join(lines)
 
 
 def dump_stack_frames(
-    limit: Optional[int] = None,
     out: Optional[TWritable] = None,
     skip: int = 0
 ) -> None:
     """Print a summary of the stack to stdout, or someplace else."""
     fout = out or sys.stdout
-    fout.write(short_stack(limit=limit, skip=skip+1))
+    fout.write(short_stack(skip=skip+1))
     fout.write("\n")
 
 
@@ -507,7 +553,7 @@ def show_calls(
                 extra += ")"
             if show_stack:
                 extra += " @ "
-                extra += "; ".join(_clean_stack_line(l) for l in short_stack().splitlines())
+                extra += "; ".join(short_stack(short_filenames=True).splitlines())
             callid = next(CALLS)
             msg = f"{oid} {callid:04d} {func.__name__}{extra}\n"
             DebugOutputFile.get_one(interim=True).write(msg)
@@ -518,15 +564,6 @@ def show_calls(
             return ret
         return _wrapper
     return _decorator
-
-
-def _clean_stack_line(s: str) -> str:                       # pragma: debugging
-    """Simplify some paths in a stack trace, for compactness."""
-    s = s.strip()
-    s = s.replace(os.path.dirname(__file__) + "/", "")
-    s = s.replace(os.path.dirname(os.__file__) + "/", "")
-    s = s.replace(sys.prefix + "/", "")
-    return s
 
 
 def relevant_environment_display(env: Mapping[str, str]) -> List[Tuple[str, str]]:

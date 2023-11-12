@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 import ast
+import os
 import pprint
 import re
 import sys
@@ -333,16 +334,25 @@ class CmdLineTest(BaseCmdLineTest):
     def test_debug_premain(self) -> None:
         self.command_line("debug premain")
         out = self.stdout()
+        # -- premain ---------------------------------------------------
         #   ... many lines ...
+        #           _multicall : /Users/ned/cov/trunk/.tox/py39/site-packages/pluggy/_callers.py:77
         #   pytest_pyfunc_call : /Users/ned/cov/trunk/.tox/py39/site-packages/_pytest/python.py:183
         #   test_debug_premain : /Users/ned/cov/trunk/tests/test_cmdline.py:284
         #         command_line : /Users/ned/cov/trunk/tests/coveragetest.py:309
         #         command_line : /Users/ned/cov/trunk/tests/coveragetest.py:472
         #         command_line : /Users/ned/cov/trunk/coverage/cmdline.py:592
         #             do_debug : /Users/ned/cov/trunk/coverage/cmdline.py:804
-        assert re.search(r"(?m)^\s+test_debug_premain : .*[/\\]tests[/\\]test_cmdline.py:\d+$", out)
-        assert re.search(r"(?m)^\s+command_line : .*[/\\]coverage[/\\]cmdline.py:\d+$", out)
-        assert re.search(r"(?m)^\s+do_debug : .*[/\\]coverage[/\\]cmdline.py:\d+$", out)
+        lines = out.splitlines()
+        s = re.escape(os.sep)
+        assert lines[0].startswith("-- premain ----")
+        assert len(lines) > 25
+        assert re.search(fr"{s}site-packages{s}_pytest{s}", out)
+        assert re.search(fr"{s}site-packages{s}pluggy{s}", out)
+        assert re.search(fr"(?m)^\s+test_debug_premain : .*{s}tests{s}test_cmdline.py:\d+$", out)
+        assert re.search(fr"(?m)^\s+command_line : .*{s}coverage{s}cmdline.py:\d+$", out)
+        assert re.search(fr"(?m)^\s+do_debug : .*{s}coverage{s}cmdline.py:\d+$", out)
+        assert "do_debug : " in lines[-1]
 
     def test_erase(self) -> None:
         # coverage erase

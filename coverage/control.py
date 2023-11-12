@@ -354,7 +354,7 @@ class Coverage(TConfigurable):
 
         # "[run] _crash" will raise an exception if the value is close by in
         # the call stack, for testing error handling.
-        if self.config._crash and self.config._crash in short_stack(limit=4):
+        if self.config._crash and self.config._crash in short_stack():
             raise RuntimeError(f"Crashing because called by {self.config._crash}")
 
     def _write_startup_debug(self) -> None:

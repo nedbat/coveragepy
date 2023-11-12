@@ -720,7 +720,7 @@ class AstArcAnalyzer:
         """Add an arc, including message fragments to use if it is missing."""
         if self.debug:                      # pragma: debugging
             print(f"\nAdding possible arc: ({start}, {end}): {smsg!r}, {emsg!r}")
-            print(short_stack(limit=10))
+            print(short_stack())
         self.arcs.add((start, end))
 
         if smsg is not None or emsg is not None:

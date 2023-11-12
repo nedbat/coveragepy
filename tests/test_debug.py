@@ -21,7 +21,7 @@ from coverage.debug import (
     DebugOutputFile,
     auto_repr, clipped_repr, exc_one_line, filter_text,
     info_formatter, info_header,
-    relevant_environment_display, short_id, short_stack,
+    relevant_environment_display, short_id, short_filename, short_stack,
 )
 from coverage.exceptions import DataError
 
@@ -299,18 +299,66 @@ class ShortStackTest(CoverageTest):
         assert "f_two" in stack[2]
         assert "f_three" in stack[3]
 
-    def test_short_stack_limit(self) -> None:
-        stack = f_one(limit=2).splitlines()
-        assert 2 == len(stack)
-        assert "f_two" in stack[0]
-        assert "f_three" in stack[1]
-
     def test_short_stack_skip(self) -> None:
         stack = f_one(skip=1).splitlines()
         assert 3 == len(stack)
         assert "test_short_stack" in stack[0]
         assert "f_one" in stack[1]
         assert "f_two" in stack[2]
+
+    def test_short_stack_full(self) -> None:
+        stack_text = f_one(full=True)
+        s = re.escape(os.sep)
+        if env.WINDOWS:
+            pylib = "[Ll]ib"
+        else:
+            py = "pypy" if env.PYPY else "python"
+            majv, minv = sys.version_info[:2]
+            pylib = f"lib{s}{py}{majv}.{minv}"
+        assert len(re_lines(fr"{s}{pylib}{s}site-packages{s}_pytest", stack_text)) > 3
+        assert len(re_lines(fr"{s}{pylib}{s}site-packages{s}pluggy", stack_text)) > 3
+        assert not re_lines(r" 0x[0-9a-fA-F]+", stack_text) # No frame ids
+        stack = stack_text.splitlines()
+        assert len(stack) > 25
+        assert "test_short_stack" in stack[-4]
+        assert "f_one" in stack[-3]
+        assert "f_two" in stack[-2]
+        assert "f_three" in stack[-1]
+
+    def test_short_stack_short_filenames(self) -> None:
+        stack_text = f_one(full=True, short_filenames=True)
+        s = re.escape(os.sep)
+        assert not re_lines(r"site-packages", stack_text)
+        assert len(re_lines(fr"syspath:{s}_pytest", stack_text)) > 3
+        assert len(re_lines(fr"syspath:{s}pluggy", stack_text)) > 3
+
+    def test_short_stack_frame_ids(self) -> None:
+        stack = f_one(full=True, frame_ids=True).splitlines()
+        print(stack)
+        assert len(stack) > 25
+        frame_ids = [m[0] for line in stack if (m := re.search(r" 0x[0-9a-fA-F]{6,}", line))]
+        # Every line has a frame id.
+        assert len(frame_ids) == len(stack)
+        # All the frame ids are different.
+        assert len(set(frame_ids)) == len(frame_ids)
+
+
+class ShortFilenameTest(CoverageTest):
+    """Tests of debug.py:short_filename."""
+
+    def test_short_filename(self) -> None:
+        s = os.sep
+        se = re.escape(s)
+        assert short_filename(ast.__file__) == f"syspath:{s}ast.py"
+        assert short_filename(pytest.__file__) == f"syspath:{s}pytest{s}__init__.py"
+        assert short_filename(env.__file__) == f"cov:{s}env.py"
+        self.make_file("hello.txt", "hi")
+        print(f'{os.path.abspath("hello.txt") = }')
+        short_hello = short_filename(os.path.abspath("hello.txt"))
+        assert re.match(fr"tmp:{se}t\d+{se}hello.txt", short_hello)
+        oddball = f"{s}xyzzy{s}plugh{s}foo.txt"
+        assert short_filename(oddball) == oddball
+        assert short_filename(None) is None
 
 
 def test_relevant_environment_display() -> None:
