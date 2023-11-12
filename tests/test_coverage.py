@@ -1405,6 +1405,14 @@ class ExcludeTest(CoverageTest):
             assert a == 1
             """,
             [1,7], "", excludes=['#pragma: NO COVER'])
+        self.check_coverage("""\
+            a = 0
+            def very_long_function_to_exclude_name(very_long_argument1,
+            very_long_argument2):
+                pass
+            assert a == 0
+            """,
+            [1,5], "", excludes=['function_to_exclude'])
 
     def test_excluding_for_else(self) -> None:
         self.check_coverage("""\
