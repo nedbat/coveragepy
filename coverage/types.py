@@ -79,7 +79,7 @@ TTraceFileData = Union[Set[TLineNo], Set[TArc], Set[int]]
 TTraceData = Dict[str, TTraceFileData]
 
 class TTracer(Protocol):
-    """Either CTracer or PyTracer."""
+    """TODO: Either CTracer or PyTracer."""
 
     data: TTraceData
     trace_arcs: bool

@@ -70,6 +70,14 @@ class PyTracer(TTracer):
         self.context: Optional[str] = None
         self.started_context = False
 
+        # The data_stack parallels the Python call stack. Each entry is
+        # information about an active frame, a four-element tuple:
+        #   [0] The TTraceData for this frame's file. Could be None if we
+        #           aren't tracing this frame.
+        #   [1] The current file name for the frame. None if we aren't tracing
+        #           this frame.
+        #   [2] The last line number executed in this frame.
+        #   [3] Boolean: did this frame start a new context?
         self.data_stack: List[Tuple[Optional[TTraceFileData], Optional[str], TLineNo, bool]] = []
         self.thread: Optional[threading.Thread] = None
         self.stopped = False
@@ -279,13 +287,6 @@ class PyTracer(TTracer):
         if self.threading:
             if self.thread is None:
                 self.thread = self.threading.current_thread()
-            else:
-                if self.thread.ident != self.threading.current_thread().ident:
-                    # Re-starting from a different thread!? Don't set the trace
-                    # function, but we are marked as running again, so maybe it
-                    # will be ok?
-                    #self.log("~", "starting on different threads")
-                    return self._cached_bound_method_trace
 
         sys.settrace(self._cached_bound_method_trace)
         return self._cached_bound_method_trace

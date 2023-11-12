@@ -115,6 +115,9 @@ class PYBEHAVIOR:
     # Changed in https://github.com/python/cpython/pull/101441
     comprehensions_are_functions = (PYVERSION <= (3, 12, 0, "alpha", 7, 0))
 
+    # PEP669 Low Impact Monitoring: https://peps.python.org/pep-0669/
+    pep669 = bool(getattr(sys, "monitoring", None))
+
 
 # Coverage.py specifics, about testing scenarios. See tests/testenv.py also.
 

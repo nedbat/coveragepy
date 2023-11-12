@@ -21,6 +21,7 @@ from coverage.debug import short_stack
 from coverage.disposition import FileDisposition
 from coverage.exceptions import ConfigError
 from coverage.misc import human_sorted_items, isolate_module
+from coverage.pep669_tracer import Pep669Tracer
 from coverage.plugin import CoveragePlugin
 from coverage.pytracer import PyTracer
 from coverage.types import (
@@ -144,17 +145,24 @@ class Collector:
         if HAS_CTRACER and not timid:
             use_ctracer = True
 
-        #if HAS_CTRACER and self._trace_class is CTracer:
-        if use_ctracer:
+        if env.PYBEHAVIOR.pep669 and self.should_start_context is None:
+            self._trace_class = Pep669Tracer
+            self.file_disposition_class = FileDisposition
+            self.supports_plugins = False
+            self.packed_arcs = False
+            self.systrace = False
+        elif use_ctracer:
             self._trace_class = CTracer
             self.file_disposition_class = CFileDisposition
             self.supports_plugins = True
             self.packed_arcs = True
+            self.systrace = True
         else:
             self._trace_class = PyTracer
             self.file_disposition_class = FileDisposition
             self.supports_plugins = False
             self.packed_arcs = False
+            self.systrace = True
 
         # We can handle a few concurrency options here, but only one at a time.
         concurrencies = set(self.concurrency)
@@ -275,6 +283,7 @@ class Collector:
 
     def _start_tracer(self) -> TTraceFn:
         """Start a new Tracer object, and store it in self.tracers."""
+        # TODO: for pep669, this doesn't return a TTraceFn
         tracer = self._trace_class()
         tracer.data = self.data
         tracer.trace_arcs = self.branch
@@ -344,7 +353,7 @@ class Collector:
 
         # Install our installation tracer in threading, to jump-start other
         # threads.
-        if self.threading:
+        if self.systrace and self.threading:
             self.threading.settrace(self._installation_trace)
 
     def stop(self) -> None:
