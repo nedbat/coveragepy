@@ -90,7 +90,10 @@ class PyRunner:
         This needs to happen before any importing, and without importing anything.
         """
         path0: Optional[str]
-        if self.as_module:
+        if os.environ.get('PYTHONSAFEPATH', ''):
+            # See https://docs.python.org/3/using/cmdline.html#cmdoption-P
+            path0 = None
+        elif self.as_module:
             path0 = os.getcwd()
         elif os.path.isdir(self.arg0):
             # Running a directory means running the __main__.py file in that
