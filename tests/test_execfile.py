@@ -311,7 +311,7 @@ class RunModuleTest(UsingModulesMixin, CoverageTest):
             run_python_module([TRY_EXECFILE])
         out, err = self.stdouterr()
         mod_globs = json.loads(out)
-        assert os.cwd() not in mod_globs["path"]
+        assert os.getcwd() not in mod_globs["path"]
         assert err == ""
 
     def test_no_such_module(self) -> None:
