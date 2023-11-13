@@ -23,6 +23,7 @@ from coverage.execfile import run_python_file, run_python_module
 from coverage.files import python_reported_file
 
 from tests.coveragetest import CoverageTest, TESTS_DIR, UsingModulesMixin
+from tests.helpers import change_dir
 
 TRY_EXECFILE = os.path.join(TESTS_DIR, "modules/process_test/try_execfile.py")
 
@@ -306,12 +307,13 @@ class RunModuleTest(UsingModulesMixin, CoverageTest):
         assert out == "pkg1.__init__: pkg1\npkg1.__init__: __main__\n"
         assert err == ""
 
-    def test_pythonpath(self) -> None:
-        with mock.patch.dict(os.environ, {"PYTHONSAFEPATH": "1"}):
-            run_python_module([TRY_EXECFILE])
+    def test_pythonpath(self, tmp_path) -> None:
+        env = {"PYTHONSAFEPATH": "1"}
+        with mock.patch.dict(os.environ, env), change_dir(tmp_path):
+            run_python_module(["process_test.try_execfile"])
         out, err = self.stdouterr()
         mod_globs = json.loads(out)
-        assert os.getcwd() not in mod_globs["path"]
+        assert tmp_path not in mod_globs["path"]
         assert err == ""
 
     def test_no_such_module(self) -> None:
