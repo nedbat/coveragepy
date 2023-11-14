@@ -16,7 +16,6 @@ import sys
 
 from pathlib import Path
 from typing import Any
-from unittest import mock
 from collections.abc import Iterator
 
 import pytest
