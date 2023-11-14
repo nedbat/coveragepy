@@ -13,7 +13,7 @@ import pathlib
 import py_compile
 import re
 import sys
-from unittest import mock
+from pathlib import Path
 from typing import Any, Iterator
 
 import pytest
@@ -307,9 +307,9 @@ class RunModuleTest(UsingModulesMixin, CoverageTest):
         assert out == "pkg1.__init__: pkg1\npkg1.__init__: __main__\n"
         assert err == ""
 
-    def test_pythonpath(self, tmp_path) -> None:
-        env = {"PYTHONSAFEPATH": "1"}
-        with mock.patch.dict(os.environ, env), change_dir(tmp_path):
+    def test_pythonpath(self, tmp_path: Path) -> None:
+        self.set_environ("PYTHONSAFEPATH", "1")
+        with change_dir(tmp_path):
             run_python_module(["process_test.try_execfile"])
         out, err = self.stdouterr()
         mod_globs = json.loads(out)
