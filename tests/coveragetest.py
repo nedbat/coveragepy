@@ -438,21 +438,19 @@ class CoverageTest(
 
         cmd = " ".join([shlex.quote(w) for w in command_words] + command_args)
 
-        # Add our test modules directory to PYTHONPATH.  I'm sure there's too
-        # much path munging here, but...
-        pythonpath_name = "PYTHONPATH"
-
-        testmods = nice_file(self.working_root(), "tests/modules")
-        zipfile = nice_file(self.working_root(), "tests/zipmods.zip")
-        pypath = os.getenv(pythonpath_name, '')
-        if pypath:
-            pypath += os.pathsep
-        pypath += testmods + os.pathsep + zipfile
-        self.set_environ(pythonpath_name, pypath)
-
         self.last_command_status, self.last_command_output = run_command(cmd)
         print(self.last_command_output)
         return self.last_command_status, self.last_command_output
+
+    def add_test_modules_to_syspath(self) -> None:
+        """Add our test modules directory to PYTHONPATH."""
+        pypath = os.getenv("PYTHONPATH", "")
+        if pypath:
+            pypath += os.pathsep
+        testmods = nice_file(self.working_root(), "tests/modules")
+        zipfile = nice_file(self.working_root(), "tests/zipmods.zip")
+        pypath += testmods + os.pathsep + zipfile
+        self.set_environ("PYTHONPATH", pypath)
 
     def working_root(self) -> str:
         """Where is the root of the coverage.py working tree?"""
