@@ -50,7 +50,7 @@ class ProcessTest(CoverageTest):
             """)
 
         self.assert_doesnt_exist(".coverage")
-        self.add_test_modules_to_syspath()
+        self.add_test_modules_to_pythonpath()
         out = self.run_command("coverage run mycode.py")
         self.assert_exists(".coverage")
         assert out == 'done\n'
@@ -670,7 +670,7 @@ class EnvironmentTest(CoverageTest):
         self.assert_tryexecfile_output(expected, actual)
 
     def test_coverage_run_dashm_is_like_python_dashm(self) -> None:
-        self.add_test_modules_to_syspath()
+        self.add_test_modules_to_pythonpath()
         expected = self.run_command("python -m process_test.try_execfile")
         actual = self.run_command("coverage run -m process_test.try_execfile")
         self.assert_tryexecfile_output(expected, actual)
@@ -706,7 +706,7 @@ class EnvironmentTest(CoverageTest):
         When imported by -m, a module's __name__ is __main__, but we need the
         --source machinery to know and respect the original name.
         """
-        self.add_test_modules_to_syspath()
+        self.add_test_modules_to_pythonpath()
         expected = self.run_command("python -m process_test.try_execfile")
         actual = self.run_command(
             "coverage run --source process_test.try_execfile -m process_test.try_execfile"
@@ -726,7 +726,7 @@ class EnvironmentTest(CoverageTest):
             [run]
             disable_warnings = module-not-measured
             """)
-        self.add_test_modules_to_syspath()
+        self.add_test_modules_to_pythonpath()
         expected = self.run_command("python -m process_test.try_execfile")
         actual = self.run_command(
             "coverage run --source process_test -m process_test.try_execfile"
@@ -748,7 +748,7 @@ class EnvironmentTest(CoverageTest):
             import process_test.try_execfile
             """)
 
-        self.add_test_modules_to_syspath()
+        self.add_test_modules_to_pythonpath()
         expected = self.run_command("python myscript")
         actual = self.run_command("coverage run --source process_test myscript")
         self.assert_tryexecfile_output(expected, actual)
