@@ -40,7 +40,7 @@ def run_command(cmd: str) -> Tuple[int, str]:
     # the test suite.  Use these lines to get a list of the tests using them:
     if 0:  # pragma: debugging
         with open("/tmp/processes.txt", "a") as proctxt:  # type: ignore[unreachable]
-            print(os.environ.get("PYTEST_CURRENT_TEST", "unknown"), file=proctxt, flush=True)
+            print(os.getenv("PYTEST_CURRENT_TEST", "unknown"), file=proctxt, flush=True)
 
     # In some strange cases (PyPy3 in a virtualenv!?) the stdout encoding of
     # the subprocess is set incorrectly to ascii.  Use an environment variable
@@ -65,7 +65,7 @@ def run_command(cmd: str) -> Tuple[int, str]:
 
 
 # $set_env.py: COVERAGE_DIS - Disassemble test code to /tmp/dis
-SHOW_DIS = bool(int(os.environ.get("COVERAGE_DIS", 0)))
+SHOW_DIS = bool(int(os.getenv("COVERAGE_DIS", "0")))
 
 def make_file(
     filename: str,
@@ -110,7 +110,7 @@ def make_file(
         os.makedirs("/tmp/dis", exist_ok=True)
         with open(f"/tmp/dis/{basename}.dis", "w") as fdis:
             print(f"# {os.path.abspath(filename)}", file=fdis)
-            cur_test = os.environ.get("PYTEST_CURRENT_TEST", "unknown")
+            cur_test = os.getenv("PYTEST_CURRENT_TEST", "unknown")
             print(f"# PYTEST_CURRENT_TEST = {cur_test}", file=fdis)
             try:
                 dis.dis(text, file=fdis)

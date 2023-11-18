@@ -119,12 +119,12 @@ class PYBEHAVIOR:
 C_TRACER = os.getenv("COVERAGE_TEST_TRACER", "c") == "c"
 
 # Are we coverage-measuring ourselves?
-METACOV = os.getenv("COVERAGE_COVERAGE", "") != ""
+METACOV = os.getenv("COVERAGE_COVERAGE") is not None
 
 # Are we running our test suite?
 # Even when running tests, you can use COVERAGE_TESTING=0 to disable the
 # test-specific behavior like AST checking.
-TESTING = os.getenv("COVERAGE_TESTING", "") == "True"
+TESTING = os.getenv("COVERAGE_TESTING") == "True"
 
 
 def debug_info() -> Iterable[Tuple[str, Any]]:

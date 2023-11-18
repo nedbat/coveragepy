@@ -1337,7 +1337,7 @@ class Coverage(TConfigurable):
 
 # Mega debugging...
 # $set_env.py: COVERAGE_DEBUG_CALLS - Lots and lots of output about calls to Coverage.
-if int(os.environ.get("COVERAGE_DEBUG_CALLS", 0)):              # pragma: debugging
+if int(os.getenv("COVERAGE_DEBUG_CALLS", 0)):               # pragma: debugging
     from coverage.debug import decorate_methods, show_calls
 
     Coverage = decorate_methods(        # type: ignore[misc]
@@ -1369,7 +1369,7 @@ def process_startup() -> Optional[Coverage]:
     not started by this call.
 
     """
-    cps = os.environ.get("COVERAGE_PROCESS_START")
+    cps = os.getenv("COVERAGE_PROCESS_START")
     if not cps:
         # No request for coverage, nothing to do.
         return None

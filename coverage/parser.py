@@ -676,7 +676,7 @@ class AstArcAnalyzer:
 
         # Turn on AST dumps with an environment variable.
         # $set_env.py: COVERAGE_AST_DUMP - Dump the AST nodes when parsing code.
-        dump_ast = bool(int(os.environ.get("COVERAGE_AST_DUMP", 0)))
+        dump_ast = bool(int(os.getenv("COVERAGE_AST_DUMP", "0")))
 
         if dump_ast:                                # pragma: debugging
             # Dump the AST so that failing tests have helpful output.
@@ -695,7 +695,7 @@ class AstArcAnalyzer:
         self.block_stack: List[Block] = []
 
         # $set_env.py: COVERAGE_TRACK_ARCS - Trace possible arcs added while parsing code.
-        self.debug = bool(int(os.environ.get("COVERAGE_TRACK_ARCS", 0)))
+        self.debug = bool(int(os.getenv("COVERAGE_TRACK_ARCS", "0")))
 
     def analyze(self) -> None:
         """Examine the AST tree from `root_node` to determine possible arcs.

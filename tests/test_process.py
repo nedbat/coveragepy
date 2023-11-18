@@ -59,7 +59,7 @@ class ProcessTest(CoverageTest):
         # Test that we are setting COVERAGE_RUN when we run.
         self.make_file("envornot.py", """\
             import os
-            print(os.environ.get("COVERAGE_RUN", "nope"))
+            print(os.getenv("COVERAGE_RUN", "nope"))
             """)
         self.del_environ("COVERAGE_RUN")
         # Regular Python doesn't have the environment variable.
@@ -517,7 +517,7 @@ class ProcessTest(CoverageTest):
         assert py_out == "None\n"
 
         cov_out = self.run_command("coverage run showtrace.py")
-        if os.environ.get('COVERAGE_TEST_TRACER', 'c') == 'c':
+        if os.getenv('COVERAGE_TEST_TRACER', 'c') == 'c':
             # If the C trace function is being tested, then regular running should have
             # the C function, which registers itself as f_trace.
             assert cov_out == "CTracer\n"

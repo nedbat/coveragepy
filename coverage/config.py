@@ -548,7 +548,7 @@ def config_files_to_try(config_file: Union[bool, str]) -> List[Tuple[str, bool, 
     specified_file = (config_file is not True)
     if not specified_file:
         # No file was specified. Check COVERAGE_RCFILE.
-        rcfile = os.environ.get("COVERAGE_RCFILE")
+        rcfile = os.getenv("COVERAGE_RCFILE")
         if rcfile:
             config_file = rcfile
             specified_file = True
@@ -602,10 +602,10 @@ def read_coverage_config(
 
     # $set_env.py: COVERAGE_DEBUG - Options for --debug.
     # 3) from environment variables:
-    env_data_file = os.environ.get("COVERAGE_FILE")
+    env_data_file = os.getenv("COVERAGE_FILE")
     if env_data_file:
         config.data_file = env_data_file
-    debugs = os.environ.get("COVERAGE_DEBUG")
+    debugs = os.getenv("COVERAGE_DEBUG")
     if debugs:
         config.debug.extend(d.strip() for d in debugs.split(","))
 
