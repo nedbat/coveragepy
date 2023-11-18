@@ -87,7 +87,7 @@ def reset_filesdotpy_globals() -> Iterator[None]:
     set_relative_directory()
     yield
 
-WORKER = os.environ.get("PYTEST_XDIST_WORKER", "none")
+WORKER = os.getenv("PYTEST_XDIST_WORKER", "none")
 
 def pytest_sessionstart() -> None:
     """Run once at the start of the test session."""

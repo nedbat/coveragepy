@@ -26,7 +26,7 @@ import tempfile
 #sys.path.append(os.path.abspath('.'))
 
 # on_rtd is whether we are on readthedocs.org
-on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
+on_rtd = os.getenv('READTHEDOCS') == 'True'
 
 # -- General configuration -----------------------------------------------------
 

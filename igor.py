@@ -47,7 +47,7 @@ def ignore_warnings():
         yield
 
 
-VERBOSITY = int(os.environ.get("COVERAGE_IGOR_VERBOSE", "0"))
+VERBOSITY = int(os.getenv("COVERAGE_IGOR_VERBOSE", "0"))
 
 # Functions named do_* are executable from the command line: do_blah is run
 # by "python igor.py blah".
@@ -118,7 +118,7 @@ def should_skip(tracer):
     skipper = ""
 
     # $set_env.py: COVERAGE_ONE_TRACER - Only run tests for one tracer.
-    only_one = os.environ.get("COVERAGE_ONE_TRACER")
+    only_one = os.getenv("COVERAGE_ONE_TRACER")
     if only_one:
         if CPYTHON:
             if tracer == "py":
@@ -128,10 +128,10 @@ def should_skip(tracer):
                 skipper = f"No C tracer for {platform.python_implementation()}"
     elif tracer == "py":
         # $set_env.py: COVERAGE_NO_PYTRACER - Don't run the tests under the Python tracer.
-        skipper = os.environ.get("COVERAGE_NO_PYTRACER")
+        skipper = os.getenv("COVERAGE_NO_PYTRACER")
     else:
         # $set_env.py: COVERAGE_NO_CTRACER - Don't run the tests under the C tracer.
-        skipper = os.environ.get("COVERAGE_NO_CTRACER")
+        skipper = os.getenv("COVERAGE_NO_CTRACER")
 
     if skipper:
         msg = "Skipping tests " + label_for_tracer(tracer)
@@ -168,7 +168,7 @@ def run_tests_with_coverage(tracer, *runner_args):
     os.environ["COVERAGE_TESTING"] = "True"
     os.environ["COVERAGE_PROCESS_START"] = os.path.abspath("metacov.ini")
     os.environ["COVERAGE_HOME"] = os.getcwd()
-    context = os.environ.get("COVERAGE_CONTEXT")
+    context = os.getenv("COVERAGE_CONTEXT")
     if context:
         if context[0] == "$":
             context = os.environ[context[1:]]
@@ -235,7 +235,7 @@ def do_combine_html():
     cov = coverage.Coverage(config_file="metacov.ini", messages=True)
     cov.load()
     show_contexts = bool(
-        os.environ.get("COVERAGE_DYNCTX") or os.environ.get("COVERAGE_CONTEXT")
+        os.getenv("COVERAGE_DYNCTX") or os.getenv("COVERAGE_CONTEXT")
     )
     cov.html_report(show_contexts=show_contexts)
 
@@ -249,7 +249,7 @@ def do_test_with_tracer(tracer, *runner_args):
         return None
 
     os.environ["COVERAGE_TEST_TRACER"] = tracer
-    if os.environ.get("COVERAGE_COVERAGE", "no") == "yes":
+    if os.getenv("COVERAGE_COVERAGE", "no") == "yes":
         return run_tests_with_coverage(tracer, *runner_args)
     else:
         return run_tests(tracer, *runner_args)

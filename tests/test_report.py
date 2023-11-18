@@ -85,6 +85,7 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
     def test_report_wildcard(self) -> None:
         # Try reporting using wildcards to get the modules.
         self.make_mycode()
+        self.add_test_modules_to_pythonpath()
         # Wildcard is handled by shell or cmdline.py, so use real commands
         self.run_command("coverage run mycode.py")
         report = self.report_from_command("coverage report my*.py")
@@ -245,6 +246,7 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
             [report]
             omit = */covmod1.py
             """)
+        self.add_test_modules_to_pythonpath()
         self.run_command("coverage run mycode.py")
 
         # Read the data written, to see that the right files have been omitted from running.

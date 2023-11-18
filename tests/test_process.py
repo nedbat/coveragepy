@@ -50,6 +50,7 @@ class ProcessTest(CoverageTest):
             """)
 
         self.assert_doesnt_exist(".coverage")
+        self.add_test_modules_to_pythonpath()
         out = self.run_command("coverage run mycode.py")
         self.assert_exists(".coverage")
         assert out == 'done\n'
@@ -58,7 +59,7 @@ class ProcessTest(CoverageTest):
         # Test that we are setting COVERAGE_RUN when we run.
         self.make_file("envornot.py", """\
             import os
-            print(os.environ.get("COVERAGE_RUN", "nope"))
+            print(os.getenv("COVERAGE_RUN", "nope"))
             """)
         self.del_environ("COVERAGE_RUN")
         # Regular Python doesn't have the environment variable.
@@ -516,7 +517,7 @@ class ProcessTest(CoverageTest):
         assert py_out == "None\n"
 
         cov_out = self.run_command("coverage run showtrace.py")
-        if os.environ.get('COVERAGE_TEST_TRACER', 'c') == 'c':
+        if os.getenv('COVERAGE_TEST_TRACER', 'c') == 'c':
             # If the C trace function is being tested, then regular running should have
             # the C function, which registers itself as f_trace.
             assert cov_out == "CTracer\n"
@@ -639,8 +640,7 @@ class EnvironmentTest(CoverageTest):
     def assert_tryexecfile_output(self, expected: str, actual: str) -> None:
         """Assert that the output we got is a successful run of try_execfile.py.
 
-        `expected` and `actual` must be the same, modulo a few slight known
-        platform differences.
+        `expected` and `actual` must be the same.
 
         """
         # First, is this even credible try_execfile.py output?
@@ -670,7 +670,7 @@ class EnvironmentTest(CoverageTest):
         self.assert_tryexecfile_output(expected, actual)
 
     def test_coverage_run_dashm_is_like_python_dashm(self) -> None:
-        # These -m commands assume the coverage tree is on the path.
+        self.add_test_modules_to_pythonpath()
         expected = self.run_command("python -m process_test.try_execfile")
         actual = self.run_command("coverage run -m process_test.try_execfile")
         self.assert_tryexecfile_output(expected, actual)
@@ -706,7 +706,7 @@ class EnvironmentTest(CoverageTest):
         When imported by -m, a module's __name__ is __main__, but we need the
         --source machinery to know and respect the original name.
         """
-        # These -m commands assume the coverage tree is on the path.
+        self.add_test_modules_to_pythonpath()
         expected = self.run_command("python -m process_test.try_execfile")
         actual = self.run_command(
             "coverage run --source process_test.try_execfile -m process_test.try_execfile"
@@ -726,7 +726,7 @@ class EnvironmentTest(CoverageTest):
             [run]
             disable_warnings = module-not-measured
             """)
-        # These -m commands assume the coverage tree is on the path.
+        self.add_test_modules_to_pythonpath()
         expected = self.run_command("python -m process_test.try_execfile")
         actual = self.run_command(
             "coverage run --source process_test -m process_test.try_execfile"
@@ -748,6 +748,7 @@ class EnvironmentTest(CoverageTest):
             import process_test.try_execfile
             """)
 
+        self.add_test_modules_to_pythonpath()
         expected = self.run_command("python myscript")
         actual = self.run_command("coverage run --source process_test myscript")
         self.assert_tryexecfile_output(expected, actual)

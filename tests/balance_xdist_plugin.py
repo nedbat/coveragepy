@@ -57,7 +57,7 @@ class BalanceXdistPlugin:       # pragma: debugging
         self.config = config
         self.running_all = (self.config.getoption("-k") == "")
         self.times = collections.defaultdict(float)
-        self.worker = os.environ.get("PYTEST_XDIST_WORKER", "none")
+        self.worker = os.getenv("PYTEST_XDIST_WORKER", "none")
         self.tests_csv = None
 
     def pytest_sessionstart(self, session):

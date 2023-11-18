@@ -374,7 +374,7 @@ class PytestTracker:
 
     def filter(self, text: str) -> str:
         """Add a message when the pytest test changes."""
-        test_name = os.environ.get("PYTEST_CURRENT_TEST")
+        test_name = os.getenv("PYTEST_CURRENT_TEST")
         if test_name != self.test_name:
             text = f"Pytest context: {test_name}\n" + text
             self.test_name = test_name
@@ -435,7 +435,7 @@ class DebugOutputFile:
             if file_name is not None:
                 fileobj = open(file_name, "a", encoding="utf-8")
             else:
-                file_name = os.environ.get("COVERAGE_DEBUG_FILE", FORCED_DEBUG_FILE)
+                file_name = os.getenv("COVERAGE_DEBUG_FILE", FORCED_DEBUG_FILE)
                 if file_name in ("stdout", "stderr"):
                     fileobj = getattr(sys, file_name)
                 elif file_name:
