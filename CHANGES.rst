@@ -33,12 +33,17 @@ Unreleased
   reduce the overhead coverage.py imposes on your test suite. Set the
   environment variable ``COVERAGE_CORE=sysmon`` to try it out.
 
+- Fix: the PYTHONSAFEPATH environment variable new in Python 3.11 is properly
+  supported, closing `issue 1696`_.  Thanks, `Philipp A. <pull 1700_>`_.
+
 - The :class:`Coverage constructor<.Coverage>` now has a ``plugins`` parameter
   for passing in plugin objects directly, thanks to `Alex Gaynor <pull
   1919_>`_.
 
 - Confirmed support for PyPy 3.11. Thanks Michał Górny.
 
+.. _issue 1696: https://github.com/nedbat/coveragepy/issues/1696
+.. _pull 1700: https://github.com/nedbat/coveragepy/pull/1700
 .. _pull 1919: https://github.com/nedbat/coveragepy/pull/1919
 
 
