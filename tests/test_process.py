@@ -666,6 +666,7 @@ class EnvironmentTest(CoverageTest):
         """
         # First, is this even credible try_execfile.py output?
         assert '"DATA": "xyzzy"' in actual
+        # If this fails, "+" is actual, and "-" is expected
         assert actual == expected
 
     def test_coverage_run_is_like_python(self) -> None:
@@ -807,12 +808,26 @@ class EnvironmentTest(CoverageTest):
         actual = self.run_command(f"python {cov_main} run run_me.py")
         self.assert_tryexecfile_output(expected, actual)
 
+    @pytest.mark.skipif(env.PYVERSION < (3, 11), reason="PYTHONSAFEPATH is new in 3.11")
+    @pytest.mark.skipif(
+        env.WINDOWS,
+        reason="Windows gets this wrong: https://github.com/python/cpython/issues/131484",
+    )
     def test_pythonsafepath(self) -> None:
         with open(TRY_EXECFILE) as f:
             self.make_file("run_me.py", f.read())
         self.set_environ("PYTHONSAFEPATH", "1")
         expected = self.run_command("python run_me.py")
         actual = self.run_command("coverage run run_me.py")
+        self.assert_tryexecfile_output(expected, actual)
+
+    @pytest.mark.skipif(env.PYVERSION < (3, 11), reason="PYTHONSAFEPATH is new in 3.11")
+    def test_pythonsafepath_dashm_runme(self) -> None:
+        with open(TRY_EXECFILE) as f:
+            self.make_file("run_me.py", f.read())
+        self.set_environ("PYTHONSAFEPATH", "1")
+        expected = self.run_command("python run_me.py")
+        actual = self.run_command("python -m coverage run run_me.py")
         self.assert_tryexecfile_output(expected, actual)
 
     @pytest.mark.skipif(env.PYVERSION < (3, 11), reason="PYTHONSAFEPATH is new in 3.11")

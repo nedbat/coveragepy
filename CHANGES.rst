@@ -23,7 +23,14 @@ upgrading your version of coverage.py.
 Unreleased
 ----------
 
-Nothing yet.
+- Fix: the PYTHONSAFEPATH environment variable new in Python 3.11 is properly
+  supported, closing `issue 1696`_.  Thanks, `Philipp A. <pull 1700_>`_.  This
+  works properly except for a detail when using the ``coverage`` command on
+  Windows.  There you can use ``python -m coverage`` instead if you need exact
+  emulation.
+
+.. _issue 1696: https://github.com/nedbat/coveragepy/issues/1696
+.. _pull 1700: https://github.com/nedbat/coveragepy/pull/1700
 
 
 .. start-releases
