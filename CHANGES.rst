@@ -20,12 +20,17 @@ development at the same time, such as 4.5.x and 5.0.
 Unreleased
 ----------
 
+- Fix: the PYTHONSAFEPATH environment variable new in Python 3.11 is properly
+  supported, closing `issue 1696`_.  Thanks, `Philipp A. <pull 1700_>`_.
+
 - Added new :ref:`debug options <cmd_run_debug>`:
 
   - ``pytest`` writes the pytest test name into the debug output.
 
   - ``dataop2`` writes the full data being added to CoverageData objects.
 
+.. _issue 1696: https://github.com/nedbat/coveragepy/issues/1696
+.. _pull 1700: https://github.com/nedbat/coveragepy/pull/1700
 
 .. scriv-start-here
 

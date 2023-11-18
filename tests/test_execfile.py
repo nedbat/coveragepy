@@ -307,15 +307,6 @@ class RunModuleTest(UsingModulesMixin, CoverageTest):
         assert out == "pkg1.__init__: pkg1\npkg1.__init__: __main__\n"
         assert err == ""
 
-    def test_pythonpath(self, tmp_path: Path) -> None:
-        self.set_environ("PYTHONSAFEPATH", "1")
-        with change_dir(tmp_path):
-            run_python_module(["process_test.try_execfile"])
-        out, err = self.stdouterr()
-        mod_globs = json.loads(out)
-        assert tmp_path not in mod_globs["path"]
-        assert err == ""
-
     def test_no_such_module(self) -> None:
         with pytest.raises(NoSource, match="No module named '?i_dont_exist'?"):
             run_python_module(["i_dont_exist"])
