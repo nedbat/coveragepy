@@ -90,7 +90,7 @@ class PyRunner:
         This needs to happen before any importing, and without importing anything.
         """
         path0: Optional[str]
-        if env.PYVERSION >= (3, 11) and os.environ.get('PYTHONSAFEPATH', ''):
+        if env.PYVERSION >= (3, 11) and os.getenv('PYTHONSAFEPATH'):
             # See https://docs.python.org/3/using/cmdline.html#cmdoption-P
             path0 = None
         elif self.as_module:
