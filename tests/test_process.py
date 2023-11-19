@@ -802,8 +802,8 @@ class EnvironmentTest(CoverageTest):
         self.set_environ("PYTHONSAFEPATH", "1")
         expected = self.run_command("python -m with_main")
         actual = self.run_command("coverage run -m with_main")
-        assert re.search(f"No module named '?with_main'?", actual)
-        assert re.search(f"No module named '?with_main'?", expected)
+        assert re.search("No module named '?with_main'?", actual)
+        assert re.search("No module named '?with_main'?", expected)
 
     def test_coverage_custom_script(self) -> None:
         # https://github.com/nedbat/coveragepy/issues/678
