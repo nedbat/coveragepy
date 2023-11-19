@@ -264,14 +264,9 @@ def short_stack(
     return "\n".join(lines)
 
 
-def dump_stack_frames(
-    out: Optional[TWritable] = None,
-    skip: int = 0
-) -> None:
-    """Print a summary of the stack to stdout, or someplace else."""
-    fout = out or sys.stdout
-    fout.write(short_stack(skip=skip+1))
-    fout.write("\n")
+def dump_stack_frames(out: TWritable, skip: int = 0) -> None:
+    """Print a summary of the stack to `out`."""
+    out.write(short_stack(skip=skip+1) + "\n")
 
 
 def clipped_repr(text: str, numchars: int = 50) -> str:
