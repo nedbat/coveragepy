@@ -386,11 +386,11 @@ class ProcessTest(CoverageTest):
         # .coverage.machine.123 files.
         self.assert_file_count(".coverage.*", 2)
 
-        # The two data files should have different random numbers at the end of
+        # The two data files should have different random words at the end of
         # the file name.
         data_files = glob.glob(".coverage.*")
-        nums = {name.rpartition(".")[-1] for name in data_files}
-        assert len(nums) == 2, f"Same random: {data_files}"
+        suffixes = {name.rpartition(".")[-1] for name in data_files}
+        assert len(suffixes) == 2, f"Same random suffix: {data_files}"
 
         # Combine the parallel coverage data files into .coverage .
         self.run_command("coverage combine")

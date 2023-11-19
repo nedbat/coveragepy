@@ -14,6 +14,7 @@ import os
 import random
 import socket
 import sqlite3
+import string
 import sys
 import textwrap
 import threading
@@ -1094,8 +1095,10 @@ def filename_suffix(suffix: Union[str, bool, None]) -> Union[str, None]:
         # plenty of distinguishing information.  We do this here in
         # `save()` at the last minute so that the pid will be correct even
         # if the process forks.
-        dice = random.Random(os.urandom(8)).randint(0, 999999)
-        suffix = "%s.%s.%06d" % (socket.gethostname(), os.getpid(), dice)
+        die = random.Random(os.urandom(8))
+        letters = string.ascii_uppercase + string.ascii_lowercase
+        rolls = "".join(die.choice(letters) for _ in range(6))
+        suffix = f"{socket.gethostname()}.{os.getpid()}.X{rolls}x"
     elif suffix is False:
         suffix = None
     return suffix
