@@ -118,7 +118,7 @@ class HtmlTestHelpers(CoverageTest):
                 html = fhtml.read()
             for href in re.findall(r""" href=['"]([^'"]*)['"]""", html):
                 if href.startswith("#"):
-                    assert re.search(rf""" id=['"]{href[1:]}['"]""", html), (
+                    assert re.search(fr""" id=['"]{href[1:]}['"]""", html), (
                         f"Fragment {href!r} in {fname} has no anchor"
                     )
                     continue

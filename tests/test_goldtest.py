@@ -63,7 +63,7 @@ class CompareTest(CoverageTest):
         self.make_file("out/gettysburg.txt", BAD_GETTY)
 
         # compare() raises an assertion.
-        msg = rf"Files differ: .*{GOLD_PATH_RX} != {OUT_PATH_RX}"
+        msg = fr"Files differ: .*{GOLD_PATH_RX} != {OUT_PATH_RX}"
         with pytest.raises(AssertionError, match=msg):
             compare(gold_path("testing/getty"), "out", scrubs=SCRUBS)
 
@@ -71,8 +71,8 @@ class CompareTest(CoverageTest):
         stdout = self.stdout()
         assert "- Four score" in stdout
         assert "+ Five score" in stdout
-        assert re_line(rf"^:::: diff '.*{GOLD_PATH_RX}' and '{OUT_PATH_RX}'", stdout)
-        assert re_line(rf"^:::: end diff '.*{GOLD_PATH_RX}' and '{OUT_PATH_RX}'", stdout)
+        assert re_line(fr"^:::: diff '.*{GOLD_PATH_RX}' and '{OUT_PATH_RX}'", stdout)
+        assert re_line(fr"^:::: end diff '.*{GOLD_PATH_RX}' and '{OUT_PATH_RX}'", stdout)
         assert (
             os_sep(f"Saved actual output to '{ACTUAL_GETTY_FILE}': see tests/gold/README.rst")
             in os_sep(stdout)
@@ -89,7 +89,7 @@ class CompareTest(CoverageTest):
         self.make_file("out/gettysburg.txt", GOOD_GETTY)
 
         # compare() raises an assertion.
-        msg = rf"Files differ: .*{GOLD_PATH_RX} != {OUT_PATH_RX}"
+        msg = fr"Files differ: .*{GOLD_PATH_RX} != {OUT_PATH_RX}"
         with pytest.raises(AssertionError, match=msg):
             compare(gold_path("testing/getty"), "out")
 
@@ -138,7 +138,7 @@ class CompareTest(CoverageTest):
         # compare() raises an exception.
         gold_rx = path_regex(gold_path("testing/xml/output.xml"))
         out_rx = path_regex("out/output.xml")
-        msg = rf"Files differ: .*{gold_rx} != {out_rx}"
+        msg = fr"Files differ: .*{gold_rx} != {out_rx}"
         with pytest.raises(AssertionError, match=msg):
             compare(gold_path("testing/xml"), "out", scrubs=SCRUBS)
 
@@ -156,24 +156,24 @@ class ContainsTest(CoverageTest):
 
     def test_contains(self) -> None:
         contains(GOLD_GETTY_FILE, "Four", "fathers", "dedicated")
-        msg = rf"Missing content in {GOLD_GETTY_FILE_RX}: 'xyzzy'"
+        msg = fr"Missing content in {GOLD_GETTY_FILE_RX}: 'xyzzy'"
         with pytest.raises(AssertionError, match=msg):
             contains(GOLD_GETTY_FILE, "Four", "fathers", "xyzzy", "dedicated")
 
     def test_contains_rx(self) -> None:
         contains_rx(GOLD_GETTY_FILE, r"Fo.r", r"f[abc]thers", "dedi[cdef]ated")
-        msg = rf"Missing regex in {GOLD_GETTY_FILE_RX}: r'm\[opq\]thers'"
+        msg = fr"Missing regex in {GOLD_GETTY_FILE_RX}: r'm\[opq\]thers'"
         with pytest.raises(AssertionError, match=msg):
             contains_rx(GOLD_GETTY_FILE, r"Fo.r", r"m[opq]thers")
 
     def test_contains_any(self) -> None:
         contains_any(GOLD_GETTY_FILE, "Five", "Four", "Three")
-        msg = rf"Missing content in {GOLD_GETTY_FILE_RX}: 'One' \[1 of 3\]"
+        msg = fr"Missing content in {GOLD_GETTY_FILE_RX}: 'One' \[1 of 3\]"
         with pytest.raises(AssertionError, match=msg):
             contains_any(GOLD_GETTY_FILE, "One", "Two", "Three")
 
     def test_doesnt_contain(self) -> None:
         doesnt_contain(GOLD_GETTY_FILE, "One", "Two", "Three")
-        msg = rf"Forbidden content in {GOLD_GETTY_FILE_RX}: 'Four'"
+        msg = fr"Forbidden content in {GOLD_GETTY_FILE_RX}: 'Four'"
         with pytest.raises(AssertionError, match=msg):
             doesnt_contain(GOLD_GETTY_FILE, "Three", "Four", "Five")
