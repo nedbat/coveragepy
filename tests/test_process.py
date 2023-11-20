@@ -668,12 +668,13 @@ class EnvironmentTest(CoverageTest):
         assert '"DATA": "xyzzy"' in actual
         assert actual == expected
 
-    def test_coverage_run_is_like_python(self) -> None:
+    def test_coverage_run_is_like_python_runme(self) -> None:
         with open(TRY_EXECFILE) as f:
             self.make_file("run_me.py", f.read())
         expected = self.run_command("python run_me.py")
         actual = self.run_command("coverage run run_me.py")
         self.assert_tryexecfile_output(expected, actual)
+        1/0 # See what the output looks like without safepath
 
     def test_coverage_run_far_away_is_like_python(self) -> None:
         with open(TRY_EXECFILE) as f:
@@ -807,7 +808,7 @@ class EnvironmentTest(CoverageTest):
         actual = self.run_command(f"python {cov_main} run run_me.py")
         self.assert_tryexecfile_output(expected, actual)
 
-    def test_pythonsafepath(self) -> None:
+    def test_pythonsafepath_runme(self) -> None:
         with open(TRY_EXECFILE) as f:
             self.make_file("run_me.py", f.read())
         self.set_environ("PYTHONSAFEPATH", "1")

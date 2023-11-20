@@ -46,15 +46,15 @@ jobs:
           # Available versions:
           # https://github.com/actions/python-versions/blob/main/versions-manifest.json
           # https://github.com/actions/setup-python/blob/main/docs/advanced-usage.md#available-versions-of-python-and-pypy
-          - "3.9"
-          - "3.10"
+          #- "3.9"
+          #- "3.10"
           - "3.11"
-          - "3.12"
-          - "3.13"
-          - "3.14"
-          - "pypy-3.9"
-          - "pypy-3.10"
-          - "pypy-3.11"
+          #- "3.12"
+          #- "3.13"
+          #- "3.14"
+          #- "pypy-3.9"
+          #- "pypy-3.10"
+          #- "pypy-3.11"
         #
         # If we need to exclude any combinations, do it like this:
         #  exclude:
@@ -68,7 +68,6 @@ jobs:
         #    - python-version: "3.8"
         #      os: "macos"
         #      os-version: "13"
-
       fail-fast: false
 
     steps:
@@ -104,7 +103,7 @@ jobs:
 
       - name: "Run tox for ${{ matrix.python-version }}"
         run: |
-          python -m tox -- -rfsEX
+          python -m tox -- -rfsEX -k runme
 
       - name: "Retry tox for ${{ matrix.python-version }}"
         if: failure()
