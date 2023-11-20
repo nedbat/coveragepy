@@ -210,6 +210,10 @@ class DebugTraceTest(CoverageTest):
         vtuple = ast.literal_eval(pyversion.partition(":")[-1].strip())
         assert vtuple[:5] == sys.version_info
 
+    def test_debug_process(self) -> None:
+        out_text = self.f1_debug_output(["trace", "process"])
+        assert f"New process: pid={os.getpid()}, executable:" in out_text
+
     def test_debug_pytest(self) -> None:
         out_text = self.f1_debug_output(["trace", "pytest"])
         ctx = "tests/test_debug.py::DebugTraceTest::test_debug_pytest (call)"

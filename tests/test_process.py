@@ -24,7 +24,7 @@ from coverage.data import line_counts
 from coverage.files import abs_file, python_reported_file
 
 from tests.coveragetest import CoverageTest, TESTS_DIR
-from tests.helpers import re_lines_text
+from tests.helpers import re_lines, re_lines_text
 
 
 class ProcessTest(CoverageTest):
@@ -364,44 +364,59 @@ class ProcessTest(CoverageTest):
         self.make_file("fork.py", """\
             import os
 
-            def child():
-                print('Child!')
+            print(f"parent={os.getpid()}", flush=True)
+            ret = os.fork()
 
-            def main():
-                ret = os.fork()
-
-                if ret == 0:
-                    child()
-                else:
-                    os.waitpid(ret, 0)
-
-            main()
+            if ret == 0:
+                print(f"child={os.getpid()}", flush=True)
+            else:
+                os.waitpid(ret, 0)
             """)
+        total_lines = 6
 
-        out = self.run_command("coverage run -p fork.py")
-        assert out == 'Child!\n'
+        self.set_environ("COVERAGE_DEBUG_FILE", "debug.out")
+        out = self.run_command("coverage run --debug=pid,process,trace -p fork.py")
+        pids = {key:int(pid) for line in out.splitlines() for key, pid in [line.split("=")]}
+        assert set(pids) == {"parent", "child"}
         self.assert_doesnt_exist(".coverage")
 
         # After running the forking program, there should be two
-        # .coverage.machine.123 files.
+        # .coverage.machine.pid.randomword files.  The pids should match our
+        # processes, and the files should have different random words at the
+        # end of the file name.
         self.assert_file_count(".coverage.*", 2)
-
-        # The two data files should have different random words at the end of
-        # the file name.
         data_files = glob.glob(".coverage.*")
-        suffixes = {name.rpartition(".")[-1] for name in data_files}
+        filepids = {int(name.split(".")[-2]) for name in data_files}
+        assert filepids == set(pids.values())
+        suffixes = {name.split(".")[-1] for name in data_files}
         assert len(suffixes) == 2, f"Same random suffix: {data_files}"
 
-        # Combine the parallel coverage data files into .coverage .
+        # Each data file should have a subset of the lines.
+        for data_file in data_files:
+            data = coverage.CoverageData(data_file)
+            data.read()
+            assert line_counts(data)["fork.py"] < total_lines
+
+        # Combine the parallel coverage data files into a .coverage file.
+        # After combining, there should be only the .coverage file.
         self.run_command("coverage combine")
         self.assert_exists(".coverage")
-
-        # After combining, there should be only the .coverage file.
         self.assert_file_count(".coverage.*", 0)
 
         data = coverage.CoverageData()
         data.read()
-        assert line_counts(data)['fork.py'] == 9
+        assert line_counts(data)["fork.py"] == total_lines
+
+        debug_text = open("debug.out").read()
+        ppid = pids["parent"]
+        cpid = pids["child"]
+        assert ppid != cpid
+        plines = re_lines(fr"{ppid}\.[0-9a-f]+: New process: pid={ppid}, executable", debug_text)
+        assert len(plines) == 1
+        clines = re_lines(fr"{cpid}\.[0-9a-f]+: New process: forked {ppid} -> {cpid}", debug_text)
+        assert len(clines) == 1
+        reported_pids = {line.split(".")[0] for line in debug_text.splitlines()}
+        assert len(reported_pids) == 2
 
     def test_warnings_during_reporting(self) -> None:
         # While fixing issue #224, the warnings were being printed far too
