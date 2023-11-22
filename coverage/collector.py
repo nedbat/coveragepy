@@ -345,10 +345,16 @@ class Collector:
 
     def start(self) -> None:
         """Start collecting trace information."""
-        # We may be a new collector in a forked process.  The old process' 
+        # We may be a new collector in a forked process.  The old process'
         # collectors will be in self._collectors, but they won't be usable.
         # Find them and discard them.
-        #self.__class__._collectors = [c for c in self._collectors if c.pid == self.pid]
+        keep_collectors = []
+        for c in self._collectors:
+            if c.pid == self.pid:
+                keep_collectors.append(c)
+            else:
+                c.post_fork()
+        self._collectors[:] = keep_collectors
 
         if self._collectors:
             self._collectors[-1].pause()
@@ -366,10 +372,6 @@ class Collector:
         # If _start_tracer succeeded, then we add ourselves to the global
         # stack of collectors.
         self._collectors.append(self)
-
-        with open("/tmp/foo.out", "a") as f:
-            print(f"pid={os.getpid()} start: {self._collectors = }", file=f)
-            print(f"start stack:\n{short_stack()}", file=f)
 
         # Install our installation tracer in threading, to jump-start other
         # threads.
@@ -391,9 +393,6 @@ class Collector:
 
         # Remove this Collector from the stack, and resume the one underneath
         # (if any).
-        with open("/tmp/foo.out", "a") as f:
-            print(f"pid={os.getpid()} stop: {self._collectors = }", file=f)
-            print(f"stop stack:\n{short_stack()}", file=f)
         self._collectors.pop()
         if self._collectors:
             self._collectors[-1].resume()
@@ -418,6 +417,12 @@ class Collector:
             self.threading.settrace(self._installation_trace)
         else:
             self._start_tracer()
+
+    def post_fork(self) -> None:
+        """After a fork, tracers might need to adjust."""
+        for tracer in self.tracers:
+            if hasattr(tracer, "post_fork"):
+                tracer.post_fork()
 
     def _activity(self) -> bool:
         """Has any activity been traced?
