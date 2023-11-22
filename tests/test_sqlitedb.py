@@ -11,12 +11,11 @@ from unittest import mock
 import pytest
 
 import coverage.sqlitedb
-from coverage.debug import DebugControlString
 from coverage.exceptions import DataError
 from coverage.sqlitedb import SqliteDb
 
 from tests.coveragetest import CoverageTest
-from tests.helpers import FailingProxy
+from tests.helpers import DebugControlString, FailingProxy
 
 DB_INIT = """\
 create table name (first text, last text);

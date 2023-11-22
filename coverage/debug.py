@@ -8,7 +8,6 @@ from __future__ import annotations
 import contextlib
 import functools
 import inspect
-import io
 import itertools
 import os
 import pprint
@@ -20,7 +19,7 @@ import types
 import _thread
 
 from typing import (
-    cast, overload,
+    overload,
     Any, Callable, IO, Iterable, Iterator, Mapping, Optional, List, Tuple,
 )
 
@@ -106,16 +105,6 @@ class DebugControl:
         if self.should("callers"):
             dump_stack_frames(out=self.output, skip=1)
         self.output.flush()
-
-
-class DebugControlString(DebugControl):
-    """A `DebugControl` that writes to a StringIO, for testing."""
-    def __init__(self, options: Iterable[str]) -> None:
-        super().__init__(options, io.StringIO())
-
-    def get_output(self) -> str:
-        """Get the output text from the `DebugControl`."""
-        return cast(str, self.raw_output.getvalue())        # type: ignore[union-attr]
 
 
 class NoDebugging(DebugControl):
