@@ -338,7 +338,6 @@ class ShortStackTest(CoverageTest):
 
     def test_short_stack_frame_ids(self) -> None:
         stack = f_one(full=True, frame_ids=True).splitlines()
-        print(stack)
         assert len(stack) > 25
         frame_ids = [m[0] for line in stack if (m := re.search(r" 0x[0-9a-fA-F]{6,}", line))]
         # Every line has a frame id.
@@ -357,7 +356,6 @@ class ShortFilenameTest(CoverageTest):
         assert short_filename(pytest.__file__) == f"syspath:{s}pytest{s}__init__.py"
         assert short_filename(env.__file__) == f"cov:{s}env.py"
         self.make_file("hello.txt", "hi")
-        print(f'{os.path.abspath("hello.txt") = }')
         short_hello = short_filename(os.path.abspath("hello.txt"))
         assert re.match(fr"tmp:{se}t\d+{se}hello.txt", short_hello)
         oddball = f"{s}xyzzy{s}plugh{s}foo.txt"
