@@ -12,8 +12,9 @@ import os.path
 import sys
 import traceback
 
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
+from coverage.debug import DebugControl
 
 # An attribute that will be set on the module to indicate that it has been
 # monkey-patched.
@@ -28,40 +29,36 @@ class ProcessWithCoverage(OriginalProcess):         # pylint: disable=abstract-m
 
     def _bootstrap(self, *args, **kwargs):          # type: ignore[no-untyped-def]
         """Wrapper around _bootstrap to start coverage."""
+        debug: Optional[DebugControl] = None
         try:
             from coverage import Coverage       # avoid circular import
             cov = Coverage(data_suffix=True, auto_data=True)
             cov._warn_preimported_source = False
             cov.start()
-            debug = cov._debug
-            assert debug is not None
-            if debug.should("multiproc"):
+            _debug = cov._debug
+            assert _debug is not None
+            if _debug.should("multiproc"):
+                debug = _debug
+            if debug:
                 debug.write("Calling multiprocessing bootstrap")
-        except Exception as exc:
-            with open("/tmp/foo.out", "a") as f:
-                print(f"Exception during multiprocessing bootstrap init: {exc.__class__.__name__}: {exc}", file=f)
-            print("Exception during multiprocessing bootstrap init:")
-            traceback.print_exc(file=sys.stdout)
-            sys.stdout.flush()
+        except Exception:
+            print("Exception during multiprocessing bootstrap init:", file=sys.stderr)
+            traceback.print_exc(file=sys.stderr)
+            sys.stderr.flush()
             raise
         try:
             return original_bootstrap(self, *args, **kwargs)
         finally:
-            if debug.should("multiproc"):
+            if debug:
                 debug.write("Finished multiprocessing bootstrap")
             try:
                 cov.stop()
-            except Exception as exc:
-                with open("/tmp/foo.out", "a") as f:
-                    print(f"Exception during multiprocessing bootstrap finally stop: {exc = }", file=f)
-                raise
-            try:
                 cov.save()
             except Exception as exc:
-                with open("/tmp/foo.out", "a") as f:
-                    print(f"Exception during multiprocessing bootstrap finally save: {exc = }", file=f)
+                if debug:
+                    debug.write("Exception during multiprocessing bootstrap cleanup", exc=exc)
                 raise
-            if debug.should("multiproc"):
+            if debug:
                 debug.write("Saved multiprocessing data")
 
 class Stowaway:
