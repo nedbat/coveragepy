@@ -87,13 +87,18 @@ class DebugControl:
         finally:
             self.suppress_callers = old
 
-    def write(self, msg: str) -> None:
+    def write(self, msg: str, *, exc: Optional[BaseException] = None) -> None:
         """Write a line of debug output.
 
         `msg` is the line to write. A newline will be appended.
 
+        If `exc` is provided, a stack trace of the exception will be written
+        after the message.
+
         """
-        self.output.write(msg+"\n")
+        self.output.write(msg + "\n")
+        if exc is not None:
+            self.output.write("".join(traceback.format_exception(None, exc, exc.__traceback__)))
         if self.should("self"):
             caller_self = inspect.stack()[1][0].f_locals.get("self")
             if caller_self is not None:
@@ -123,7 +128,7 @@ class NoDebugging(DebugControl):
         """Should we write debug messages?  Never."""
         return False
 
-    def write(self, msg: str) -> None:
+    def write(self, msg: str, *, exc: Optional[BaseException] = None) -> None:
         """This will never be called."""
         raise AssertionError("NoDebugging.write should never be called.")
 
