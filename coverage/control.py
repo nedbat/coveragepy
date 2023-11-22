@@ -322,6 +322,8 @@ class Coverage(TConfigurable):
 
         # Create and configure the debugging controller.
         self._debug = DebugControl(self.config.debug, self._debug_file, self.config.debug_file)
+        if self._debug.should("process"):
+            self._debug.write("Coverage._init")
 
         if "multiprocessing" in (self.config.concurrency or ()):
             # Multi-processing uses parallel for the subprocesses, so also use

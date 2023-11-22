@@ -369,24 +369,28 @@ class CwdTracker:
 class ProcessTracker:
     """Track process creation for debug logging."""
     def __init__(self) -> None:
-        self.pid: int = 0
+        self.pid: int = os.getpid()
+        self.did_welcome = False
 
     def filter(self, text: str) -> str:
         """Add a message about how new processes came to be."""
+        welcome = ""
         pid = os.getpid()
-        if pid != self.pid:
-            if self.pid == 0:
-                argv = getattr(sys, "argv", None)
-                premsg = (
-                    f"New process: {pid=}, executable: {sys.executable!r}\n"
-                    + f"New process: cmd: {argv!r}\n"
-                )
-                if hasattr(os, "getppid"):
-                    premsg += f"New process parent pid: {os.getppid()!r}\n"
-            else:
-                premsg = f"New process: forked {self.pid} -> {pid}\n"
+        if self.pid != pid:
+            welcome = f"New process: forked {self.pid} -> {pid}\n"
             self.pid = pid
-            return premsg + text
+        elif not self.did_welcome:
+            argv = getattr(sys, "argv", None)
+            welcome = (
+                f"New process: {pid=}, executable: {sys.executable!r}\n"
+                + f"New process: cmd: {argv!r}\n"
+            )
+            if hasattr(os, "getppid"):
+                welcome += f"New process parent pid: {os.getppid()!r}\n"
+
+        if welcome:
+            self.did_welcome = True
+            return welcome + text
         else:
             return text
 
