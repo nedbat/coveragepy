@@ -5,6 +5,7 @@
 
 from __future__ import annotations
 
+import csv
 import glob
 import os
 import os.path
@@ -14,6 +15,7 @@ import stat
 import sys
 import textwrap
 
+from pathlib import Path
 from typing import Any
 
 import pytest
@@ -364,11 +366,11 @@ class ProcessTest(CoverageTest):
         self.make_file("fork.py", """\
             import os
 
-            print(f"parent={os.getpid()}", flush=True)
+            print(f"parent,{os.getpid()}", flush=True)
             ret = os.fork()
 
             if ret == 0:
-                print(f"child={os.getpid()}", flush=True)
+                print(f"child,{os.getpid()}", flush=True)
             else:
                 os.waitpid(ret, 0)
             """)
@@ -376,7 +378,7 @@ class ProcessTest(CoverageTest):
 
         self.set_environ("COVERAGE_DEBUG_FILE", "debug.out")
         out = self.run_command("coverage run --debug=pid,process,trace -p fork.py")
-        pids = {key:int(pid) for line in out.splitlines() for key, pid in [line.split("=")]}
+        pids = {key:int(pid) for key, pid in csv.reader(out.splitlines())}
         assert set(pids) == {"parent", "child"}
         self.assert_doesnt_exist(".coverage")
 
@@ -407,7 +409,7 @@ class ProcessTest(CoverageTest):
         data.read()
         assert line_counts(data)["fork.py"] == total_lines
 
-        debug_text = open("debug.out").read()
+        debug_text = Path("debug.out").read_text()
         ppid = pids["parent"]
         cpid = pids["child"]
         assert ppid != cpid
