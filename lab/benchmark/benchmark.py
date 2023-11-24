@@ -15,6 +15,8 @@ from pathlib import Path
 
 from typing import Any, Dict, Iterable, Iterator, List, Optional, Tuple
 
+import tabulate
+
 
 class ShellSession:
     """A logged shell session.
@@ -26,6 +28,7 @@ class ShellSession:
         self.output_filename = output_filename
         self.last_duration: float = 0
         self.foutput = None
+        self.env_vars = {}
 
     def __enter__(self):
         self.foutput = open(self.output_filename, "a", encoding="utf-8")
@@ -35,9 +38,25 @@ class ShellSession:
     def __exit__(self, exc_type, exc_value, traceback):
         self.foutput.close()
 
+    @contextlib.contextmanager
+    def set_env(self, env_vars):
+        old_env_vars = self.env_vars
+        if env_vars:
+            self.env_vars = dict(old_env_vars)
+            self.env_vars.update(env_vars)
+        try:
+            yield
+        finally:
+            self.env_vars = old_env_vars
+
     def print(self, *args, **kwargs):
         """Print a message to this shell's log."""
         print(*args, **kwargs, file=self.foutput)
+
+    def print_banner(self, *args, **kwargs):
+        """Print a distinguished banner to the log."""
+        self.print("\n######> ", end="")
+        self.print(*args, **kwargs)
 
     def run_command(self, cmd: str) -> str:
         """
@@ -47,7 +66,7 @@ class ShellSession:
             str: the output of the command.
 
         """
-        self.print(f"\n========================\n$ {cmd}")
+        self.print(f"\n### ========================\n$ {cmd}")
         start = time.perf_counter()
         proc = subprocess.run(
             cmd,
@@ -55,6 +74,7 @@ class ShellSession:
             check=False,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
+            env=self.env_vars,
         )
         output = proc.stdout.decode("utf-8")
         self.last_duration = time.perf_counter() - start
@@ -161,11 +181,19 @@ class ProjectToTest:
         pass
 
     def run_no_coverage(self, env):
-        """Run the test suite with no coverage measurement."""
+        """Run the test suite with no coverage measurement.
+
+        Returns the duration of the run.
+        """
         pass
 
     def run_with_coverage(self, env, pip_args, cov_tweaks):
-        """Run the test suite with coverage measurement."""
+        """Run the test suite with coverage measurement.
+
+        Must install a particular version of coverage using `pip_args`.
+
+        Returns the duration of the run.
+        """
         pass
 
 
@@ -179,6 +207,10 @@ class EmptyProject(ProjectToTest):
     def get_source(self, shell):
         pass
 
+    def run_no_coverage(self, env):
+        """Run the test suite with coverage measurement."""
+        return next(self.durations)
+
     def run_with_coverage(self, env, pip_args, cov_tweaks):
         """Run the test suite with coverage measurement."""
         return next(self.durations)
@@ -188,7 +220,7 @@ class ToxProject(ProjectToTest):
     """A project using tox to run the test suite."""
 
     def prep_environment(self, env):
-        env.shell.run_command(f"{env.python} -m pip install 'tox<4'")
+        env.shell.run_command(f"{env.python} -m pip install tox")
         self.run_tox(env, env.pyver.toxenv, "--notest")
 
     def run_tox(self, env, toxenv, toxargs=""):
@@ -262,6 +294,81 @@ class ProjectAttrs(ToxProject):
 
     def post_check(self, env):
         env.shell.run_command("ls -al")
+
+
+class ProjectDjangoAuthToolkit(ToxProject):
+    """jazzband/django-oauth-toolkit"""
+
+    git_url = "https://github.com/jazzband/django-oauth-toolkit"
+
+    def run_no_coverage(self, env):
+        env.shell.run_command("echo No option to run without coverage")
+        return 0
+
+
+class ProjectDjango(ToxProject):
+    """django/django"""
+    # brew install libmemcached
+    # pip install -e .
+    # coverage run tests/runtests.py --settings=test_sqlite
+    # coverage report --format=total --precision=6
+    # 32.848540
+
+
+class ProjectMashumaro(ProjectToTest):
+    git_url = "https://github.com/Fatal1ty/mashumaro"
+
+    def __init__(self, more_pytest_args=""):
+        super().__init__()
+        self.more_pytest_args = more_pytest_args
+
+    def prep_environment(self, env):
+        env.shell.run_command(f"{env.python} -m pip install .")
+        env.shell.run_command(f"{env.python} -m pip install -r requirements-dev.txt")
+
+    def run_no_coverage(self, env):
+        env.shell.run_command(f"{env.python} -m pytest {self.more_pytest_args}")
+        return env.shell.last_duration
+
+    def run_with_coverage(self, env, pip_args, cov_tweaks):
+        env.shell.run_command(f"{env.python} -m pip install {pip_args}")
+        env.shell.run_command(
+            f"{env.python} -m pytest --cov=mashumaro --cov=tests {self.more_pytest_args}"
+        )
+        duration = env.shell.last_duration
+        report = env.shell.run_command(f"{env.python} -m coverage report --precision=6")
+        print("Results:", report.splitlines()[-1])
+        return duration
+
+
+class ProjectOperator(ProjectToTest):
+    git_url = "https://github.com/nedbat/operator"
+
+    def __init__(self, more_pytest_args=""):
+        super().__init__()
+        self.more_pytest_args = more_pytest_args
+
+    def prep_environment(self, env):
+        env.shell.run_command(f"{env.python} -m pip install tox")
+        Path("/tmp/operator_tmp").mkdir(exist_ok=True)
+        env.shell.run_command(f"{env.python} -m tox -e unit --notest")
+        env.shell.run_command(f"{env.python} -m tox -e unitnocov --notest")
+
+    def run_no_coverage(self, env):
+        env.shell.run_command(
+            f"TMPDIR=/tmp/operator_tmp {env.python} -m tox -e unitnocov --skip-pkg-install -- {self.more_pytest_args}"
+        )
+        return env.shell.last_duration
+
+    def run_with_coverage(self, env, pip_args, cov_tweaks):
+        env.shell.run_command(f"{env.python} -m pip install {pip_args}")
+        env.shell.run_command(
+            f"TMPDIR=/tmp/operator_tmp {env.python} -m tox -e unit --skip-pkg-install -- {self.more_pytest_args}"
+        )
+        duration = env.shell.last_duration
+        report = env.shell.run_command(f"{env.python} -m coverage report --precision=6")
+        print("Results:", report.splitlines()[-1])
+        return duration
 
 
 def tweak_toml_coverage_settings(
@@ -377,38 +484,50 @@ class Coverage:
     pip_args: Optional[str] = None
     # Tweaks to the .coveragerc file
     tweaks: Optional[Iterable[Tuple[str, Any]]] = None
+    # Environment variables to set
+    env_vars: Optional[Dict[str, str]] = None
+
+
+class NoCoverage(Coverage):
+    """Run without coverage at all."""
+
+    def __init__(self, slug="nocov"):
+        super().__init__(slug=slug, pip_args=None)
 
 
 class CoveragePR(Coverage):
     """A version of coverage.py from a pull request."""
 
-    def __init__(self, number, tweaks=None):
+    def __init__(self, number, tweaks=None, env_vars=None):
         super().__init__(
             slug=f"#{number}",
             pip_args=f"git+https://github.com/nedbat/coveragepy.git@refs/pull/{number}/merge",
             tweaks=tweaks,
+            env_vars=env_vars,
         )
 
 
 class CoverageCommit(Coverage):
     """A version of coverage.py from a specific commit."""
 
-    def __init__(self, sha, tweaks=None):
+    def __init__(self, sha, tweaks=None, env_vars=None):
         super().__init__(
             slug=sha,
             pip_args=f"git+https://github.com/nedbat/coveragepy.git@{sha}",
             tweaks=tweaks,
+            env_vars=env_vars,
         )
 
 
 class CoverageSource(Coverage):
     """The coverage.py in a working tree."""
 
-    def __init__(self, directory, tweaks=None):
+    def __init__(self, directory, slug="source", tweaks=None, env_vars=None):
         super().__init__(
-            slug="source",
+            slug=slug,
             pip_args=directory,
             tweaks=tweaks,
+            env_vars=env_vars,
         )
 
 
@@ -452,8 +571,9 @@ class Experiment:
         all_runs = []
 
         for proj in self.projects:
-            print(f"Prepping project {proj.slug}")
             with proj.shell() as shell:
+                print(f"Prepping project {proj.slug}")
+                shell.print_banner(f"Prepping project {proj.slug}")
                 proj.make_dir()
                 proj.get_source(shell)
 
@@ -477,22 +597,25 @@ class Experiment:
         run_data: Dict[ResultKey, List[float]] = collections.defaultdict(list)
 
         for proj, pyver, cov_ver, env in all_runs:
-            total_run_num = next(total_run_nums)
-            print(
-                "Running tests: "
-                + f"{proj.slug}, {pyver.slug}, cov={cov_ver.slug}, "
-                + f"{total_run_num} of {total_runs}"
-            )
             with env.shell:
+                total_run_num = next(total_run_nums)
+                banner = (
+                    "Running tests: "
+                    + f"proj={proj.slug}, py={pyver.slug}, cov={cov_ver.slug}, "
+                    + f"{total_run_num} of {total_runs}"
+                )
+                print(banner)
+                env.shell.print_banner(banner)
                 with change_dir(proj.dir):
-                    if cov_ver.pip_args is None:
-                        dur = proj.run_no_coverage(env)
-                    else:
-                        dur = proj.run_with_coverage(
-                            env,
-                            cov_ver.pip_args,
-                            cov_ver.tweaks,
-                        )
+                    with env.shell.set_env(cov_ver.env_vars):
+                        if cov_ver.pip_args is None:
+                            dur = proj.run_no_coverage(env)
+                        else:
+                            dur = proj.run_with_coverage(
+                                env,
+                                cov_ver.pip_args,
+                                cov_ver.tweaks,
+                            )
             print(f"Tests took {dur:.3f}s")
             result_key = (proj.slug, pyver.slug, cov_ver.slug)
             run_data[result_key].append(dur)
@@ -503,12 +626,19 @@ class Experiment:
             for pyver in self.py_versions:
                 for cov_ver in self.cov_versions:
                     result_key = (proj.slug, pyver.slug, cov_ver.slug)
-                    med = statistics.median(run_data[result_key])
+                    data = run_data[result_key]
+                    med = statistics.median(data)
                     self.result_data[result_key] = med
-                    print(
-                        f"Median for {proj.slug}, {pyver.slug}, "
-                        + f"cov={cov_ver.slug}: {med:.3f}s"
+                    stdev = statistics.stdev(data)
+                    summary = (
+                        f"Median for {proj.slug}, {pyver.slug}, {cov_ver.slug}: "
+                        + f"{med:.3f}s, "
+                        + f"stdev={stdev:.3f}"
                     )
+                    if 1:
+                        data_sum = ", ".join(f"{d:.3f}" for d in data)
+                        summary += f", data={data_sum}"
+                    print(summary)
 
     def show_results(
         self,
@@ -526,20 +656,14 @@ class Experiment:
         data_order = [*rows, column]
         remap = [data_order.index(datum) for datum in DIMENSION_NAMES]
 
-        WIDTH = 20
-
-        def as_table_row(vals):
-            return "| " + " | ".join(v.ljust(WIDTH) for v in vals) + " |"
-
         header = []
         header.extend(rows)
         header.extend(dimensions[column])
         header.extend(slug for slug, _, _ in ratios)
 
-        print()
-        print(as_table_row(header))
-        dashes = [":---"] * len(rows) + ["---:"] * (len(header) - len(rows))
-        print(as_table_row(dashes))
+        aligns = ["left"] * len(rows) + ["right"] * (len(header) - len(rows))
+        data = []
+
         for tup in itertools.product(*table_axes):
             row = []
             row.extend(tup)
@@ -548,12 +672,15 @@ class Experiment:
                 key = (*tup, col)
                 key = tuple(key[i] for i in remap)
                 result_time = self.result_data[key]  # type: ignore
-                row.append(f"{result_time:.1f} s")
+                row.append(f"{result_time:.1f}s")
                 col_data[col] = result_time
             for _, num, denom in ratios:
                 ratio = col_data[num] / col_data[denom]
                 row.append(f"{ratio * 100:.0f}%")
-            print(as_table_row(row))
+            data.append(row)
+
+        print()
+        print(tabulate.tabulate(data, headers=header, colalign=aligns, tablefmt="pipe"))
 
 
 PERF_DIR = Path("/tmp/covperf")
