@@ -602,11 +602,34 @@ class ApiTest(CoverageTest):
             """)
         assert expected == self.stdout()
 
-    def make_test_files(self) -> None:
-        """Create a simple file representing a method with two tests.
+    def test_config_crash(self) -> None:
+        # The internal '[run] _crash' setting can be used to artificially raise
+        # exceptions from inside Coverage.
+        cov = coverage.Coverage()
+        cov.set_option("run:_crash", "test_config_crash")
+        with pytest.raises(Exception, match="Crashing because called by test_config_crash"):
+            cov.start()
 
-        Returns absolute path to the file.
-        """
+    def test_config_crash_no_crash(self) -> None:
+        # '[run] _crash' really checks the call stack.
+        cov = coverage.Coverage()
+        cov.set_option("run:_crash", "not_my_caller")
+        cov.start()
+        cov.stop()
+
+    def test_run_debug_sys(self) -> None:
+        # https://github.com/nedbat/coveragepy/issues/907
+        cov = coverage.Coverage()
+        with cov.collect():
+            d = dict(cov.sys_info())
+        assert cast(str, d['data_file']).endswith(".coverage")
+
+
+class SwitchContextTest(CoverageTest):
+    """Tests of the .switch_context() method."""
+
+    def make_test_files(self) -> None:
+        """Create a simple file representing a method with two tests."""
         self.make_file("testsuite.py", """\
             def timestwo(x):
                 return x*2
@@ -716,28 +739,6 @@ class ApiTest(CoverageTest):
 
         with pytest.raises(CoverageException, match=msg):
             cov.switch_context("test3")
-
-    def test_config_crash(self) -> None:
-        # The internal '[run] _crash' setting can be used to artificially raise
-        # exceptions from inside Coverage.
-        cov = coverage.Coverage()
-        cov.set_option("run:_crash", "test_config_crash")
-        with pytest.raises(Exception, match="Crashing because called by test_config_crash"):
-            cov.start()
-
-    def test_config_crash_no_crash(self) -> None:
-        # '[run] _crash' really checks the call stack.
-        cov = coverage.Coverage()
-        cov.set_option("run:_crash", "not_my_caller")
-        cov.start()
-        cov.stop()
-
-    def test_run_debug_sys(self) -> None:
-        # https://github.com/nedbat/coveragepy/issues/907
-        cov = coverage.Coverage()
-        with cov.collect():
-            d = dict(cov.sys_info())
-        assert cast(str, d['data_file']).endswith(".coverage")
 
 
 class CurrentInstanceTest(CoverageTest):
