@@ -1405,14 +1405,6 @@ class ExcludeTest(CoverageTest):
             assert a == 1
             """,
             [1,7], "", excludes=['#pragma: NO COVER'])
-        self.check_coverage("""\
-            a = 0
-            def very_long_function_to_exclude_name(very_long_argument1,
-            very_long_argument2):
-                pass
-            assert a == 0
-            """,
-            [1,5], "", excludes=['function_to_exclude'])
 
     def test_excluding_for_else(self) -> None:
         self.check_coverage("""\
@@ -1554,6 +1546,50 @@ class ExcludeTest(CoverageTest):
             """,
             [6,7], "", excludes=['#pragma: NO COVER'])
 
+        self.check_coverage("""\
+            a = 0
+            def very_long_function_to_exclude_name(very_long_argument1,
+            very_long_argument2):
+                pass
+            assert a == 0
+            """,
+            [1,5], "", excludes=['function_to_exclude'])
+
+        self.check_coverage("""\
+            a = 0
+            def very_long_function_to_exclude_name(
+                very_long_argument1,
+                very_long_argument2
+            ):
+                pass
+            assert a == 0
+            """,
+            [1,7], "", excludes=['function_to_exclude'])
+
+        self.check_coverage("""\
+            def my_func(
+                super_long_input_argument_0=0,
+                super_long_input_argument_1=1,
+                super_long_input_argument_2=2):
+                pass
+
+            def my_func_2(super_long_input_argument_0=0, super_long_input_argument_1=1, super_long_input_argument_2=2):
+                pass
+            """,
+            [], "", excludes=['my_func'])
+
+        self.check_coverage("""\
+            def my_func(
+                super_long_input_argument_0=0,
+                super_long_input_argument_1=1,
+                super_long_input_argument_2=2):
+                pass
+
+            def my_func_2(super_long_input_argument_0=0, super_long_input_argument_1=1, super_long_input_argument_2=2):
+                pass
+            """,
+            [1,5], "5", excludes=['my_func_2'])
+
     def test_excluding_method(self) -> None:
         self.check_coverage("""\
             class Fooey:
@@ -1567,6 +1603,22 @@ class ExcludeTest(CoverageTest):
             assert x.a == 1
             """,
             [1,2,3,8,9], "", excludes=['#pragma: NO COVER'])
+
+        self.check_coverage("""\
+            class Fooey:
+                def __init__(self):
+                    self.a = 1
+
+                def very_long_method_to_exclude_name(
+                    very_long_argument1,
+                    very_long_argument2
+                ):
+                    pass
+
+            x = Fooey()
+            assert x.a == 1
+            """,
+            [1,2,3,11,12], "", excludes=['method_to_exclude'])
 
     def test_excluding_class(self) -> None:
         self.check_coverage("""\
