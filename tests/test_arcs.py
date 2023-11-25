@@ -1300,9 +1300,9 @@ class YieldTest(CoverageTest):
         # https://github.com/nedbat/coveragepy/issues/440
         self.check_coverage("""\
             def gen():
-                print("yup")
-                yield "yielded"
-                print("nope")
+                print(2)
+                yield 3
+                print(4)
 
             print(next(gen()))
             """,
@@ -1311,6 +1311,7 @@ class YieldTest(CoverageTest):
             arcz=".1 16 6.  .2 23 34 4.",
             arcz_missing="34 4.",
         )
+        assert self.stdout() == "2\n3\n"
 
 
 @pytest.mark.skipif(not env.PYBEHAVIOR.match_case, reason="Match-case is new in 3.10")
