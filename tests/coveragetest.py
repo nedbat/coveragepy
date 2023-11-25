@@ -193,7 +193,7 @@ class CoverageTest(
         # Get the analysis results, and check that they are right.
         analysis = cov._analyze(mod)
         statements = sorted(analysis.statements)
-        if lines is not None:
+        if lines is not None and len(lines) != 0:
             if isinstance(lines[0], int):
                 # lines is just a list of numbers, it must match the statements
                 # found in the code.
