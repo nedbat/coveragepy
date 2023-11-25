@@ -233,6 +233,14 @@ def assert_good_debug_sys(out_text: str) -> None:
         label_pat = fr"^\s*{label}: "
         msg = f"Incorrect lines for {label!r}"
         assert 1 == len(re_lines(label_pat, out_text)), msg
+    tracer_line = re_line("tracer:", out_text).strip()
+    if testenv.C_TRACER:
+        assert tracer_line == "tracer: CTracer"
+    elif testenv.PY_TRACER:
+        assert tracer_line == "tracer: PyTracer"
+    else:
+        assert testenv.SYS_MON
+        assert tracer_line == "tracer: Pep669Monitor"
 
 
 class DebugOutputTest(CoverageTest):
