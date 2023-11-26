@@ -1590,6 +1590,56 @@ class ExcludeTest(CoverageTest):
             """,
             [1,5], "5", excludes=['my_func_2'])
 
+        self.check_coverage("""\
+            def my_func       (
+                super_long_input_argument_0=0,
+                super_long_input_argument_1=1,
+                super_long_input_argument_2=2):
+                pass
+
+            def my_func_2    (super_long_input_argument_0=0, super_long_input_argument_1=1, super_long_input_argument_2=2):
+                pass
+            """,
+            [1,5], "5", excludes=['my_func_2'])
+
+        self.check_coverage("""\
+            def my_func       (
+                super_long_input_argument_0=0,
+                super_long_input_argument_1=1,
+                super_long_input_argument_2=2):
+                pass
+
+            def my_func_2    (super_long_input_argument_0=0, super_long_input_argument_1=1, super_long_input_argument_2=2):
+                pass
+            """,
+            [], "5", excludes=['my_func'])
+
+        self.check_coverage("""\
+            def my_func \
+                (
+                super_long_input_argument_0=0,
+                super_long_input_argument_1=1
+                ):
+                pass
+
+            def my_func_2(super_long_input_argument_0=0, super_long_input_argument_1=1, super_long_input_argument_2=2):
+                pass
+            """,
+            [1,5], "5", excludes=['my_func_2'])
+
+        self.check_coverage("""\
+            def my_func \
+                (
+                super_long_input_argument_0=0,
+                super_long_input_argument_1=1
+                ):
+                pass
+
+            def my_func_2(super_long_input_argument_0=0, super_long_input_argument_1=1, super_long_input_argument_2=2):
+                pass
+            """,
+            [], "5", excludes=['my_func'])
+
     def test_excluding_method(self) -> None:
         self.check_coverage("""\
             class Fooey:
