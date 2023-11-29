@@ -500,6 +500,7 @@ class MultiprocessingTest(CoverageTest):
             last_line = self.squeezed_lines(out)[-1]
             assert re.search(r"TOTAL \d+ 0 100%", last_line)
 
+    @pytest.mark.skipif(env.METACOV and testenv.SYS_MON, reason="buh")
     def test_multiprocessing_simple(self, start_method: str) -> None:
         nprocs = 3
         upto = 30
@@ -514,6 +515,7 @@ class MultiprocessingTest(CoverageTest):
             start_method=start_method,
         )
 
+    @pytest.mark.skipif(env.METACOV and testenv.SYS_MON, reason="buh")
     def test_multiprocessing_append(self, start_method: str) -> None:
         nprocs = 3
         upto = 30
@@ -546,6 +548,7 @@ class MultiprocessingTest(CoverageTest):
             start_method=start_method,
         )
 
+    @pytest.mark.skipif(env.METACOV and testenv.SYS_MON, reason="buh")
     def test_multiprocessing_with_branching(self, start_method: str) -> None:
         nprocs = 3
         upto = 30

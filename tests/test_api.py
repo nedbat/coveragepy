@@ -27,6 +27,7 @@ from coverage.files import abs_file, relative_filename
 from coverage.misc import import_local_file
 from coverage.types import FilePathClasses, FilePathType, TCovKwargs
 
+from tests import testenv
 from tests.coveragetest import CoverageTest, TESTS_DIR, UsingModulesMixin
 from tests.helpers import assert_count_equal, assert_coverage_warnings
 from tests.helpers import change_dir, nice_file, os_sep
@@ -625,6 +626,7 @@ class ApiTest(CoverageTest):
         assert cast(str, d['data_file']).endswith(".coverage")
 
 
+@pytest.mark.skipif(not testenv.DYN_CONTEXTS, reason="No dynamic contexts with this core.")
 class SwitchContextTest(CoverageTest):
     """Tests of the .switch_context() method."""
 
