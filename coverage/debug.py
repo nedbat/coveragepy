@@ -24,7 +24,7 @@ from typing import (
 )
 
 from coverage.misc import human_sorted_items, isolate_module
-from coverage.types import TWritable
+from coverage.types import AnyCallable, TWritable
 
 os = isolate_module(os)
 
@@ -526,7 +526,7 @@ def decorate_methods(
     return _decorator
 
 
-def break_in_pudb(func: Callable[..., Any]) -> Callable[..., Any]:  # pragma: debugging
+def break_in_pudb(func: AnyCallable) -> AnyCallable:  # pragma: debugging
     """A function decorator to stop in the debugger for each call."""
     @functools.wraps(func)
     def _wrapper(*args: Any, **kwargs: Any) -> Any:
@@ -547,7 +547,7 @@ def show_calls(
     show_return: bool = False,
 ) -> Callable[..., Any]:                                    # pragma: debugging
     """A method decorator to debug-log each call to the function."""
-    def _decorator(func: Callable[..., Any]) -> Callable[..., Any]:
+    def _decorator(func: AnyCallable) -> AnyCallable:
         @functools.wraps(func)
         def _wrapper(self: Any, *args: Any, **kwargs: Any) -> Any:
             oid = getattr(self, OBJ_ID_ATTR, None)
