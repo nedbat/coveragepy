@@ -20,11 +20,18 @@ development at the same time, such as 4.5.x and 5.0.
 Unreleased
 ----------
 
+- Fix: function definitions with multi-line signatures can now be excluded by
+  matching any of the lines, closing `issue 684`_.  Thanks, `Jan Rusak and
+  others <pull 1705_>`_.
+
 - Added new :ref:`debug options <cmd_run_debug>`:
 
   - ``pytest`` writes the pytest test name into the debug output.
 
   - ``dataop2`` writes the full data being added to CoverageData objects.
+
+.. _issue 684: https://github.com/nedbat/coveragepy/issues/684
+.. _pull 1705: https://github.com/nedbat/coveragepy/pull/1705
 
 
 .. scriv-start-here
