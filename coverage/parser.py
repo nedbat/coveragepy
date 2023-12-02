@@ -191,11 +191,11 @@ class PythonParser:
                     for l in range(first_line, elineno+1):              # type: ignore[unreachable]
                         self._multiline[l] = first_line
                     # Check if multi-line was before a suite (trigger by the colon token).
-                    statement_multilines = set(range(first_line, elineno + 1))
-                    if (statement_multilines & set(self.raw_excluded) and prev_toktype == token.OP
-                        and prev_ttext == ":" and nesting == 0):
-                        exclude_indent = indent
-                        excluding = True
+                    if nesting == 0 and prev_toktype == token.OP and prev_ttext == ":":
+                        statement_multilines = set(range(first_line, elineno + 1))
+                        if statement_multilines & set(self.raw_excluded):
+                            exclude_indent = indent
+                            excluding = True
                 first_line = None
                 first_on_line = True
 
