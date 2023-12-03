@@ -391,8 +391,7 @@ class Collector:
 
         self.pause()
 
-        # Remove this Collector from the stack, and resume the one underneath
-        # (if any).
+        # Remove this Collector from the stack, and resume the one underneath (if any).
         self._collectors.pop()
         if self._collectors:
             self._collectors[-1].resume()
