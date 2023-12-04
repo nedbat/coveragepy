@@ -285,7 +285,7 @@ class PluginWarningOnPyTracerTest(CoverageTest):
         if testenv.PY_TRACER:
             core = "PyTracer"
         elif testenv.SYS_MON:
-            core = "Pep669Monitor"
+            core = "SysMonitor"
 
         expected_warnings = [
             fr"Plugin file tracers \(tests.plugin1.Plugin\) aren't supported with {core}",

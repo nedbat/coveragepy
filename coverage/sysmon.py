@@ -161,7 +161,7 @@ def bytes_to_lines(code: CodeType) -> Dict[int, int]:
     return b2l
 
 
-class Pep669Monitor(TTracer):
+class SysMonitor(TTracer):
     """Python implementation of the raw data tracer for PEP669 implementations."""
 
     # One of these will be used across threads. Be careful.
@@ -206,7 +206,7 @@ class Pep669Monitor(TTracer):
         points = sum(len(v) for v in self.data.values())
         files = len(self.data)
         return (
-            f"<Pep669Monitor at {id(self):#x}: {points} data points in {files} files>"
+            f"<SysMonitor at {id(self):#x}: {points} data points in {files} files>"
         )
 
     @panopticon()

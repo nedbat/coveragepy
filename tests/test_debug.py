@@ -240,7 +240,7 @@ def assert_good_debug_sys(out_text: str) -> None:
         assert tracer_line == "tracer: PyTracer"
     else:
         assert testenv.SYS_MON
-        assert tracer_line == "tracer: Pep669Monitor"
+        assert tracer_line == "tracer: SysMonitor"
 
 
 class DebugOutputTest(CoverageTest):
