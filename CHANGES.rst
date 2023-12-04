@@ -21,8 +21,8 @@ Unreleased
 ----------
 
 - Fix: function definitions with multi-line signatures can now be excluded by
-  matching any of the lines, closing `issue 684`_.  Thanks, `Jan Rusak and
-  others <pull 1705_>`_.
+  matching any of the lines, closing `issue 684`_.  Thanks, `Jan Rusak,
+  Maciej Kowalczyk and Joanna Ejzel <pull 1705_>`_.
 
 - Added new :ref:`debug options <cmd_run_debug>`:
 
