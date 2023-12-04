@@ -94,12 +94,15 @@ class PyRunner:
             path0 = None
         elif self.as_module:
             path0 = os.getcwd()
+            print(f"as_module: {path0 = }")
         elif os.path.isdir(self.arg0):
             # Running a directory means running the __main__.py file in that
             # directory.
             path0 = self.arg0
+            print(f"isdir(arg0): {self.arg0 = }")
         else:
             path0 = os.path.abspath(os.path.dirname(self.arg0))
+            print(f"else: {path0 = }")
 
         if os.path.isdir(sys.path[0]):
             # sys.path fakery.  If we are being run as a command, then sys.path[0]
@@ -114,16 +117,21 @@ class PyRunner:
             top_file_dir_abs = canonical_filename(top_file_dir_abs)
             if sys_path_0_abs != top_file_dir_abs:
                 path0 = None
+                print(f"setting path0 = None")
 
         else:
             # sys.path[0] is a file. Is the next entry the directory containing
             # that file?
+            print(f"{sys.path[1] = }, {sys.path[0] = }")
             if sys.path[1] == os.path.dirname(sys.path[0]):
                 # Can it be right to always remove that?
                 del sys.path[1]
+                print("deleted sys.path[1]")
 
         if path0 is not None:
+            print(f"before setting, {sys.path[0] = }")
             sys.path[0] = python_reported_file(path0)
+            print(f"setting {sys.path[0] = }")
 
     def _prepare2(self) -> None:
         """Do more preparation to run Python code.
