@@ -89,13 +89,9 @@ def name_for_module(filename: str, frame: Optional[FrameType]) -> str:
         # This is the usual case: an imported module.
         return dunder_name
 
-    loader = module_globals.get("__loader__", None)
-    for attrname in ("fullname", "name"):   # attribute renamed in py3.2
-        if hasattr(loader, attrname):
-            fullname = getattr(loader, attrname)
-        else:
-            continue
-
+    spec = module_globals.get("__spec__", None)
+    if spec:
+        fullname = spec.name
         if isinstance(fullname, str) and fullname != "__main__":
             # Module loaded via: runpy -m
             return fullname

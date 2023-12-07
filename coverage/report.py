@@ -235,7 +235,7 @@ class SummaryReporter:
             lines_values = human_sorted_items(lines_values, reverse=reverse)
         else:
             lines_values.sort(
-                key=lambda line: (line[sort_idx], line[0]),     # type: ignore[index]
+                key=lambda line: (line[sort_idx], line[0]),
                 reverse=reverse,
             )
 

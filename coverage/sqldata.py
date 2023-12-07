@@ -14,14 +14,15 @@ import os
 import random
 import socket
 import sqlite3
+import string
 import sys
 import textwrap
 import threading
 import zlib
 
 from typing import (
-    cast, Any, Callable, Collection, Dict, List, Mapping,
-    Optional, Sequence, Set, Tuple, TypeVar, Union,
+    cast, Any, Collection, Dict, List, Mapping,
+    Optional, Sequence, Set, Tuple, Union,
 )
 
 from coverage.debug import NoDebugging, auto_repr
@@ -30,7 +31,7 @@ from coverage.files import PathAliases
 from coverage.misc import file_be_gone, isolate_module
 from coverage.numbits import numbits_to_nums, numbits_union, nums_to_numbits
 from coverage.sqlitedb import SqliteDb
-from coverage.types import FilePath, TArc, TDebugCtl, TLineNo, TWarnFn
+from coverage.types import AnyCallable, FilePath, TArc, TDebugCtl, TLineNo, TWarnFn
 from coverage.version import __version__
 
 os = isolate_module(os)
@@ -111,9 +112,7 @@ CREATE TABLE tracer (
 );
 """
 
-TMethod = TypeVar("TMethod", bound=Callable[..., Any])
-
-def _locked(method: TMethod) -> TMethod:
+def _locked(method: AnyCallable) -> AnyCallable:
     """A decorator for methods that should hold self._lock."""
     @functools.wraps(method)
     def _wrapped(self: CoverageData, *args: Any, **kwargs: Any) -> Any:
@@ -123,7 +122,7 @@ def _locked(method: TMethod) -> TMethod:
             if self._debug.should("lock"):
                 self._debug.write(f"Locked  {self._lock!r} for {method.__name__}")
             return method(self, *args, **kwargs)
-    return _wrapped     # type: ignore[return-value]
+    return _wrapped
 
 
 class CoverageData:
@@ -1094,8 +1093,10 @@ def filename_suffix(suffix: Union[str, bool, None]) -> Union[str, None]:
         # plenty of distinguishing information.  We do this here in
         # `save()` at the last minute so that the pid will be correct even
         # if the process forks.
-        dice = random.Random(os.urandom(8)).randint(0, 999999)
-        suffix = "%s.%s.%06d" % (socket.gethostname(), os.getpid(), dice)
+        die = random.Random(os.urandom(8))
+        letters = string.ascii_uppercase + string.ascii_lowercase
+        rolls = "".join(die.choice(letters) for _ in range(6))
+        suffix = f"{socket.gethostname()}.{os.getpid()}.X{rolls}x"
     elif suffix is False:
         suffix = None
     return suffix

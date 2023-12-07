@@ -136,6 +136,7 @@ class PythonParser:
         empty = True
         first_on_line = True
         nesting = 0
+        prev_ttext = None
 
         assert self.text is not None
         tokgen = generate_tokens(self.text)
@@ -189,6 +190,12 @@ class PythonParser:
                     # so record a multi-line range.
                     for l in range(first_line, elineno+1):              # type: ignore[unreachable]
                         self._multiline[l] = first_line
+                    # Check if multi-line was before a suite (trigger by the colon token).
+                    if nesting == 0 and prev_toktype == token.OP and prev_ttext == ":":
+                        statement_multilines = set(range(first_line, elineno + 1))
+                        if statement_multilines & set(self.raw_excluded):
+                            exclude_indent = indent
+                            excluding = True
                 first_line = None
                 first_on_line = True
 
@@ -206,6 +213,7 @@ class PythonParser:
                     first_on_line = False
 
             prev_toktype = toktype
+            prev_ttext = ttext
 
         # Find the starts of the executable statements.
         if not empty:

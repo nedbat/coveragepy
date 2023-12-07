@@ -371,7 +371,7 @@ def globs_to_regex(
         flags |= re.IGNORECASE
     rx = join_regex(map(_glob_to_regex, patterns))
     if not partial:
-        rx = rf"(?:{rx})\Z"
+        rx = fr"(?:{rx})\Z"
     compiled = re.compile(rx, flags=flags)
     return compiled
 
@@ -495,7 +495,7 @@ class PathAliases:
             if len(parts) > 1:
                 dir1 = parts[0]
                 pattern = f"*/{dir1}"
-                regex_pat = rf"^(.*[\\/])?{re.escape(dir1)}[\\/]"
+                regex_pat = fr"^(.*[\\/])?{re.escape(dir1)}[\\/]"
                 result = f"{dir1}{os.sep}"
                 # Only add a new pattern if we don't already have this pattern.
                 if not any(p == pattern for p, _, _ in self.aliases):

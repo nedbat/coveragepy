@@ -21,7 +21,7 @@ comment = (
 print(f"Comment will be:\n\n{comment}\n")
 
 repo_owner = sys.argv[1]
-for m in re.finditer(rf"https://github.com/{repo_owner}/(issues|pull)/(\d+)", latest["text"]):
+for m in re.finditer(fr"https://github.com/{repo_owner}/(issues|pull)/(\d+)", latest["text"]):
     kind, number = m.groups()
     do_comment = False
 

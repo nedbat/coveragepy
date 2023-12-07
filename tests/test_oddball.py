@@ -44,7 +44,8 @@ class ThreadingTest(CoverageTest):
             fromMainThread()
             other.join()
             """,
-            [1, 3, 4, 6, 7, 9, 10, 12, 13, 14, 15], "10")
+            [1, 3, 4, 6, 7, 9, 10, 12, 13, 14, 15], "10"
+        )
 
     def test_thread_run(self) -> None:
         self.check_coverage("""\
@@ -63,7 +64,8 @@ class ThreadingTest(CoverageTest):
             thd.start()
             thd.join()
             """,
-            [1, 3, 4, 5, 6, 7, 9, 10, 12, 13, 14], "")
+            [1, 3, 4, 5, 6, 7, 9, 10, 12, 13, 14], ""
+        )
 
 
 class RecursionTest(CoverageTest):
@@ -81,7 +83,8 @@ class RecursionTest(CoverageTest):
             recur(495)  # We can get at least this many stack frames.
             i = 8       # and this line will be traced
             """,
-            [1, 2, 3, 5, 7, 8], "")
+            [1, 2, 3, 5, 7, 8], ""
+        )
 
     def test_long_recursion(self) -> None:
         # We can't finish a very deep recursion, but we don't crash.

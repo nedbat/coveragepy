@@ -60,7 +60,7 @@ class SqliteDb:
         # In Python 3.12+, we can change the config to allow journal_mode=off.
         if hasattr(sqlite3, "SQLITE_DBCONFIG_DEFENSIVE"):
             # Turn off defensive mode, so that journal_mode=off can succeed.
-            self.con.setconfig(     # type: ignore[attr-defined]
+            self.con.setconfig(                     # type: ignore[attr-defined, unused-ignore]
                 sqlite3.SQLITE_DBCONFIG_DEFENSIVE, False
             )
 

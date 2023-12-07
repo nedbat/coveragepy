@@ -196,7 +196,7 @@ class PyTracer(TTracer):
                     tracename = disp.source_filename
                     assert tracename is not None
                     if tracename not in self.data:
-                        self.data[tracename] = set()    # type: ignore[assignment]
+                        self.data[tracename] = set()
                     self.cur_file_data = self.data[tracename]
                 else:
                     frame.f_trace_lines = False

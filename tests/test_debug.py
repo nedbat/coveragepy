@@ -18,7 +18,7 @@ import pytest
 import coverage
 from coverage import env
 from coverage.debug import (
-    DebugOutputFile,
+    DebugControl, DebugOutputFile,
     auto_repr, clipped_repr, exc_one_line, filter_text,
     info_formatter, info_header,
     relevant_environment_display, short_id, short_filename, short_stack,
@@ -26,7 +26,7 @@ from coverage.debug import (
 from coverage.exceptions import DataError
 
 from tests.coveragetest import CoverageTest
-from tests.helpers import re_line, re_lines, re_lines_text
+from tests.helpers import DebugControlString, re_line, re_lines, re_lines_text
 
 
 class InfoFormatterTest(CoverageTest):
@@ -210,6 +210,10 @@ class DebugTraceTest(CoverageTest):
         vtuple = ast.literal_eval(pyversion.partition(":")[-1].strip())
         assert vtuple[:5] == sys.version_info
 
+    def test_debug_process(self) -> None:
+        out_text = self.f1_debug_output(["trace", "process"])
+        assert f"New process: pid={os.getpid()}, executable:" in out_text
+
     def test_debug_pytest(self) -> None:
         out_text = self.f1_debug_output(["trace", "pytest"])
         ctx = "tests/test_debug.py::DebugTraceTest::test_debug_pytest (call)"
@@ -273,6 +277,55 @@ class DebugOutputTest(CoverageTest):
         assert_good_debug_sys(out)
 
 
+class DebugControlTest(CoverageTest):
+    """Tests of DebugControl (via DebugControlString)."""
+
+    run_in_temp_dir = False
+
+    def test_debug_control(self) -> None:
+        debug = DebugControlString(["yes"])
+        assert debug.should("yes")
+        debug.write("YES")
+        assert not debug.should("no")
+        assert "YES\n" == debug.get_output()
+
+    def test_debug_write_exceptions(self) -> None:
+        debug = DebugControlString(["yes"])
+        try:
+            raise RuntimeError('Oops') # This is in the traceback
+        except Exception as exc:
+            debug.write("Something happened", exc=exc)
+        lines = debug.get_output().splitlines()
+        assert "Something happened" == lines[0]
+        assert "Traceback (most recent call last):" == lines[1]
+        assert "    raise RuntimeError('Oops') # This is in the traceback" in lines
+        assert "RuntimeError: Oops" == lines[-1]
+
+    def test_debug_write_self(self) -> None:
+        class DebugWritingClass:
+            """A simple class to show 'self:' debug messages."""
+            def __init__(self, debug: DebugControl) -> None:
+                # This line will have "self:" reported.
+                debug.write("Hello from me")
+
+            def __repr__(self) -> str:
+                return "<<DebugWritingClass object!>>"
+
+        def run_some(debug: DebugControl) -> None:
+            # This line will have no "self:" because there's no local self.
+            debug.write("In run_some")
+            DebugWritingClass(debug)
+
+        debug = DebugControlString(["self"])
+        run_some(debug)
+        lines = debug.get_output().splitlines()
+        assert lines == [
+            "In run_some",
+            "Hello from me",
+            "self: <<DebugWritingClass object!>>",
+        ]
+
+
 def f_one(*args: Any, **kwargs: Any) -> str:
     """First of the chain of functions for testing `short_stack`."""
     return f_two(*args, **kwargs)
@@ -334,7 +387,6 @@ class ShortStackTest(CoverageTest):
 
     def test_short_stack_frame_ids(self) -> None:
         stack = f_one(full=True, frame_ids=True).splitlines()
-        print(stack)
         assert len(stack) > 25
         frame_ids = [m[0] for line in stack if (m := re.search(r" 0x[0-9a-fA-F]{6,}", line))]
         # Every line has a frame id.
@@ -353,7 +405,6 @@ class ShortFilenameTest(CoverageTest):
         assert short_filename(pytest.__file__) == f"syspath:{s}pytest{s}__init__.py"
         assert short_filename(env.__file__) == f"cov:{s}env.py"
         self.make_file("hello.txt", "hi")
-        print(f'{os.path.abspath("hello.txt") = }')
         short_hello = short_filename(os.path.abspath("hello.txt"))
         assert re.match(fr"tmp:{se}t\d+{se}hello.txt", short_hello)
         oddball = f"{s}xyzzy{s}plugh{s}foo.txt"

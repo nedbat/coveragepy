@@ -19,6 +19,9 @@ from typing import (
 if TYPE_CHECKING:
     from coverage.plugin import FileTracer
 
+
+AnyCallable = Callable[..., Any]
+
 ## File paths
 
 # For arguments that are file paths:

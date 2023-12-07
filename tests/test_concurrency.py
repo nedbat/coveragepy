@@ -488,7 +488,7 @@ class MultiprocessingTest(CoverageTest):
             assert len(out_lines) == nprocs + 1
             assert all(
                 re.fullmatch(
-                    r"(Combined data file|Skipping duplicate data) \.coverage\..*\.\d+\.\d+",
+                    r"(Combined data file|Skipping duplicate data) \.coverage\..*\.\d+\.X\w{6}x",
                     line
                 )
                 for line in out_lines

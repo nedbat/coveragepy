@@ -39,7 +39,7 @@ clean: clean_platform			## Remove artifacts of test execution, installation, etc
 	@rm -f tests/covmain.zip tests/zipmods.zip tests/zip1.zip
 	@rm -rf doc/_build doc/_spell doc/sample_html_beta
 	@rm -rf tmp
-	@rm -rf .cache .hypothesis .*_cache
+	@rm -rf .*cache */.*cache */*/.*cache */*/*/.*cache .hypothesis
 	@rm -rf tests/actual
 	@-make -C tests/gold/html clean
 
@@ -91,9 +91,17 @@ metasmoke:
 
 DOCBIN = .tox/doc/bin
 
-PIP_COMPILE = pip-compile --upgrade --allow-unsafe --resolver=backtracking
-upgrade: export CUSTOM_COMPILE_COMMAND=make upgrade
+
+PIP_COMPILE = pip-compile ${COMPILE_OPTS} --allow-unsafe --resolver=backtracking
 upgrade: 				## Update the *.pip files with the latest packages satisfying *.in files.
+	$(MAKE) _upgrade COMPILE_OPTS="--upgrade"
+
+upgrade-one:				## Update the *.pip files for one package. `make upgrade-one package=...`
+	@test -n "$(package)" || { echo "\nUsage: make upgrade-one package=...\n"; exit 1; }
+	$(MAKE) _upgrade COMPILE_OPTS="--upgrade-package $(package)"
+
+_upgrade: export CUSTOM_COMPILE_COMMAND=make upgrade
+_upgrade:
 	pip install -q -r requirements/pip-tools.pip
 	$(PIP_COMPILE) -o requirements/pip-tools.pip requirements/pip-tools.in
 	$(PIP_COMPILE) -o requirements/pip.pip requirements/pip.in

@@ -20,7 +20,7 @@ hypothesis==6.87.1
     # via -r requirements/pytest.in
 iniconfig==2.0.0
     # via pytest
-mypy==1.5.1
+mypy==1.7.1
     # via -r requirements/mypy.in
 mypy-extensions==1.0.0
     # via mypy

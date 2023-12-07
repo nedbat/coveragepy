@@ -8,6 +8,7 @@ from __future__ import annotations
 import collections
 import contextlib
 import dis
+import io
 import os
 import os.path
 import re
@@ -25,6 +26,7 @@ from typing import (
 import pytest
 
 from coverage import env
+from coverage.debug import DebugControl
 from coverage.exceptions import CoverageWarning
 from coverage.misc import output_encoding
 from coverage.types import TArc, TLineNo
@@ -383,3 +385,14 @@ class FailingProxy:
         def _meth(*args: Any, **kwargs: Any) -> NoReturn:
             raise exc
         return _meth
+
+
+class DebugControlString(DebugControl):
+    """A `DebugControl` that writes to a StringIO, for testing."""
+    def __init__(self, options: Iterable[str]) -> None:
+        self.io = io.StringIO()
+        super().__init__(options, self.io)
+
+    def get_output(self) -> str:
+        """Get the output text from the `DebugControl`."""
+        return self.io.getvalue()

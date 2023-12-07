@@ -8,7 +8,6 @@ from __future__ import annotations
 import contextlib
 import functools
 import inspect
-import io
 import itertools
 import os
 import pprint
@@ -20,12 +19,12 @@ import types
 import _thread
 
 from typing import (
-    cast, overload,
+    overload,
     Any, Callable, IO, Iterable, Iterator, Mapping, Optional, List, Tuple,
 )
 
 from coverage.misc import human_sorted_items, isolate_module
-from coverage.types import TWritable
+from coverage.types import AnyCallable, TWritable
 
 os = isolate_module(os)
 
@@ -53,14 +52,17 @@ class DebugControl:
         self.suppress_callers = False
 
         filters = []
+        if self.should("process"):
+            filters.append(CwdTracker().filter)
+            filters.append(ProcessTracker().filter)
         if self.should("pytest"):
             filters.append(PytestTracker().filter)
         if self.should("pid"):
             filters.append(add_pid_and_tid)
+
         self.output = DebugOutputFile.get_one(
             output,
             file_name=file_name,
-            show_process=self.should("process"),
             filters=filters,
         )
         self.raw_output = self.output.outfile
@@ -84,13 +86,18 @@ class DebugControl:
         finally:
             self.suppress_callers = old
 
-    def write(self, msg: str) -> None:
+    def write(self, msg: str, *, exc: Optional[BaseException] = None) -> None:
         """Write a line of debug output.
 
         `msg` is the line to write. A newline will be appended.
 
+        If `exc` is provided, a stack trace of the exception will be written
+        after the message.
+
         """
-        self.output.write(msg+"\n")
+        self.output.write(msg + "\n")
+        if exc is not None:
+            self.output.write("".join(traceback.format_exception(None, exc, exc.__traceback__)))
         if self.should("self"):
             caller_self = inspect.stack()[1][0].f_locals.get("self")
             if caller_self is not None:
@@ -98,16 +105,6 @@ class DebugControl:
         if self.should("callers"):
             dump_stack_frames(out=self.output, skip=1)
         self.output.flush()
-
-
-class DebugControlString(DebugControl):
-    """A `DebugControl` that writes to a StringIO, for testing."""
-    def __init__(self, options: Iterable[str]) -> None:
-        super().__init__(options, io.StringIO())
-
-    def get_output(self) -> str:
-        """Get the output text from the `DebugControl`."""
-        return cast(str, self.raw_output.getvalue())        # type: ignore[union-attr]
 
 
 class NoDebugging(DebugControl):
@@ -120,7 +117,7 @@ class NoDebugging(DebugControl):
         """Should we write debug messages?  Never."""
         return False
 
-    def write(self, msg: str) -> None:
+    def write(self, msg: str, *, exc: Optional[BaseException] = None) -> None:
         """This will never be called."""
         raise AssertionError("NoDebugging.write should never be called.")
 
@@ -227,8 +224,8 @@ def short_stack(
         import_local_file : /Users/ned/coverage/trunk/coverage/backward.py:159
         ...
 
-    `skip` is the number of frames to skip, so that debugging functions can
-    call this and not be included in the result.
+    `skip` is the number of closest immediate frames to skip, so that debugging
+    functions can call this and not be included in the result.
 
     If `full` is true, then include all frames.  Otherwise, initial "boring"
     frames (ones in site-packages and earlier) are omitted.
@@ -264,14 +261,9 @@ def short_stack(
     return "\n".join(lines)
 
 
-def dump_stack_frames(
-    out: Optional[TWritable] = None,
-    skip: int = 0
-) -> None:
-    """Print a summary of the stack to stdout, or someplace else."""
-    fout = out or sys.stdout
-    fout.write(short_stack(skip=skip+1))
-    fout.write("\n")
+def dump_stack_frames(out: TWritable, skip: int = 0) -> None:
+    """Print a summary of the stack to `out`."""
+    out.write(short_stack(skip=skip+1) + "\n")
 
 
 def clipped_repr(text: str, numchars: int = 50) -> str:
@@ -336,7 +328,8 @@ def filter_text(text: str, filters: Iterable[Callable[[str], str]]) -> str:
     """Run `text` through a series of filters.
 
     `filters` is a list of functions. Each takes a string and returns a
-    string.  Each is run in turn.
+    string.  Each is run in turn. After each filter, the text is split into
+    lines, and each line is passed through the next filter.
 
     Returns: the final string that results after all of the filters have
     run.
@@ -345,10 +338,10 @@ def filter_text(text: str, filters: Iterable[Callable[[str], str]]) -> str:
     clean_text = text.rstrip()
     ending = text[len(clean_text):]
     text = clean_text
-    for fn in filters:
+    for filter_fn in filters:
         lines = []
         for line in text.splitlines():
-            lines.extend(fn(line).splitlines())
+            lines.extend(filter_fn(line).splitlines())
         text = "\n".join(lines)
     return text + ending
 
@@ -365,6 +358,35 @@ class CwdTracker:
             text = f"cwd is now {cwd!r}\n" + text
             self.cwd = cwd
         return text
+
+
+class ProcessTracker:
+    """Track process creation for debug logging."""
+    def __init__(self) -> None:
+        self.pid: int = os.getpid()
+        self.did_welcome = False
+
+    def filter(self, text: str) -> str:
+        """Add a message about how new processes came to be."""
+        welcome = ""
+        pid = os.getpid()
+        if self.pid != pid:
+            welcome = f"New process: forked {self.pid} -> {pid}\n"
+            self.pid = pid
+        elif not self.did_welcome:
+            argv = getattr(sys, "argv", None)
+            welcome = (
+                f"New process: {pid=}, executable: {sys.executable!r}\n"
+                + f"New process: cmd: {argv!r}\n"
+            )
+            if hasattr(os, "getppid"):
+                welcome += f"New process parent pid: {os.getppid()!r}\n"
+
+        if welcome:
+            self.did_welcome = True
+            return welcome + text
+        else:
+            return text
 
 
 class PytestTracker:
@@ -386,26 +408,17 @@ class DebugOutputFile:
     def __init__(
         self,
         outfile: Optional[IO[str]],
-        show_process: bool,
         filters: Iterable[Callable[[str], str]],
     ):
         self.outfile = outfile
-        self.show_process = show_process
         self.filters = list(filters)
-
-        if self.show_process:
-            self.filters.insert(0, CwdTracker().filter)
-            self.write(f"New process: executable: {sys.executable!r}\n")
-            self.write("New process: cmd: {!r}\n".format(getattr(sys, "argv", None)))
-            if hasattr(os, "getppid"):
-                self.write(f"New process: pid: {os.getpid()!r}, parent pid: {os.getppid()!r}\n")
+        self.pid = os.getpid()
 
     @classmethod
     def get_one(
         cls,
         fileobj: Optional[IO[str]] = None,
         file_name: Optional[str] = None,
-        show_process: bool = True,
         filters: Iterable[Callable[[str], str]] = (),
         interim: bool = False,
     ) -> DebugOutputFile:
@@ -417,9 +430,6 @@ class DebugOutputFile:
         provided, or COVERAGE_DEBUG_FILE, or stderr), and a process-wide
         singleton DebugOutputFile is made.
 
-        `show_process` controls whether the debug file adds process-level
-        information, and filters is a list of other message filters to apply.
-
         `filters` are the text filters to apply to the stream to annotate with
         pids, etc.
 
@@ -428,7 +438,7 @@ class DebugOutputFile:
         """
         if fileobj is not None:
             # Make DebugOutputFile around the fileobj passed.
-            return cls(fileobj, show_process, filters)
+            return cls(fileobj, filters)
 
         the_one, is_interim = cls._get_singleton_data()
         if the_one is None or is_interim:
@@ -442,8 +452,11 @@ class DebugOutputFile:
                     fileobj = open(file_name, "a", encoding="utf-8")
                 else:
                     fileobj = sys.stderr
-            the_one = cls(fileobj, show_process, filters)
+            the_one = cls(fileobj, filters)
             cls._set_singleton_data(the_one, interim)
+
+        if not(the_one.filters):
+            the_one.filters = list(filters)
         return the_one
 
     # Because of the way igor.py deletes and re-imports modules,
@@ -513,7 +526,7 @@ def decorate_methods(
     return _decorator
 
 
-def break_in_pudb(func: Callable[..., Any]) -> Callable[..., Any]:  # pragma: debugging
+def break_in_pudb(func: AnyCallable) -> AnyCallable:  # pragma: debugging
     """A function decorator to stop in the debugger for each call."""
     @functools.wraps(func)
     def _wrapper(*args: Any, **kwargs: Any) -> Any:
@@ -534,7 +547,7 @@ def show_calls(
     show_return: bool = False,
 ) -> Callable[..., Any]:                                    # pragma: debugging
     """A method decorator to debug-log each call to the function."""
-    def _decorator(func: Callable[..., Any]) -> Callable[..., Any]:
+    def _decorator(func: AnyCallable) -> AnyCallable:
         @functools.wraps(func)
         def _wrapper(self: Any, *args: Any, **kwargs: Any) -> Any:
             oid = getattr(self, OBJ_ID_ATTR, None)
