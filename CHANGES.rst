@@ -24,6 +24,10 @@ Unreleased
   matching any of the lines, closing `issue 684`_.  Thanks, `Jan Rusak,
   Maciej Kowalczyk and Joanna Ejzel <pull 1705_>`_.
 
+- The ``coverage annotate`` command used to announce that it would be removed
+  in a future version. Enough people got in touch to say that they use it, so
+  it will stay.  Don't expect it to keep up with other new features though.
+
 - Added new :ref:`debug options <cmd_run_debug>`:
 
   - ``pytest`` writes the pytest test name into the debug output.

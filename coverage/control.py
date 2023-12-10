@@ -1110,9 +1110,6 @@ class Coverage(TConfigurable):
         See :meth:`report` for other arguments.
 
         """
-        print("The annotate command will be removed in a future version.")
-        print("Get in touch if you still use it: ned@nedbatchelder.com")
-
         self._prepare_data_for_reporting()
         with override_config(
             self,
