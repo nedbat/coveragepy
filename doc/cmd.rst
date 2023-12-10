@@ -906,8 +906,7 @@ Text annotation: ``coverage annotate``
 .. note::
 
     The **annotate** command has been obsoleted by more modern reporting tools,
-    including the **html** command.  **annotate** will be removed in a future
-    version.
+    including the **html** command.
 
 The **annotate** command produces a text annotation of your source code.  With
 a ``-d`` argument specifying an output directory, each Python file becomes a
