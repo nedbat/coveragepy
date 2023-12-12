@@ -338,9 +338,13 @@ def import_local_file(modname: str, modfile: Optional[str] = None) -> ModuleType
     return mod
 
 
-def _human_key(s: str) -> List[Union[str, int]]:
+def _human_key(s: str) -> Tuple[List[Union[str, int]], str]:
     """Turn a string into a list of string and number chunks.
-        "z23a" -> ["z", 23, "a"]
+
+    "z23a" -> (["z", 23, "a"], "z23a")
+
+    The original string is appended as a last value to ensure the
+    key is unique enough so that "x1y" and "x001y" can be distinguished.
     """
     def tryint(s: str) -> Union[str, int]:
         """If `s` is a number, return an int, else `s` unchanged."""
@@ -349,7 +353,7 @@ def _human_key(s: str) -> List[Union[str, int]]:
         except ValueError:
             return s
 
-    return [tryint(c) for c in re.split(r"(\d+)", s)]
+    return ([tryint(c) for c in re.split(r"(\d+)", s)], s)
 
 def human_sorted(strings: Iterable[str]) -> List[str]:
     """Sort the given iterable of strings the way that humans expect.

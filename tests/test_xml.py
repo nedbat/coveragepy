@@ -350,6 +350,20 @@ class XmlReportTest(XmlTestHelpers, CoverageTest):
         named_sub_package = dom.findall(".//package[@name='namespace.package.subpackage']")
         assert len(named_sub_package) == 1
 
+    def test_bug_1709(self) -> None:
+        # https://github.com/nedbat/coveragepy/issues/1709
+        self.make_file("main.py", "import x1y, x01y, x001y")
+        self.make_file("x1y.py", "print('x1y')")
+        self.make_file("x01y.py", "print('x01y')")
+        self.make_file("x001y.py", "print('x001y')")
+
+        cov = coverage.Coverage()
+        self.start_import_stop(cov, "main")
+        assert self.stdout() == "x1y\nx01y\nx001y\n"
+        # This used to raise:
+        # TypeError: '<' not supported between instances of 'Element' and 'Element'
+        cov.xml_report()
+
 
 def unbackslash(v: Any) -> Any:
     """Find strings in `v`, and replace backslashes with slashes throughout."""

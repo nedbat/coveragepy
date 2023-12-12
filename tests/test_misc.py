@@ -137,7 +137,7 @@ class ImportThirdPartyTest(CoverageTest):
 
 
 HUMAN_DATA = [
-    ("z1 a2z a2a a3 a1", "a1 a2a a2z a3 z1"),
+    ("z1 a2z a01 a2a a3 a1", "a01 a1 a2a a2z a3 z1"),
     ("a10 a9 a100 a1", "a1 a9 a10 a100"),
     ("4.0 3.10-win 3.10-mac 3.9-mac 3.9-win", "3.9-mac 3.9-win 3.10-mac 3.10-win 4.0"),
 ]
@@ -149,6 +149,8 @@ def test_human_sorted(words: str, ordered: str) -> None:
 @pytest.mark.parametrize("words, ordered", HUMAN_DATA)
 def test_human_sorted_items(words: str, ordered: str) -> None:
     keys = words.split()
+    # Check that we never try to compare the values in the items
+    human_sorted_items([(k, object()) for k in keys])
     items = [(k, 1) for k in keys] + [(k, 2) for k in keys]
     okeys = ordered.split()
     oitems = [(k, v) for k in okeys for v in [1, 2]]
