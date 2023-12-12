@@ -20,6 +20,8 @@ development at the same time, such as 4.5.x and 5.0.
 Unreleased
 ----------
 
+- Fix: the PYTHONSAFEPATH environment variable new in Python 3.11 is properly
+  supported, closing `issue 1696`_.  Thanks, `Philipp A. <pull 1700_>`_.
 - Fix: function definitions with multi-line signatures can now be excluded by
   matching any of the lines, closing `issue 684`_.  Thanks, `Jan Rusak,
   Maciej Kowalczyk and Joanna Ejzel <pull 1705_>`_.
@@ -38,6 +40,8 @@ Unreleased
 
   - ``dataop2`` writes the full data being added to CoverageData objects.
 
+.. _issue 1696: https://github.com/nedbat/coveragepy/issues/1696
+.. _pull 1700: https://github.com/nedbat/coveragepy/pull/1700
 .. _issue 684: https://github.com/nedbat/coveragepy/issues/684
 .. _pull 1705: https://github.com/nedbat/coveragepy/pull/1705
 .. _issue 1709: https://github.com/nedbat/coveragepy/issues/1709
