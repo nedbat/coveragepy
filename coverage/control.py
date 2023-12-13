@@ -1301,7 +1301,7 @@ class Coverage(TConfigurable):
         info = [
             ("coverage_version", covmod.__version__),
             ("coverage_module", covmod.__file__),
-            ("tracer", self._collector.tracer_name() if self._collector is not None else "-none-"),
+            ("core", self._collector.tracer_name() if self._collector is not None else "-none-"),
             ("CTracer", "available" if HAS_CTRACER else "unavailable"),
             ("plugins.file_tracers", plugin_info(self._plugins.file_tracers)),
             ("plugins.configurers", plugin_info(self._plugins.configurers)),

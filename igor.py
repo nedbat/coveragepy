@@ -128,7 +128,6 @@ def should_skip(core):
     if test_cores:
         if core not in test_cores:
             skipper = f"core {core} not in COVERAGE_TEST_CORES={test_cores}"
-
     else:
         # $set_env.py: COVERAGE_ONE_CORE - Only run tests for one core.
         only_one = os.getenv("COVERAGE_ONE_CORE")
