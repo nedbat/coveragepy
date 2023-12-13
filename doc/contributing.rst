@@ -175,17 +175,19 @@ can combine tox and pytest options::
 
 TODO: Update this for CORE instead of TRACER
 
-You can also affect the test runs with environment variables. Define any of
-these as 1 to use them:
+You can also affect the test runs with environment variables:
 
-- ``COVERAGE_NO_PYTRACER=1`` disables the Python tracer if you only want to
-  run the CTracer tests.
+- ``COVERAGE_ONE_CORE=1`` will use only one tracing core for each Python
+  version.  This isn't about CPU cores, it's about the central code that tracks
+  execution.  This will use the preferred core for the Python version and
+  implementation being tested.
 
-- ``COVERAGE_NO_CTRACER=1`` disables the C tracer if you only want to run the
-  PyTracer tests.
+- ``COVERAGE_TEST_CORES=...`` defines the cores to run tests on.  Three cores
+  are available, specify them as a comma-separated string:
 
-- ``COVERAGE_ONE_TRACER=1`` will use only one tracer for each Python version.
-  This will use the C tracer if it is available, or the Python tracer if not.
+  - ``ctrace`` is a sys.settrace function implemented in C.
+  - ``pytrace`` is a sys.settrace function implemented in Python.
+  - ``sysmon`` is a sys.monitoring implementation.
 
 - ``COVERAGE_AST_DUMP=1`` will dump the AST tree as it is being used during
   code parsing.
