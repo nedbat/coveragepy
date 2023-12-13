@@ -149,10 +149,13 @@ class Collector:
         else:
             core = os.getenv("COVERAGE_CORE")
             if not core:
-                if env.PYBEHAVIOR.pep669 and self.should_start_context is None:
-                    core = "sysmon"
-                elif HAS_CTRACER:
+                # Once we're comfortable with sysmon as a default:
+                # if env.PYBEHAVIOR.pep669 and self.should_start_context is None:
+                #     core = "sysmon"
+                if HAS_CTRACER:
                     core = "ctrace"
+                else:
+                    core = "pytrace"
 
         if core == "sysmon":
             self._trace_class = SysMonitor
