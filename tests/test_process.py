@@ -27,7 +27,7 @@ from coverage.files import abs_file, python_reported_file
 
 from tests import testenv
 from tests.coveragetest import CoverageTest, TESTS_DIR
-from tests.helpers import re_lines, re_lines_text
+from tests.helpers import re_line, re_lines, re_lines_text
 
 
 class ProcessTest(CoverageTest):
@@ -1079,6 +1079,57 @@ class FailUnderTest(CoverageTest):
         assert st == 2
         expected = "Coverage failure: total of 99 is less than fail-under=100"
         assert expected == self.last_line_squeezed(out)
+
+
+class CoverageCoreTest(CoverageTest):
+    """Test that cores are chosen correctly."""
+    # This doesn't test failure modes, only successful requests.
+    try:
+        from coverage.tracer import CTracer
+        has_ctracer = True
+    except ImportError:
+        has_ctracer = False
+
+    def test_core_default(self) -> None:
+        self.del_environ("COVERAGE_TEST_CORES")
+        self.del_environ("COVERAGE_CORE")
+        self.make_file("numbers.py", "print(123, 456)")
+        out = self.run_command("coverage run --debug=sys numbers.py")
+        assert out.endswith("123 456\n")
+        core = re_line(r" core:", out).strip()
+        if self.has_ctracer:
+            assert core == "core: CTracer"
+        else:
+            assert core == "core: PyTracer"
+
+    @pytest.mark.skipif(not has_ctracer, reason="No CTracer to request")
+    def test_core_request_ctrace(self) -> None:
+        self.del_environ("COVERAGE_TEST_CORES")
+        self.set_environ("COVERAGE_CORE", "ctrace")
+        self.make_file("numbers.py", "print(123, 456)")
+        out = self.run_command("coverage run --debug=sys numbers.py")
+        assert out.endswith("123 456\n")
+        core = re_line(r" core:", out).strip()
+        assert core == "core: CTracer"
+
+    def test_core_request_pytrace(self) -> None:
+        self.del_environ("COVERAGE_TEST_CORES")
+        self.set_environ("COVERAGE_CORE", "pytrace")
+        self.make_file("numbers.py", "print(123, 456)")
+        out = self.run_command("coverage run --debug=sys numbers.py")
+        assert out.endswith("123 456\n")
+        core = re_line(r" core:", out).strip()
+        assert core == "core: PyTracer"
+
+    @pytest.mark.skipif(not env.PYBEHAVIOR.pep669, reason="No sys.monitoring to request")
+    def test_core_request_sysmon(self) -> None:
+        self.del_environ("COVERAGE_TEST_CORES")
+        self.set_environ("COVERAGE_CORE", "sysmon")
+        self.make_file("numbers.py", "print(123, 456)")
+        out = self.run_command("coverage run --debug=sys numbers.py")
+        assert out.endswith("123 456\n")
+        core = re_line(r" core:", out).strip()
+        assert core == "core: SysMonitor"
 
 
 class FailUnderNoFilesTest(CoverageTest):
