@@ -17,8 +17,12 @@ development at the same time, such as 4.5.x and 5.0.
     ..  Version 9.8.1 — 2027-07-27
     ..  --------------------------
 
-Unreleased
-----------
+.. scriv-start-here
+
+.. _changes_7-3-3:
+
+Version 7.3.3 — 2023-12-14
+--------------------------
 
 - Fix: function definitions with multi-line signatures can now be excluded by
   matching any of the lines, closing `issue 684`_.  Thanks, `Jan Rusak,
@@ -42,8 +46,6 @@ Unreleased
 .. _pull 1705: https://github.com/nedbat/coveragepy/pull/1705
 .. _issue 1709: https://github.com/nedbat/coveragepy/issues/1709
 
-
-.. scriv-start-here
 
 .. _changes_7-3-2:
 
