@@ -173,7 +173,7 @@ jobs:
           ls -al wheelhouse/
 
       - name: "Upload wheels"
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: dist
           path: wheelhouse/*.whl
@@ -207,7 +207,7 @@ jobs:
           ls -al dist/
 
       - name: "Upload sdist"
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: dist
           path: dist/*.tar.gz
@@ -245,7 +245,7 @@ jobs:
           ls -al dist/
 
       - name: "Upload wheels"
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: dist
           path: dist/*.whl
@@ -278,7 +278,7 @@ jobs:
           ls -alR
 
       - name: "Upload signatures"
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: signatures
           path: |
