@@ -131,7 +131,7 @@ jobs:
           python igor.py zip_mods
 
       - name: "Download coverage data"
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: metacov
 
@@ -193,7 +193,7 @@ jobs:
 
       - name: "Download coverage HTML report"
         if: ${{ github.ref == 'refs/heads/master' }}
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: html_report
           path: reports_repo/${{ env.report_dir }}
