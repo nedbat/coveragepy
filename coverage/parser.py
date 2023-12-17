@@ -690,7 +690,10 @@ class AstArcAnalyzer:
             # Dump the AST so that failing tests have helpful output.
             print(f"Statements: {self.statements}")
             print(f"Multiline map: {self.multiline}")
-            ast_dump(self.root_node)
+            dumpkw: Dict[str, Any] = {}
+            if sys.version_info >= (3, 9):
+                dumpkw["indent"] = 4
+            print(ast.dump(self.root_node, include_attributes=True, **dumpkw))
 
         self.arcs: Set[TArc] = set()
 
@@ -1350,74 +1353,3 @@ class AstArcAnalyzer:
         _code_object__DictComp = _make_expression_code_method("dictionary comprehension")
         _code_object__SetComp = _make_expression_code_method("set comprehension")
         _code_object__ListComp = _make_expression_code_method("list comprehension")
-
-
-# Code only used when dumping the AST for debugging.
-
-SKIP_DUMP_FIELDS = ["ctx"]
-
-def _is_simple_value(value: Any) -> bool:
-    """Is `value` simple enough to be displayed on a single line?"""
-    return (
-        value in [None, [], (), {}, set(), frozenset(), Ellipsis] or
-        isinstance(value, (bytes, int, float, str))
-    )
-
-def ast_dump(
-    node: ast.AST,
-    depth: int = 0,
-    print: Callable[[str], None] = print,   # pylint: disable=redefined-builtin
-) -> None:
-    """Dump the AST for `node`.
-
-    This recursively walks the AST, printing a readable version.
-
-    """
-    indent = " " * depth
-    lineno = getattr(node, "lineno", None)
-    if lineno is not None:
-        linemark = f" @ {node.lineno},{node.col_offset}"
-        if hasattr(node, "end_lineno"):
-            assert hasattr(node, "end_col_offset")
-            linemark += ":"
-            if node.end_lineno != node.lineno:
-                linemark += f"{node.end_lineno},"
-            linemark += f"{node.end_col_offset}"
-    else:
-        linemark = ""
-    head = f"{indent}<{node.__class__.__name__}{linemark}"
-
-    named_fields = [
-        (name, value)
-        for name, value in ast.iter_fields(node)
-        if name not in SKIP_DUMP_FIELDS
-    ]
-    if not named_fields:
-        print(f"{head}>")
-    elif len(named_fields) == 1 and _is_simple_value(named_fields[0][1]):
-        field_name, value = named_fields[0]
-        print(f"{head} {field_name}: {value!r}>")
-    else:
-        print(head)
-        if 0:
-            print("{}# mro: {}".format(     # type: ignore[unreachable]
-                indent, ", ".join(c.__name__ for c in node.__class__.__mro__[1:]),
-            ))
-        next_indent = indent + "    "
-        for field_name, value in named_fields:
-            prefix = f"{next_indent}{field_name}:"
-            if _is_simple_value(value):
-                print(f"{prefix} {value!r}")
-            elif isinstance(value, list):
-                print(f"{prefix} [")
-                for n in value:
-                    if _is_simple_value(n):
-                        print(f"{next_indent}    {n!r}")
-                    else:
-                        ast_dump(n, depth + 8, print=print)
-                print(f"{next_indent}]")
-            else:
-                print(prefix)
-                ast_dump(value, depth + 8, print=print)
-
-        print(f"{indent}>")

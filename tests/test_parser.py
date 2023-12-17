@@ -5,21 +5,16 @@
 
 from __future__ import annotations
 
-import ast
-import os.path
 import textwrap
-import warnings
-
-from typing import List
 
 import pytest
 
 from coverage import env
 from coverage.exceptions import NotPython
-from coverage.parser import ast_dump, PythonParser
+from coverage.parser import PythonParser
 
-from tests.coveragetest import CoverageTest, TESTS_DIR
-from tests.helpers import arcz_to_arcs, re_lines, xfail_pypy38
+from tests.coveragetest import CoverageTest
+from tests.helpers import arcz_to_arcs, xfail_pypy38
 
 
 class PythonParserTest(CoverageTest):
@@ -517,32 +512,3 @@ class ParserFileTest(CoverageTest):
 
         parser = self.parse_file("abrupt.py")
         assert parser.statements == {1}
-
-
-def test_ast_dump() -> None:
-    # Run the AST_DUMP code to make sure it doesn't fail, with some light
-    # assertions. Use parser.py as the test code since it is the longest file,
-    # and fitting, since it's the AST_DUMP code.
-    import coverage.parser
-    files = [
-        coverage.parser.__file__,
-        os.path.join(TESTS_DIR, "stress_phystoken.tok"),
-    ]
-    for fname in files:
-        with open(fname) as f:
-            source = f.read()
-            num_lines = len(source.splitlines())
-            with warnings.catch_warnings():
-                # stress_phystoken.tok has deprecation warnings, suppress them.
-                warnings.filterwarnings("ignore", message=r".*invalid escape sequence")
-                ast_root = ast.parse(source)
-        result: List[str] = []
-        ast_dump(ast_root, print=result.append)
-        if num_lines < 100:
-            continue
-        assert len(result) > 5 * num_lines
-        assert result[0] == "<Module"
-        assert result[-1] == ">"
-        result_text = "\n".join(result)
-        assert len(re_lines(r"^\s+>", result_text)) > num_lines
-        assert len(re_lines(r"<Name @ \d+,\d+(:\d+)? id: '\w+'>", result_text)) > num_lines // 2
