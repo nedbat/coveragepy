@@ -29,6 +29,8 @@ PYPY = (platform.python_implementation() == "PyPy")
 
 # Python versions. We amend version_info with one more value, a zero if an
 # official version, or 1 if built from source beyond an official version.
+# Only use sys.version_info directly where tools like mypy need it to understand
+# version-specfic code, otherwise use PYVERSION.
 PYVERSION = sys.version_info + (int(platform.python_version()[-1] == "+"),)
 
 if PYPY:
