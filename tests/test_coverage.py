@@ -1740,6 +1740,59 @@ class ExcludeTest(CoverageTest):
             [], "5", excludes=['my_func']
         )
 
+    def test_excluding_bug1713(self) -> None:
+        if env.PYVERSION >= (3, 10):
+            self.check_coverage("""\
+                print("1")
+
+                def hello_3(a):  # pragma: no cover
+                    match a:
+                        case ("5"
+                              | "6"):
+                            print("7")
+                        case "8":
+                            print("9")
+
+                print("11")
+                """,
+                [1, 11],
+            )
+        self.check_coverage("""\
+            print("1")
+
+            def hello_3(a):  # no thanks
+                if ("4" or
+                    "5"):
+                    print("6")
+                else:
+                    print("8")
+
+            print("10")
+            """,
+            [1, 10], "", excludes=["no thanks"],
+        )
+        self.check_coverage("""\
+            print(1)
+
+            def func(a, b):
+                if a == 4:      # pragma: no cover
+                    func5()
+                    if b:
+                        print(7)
+                    func8()
+
+            print(10)
+            """,
+            [1, 3, 10]
+        )
+        self.check_coverage("""\
+            class Foo:  # pragma: no cover 
+                def greet(self):
+                    print("hello world")
+            """,
+            []
+        )
+
     def test_excluding_method(self) -> None:
         self.check_coverage("""\
             class Fooey:

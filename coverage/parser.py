@@ -158,7 +158,10 @@ class PythonParser:
                     self.raw_classdefs.add(slineno)
             elif toktype == token.OP:
                 if ttext == ":" and nesting == 0:
-                    should_exclude = (elineno in self.raw_excluded) or excluding_decorators
+                    should_exclude = (
+                        self.raw_excluded.intersection(range(first_line, elineno + 1))
+                        or excluding_decorators
+                    )
                     if not excluding and should_exclude:
                         # Start excluding a suite.  We trigger off of the colon
                         # token so that the #pragma comment will be recognized on
@@ -190,12 +193,6 @@ class PythonParser:
                     # so record a multi-line range.
                     for l in range(first_line, elineno+1):              # type: ignore[unreachable]
                         self._multiline[l] = first_line
-                    # Check if multi-line was before a suite (trigger by the colon token).
-                    if nesting == 0 and prev_toktype == token.OP and prev_ttext == ":":
-                        statement_multilines = set(range(first_line, elineno + 1))
-                        if statement_multilines & set(self.raw_excluded):
-                            exclude_indent = indent
-                            excluding = True
                 first_line = None
                 first_on_line = True
 
@@ -213,7 +210,6 @@ class PythonParser:
                     first_on_line = False
 
             prev_toktype = toktype
-            prev_ttext = ttext
 
         # Find the starts of the executable statements.
         if not empty:

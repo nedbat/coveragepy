@@ -20,9 +20,14 @@ development at the same time, such as 4.5.x and 5.0.
 Unreleased
 ----------
 
+- Fix: the change for multi-line signature exclusions in 7.3.3 broke other
+  forms of nested clauses being excluded properly.  This is now fixed, closing
+  `issue 1713`_.
+
 - Fix: in the HTML report, selecting code for copying won't select the line
   numbers also. Thanks, `Robert Harris <pull 1717_>`_.
 
+.. _issue 1713: https://github.com/nedbat/coveragepy/issues/1713
 .. _pull 1717: https://github.com/nedbat/coveragepy/pull/1717
 
 
