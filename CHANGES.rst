@@ -20,7 +20,10 @@ development at the same time, such as 4.5.x and 5.0.
 Unreleased
 ----------
 
-Nothing yet.
+- Fix: in the HTML report, selecting code for copying won't select the line
+  numbers also. Thanks, `Robert Harris <pull 1717_>`_.
+
+.. _pull 1717: https://github.com/nedbat/coveragepy/pull/1717
 
 
 .. scriv-start-here
