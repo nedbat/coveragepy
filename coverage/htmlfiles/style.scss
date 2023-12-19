@@ -418,6 +418,7 @@ $border-indicator-width: .2em;
             margin-left: -$left-gutter;
             padding-right: 1em;
             color: $light-gray4;
+            user-select: none;
             @include color-dark($dark-gray4);
 
             &.highlight {

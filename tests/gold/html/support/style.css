@@ -148,7 +148,7 @@ kbd { border: 1px solid black; border-color: #888 #333 #333 #888; padding: .1em 
 
 #source p * { box-sizing: border-box; }
 
-#source p .n { float: left; text-align: right; width: 3.5rem; box-sizing: border-box; margin-left: -3.5rem; padding-right: 1em; color: #999; }
+#source p .n { float: left; text-align: right; width: 3.5rem; box-sizing: border-box; margin-left: -3.5rem; padding-right: 1em; color: #999; user-select: none; }
 
 @media (prefers-color-scheme: dark) { #source p .n { color: #777; } }
 
