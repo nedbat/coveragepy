@@ -17,20 +17,24 @@ from tests.coveragetest import CoverageTest
 from tests.helpers import arcz_to_arcs, xfail_pypy38
 
 
-class PythonParserTest(CoverageTest):
+class PythonParserTestBase(CoverageTest):
     """Tests for coverage.py's Python code parsing."""
 
     run_in_temp_dir = False
 
-    def parse_source(self, text: str) -> PythonParser:
+    def parse_text(self, text: str) -> PythonParser:
         """Parse `text` as source, and return the `PythonParser` used."""
         text = textwrap.dedent(text)
         parser = PythonParser(text=text, exclude="nocover")
         parser.parse_source()
         return parser
 
+
+class PythonParserTest(PythonParserTestBase):
+    """Tests of coverage.parser."""
+
     def test_exit_counts(self) -> None:
-        parser = self.parse_source("""\
+        parser = self.parse_text("""\
             # check some basic branch counting
             class Foo:
                 def foo(self, a):
@@ -48,7 +52,7 @@ class PythonParserTest(CoverageTest):
 
     def test_generator_exit_counts(self) -> None:
         # https://github.com/nedbat/coveragepy/issues/324
-        parser = self.parse_source("""\
+        parser = self.parse_text("""\
             def gen(input):
                 for n in inp:
                     yield (i * 2 for i in range(n))
@@ -63,7 +67,7 @@ class PythonParserTest(CoverageTest):
         }
 
     def test_try_except(self) -> None:
-        parser = self.parse_source("""\
+        parser = self.parse_text("""\
             try:
                 a = 2
             except ValueError:
@@ -79,7 +83,7 @@ class PythonParserTest(CoverageTest):
         }
 
     def test_excluded_classes(self) -> None:
-        parser = self.parse_source("""\
+        parser = self.parse_text("""\
             class Foo:
                 def __init__(self):
                     pass
@@ -93,7 +97,7 @@ class PythonParserTest(CoverageTest):
         }
 
     def test_missing_branch_to_excluded_code(self) -> None:
-        parser = self.parse_source("""\
+        parser = self.parse_text("""\
             if fooey:
                 a = 2
             else:   # nocover
@@ -101,7 +105,7 @@ class PythonParserTest(CoverageTest):
             b = 5
             """)
         assert parser.exit_counts() == { 1:1, 2:1, 5:1 }
-        parser = self.parse_source("""\
+        parser = self.parse_text("""\
             def foo():
                 if fooey:
                     a = 3
@@ -110,7 +114,7 @@ class PythonParserTest(CoverageTest):
             b = 6
             """)
         assert parser.exit_counts() == { 1:1, 2:2, 3:1, 5:1, 6:1 }
-        parser = self.parse_source("""\
+        parser = self.parse_text("""\
             def foo():
                 if fooey:
                     a = 3
@@ -126,7 +130,7 @@ class PythonParserTest(CoverageTest):
             "'unindent does not match any outer indentation level.*' at line 3"
         )
         with pytest.raises(NotPython, match=msg):
-            _ = self.parse_source("""\
+            _ = self.parse_text("""\
                 0 spaces
                   2
                  1
@@ -143,77 +147,10 @@ class PythonParserTest(CoverageTest):
             + r"' at line 1"
         )
         with pytest.raises(NotPython, match=msg):
-            _ = self.parse_source("'''")
-
-    @xfail_pypy38
-    def test_decorator_pragmas(self) -> None:
-        parser = self.parse_source("""\
-            # 1
-
-            @foo(3)                     # nocover
-            @bar
-            def func(x, y=5):
-                return 6
-
-            class Foo:      # this is the only statement.
-                '''9'''
-                @foo                    # nocover
-                def __init__(self):
-                    '''12'''
-                    return 13
-
-                @foo(                   # nocover
-                    16,
-                    17,
-                )
-                def meth(self):
-                    return 20
-
-            @foo(                       # nocover
-                23
-            )
-            def func(x=25):
-                return 26
-            """)
-        raw_statements = {3, 4, 5, 6, 8, 9, 10, 11, 13, 15, 16, 17, 19, 20, 22, 23, 25, 26}
-        assert parser.raw_statements == raw_statements
-        assert parser.statements == {8}
-
-    @xfail_pypy38
-    def test_decorator_pragmas_with_colons(self) -> None:
-        # A colon in a decorator expression would confuse the parser,
-        # ending the exclusion of the decorated function.
-        parser = self.parse_source("""\
-            @decorate(X)        # nocover
-            @decorate("Hello"[2])
-            def f():
-                x = 4
-
-            @decorate(X)        # nocover
-            @decorate("Hello"[:7])
-            def g():
-                x = 9
-            """)
-        raw_statements = {1, 2, 3, 4, 6, 7, 8, 9}
-        assert parser.raw_statements == raw_statements
-        assert parser.statements == set()
-
-    def test_class_decorator_pragmas(self) -> None:
-        parser = self.parse_source("""\
-            class Foo(object):
-                def __init__(self):
-                    self.x = 3
-
-            @foo                        # nocover
-            class Bar(object):
-                def __init__(self):
-                    self.x = 8
-            """)
-        assert parser.raw_statements == {1, 2, 3, 5, 6, 7, 8}
-        assert parser.statements == {1, 2, 3}
+            _ = self.parse_text("'''")
 
     def test_empty_decorated_function(self) -> None:
-        parser = self.parse_source("""\
+        parser = self.parse_text("""\
             def decorator(func):
                 return func
 
@@ -251,21 +188,84 @@ class PythonParserTest(CoverageTest):
             + r"|(unmatched ']')"                   # after 3.12.0b1
         )
         with pytest.raises(NotPython, match=msg):
-            self.parse_source("]")
+            self.parse_text("]")
         with pytest.raises(NotPython, match=msg):
-            self.parse_source("]")
+            self.parse_text("]")
 
 
-class ParserMissingArcDescriptionTest(CoverageTest):
+class ExclusionParserTest(PythonParserTestBase):
+    """Tests for the exclusion code in PythonParser."""
+
+    @xfail_pypy38
+    def test_decorator_pragmas(self) -> None:
+        parser = self.parse_text("""\
+            # 1
+
+            @foo(3)                     # nocover
+            @bar
+            def func(x, y=5):
+                return 6
+
+            class Foo:      # this is the only statement.
+                '''9'''
+                @foo                    # nocover
+                def __init__(self):
+                    '''12'''
+                    return 13
+
+                @foo(                   # nocover
+                    16,
+                    17,
+                )
+                def meth(self):
+                    return 20
+
+            @foo(                       # nocover
+                23
+            )
+            def func(x=25):
+                return 26
+            """)
+        raw_statements = {3, 4, 5, 6, 8, 9, 10, 11, 13, 15, 16, 17, 19, 20, 22, 23, 25, 26}
+        assert parser.raw_statements == raw_statements
+        assert parser.statements == {8}
+
+    @xfail_pypy38
+    def test_decorator_pragmas_with_colons(self) -> None:
+        # A colon in a decorator expression would confuse the parser,
+        # ending the exclusion of the decorated function.
+        parser = self.parse_text("""\
+            @decorate(X)        # nocover
+            @decorate("Hello"[2])
+            def f():
+                x = 4
+
+            @decorate(X)        # nocover
+            @decorate("Hello"[:7])
+            def g():
+                x = 9
+            """)
+        raw_statements = {1, 2, 3, 4, 6, 7, 8, 9}
+        assert parser.raw_statements == raw_statements
+        assert parser.statements == set()
+
+    def test_class_decorator_pragmas(self) -> None:
+        parser = self.parse_text("""\
+            class Foo(object):
+                def __init__(self):
+                    self.x = 3
+
+            @foo                        # nocover
+            class Bar(object):
+                def __init__(self):
+                    self.x = 8
+            """)
+        assert parser.raw_statements == {1, 2, 3, 5, 6, 7, 8}
+        assert parser.statements == {1, 2, 3}
+
+
+class ParserMissingArcDescriptionTest(PythonParserTestBase):
     """Tests for PythonParser.missing_arc_description."""
-
-    run_in_temp_dir = False
-
-    def parse_text(self, source: str) -> PythonParser:
-        """Parse Python source, and return the parser object."""
-        parser = PythonParser(text=textwrap.dedent(source))
-        parser.parse_source()
-        return parser
 
     def test_missing_arc_description(self) -> None:
         # This code is never run, so the actual values don't matter.
