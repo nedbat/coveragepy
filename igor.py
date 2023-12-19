@@ -446,10 +446,10 @@ def do_cheats():
 
     print("\n## To run this code:")
     if facts.branch == "master":
-        print(f"pip install git+{github}#{egg}")
+        print(f"python3 -m pip install git+{github}#{egg}")
     else:
-        print(f"pip install git+{github}@{facts.branch}#{egg}")
-    print(f"pip install git+{github}@{facts.sha}#{egg}")
+        print(f"python3 -m pip install git+{github}@{facts.branch}#{egg}")
+    print(f"python3 -m pip install git+{github}@{facts.sha[:20]}#{egg}")
 
     print(
         "\n## For other collaborators:\n"
