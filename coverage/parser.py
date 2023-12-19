@@ -127,16 +127,25 @@ class PythonParser:
 
         # Tokenize, to find excluded suites, to find docstrings, and to find
         # multi-line statements.
-        indent = 0
-        exclude_indent = 0
-        excluding = False
-        excluding_decorators = False
-        prev_toktype = token.INDENT
-        first_line = None
-        empty = True
-        first_on_line = True
-        nesting = 0
-        prev_ttext = None
+
+        # The last token seen. Start with INDENT to get module docstrings
+        prev_toktype: int = token.INDENT
+        # The current number of indents.
+        indent: int = 0
+        # An exclusion comment will exclude an entire clause at this indent.
+        exclude_indent: int = 0
+        # Are we currently excluding lines?
+        excluding: bool = False
+        # Are we excluding decorators now?
+        excluding_decorators: bool = False
+        # The line number of the first line in a multi-line statement.
+        first_line: int = 0
+        # Is the file empty?
+        empty: bool = True
+        # Is this the first token on a line?
+        first_on_line: bool = True
+        # Parenthesis (and bracket) nesting level.
+        nesting: int = 0
 
         assert self.text is not None
         tokgen = generate_tokens(self.text)
@@ -180,26 +189,26 @@ class PythonParser:
                     nesting += 1
                 elif ttext in ")]}":
                     nesting -= 1
-            elif toktype == token.STRING and prev_toktype == token.INDENT:
-                # Strings that are first on an indented line are docstrings.
-                # (a trick from trace.py in the stdlib.) This works for
-                # 99.9999% of cases.  For the rest (!) see:
-                # http://stackoverflow.com/questions/1769332/x/1769794#1769794
-                self.raw_docstrings.update(range(slineno, elineno+1))
+            elif toktype == token.STRING:
+                if prev_toktype == token.INDENT:
+                    # Strings that are first on an indented line are docstrings.
+                    # (a trick from trace.py in the stdlib.) This works for
+                    # 99.9999% of cases.
+                    self.raw_docstrings.update(range(slineno, elineno+1))
             elif toktype == token.NEWLINE:
-                if first_line is not None and elineno != first_line:    # type: ignore[unreachable]
+                if first_line and elineno != first_line:
                     # We're at the end of a line, and we've ended on a
                     # different line than the first line of the statement,
                     # so record a multi-line range.
-                    for l in range(first_line, elineno+1):              # type: ignore[unreachable]
+                    for l in range(first_line, elineno+1):
                         self._multiline[l] = first_line
-                first_line = None
+                first_line = 0
                 first_on_line = True
 
             if ttext.strip() and toktype != tokenize.COMMENT:
                 # A non-white-space token.
                 empty = False
-                if first_line is None:
+                if not first_line:
                     # The token is not white space, and is the first in a statement.
                     first_line = slineno
                     # Check whether to end an excluded suite.
