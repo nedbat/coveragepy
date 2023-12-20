@@ -95,15 +95,12 @@ def main(owner_repo, artifact_pattern, dest_dir):
     temp_zip = "artifacts.zip"
 
     # Download the latest of each name.
-    # I'd like to use created_at, because it seems like the better value to use,
-    # but it is in the wrong time zone, and updated_at is the same but correct.
-    # Bug report here: https://github.com/actions/upload-artifact/issues/488.
     for name, artifacts in artifacts_by_name.items():
-        artifact = max(artifacts, key=operator.itemgetter("updated_at"))
+        artifact = max(artifacts, key=operator.itemgetter("created_at"))
         print(
             f"Downloading {artifact['name']}, "
             + f"size: {artifact['size_in_bytes']}, "
-            + f"created: {utc2local(artifact['updated_at'])}"
+            + f"created: {utc2local(artifact['created_at'])}"
         )
         download_url(artifact["archive_download_url"], temp_zip)
         unpack_zipfile(temp_zip)
