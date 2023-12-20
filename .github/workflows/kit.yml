@@ -49,6 +49,8 @@ jobs:
   wheels:
     name: "${{ matrix.py }} ${{ matrix.os }} ${{ matrix.arch }} wheels"
     runs-on: ${{ matrix.os }}-latest
+    env:
+      MATRIX_ID: "${{ matrix.py }}-${{ matrix.os }}-${{ matrix.arch }}"
     strategy:
       matrix:
         include:
@@ -173,9 +175,9 @@ jobs:
           ls -al wheelhouse/
 
       - name: "Upload wheels"
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: dist
+          name: dist-${{ env.MATRIX_ID }}
           path: wheelhouse/*.whl
           retention-days: 7
 
@@ -207,9 +209,9 @@ jobs:
           ls -al dist/
 
       - name: "Upload sdist"
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: dist
+          name: dist-sdist
           path: dist/*.tar.gz
           retention-days: 7
 
@@ -245,9 +247,9 @@ jobs:
           ls -al dist/
 
       - name: "Upload wheels"
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: dist
+          name: dist-pypy
           path: dist/*.whl
           retention-days: 7
 
@@ -264,9 +266,10 @@ jobs:
       id-token: write
     steps:
       - name: "Download artifacts"
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
-          name: dist
+          pattern: dist-*
+          merge-multiple: true
 
       - name: "Sign artifacts"
         uses: sigstore/gh-action-sigstore-python@v2.1.1
@@ -278,7 +281,7 @@ jobs:
           ls -alR
 
       - name: "Upload signatures"
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: signatures
           path: |

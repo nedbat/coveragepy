@@ -213,10 +213,11 @@ build_kits:				## Trigger GitHub to build kits
 	python ci/trigger_build_kits.py $(REPO_OWNER)
 
 download_kits:				## Download the built kits from GitHub.
-	python ci/download_gha_artifacts.py $(REPO_OWNER)
+	python ci/download_gha_artifacts.py $(REPO_OWNER) 'dist-*' dist
 
 check_kits:				## Check that dist/* are well-formed.
 	python -m twine check dist/*
+	@echo $$(ls -1 dist | wc -l) distribution kits
 
 tag:					## Make a git tag with the version number.
 	git tag -a -m "Version $$(python setup.py --version)" $$(python setup.py --version)
