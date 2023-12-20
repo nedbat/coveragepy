@@ -17,8 +17,12 @@ development at the same time, such as 4.5.x and 5.0.
     ..  Version 9.8.1 — 2027-07-27
     ..  --------------------------
 
-Unreleased
-----------
+.. scriv-start-here
+
+.. _changes_7-3-4:
+
+Version 7.3.4 — 2023-12-20
+--------------------------
 
 - Fix: the change for multi-line signature exclusions in 7.3.3 broke other
   forms of nested clauses being excluded properly.  This is now fixed, closing
@@ -30,8 +34,6 @@ Unreleased
 .. _issue 1713: https://github.com/nedbat/coveragepy/issues/1713
 .. _pull 1717: https://github.com/nedbat/coveragepy/pull/1717
 
-
-.. scriv-start-here
 
 .. _changes_7-3-3:
 
