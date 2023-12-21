@@ -570,14 +570,14 @@ class HtmlTest(HtmlTestHelpers, CoverageTest):
 
     def make_main_and_not_covered(self) -> None:
         """Helper to create files for skip_covered scenarios."""
-        self.make_file("main_file.py", """
+        self.make_file("main_file.py", """\
             import not_covered
 
             def normal():
                 print("z")
             normal()
         """)
-        self.make_file("not_covered.py", """
+        self.make_file("not_covered.py", """\
             def not_covered():
                 print("n")
         """)
@@ -607,7 +607,7 @@ class HtmlTest(HtmlTestHelpers, CoverageTest):
         self.assert_exists("htmlcov/not_covered_py.html")
 
     def test_report_skip_covered_100(self) -> None:
-        self.make_file("main_file.py", """
+        self.make_file("main_file.py", """\
             def normal():
                 print("z")
             normal()
@@ -619,7 +619,7 @@ class HtmlTest(HtmlTestHelpers, CoverageTest):
     def make_init_and_main(self) -> None:
         """Helper to create files for skip_empty scenarios."""
         self.make_file("submodule/__init__.py", "")
-        self.make_file("main_file.py", """
+        self.make_file("main_file.py", """\
             import submodule
 
             def normal():

@@ -345,14 +345,14 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         assert self.stdout() == 'x\ny\n'
 
     def test_report_skip_covered_no_branches(self) -> None:
-        self.make_file("main.py", """
+        self.make_file("main.py", """\
             import not_covered
 
             def normal():
                 print("z")
             normal()
             """)
-        self.make_file("not_covered.py", """
+        self.make_file("not_covered.py", """\
             def not_covered():
                 print("n")
             """)
@@ -377,7 +377,7 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         assert self.last_command_status == 0
 
     def test_report_skip_covered_branches(self) -> None:
-        self.make_file("main.py", """
+        self.make_file("main.py", """\
             import not_covered, covered
 
             def normal(z):
@@ -386,13 +386,13 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
             normal(True)
             normal(False)
             """)
-        self.make_file("not_covered.py", """
+        self.make_file("not_covered.py", """\
             def not_covered(n):
                 if n:
                     print("n")
             not_covered(True)
             """)
-        self.make_file("covered.py", """
+        self.make_file("covered.py", """\
             def foo():
                 pass
             foo()
@@ -417,7 +417,7 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         assert squeezed[6] == "2 files skipped due to complete coverage."
 
     def test_report_skip_covered_branches_with_totals(self) -> None:
-        self.make_file("main.py", """
+        self.make_file("main.py", """\
             import not_covered
             import also_not_run
 
@@ -427,13 +427,13 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
             normal(True)
             normal(False)
             """)
-        self.make_file("not_covered.py", """
+        self.make_file("not_covered.py", """\
             def not_covered(n):
                 if n:
                     print("n")
             not_covered(True)
             """)
-        self.make_file("also_not_run.py", """
+        self.make_file("also_not_run.py", """\
             def does_not_appear_in_this_film(ni):
                 print("Ni!")
             """)
@@ -459,7 +459,7 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         assert squeezed[7] == "1 file skipped due to complete coverage."
 
     def test_report_skip_covered_all_files_covered(self) -> None:
-        self.make_file("main.py", """
+        self.make_file("main.py", """\
             def foo():
                 pass
             foo()
@@ -504,7 +504,7 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         assert total == "100\n"
 
     def test_report_skip_covered_longfilename(self) -> None:
-        self.make_file("long_______________filename.py", """
+        self.make_file("long_______________filename.py", """\
             def foo():
                 pass
             foo()
@@ -534,7 +534,7 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         self.assert_doesnt_exist(".coverage")
 
     def test_report_skip_empty(self) -> None:
-        self.make_file("main.py", """
+        self.make_file("main.py", """\
             import submodule
 
             def normal():
@@ -584,7 +584,7 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
             precision = 3
             omit = */site-packages/*
             """)
-        self.make_file("main.py", """
+        self.make_file("main.py", """\
             import not_covered, covered
 
             def normal(z):
@@ -593,13 +593,13 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
             normal(True)
             normal(False)
             """)
-        self.make_file("not_covered.py", """
+        self.make_file("not_covered.py", """\
             def not_covered(n):
                 if n:
                     print("n")
             not_covered(True)
             """)
-        self.make_file("covered.py", """
+        self.make_file("covered.py", """\
             def foo():
                 pass
             foo()
@@ -624,7 +624,7 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         assert squeezed[6] == "TOTAL 13 0 4 1 94.118%"
 
     def test_report_precision_all_zero(self) -> None:
-        self.make_file("not_covered.py", """
+        self.make_file("not_covered.py", """\
             def not_covered(n):
                 if n:
                     print("n")
