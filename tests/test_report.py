@@ -323,6 +323,18 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         cov = coverage.Coverage(branch=True)
         self.start_import_stop(cov, "mybranch")
         assert self.stdout() == 'x\ny\n'
+        report = self.get_report(cov, show_missing=True)
+
+        # Name           Stmts   Miss Branch BrPart  Cover   Missing
+        # ----------------------------------------------------------
+        # mybranch.py        6      0      4      2    80%   2->4, 4->exit
+        # ----------------------------------------------------------
+        # TOTAL              6      0      4      2    80%
+
+        assert self.line_count(report) == 5
+        squeezed = self.squeezed_lines(report)
+        assert squeezed[2] == "mybranch.py 6 0 4 2 80% 2->4, 4->exit"
+        assert squeezed[4] == "TOTAL 6 0 4 2 80%"
 
     def test_report_show_missing_branches_and_lines(self) -> None:
         self.make_file("main.py", """\
@@ -343,6 +355,17 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         cov = coverage.Coverage(branch=True)
         self.start_import_stop(cov, "main")
         assert self.stdout() == 'x\ny\n'
+        report_lines = self.get_report(cov, squeeze=False, show_missing=True).splitlines()
+
+        expected = [
+            'Name          Stmts   Miss Branch BrPart  Cover   Missing',
+            '---------------------------------------------------------',
+            'main.py           1      0      0      0   100%',
+            'mybranch.py      10      2      8      3    61%   2->4, 4->6, 7-8',
+            '---------------------------------------------------------',
+            'TOTAL            11      2      8      3    63%',
+        ]
+        assert expected == report_lines
 
     def test_report_skip_covered_no_branches(self) -> None:
         self.make_file("main.py", """\
