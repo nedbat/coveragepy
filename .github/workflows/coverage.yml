@@ -73,8 +73,11 @@ jobs:
         with:
           python-version: "${{ matrix.python-version }}"
           allow-prereleases: true
-          cache: pip
-          cache-dependency-path: 'requirements/*.pip'
+          # At a certain point, installing dependencies failed on pypy 3.9 and
+          # 3.10 on Windows.  Commenting out the cache here fixed it.  Someday
+          # try using the cache again.
+          #cache: pip
+          #cache-dependency-path: 'requirements/*.pip'
 
       - name: "Install dependencies"
         run: |
@@ -122,8 +125,11 @@ jobs:
         uses: "actions/setup-python@v5"
         with:
           python-version: "3.8" # Minimum of PYVERSIONS
-          cache: pip
-          cache-dependency-path: 'requirements/*.pip'
+          # At a certain point, installing dependencies failed on pypy 3.9 and
+          # 3.10 on Windows.  Commenting out the cache here fixed it.  Someday
+          # try using the cache again.
+          #cache: pip
+          #cache-dependency-path: 'requirements/*.pip'
 
       - name: "Install dependencies"
         run: |
