@@ -4,17 +4,17 @@
 #
 #    make upgrade
 #
-distlib==0.3.7
+distlib==0.3.8
     # via virtualenv
-filelock==3.12.4
+filelock==3.13.1
     # via virtualenv
-platformdirs==3.11.0
+platformdirs==4.1.0
     # via virtualenv
-virtualenv==20.24.5
+virtualenv==20.25.0
     # via -r requirements/pip.in
 
 # The following packages are considered to be unsafe in a requirements file:
-pip==23.2.1
+pip==23.3.2
     # via -r requirements/pip.in
-setuptools==68.2.2
+setuptools==69.0.3
     # via -r requirements/pip.in
