@@ -16,7 +16,7 @@ from typing import Any, Callable, Dict, List, Optional, Set, Tuple, cast
 from coverage import env
 from coverage.types import (
     TArc, TFileDisposition, TLineNo, TTraceData, TTraceFileData, TTraceFn,
-    TTracer, TWarnFn,
+    TracerCore, TWarnFn,
 )
 
 # We need the YIELD_VALUE opcode below, in a comparison-friendly form.
@@ -32,7 +32,7 @@ if RESUME is None:
 
 THIS_FILE = __file__.rstrip("co")
 
-class PyTracer(TTracer):
+class PyTracer(TracerCore):
     """Python implementation of the raw data tracer."""
 
     # Because of poor implementations of trace-function-manipulating tools,

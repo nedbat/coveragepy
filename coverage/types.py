@@ -78,8 +78,8 @@ TTraceFileData = Union[Set[TLineNo], Set[TArc], Set[int]]
 
 TTraceData = Dict[str, TTraceFileData]
 
-class TTracer(Protocol):
-    """TODO: Either CTracer or PyTracer."""
+class TracerCore(Protocol):
+    """Anything that can report on Python execution."""
 
     data: TTraceData
     trace_arcs: bool
@@ -92,8 +92,8 @@ class TTracer(Protocol):
     def __init__(self) -> None:
         ...
 
-    def start(self) -> TTraceFn:
-        """Start this tracer, returning a trace function."""
+    def start(self) -> TTraceFn | None:
+        """Start this tracer, return a trace function if based on sys.settrace."""
 
     def stop(self) -> None:
         """Stop this tracer."""
@@ -106,6 +106,7 @@ class TTracer(Protocol):
 
     def get_stats(self) -> Optional[Dict[str, int]]:
         """Return a dictionary of statistics, or None."""
+
 
 ## Coverage
 

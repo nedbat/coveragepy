@@ -25,7 +25,7 @@ from coverage.plugin import CoveragePlugin
 from coverage.pytracer import PyTracer
 from coverage.sysmon import SysMonitor
 from coverage.types import (
-    TArc, TFileDisposition, TTraceData, TTraceFn, TTracer, TWarnFn,
+    TArc, TFileDisposition, TTraceData, TTraceFn, TracerCore, TWarnFn,
 )
 
 os = isolate_module(os)
@@ -140,7 +140,7 @@ class Collector:
 
         self.concur_id_func = None
 
-        self._trace_class: Type[TTracer]
+        self._trace_class: Type[TracerCore]
         self.file_disposition_class: Type[TFileDisposition]
 
         core: Optional[str]
@@ -291,13 +291,12 @@ class Collector:
             self.should_trace_cache = {}
 
         # Our active Tracers.
-        self.tracers: List[TTracer] = []
+        self.tracers: List[TracerCore] = []
 
         self._clear_data()
 
-    def _start_tracer(self) -> TTraceFn:
+    def _start_tracer(self) -> TTraceFn | None:
         """Start a new Tracer object, and store it in self.tracers."""
-        # TODO: for pep669, this doesn't return a TTraceFn
         tracer = self._trace_class()
         tracer.data = self.data
         tracer.trace_arcs = self.branch

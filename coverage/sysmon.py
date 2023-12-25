@@ -17,7 +17,16 @@ import threading
 import traceback
 
 from types import CodeType, FrameType
-from typing import Any, Callable, Dict, List, Optional, Set, cast
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    List,
+    Optional,
+    Set,
+    TYPE_CHECKING,
+    cast,
+)
 
 from coverage.debug import short_filename, short_stack
 from coverage.types import (
@@ -27,21 +36,26 @@ from coverage.types import (
     TLineNo,
     TTraceData,
     TTraceFileData,
-    TTraceFn,
-    TTracer,
+    TracerCore,
     TWarnFn,
 )
 
 # pylint: disable=unused-argument
-# As of mypy 1.7.1, sys.monitoring isn't in typeshed stubs.
-# mypy: ignore-errors
 
 LOG = False
 
 # This module will be imported in all versions of Python, but only used in 3.12+
+# It will be type-checked for 3.12, but not for earlier versions.
 sys_monitoring = getattr(sys, "monitoring", None)
 
-if LOG:     # pragma: debugging
+if TYPE_CHECKING:
+    assert sys_monitoring is not None
+    # I want to say this but it's not allowed:
+    #   MonitorReturn = Literal[sys.monitoring.DISABLE] | None
+    MonitorReturn = Any
+
+
+if LOG:  # pragma: debugging
 
     class LoggingWrapper:
         """Wrap a namespace to log all its functions."""
@@ -58,6 +72,7 @@ if LOG:     # pragma: debugging
             return _wrapped
 
     sys_monitoring = LoggingWrapper(sys_monitoring, "sys.monitoring")
+    assert sys_monitoring is not None
 
     short_stack = functools.partial(
         short_stack, full=True, short_filenames=True, frame_ids=True
@@ -114,8 +129,9 @@ if LOG:     # pragma: debugging
                     return ret
                 except Exception as exc:
                     log(f"!!{exc.__class__.__name__}: {exc}")
-                    log("".join(traceback.format_exception(exc)))  # pylint: disable=no-value-for-parameter
+                    log("".join(traceback.format_exception(exc))) # pylint: disable=[no-value-for-parameter]
                     try:
+                        assert sys_monitoring is not None
                         sys_monitoring.set_events(sys.monitoring.COVERAGE_ID, 0)
                     except ValueError:
                         # We might have already shut off monitoring.
@@ -146,13 +162,14 @@ class CodeInfo:
 
     tracing: bool
     file_data: Optional[TTraceFileData]
-    byte_to_line: Dict[int, int]
+    # TODO: what is byte_to_line for?
+    byte_to_line: Dict[int, int] | None
 
 
 def bytes_to_lines(code: CodeType) -> Dict[int, int]:
     """Make a dict mapping byte code offsets to line numbers."""
     b2l = {}
-    cur_line = None
+    cur_line = 0
     for inst in dis.get_instructions(code):
         if inst.starts_line is not None:
             cur_line = inst.starts_line
@@ -161,7 +178,7 @@ def bytes_to_lines(code: CodeType) -> Dict[int, int]:
     return b2l
 
 
-class SysMonitor(TTracer):
+class SysMonitor(TracerCore):
     """Python implementation of the raw data tracer for PEP669 implementations."""
 
     # One of these will be used across threads. Be careful.
@@ -185,7 +202,7 @@ class SysMonitor(TTracer):
         self.code_infos: Dict[int, CodeInfo] = {}
         # A list of code_objects, just to keep them alive so that id's are
         # useful as identity.
-        self.code_objects: List[CodeInfo] = []
+        self.code_objects: List[CodeType] = []
         self.last_lines: Dict[FrameType, int] = {}
         # Map id(code_object) -> code_object
         self.local_event_codes: Dict[int, CodeType] = {}
@@ -205,15 +222,14 @@ class SysMonitor(TTracer):
     def __repr__(self) -> str:
         points = sum(len(v) for v in self.data.values())
         files = len(self.data)
-        return (
-            f"<SysMonitor at {id(self):#x}: {points} data points in {files} files>"
-        )
+        return f"<SysMonitor at {id(self):#x}: {points} data points in {files} files>"
 
     @panopticon()
-    def start(self) -> TTraceFn:
+    def start(self) -> None:
         """Start this Tracer."""
         self.stopped = False
 
+        assert sys_monitoring is not None
         sys_monitoring.use_tool_id(self.myid, "coverage.py")
         register = functools.partial(sys_monitoring.register_callback, self.myid)
         events = sys.monitoring.events
@@ -237,6 +253,7 @@ class SysMonitor(TTracer):
     @panopticon()
     def stop(self) -> None:
         """Stop this Tracer."""
+        assert sys_monitoring is not None
         sys_monitoring.set_events(self.myid, 0)
         for code in self.local_event_codes.values():
             sys_monitoring.set_local_events(self.myid, code, 0)
@@ -266,36 +283,39 @@ class SysMonitor(TTracer):
 
         def callers_frame(self) -> FrameType:
             """Get the frame of the Python code we're monitoring."""
-            return inspect.currentframe().f_back.f_back.f_back
+            return (
+                inspect.currentframe().f_back.f_back.f_back  # type: ignore[union-attr,return-value]
+            )
+
     else:
 
         def callers_frame(self) -> FrameType:
             """Get the frame of the Python code we're monitoring."""
-            return inspect.currentframe().f_back.f_back
+            return inspect.currentframe().f_back.f_back  # type: ignore[union-attr,return-value]
 
     @panopticon("code", "@")
-    def sysmon_py_start(self, code: CodeType, instruction_offset: int):
+    def sysmon_py_start(self, code: CodeType, instruction_offset: int) -> MonitorReturn:
         """Handle sys.monitoring.events.PY_START events."""
         # Entering a new frame.  Decide if we should trace in this file.
         self._activity = True
         self.stats["starts"] += 1
 
         code_info = self.code_infos.get(id(code))
+        tracing_code: bool | None = None
+        file_data: TTraceFileData | None = None
         if code_info is not None:
             tracing_code = code_info.tracing
             file_data = code_info.file_data
-        else:
-            tracing_code = file_data = None
 
         if tracing_code is None:
             filename = code.co_filename
             disp = self.should_trace_cache.get(filename)
             if disp is None:
-                frame = inspect.currentframe().f_back
+                frame = inspect.currentframe().f_back  # type: ignore[union-attr]
                 if LOG:
                     # @panopticon adds a frame.
-                    frame = frame.f_back
-                disp = self.should_trace(filename, frame)
+                    frame = frame.f_back  # type: ignore[union-attr]
+                disp = self.should_trace(filename, frame)  # type: ignore[arg-type]
                 self.should_trace_cache[filename] = disp
 
             tracing_code = disp.trace
@@ -320,10 +340,12 @@ class SysMonitor(TTracer):
             if tracing_code:
                 events = sys.monitoring.events
                 if self.sysmon_on:
+                    assert sys_monitoring is not None
                     sys_monitoring.set_local_events(
                         self.myid,
                         code,
                         events.PY_RETURN
+                        #
                         | events.PY_RESUME
                         # | events.PY_YIELD
                         | events.LINE,
@@ -340,7 +362,9 @@ class SysMonitor(TTracer):
             return sys.monitoring.DISABLE
 
     @panopticon("code", "@")
-    def sysmon_py_resume_arcs(self, code: CodeType, instruction_offset: int):
+    def sysmon_py_resume_arcs(
+        self, code: CodeType, instruction_offset: int
+    ) -> MonitorReturn:
         """Handle sys.monitoring.events.PY_RESUME events for branch coverage."""
         frame = self.callers_frame()
         self.last_lines[frame] = frame.f_lineno
@@ -348,7 +372,7 @@ class SysMonitor(TTracer):
     @panopticon("code", "@", None)
     def sysmon_py_return_arcs(
         self, code: CodeType, instruction_offset: int, retval: object
-    ):
+    ) -> MonitorReturn:
         """Handle sys.monitoring.events.PY_RETURN events for branch coverage."""
         frame = self.callers_frame()
         code_info = self.code_infos.get(id(code))
@@ -360,7 +384,9 @@ class SysMonitor(TTracer):
         self.last_lines.pop(frame, None)
 
     @panopticon("code", "@", None)
-    def sysmon_py_unwind_arcs(self, code: CodeType, instruction_offset: int, exception):
+    def sysmon_py_unwind_arcs(
+        self, code: CodeType, instruction_offset: int, exception: BaseException
+    ) -> MonitorReturn:
         """Handle sys.monitoring.events.PY_UNWIND events for branch coverage."""
         frame = self.callers_frame()
         code_info = self.code_infos.get(id(code))
@@ -372,7 +398,7 @@ class SysMonitor(TTracer):
         self.last_lines.pop(frame, None)
 
     @panopticon("code", "line")
-    def sysmon_line_lines(self, code: CodeType, line_number: int):
+    def sysmon_line_lines(self, code: CodeType, line_number: int) -> MonitorReturn:
         """Handle sys.monitoring.events.LINE events for line coverage."""
         code_info = self.code_infos[id(code)]
         if code_info.file_data is not None:
@@ -381,7 +407,7 @@ class SysMonitor(TTracer):
         return sys.monitoring.DISABLE
 
     @panopticon("code", "line")
-    def sysmon_line_arcs(self, code: CodeType, line_number: int):
+    def sysmon_line_arcs(self, code: CodeType, line_number: int) -> MonitorReturn:
         """Handle sys.monitoring.events.LINE events for branch coverage."""
         code_info = self.code_infos[id(code)]
         ret = None

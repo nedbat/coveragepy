@@ -3,7 +3,7 @@
 
 from typing import Any, Dict
 
-from coverage.types import TFileDisposition, TTraceData, TTraceFn, TTracer
+from coverage.types import TFileDisposition, TTraceData, TTraceFn, TracerCore
 
 class CFileDisposition(TFileDisposition):
     canonical_filename: Any
@@ -15,7 +15,7 @@ class CFileDisposition(TFileDisposition):
     trace: Any
     def __init__(self) -> None: ...
 
-class CTracer(TTracer):
+class CTracer(TracerCore):
     check_include: Any
     concur_id_func: Any
     data: TTraceData
