@@ -182,7 +182,7 @@ class SysMonitor(TracerCore):
 
     # One of these will be used across threads. Be careful.
 
-    def __init__(self) -> None:
+    def __init__(self, tool_id: int) -> None:
         # Attributes set from the collector:
         self.data: TTraceData
         self.trace_arcs = False
@@ -195,7 +195,7 @@ class SysMonitor(TracerCore):
         # TODO: warn is unused.
         self.warn: TWarnFn
 
-        self.myid = sys.monitoring.COVERAGE_ID
+        self.myid = tool_id
 
         # Map id(code_object) -> CodeInfo
         self.code_infos: Dict[int, CodeInfo] = {}
@@ -248,6 +248,10 @@ class SysMonitor(TracerCore):
     @panopticon()
     def stop(self) -> None:
         """Stop this Tracer."""
+        if not self.sysmon_on:
+            # In forking situations, we might try to stop when we are not
+            # started.  Do nothing in that case.
+            return
         assert sys_monitoring is not None
         sys_monitoring.set_events(self.myid, 0)
         for code in self.local_event_codes.values():

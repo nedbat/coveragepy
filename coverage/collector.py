@@ -50,6 +50,7 @@ except ImportError:
 
 T = TypeVar("T")
 
+
 class Collector:
     """Collects trace data.
 
@@ -84,6 +85,7 @@ class Collector:
         branch: bool,
         warn: TWarnFn,
         concurrency: List[str],
+        metacov: bool,
     ) -> None:
         """Create a collector.
 
@@ -159,18 +161,21 @@ class Collector:
 
         if core == "sysmon":
             self._trace_class = SysMonitor
+            self._core_kwargs = {"tool_id": 3 if metacov else 1}
             self.file_disposition_class = FileDisposition
             self.supports_plugins = False
             self.packed_arcs = False
             self.systrace = False
         elif core == "ctrace":
             self._trace_class = CTracer
+            self._core_kwargs = {}
             self.file_disposition_class = CFileDisposition
             self.supports_plugins = True
             self.packed_arcs = True
             self.systrace = True
         elif core == "pytrace":
             self._trace_class = PyTracer
+            self._core_kwargs = {}
             self.file_disposition_class = FileDisposition
             self.supports_plugins = False
             self.packed_arcs = False
@@ -297,7 +302,7 @@ class Collector:
 
     def _start_tracer(self) -> TTraceFn | None:
         """Start a new Tracer object, and store it in self.tracers."""
-        tracer = self._trace_class()
+        tracer = self._trace_class(**self._core_kwargs)
         tracer.data = self.data
         tracer.trace_arcs = self.branch
         tracer.should_trace = self.should_trace
@@ -414,10 +419,11 @@ class Collector:
         """Resume tracing after a `pause`."""
         for tracer in self.tracers:
             tracer.start()
-        if self.threading:
-            self.threading.settrace(self._installation_trace)
-        else:
-            self._start_tracer()
+        if self.systrace:
+            if self.threading:
+                self.threading.settrace(self._installation_trace)
+            else:
+                self._start_tracer()
 
     def post_fork(self) -> None:
         """After a fork, tracers might need to adjust."""

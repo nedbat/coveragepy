@@ -262,6 +262,7 @@ class Coverage(TConfigurable):
         self._plugins: Plugins = Plugins()
         self._data: Optional[CoverageData] = None
         self._collector: Optional[Collector] = None
+        self._metacov = False
 
         self._file_mapper: Callable[[str], str] = abs_file
         self._data_suffix = self._run_suffix = None
@@ -539,6 +540,7 @@ class Coverage(TConfigurable):
             branch=self.config.branch,
             warn=self._warn,
             concurrency=concurrency,
+            metacov=self._metacov,
         )
 
         suffix = self._data_suffix_specified
