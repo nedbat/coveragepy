@@ -136,15 +136,14 @@ There are many options:
       --source=SRC1,SRC2,...
                             A list of directories or importable names of code to
                             measure.
-      --timid               Use a simpler but slower trace method. Try this if you
-                            get seemingly impossible results!
+      --timid               Use the slower Python trace function core.
       --debug=OPTS          Debug options, separated by commas. [env:
                             COVERAGE_DEBUG]
       -h, --help            Get help on this command.
       --rcfile=RCFILE       Specify configuration file. By default '.coveragerc',
                             'setup.cfg', 'tox.ini', and 'pyproject.toml' are
                             tried. [env: COVERAGE_RCFILE]
-.. [[[end]]] (checksum: 05d15818e42e6f989c42894fb2b3c753)
+.. [[[end]]] (checksum: b1a0fffe2768fc142f1d97ae556b621d)
 
 If you want :ref:`branch coverage <branch>` measurement, use the ``--branch``
 flag.  Otherwise only statement coverage is measured.
@@ -202,6 +201,11 @@ code as well as your own, add the ``-L`` (or ``--pylib``) flag.
 If your coverage results seem to be overlooking code that you know has been
 executed, try running coverage.py again with the ``--timid`` flag.  This uses a
 simpler but slower trace method, and might be needed in rare cases.
+
+In Python 3.12 and above, you can try an experimental core based on the new
+:mod:`sys.monitoring <python:sys.monitoring>` module by defining a
+``COVERAGE_CORE=sysmon`` environment variable.  This should be faster, though
+plugins and dynamic contexts are not yet supported with it.
 
 Coverage.py sets an environment variable, ``COVERAGE_RUN`` to indicate that
 your code is running under coverage measurement.  The value is not relevant,

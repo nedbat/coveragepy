@@ -217,10 +217,7 @@ class Opts:
     )
     timid = optparse.make_option(
         "", "--timid", action="store_true",
-        help=(
-            "Use a simpler but slower trace method. Try this if you get " +
-            "seemingly impossible results!"
-        ),
+        help="Use the slower Python trace function core.",
     )
     title = optparse.make_option(
         "", "--title", action="store", metavar="TITLE",

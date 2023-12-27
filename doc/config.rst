@@ -477,9 +477,9 @@ ambiguities between packages and directories.
 [run] timid
 ...........
 
-(boolean, default False) Use a simpler but slower trace method.  This uses
-PyTracer instead of CTracer, and is only needed in very unusual circumstances.
-Try this if you get seemingly impossible results.
+(boolean, default False) Use a simpler but slower trace method.  This uses the
+PyTracer trace function core instead of CTracer, and is only needed in very
+unusual circumstances.
 
 
 .. _config_paths:
