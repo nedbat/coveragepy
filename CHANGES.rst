@@ -17,8 +17,12 @@ development at the same time, such as 4.5.x and 5.0.
     ..  Version 9.8.1 — 2027-07-27
     ..  --------------------------
 
-Unreleased
-----------
+.. scriv-start-here
+
+.. _changes_7-4-0:
+
+Version 7.4.0 — 2023-12-27
+--------------------------
 
 - In Python 3.12 and above, you can try an experimental core based on the new
   :mod:`sys.monitoring <python:sys.monitoring>` module by defining a
@@ -26,8 +30,6 @@ Unreleased
   plugins and dynamic contexts are not yet supported with it.  I am very
   interested to hear how it works (or doesn't!) for you.
 
-
-.. scriv-start-here
 
 .. _changes_7-3-4:
 
