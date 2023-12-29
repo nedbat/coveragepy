@@ -32,9 +32,10 @@ Version 7.4.0 — 2023-12-27
 
 - In Python 3.12 and above, you can try an experimental core based on the new
   :mod:`sys.monitoring <python:sys.monitoring>` module by defining a
-  ``COVERAGE_CORE=sysmon`` environment variable.  This should be faster, though
-  plugins and dynamic contexts are not yet supported with it.  I am very
-  interested to hear how it works (or doesn't!) for you.
+  ``COVERAGE_CORE=sysmon`` environment variable.  This should be faster for
+  line coverage, but not for branch coverage, and plugins and dynamic contexts
+  are not yet supported with it.  I am very interested to hear how it works (or
+  doesn't!) for you.
 
 
 .. _changes_7-3-4:
