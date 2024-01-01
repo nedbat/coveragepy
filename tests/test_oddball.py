@@ -112,6 +112,7 @@ class RecursionTest(CoverageTest):
         # will be traced.
 
         self.make_file("recur.py", """\
+            import sys #; sys.setrecursionlimit(70)
             def recur(n):
                 if n == 0:
                     return 0    # never hit
@@ -121,8 +122,8 @@ class RecursionTest(CoverageTest):
             try:
                 recur(100000)  # This is definitely too many frames.
             except RuntimeError:
-                i = 10
-            i = 11
+                i = 11
+            i = 12
             """)
 
         cov = coverage.Coverage()
@@ -131,12 +132,12 @@ class RecursionTest(CoverageTest):
 
         assert cov._collector is not None
         pytrace = (cov._collector.tracer_name() == "PyTracer")
-        expected_missing = [3]
+        expected_missing = [4]
         if pytrace:                                 # pragma: no metacov
-            expected_missing += [9, 10, 11]
+            expected_missing += [10, 11, 12]
 
         _, statements, missing, _ = cov.analysis("recur.py")
-        assert statements == [1, 2, 3, 5, 7, 8, 9, 10, 11]
+        assert statements == [1, 2, 3, 4, 6, 8, 9, 10, 11, 12]
         assert expected_missing == missing
 
         # Get a warning about the stackoverflow effect on the tracing function.
@@ -145,7 +146,7 @@ class RecursionTest(CoverageTest):
             assert re.fullmatch(
                 r"Trace function changed, data is likely wrong: None != " +
                 r"<bound method PyTracer._trace of " +
-                "<PyTracer at 0x[0-9a-fA-F]+: 5 data points in 1 files>>",
+                "<PyTracer at 0x[0-9a-fA-F]+: 6 data points in 1 files>>",
                 cov._warnings[0],
             )
         else:

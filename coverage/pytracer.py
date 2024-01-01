@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import atexit
 import dis
+import itertools
 import sys
 import threading
 
@@ -51,7 +52,12 @@ class PyTracer(TracerCore):
     # PyTracer to get accurate results.  The command-line --timid argument is
     # used to force the use of this tracer.
 
+    tracer_ids = itertools.count()
+
     def __init__(self) -> None:
+        # Which tracer are we?
+        self.id = next(self.tracer_ids)
+
         # Attributes set from the collector:
         self.data: TTraceData
         self.trace_arcs = False
@@ -101,7 +107,7 @@ class PyTracer(TracerCore):
         with open("/tmp/debug_trace.txt", "a") as f:
             f.write("{} {}[{}]".format(
                 marker,
-                id(self),
+                self.id,
                 len(self.data_stack),
             ))
             if 0:   # if you want thread ids..
