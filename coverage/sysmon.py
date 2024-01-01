@@ -377,8 +377,10 @@ class SysMonitor(TracerCore):
         frame = self.callers_frame()
         code_info = self.code_infos.get(id(code))
         if code_info is not None and code_info.file_data is not None:
-            arc = (self.last_lines[frame], -code.co_firstlineno)
-            cast(Set[TArc], code_info.file_data).add(arc)
+            last_line = self.last_lines.get(frame)
+            if last_line is not None:
+                arc = (last_line, -code.co_firstlineno)
+                cast(Set[TArc], code_info.file_data).add(arc)
 
         # Leaving this function, no need for the frame any more.
         self.last_lines.pop(frame, None)
@@ -391,8 +393,10 @@ class SysMonitor(TracerCore):
         frame = self.callers_frame()
         code_info = self.code_infos.get(id(code))
         if code_info is not None and code_info.file_data is not None:
-            arc = (self.last_lines[frame], -code.co_firstlineno)
-            cast(Set[TArc], code_info.file_data).add(arc)
+            last_line = self.last_lines.get(frame)
+            if last_line is not None:
+                arc = (last_line, -code.co_firstlineno)
+                cast(Set[TArc], code_info.file_data).add(arc)
 
         # Leaving this function.
         self.last_lines.pop(frame, None)
@@ -413,8 +417,10 @@ class SysMonitor(TracerCore):
         ret = None
         if code_info.file_data is not None:
             frame = self.callers_frame()
-            arc = (self.last_lines[frame], line_number)
-            cast(Set[TArc], code_info.file_data).add(arc)
+            last_line = self.last_lines.get(frame)
+            if last_line is not None:
+                arc = (last_line, line_number)
+                cast(Set[TArc], code_info.file_data).add(arc)
             # log(f"adding {arc=}")
             self.last_lines[frame] = line_number
         return ret
