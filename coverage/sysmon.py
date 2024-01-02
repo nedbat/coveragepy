@@ -5,7 +5,6 @@
 
 from __future__ import annotations
 
-import atexit
 import dataclasses
 import dis
 import functools
@@ -214,10 +213,6 @@ class SysMonitor(TracerCore):
 
         self.stopped = False
         self._activity = False
-
-        self.in_atexit = False
-        # On exit, self.in_atexit = True
-        atexit.register(setattr, self, "in_atexit", True)
 
     def __repr__(self) -> str:
         points = sum(len(v) for v in self.data.values())
