@@ -5,6 +5,7 @@
 
 from __future__ import annotations
 
+import atexit
 import contextlib
 import functools
 import inspect
@@ -450,6 +451,7 @@ class DebugOutputFile:
                     fileobj = getattr(sys, file_name)
                 elif file_name:
                     fileobj = open(file_name, "a", encoding="utf-8")
+                    atexit.register(fileobj.close)
                 else:
                     fileobj = sys.stderr
             the_one = cls(fileobj, filters)
