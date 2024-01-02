@@ -330,8 +330,9 @@ def assert_coverage_warnings(
     """
     assert msgs     # don't call this without some messages.
     warns = [w for w in warns if issubclass(w.category, CoverageWarning)]
-    assert len(warns) == len(msgs)
-    for actual, expected in zip((cast(Warning, w.message).args[0] for w in warns), msgs):
+    actuals = [cast(Warning, w.message).args[0] for w in warns]
+    assert len(msgs) == len(actuals)
+    for expected, actual in zip(msgs, actuals):
         if hasattr(expected, "search"):
             assert expected.search(actual), f"{actual!r} didn't match {expected!r}"
         else:
