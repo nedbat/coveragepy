@@ -317,12 +317,16 @@ class PyTracer(TracerCore):
                 #self.log("~", "stopping on different threads")
                 return
 
-        if self.warn:
-            # PyPy clears the trace function before running atexit functions,
-            # so don't warn if we are in atexit on PyPy and the trace function
-            # has changed to None.
-            dont_warn = (env.PYPY and self.in_atexit and tf is None)
-            if (not dont_warn) and tf != self._cached_bound_method_trace:   # pylint: disable=comparison-with-callable
+        # PyPy clears the trace function before running atexit functions,
+        # so don't warn if we are in atexit on PyPy and the trace function
+        # has changed to None.  Metacoverage also messes this up, so don't
+        # warn if we are measuring ourselves.
+        suppress_warning = (
+            (env.PYPY and self.in_atexit and tf is None)
+            or env.METACOV
+        )
+        if self.warn and not suppress_warning:
+            if tf != self._cached_bound_method_trace:   # pylint: disable=comparison-with-callable
                 self.warn(
                     "Trace function changed, data is likely wrong: " +
                     f"{tf!r} != {self._cached_bound_method_trace!r}",

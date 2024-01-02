@@ -481,6 +481,7 @@ class ProcessTest(CoverageTest):
         assert "Hello\n" in out
         assert "warning" not in out
 
+    @pytest.mark.skipif(env.METACOV, reason="Can't test tracers changing during metacoverage")
     def test_warning_trace_function_changed(self) -> None:
         self.make_file("settrace.py", """\
             import sys

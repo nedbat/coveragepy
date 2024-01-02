@@ -141,7 +141,7 @@ class RecursionTest(CoverageTest):
         assert expected_missing == missing
 
         # Get a warning about the stackoverflow effect on the tracing function.
-        if pytrace:                                 # pragma: no metacov
+        if pytrace and not env.METACOV:                     # pragma: no metacov
             assert len(cov._warnings) == 1
             assert re.fullmatch(
                 r"Trace function changed, data is likely wrong: None != " +
