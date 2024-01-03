@@ -8,9 +8,7 @@ on:
   # on pull requests yet.
   push:
     branches:
-      # sys.monitoring somehow broke metacoverage, so turn it off while we fix
-      # it and get a sys.monitoring out the door.
-      #- master
+      - master
       - "**/*metacov*"
   workflow_dispatch:
 
