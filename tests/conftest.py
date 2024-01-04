@@ -30,7 +30,10 @@ pytest.register_assert_rewrite("tests.helpers")
 # Pytest can take additional options:
 # $set_env.py: PYTEST_ADDOPTS - Extra arguments to pytest.
 
-pytest_plugins = "tests.balance_xdist_plugin"
+pytest_plugins = [
+    "tests.balance_xdist_plugin",
+    "tests.select_plugin",
+]
 
 
 @pytest.fixture(autouse=True)
