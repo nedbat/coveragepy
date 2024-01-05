@@ -227,7 +227,7 @@ class SysMonitor(TracerCore):
         assert sys_monitoring is not None
         sys_monitoring.use_tool_id(self.myid, "coverage.py")
         register = functools.partial(sys_monitoring.register_callback, self.myid)
-        events = sys.monitoring.events
+        events = sys_monitoring.events
         if self.trace_arcs:
             sys_monitoring.set_events(
                 self.myid,

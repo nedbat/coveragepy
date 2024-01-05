@@ -422,6 +422,7 @@ class ByteParser:
         line numbers.  Produces a sequence: l0, l1, ...
         """
         if hasattr(self.code, "co_lines"):
+            # PYVERSIONS: new in 3.10
             for _, _, line in self.code.co_lines():
                 if line:
                     yield line
