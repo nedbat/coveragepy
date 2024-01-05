@@ -341,6 +341,12 @@ class ProjectMashumaro(ProjectToTest):
         return duration
 
 
+class ProjectMashumaroBranch(ProjectMashumaro):
+    def __init__(self, more_pytest_args=""):
+        super().__init__(more_pytest_args="--cov-branch " + more_pytest_args)
+        self.slug = "mashbranch"
+
+
 class ProjectOperator(ProjectToTest):
     git_url = "https://github.com/nedbat/operator"
 
@@ -629,7 +635,7 @@ class Experiment:
                     data = run_data[result_key]
                     med = statistics.median(data)
                     self.result_data[result_key] = med
-                    stdev = statistics.stdev(data)
+                    stdev = statistics.stdev(data) if len(data) > 1 else 0.0
                     summary = (
                         f"Median for {proj.slug}, {pyver.slug}, {cov_ver.slug}: "
                         + f"{med:.3f}s, "

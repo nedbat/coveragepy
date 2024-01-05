@@ -76,7 +76,7 @@ if 0:
         ],
     )
 
-if 1:
+if 0:
     # Compare 3.12 coverage vs no coverage
     run_experiment(
         py_versions=[
@@ -94,6 +94,33 @@ if 1:
         projects=[
             ProjectMashumaro(),     # small: "-k ck"
             ProjectOperator(),      # small: "-k irk"
+        ],
+        rows=["pyver", "proj"],
+        column="cov",
+        ratios=[
+            (f"732%", "732", "nocov"),
+            (f"sysmon%", "sysmon", "nocov"),
+        ],
+    )
+
+if 1:
+    # Compare 3.12 coverage vs no coverage
+    run_experiment(
+        py_versions=[
+            Python(3, 12),
+        ],
+        cov_versions=[
+            NoCoverage("nocov"),
+            Coverage("732", "coverage==7.3.2"),
+            CoverageSource(
+                slug="sysmon",
+                directory="/Users/nbatchelder/coverage/trunk",
+                env_vars={"COVERAGE_CORE": "sysmon"},
+            ),
+        ],
+        projects=[
+            ProjectMashumaro(),     # small: "-k ck"
+            ProjectMashumaroBranch(),     # small: "-k ck"
         ],
         rows=["pyver", "proj"],
         column="cov",
