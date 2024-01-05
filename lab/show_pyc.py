@@ -23,17 +23,15 @@ def show_pyc_file(fname):
     magic = f.read(4)
     print("magic %s" % (binascii.hexlify(magic)))
     read_date_and_size = True
-    if sys.version_info >= (3, 7):
-        # 3.7 added a flags word
-        flags = struct.unpack('<L', f.read(4))[0]
-        hash_based = bool(flags & 0x01)
-        check_source = bool(flags & 0x02)
-        print(f"flags {flags:#08x}")
-        if hash_based:
-            source_hash = f.read(8)
-            read_date_and_size = False
-            print(f"hash {binascii.hexlify(source_hash)}")
-            print(f"check_source {check_source}")
+    flags = struct.unpack('<L', f.read(4))[0]
+    hash_based = bool(flags & 0x01)
+    check_source = bool(flags & 0x02)
+    print(f"flags {flags:#08x}")
+    if hash_based:
+        source_hash = f.read(8)
+        read_date_and_size = False
+        print(f"hash {binascii.hexlify(source_hash)}")
+        print(f"check_source {check_source}")
     if read_date_and_size:
         moddate = f.read(4)
         modtime = time.asctime(time.localtime(struct.unpack('<L', moddate)[0]))
@@ -147,7 +145,7 @@ def lnotab_interpreted(code):
                 yield (byte_num, line_num)
                 last_line_num = line_num
             byte_num += byte_incr
-        if sys.version_info >= (3, 6) and line_incr >= 0x80:
+        if line_incr >= 0x80:
             line_incr -= 0x100
         line_num += line_incr
     if line_num != last_line_num:
