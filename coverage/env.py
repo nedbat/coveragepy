@@ -60,13 +60,12 @@ class PYBEHAVIOR:
         optimize_if_not_debug = 2
 
     # 3.7 changed how functions with only docstrings are numbered.
-    docstring_only_function = (not PYPY) and ((3, 7, 0, "beta", 5) <= PYVERSION <= (3, 10))
+    docstring_only_function = (not PYPY) and (PYVERSION <= (3, 10))
 
     # When a break/continue/return statement in a try block jumps to a finally
-    # block, does the finally block do the break/continue/return (pre-3.8), or
-    # does the finally jump back to the break/continue/return (3.8) to do the
-    # work?
-    finally_jumps_back = ((3, 8) <= PYVERSION < (3, 10))
+    # block, does the finally jump back to the break/continue/return (pre-3.10)
+    # to do the work?
+    finally_jumps_back = (PYVERSION < (3, 10))
 
     # CPython 3.11 now jumps to the decorator line again while executing
     # the decorator.
