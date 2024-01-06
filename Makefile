@@ -15,7 +15,7 @@ help:					## Show this help.
 	@echo Available targets:
 	@awk -F ':.*##' '/^[^: ]+:.*##/{printf "  \033[1m%-20s\033[m %s\n",$$1,$$2} /^##@/{printf "\n%s\n",substr($$0,5)}' $(MAKEFILE_LIST)
 
-clean_platform:
+_clean_platform:
 	@rm -f *.so */*.so
 	@rm -f *.pyd */*.pyd
 	@rm -rf __pycache__ */__pycache__ */*/__pycache__ */*/*/__pycache__ */*/*/*/__pycache__ */*/*/*/*/__pycache__
@@ -23,7 +23,10 @@ clean_platform:
 	@rm -f *.pyo */*.pyo */*/*.pyo */*/*/*.pyo */*/*/*/*.pyo */*/*/*/*/*.pyo
 	@rm -f *$$py.class */*$$py.class */*/*$$py.class */*/*/*$$py.class */*/*/*/*$$py.class */*/*/*/*/*$$py.class
 
-clean: clean_platform			## Remove artifacts of test execution, installation, etc.
+debug_clean:				## Delete various debugging artifacts.
+	@rm -rf /tmp/dis $$COVERAGE_DEBUG_FILE
+
+clean: debug_clean _clean_platform	## Remove artifacts of test execution, installation, etc.
 	@echo "Cleaning..."
 	@-pip uninstall -yq coverage
 	@mkdir -p build	# so the chmod won't fail if build doesn't exist

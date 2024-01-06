@@ -600,11 +600,11 @@ def read_coverage_config(
             if specified_file:
                 raise ConfigError(f"Couldn't read {fname!r} as a config file")
 
-    # $set_env.py: COVERAGE_DEBUG - Options for --debug.
     # 3) from environment variables:
     env_data_file = os.getenv("COVERAGE_FILE")
     if env_data_file:
         config.data_file = env_data_file
+    # $set_env.py: COVERAGE_DEBUG - Debug options: https://coverage.rtfd.io/cmd.html#debug
     debugs = os.getenv("COVERAGE_DEBUG")
     if debugs:
         config.debug.extend(d.strip() for d in debugs.split(","))

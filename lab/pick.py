@@ -17,15 +17,15 @@ Use like this::
 
 as in::
 
-    te py311 -- -vvv -n 0 --select-cmd="python lab/pick.py sample 10 < tests.txt"
+    te py311 -- -vvv -n 0 --cache-clear --select-cmd="python lab/pick.py sample 10 < tests.txt"
 
 or::
 
-    for n in 1 1 2 2 3 3; do te py311 -- -vvv -n 0 --select-cmd="python lab/pick.py sample 3 $n < tests.txt"; done
+    for n in 1 1 2 2 3 3; do te py311 -- -vvv -n 0 --cache-clear --select-cmd="python lab/pick.py sample 3 $n < tests.txt"; done
 
 or::
 
-    for n in $(seq 1 10); do echo seed=$n; COVERAGE_COVERAGE=yes te py311 -- -n 0 --select-cmd="python lab/pick.py sample 20 $n < tests.txt"; done
+    for n in $(seq 1 10); do echo seed=$n; COVERAGE_COVERAGE=yes te py311 -- -n 0 --cache-clear --select-cmd="python lab/pick.py sample 20 $n < tests.txt"; done
 
 """
 
