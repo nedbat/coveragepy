@@ -21,6 +21,7 @@ from coverage.types import (
 )
 
 # We need the YIELD_VALUE opcode below, in a comparison-friendly form.
+# PYVERSIONS: RESUME is new in Python3.11
 RESUME = dis.opmap.get("RESUME")
 RETURN_VALUE = dis.opmap["RETURN_VALUE"]
 if RESUME is None:
@@ -137,7 +138,8 @@ class PyTracer(TracerCore):
         if THIS_FILE in frame.f_code.co_filename:
             return None
 
-        #self.log(":", frame.f_code.co_filename, frame.f_lineno, frame.f_code.co_name + "()", event)
+        # f = frame; code = f.f_code
+        # self.log(":", f"{code.co_filename} {f.f_lineno} {code.co_name}()", event)
 
         if (self.stopped and sys.gettrace() == self._cached_bound_method_trace):    # pylint: disable=comparison-with-callable
             # The PyTrace.stop() method has been called, possibly by another
@@ -255,8 +257,10 @@ class PyTracer(TracerCore):
                         # A return from the end of a code object is a real return.
                         real_return = True
                     else:
-                        # it's a real return.
-                        real_return = (code[lasti + 2] != RESUME)
+                        # It is a real return if we aren't going to resume next.
+                        if env.PYBEHAVIOR.lasti_is_yield:
+                            lasti += 2
+                        real_return = (code[lasti] != RESUME)
                 else:
                     if code[lasti] == RETURN_VALUE:
                         real_return = True

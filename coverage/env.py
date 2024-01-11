@@ -117,6 +117,11 @@ class PYBEHAVIOR:
     # PEP669 Low Impact Monitoring: https://peps.python.org/pep-0669/
     pep669 = bool(getattr(sys, "monitoring", None))
 
+    # Where does frame.f_lasti point when yielding from a generator?
+    # It used to point at the YIELD, now it points at the RESUME.
+    # https://github.com/python/cpython/issues/113728
+    lasti_is_yield = (PYVERSION < (3, 13))
+
 
 # Coverage.py specifics, about testing scenarios. See tests/testenv.py also.
 
