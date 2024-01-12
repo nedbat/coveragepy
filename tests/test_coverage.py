@@ -11,7 +11,6 @@ import coverage
 from coverage import env
 from coverage.exceptions import NoDataError
 
-from tests import testenv
 from tests.coveragetest import CoverageTest
 
 
@@ -1407,7 +1406,6 @@ class ExcludeTest(CoverageTest):
             arcz_missing=arcz_missing,
         )
 
-    @pytest.mark.xfail(testenv.SYS_MON, reason="TODO: fix this for sys.monitoring")
     def test_excluded_comprehension_branches(self) -> None:
         # https://github.com/nedbat/coveragepy/issues/1271
         self.check_coverage("""\

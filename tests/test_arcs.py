@@ -7,7 +7,6 @@ from __future__ import annotations
 
 import pytest
 
-from tests import testenv
 from tests.coveragetest import CoverageTest
 from tests.helpers import assert_count_equal, xfail_pypy38
 
@@ -1308,7 +1307,6 @@ class YieldTest(CoverageTest):
             arcz=".1 19 9.  .2 23 34 45 56 63 37 7.",
         )
 
-    @pytest.mark.xfail(testenv.SYS_MON, reason="TODO: fix this for sys.monitoring")
     def test_abandoned_yield(self) -> None:
         # https://github.com/nedbat/coveragepy/issues/440
         self.check_coverage("""\
@@ -1651,7 +1649,6 @@ class MiscArcTest(CoverageTest):
         self.check_coverage(code, arcs=[(-1, 1), (1, 2*n+4), (2*n+4, -1)])
         assert self.stdout() == f"{n}\n"
 
-    @pytest.mark.xfail(testenv.SYS_MON, reason="TODO: fix this for sys.monitoring")
     def test_partial_generators(self) -> None:
         # https://github.com/nedbat/coveragepy/issues/475
         # Line 2 is executed completely.

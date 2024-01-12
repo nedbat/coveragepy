@@ -6,7 +6,6 @@
 from __future__ import annotations
 
 import dataclasses
-import dis
 import functools
 import inspect
 import os
@@ -168,12 +167,10 @@ class CodeInfo:
 def bytes_to_lines(code: CodeType) -> Dict[int, int]:
     """Make a dict mapping byte code offsets to line numbers."""
     b2l = {}
-    cur_line = 0
-    for inst in dis.get_instructions(code):
-        if inst.starts_line is not None:
-            cur_line = inst.starts_line
-        b2l[inst.offset] = cur_line
-    log(f"  --> bytes_to_lines: {b2l!r}")
+    for bstart, bend, lineno in code.co_lines():
+        if lineno is not None:
+            for boffset in range(bstart, bend, 2):
+                b2l[boffset] = lineno
     return b2l
 
 
@@ -379,26 +376,30 @@ class SysMonitor(TracerCore):
             last_line = self.last_lines.get(frame)
             if last_line is not None:
                 arc = (last_line, -code.co_firstlineno)
+                # log(f"adding {arc=}")
                 cast(Set[TArc], code_info.file_data).add(arc)
 
         # Leaving this function, no need for the frame any more.
         self.last_lines.pop(frame, None)
 
-    @panopticon("code", "@", None)
+    @panopticon("code", "@", "exc")
     def sysmon_py_unwind_arcs(
         self, code: CodeType, instruction_offset: int, exception: BaseException
     ) -> MonitorReturn:
         """Handle sys.monitoring.events.PY_UNWIND events for branch coverage."""
         frame = self.callers_frame()
+        # Leaving this function.
+        last_line = self.last_lines.pop(frame, None)
+        if isinstance(exception, GeneratorExit):
+            # We don't want to count generator exits as arcs.
+            return
         code_info = self.code_infos.get(id(code))
         if code_info is not None and code_info.file_data is not None:
-            last_line = self.last_lines.get(frame)
             if last_line is not None:
                 arc = (last_line, -code.co_firstlineno)
+                # log(f"adding {arc=}")
                 cast(Set[TArc], code_info.file_data).add(arc)
 
-        # Leaving this function.
-        self.last_lines.pop(frame, None)
 
     @panopticon("code", "line")
     def sysmon_line_lines(self, code: CodeType, line_number: int) -> MonitorReturn:
