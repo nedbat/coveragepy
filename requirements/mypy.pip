@@ -4,7 +4,7 @@
 #
 #    make upgrade
 #
-attrs==23.1.0
+attrs==23.2.0
     # via hypothesis
 colorama==0.4.6
     # via -r requirements/pytest.in
@@ -16,7 +16,7 @@ execnet==2.0.2
     # via pytest-xdist
 flaky==3.7.0
     # via -r requirements/pytest.in
-hypothesis==6.92.1
+hypothesis==6.93.0
     # via -r requirements/pytest.in
 iniconfig==2.0.0
     # via pytest
@@ -28,7 +28,7 @@ packaging==23.2
     # via pytest
 pluggy==1.3.0
     # via pytest
-pytest==7.4.3
+pytest==7.4.4
     # via
     #   -r requirements/pytest.in
     #   pytest-xdist

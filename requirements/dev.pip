@@ -6,7 +6,7 @@
 #
 astroid==3.0.2
     # via pylint
-attrs==23.1.0
+attrs==23.2.0
     # via hypothesis
 build==1.0.3
     # via check-manifest
@@ -47,7 +47,7 @@ flaky==3.7.0
     # via -r requirements/pytest.in
 greenlet==3.0.3
     # via -r requirements/dev.in
-hypothesis==6.92.1
+hypothesis==6.93.0
     # via -r requirements/pytest.in
 idna==3.6
     # via requests
@@ -68,7 +68,7 @@ jedi==0.19.1
     # via pudb
 keyring==24.3.0
     # via twine
-libsass==0.22.0
+libsass==0.23.0
     # via -r requirements/dev.in
 markdown-it-py==3.0.0
     # via rich
@@ -76,7 +76,7 @@ mccabe==0.7.0
     # via pylint
 mdurl==0.1.2
     # via markdown-it-py
-more-itertools==10.1.0
+more-itertools==10.2.0
     # via jaraco-classes
 nh3==0.2.15
     # via readme-renderer
@@ -113,7 +113,7 @@ pyproject-api==1.6.1
     # via tox
 pyproject-hooks==1.0.0
     # via build
-pytest==7.4.3
+pytest==7.4.4
     # via
     #   -r requirements/pytest.in
     #   pytest-xdist
@@ -136,6 +136,8 @@ rich==13.7.0
     # via twine
 sortedcontainers==2.4.0
     # via hypothesis
+tabulate==0.9.0
+    # via -r requirements/dev.in
 tomli==2.0.1
     # via
     #   build
@@ -147,7 +149,7 @@ tomli==2.0.1
     #   tox
 tomlkit==0.12.3
     # via pylint
-tox==4.11.4
+tox==4.12.0
     # via
     #   -r requirements/tox.in
     #   tox-gh
@@ -164,7 +166,7 @@ urllib3==2.1.0
     # via
     #   requests
     #   twine
-urwid==2.3.4
+urwid==2.4.2
     # via
     #   pudb
     #   urwid-readline
