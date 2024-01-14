@@ -45,23 +45,6 @@ def set_warnings() -> None:
     # Warnings to suppress:
     # How come these warnings are successfully suppressed here, but not in pyproject.toml??
 
-    warnings.filterwarnings(
-        "ignore",
-        category=DeprecationWarning,
-        message=r".*imp module is deprecated in favour of importlib",
-    )
-
-    warnings.filterwarnings(
-        "ignore",
-        category=DeprecationWarning,
-        message=r"module 'sre_constants' is deprecated",
-    )
-
-    warnings.filterwarnings(
-        "ignore",
-        category=pytest.PytestRemovedIn8Warning,
-    )
-
     if env.PYPY:
         # pypy3 warns about unclosed files a lot.
         warnings.filterwarnings("ignore", r".*unclosed file", category=ResourceWarning)
