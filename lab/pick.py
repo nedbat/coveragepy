@@ -2,30 +2,43 @@
 # For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
 
 """
-Pick lines from a file.  Blank or commented lines are ignored.
+Pick lines from the standard input.  Blank or commented lines are ignored.
 
 Used to subset lists of tests to run.  Use with the --select-cmd pytest plugin
 option.
 
+The first command line argument is a mode for selection. Other arguments depend
+on the mode.  Only one mode is currently implemented: sample.
+
+Modes:
+
+    - ``sample``: randomly sample N lines from the input.
+
+        - the first argument is N, the number of lines you want.
+
+        - the second argument is optional: a seed for the randomizer.
+          Using the same seed will produce the same output.
+
+Examples:
+
 Get a list of test nodes::
 
-    .tox/py311/bin/pytest --collect-only | grep :: > tests.txt
+    pytest --collect-only | grep :: > tests.txt
 
 Use like this::
 
-    pytest --select-cmd="python lab/pick.py sample 10 < tests.txt"
+    pytest --cache-clear --select-cmd="python pick.py sample 10 < tests.txt"
 
-as in::
+For coverage.py specifically::
 
-    te py311 -- -vvv -n 0 --cache-clear --select-cmd="python lab/pick.py sample 10 < tests.txt"
-
-or::
-
-    for n in 1 1 2 2 3 3; do te py311 -- -vvv -n 0 --cache-clear --select-cmd="python lab/pick.py sample 3 $n < tests.txt"; done
+    tox -q -e py311 -- -n 0 --cache-clear --select-cmd="python lab/pick.py sample 10 < tests.txt"
 
 or::
 
-    for n in $(seq 1 10); do echo seed=$n; COVERAGE_COVERAGE=yes te py311 -- -n 0 --cache-clear --select-cmd="python lab/pick.py sample 20 $n < tests.txt"; done
+    for n in $(seq 1 100); do \
+        echo seed=$n; \
+        tox -q -e py311 -- -n 0 --cache-clear --select-cmd="python lab/pick.py sample 3 $n < tests.txt"; \
+    done
 
 """
 
@@ -45,16 +58,11 @@ for line in sys.stdin:
     lines.append(line)
 
 mode = next_arg()
-if mode == "head":
-    number = int(next_arg())
-    lines = lines[:number]
-elif mode == "sample":
+if mode == "sample":
     number = int(next_arg())
     if args:
         random.seed(next_arg())
     lines = random.sample(lines, number)
-elif mode == "all":
-    pass
 else:
     raise ValueError(f"Don't know {mode=}")
 

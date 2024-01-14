@@ -3,6 +3,9 @@
 
 """
 A pytest plugin to select tests by running an external command.
+
+See lab/pick.py for how to use pick.py to subset test suites.
+
 """
 
 import subprocess
@@ -20,9 +23,7 @@ def pytest_addoption(parser):
     )
 
 
-def pytest_collection_modifyitems(
-    session, config, items
-):  # pylint: disable=unused-argument
+def pytest_collection_modifyitems(config, items):
     """Run an external command to get a list of tests to run."""
     select_cmd = config.getoption("--select-cmd")
     if select_cmd:
