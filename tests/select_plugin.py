@@ -6,6 +6,8 @@ A pytest plugin to select tests by running an external command.
 
 See lab/pick.py for how to use pick.py to subset test suites.
 
+More about this: https://nedbatchelder.com/blog/202401/randomly_subsetting_test_suites.html
+
 """
 
 import subprocess

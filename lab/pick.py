@@ -40,6 +40,8 @@ or::
         tox -q -e py311 -- -n 0 --cache-clear --select-cmd="python lab/pick.py sample 3 $n < tests.txt"; \
     done
 
+More about this: https://nedbatchelder.com/blog/202401/randomly_subsetting_test_suites.html
+
 """
 
 import random
