@@ -114,8 +114,11 @@ def make_file(
             print(f"# {os.path.abspath(filename)}", file=fdis)
             cur_test = os.getenv("PYTEST_CURRENT_TEST", "unknown")
             print(f"# PYTEST_CURRENT_TEST = {cur_test}", file=fdis)
+            kwargs = {}
+            if env.PYVERSION >= (3, 13):
+                kwargs["show_offsets"] = True
             try:
-                dis.dis(text, file=fdis)
+                dis.dis(text, file=fdis, **kwargs)
             except Exception as exc:
                 # Some tests make .py files that aren't Python, so dis will
                 # fail, which is expected.
