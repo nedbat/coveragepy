@@ -120,7 +120,7 @@ filterwarnings = [
     #"ignore:the imp module is deprecated in favour of importlib:DeprecationWarning",
 
     ## Pytest warns if it can't collect things that seem to be tests. This should be an error.
-    #"error::pytest.PytestCollectionWarning",
+    "error::pytest.PytestCollectionWarning",
 ]
 
 # xfail tests that pass should fail the test suite
