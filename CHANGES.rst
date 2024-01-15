@@ -20,7 +20,10 @@ development at the same time, such as 4.5.x and 5.0.
 Unreleased
 ----------
 
-Nothing yet.
+- Fix: the JSON report now includes an explicit format version number, closing
+  `issue 1732`_.
+
+.. _issue 1732: https://github.com/nedbat/coveragepy/issues/1732
 
 
 .. scriv-start-here

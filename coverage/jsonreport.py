@@ -21,6 +21,10 @@ if TYPE_CHECKING:
     from coverage.data import CoverageData
 
 
+# "Version 1" had no format number at all.
+# 2: add the meta.format field.
+FORMAT_VERSION = 2
+
 class JsonReporter:
     """A reporter for writing JSON coverage results."""
 
@@ -44,6 +48,7 @@ class JsonReporter:
         coverage_data = self.coverage.get_data()
         coverage_data.set_query_contexts(self.config.report_contexts)
         self.report_data["meta"] = {
+            "format": FORMAT_VERSION,
             "version": __version__,
             "timestamp": datetime.datetime.now().isoformat(),
             "branch_coverage": coverage_data.has_arcs(),

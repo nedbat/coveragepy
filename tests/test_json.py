@@ -13,6 +13,7 @@ from typing import Any, Dict
 
 import coverage
 from coverage import Coverage
+from coverage.jsonreport import FORMAT_VERSION
 
 from tests.coveragetest import UsingModulesMixin, CoverageTest
 
@@ -26,7 +27,7 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
         expected_result: Dict[str, Any],
     ) -> None:
         """
-        Helper for tests that handles the common ceremony so the tests can be clearly show the
+        Helper that handles common ceremonies so tests can clearly show the
         consequences of setting various arguments.
         """
         self.make_file("a.py", """\
@@ -49,13 +50,16 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
             datetime.strptime(parsed_result['meta']['timestamp'], "%Y-%m-%dT%H:%M:%S.%f")
         )
         del (parsed_result['meta']['timestamp'])
+        expected_result["meta"].update({
+            "format": FORMAT_VERSION,
+            "version": coverage.__version__,
+        })
         assert parsed_result == expected_result
 
     def test_branch_coverage(self) -> None:
         cov = coverage.Coverage(branch=True)
         expected_result = {
             'meta': {
-                "version": coverage.__version__,
                 "branch_coverage": True,
                 "show_contexts": False,
             },
@@ -107,7 +111,6 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
         cov = coverage.Coverage()
         expected_result = {
             'meta': {
-                "version": coverage.__version__,
                 "branch_coverage": False,
                 "show_contexts": False,
             },
@@ -152,7 +155,6 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
         cov = coverage.Coverage(context="cool_test", config_file="config")
         expected_result = {
             'meta': {
-                "version": coverage.__version__,
                 "branch_coverage": False,
                 "show_contexts": True,
             },
