@@ -506,6 +506,11 @@ class IncrementalChecker:
 
     STATUS_FILE = "status.json"
     STATUS_FORMAT = 2
+    NOTE = (
+        "This file is an internal implementation detail to speed up HTML report"
+        + " generation. Its format can change at any time. You might be looking"
+        + " for the JSON report: https://coverage.rtfd.io/cmd.html#cmd-json"
+    )
 
     #  The data looks like:
     #
@@ -578,6 +583,7 @@ class IncrementalChecker:
             files[filename] = fileinfo
 
         status = {
+            "note": self.NOTE,
             "format": self.STATUS_FORMAT,
             "version": coverage.__version__,
             "globals": self.globals,
