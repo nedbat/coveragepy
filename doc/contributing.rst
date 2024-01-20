@@ -36,6 +36,8 @@ you frustration.
 Getting the code
 ----------------
 
+.. PYVERSIONS (mention of lowest version in the "create virtualenv" step).
+
 The coverage.py code is hosted on a GitHub repository at
 https://github.com/nedbat/coveragepy.  To get a working environment, follow
 these steps:
@@ -47,6 +49,7 @@ these steps:
 
 #.  (Optional) Create a virtualenv to work in, and activate it.  There
     are a number of ways to do this.  Use the method you are comfortable with.
+    Ideally, use Python3.8 (the lowest version coverage.py supports).
 
 #.  Clone the repository::
 
@@ -55,7 +58,7 @@ these steps:
 
 #.  Install the requirements::
 
-    $ python3 -m pip install -r requirements/dev.in
+    $ python3 -m pip install -r requirements/dev.pip
 
     Note: You may need to upgrade pip to install the requirements.
 
