@@ -25,7 +25,7 @@ jobs:
       - name: 'Checkout Repository'
         uses: actions/checkout@v4
       - name: 'Dependency Review'
-        uses: actions/dependency-review-action@v3
+        uses: actions/dependency-review-action@v4
         with:
           base-ref: ${{ github.event.pull_request.base.sha || 'master' }}
           head-ref: ${{ github.event.pull_request.head.sha || github.ref }}
