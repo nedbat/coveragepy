@@ -80,6 +80,13 @@ jobs:
           #cache: pip
           #cache-dependency-path: 'requirements/*.pip'
 
+      - name: "Show environment"
+        run: |
+          set -xe
+          python -VV
+          python -m site
+          env
+
       - name: "Install dependencies"
         run: |
           echo matrix id: $MATRIX_ID
@@ -132,11 +139,16 @@ jobs:
           #cache: pip
           #cache-dependency-path: 'requirements/*.pip'
 
-      - name: "Install dependencies"
+      - name: "Show environment"
         run: |
           set -xe
           python -VV
           python -m site
+          env
+
+      - name: "Install dependencies"
+        run: |
+          set -xe
           python -m pip install -e .
           python igor.py zip_mods
 
@@ -171,10 +183,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: "Show environment"
+        run: |
+          set -xe
+          env
+
       - name: "Compute info for later steps"
         id: info
         run: |
           set -xe
+          env
           export SHA10=$(echo ${{ github.sha }} | cut -c 1-10)
           export SLUG=$(date +'%Y%m%d')_$SHA10
           export REPORT_DIR=reports/$SLUG/htmlcov

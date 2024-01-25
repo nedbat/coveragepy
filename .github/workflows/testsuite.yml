@@ -79,14 +79,19 @@ jobs:
           #cache: pip
           #cache-dependency-path: 'requirements/*.pip'
 
-      - name: "Install dependencies"
+      - name: "Show environment"
         run: |
           set -xe
           python -VV
           python -m site
-          python -m pip install -r requirements/tox.pip
           # For extreme debugging:
           # python -c "import urllib.request as r; exec(r.urlopen('https://bit.ly/pydoctor').read())"
+          env
+
+      - name: "Install dependencies"
+        run: |
+          set -xe
+          python -m pip install -r requirements/tox.pip
 
       - name: "Run tox for ${{ matrix.python-version }}"
         run: |

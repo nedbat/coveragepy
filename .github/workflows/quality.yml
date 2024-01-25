@@ -92,11 +92,16 @@ jobs:
           cache: pip
           cache-dependency-path: 'requirements/*.pip'
 
-      - name: "Install dependencies"
+      - name: "Show environment"
         run: |
           set -xe
           python -VV
           python -m site
+          env
+
+      - name: "Install dependencies"
+        run: |
+          set -xe
           python -m pip install -r requirements/tox.pip
 
       - name: "Tox doc"
