@@ -23,6 +23,7 @@ from coverage.execfile import run_python_file, run_python_module
 from coverage.files import python_reported_file
 
 from tests.coveragetest import CoverageTest, TESTS_DIR, UsingModulesMixin
+from tests.helpers import without_color
 
 TRY_EXECFILE = os.path.join(TESTS_DIR, "modules/process_test/try_execfile.py")
 
@@ -188,7 +189,7 @@ class RunFileTest(CoverageTest):
             run_python_file(["excepthook_throw.py"])
         # The _ExceptionDuringRun exception has the RuntimeError as its argument.
         assert exc_info.value.args[1].args[0] == "Error Outside"
-        stderr = self.stderr()
+        stderr = without_color(self.stderr())
         assert "in excepthook\n" in stderr
         assert "Error in sys.excepthook:\n" in stderr
         assert "RuntimeError: Error Inside" in stderr
