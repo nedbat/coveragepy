@@ -50,12 +50,13 @@ jobs:
           - "3.10"
           - "3.11"
           - "3.12"
+          - "3.13"
           - "pypy-3.8"
           - "pypy-3.9"
           - "pypy-3.10"
         exclude:
           # Windows pypy 3.9 and 3.10 get stuck with PyPy 7.3.15.  I hope to
-          # unstick them, but I don't want that to block all other progress, so 
+          # unstick them, but I don't want that to block all other progress, so
           # skip them for now.
           - os: windows
             python-version: "pypy-3.9"
