@@ -24,7 +24,7 @@ from tests.coveragetest import CoverageTest
 from tests.helpers import (
     CheckUniqueFilenames, FailingProxy,
     arcs_to_arcz_repr, arcz_to_arcs, assert_count_equal, assert_coverage_warnings,
-    re_lines, re_lines_text, re_line, without_color,
+    re_lines, re_lines_text, re_line,
 )
 
 
@@ -472,15 +472,3 @@ def test_failing_proxy() -> None:
         proxy.add(3, 4)
     # then add starts working
     assert proxy.add(5, 6) == 11
-
-
-@pytest.mark.parametrize("text, result", [
-    ("", ""),
-    ("Nothing to see here", "Nothing to see here"),
-    ("Oh no! \x1b[1;35mRuntimeError\x1b[0m. Fix it.", "Oh no! RuntimeError. Fix it."),
-    ("Fancy: \x1b[48;5;95mBkgd\x1b[38;2;100;200;25mRGB\x1b[0m", "Fancy: BkgdRGB"),
-    # Other escape sequences are unaffected.
-    ("X\x1b[2J\x1b[1mBold\x1b[22m\x1b[=3hZ", "X\x1b[2JBold\x1b[=3hZ"),
-])
-def test_without_color(text: str, result: str) -> None:
-    assert without_color(text) == result
