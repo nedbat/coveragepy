@@ -28,7 +28,7 @@ line_number_sets = sets(line_numbers)
 # When coverage-testing ourselves, hypothesis complains about a test being
 # flaky because the first run exceeds the deadline (and fails), and the second
 # run succeeds.  Disable the deadline if we are coverage-testing.
-default_settings = settings()
+default_settings = settings(deadline=400)   # milliseconds
 if env.METACOV:
     default_settings = settings(default_settings, deadline=None)
 
