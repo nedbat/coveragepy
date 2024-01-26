@@ -19,6 +19,7 @@ env:
   PIP_DISABLE_PIP_VERSION_CHECK: 1
   COVERAGE_IGOR_VERBOSE: 1
   FORCE_COLOR: 1    # Get colored pytest output
+  PYTHON_COLORS: 0  # But not colored CPython output
 
 permissions:
   contents: read
