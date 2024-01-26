@@ -183,8 +183,8 @@ configuration file for all options.
 
 .. _multiprocessing: https://docs.python.org/3/library/multiprocessing.html
 .. _greenlet: https://greenlet.readthedocs.io/
-.. _gevent: http://www.gevent.org/
-.. _eventlet: http://eventlet.net/
+.. _gevent: https://www.gevent.org/
+.. _eventlet: https://eventlet.readthedocs.io/
 
 If you are measuring coverage in a multi-process program, or across a number of
 machines, you'll want the ``--parallel-mode`` switch to keep the data separate

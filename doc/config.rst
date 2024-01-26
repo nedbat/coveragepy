@@ -304,8 +304,8 @@ produce very wrong results.
 
 .. _multiprocessing: https://docs.python.org/3/library/multiprocessing.html
 .. _greenlet: https://greenlet.readthedocs.io/
-.. _gevent: http://www.gevent.org/
-.. _eventlet: http://eventlet.net/
+.. _gevent: https://www.gevent.org/
+.. _eventlet: https://eventlet.readthedocs.io/
 
 See :ref:`subprocess` for details of multi-process measurement.
 
