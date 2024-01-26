@@ -55,10 +55,13 @@ jobs:
           - "pypy-3.9"
           - "pypy-3.10"
         exclude:
-          # Mac PyPy always takes the longest, and doesn't add anything. Skip
-          # 3.8, but use 3.9/3.10 while Windows is still borked.
+          # Mac PyPy always takes the longest, and doesn't add anything.
           - os: macos
             python-version: "pypy-3.8"
+          - os: macos
+            python-version: "pypy-3.9"
+          - os: macos
+            python-version: "pypy-3.10"
           # Windows pypy 3.9 and 3.10 get stuck with PyPy 7.3.15.  I hope to
           # unstick them, but I don't want that to block all other progress, so
           # skip them for now.
