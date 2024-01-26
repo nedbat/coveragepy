@@ -223,7 +223,7 @@ check_kits:				## Check that dist/* are well-formed.
 	@echo $$(ls -1 dist | wc -l) distribution kits
 
 tag:					## Make a git tag with the version number.
-	git tag -a -m "Version $$(python setup.py --version)" $$(python setup.py --version)
+	git tag -s -m "Version $$(python setup.py --version)" $$(python setup.py --version)
 	git push --follow-tags
 
 bump_version:				## Edit sources to bump the version after a release.
