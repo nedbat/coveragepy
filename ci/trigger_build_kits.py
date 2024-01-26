@@ -5,7 +5,7 @@
 
 import sys
 
-import requests
+from session import get_session
 
 repo_owner = sys.argv[1]
 
@@ -18,9 +18,12 @@ repo_owner = sys.argv[1]
 #         - build-kits
 #
 
-resp = requests.post(
+resp = get_session().post(
     f"https://api.github.com/repos/{repo_owner}/dispatches",
     json={"event_type": "build-kits"},
 )
-print(f"Status: {resp.status_code}")
-print(resp.text)
+if resp.status_code // 100 == 2:
+    print("Success")
+else:
+    print(f"Status: {resp.status_code}")
+    print(resp.text)

@@ -13,12 +13,11 @@ import sys
 import time
 import zipfile
 
-import requests
-
+from session import get_session
 
 def download_url(url, filename):
     """Download a file from `url` to `filename`."""
-    response = requests.get(url, stream=True)
+    response = get_session().get(url, stream=True)
     if response.status_code == 200:
         with open(filename, "wb") as f:
             for chunk in response.iter_content(16*1024):
@@ -60,7 +59,7 @@ def all_items(url, key):
     """
     url += ("&" if "?" in url else "?") + "per_page=100"
     while url:
-        response = requests.get(url)
+        response = get_session().get(url)
         response.raise_for_status()
         data = response.json()
         if isinstance(data, dict) and (msg := data.get("message")):

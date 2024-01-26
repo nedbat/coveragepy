@@ -7,7 +7,7 @@ import json
 import re
 import sys
 
-import requests
+from session import get_session
 
 with open("tmp/relnotes.json") as frn:
     relnotes = json.load(frn)
@@ -27,14 +27,14 @@ for m in re.finditer(fr"https://github.com/{repo_owner}/(issues|pull)/(\d+)", la
 
     if kind == "issues":
         url = f"https://api.github.com/repos/{repo_owner}/issues/{number}"
-        issue_data = requests.get(url).json()
+        issue_data = get_session().get(url).json()
         if issue_data["state"] == "closed":
             do_comment = True
         else:
             print(f"Still open, comment manually: {m[0]}")
     else:
         url = f"https://api.github.com/repos/{repo_owner}/pulls/{number}"
-        pull_data = requests.get(url).json()
+        pull_data = get_session().get(url).json()
         if pull_data["state"] == "closed":
             if pull_data["merged"]:
                 do_comment = True
@@ -46,5 +46,5 @@ for m in re.finditer(fr"https://github.com/{repo_owner}/(issues|pull)/(\d+)", la
     if do_comment:
         print(f"Commenting on {m[0]}")
         url = f"https://api.github.com/repos/{repo_owner}/issues/{number}/comments"
-        resp = requests.post(url, json={"body": comment})
+        resp = get_session().post(url, json={"body": comment})
         print(resp)
