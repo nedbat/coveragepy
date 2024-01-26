@@ -17,16 +17,20 @@ development at the same time, such as 4.5.x and 5.0.
     ..  Version 9.8.1 — 2027-07-27
     ..  --------------------------
 
-Unreleased
-----------
+.. scriv-start-here
+
+.. _changes_7-4-1:
+
+Version 7.4.1 — 2024-01-26
+--------------------------
+
+- Python 3.13.0a3 is supported.
 
 - Fix: the JSON report now includes an explicit format version number, closing
   `issue 1732`_.
 
 .. _issue 1732: https://github.com/nedbat/coveragepy/issues/1732
 
-
-.. scriv-start-here
 
 .. _changes_7-4-0:
 
