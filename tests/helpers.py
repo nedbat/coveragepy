@@ -397,8 +397,3 @@ class DebugControlString(DebugControl):
     def get_output(self) -> str:
         """Get the output text from the `DebugControl`."""
         return self.io.getvalue()
-
-
-def without_color(text: str) -> str:
-    """Remove ANSI color-setting escape sequences."""
-    return re.sub(r"\033\[[\d;]+m", "", text)

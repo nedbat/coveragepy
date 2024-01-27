@@ -27,7 +27,7 @@ from coverage.files import abs_file, python_reported_file
 
 from tests import testenv
 from tests.coveragetest import CoverageTest, TESTS_DIR
-from tests.helpers import re_line, re_lines, re_lines_text, without_color
+from tests.helpers import re_line, re_lines, re_lines_text
 
 
 class ProcessTest(CoverageTest):
@@ -318,7 +318,6 @@ class ProcessTest(CoverageTest):
         assert out == out2
 
         # But also make sure that the output is what we expect.
-        out = without_color(out)
         path = python_reported_file('throw.py')
         msg = f'File "{re.escape(path)}", line 8, in f2'
         assert re.search(msg, out)
@@ -970,11 +969,8 @@ class ExcepthookTest(CoverageTest):
         py_st, py_out = self.run_command_status("python excepthook_throw.py")
         assert cov_st == py_st
         assert cov_st == 1
-        assert "in excepthook" in without_color(py_out)
-        # Don't know why: the Python output shows "Error in sys.excepthook" and
-        # "Original exception" in color.  The coverage output has the first in
-        # color and "Original" without color? Strip all the color.
-        assert without_color(cov_out) == without_color(py_out)
+        assert "in excepthook" in py_out
+        assert cov_out == py_out
 
 
 class AliasedCommandTest(CoverageTest):
@@ -1181,7 +1177,6 @@ class YankedDirectoryTest(CoverageTest):
     def test_removing_directory_with_error(self) -> None:
         self.make_file("bug806.py", self.BUG_806)
         out = self.run_command("coverage run bug806.py")
-        out = without_color(out)
         path = python_reported_file('bug806.py')
         # Python 3.11 adds an extra line to the traceback.
         # Check that the lines we expect are there.
