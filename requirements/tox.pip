@@ -26,7 +26,7 @@ platformdirs==4.1.0
     # via
     #   tox
     #   virtualenv
-pluggy==1.3.0
+pluggy==1.4.0
     # via tox
 pyproject-api==1.6.1
     # via tox

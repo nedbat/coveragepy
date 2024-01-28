@@ -14,7 +14,7 @@ build==1.0.3
     # via -r requirements/kit.in
 certifi==2023.11.17
     # via cibuildwheel
-cibuildwheel==2.16.2
+cibuildwheel==2.16.3
     # via -r requirements/kit.in
 colorama==0.4.6
     # via -r requirements/kit.in
