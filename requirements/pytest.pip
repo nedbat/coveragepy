@@ -24,6 +24,8 @@ packaging==23.2
     # via pytest
 pluggy==1.4.0
     # via pytest
+pygments==2.17.2
+    # via -r requirements/pytest.in
 pytest==8.0.0
     # via
     #   -r requirements/pytest.in

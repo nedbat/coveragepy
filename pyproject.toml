@@ -126,6 +126,9 @@ filterwarnings = [
 # xfail tests that pass should fail the test suite
 xfail_strict = true
 
+# https://docs.pytest.org/en/stable/reference/reference.html#confval-verbosity_assertions
+verbosity_assertions = 5
+
 balanced_clumps = [
     # Because of expensive session-scoped fixture:
     "VirtualenvTest",
