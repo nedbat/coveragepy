@@ -240,6 +240,7 @@ More information
     api
     howitworks
     plugins
+    other
     contributing
     trouble
     faq

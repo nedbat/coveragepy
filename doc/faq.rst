@@ -136,25 +136,6 @@ It's good, but `it isn't perfect`__.
 __ https://nedbatchelder.com/blog/200710/flaws_in_coverage_measurement.html
 
 
-..  Other resources
-    ---------------
-
-    There are a number of projects that help integrate coverage.py into other
-    systems:
-
-    - `trialcoverage`_ is a plug-in for Twisted trial.
-
-    .. _trialcoverage: https://pypi.org/project/trialcoverage/
-
-    - `pytest-cov`_
-
-    .. _pytest-cov: https://pypi.org/project/pytest-cov/
-
-    - `django-coverage`_ for use with Django.
-
-    .. _django-coverage: https://pypi.org/project/django-coverage/
-
-
 Q: Where can I get more help with coverage.py?
 ..............................................
 
@@ -168,7 +149,7 @@ Bug reports are gladly accepted at the `GitHub issue tracker`_.
 
 .. _GitHub issue tracker: https://github.com/nedbat/coveragepy/issues
 
-`I can be reached`__ in a number of ways, I'm happy to answer questions about
+`I can be reached`__ in a number of ways. I'm happy to answer questions about
 using coverage.py.
 
 __  https://nedbatchelder.com/site/aboutned.html
