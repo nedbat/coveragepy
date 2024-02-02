@@ -16,10 +16,8 @@ sphinx:
   builder: html
   configuration: doc/conf.py
 
-# Build all the formats
-formats:
-  - epub
-  - htmlzip
+# Don't build anything except HTML.
+formats: []
 
 python:
   install:
