@@ -65,6 +65,11 @@ __ https://cython.readthedocs.io/en/latest/src/tutorial/profiling_tutorial.html#
 
 __ https://github.com/MrSenko/coverage-jinja-plugin
 
+- `coverage-sh`__ measures code coverage of shell (sh or bash) scripts executed
+  from Python with subprocess.
+
+__ https://github.com/lackhove/coverage-sh
+
 - `hy-coverage`__ supports the Hy language.
 
 __ https://github.com/timmartin/hy-coverage
