@@ -25,6 +25,8 @@ implementing coverage measurement for non-Python files.
 Information about using plug-ins is on this page.  To write a plug-in, see
 :ref:`api_plugin`.
 
+See :ref:`other` for available plug-ins.
+
 .. versionadded:: 4.0
 
 
@@ -133,27 +135,3 @@ a coverage.py plug-in called ``something.plugin``.
    like "Plugin file tracers (something.plugin) aren't supported with
    PyTracer," then you don't have the :ref:`C extension <install_extension>`
    installed.  The C extension is needed for certain plug-ins.
-
-
-Available plug-ins
-------------------
-
-Some coverage.py plug-ins you might find useful:
-
-* `Django template coverage.py plug-in`__: for measuring coverage in Django
-  templates.
-
-  .. __: https://pypi.org/project/django_coverage_plugin/
-
-* `Conditional coverage plug-in`__: for measuring coverage based
-  on any rules you define!
-  Can exclude different lines of code that are only executed
-  on different platforms, python versions,
-  and with different dependencies installed.
-
-  .. __: https://github.com/wemake-services/coverage-conditional-plugin
-
-* `Mako template coverage plug-in`__: for measuring coverage in Mako templates.
-  Doesn't work yet, probably needs some changes in Mako itself.
-
-  .. __: https://bitbucket-archive.softwareheritage.org/projects/ne/ned/coverage-mako-plugin.html

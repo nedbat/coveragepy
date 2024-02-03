@@ -74,6 +74,11 @@ Coverage.py plugins to enable coverage measurement of other languages.
 
   __ https://github.com/timmartin/hy-coverage
 
+* `coverage-mako-plugin`__ measures coverage in Mako templates.
+  Doesn't work yet, probably needs some changes in Mako itself.
+
+  __ https://bitbucket-archive.softwareheritage.org/projects/ne/ned/coverage-mako-plugin.html
+
 
 Reporting helpers
 -----------------
@@ -101,21 +106,26 @@ Helpers for seeing the results.
 
   __ https://github.com/wbolster/emacs-python-coverage
 
-* `python-genbadge`__ provides a set of commandline utilities to generate badges for tools that do not provide one,
-  including coverage badges.
+* `python-genbadge`__ provides a set of command line utilities to generate
+  badges for tools that do not provide one, including coverage badges.
 
   __ https://smarie.github.io/python-genbadge/
 
 
-GitHub Action articles
-----------------------
+Other articles
+--------------
 
-How to use GitHub Actions for reporting.
+Writings about ways to enhance your use of coverage.py.
 
-* `How to Ditch Codecov for Python Projects`__
+* `How to Ditch Codecov for Python Projects`__: using GitHub Actions to manage
+  coverage across versions and report on results.
 
   __ https://hynek.me/articles/ditch-codecov-python/
 
-* `Making a coverage badge`__
+* `Making a coverage badge`__: using GitHub Actions to produce a colored badge.
 
   __ https://nedbatchelder.com/blog/202209/making_a_coverage_badge.html
+
+* `Coverage goals`__: a sidecar tool for reporting on per-file coverage goals.
+
+  __ https://nedbatchelder.com/blog/202111/coverage_goals.html
