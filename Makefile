@@ -287,7 +287,7 @@ $(RELNOTES_JSON): $(CHANGES_MD)
 	$(DOCBIN)/python ci/parse_relnotes.py tmp/rst_rst/changes.md $(RELNOTES_JSON)
 
 github_releases: $(DOCBIN)		## Update GitHub releases.
-	$(DOCBIN)/python -m scriv github-release
+	$(DOCBIN)/python -m scriv github-release --all
 
 comment_on_fixes: $(RELNOTES_JSON)	## Add a comment to issues that were fixed.
 	python ci/comment_on_fixes.py $(REPO_OWNER)
