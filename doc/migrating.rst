@@ -8,10 +8,10 @@ Migrating between versions
 ==========================
 
 New versions of coverage.py or Python might require you to adjust your
-settings, options, or other aspects how you use coverage.py.  This page details
-those changes.
+settings, options, or other aspects of how you use coverage.py.  This page
+details those changes.
 
-.. _migrating_cov7:
+.. _migrating_cov7x:
 
 Migrating to coverage.py 7.x
 ----------------------------
@@ -39,6 +39,18 @@ Consider these changes when migrating to coverage.py 7.x:
   entire list.  Newer versions of coverage.py will be adding to the default set
   of exclusions.  Using ``exclude_also`` will let you benefit from those
   updates.
+
+
+.. _migrating_cov62:
+
+Migrating to coverage.py 6.2
+----------------------------
+
+- The ``--concurrency`` settings changed in 6.2 to be a list of values.  You
+  might need to explicitly list concurrency options that we previously implied.
+  For example, ``--concurrency=multiprocessing`` used to implicitly enable
+  thread concurrency.  Now that must be explicitly enabled with
+  ``--concurrency=multiprocessing,thread``.
 
 
 .. _migrating_py312:

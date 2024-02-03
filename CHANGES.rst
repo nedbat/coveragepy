@@ -9,6 +9,9 @@ These changes are listed in decreasing version number order. Note this can be
 different from a strict chronological order when there are two branches in
 development at the same time, such as 4.5.x and 5.0.
 
+See :ref:`migrating` for significant changes that might be required when
+upgrading your version of coverage.py.
+
     .. When updating the "Unreleased" header to a specific version, use this
     .. format.  Don't forget the jump target:
     ..
@@ -892,10 +895,12 @@ Version 6.3 — 2022-01-25
 Version 6.2 — 2021-11-26
 ------------------------
 
-- Feature: Now the ``--concurrency`` setting can now have a list of values, so
-  that threads and another lightweight threading package can be measured
-  together, such as ``--concurrency=gevent,thread``.  Closes `issue 1012`_ and
-  `issue 1082`_.
+- Feature: Now the ``--concurrency`` setting can have a list of values, so that
+  threads and another lightweight threading package can be measured together,
+  such as ``--concurrency=gevent,thread``.  Closes `issue 1012`_ and `issue
+  1082`_.  This also means that ``thread`` must be explicitly specified in some
+  cases that used to be implicit such as ``--concurrency=multiprocessing``,
+  which must be changed to ``--concurrency=multiprocessing,thread``.
 
 - Fix: A module specified as the ``source`` setting is imported during startup,
   before the user program imports it.  This could cause problems if the rest of
