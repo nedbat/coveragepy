@@ -235,7 +235,9 @@ jobs:
           path: reports_repo/${{ env.report_dir }}
 
       - name: "Push to report repo"
-        if: ${{ github.ref == 'refs/heads/master' }}
+        if: |
+          github.repository_owner == 'nedbat'
+          && github.ref == 'refs/heads/master'
         env:
           COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
         run: |
@@ -259,7 +261,9 @@ jobs:
           echo '[${{ env.url }}](${{ env.url }})' >> $GITHUB_STEP_SUMMARY
 
       - name: "Create badge"
-        if: ${{ github.ref == 'refs/heads/master' }}
+        if: |
+          github.repository_owner == 'nedbat'
+          && github.ref == 'refs/heads/master'
         # https://gist.githubusercontent.com/nedbat/8c6980f77988a327348f9b02bbaf67f5
         uses: schneegans/dynamic-badges-action@e9a478b16159b4d31420099ba146cdc50f134483
         with:
