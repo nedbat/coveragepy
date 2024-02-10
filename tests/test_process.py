@@ -1122,7 +1122,6 @@ class CoverageCoreTest(CoverageTest):
         core = re_line(r" core:", out).strip()
         assert core == "core: PyTracer"
 
-    @pytest.mark.skipif(not env.PYBEHAVIOR.pep669, reason="No sys.monitoring to request")
     def test_core_request_sysmon(self) -> None:
         self.del_environ("COVERAGE_TEST_CORES")
         self.set_environ("COVERAGE_CORE", "sysmon")
@@ -1130,7 +1129,10 @@ class CoverageCoreTest(CoverageTest):
         out = self.run_command("coverage run --debug=sys numbers.py")
         assert out.endswith("123 456\n")
         core = re_line(r" core:", out).strip()
-        assert core == "core: SysMonitor"
+        if env.PYBEHAVIOR.pep669:
+            assert core == "core: SysMonitor"
+        else:
+            assert core in ("core: CTracer", "core: PyTracer")
 
 
 class FailUnderNoFilesTest(CoverageTest):
