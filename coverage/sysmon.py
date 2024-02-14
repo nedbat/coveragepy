@@ -251,11 +251,11 @@ class SysMonitor(TracerCore):
             return
         assert sys_monitoring is not None
         sys_monitoring.set_events(self.myid, 0)
+        self.sysmon_on = False
         for code in self.local_event_codes.values():
             sys_monitoring.set_local_events(self.myid, code, 0)
         self.local_event_codes = {}
         sys_monitoring.free_tool_id(self.myid)
-        self.sysmon_on = False
 
     @panopticon()
     def post_fork(self) -> None:
