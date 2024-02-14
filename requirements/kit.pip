@@ -4,7 +4,7 @@
 #
 #    make upgrade
 #
-auditwheel==5.4.0
+auditwheel==6.0.0
     # via -r requirements/kit.in
 bashlex==0.18
     # via cibuildwheel
@@ -12,9 +12,9 @@ bracex==2.4
     # via cibuildwheel
 build==1.0.3
     # via -r requirements/kit.in
-certifi==2023.11.17
+certifi==2024.2.2
     # via cibuildwheel
-cibuildwheel==2.16.3
+cibuildwheel==2.16.5
     # via -r requirements/kit.in
 colorama==0.4.6
     # via -r requirements/kit.in
@@ -24,9 +24,10 @@ importlib-metadata==7.0.1
     # via build
 packaging==23.2
     # via
+    #   auditwheel
     #   build
     #   cibuildwheel
-platformdirs==4.1.0
+platformdirs==4.2.0
     # via cibuildwheel
 pyelftools==0.30
     # via auditwheel
@@ -45,5 +46,5 @@ zipp==3.17.0
     # via importlib-metadata
 
 # The following packages are considered to be unsafe in a requirements file:
-setuptools==69.0.3
+setuptools==69.1.0
     # via -r requirements/kit.in
