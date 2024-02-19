@@ -647,6 +647,31 @@ class CoverageData:
                     continue
                 con.execute_void(sql, (file_id,))
 
+    def purge_contexts(self, contexts: Collection[str]) -> None:
+        """Purge any existing coverage data for the given `contexts`.
+
+        This removes all coverage data for the contexts, but does not remove
+        them from the list returned by measured_contexts(), so that context_ids
+        for the contexts remain constant over time."""
+
+        if self._debug.should("dataop"):
+            self._debug.write("Purging contexts {contexts}")
+        self._start_using()
+        with self._connect() as con:
+
+            if self._has_lines:
+                sql = "delete from line_bits where context_id=?"
+            elif self._has_arcs:
+                sql = "delete from arc where context_id=?"
+            else:
+                raise DataError("Can't purge contexts in an empty CoverageData")
+
+            for context in contexts:
+                context_id = self._context_id(context)
+                if context_id is None:
+                    continue
+                con.execute_void(sql, (context_id,))
+
     def update(self, other_data: CoverageData, aliases: Optional[PathAliases] = None) -> None:
         """Update this data with data from several other :class:`CoverageData` instances.
 
