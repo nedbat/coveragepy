@@ -6,7 +6,7 @@
 #
 cffi==1.16.0
     # via -r requirements/light-threads.in
-dnspython==2.5.0
+dnspython==2.6.1
     # via eventlet
 eventlet==0.35.1
     # via -r requirements/light-threads.in
@@ -21,7 +21,7 @@ pycparser==2.21
     # via cffi
 zope-event==5.0
     # via gevent
-zope-interface==6.1
+zope-interface==6.2
     # via gevent
 
 # The following packages are considered to be unsafe in a requirements file:

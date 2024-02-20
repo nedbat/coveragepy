@@ -47,7 +47,7 @@ flaky==3.7.0
     # via -r requirements/pytest.in
 greenlet==3.0.3
     # via -r requirements/dev.in
-hypothesis==6.98.4
+hypothesis==6.98.9
     # via -r requirements/pytest.in
 idna==3.6
     # via requests
@@ -114,7 +114,7 @@ pyproject-api==1.6.1
     # via tox
 pyproject-hooks==1.0.0
     # via build
-pytest==8.0.0
+pytest==8.0.1
     # via
     #   -r requirements/pytest.in
     #   pytest-xdist
@@ -150,7 +150,7 @@ tomli==2.0.1
     #   tox
 tomlkit==0.12.3
     # via pylint
-tox==4.12.1
+tox==4.13.0
     # via
     #   -r requirements/tox.in
     #   tox-gh
@@ -164,11 +164,11 @@ typing-extensions==4.9.0
     #   pylint
     #   rich
     #   urwid
-urllib3==2.2.0
+urllib3==2.2.1
     # via
     #   requests
     #   twine
-urwid==2.5.3
+urwid==2.6.1
     # via
     #   pudb
     #   urwid-readline
