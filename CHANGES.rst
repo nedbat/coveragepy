@@ -20,8 +20,12 @@ upgrading your version of coverage.py.
     ..  Version 9.8.1 — 2027-07-27
     ..  --------------------------
 
-Unreleased
-----------
+.. scriv-start-here
+
+.. _changes_7-4-2:
+
+Version 7.4.2 — 2024-02-20
+--------------------------
 
 - Fix: setting ``COVERAGE_CORE=sysmon`` no longer errors on 3.11 and lower,
   thanks `Hugo van Kemenade <pull 1747_>`_.  It now issues a warning that
@@ -29,8 +33,6 @@ Unreleased
 
 .. _pull 1747: https://github.com/nedbat/coveragepy/pull/1747
 
-
-.. scriv-start-here
 
 .. _changes_7-4-1:
 
