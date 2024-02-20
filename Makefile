@@ -222,11 +222,11 @@ check_kits:				## Check that dist/* are well-formed.
 	python -m twine check dist/*
 	@echo $$(ls -1 dist | wc -l) distribution kits
 
-tag:					## Make a git tag with the version number.
+tag:					#: Make a git tag with the version number (see howto.txt).
 	git tag -s -m "Version $$(python setup.py --version)" $$(python setup.py --version)
 	git push --follow-tags
 
-bump_version:				## Edit sources to bump the version after a release.
+bump_version:				#: Edit sources to bump the version after a release (see howto.txt).
 	git switch -c nedbat/bump-version
 	python igor.py bump_version
 	git commit -a -m "build: bump version"

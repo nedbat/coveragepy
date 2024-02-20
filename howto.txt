@@ -39,6 +39,7 @@
     - merge to master
     - git push
 - Start the kits:
+    - opvars github
     - Trigger the kit GitHub Action
         $ make build_kits
 - Build and publish docs:
@@ -71,12 +72,11 @@
 - Update readthedocs
     - @ https://readthedocs.org/projects/coverage/versions/
         - find the latest tag in the inactive list, edit it, make it active.
-            - readthedocs won't find the tag until a commit is made on master.
         - keep just the latest version of each x.y release, make the rest active but hidden.
             - pre-releases should be hidden
     - IF NOT PRE-RELEASE:
         - @ https://readthedocs.org/dashboard/coverage/advanced/
-            - change the default and latest versions to the new version
+            - change the "default version" to the new version
         - @ https://readthedocs.org/projects/coverage/builds/
             - manually build "latest"
             - wait for the new tag build to finish successfully.
