@@ -1129,10 +1129,13 @@ class CoverageCoreTest(CoverageTest):
         out = self.run_command("coverage run --debug=sys numbers.py")
         assert out.endswith("123 456\n")
         core = re_line(r" core:", out).strip()
+        warns = re_lines(r"CoverageWarning: sys.monitoring isn't available", out)
         if env.PYBEHAVIOR.pep669:
             assert core == "core: SysMonitor"
+            assert not warns
         else:
             assert core in ("core: CTracer", "core: PyTracer")
+            assert warns
 
 
 class FailUnderNoFilesTest(CoverageTest):

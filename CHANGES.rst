@@ -23,7 +23,11 @@ upgrading your version of coverage.py.
 Unreleased
 ----------
 
-Nothing yet.
+- Fix: setting ``COVERAGE_CORE=sysmon`` no longer errors on 3.11 and lower,
+  thanks `Hugo van Kemenade <pull 1747_>`_.  It now issues a warning that
+  sys.monitoring is not available and falls back to the default core instead.
+
+.. _pull 1747: https://github.com/nedbat/coveragepy/pull/1747
 
 
 .. scriv-start-here
