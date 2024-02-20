@@ -30,6 +30,7 @@ from coverage.misc import import_local_file
 
 from tests import testenv
 from tests.coveragetest import CoverageTest
+from tests.helpers import flaky_method
 
 
 # These libraries aren't always available, we'll skip tests if they aren't.
@@ -317,6 +318,7 @@ class ConcurrencyTest(CoverageTest):
             """
         self.try_some_code(BUG_330, "eventlet", eventlet, "0\n")
 
+    @flaky_method(max_runs=3)   # Sometimes a test fails due to inherent randomness. Try more times.
     def test_threads_with_gevent(self) -> None:
         self.make_file("both.py", """\
             import queue
