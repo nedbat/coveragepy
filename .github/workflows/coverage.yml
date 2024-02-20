@@ -69,6 +69,13 @@ jobs:
             python-version: "pypy-3.9"
           - os: windows
             python-version: "pypy-3.10"
+          # Skip 3.13.0a4 and pin to 3.13.0a3 for Windows due to build error.
+          # Undo when 3.13.0a5 is released.
+          - os: windows
+            python-version: "3.13"
+        include:
+          - os: windows
+            python-version: "3.13.0-alpha.3"
       # If one job fails, stop the whole thing.
       fail-fast: true
 
