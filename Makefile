@@ -99,7 +99,7 @@ PIP_COMPILE = pip-compile ${COMPILE_OPTS} --allow-unsafe --resolver=backtracking
 upgrade: 				## Update the *.pip files with the latest packages satisfying *.in files.
 	$(MAKE) _upgrade COMPILE_OPTS="--upgrade"
 
-upgrade-one:				## Update the *.pip files for one package. `make upgrade-one package=...`
+upgrade_one:				## Update the *.pip files for one package. `make upgrade-one package=...`
 	@test -n "$(package)" || { echo "\nUsage: make upgrade-one package=...\n"; exit 1; }
 	$(MAKE) _upgrade COMPILE_OPTS="--upgrade-package $(package)"
 
