@@ -20,6 +20,12 @@ upgrading your version of coverage.py.
     ..  Version 9.8.1 — 2027-07-27
     ..  --------------------------
 
+Unreleased
+----------
+
+Nothing yet.
+
+
 .. scriv-start-here
 
 .. _changes_7-4-3:
