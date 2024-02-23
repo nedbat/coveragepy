@@ -39,6 +39,9 @@ jobs:
     # https://github.com/deadsnakes/issues/issues/234
     # bionic: 18, focal: 20, jammy: 22
     runs-on: ubuntu-20.04
+    # If it doesn't finish in an hour, it's not going to. Don't spin for six
+    # hours needlessly.
+    timeout-minutes: 60
 
     strategy:
       matrix:
