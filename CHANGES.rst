@@ -20,15 +20,18 @@ upgrading your version of coverage.py.
     ..  Version 9.8.1 — 2027-07-27
     ..  --------------------------
 
-Unreleased
-----------
+.. scriv-start-here
+
+.. _changes_7-4-3:
+
+Version 7.4.3 — 2024-02-23
+--------------------------
 
 - Fix: in some cases, coverage could fail with a RuntimeError: "Set changed
   size during iteration." This is now fixed, closing `issue 1733`_.
 
 .. _issue 1733: https://github.com/nedbat/coveragepy/issues/1733
 
-.. scriv-start-here
 
 .. _changes_7-4-2:
 
