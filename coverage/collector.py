@@ -513,9 +513,12 @@ class Collector:
                 # these packed ints.
                 arc_data: Dict[str, List[TArc]] = {}
                 packed_data = cast(Dict[str, Set[int]], self.data)
-                for fname, packeds in packed_data.items():
+
+                # The list() here and in the inner loop are to get a clean copy
+                # even as tracers are continuing to add data.
+                for fname, packeds in list(packed_data.items()):
                     tuples = []
-                    for packed in packeds:
+                    for packed in list(packeds):
                         l1 = packed & 0xFFFFF
                         l2 = (packed & (0xFFFFF << 20)) >> 20
                         if packed & (1 << 40):

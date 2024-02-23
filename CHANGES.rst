@@ -23,8 +23,10 @@ upgrading your version of coverage.py.
 Unreleased
 ----------
 
-Nothing yet.
+- Fix: in some cases, coverage could fail with a RuntimeError: "Set changed
+  size during iteration." This is now fixed, closing `issue 1733`_.
 
+.. _issue 1733: https://github.com/nedbat/coveragepy/issues/1733
 
 .. scriv-start-here
 
