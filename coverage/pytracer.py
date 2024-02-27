@@ -12,7 +12,7 @@ import sys
 import threading
 
 from types import FrameType, ModuleType
-from typing import Any, Callable, Dict, List, Optional, Set, Tuple, cast
+from typing import Any, Callable, Set, cast
 
 from coverage import env
 from coverage.types import (
@@ -63,18 +63,18 @@ class PyTracer(TracerCore):
         self.data: TTraceData
         self.trace_arcs = False
         self.should_trace: Callable[[str, FrameType], TFileDisposition]
-        self.should_trace_cache: Dict[str, Optional[TFileDisposition]]
-        self.should_start_context: Optional[Callable[[FrameType], Optional[str]]] = None
-        self.switch_context: Optional[Callable[[Optional[str]], None]] = None
+        self.should_trace_cache: dict[str, TFileDisposition | None]
+        self.should_start_context: Callable[[FrameType], str | None] | None = None
+        self.switch_context: Callable[[str | None], None] | None = None
         self.warn: TWarnFn
 
         # The threading module to use, if any.
-        self.threading: Optional[ModuleType] = None
+        self.threading: ModuleType | None = None
 
-        self.cur_file_data: Optional[TTraceFileData] = None
+        self.cur_file_data: TTraceFileData | None = None
         self.last_line: TLineNo = 0
-        self.cur_file_name: Optional[str] = None
-        self.context: Optional[str] = None
+        self.cur_file_name: str | None = None
+        self.context: str | None = None
         self.started_context = False
 
         # The data_stack parallels the Python call stack. Each entry is
@@ -85,8 +85,8 @@ class PyTracer(TracerCore):
         #           this frame.
         #   [2] The last line number executed in this frame.
         #   [3] Boolean: did this frame start a new context?
-        self.data_stack: List[Tuple[Optional[TTraceFileData], Optional[str], TLineNo, bool]] = []
-        self.thread: Optional[threading.Thread] = None
+        self.data_stack: list[tuple[TTraceFileData | None, str | None, TLineNo, bool]] = []
+        self.thread: threading.Thread | None = None
         self.stopped = False
         self._activity = False
 
@@ -106,11 +106,7 @@ class PyTracer(TracerCore):
     def log(self, marker: str, *args: Any) -> None:
         """For hard-core logging of what this tracer is doing."""
         with open("/tmp/debug_trace.txt", "a") as f:
-            f.write("{} {}[{}]".format(
-                marker,
-                self.id,
-                len(self.data_stack),
-            ))
+            f.write(f"{marker} {self.id}[{len(self.data_stack)}]")
             if 0:   # if you want thread ids..
                 f.write(".{:x}.{:x}".format(                    # type: ignore[unreachable]
                     self.thread.ident,
@@ -131,8 +127,8 @@ class PyTracer(TracerCore):
         frame: FrameType,
         event: str,
         arg: Any,                               # pylint: disable=unused-argument
-        lineno: Optional[TLineNo] = None,       # pylint: disable=unused-argument
-    ) -> Optional[TTraceFn]:
+        lineno: TLineNo | None = None,       # pylint: disable=unused-argument
+    ) -> TTraceFn | None:
         """The trace function passed to sys.settrace."""
 
         if THIS_FILE in frame.f_code.co_filename:
@@ -345,6 +341,6 @@ class PyTracer(TracerCore):
         """Reset the activity() flag."""
         self._activity = False
 
-    def get_stats(self) -> Optional[Dict[str, int]]:
+    def get_stats(self) -> dict[str, int] | None:
         """Return a dictionary of statistics, or None."""
         return None

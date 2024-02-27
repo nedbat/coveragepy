@@ -13,7 +13,7 @@ import os.path
 import re
 import xml.etree.ElementTree
 
-from typing import Iterable, List, Optional, Tuple
+from typing import Iterable
 
 from tests.coveragetest import TESTS_DIR
 from tests.helpers import os_sep
@@ -27,9 +27,9 @@ def gold_path(path: str) -> str:
 def compare(
     expected_dir: str,
     actual_dir: str,
-    file_pattern: Optional[str] = None,
+    file_pattern: str | None = None,
     actual_extra: bool = False,
-    scrubs: Optional[List[Tuple[str, str]]] = None,
+    scrubs: list[tuple[str, str]] | None = None,
 ) -> None:
     """Compare files matching `file_pattern` in `expected_dir` and `actual_dir`.
 
@@ -175,7 +175,7 @@ def canonicalize_xml(xtext: str) -> str:
     return xml.etree.ElementTree.tostring(root).decode("utf-8")
 
 
-def _fnmatch_list(files: List[str], file_pattern: Optional[str]) -> List[str]:
+def _fnmatch_list(files: list[str], file_pattern: str | None) -> list[str]:
     """Filter the list of `files` to only those that match `file_pattern`.
     If `file_pattern` is None, then return the entire list of files.
     Returns a list of the filtered files.
@@ -185,7 +185,7 @@ def _fnmatch_list(files: List[str], file_pattern: Optional[str]) -> List[str]:
     return files
 
 
-def scrub(strdata: str, scrubs: Iterable[Tuple[str, str]]) -> str:
+def scrub(strdata: str, scrubs: Iterable[tuple[str, str]]) -> str:
     """Scrub uninteresting data from the payload in `strdata`.
     `scrubs` is a list of (find, replace) pairs of regexes that are used on
     `strdata`.  A string is returned.

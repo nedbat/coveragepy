@@ -15,7 +15,7 @@ import shutil
 import string
 
 from dataclasses import dataclass
-from typing import Any, Dict, Iterable, List, Optional, Tuple, TYPE_CHECKING, cast
+from typing import Any, Iterable, TYPE_CHECKING, cast
 
 import coverage
 from coverage.data import CoverageData, add_data_to_hash
@@ -77,19 +77,19 @@ def write_html(fname: str, html: str) -> None:
 @dataclass
 class LineData:
     """The data for each source line of HTML output."""
-    tokens: List[Tuple[str, str]]
+    tokens: list[tuple[str, str]]
     number: TLineNo
     category: str
     statement: bool
-    contexts: List[str]
+    contexts: list[str]
     contexts_label: str
-    context_list: List[str]
-    short_annotations: List[str]
-    long_annotations: List[str]
+    context_list: list[str]
+    short_annotations: list[str]
+    long_annotations: list[str]
     html: str = ""
-    context_str: Optional[str] = None
-    annotate: Optional[str] = None
-    annotate_long: Optional[str] = None
+    context_str: str | None = None
+    annotate: str | None = None
+    annotate_long: str | None = None
     css_class: str = ""
 
 
@@ -98,7 +98,7 @@ class FileData:
     """The data for each source file of HTML output."""
     relative_filename: str
     nums: Numbers
-    lines: List[LineData]
+    lines: list[LineData]
 
 
 class HtmlDataGeneration:
@@ -233,7 +233,7 @@ class HtmlReporter:
 
         title = self.config.html_title
 
-        self.extra_css: Optional[str]
+        self.extra_css: str | None
         if self.config.extra_css:
             self.extra_css = os.path.basename(self.config.extra_css)
         else:
@@ -242,8 +242,8 @@ class HtmlReporter:
         self.data = self.coverage.get_data()
         self.has_arcs = self.data.has_arcs()
 
-        self.file_summaries: List[IndexInfoDict] = []
-        self.all_files_nums: List[Numbers] = []
+        self.file_summaries: list[IndexInfoDict] = []
+        self.all_files_nums: list[Numbers] = []
         self.incr = IncrementalChecker(self.directory)
         self.datagen = HtmlDataGeneration(self.coverage)
         self.totals = Numbers(precision=self.config.precision)
@@ -278,7 +278,7 @@ class HtmlReporter:
         self.pyfile_html_source = read_data("pyfile.html")
         self.source_tmpl = Templite(self.pyfile_html_source, self.template_globals)
 
-    def report(self, morfs: Optional[Iterable[TMorf]]) -> float:
+    def report(self, morfs: Iterable[TMorf] | None) -> float:
         """Generate an HTML report for `morfs`.
 
         `morfs` is a list of modules or file names.
@@ -546,7 +546,7 @@ class IncrementalChecker:
     def reset(self) -> None:
         """Initialize to empty. Causes all files to be reported."""
         self.globals = ""
-        self.files: Dict[str, FileInfoDict] = {}
+        self.files: dict[str, FileInfoDict] = {}
 
     def read(self) -> None:
         """Read the information we stored last time."""
@@ -651,6 +651,6 @@ def escape(t: str) -> str:
     return t.replace("&", "&amp;").replace("<", "&lt;")
 
 
-def pair(ratio: Tuple[int, int]) -> str:
+def pair(ratio: tuple[int, int]) -> str:
     """Format a pair of numbers so JavaScript can read them in an attribute."""
-    return "%s %s" % ratio
+    return "{} {}".format(*ratio)

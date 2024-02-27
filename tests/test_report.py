@@ -13,7 +13,6 @@ import os.path
 import py_compile
 import re
 
-from typing import Tuple
 
 import pytest
 
@@ -994,7 +993,7 @@ class SummaryReporterConfigurationTest(CoverageTest):
         source += "    a = 2\n" * dont_run
         self.make_file(filename, source)
 
-    def get_summary_text(self, *options: Tuple[str, TConfigValueIn]) -> str:
+    def get_summary_text(self, *options: tuple[str, TConfigValueIn]) -> str:
         """Get text output from the SummaryReporter.
 
         The arguments are tuples: (name, value) for Coverage.set_option.

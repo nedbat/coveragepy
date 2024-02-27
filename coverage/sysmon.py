@@ -18,9 +18,6 @@ from types import CodeType, FrameType
 from typing import (
     Any,
     Callable,
-    Dict,
-    List,
-    Optional,
     Set,
     TYPE_CHECKING,
     cast,
@@ -75,7 +72,7 @@ if LOG:  # pragma: debugging
     short_stack = functools.partial(
         short_stack, full=True, short_filenames=True, frame_ids=True,
     )
-    seen_threads: Set[int] = set()
+    seen_threads: set[int] = set()
 
     def log(msg: str) -> None:
         """Write a message to our detailed debugging log(s)."""
@@ -108,7 +105,7 @@ if LOG:  # pragma: debugging
             )
         return repr(arg)
 
-    def panopticon(*names: Optional[str]) -> AnyCallable:
+    def panopticon(*names: str | None) -> AnyCallable:
         """Decorate a function to log its calls."""
 
         def _decorator(method: AnyCallable) -> AnyCallable:
@@ -145,7 +142,7 @@ else:
     def log(msg: str) -> None:
         """Write a message to our detailed debugging log(s), but not really."""
 
-    def panopticon(*names: Optional[str]) -> AnyCallable:
+    def panopticon(*names: str | None) -> AnyCallable:
         """Decorate a function to log its calls, but not really."""
 
         def _decorator(meth: AnyCallable) -> AnyCallable:
@@ -159,12 +156,12 @@ class CodeInfo:
     """The information we want about each code object."""
 
     tracing: bool
-    file_data: Optional[TTraceFileData]
+    file_data: TTraceFileData | None
     # TODO: what is byte_to_line for?
-    byte_to_line: Dict[int, int] | None
+    byte_to_line: dict[int, int] | None
 
 
-def bytes_to_lines(code: CodeType) -> Dict[int, int]:
+def bytes_to_lines(code: CodeType) -> dict[int, int]:
     """Make a dict mapping byte code offsets to line numbers."""
     b2l = {}
     for bstart, bend, lineno in code.co_lines():
@@ -184,24 +181,24 @@ class SysMonitor(TracerCore):
         self.data: TTraceData
         self.trace_arcs = False
         self.should_trace: Callable[[str, FrameType], TFileDisposition]
-        self.should_trace_cache: Dict[str, Optional[TFileDisposition]]
+        self.should_trace_cache: dict[str, TFileDisposition | None]
         # TODO: should_start_context and switch_context are unused!
         # Change tests/testenv.py:DYN_CONTEXTS when this is updated.
-        self.should_start_context: Optional[Callable[[FrameType], Optional[str]]] = None
-        self.switch_context: Optional[Callable[[Optional[str]], None]] = None
+        self.should_start_context: Callable[[FrameType], str | None] | None = None
+        self.switch_context: Callable[[str | None], None] | None = None
         # TODO: warn is unused.
         self.warn: TWarnFn
 
         self.myid = tool_id
 
         # Map id(code_object) -> CodeInfo
-        self.code_infos: Dict[int, CodeInfo] = {}
+        self.code_infos: dict[int, CodeInfo] = {}
         # A list of code_objects, just to keep them alive so that id's are
         # useful as identity.
-        self.code_objects: List[CodeType] = []
-        self.last_lines: Dict[FrameType, int] = {}
+        self.code_objects: list[CodeType] = []
+        self.last_lines: dict[FrameType, int] = {}
         # Map id(code_object) -> code_object
-        self.local_event_codes: Dict[int, CodeType] = {}
+        self.local_event_codes: dict[int, CodeType] = {}
         self.sysmon_on = False
 
         self.stats = {
@@ -270,7 +267,7 @@ class SysMonitor(TracerCore):
         """Reset the activity() flag."""
         self._activity = False
 
-    def get_stats(self) -> Optional[Dict[str, int]]:
+    def get_stats(self) -> dict[str, int] | None:
         """Return a dictionary of statistics, or None."""
         return None
 

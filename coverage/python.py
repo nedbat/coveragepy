@@ -9,7 +9,7 @@ import os.path
 import types
 import zipimport
 
-from typing import Dict, Iterable, Optional, Set, TYPE_CHECKING
+from typing import Iterable, TYPE_CHECKING
 
 from coverage import env
 from coverage.exceptions import CoverageException, NoSource
@@ -46,7 +46,7 @@ def get_python_source(filename: str) -> str:
     else:
         exts = [ext]
 
-    source_bytes: Optional[bytes]
+    source_bytes: bytes | None
     for ext in exts:
         try_filename = base + ext
         if os.path.exists(try_filename):
@@ -73,7 +73,7 @@ def get_python_source(filename: str) -> str:
     return source
 
 
-def get_zip_bytes(filename: str) -> Optional[bytes]:
+def get_zip_bytes(filename: str) -> bytes | None:
     """Get data from `filename` if it is a zip file path.
 
     Returns the bytestring data read from the zip file, or None if no zip file
@@ -143,7 +143,7 @@ def source_for_morf(morf: TMorf) -> str:
 class PythonFileReporter(FileReporter):
     """Report support for a Python file."""
 
-    def __init__(self, morf: TMorf, coverage: Optional[Coverage] = None) -> None:
+    def __init__(self, morf: TMorf, coverage: Coverage | None = None) -> None:
         self.coverage = coverage
 
         filename = source_for_morf(morf)
@@ -166,8 +166,8 @@ class PythonFileReporter(FileReporter):
             name = relative_filename(filename)
         self.relname = name
 
-        self._source: Optional[str] = None
-        self._parser: Optional[PythonParser] = None
+        self._source: str | None = None
+        self._parser: PythonParser | None = None
         self._excluded = None
 
     def __repr__(self) -> str:
@@ -188,22 +188,22 @@ class PythonFileReporter(FileReporter):
             self._parser.parse_source()
         return self._parser
 
-    def lines(self) -> Set[TLineNo]:
+    def lines(self) -> set[TLineNo]:
         """Return the line numbers of statements in the file."""
         return self.parser.statements
 
-    def excluded_lines(self) -> Set[TLineNo]:
+    def excluded_lines(self) -> set[TLineNo]:
         """Return the line numbers of statements in the file."""
         return self.parser.excluded
 
-    def translate_lines(self, lines: Iterable[TLineNo]) -> Set[TLineNo]:
+    def translate_lines(self, lines: Iterable[TLineNo]) -> set[TLineNo]:
         return self.parser.translate_lines(lines)
 
-    def translate_arcs(self, arcs: Iterable[TArc]) -> Set[TArc]:
+    def translate_arcs(self, arcs: Iterable[TArc]) -> set[TArc]:
         return self.parser.translate_arcs(arcs)
 
     @expensive
-    def no_branch_lines(self) -> Set[TLineNo]:
+    def no_branch_lines(self) -> set[TLineNo]:
         assert self.coverage is not None
         no_branch = self.parser.lines_matching(
             join_regex(self.coverage.config.partial_list),
@@ -212,18 +212,18 @@ class PythonFileReporter(FileReporter):
         return no_branch
 
     @expensive
-    def arcs(self) -> Set[TArc]:
+    def arcs(self) -> set[TArc]:
         return self.parser.arcs()
 
     @expensive
-    def exit_counts(self) -> Dict[TLineNo, int]:
+    def exit_counts(self) -> dict[TLineNo, int]:
         return self.parser.exit_counts()
 
     def missing_arc_description(
         self,
         start: TLineNo,
         end: TLineNo,
-        executed_arcs: Optional[Iterable[TArc]] = None,
+        executed_arcs: Iterable[TArc] | None = None,
     ) -> str:
         return self.parser.missing_arc_description(start, end, executed_arcs)
 

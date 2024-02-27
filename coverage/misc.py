@@ -21,8 +21,7 @@ import types
 
 from types import ModuleType
 from typing import (
-    Any, Callable, Dict, IO, Iterable, Iterator, List, Mapping, NoReturn, Optional,
-    Sequence, Tuple, TypeVar, Union,
+    Any, Callable, IO, Iterable, Iterator, Mapping, NoReturn, Sequence, TypeVar,
 )
 
 from coverage import env
@@ -34,7 +33,7 @@ from coverage.types import TArc
 # pylint: disable=unused-wildcard-import
 from coverage.exceptions import *   # pylint: disable=wildcard-import
 
-ISOLATED_MODULES: Dict[ModuleType, ModuleType] = {}
+ISOLATED_MODULES: dict[ModuleType, ModuleType] = {}
 
 
 def isolate_module(mod: ModuleType) -> ModuleType:
@@ -80,7 +79,7 @@ def sys_modules_saved() -> Iterator[None]:
         saver.restore()
 
 
-def import_third_party(modname: str) -> Tuple[ModuleType, bool]:
+def import_third_party(modname: str) -> tuple[ModuleType, bool]:
     """Import a third-party module we need, but might not be installed.
 
     This also cleans out the module after the import, so that coverage won't
@@ -140,7 +139,7 @@ def expensive(fn: Callable[[TSelf], TRetVal]) -> Callable[[TSelf], TRetVal]:
         return fn                   # pragma: not testing
 
 
-def bool_or_none(b: Any) -> Optional[bool]:
+def bool_or_none(b: Any) -> bool | None:
     """Return bool(b), but preserve None."""
     if b is None:
         return None
@@ -180,7 +179,7 @@ def ensure_dir_for_file(path: str) -> None:
     ensure_dir(os.path.dirname(path))
 
 
-def output_encoding(outfile: Optional[IO[str]] = None) -> str:
+def output_encoding(outfile: IO[str] | None = None) -> str:
     """Determine the encoding to use for output written to `outfile` or stdout."""
     if outfile is None:
         outfile = sys.stdout
@@ -318,7 +317,7 @@ def format_local_datetime(dt: datetime.datetime) -> str:
     return dt.astimezone().strftime("%Y-%m-%d %H:%M %z")
 
 
-def import_local_file(modname: str, modfile: Optional[str] = None) -> ModuleType:
+def import_local_file(modname: str, modfile: str | None = None) -> ModuleType:
     """Import a local file as a module.
 
     Opens a file in the current directory named `modname`.py, imports it
@@ -338,7 +337,7 @@ def import_local_file(modname: str, modfile: Optional[str] = None) -> ModuleType
     return mod
 
 
-def _human_key(s: str) -> Tuple[List[Union[str, int]], str]:
+def _human_key(s: str) -> tuple[list[str | int], str]:
     """Turn a string into a list of string and number chunks.
 
     "z23a" -> (["z", 23, "a"], "z23a")
@@ -346,7 +345,7 @@ def _human_key(s: str) -> Tuple[List[Union[str, int]], str]:
     The original string is appended as a last value to ensure the
     key is unique enough so that "x1y" and "x001y" can be distinguished.
     """
-    def tryint(s: str) -> Union[str, int]:
+    def tryint(s: str) -> str | int:
         """If `s` is a number, return an int, else `s` unchanged."""
         try:
             return int(s)
@@ -355,7 +354,7 @@ def _human_key(s: str) -> Tuple[List[Union[str, int]], str]:
 
     return ([tryint(c) for c in re.split(r"(\d+)", s)], s)
 
-def human_sorted(strings: Iterable[str]) -> List[str]:
+def human_sorted(strings: Iterable[str]) -> list[str]:
     """Sort the given iterable of strings the way that humans expect.
 
     Numeric components in the strings are sorted as numbers.
@@ -370,7 +369,7 @@ SortableItem = TypeVar("SortableItem", bound=Sequence[Any])
 def human_sorted_items(
     items: Iterable[SortableItem],
     reverse: bool = False,
-) -> List[SortableItem]:
+) -> list[SortableItem]:
     """Sort (string, ...) items the way humans expect.
 
     The elements of `items` can be any tuple/list. They'll be sorted by the

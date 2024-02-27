@@ -14,7 +14,7 @@ import os
 import os.path
 import sys
 
-from typing import Any, Callable, Iterable, Iterator, Optional, Tuple, cast
+from typing import Any, Callable, Iterable, Iterator, Tuple, cast
 
 import pytest
 
@@ -83,7 +83,7 @@ class TempDirMixin:
         filename: str,
         text: str = "",
         bytes: bytes = b"",
-        newline: Optional[str] = None,
+        newline: str | None = None,
     ) -> str:
         """Make a file. See `tests.helpers.make_file`"""
         # pylint: disable=redefined-builtin     # bytes
@@ -136,7 +136,7 @@ class StdStreamCapturingMixin:
         """Grab the fixture so our methods can use it."""
         self.capsys = capsys
 
-    def stdouterr(self) -> Tuple[str, str]:
+    def stdouterr(self) -> tuple[str, str]:
         """Returns (out, err), two strings for stdout and stderr."""
         return cast(Tuple[str, str], self.capsys.readouterr())
 

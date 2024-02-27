@@ -21,7 +21,7 @@ import _thread
 
 from typing import (
     overload,
-    Any, Callable, IO, Iterable, Iterator, Mapping, Optional, List, Tuple,
+    Any, Callable, IO, Iterable, Iterator, Mapping,
 )
 
 from coverage.misc import human_sorted_items, isolate_module
@@ -33,7 +33,7 @@ os = isolate_module(os)
 # When debugging, it can be helpful to force some options, especially when
 # debugging the configuration mechanisms you usually use to control debugging!
 # This is a list of forced debugging options.
-FORCED_DEBUG: List[str] = []
+FORCED_DEBUG: list[str] = []
 FORCED_DEBUG_FILE = None
 
 
@@ -45,8 +45,8 @@ class DebugControl:
     def __init__(
         self,
         options: Iterable[str],
-        output: Optional[IO[str]],
-        file_name: Optional[str] = None,
+        output: IO[str] | None,
+        file_name: str | None = None,
     ) -> None:
         """Configure the options and output file for debugging."""
         self.options = list(options) + FORCED_DEBUG
@@ -87,7 +87,7 @@ class DebugControl:
         finally:
             self.suppress_callers = old
 
-    def write(self, msg: str, *, exc: Optional[BaseException] = None) -> None:
+    def write(self, msg: str, *, exc: BaseException | None = None) -> None:
         """Write a line of debug output.
 
         `msg` is the line to write. A newline will be appended.
@@ -118,7 +118,7 @@ class NoDebugging(DebugControl):
         """Should we write debug messages?  Never."""
         return False
 
-    def write(self, msg: str, *, exc: Optional[BaseException] = None) -> None:
+    def write(self, msg: str, *, exc: BaseException | None = None) -> None:
         """This will never be called."""
         raise AssertionError("NoDebugging.write should never be called.")
 
@@ -128,7 +128,7 @@ def info_header(label: str) -> str:
     return "--{:-<60s}".format(" "+label+" ")
 
 
-def info_formatter(info: Iterable[Tuple[str, Any]]) -> Iterator[str]:
+def info_formatter(info: Iterable[tuple[str, Any]]) -> Iterator[str]:
     """Produce a sequence of formatted lines from info.
 
     `info` is a sequence of pairs (label, data).  The produced lines are
@@ -158,7 +158,7 @@ def info_formatter(info: Iterable[Tuple[str, Any]]) -> Iterator[str]:
 def write_formatted_info(
     write: Callable[[str], None],
     header: str,
-    info: Iterable[Tuple[str, Any]],
+    info: Iterable[tuple[str, Any]],
 ) -> None:
     """Write a sequence of (label,data) pairs nicely.
 
@@ -179,10 +179,10 @@ def exc_one_line(exc: Exception) -> str:
     return "|".join(l.rstrip() for l in lines)
 
 
-_FILENAME_REGEXES: List[Tuple[str, str]] = [
+_FILENAME_REGEXES: list[tuple[str, str]] = [
     (r".*[/\\]pytest-of-.*[/\\]pytest-\d+([/\\]popen-gw\d+)?", "tmp:"),
 ]
-_FILENAME_SUBS: List[Tuple[str, str]] = []
+_FILENAME_SUBS: list[tuple[str, str]] = []
 
 @overload
 def short_filename(filename: str) -> str:
@@ -192,7 +192,7 @@ def short_filename(filename: str) -> str:
 def short_filename(filename: None) -> None:
     pass
 
-def short_filename(filename: Optional[str]) -> Optional[str]:
+def short_filename(filename: str | None) -> str | None:
     """Shorten a file name. Directories are replaced by prefixes like 'syspath:'"""
     if not _FILENAME_SUBS:
         for pathdir in sys.path:
@@ -350,7 +350,7 @@ def filter_text(text: str, filters: Iterable[Callable[[str], str]]) -> str:
 class CwdTracker:
     """A class to add cwd info to debug messages."""
     def __init__(self) -> None:
-        self.cwd: Optional[str] = None
+        self.cwd: str | None = None
 
     def filter(self, text: str) -> str:
         """Add a cwd message for each new cwd."""
@@ -393,7 +393,7 @@ class ProcessTracker:
 class PytestTracker:
     """Track the current pytest test name to add to debug messages."""
     def __init__(self) -> None:
-        self.test_name: Optional[str] = None
+        self.test_name: str | None = None
 
     def filter(self, text: str) -> str:
         """Add a message when the pytest test changes."""
@@ -408,7 +408,7 @@ class DebugOutputFile:
     """A file-like object that includes pid and cwd information."""
     def __init__(
         self,
-        outfile: Optional[IO[str]],
+        outfile: IO[str] | None,
         filters: Iterable[Callable[[str], str]],
     ):
         self.outfile = outfile
@@ -418,8 +418,8 @@ class DebugOutputFile:
     @classmethod
     def get_one(
         cls,
-        fileobj: Optional[IO[str]] = None,
-        file_name: Optional[str] = None,
+        fileobj: IO[str] | None = None,
+        file_name: str | None = None,
         filters: Iterable[Callable[[str], str]] = (),
         interim: bool = False,
     ) -> DebugOutputFile:
@@ -478,7 +478,7 @@ class DebugOutputFile:
         sys.modules[cls.SYS_MOD_NAME] = singleton_module
 
     @classmethod
-    def _get_singleton_data(cls) -> Tuple[Optional[DebugOutputFile], bool]:
+    def _get_singleton_data(cls) -> tuple[DebugOutputFile | None, bool]:
         """Get the one DebugOutputFile."""
         singleton_module = sys.modules.get(cls.SYS_MOD_NAME)
         return getattr(singleton_module, cls.SINGLETON_ATTR, (None, True))
@@ -582,7 +582,7 @@ def show_calls(
     return _decorator
 
 
-def relevant_environment_display(env: Mapping[str, str]) -> List[Tuple[str, str]]:
+def relevant_environment_display(env: Mapping[str, str]) -> list[tuple[str, str]]:
     """Filter environment variables for a debug display.
 
     Select variables to display (with COV or PY in the name, or HOME, TEMP, or

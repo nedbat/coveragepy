@@ -9,7 +9,7 @@ import os
 import os.path
 import re
 
-from typing import Any, Dict, Iterator, Tuple, Union
+from typing import Any, Iterator
 from xml.etree import ElementTree
 
 import pytest
@@ -64,7 +64,7 @@ class XmlTestHelpers(CoverageTest):
 
     def assert_source(
         self,
-        xmldom: Union[ElementTree.Element, ElementTree.ElementTree],
+        xmldom: ElementTree.Element | ElementTree.ElementTree,
         src: str,
     ) -> None:
         """Assert that the XML has a <source> element with `src`."""
@@ -379,7 +379,7 @@ def unbackslash(v: Any) -> Any:
 class XmlPackageStructureTest(XmlTestHelpers, CoverageTest):
     """Tests about the package structure reported in the coverage.xml file."""
 
-    def package_and_class_tags(self, cov: Coverage) -> Iterator[Tuple[str, Dict[str, Any]]]:
+    def package_and_class_tags(self, cov: Coverage) -> Iterator[tuple[str, dict[str, Any]]]:
         """Run an XML report on `cov`, and get the package and class tags."""
         cov.xml_report()
         dom = ElementTree.parse("coverage.xml")

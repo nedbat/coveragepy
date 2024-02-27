@@ -5,7 +5,7 @@
 
 from __future__ import annotations
 
-from typing import Optional, Type, TYPE_CHECKING
+from typing import TYPE_CHECKING
 
 from coverage.types import TFileDisposition
 
@@ -18,10 +18,10 @@ class FileDisposition:
 
     original_filename: str
     canonical_filename: str
-    source_filename: Optional[str]
+    source_filename: str | None
     trace: bool
     reason: str
-    file_tracer: Optional[FileTracer]
+    file_tracer: FileTracer | None
     has_dynamic_filename: bool
 
     def __repr__(self) -> str:
@@ -32,7 +32,7 @@ class FileDisposition:
 # be implemented in either C or Python.  Acting on them is done with these
 # functions.
 
-def disposition_init(cls: Type[TFileDisposition], original_filename: str) -> TFileDisposition:
+def disposition_init(cls: type[TFileDisposition], original_filename: str) -> TFileDisposition:
     """Construct and initialize a new FileDisposition object."""
     disp = cls()
     disp.original_filename = original_filename

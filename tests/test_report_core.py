@@ -5,7 +5,7 @@
 
 from __future__ import annotations
 
-from typing import IO, Iterable, List, Optional, Type
+from typing import IO, Iterable
 
 import pytest
 
@@ -21,12 +21,12 @@ class FakeReporter:
 
     report_type = "fake report file"
 
-    def __init__(self, output: str = "", error: Optional[Type[Exception]] = None) -> None:
+    def __init__(self, output: str = "", error: type[Exception] | None = None) -> None:
         self.output = output
         self.error = error
-        self.morfs: Optional[Iterable[TMorf]] = None
+        self.morfs: Iterable[TMorf] | None = None
 
-    def report(self, morfs: Optional[Iterable[TMorf]], outfile: IO[str]) -> float:
+    def report(self, morfs: Iterable[TMorf] | None, outfile: IO[str]) -> float:
         """Fake."""
         self.morfs = morfs
         outfile.write(self.output)
@@ -40,7 +40,7 @@ class RenderReportTest(CoverageTest):
 
     def test_stdout(self) -> None:
         fake = FakeReporter(output="Hello!\n")
-        msgs: List[str] = []
+        msgs: list[str] = []
         res = render_report("-", fake, [pytest, "coverage"], msgs.append)
         assert res == 17.25
         assert fake.morfs == [pytest, "coverage"]
@@ -49,7 +49,7 @@ class RenderReportTest(CoverageTest):
 
     def test_file(self) -> None:
         fake = FakeReporter(output="Gréètings!\n")
-        msgs: List[str] = []
+        msgs: list[str] = []
         res = render_report("output.txt", fake, [], msgs.append)
         assert res == 17.25
         assert self.stdout() == ""
@@ -58,9 +58,9 @@ class RenderReportTest(CoverageTest):
         assert msgs == ["Wrote fake report file to output.txt"]
 
     @pytest.mark.parametrize("error", [CoverageException, ZeroDivisionError])
-    def test_exception(self, error: Type[Exception]) -> None:
+    def test_exception(self, error: type[Exception]) -> None:
         fake = FakeReporter(error=error)
-        msgs: List[str] = []
+        msgs: list[str] = []
         with pytest.raises(error, match="You asked for it!"):
             render_report("output.txt", fake, [], msgs.append)
         assert self.stdout() == ""

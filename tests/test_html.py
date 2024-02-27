@@ -15,7 +15,7 @@ import re
 import sys
 
 from unittest import mock
-from typing import Any, Dict, IO, List, Optional, Set, Tuple
+from typing import Any, IO
 
 import pytest
 
@@ -56,8 +56,8 @@ class HtmlTestHelpers(CoverageTest):
 
     def run_coverage(
         self,
-        covargs: Optional[Dict[str, Any]] = None,
-        htmlargs: Optional[Dict[str, Any]] = None,
+        covargs: dict[str, Any] | None = None,
+        htmlargs: dict[str, Any] | None = None,
     ) -> float:
         """Run coverage.py on main_file.py, and create an HTML report."""
         self.clean_local_file_imports()
@@ -134,7 +134,7 @@ class HtmlTestHelpers(CoverageTest):
 
 class FileWriteTracker:
     """A fake object to track how `open` is used to write files."""
-    def __init__(self, written: Set[str]) -> None:
+    def __init__(self, written: set[str]) -> None:
         self.written = written
 
     def open(self, filename: str, mode: str = "r") -> IO[str]:
@@ -155,12 +155,12 @@ class HtmlDeltaTest(HtmlTestHelpers, CoverageTest):
         self.real_coverage_version = coverage.__version__
         self.addCleanup(setattr, coverage, "__version__", self.real_coverage_version)
 
-        self.files_written: Set[str]
+        self.files_written: set[str]
 
     def run_coverage(
         self,
-        covargs: Optional[Dict[str, Any]] = None,
-        htmlargs: Optional[Dict[str, Any]] = None,
+        covargs: dict[str, Any] | None = None,
+        htmlargs: dict[str, Any] | None = None,
     ) -> float:
         """Run coverage in-process for the delta tests.
 
@@ -659,7 +659,7 @@ def filepath_to_regex(path: str) -> str:
 def compare_html(
     expected: str,
     actual: str,
-    extra_scrubs: Optional[List[Tuple[str, str]]] = None,
+    extra_scrubs: list[tuple[str, str]] | None = None,
 ) -> None:
     """Specialized compare function for our HTML files."""
     __tracebackhide__ = True    # pytest, please don't show me this function.
@@ -1208,7 +1208,7 @@ class HtmlWithContextsTest(HtmlTestHelpers, CoverageTest):
         d = self.html_data_from_cov(cov, mod)
 
         context_labels = [self.EMPTY, 'two_tests.test_one', 'two_tests.test_two']
-        expected_lines: List[List[TLineNo]] = [[], self.TEST_ONE_LINES, []]
+        expected_lines: list[list[TLineNo]] = [[], self.TEST_ONE_LINES, []]
         for label, expected in zip(context_labels, expected_lines):
             actual = [ld.number for ld in d.lines if label in (ld.contexts or ())]
             assert sorted(expected) == sorted(actual)

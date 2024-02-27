@@ -8,7 +8,7 @@ from __future__ import annotations
 import re
 
 from types import SimpleNamespace
-from typing import Any, ContextManager, Dict, List, Optional
+from typing import Any, ContextManager
 
 import pytest
 
@@ -27,8 +27,8 @@ class TempliteTest(CoverageTest):
     def try_render(
         self,
         text: str,
-        ctx: Optional[Dict[str, Any]] = None,
-        result: Optional[str] = None,
+        ctx: dict[str, Any] | None = None,
+        result: str | None = None,
     ) -> None:
         """Render `text` through `ctx`, and it had better be `result`.
 
@@ -120,7 +120,7 @@ class TempliteTest(CoverageTest):
             "Look: 1, 2, 3, 4, done.",
         )
         # Loop iterables can be filtered.
-        def rev(l: List[int]) -> List[int]:
+        def rev(l: list[int]) -> list[int]:
             """Return the reverse of `l`."""
             l = l[:]
             l.reverse()

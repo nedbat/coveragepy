@@ -15,7 +15,7 @@ import shutil
 import sys
 import textwrap
 
-from typing import cast, Callable, Dict, Iterable, List, Optional, Set
+from typing import cast, Callable, Iterable
 
 import pytest
 
@@ -37,7 +37,7 @@ BAD_SQLITE_REGEX = r"file( is encrypted or)? is not a database"
 class ApiTest(CoverageTest):
     """Api-oriented tests for coverage.py."""
 
-    def clean_files(self, files: List[str], pats: List[str]) -> List[str]:
+    def clean_files(self, files: list[str], pats: list[str]) -> list[str]:
         """Remove names matching `pats` from `files`, a list of file names."""
         good = []
         for f in files:
@@ -48,7 +48,7 @@ class ApiTest(CoverageTest):
                 good.append(f)
         return good
 
-    def assertFiles(self, files: List[str]) -> None:
+    def assertFiles(self, files: list[str]) -> None:
         """Assert that the files here are `files`, ignoring the usual junk."""
         here = os.listdir(".")
         here = self.clean_files(here, ["*.pyc", "__pycache__", "*$py.class"])
@@ -491,7 +491,7 @@ class ApiTest(CoverageTest):
                 },
             )
 
-        def get_combined_filenames() -> Set[str]:
+        def get_combined_filenames() -> set[str]:
             cov = coverage.Coverage()
             cov.combine()
             assert self.stdout() == ""
@@ -748,7 +748,7 @@ class CurrentInstanceTest(CoverageTest):
 
     run_in_temp_dir = False
 
-    def assert_current_is_none(self, current: Optional[Coverage]) -> None:
+    def assert_current_is_none(self, current: Coverage | None) -> None:
         """Assert that a current we expect to be None is correct."""
         # During meta-coverage, the None answers will be wrong because the
         # overall coverage measurement will still be on the current-stack.
@@ -878,7 +878,7 @@ class SourceIncludeOmitTest(IncludeOmitTestsMixin, CoverageTest):
         )
         sys.path.insert(0, abs_file("tests_dir_modules"))
 
-    def coverage_usepkgs_counts(self, **kwargs: TCovKwargs) -> Dict[str, int]:
+    def coverage_usepkgs_counts(self, **kwargs: TCovKwargs) -> dict[str, int]:
         """Run coverage on usepkgs and return a line summary.
 
         Arguments are passed to the `coverage.Coverage` constructor.

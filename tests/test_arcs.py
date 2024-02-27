@@ -49,7 +49,7 @@ class SimpleArcTest(CoverageTest):
 
             c = 5
             """,
-            arcz="-{0}2 23 35 5-{0}".format(line1),
+            arcz=f"-{line1}2 23 35 5-{line1}",
         )
 
     def test_function_def(self) -> None:
@@ -477,7 +477,7 @@ class LoopArcTest(CoverageTest):
             num_stmts = 3
         else:
             num_stmts = 2
-        expected = "zero.py {n} {n} 0 0 0% 1-3".format(n=num_stmts)
+        expected = f"zero.py {num_stmts} {num_stmts} 0 0 0% 1-3"
         report = self.get_report(cov, show_missing=True)
         squeezed = self.squeezed_lines(report)
         assert expected in squeezed[3]
@@ -1637,10 +1637,10 @@ class MiscArcTest(CoverageTest):
         # line-number packing.
         code = """\
             data = [
-            """ + "".join("""\
+            """ + "".join(f"""\
                 [
                     {i}, {i}, {i}, {i}, {i}, {i}, {i}, {i}, {i}, {i}],
-            """.format(i=i) for i in range(n)
+            """ for i in range(n)
             ) + """\
             ]
 

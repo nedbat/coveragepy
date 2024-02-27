@@ -11,7 +11,6 @@ import re
 import sys
 import warnings
 
-from typing import List, Tuple
 
 import pytest
 
@@ -233,7 +232,7 @@ class CheckUniqueFilenamesTest(CoverageTest):
             filename: str,
             a: int = 17,
             b: str = "hello",
-        ) -> Tuple[int, str, int, str]:
+        ) -> tuple[int, str, int, str]:
             """The method we'll wrap, with args to be sure args work."""
             return (self.x, filename, a, b)
 
@@ -376,7 +375,7 @@ class ArczTest(CoverageTest):
         ("-11 12 2-5", [(-1, 1), (1, 2), (2, -5)]),
         ("-QA CB IT Z-A", [(-26, 10), (12, 11), (18, 29), (35, -10)]),
     ])
-    def test_arcz_to_arcs(self, arcz: str, arcs: List[TArc]) -> None:
+    def test_arcz_to_arcs(self, arcz: str, arcs: list[TArc]) -> None:
         assert arcz_to_arcs(arcz) == arcs
 
     @pytest.mark.parametrize("arcs, arcz_repr", [
@@ -393,7 +392,7 @@ class ArczTest(CoverageTest):
             ),
         ),
     ])
-    def test_arcs_to_arcz_repr(self, arcs: List[TArc], arcz_repr: str) -> None:
+    def test_arcs_to_arcz_repr(self, arcs: list[TArc], arcz_repr: str) -> None:
         assert arcs_to_arcz_repr(arcs) == arcz_repr
 
 

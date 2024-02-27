@@ -12,7 +12,7 @@ import os.path
 import sys
 import traceback
 
-from typing import Any, Dict, Optional
+from typing import Any
 
 from coverage.debug import DebugControl
 
@@ -29,7 +29,7 @@ class ProcessWithCoverage(OriginalProcess):         # pylint: disable=abstract-m
 
     def _bootstrap(self, *args, **kwargs):          # type: ignore[no-untyped-def]
         """Wrapper around _bootstrap to start coverage."""
-        debug: Optional[DebugControl] = None
+        debug: DebugControl | None = None
         try:
             from coverage import Coverage       # avoid circular import
             cov = Coverage(data_suffix=True, auto_data=True)
@@ -66,10 +66,10 @@ class Stowaway:
     def __init__(self, rcfile: str) -> None:
         self.rcfile = rcfile
 
-    def __getstate__(self) -> Dict[str, str]:
+    def __getstate__(self) -> dict[str, str]:
         return {"rcfile": self.rcfile}
 
-    def __setstate__(self, state: Dict[str, str]) -> None:
+    def __setstate__(self, state: dict[str, str]) -> None:
         patch_multiprocessing(state["rcfile"])
 
 
@@ -104,7 +104,7 @@ def patch_multiprocessing(rcfile: str) -> None:
     except (ImportError, AttributeError):
         pass
     else:
-        def get_preparation_data_with_stowaway(name: str) -> Dict[str, Any]:
+        def get_preparation_data_with_stowaway(name: str) -> dict[str, Any]:
             """Get the original preparation data, and also insert our stowaway."""
             d = original_get_preparation_data(name)
             d["stowaway"] = Stowaway(rcfile)

@@ -19,8 +19,7 @@ import sys
 
 from types import ModuleType
 from typing import (
-    Any, Collection, Dict, Iterable, Iterator, List, Mapping, Optional,
-    Sequence, Tuple, Union,
+    Any, Collection, Iterable, Iterator, Mapping, Sequence,
 )
 
 import coverage
@@ -68,15 +67,15 @@ class CoverageTest(
         super().setUp()
 
         # Attributes for getting info about what happened.
-        self.last_command_status: Optional[int] = None
-        self.last_command_output: Optional[str] = None
-        self.last_module_name: Optional[str] = None
+        self.last_command_status: int | None = None
+        self.last_command_output: str | None = None
+        self.last_module_name: str | None = None
 
     def start_import_stop(
         self,
         cov: Coverage,
         modname: str,
-        modfile: Optional[str] = None,
+        modfile: str | None = None,
     ) -> ModuleType:
         """Start coverage, import a file, then stop coverage.
 
@@ -128,8 +127,8 @@ class CoverageTest(
 
     def _check_arcs(
         self,
-        a1: Optional[Iterable[TArc]],
-        a2: Optional[Iterable[TArc]],
+        a1: Iterable[TArc] | None,
+        a2: Iterable[TArc] | None,
         arc_type: str,
     ) -> str:
         """Check that the arc lists `a1` and `a2` are equal.
@@ -151,17 +150,17 @@ class CoverageTest(
     def check_coverage(
         self,
         text: str,
-        lines: Optional[Union[Sequence[TLineNo], Sequence[List[TLineNo]]]] = None,
-        missing: Union[str, Sequence[str]] = "",
+        lines: Sequence[TLineNo] | Sequence[list[TLineNo]] | None = None,
+        missing: str | Sequence[str] = "",
         report: str = "",
-        excludes: Optional[Iterable[str]] = None,
+        excludes: Iterable[str] | None = None,
         partials: Iterable[str] = (),
-        arcz: Optional[str] = None,
-        arcz_missing: Optional[str] = None,
-        arcz_unpredicted: Optional[str] = None,
-        arcs: Optional[Iterable[TArc]] = None,
-        arcs_missing: Optional[Iterable[TArc]] = None,
-        arcs_unpredicted: Optional[Iterable[TArc]] = None,
+        arcz: str | None = None,
+        arcz_missing: str | None = None,
+        arcz_unpredicted: str | None = None,
+        arcs: Iterable[TArc] | None = None,
+        arcs_missing: Iterable[TArc] | None = None,
+        arcs_unpredicted: Iterable[TArc] | None = None,
     ) -> Coverage:
         """Check the coverage measurement of `text`.
 
@@ -262,11 +261,11 @@ class CoverageTest(
 
     def make_data_file(
         self,
-        basename: Optional[str] = None,
-        suffix: Optional[str] = None,
-        lines: Optional[Mapping[str, Collection[TLineNo]]] = None,
-        arcs: Optional[Mapping[str, Collection[TArc]]] = None,
-        file_tracers: Optional[Mapping[str, str]] = None,
+        basename: str | None = None,
+        suffix: str | None = None,
+        lines: Mapping[str, Collection[TLineNo]] | None = None,
+        arcs: Mapping[str, Collection[TArc]] | None = None,
+        file_tracers: Mapping[str, str] | None = None,
     ) -> CoverageData:
         """Write some data into a coverage data file."""
         data = coverage.CoverageData(basename=basename, suffix=suffix)
@@ -306,7 +305,7 @@ class CoverageTest(
         saved_warnings = []
         def capture_warning(
             msg: str,
-            slug: Optional[str] = None,
+            slug: str | None = None,
             once: bool = False,                 # pylint: disable=unused-argument
         ) -> None:
             """A fake implementation of Coverage._warn, to capture warnings."""
@@ -368,7 +367,7 @@ class CoverageTest(
         self,
         dt: datetime.datetime,
         seconds: int = 10,
-        msg: Optional[str] = None,
+        msg: str | None = None,
     ) -> None:
         """Assert that `dt` marks a time at most `seconds` seconds ago."""
         age = datetime.datetime.now() - dt
@@ -413,7 +412,7 @@ class CoverageTest(
         _, output = self.run_command_status(cmd)
         return output
 
-    def run_command_status(self, cmd: str) -> Tuple[int, str]:
+    def run_command_status(self, cmd: str) -> tuple[int, str]:
         """Run the command-line `cmd` in a sub-process, and print its output.
 
         Use this when you need to test the process behavior of coverage.
@@ -479,7 +478,7 @@ class CoverageTest(
         assert "error" not in report.lower()
         return report
 
-    def report_lines(self, report: str) -> List[str]:
+    def report_lines(self, report: str) -> list[str]:
         """Return the lines of the report, as a list."""
         lines = report.split('\n')
         assert lines[-1] == ""
@@ -489,7 +488,7 @@ class CoverageTest(
         """How many lines are in `report`?"""
         return len(self.report_lines(report))
 
-    def squeezed_lines(self, report: str) -> List[str]:
+    def squeezed_lines(self, report: str) -> list[str]:
         """Return a list of the lines in report, with the spaces squeezed."""
         lines = self.report_lines(report)
         return [re.sub(r"\s+", " ", l.strip()) for l in lines]
@@ -498,7 +497,7 @@ class CoverageTest(
         """Return the last line of `report` with the spaces squeezed down."""
         return self.squeezed_lines(report)[-1]
 
-    def get_measured_filenames(self, coverage_data: CoverageData) -> Dict[str, str]:
+    def get_measured_filenames(self, coverage_data: CoverageData) -> dict[str, str]:
         """Get paths to measured files.
 
         Returns a dict of {filename: absolute path to file}

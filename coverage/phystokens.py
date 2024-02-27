@@ -13,7 +13,7 @@ import sys
 import token
 import tokenize
 
-from typing import Iterable, List, Optional, Set, Tuple
+from typing import Iterable
 
 from coverage import env
 from coverage.types import TLineNo, TSourceTokenLines
@@ -32,7 +32,7 @@ def _phys_tokens(toks: TokenInfos) -> TokenInfos:
     Returns the same values as generate_tokens()
 
     """
-    last_line: Optional[str] = None
+    last_line: str | None = None
     last_lineno = -1
     last_ttext: str = ""
     for ttype, ttext, (slineno, scol), (elineno, ecol), ltext in toks:
@@ -81,7 +81,7 @@ class SoftKeywordFinder(ast.NodeVisitor):
     """Helper for finding lines with soft keywords, like match/case lines."""
     def __init__(self, source: str) -> None:
         # This will be the set of line numbers that start with a soft keyword.
-        self.soft_key_lines: Set[TLineNo] = set()
+        self.soft_key_lines: set[TLineNo] = set()
         self.visit(ast.parse(source))
 
     if sys.version_info >= (3, 10):
@@ -116,7 +116,7 @@ def source_token_lines(source: str) -> TSourceTokenLines:
     """
 
     ws_tokens = {token.INDENT, token.DEDENT, token.NEWLINE, tokenize.NL}
-    line: List[Tuple[str, str]] = []
+    line: list[tuple[str, str]] = []
     col = 0
 
     source = source.expandtabs(8).replace("\r\n", "\n")
@@ -182,8 +182,8 @@ class CachedTokenizer:
 
     """
     def __init__(self) -> None:
-        self.last_text: Optional[str] = None
-        self.last_tokens: List[tokenize.TokenInfo] = []
+        self.last_text: str | None = None
+        self.last_tokens: list[tokenize.TokenInfo] = []
 
     def generate_tokens(self, text: str) -> TokenInfos:
         """A stand-in for `tokenize.generate_tokens`."""

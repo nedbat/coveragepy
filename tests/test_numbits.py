@@ -8,7 +8,7 @@ from __future__ import annotations
 import json
 import sqlite3
 
-from typing import Iterable, Set
+from typing import Iterable
 
 from hypothesis import example, given, settings
 from hypothesis.strategies import sets, integers
@@ -54,7 +54,7 @@ class NumbitsOpTest(CoverageTest):
 
     @given(line_number_sets, line_number_sets)
     @settings(default_settings)
-    def test_union(self, nums1: Set[int], nums2: Set[int]) -> None:
+    def test_union(self, nums1: set[int], nums2: set[int]) -> None:
         nb1 = nums_to_numbits(nums1)
         good_numbits(nb1)
         nb2 = nums_to_numbits(nums2)
@@ -66,7 +66,7 @@ class NumbitsOpTest(CoverageTest):
 
     @given(line_number_sets, line_number_sets)
     @settings(default_settings)
-    def test_intersection(self, nums1: Set[int], nums2: Set[int]) -> None:
+    def test_intersection(self, nums1: set[int], nums2: set[int]) -> None:
         nb1 = nums_to_numbits(nums1)
         good_numbits(nb1)
         nb2 = nums_to_numbits(nums2)
@@ -78,7 +78,7 @@ class NumbitsOpTest(CoverageTest):
 
     @given(line_number_sets, line_number_sets)
     @settings(default_settings)
-    def test_any_intersection(self, nums1: Set[int], nums2: Set[int]) -> None:
+    def test_any_intersection(self, nums1: set[int], nums2: set[int]) -> None:
         nb1 = nums_to_numbits(nums1)
         good_numbits(nb1)
         nb2 = nums_to_numbits(nums2)

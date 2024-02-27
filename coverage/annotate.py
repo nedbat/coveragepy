@@ -8,7 +8,7 @@ from __future__ import annotations
 import os
 import re
 
-from typing import Iterable, Optional, TYPE_CHECKING
+from typing import Iterable, TYPE_CHECKING
 
 from coverage.files import flat_rootname
 from coverage.misc import ensure_dir, isolate_module
@@ -48,12 +48,12 @@ class AnnotateReporter:
     def __init__(self, coverage: Coverage) -> None:
         self.coverage = coverage
         self.config = self.coverage.config
-        self.directory: Optional[str] = None
+        self.directory: str | None = None
 
     blank_re = re.compile(r"\s*(#|$)")
     else_re = re.compile(r"\s*else\s*:\s*(#|$)")
 
-    def report(self, morfs: Optional[Iterable[TMorf]], directory: Optional[str] = None) -> None:
+    def report(self, morfs: Iterable[TMorf] | None, directory: str | None = None) -> None:
         """Run the report.
 
         See `coverage.report()` for arguments.

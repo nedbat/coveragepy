@@ -19,8 +19,7 @@ import warnings
 
 from pathlib import Path
 from typing import (
-    Any, Callable, Iterable, Iterator, List, NoReturn, Optional, Set, Tuple, Type,
-    TypeVar, Union, cast,
+    Any, Callable, Iterable, Iterator, NoReturn, TypeVar, cast,
 )
 
 import flaky
@@ -33,7 +32,7 @@ from coverage.misc import output_encoding
 from coverage.types import TArc, TLineNo
 
 
-def run_command(cmd: str) -> Tuple[int, str]:
+def run_command(cmd: str) -> tuple[int, str]:
     """Run a command in a sub-process.
 
     Returns the exit status code and the combined stdout and stderr.
@@ -74,7 +73,7 @@ def make_file(
     filename: str,
     text: str = "",
     bytes: bytes = b"",
-    newline: Optional[str] = None,
+    newline: str | None = None,
 ) -> str:
     """Create a file for testing.
 
@@ -147,7 +146,7 @@ class CheckUniqueFilenames:
     """Asserts the uniqueness of file names passed to a function."""
 
     def __init__(self, wrapped: Callable[..., Any]) -> None:
-        self.filenames: Set[str] = set()
+        self.filenames: set[str] = set()
         self.wrapped = wrapped
 
     @classmethod
@@ -175,7 +174,7 @@ class CheckUniqueFilenames:
         return self.wrapped(filename, *args, **kwargs)
 
 
-def re_lines(pat: str, text: str, match: bool = True) -> List[str]:
+def re_lines(pat: str, text: str, match: bool = True) -> list[str]:
     """Return a list of lines selected by `pat` in the string `text`.
 
     If `match` is false, the selection is inverted: only the non-matching
@@ -219,7 +218,7 @@ _arcz_map.update({c: ord(c) - ord('0') for c in '123456789'})
 _arcz_map.update({c: 10 + ord(c) - ord('A') for c in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'})
 
 
-def arcz_to_arcs(arcz: str) -> List[TArc]:
+def arcz_to_arcs(arcz: str) -> list[TArc]:
     """Convert a compact textual representation of arcs to a list of pairs.
 
     The text has space-separated pairs of letters.  Period is -1, 1-9 are
@@ -270,7 +269,7 @@ def _arcs_to_arcz_repr_one(num: TLineNo) -> str:
     return z
 
 
-def arcs_to_arcz_repr(arcs: Optional[Iterable[TArc]]) -> str:
+def arcs_to_arcz_repr(arcs: Iterable[TArc] | None) -> str:
     """Convert a list of arcs to a readable multi-line form for asserting.
 
     Each pair is on its own line, with a comment showing the arcz form,
@@ -288,7 +287,7 @@ def arcs_to_arcz_repr(arcs: Optional[Iterable[TArc]]) -> str:
 
 
 @contextlib.contextmanager
-def change_dir(new_dir: Union[str, Path]) -> Iterator[None]:
+def change_dir(new_dir: str | Path) -> Iterator[None]:
     """Change directory, and then change back.
 
     Use as a context manager, it will return to the original
@@ -305,8 +304,8 @@ def change_dir(new_dir: Union[str, Path]) -> Iterator[None]:
 T = TypeVar("T")
 
 def assert_count_equal(
-    a: Optional[Iterable[T]],
-    b: Optional[Iterable[T]],
+    a: Iterable[T] | None,
+    b: Iterable[T] | None,
 ) -> None:
     """
     A pytest-friendly implementation of assertCountEqual.
@@ -321,7 +320,7 @@ def assert_count_equal(
 
 def assert_coverage_warnings(
     warns: Iterable[warnings.WarningMessage],
-    *msgs: Union[str, re.Pattern[str]],
+    *msgs: str | re.Pattern[str],
 ) -> None:
     """
     Assert that the CoverageWarning's in `warns` have `msgs` as messages.
@@ -343,7 +342,7 @@ def assert_coverage_warnings(
 @contextlib.contextmanager
 def swallow_warnings(
     message: str = r".",
-    category: Type[Warning] = CoverageWarning,
+    category: type[Warning] = CoverageWarning,
 ) -> Iterator[None]:
     """Swallow particular warnings.
 
@@ -362,7 +361,7 @@ xfail_pypy38 = pytest.mark.xfail(
 
 class FailingProxy:
     """A proxy for another object, but one method will fail a few times before working."""
-    def __init__(self, obj: Any, methname: str, fails: List[Exception]) -> None:
+    def __init__(self, obj: Any, methname: str, fails: list[Exception]) -> None:
         """Create the failing proxy.
 
         `obj` is the object to proxy.  `methname` is the method that will fail

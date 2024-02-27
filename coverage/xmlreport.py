@@ -12,7 +12,7 @@ import time
 import xml.dom.minidom
 
 from dataclasses import dataclass
-from typing import Any, Dict, IO, Iterable, Optional, TYPE_CHECKING
+from typing import Any, IO, Iterable, TYPE_CHECKING
 
 from coverage import __version__, files
 from coverage.misc import isolate_module, human_sorted, human_sorted_items
@@ -42,7 +42,7 @@ def rate(hit: int, num: int) -> str:
 @dataclass
 class PackageData:
     """Data we keep about each "package" (in Java terms)."""
-    elements: Dict[str, xml.dom.minidom.Element]
+    elements: dict[str, xml.dom.minidom.Element]
     hits: int
     lines: int
     br_hits: int
@@ -72,10 +72,10 @@ class XmlReporter:
                     else:
                         src = files.canonical_filename(src)
                     self.source_paths.add(src)
-        self.packages: Dict[str, PackageData] = {}
+        self.packages: dict[str, PackageData] = {}
         self.xml_out: xml.dom.minidom.Document
 
-    def report(self, morfs: Optional[Iterable[TMorf]], outfile: Optional[IO[str]] = None) -> float:
+    def report(self, morfs: Iterable[TMorf] | None, outfile: IO[str] | None = None) -> float:
         """Generate a Cobertura-compatible XML report for `morfs`.
 
         `morfs` is a list of modules or file names.

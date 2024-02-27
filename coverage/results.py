@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import collections
 
-from typing import Callable, Dict, Iterable, List, Optional, Tuple, TYPE_CHECKING
+from typing import Callable, Iterable, TYPE_CHECKING
 
 from coverage.debug import auto_repr
 from coverage.exceptions import ConfigError
@@ -86,18 +86,18 @@ class Analysis:
         """Were arcs measured in this result?"""
         return self.data.has_arcs()
 
-    def arc_possibilities(self) -> List[TArc]:
+    def arc_possibilities(self) -> list[TArc]:
         """Returns a sorted list of the arcs in the code."""
         return self._arc_possibilities
 
-    def arcs_executed(self) -> List[TArc]:
+    def arcs_executed(self) -> list[TArc]:
         """Returns a sorted list of the arcs actually executed in the code."""
         executed: Iterable[TArc]
         executed = self.data.arcs(self.filename) or []
         executed = self.file_reporter.translate_arcs(executed)
         return sorted(executed)
 
-    def arcs_missing(self) -> List[TArc]:
+    def arcs_missing(self) -> list[TArc]:
         """Returns a sorted list of the un-executed arcs in the code."""
         possible = self.arc_possibilities()
         executed = self.arcs_executed()
@@ -109,7 +109,7 @@ class Analysis:
         )
         return sorted(missing)
 
-    def arcs_unpredicted(self) -> List[TArc]:
+    def arcs_unpredicted(self) -> list[TArc]:
         """Returns a sorted list of the executed arcs missing from the code."""
         possible = self.arc_possibilities()
         executed = self.arcs_executed()
@@ -126,7 +126,7 @@ class Analysis:
         )
         return sorted(unpredicted)
 
-    def _branch_lines(self) -> List[TLineNo]:
+    def _branch_lines(self) -> list[TLineNo]:
         """Returns a list of line numbers that have more than one exit."""
         return [l1 for l1,count in self.exit_counts.items() if count > 1]
 
@@ -134,7 +134,7 @@ class Analysis:
         """How many total branches are there?"""
         return sum(count for count in self.exit_counts.values() if count > 1)
 
-    def missing_branch_arcs(self) -> Dict[TLineNo, List[TLineNo]]:
+    def missing_branch_arcs(self) -> dict[TLineNo, list[TLineNo]]:
         """Return arcs that weren't executed from branch lines.
 
         Returns {l1:[l2a,l2b,...], ...}
@@ -148,7 +148,7 @@ class Analysis:
                 mba[l1].append(l2)
         return mba
 
-    def executed_branch_arcs(self) -> Dict[TLineNo, List[TLineNo]]:
+    def executed_branch_arcs(self) -> dict[TLineNo, list[TLineNo]]:
         """Return arcs that were executed from branch lines.
 
         Returns {l1:[l2a,l2b,...], ...}
@@ -162,7 +162,7 @@ class Analysis:
                 eba[l1].append(l2)
         return eba
 
-    def branch_stats(self) -> Dict[TLineNo, Tuple[int, int]]:
+    def branch_stats(self) -> dict[TLineNo, tuple[int, int]]:
         """Get stats about branches.
 
         Returns a dict mapping line numbers to a tuple:
@@ -211,7 +211,7 @@ class Numbers:
 
     __repr__ = auto_repr
 
-    def init_args(self) -> List[int]:
+    def init_args(self) -> list[int]:
         """Return a list for __init__(*args) to recreate this object."""
         return [
             self._precision,
@@ -274,7 +274,7 @@ class Numbers:
         return width
 
     @property
-    def ratio_covered(self) -> Tuple[int, int]:
+    def ratio_covered(self) -> tuple[int, int]:
         """Return a numerator and denominator for the coverage ratio."""
         numerator = self.n_executed + self.n_executed_branches
         denominator = self.n_statements + self.n_branches
@@ -304,7 +304,7 @@ class Numbers:
 def _line_ranges(
     statements: Iterable[TLineNo],
     lines: Iterable[TLineNo],
-) -> List[Tuple[TLineNo, TLineNo]]:
+) -> list[tuple[TLineNo, TLineNo]]:
     """Produce a list of ranges for `format_lines`."""
     statements = sorted(statements)
     lines = sorted(lines)
@@ -331,7 +331,7 @@ def _line_ranges(
 def format_lines(
     statements: Iterable[TLineNo],
     lines: Iterable[TLineNo],
-    arcs: Optional[Iterable[Tuple[TLineNo, List[TLineNo]]]] = None,
+    arcs: Iterable[tuple[TLineNo, list[TLineNo]]] | None = None,
 ) -> str:
     """Nicely format a list of line numbers.
 

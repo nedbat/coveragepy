@@ -8,7 +8,7 @@ from __future__ import annotations
 import inspect
 import os.path
 
-from typing import Any, List, Optional, Tuple
+from typing import Any
 from unittest import mock
 
 import pytest
@@ -50,7 +50,7 @@ class StaticContextTest(CoverageTest):
     LINES = [1, 2, 4]
     ARCS = [(-1, 1), (1, 2), (2, 4), (4, -1)]
 
-    def run_red_blue(self, **options: TCovKwargs) -> Tuple[CoverageData, CoverageData]:
+    def run_red_blue(self, **options: TCovKwargs) -> tuple[CoverageData, CoverageData]:
         """Run red.py and blue.py, and return their CoverageData objects."""
         self.make_file("red.py", self.SOURCE)
         red_cov = coverage.Coverage(context="red", data_suffix="r", source=["."], **options)
@@ -81,7 +81,7 @@ class StaticContextTest(CoverageTest):
             fred = full_names['red.py']
             fblue = full_names['blue.py']
 
-            def assert_combined_lines(filename: str, context: str, lines: List[TLineNo]) -> None:
+            def assert_combined_lines(filename: str, context: str, lines: list[TLineNo]) -> None:
                 # pylint: disable=cell-var-from-loop
                 combined.set_query_context(context)
                 assert combined.lines(filename) == lines
@@ -106,7 +106,7 @@ class StaticContextTest(CoverageTest):
             fred = full_names['red.py']
             fblue = full_names['blue.py']
 
-            def assert_combined_lines(filename: str, context: str, lines: List[TLineNo]) -> None:
+            def assert_combined_lines(filename: str, context: str, lines: list[TLineNo]) -> None:
                 # pylint: disable=cell-var-from-loop
                 combined.set_query_context(context)
                 assert combined.lines(filename) == lines
@@ -116,7 +116,7 @@ class StaticContextTest(CoverageTest):
             assert_combined_lines(fblue, 'red', [])
             assert_combined_lines(fblue, 'blue', self.LINES)
 
-            def assert_combined_arcs(filename: str, context: str, lines: List[TArc]) -> None:
+            def assert_combined_arcs(filename: str, context: str, lines: list[TArc]) -> None:
                 # pylint: disable=cell-var-from-loop
                 combined.set_query_context(context)
                 assert combined.arcs(filename) == lines
@@ -172,7 +172,7 @@ class DynamicContextTest(CoverageTest):
             ["", "two_tests.test_one", "two_tests.test_two"],
         )
 
-        def assert_context_lines(context: str, lines: List[TLineNo]) -> None:
+        def assert_context_lines(context: str, lines: list[TLineNo]) -> None:
             data.set_query_context(context)
             assert_count_equal(lines, sorted_lines(data, fname))
 
@@ -194,7 +194,7 @@ class DynamicContextTest(CoverageTest):
             ["stat", "stat|two_tests.test_one", "stat|two_tests.test_two"],
         )
 
-        def assert_context_lines(context: str, lines: List[TLineNo]) -> None:
+        def assert_context_lines(context: str, lines: list[TLineNo]) -> None:
             data.set_query_context(context)
             assert_count_equal(lines, sorted_lines(data, fname))
 
@@ -203,7 +203,7 @@ class DynamicContextTest(CoverageTest):
         assert_context_lines("stat|two_tests.test_two", self.TEST_TWO_LINES)
 
 
-def get_qualname() -> Optional[str]:
+def get_qualname() -> str | None:
     """Helper to return qualname_from_frame for the caller."""
     stack = inspect.stack()[1:]
     if any(sinfo[0].f_code.co_name == "get_qualname" for sinfo in stack):
@@ -216,11 +216,11 @@ def get_qualname() -> Optional[str]:
 # pylint: disable=missing-class-docstring, missing-function-docstring, unused-argument
 
 class Parent:
-    def meth(self) -> Optional[str]:
+    def meth(self) -> str | None:
         return get_qualname()
 
     @property
-    def a_property(self) -> Optional[str]:
+    def a_property(self) -> str | None:
         return get_qualname()
 
 class Child(Parent):
@@ -232,16 +232,16 @@ class SomethingElse:
 class MultiChild(SomethingElse, Child):
     pass
 
-def no_arguments() -> Optional[str]:
+def no_arguments() -> str | None:
     return get_qualname()
 
-def plain_old_function(a: Any, b: Any) -> Optional[str]:
+def plain_old_function(a: Any, b: Any) -> str | None:
     return get_qualname()
 
-def fake_out(self: Any) -> Optional[str]:
+def fake_out(self: Any) -> str | None:
     return get_qualname()
 
-def patch_meth(self: Any) -> Optional[str]:
+def patch_meth(self: Any) -> str | None:
     return get_qualname()
 
 # pylint: enable=missing-class-docstring, missing-function-docstring, unused-argument

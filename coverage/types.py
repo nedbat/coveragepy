@@ -43,8 +43,8 @@ class TTraceFn(Protocol):
         frame: FrameType,
         event: str,
         arg: Any,
-        lineno: Optional[TLineNo] = None,  # Our own twist, see collector.py
-    ) -> Optional[TTraceFn]:
+        lineno: TLineNo | None = None,  # Our own twist, see collector.py
+    ) -> TTraceFn | None:
         ...
 
 ## Coverage.py tracing
@@ -59,10 +59,10 @@ class TFileDisposition(Protocol):
 
     original_filename: str
     canonical_filename: str
-    source_filename: Optional[str]
+    source_filename: str | None
     trace: bool
     reason: str
-    file_tracer: Optional[FileTracer]
+    file_tracer: FileTracer | None
     has_dynamic_filename: bool
 
 
@@ -84,9 +84,9 @@ class TracerCore(Protocol):
     data: TTraceData
     trace_arcs: bool
     should_trace: Callable[[str, FrameType], TFileDisposition]
-    should_trace_cache: Mapping[str, Optional[TFileDisposition]]
-    should_start_context: Optional[Callable[[FrameType], Optional[str]]]
-    switch_context: Optional[Callable[[Optional[str]], None]]
+    should_trace_cache: Mapping[str, TFileDisposition | None]
+    should_start_context: Callable[[FrameType], str | None] | None
+    switch_context: Callable[[str | None], None] | None
     warn: TWarnFn
 
     def __init__(self) -> None:
@@ -104,7 +104,7 @@ class TracerCore(Protocol):
     def reset_activity(self) -> None:
         """Reset the activity() flag."""
 
-    def get_stats(self) -> Optional[Dict[str, int]]:
+    def get_stats(self) -> dict[str, int] | None:
         """Return a dictionary of statistics, or None."""
 
 
@@ -126,7 +126,7 @@ TConfigSectionOut = Mapping[str, TConfigValueOut]
 class TConfigurable(Protocol):
     """Something that can proxy to the coverage configuration settings."""
 
-    def get_option(self, option_name: str) -> Optional[TConfigValueOut]:
+    def get_option(self, option_name: str) -> TConfigValueOut | None:
         """Get an option from the configuration.
 
         `option_name` is a colon-separated string indicating the section and
@@ -137,7 +137,7 @@ class TConfigurable(Protocol):
 
         """
 
-    def set_option(self, option_name: str, value: Union[TConfigValueIn, TConfigSectionIn]) -> None:
+    def set_option(self, option_name: str, value: TConfigValueIn | TConfigSectionIn) -> None:
         """Set an option in the configuration.
 
         `option_name` is a colon-separated string indicating the section and
@@ -173,7 +173,7 @@ class TPlugin(Protocol):
 
 class TWarnFn(Protocol):
     """A callable warn() function."""
-    def __call__(self, msg: str, slug: Optional[str] = None, once: bool = False) -> None:
+    def __call__(self, msg: str, slug: str | None = None, once: bool = False) -> None:
         ...
 
 

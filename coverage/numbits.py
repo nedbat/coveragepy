@@ -20,7 +20,7 @@ import json
 import sqlite3
 
 from itertools import zip_longest
-from typing import Iterable, List
+from typing import Iterable
 
 
 def nums_to_numbits(nums: Iterable[int]) -> bytes:
@@ -43,7 +43,7 @@ def nums_to_numbits(nums: Iterable[int]) -> bytes:
     return bytes(b)
 
 
-def numbits_to_nums(numbits: bytes) -> List[int]:
+def numbits_to_nums(numbits: bytes) -> list[int]:
     """Convert a numbits into a list of numbers.
 
     Arguments:

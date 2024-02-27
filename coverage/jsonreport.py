@@ -9,7 +9,7 @@ import datetime
 import json
 import sys
 
-from typing import Any, Dict, IO, Iterable, List, Optional, Tuple, TYPE_CHECKING
+from typing import Any, IO, Iterable, TYPE_CHECKING
 
 from coverage import __version__
 from coverage.report_core import get_analysis_to_report
@@ -34,9 +34,9 @@ class JsonReporter:
         self.coverage = coverage
         self.config = self.coverage.config
         self.total = Numbers(self.config.precision)
-        self.report_data: Dict[str, Any] = {}
+        self.report_data: dict[str, Any] = {}
 
-    def report(self, morfs: Optional[Iterable[TMorf]], outfile: IO[str]) -> float:
+    def report(self, morfs: Iterable[TMorf] | None, outfile: IO[str]) -> float:
         """Generate a json report for `morfs`.
 
         `morfs` is a list of modules or file names.
@@ -89,7 +89,7 @@ class JsonReporter:
 
         return self.total.n_statements and self.total.pc_covered
 
-    def report_one_file(self, coverage_data: CoverageData, analysis: Analysis) -> Dict[str, Any]:
+    def report_one_file(self, coverage_data: CoverageData, analysis: Analysis) -> dict[str, Any]:
         """Extract the relevant report data for a single file."""
         nums = analysis.numbers
         self.total += nums
@@ -126,8 +126,8 @@ class JsonReporter:
 
 
 def _convert_branch_arcs(
-    branch_arcs: Dict[TLineNo, List[TLineNo]],
-) -> Iterable[Tuple[TLineNo, TLineNo]]:
+    branch_arcs: dict[TLineNo, list[TLineNo]],
+) -> Iterable[tuple[TLineNo, TLineNo]]:
     """Convert branch arcs to a list of two-element tuples."""
     for source, targets in branch_arcs.items():
         for target in targets:

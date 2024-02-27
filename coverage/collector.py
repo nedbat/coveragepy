@@ -11,7 +11,7 @@ import sys
 
 from types import FrameType
 from typing import (
-    cast, Any, Callable, Dict, List, Mapping, Optional, Set, Type, TypeVar,
+    cast, Any, Callable, Dict, List, Mapping, Set, TypeVar,
 )
 
 from coverage import env
@@ -70,7 +70,7 @@ class Collector:
     # The stack of active Collectors.  Collectors are added here when started,
     # and popped when stopped.  Collectors on the stack are paused when not
     # the top, and resumed when they become the top again.
-    _collectors: List[Collector] = []
+    _collectors: list[Collector] = []
 
     # The concurrency settings we support here.
     LIGHT_THREADS = {"greenlet", "eventlet", "gevent"}
@@ -79,12 +79,12 @@ class Collector:
         self,
         should_trace: Callable[[str, FrameType], TFileDisposition],
         check_include: Callable[[str, FrameType], bool],
-        should_start_context: Optional[Callable[[FrameType], Optional[str]]],
+        should_start_context: Callable[[FrameType], str | None] | None,
         file_mapper: Callable[[str], str],
         timid: bool,
         branch: bool,
         warn: TWarnFn,
-        concurrency: List[str],
+        concurrency: list[str],
         metacov: bool,
     ) -> None:
         """Create a collector.
@@ -136,16 +136,16 @@ class Collector:
 
         self.covdata: CoverageData
         self.threading = None
-        self.static_context: Optional[str] = None
+        self.static_context: str | None = None
 
         self.origin = short_stack()
 
         self.concur_id_func = None
 
-        self._trace_class: Type[TracerCore]
-        self.file_disposition_class: Type[TFileDisposition]
+        self._trace_class: type[TracerCore]
+        self.file_disposition_class: type[TFileDisposition]
 
-        core: Optional[str]
+        core: str | None
         if timid:
             core = "pytrace"
         else:
@@ -240,7 +240,7 @@ class Collector:
     def __repr__(self) -> str:
         return f"<Collector at {id(self):#x}: {self.tracer_name()}>"
 
-    def use_data(self, covdata: CoverageData, context: Optional[str]) -> None:
+    def use_data(self, covdata: CoverageData, context: str | None) -> None:
         """Use `covdata` for recording data."""
         self.covdata = covdata
         self.static_context = context
@@ -268,9 +268,9 @@ class Collector:
 
         # A dictionary mapping file names to file tracer plugin names that will
         # handle them.
-        self.file_tracers: Dict[str, str] = {}
+        self.file_tracers: dict[str, str] = {}
 
-        self.disabled_plugins: Set[str] = set()
+        self.disabled_plugins: set[str] = set()
 
         # The .should_trace_cache attribute is a cache from file names to
         # coverage.FileDisposition objects, or None.  When a file is first
@@ -301,7 +301,7 @@ class Collector:
             self.should_trace_cache = {}
 
         # Our active Tracers.
-        self.tracers: List[TracerCore] = []
+        self.tracers: list[TracerCore] = []
 
         self._clear_data()
 
@@ -342,12 +342,12 @@ class Collector:
     #
     # New in 3.12: threading.settrace_all_threads: https://github.com/python/cpython/pull/96681
 
-    def _installation_trace(self, frame: FrameType, event: str, arg: Any) -> Optional[TTraceFn]:
+    def _installation_trace(self, frame: FrameType, event: str, arg: Any) -> TTraceFn | None:
         """Called on new threads, installs the real tracer."""
         # Remove ourselves as the trace function.
         sys.settrace(None)
         # Install the real tracer.
-        fn: Optional[TTraceFn] = self._start_tracer()
+        fn: TTraceFn | None = self._start_tracer()
         # Invoke the real trace function with the current event, to be sure
         # not to lose an event.
         if fn:
@@ -444,9 +444,9 @@ class Collector:
         """
         return any(tracer.activity() for tracer in self.tracers)
 
-    def switch_context(self, new_context: Optional[str]) -> None:
+    def switch_context(self, new_context: str | None) -> None:
         """Switch to a new dynamic context."""
-        context: Optional[str]
+        context: str | None
         self.flush_data()
         if self.static_context:
             context = self.static_context
@@ -471,7 +471,7 @@ class Collector:
         """A locally cached version of file names mapped through file_mapper."""
         return self.file_mapper(filename)
 
-    def mapped_file_dict(self, d: Mapping[str, T]) -> Dict[str, T]:
+    def mapped_file_dict(self, d: Mapping[str, T]) -> dict[str, T]:
         """Return a dict like d, but with keys modified by file_mapper."""
         # The call to list(items()) ensures that the GIL protects the dictionary
         # iterator against concurrent modifications by tracers running
@@ -511,7 +511,7 @@ class Collector:
                 # Unpack the line number pairs packed into integers.  See
                 # tracer.c:CTracer_record_pair for the C code that creates
                 # these packed ints.
-                arc_data: Dict[str, List[TArc]] = {}
+                arc_data: dict[str, list[TArc]] = {}
                 packed_data = cast(Dict[str, Set[int]], self.data)
 
                 # The list() here and in the inner loop are to get a clean copy

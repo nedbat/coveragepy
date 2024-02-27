@@ -13,7 +13,7 @@ import sqlite3
 import threading
 
 from typing import (
-    Any, Callable, Collection, Dict, Iterable, Mapping, Set, TypeVar, Union,
+    Any, Callable, Collection, Iterable, Mapping, TypeVar, Union,
 )
 from unittest import mock
 
@@ -120,7 +120,7 @@ def assert_arcs3_data(covdata: CoverageData) -> None:
 
 TData = TypeVar("TData", bound=Union[TLineNo, TArc])
 
-def dicts_from_sets(file_data: Dict[str, Set[TData]]) -> Dict[str, Dict[TData, None]]:
+def dicts_from_sets(file_data: dict[str, set[TData]]) -> dict[str, dict[TData, None]]:
     """Convert a dict of sets into a dict of dicts.
 
     Before 6.0, file data was a dict with None as the values.  In 6.0, file

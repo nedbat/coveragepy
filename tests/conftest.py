@@ -15,7 +15,7 @@ import sysconfig
 import warnings
 
 from pathlib import Path
-from typing import Iterator, Optional
+from typing import Iterator
 
 import pytest
 
@@ -120,7 +120,7 @@ def possible_pth_dirs() -> Iterator[Path]:
     yield Path(sysconfig.get_path("purelib"))       # pragma: cant happen
 
 
-def find_writable_pth_directory() -> Optional[Path]:
+def find_writable_pth_directory() -> Path | None:
     """Find a place to write a .pth file."""
     for pth_dir in possible_pth_dirs():             # pragma: part covered
         try_it = pth_dir / f"touch_{WORKER}.it"

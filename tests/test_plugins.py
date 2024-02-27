@@ -10,7 +10,7 @@ import io
 import math
 import os.path
 
-from typing import Any, Dict, List, Optional
+from typing import Any
 from xml.etree import ElementTree
 
 import pytest
@@ -39,10 +39,10 @@ class NullConfig(TPluginConfig):
 class FakeConfig(TPluginConfig):
     """A fake config for use in tests."""
 
-    def __init__(self, plugin: str, options: Dict[str, Any]) -> None:
+    def __init__(self, plugin: str, options: dict[str, Any]) -> None:
         self.plugin = plugin
         self.options = options
-        self.asked_for: List[str] = []
+        self.asked_for: list[str] = []
 
     def get_plugin_options(self, plugin: str) -> TConfigSectionOut:
         """Just return the options for `plugin` if this is the right module."""
@@ -631,8 +631,8 @@ class BadFileTracerTest(FileTracerTest):
         module_name: str,
         plugin_name: str,
         our_error: bool = True,
-        excmsg: Optional[str] = None,
-        excmsgs: Optional[List[str]] = None,
+        excmsg: str | None = None,
+        excmsgs: list[str] | None = None,
     ) -> None:
         """Run a file, and see that the plugin failed.
 
@@ -1125,7 +1125,7 @@ class DynamicContextPluginTest(CoverageTest):
         ]
         assert expected == sorted(data.measured_contexts())
 
-        def assert_context_lines(context: str, lines: List[TLineNo]) -> None:
+        def assert_context_lines(context: str, lines: list[TLineNo]) -> None:
             data.set_query_context(context)
             assert lines == sorted_lines(data, filenames['rendering.py'])
 
@@ -1163,7 +1163,7 @@ class DynamicContextPluginTest(CoverageTest):
         ]
         assert expected == sorted(data.measured_contexts())
 
-        def assert_context_lines(context: str, lines: List[TLineNo]) -> None:
+        def assert_context_lines(context: str, lines: list[TLineNo]) -> None:
             data.set_query_context(context)
             assert lines == sorted_lines(data, filenames['rendering.py'])
 

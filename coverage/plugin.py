@@ -117,7 +117,7 @@ from __future__ import annotations
 import functools
 
 from types import FrameType
-from typing import Any, Dict, Iterable, Optional, Set, Tuple, Union
+from typing import Any, Iterable
 
 from coverage import files
 from coverage.misc import _needs_to_implement
@@ -130,7 +130,7 @@ class CoveragePlugin:
     _coverage_plugin_name: str
     _coverage_enabled: bool
 
-    def file_tracer(self, filename: str) -> Optional[FileTracer]: # pylint: disable=unused-argument
+    def file_tracer(self, filename: str) -> FileTracer | None: # pylint: disable=unused-argument
         """Get a :class:`FileTracer` object for a file.
 
         Plug-in type: file tracer.
@@ -173,7 +173,7 @@ class CoveragePlugin:
     def file_reporter(
         self,
         filename: str,                  # pylint: disable=unused-argument
-    ) -> Union[FileReporter, str]:      # str should be Literal["python"]
+    ) -> FileReporter | str:      # str should be Literal["python"]
         """Get the :class:`FileReporter` class to use for a file.
 
         Plug-in type: file tracer.
@@ -190,7 +190,7 @@ class CoveragePlugin:
     def dynamic_context(
         self,
         frame: FrameType,               # pylint: disable=unused-argument
-    ) -> Optional[str]:
+    ) -> str | None:
         """Get the dynamically computed context label for `frame`.
 
         Plug-in type: dynamic context.
@@ -238,7 +238,7 @@ class CoveragePlugin:
         """
         pass
 
-    def sys_info(self) -> Iterable[Tuple[str, Any]]:
+    def sys_info(self) -> Iterable[tuple[str, Any]]:
         """Get a list of information useful for debugging.
 
         Plug-in type: any.
@@ -311,7 +311,7 @@ class FileTracer(CoveragePluginBase):
         self,
         filename: str,                  # pylint: disable=unused-argument
         frame: FrameType,               # pylint: disable=unused-argument
-    ) -> Optional[str]:
+    ) -> str | None:
         """Get a dynamically computed source file name.
 
         Some plug-ins need to compute the source file name dynamically for each
@@ -326,7 +326,7 @@ class FileTracer(CoveragePluginBase):
         """
         return None
 
-    def line_number_range(self, frame: FrameType) -> Tuple[TLineNo, TLineNo]:
+    def line_number_range(self, frame: FrameType) -> tuple[TLineNo, TLineNo]:
         """Get the range of source line numbers for a given a call frame.
 
         The call frame is examined, and the source line number in the original
@@ -369,7 +369,7 @@ class FileReporter(CoveragePluginBase):
         self.filename = filename
 
     def __repr__(self) -> str:
-        return "<{0.__class__.__name__} filename={0.filename!r}>".format(self)
+        return f"<{self.__class__.__name__} filename={self.filename!r}>"
 
     def relative_filename(self) -> str:
         """Get the relative file name for this file.
@@ -395,7 +395,7 @@ class FileReporter(CoveragePluginBase):
         with open(self.filename, encoding="utf-8") as f:
             return f.read()
 
-    def lines(self) -> Set[TLineNo]:
+    def lines(self) -> set[TLineNo]:
         """Get the executable lines in this file.
 
         Your plug-in must determine which lines in the file were possibly
@@ -406,7 +406,7 @@ class FileReporter(CoveragePluginBase):
         """
         _needs_to_implement(self, "lines")
 
-    def excluded_lines(self) -> Set[TLineNo]:
+    def excluded_lines(self) -> set[TLineNo]:
         """Get the excluded executable lines in this file.
 
         Your plug-in can use any method it likes to allow the user to exclude
@@ -419,7 +419,7 @@ class FileReporter(CoveragePluginBase):
         """
         return set()
 
-    def translate_lines(self, lines: Iterable[TLineNo]) -> Set[TLineNo]:
+    def translate_lines(self, lines: Iterable[TLineNo]) -> set[TLineNo]:
         """Translate recorded lines into reported lines.
 
         Some file formats will want to report lines slightly differently than
@@ -439,7 +439,7 @@ class FileReporter(CoveragePluginBase):
         """
         return set(lines)
 
-    def arcs(self) -> Set[TArc]:
+    def arcs(self) -> set[TArc]:
         """Get the executable arcs in this file.
 
         To support branch coverage, your plug-in needs to be able to indicate
@@ -453,7 +453,7 @@ class FileReporter(CoveragePluginBase):
         """
         return set()
 
-    def no_branch_lines(self) -> Set[TLineNo]:
+    def no_branch_lines(self) -> set[TLineNo]:
         """Get the lines excused from branch coverage in this file.
 
         Your plug-in can use any method it likes to allow the user to exclude
@@ -466,7 +466,7 @@ class FileReporter(CoveragePluginBase):
         """
         return set()
 
-    def translate_arcs(self, arcs: Iterable[TArc]) -> Set[TArc]:
+    def translate_arcs(self, arcs: Iterable[TArc]) -> set[TArc]:
         """Translate recorded arcs into reported arcs.
 
         Similar to :meth:`translate_lines`, but for arcs.  `arcs` is a set of
@@ -479,7 +479,7 @@ class FileReporter(CoveragePluginBase):
         """
         return set(arcs)
 
-    def exit_counts(self) -> Dict[TLineNo, int]:
+    def exit_counts(self) -> dict[TLineNo, int]:
         """Get a count of exits from that each line.
 
         To determine which lines are branches, coverage.py looks for lines that
@@ -496,7 +496,7 @@ class FileReporter(CoveragePluginBase):
         self,
         start: TLineNo,
         end: TLineNo,
-        executed_arcs: Optional[Iterable[TArc]] = None,     # pylint: disable=unused-argument
+        executed_arcs: Iterable[TArc] | None = None,     # pylint: disable=unused-argument
     ) -> str:
         """Provide an English sentence describing a missing arc.
 

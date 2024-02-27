@@ -16,7 +16,7 @@ import threading
 import time
 
 from types import ModuleType
-from typing import Iterable, Optional
+from typing import Iterable
 
 from flaky import flaky
 import pytest
@@ -176,7 +176,7 @@ SIMPLE = """
     """
 
 
-def cant_trace_msg(concurrency: str, the_module: Optional[ModuleType]) -> Optional[str]:
+def cant_trace_msg(concurrency: str, the_module: ModuleType | None) -> str | None:
     """What might coverage.py say about a concurrency setting and imported module?"""
     # In the concurrency choices, "multiprocessing" doesn't count, so remove it.
     if "multiprocessing" in concurrency:
@@ -209,7 +209,7 @@ class ConcurrencyTest(CoverageTest):
         code: str,
         concurrency: str,
         the_module: ModuleType,
-        expected_out: Optional[str] = None,
+        expected_out: str | None = None,
     ) -> None:
         """Run some concurrency testing code and see that it was all covered.
 
@@ -459,7 +459,7 @@ class MultiprocessingTest(CoverageTest):
     def try_multiprocessing_code(
         self,
         code: str,
-        expected_out: Optional[str],
+        expected_out: str | None,
         the_module: ModuleType,
         nprocs: int,
         start_method: str,

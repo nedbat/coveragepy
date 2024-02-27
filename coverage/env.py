@@ -9,7 +9,7 @@ import os
 import platform
 import sys
 
-from typing import Any, Iterable, Tuple
+from typing import Any, Iterable
 
 # debug_info() at the bottom wants to show all the globals, but not imports.
 # Grab the global names here to know which names to not show. Nothing defined
@@ -134,7 +134,7 @@ METACOV = os.getenv("COVERAGE_COVERAGE") is not None
 TESTING = os.getenv("COVERAGE_TESTING") == "True"
 
 
-def debug_info() -> Iterable[Tuple[str, Any]]:
+def debug_info() -> Iterable[tuple[str, Any]]:
     """Return a list of (name, value) pairs for printing debug information."""
     info = [
         (name, value) for name, value in globals().items()

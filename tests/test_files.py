@@ -10,7 +10,7 @@ import os
 import os.path
 import re
 
-from typing import Any, Iterable, Iterator, List, Protocol
+from typing import Any, Iterable, Iterator, Protocol
 from unittest import mock
 
 import pytest
@@ -464,7 +464,7 @@ class PathAliasesTest(CoverageTest):
 
     def test_multiple_patterns(self, rel_yn: bool) -> None:
         # also test the debugfn...
-        msgs: List[str] = []
+        msgs: list[str] = []
         aliases = PathAliases(debugfn=msgs.append, relative=rel_yn)
         aliases.add('/home/*/src', './mysrc')
         aliases.add('/lib/*/libsrc', './mylib')

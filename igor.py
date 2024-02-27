@@ -155,9 +155,9 @@ def should_skip(core):
 def make_env_id(core):
     """An environment id that will keep all the test runs distinct."""
     impl = platform.python_implementation().lower()
-    version = "%s%s" % sys.version_info[:2]
+    version = "{}{}".format(*sys.version_info[:2])
     if PYPY:
-        version += "_%s%s" % sys.pypy_version_info[:2]
+        version += "_{}{}".format(*sys.pypy_version_info[:2])
     env_id = f"{impl}{version}_{core}"
     return env_id
 

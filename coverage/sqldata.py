@@ -21,8 +21,8 @@ import threading
 import zlib
 
 from typing import (
-    cast, Any, Collection, Dict, List, Mapping,
-    Optional, Sequence, Set, Tuple, Union,
+    cast, Any, Collection, Mapping,
+    Sequence,
 )
 
 from coverage.debug import NoDebugging, auto_repr
@@ -212,11 +212,11 @@ class CoverageData:
 
     def __init__(
         self,
-        basename: Optional[FilePath] = None,
-        suffix: Optional[Union[str, bool]] = None,
+        basename: FilePath | None = None,
+        suffix: str | bool | None = None,
         no_disk: bool = False,
-        warn: Optional[TWarnFn] = None,
-        debug: Optional[TDebugCtl] = None,
+        warn: TWarnFn | None = None,
+        debug: TDebugCtl | None = None,
     ) -> None:
         """Create a :class:`CoverageData` object to hold coverage-measured data.
 
@@ -240,9 +240,9 @@ class CoverageData:
 
         self._choose_filename()
         # Maps filenames to row ids.
-        self._file_map: Dict[str, int] = {}
+        self._file_map: dict[str, int] = {}
         # Maps thread ids to SqliteDb objects.
-        self._dbs: Dict[int, SqliteDb] = {}
+        self._dbs: dict[int, SqliteDb] = {}
         self._pid = os.getpid()
         # Synchronize the operations used during collection.
         self._lock = threading.RLock()
@@ -253,9 +253,9 @@ class CoverageData:
         self._has_lines = False
         self._has_arcs = False
 
-        self._current_context: Optional[str] = None
-        self._current_context_id: Optional[int] = None
-        self._query_context_ids: Optional[List[int]] = None
+        self._current_context: str | None = None
+        self._current_context_id: int | None = None
+        self._query_context_ids: list[int] | None = None
 
     __repr__ = auto_repr
 
@@ -405,7 +405,7 @@ class CoverageData:
         self._read_db()
         self._have_used = True
 
-    def _file_id(self, filename: str, add: bool = False) -> Optional[int]:
+    def _file_id(self, filename: str, add: bool = False) -> int | None:
         """Get the file id for `filename`.
 
         If filename is not in the database yet, add it if `add` is True.
@@ -420,7 +420,7 @@ class CoverageData:
                     )
         return self._file_map.get(filename)
 
-    def _context_id(self, context: str) -> Optional[int]:
+    def _context_id(self, context: str) -> int | None:
         """Get the id for a context."""
         assert context is not None
         self._start_using()
@@ -432,7 +432,7 @@ class CoverageData:
                 return None
 
     @_locked
-    def set_context(self, context: Optional[str]) -> None:
+    def set_context(self, context: str | None) -> None:
         """Set the current context for future :meth:`add_lines` etc.
 
         `context` is a str, the name of the context to use for the next data
@@ -604,7 +604,7 @@ class CoverageData:
         """
         self.touch_files([filename], plugin_name)
 
-    def touch_files(self, filenames: Collection[str], plugin_name: Optional[str] = None) -> None:
+    def touch_files(self, filenames: Collection[str], plugin_name: str | None = None) -> None:
         """Ensure that `filenames` appear in the data, empty if needed.
 
         `plugin_name` is the name of the plugin responsible for these files.
@@ -647,7 +647,7 @@ class CoverageData:
                     continue
                 con.execute_void(sql, (file_id,))
 
-    def update(self, other_data: CoverageData, aliases: Optional[PathAliases] = None) -> None:
+    def update(self, other_data: CoverageData, aliases: PathAliases | None = None) -> None:
         """Update this data with data from several other :class:`CoverageData` instances.
 
         If `aliases` is provided, it's a `PathAliases` object that is used to
@@ -699,7 +699,7 @@ class CoverageData:
                 "inner join file on file.id = line_bits.file_id " +
                 "inner join context on context.id = line_bits.context_id",
             ) as cur:
-                lines: Dict[Tuple[str, str], bytes] = {}
+                lines: dict[tuple[str, str], bytes] = {}
                 for path, context, numbits in cur:
                     key = (files[path], context)
                     if key in lines:
@@ -863,7 +863,7 @@ class CoverageData:
         """Does the database have arcs (True) or lines (False)."""
         return bool(self._has_arcs)
 
-    def measured_files(self) -> Set[str]:
+    def measured_files(self) -> set[str]:
         """A set of all files that have been measured.
 
         Note that a file may be mentioned as measured even though no lines or
@@ -872,7 +872,7 @@ class CoverageData:
         """
         return set(self._file_map)
 
-    def measured_contexts(self) -> Set[str]:
+    def measured_contexts(self) -> set[str]:
         """A set of all contexts that have been measured.
 
         .. versionadded:: 5.0
@@ -884,7 +884,7 @@ class CoverageData:
                 contexts = {row[0] for row in cur}
         return contexts
 
-    def file_tracer(self, filename: str) -> Optional[str]:
+    def file_tracer(self, filename: str) -> str | None:
         """Get the plugin name of the file tracer for a file.
 
         Returns the name of the plugin that handles this file.  If the file was
@@ -918,7 +918,7 @@ class CoverageData:
             with con.execute("select id from context where context = ?", (context,)) as cur:
                 self._query_context_ids = [row[0] for row in cur.fetchall()]
 
-    def set_query_contexts(self, contexts: Optional[Sequence[str]]) -> None:
+    def set_query_contexts(self, contexts: Sequence[str] | None) -> None:
         """Set a number of contexts for subsequent querying.
 
         The next :meth:`lines`, :meth:`arcs`, or :meth:`contexts_by_lineno`
@@ -939,7 +939,7 @@ class CoverageData:
         else:
             self._query_context_ids = None
 
-    def lines(self, filename: str) -> Optional[List[TLineNo]]:
+    def lines(self, filename: str) -> list[TLineNo] | None:
         """Get the list of lines executed for a source file.
 
         If the file was not measured, returns None.  A file might be measured,
@@ -974,7 +974,7 @@ class CoverageData:
                     nums.update(numbits_to_nums(row[0]))
                 return list(nums)
 
-    def arcs(self, filename: str) -> Optional[List[TArc]]:
+    def arcs(self, filename: str) -> list[TArc] | None:
         """Get the list of arcs executed for a file.
 
         If the file was not measured, returns None.  A file might be measured,
@@ -1006,7 +1006,7 @@ class CoverageData:
                 with con.execute(query, data) as cur:
                     return list(cur)
 
-    def contexts_by_lineno(self, filename: str) -> Dict[TLineNo, List[str]]:
+    def contexts_by_lineno(self, filename: str) -> dict[TLineNo, list[str]]:
         """Get the contexts for each line in a file.
 
         Returns:
@@ -1058,7 +1058,7 @@ class CoverageData:
         return {lineno: list(contexts) for lineno, contexts in lineno_contexts_map.items()}
 
     @classmethod
-    def sys_info(cls) -> List[Tuple[str, Any]]:
+    def sys_info(cls) -> list[tuple[str, Any]]:
         """Our information for `Coverage.sys_info`.
 
         Returns a list of (key, value) pairs.
@@ -1078,7 +1078,7 @@ class CoverageData:
         ]
 
 
-def filename_suffix(suffix: Union[str, bool, None]) -> Union[str, None]:
+def filename_suffix(suffix: str | bool | None) -> str | None:
     """Compute a filename suffix for a data file.
 
     If `suffix` is a string or None, simply return it. If `suffix` is True,

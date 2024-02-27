@@ -8,7 +8,7 @@ from __future__ import annotations
 import os.path
 
 from types import FrameType
-from typing import Any, Optional, Set, Tuple
+from typing import Any
 
 from coverage import CoveragePlugin, FileReporter, FileTracer
 from coverage.plugin_support import Plugins
@@ -25,7 +25,7 @@ except ImportError:
 
 class Plugin(CoveragePlugin):
     """A file tracer plugin for testing."""
-    def file_tracer(self, filename: str) -> Optional[FileTracer]:
+    def file_tracer(self, filename: str) -> FileTracer | None:
         if "render.py" in filename:
             return RenderFileTracer()
         return None
@@ -44,20 +44,20 @@ class RenderFileTracer(FileTracer):
         self,
         filename: str,
         frame: FrameType,
-    ) -> Optional[str]:
+    ) -> str | None:
         if frame.f_code.co_name != "render":
             return None
         source_filename: str = os.path.abspath(frame.f_locals['filename'])
         return source_filename
 
-    def line_number_range(self, frame: FrameType) -> Tuple[TLineNo, TLineNo]:
+    def line_number_range(self, frame: FrameType) -> tuple[TLineNo, TLineNo]:
         lineno = frame.f_locals['linenum']
         return lineno, lineno+1
 
 
 class MyFileReporter(FileReporter):
     """A goofy file reporter."""
-    def lines(self) -> Set[TLineNo]:
+    def lines(self) -> set[TLineNo]:
         # Goofy test arrangement: claim that the file has as many lines as the
         # number in its name.
         num = os.path.basename(self.filename).split(".")[0].split("_")[1]

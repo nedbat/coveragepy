@@ -815,7 +815,7 @@ class EnvironmentTest(CoverageTest):
             SOMETHING = "hello-xyzzy"
             """)
         abc = os.path.abspath("a/b/c")
-        self.make_file("run_coverage.py", """\
+        self.make_file("run_coverage.py", f"""\
             import sys
             sys.path[0:0] = [
                 r'{abc}',
@@ -826,7 +826,7 @@ class EnvironmentTest(CoverageTest):
 
             if __name__ == '__main__':
                 sys.exit(coverage.cmdline.main())
-            """.format(abc=abc))
+            """)
         self.make_file("how_is_it.py", """\
             import pprint, sys
             pprint.pprint(sys.path)
