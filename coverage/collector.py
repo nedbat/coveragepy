@@ -225,7 +225,7 @@ class Collector:
             raise ConfigError(
                 "Can't support concurrency={} with {}, only threads are supported.".format(
                     tried, self.tracer_name(),
-                )
+                ),
             )
 
         if do_threading or not concurrencies:

@@ -35,7 +35,7 @@ class MyFileTracer(FileTracer):
         self._filename = filename
         self._source_filename = os.path.join(
             "/src",
-            os.path.basename(filename.replace("xyz.py", "ABC.zz"))
+            os.path.basename(filename.replace("xyz.py", "ABC.zz")),
         )
 
     def source_filename(self) -> str:

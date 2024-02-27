@@ -78,7 +78,7 @@ class FilesTest(CoverageTest):
         "curdir, sep", [
             ("/", "/"),
             ("X:\\", "\\"),
-        ]
+        ],
     )
     def test_relative_dir_for_root(self, curdir: str, sep: str) -> None:
         with mock.patch.object(files.os, 'curdir', new=curdir):
@@ -97,7 +97,7 @@ class FilesTest(CoverageTest):
             ("src/files.pex", "src/files.pex/foo.py", True),
             ("src/files.zip", "src/morefiles.zip/foo.py", False),
             ("src/files.pex", "src/files.pex/zipfiles/files.zip/foo.py", True),
-        ]
+        ],
     )
     def test_source_exists(self, to_make: str, to_check: str, answer: bool) -> None:
         # source_exists won't look inside the zipfile, so it's fine to make
@@ -123,7 +123,7 @@ class FilesTest(CoverageTest):
         r"\nostrum\exercitationem\ullam\corporis\suscipit\laboriosam" +
         r"\Montréal\☺\my_program.py",
         # flat:
-        "d_e597dfacb73a23d5_my_program_py"
+        "d_e597dfacb73a23d5_my_program_py",
      ),
 ])
 def test_flat_rootname(original: str, flat: str) -> None:
@@ -263,7 +263,7 @@ def globs_to_regex_params(
             matches=["a+b/foo", "a+b/foobar", "x{y}z/foobar"],
             nomatches=["aab/foo", "ab/foo", "xyz/foo"],
         ),
-    ]))
+    ])),
 )
 def test_globs_to_regex(
     patterns: Iterable[str],

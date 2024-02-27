@@ -247,7 +247,7 @@ def short_stack(
         for pat in BORING_PRELUDE:
             stack = itertools.dropwhile(
                 (lambda fi, pat=pat: re.search(pat, fi.filename)),  # type: ignore[misc]
-                stack
+                stack,
             )
     lines = []
     for frame_info in stack:

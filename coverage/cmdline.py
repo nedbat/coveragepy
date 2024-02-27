@@ -419,7 +419,7 @@ COMMANDS = {
     "erase": CmdOptionParser(
         "erase",
         [
-            Opts.datafile
+            Opts.datafile,
             ] + GLOBAL_ARGS,
         description="Erase previously collected coverage data.",
     ),
@@ -712,7 +712,7 @@ class CoverageScript:
                 skip_empty=options.skip_empty,
                 sort=options.sort,
                 output_format=options.format,
-                **report_args
+                **report_args,
             )
         elif options.action == "annotate":
             self.coverage.annotate(directory=options.directory, **report_args)
@@ -724,25 +724,25 @@ class CoverageScript:
                 skip_empty=options.skip_empty,
                 show_contexts=options.show_contexts,
                 title=options.title,
-                **report_args
+                **report_args,
             )
         elif options.action == "xml":
             total = self.coverage.xml_report(
                 outfile=options.outfile,
                 skip_empty=options.skip_empty,
-                **report_args
+                **report_args,
             )
         elif options.action == "json":
             total = self.coverage.json_report(
                 outfile=options.outfile,
                 pretty_print=options.pretty_print,
                 show_contexts=options.show_contexts,
-                **report_args
+                **report_args,
             )
         elif options.action == "lcov":
             total = self.coverage.lcov_report(
                 outfile=options.outfile,
-                **report_args
+                **report_args,
             )
         else:
             # There are no other possible actions.
@@ -839,7 +839,7 @@ class CoverageScript:
                     show_help(
                         "Options affecting multiprocessing must only be specified " +
                         "in a configuration file.\n" +
-                        f"Remove --{opt_name} from the command line."
+                        f"Remove --{opt_name} from the command line.",
                     )
                     return ERR
 

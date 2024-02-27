@@ -30,7 +30,7 @@ from coverage.config import CoverageConfig, read_coverage_config
 from coverage.context import should_start_context_test_function, combine_context_switchers
 from coverage.data import CoverageData, combine_parallel_data
 from coverage.debug import (
-    DebugControl, NoDebugging, short_stack, write_formatted_info, relevant_environment_display
+    DebugControl, NoDebugging, short_stack, write_formatted_info, relevant_environment_display,
 )
 from coverage.disposition import disposition_debug_msg
 from coverage.exceptions import ConfigError, CoverageException, CoverageWarning, PluginError
@@ -570,7 +570,7 @@ class Coverage(TConfigurable):
                             for plugin in self._plugins.file_tracers
                     ),
                     self._collector.tracer_name(),
-                )
+                ),
             )
             for plugin in self._plugins.file_tracers:
                 plugin._coverage_enabled = False
@@ -800,7 +800,7 @@ class Coverage(TConfigurable):
         self,
         data_paths: Optional[Iterable[str]] = None,
         strict: bool = False,
-        keep: bool = False
+        keep: bool = False,
     ) -> None:
         """Combine together a number of similarly-named coverage data files.
 
@@ -965,8 +965,8 @@ class Coverage(TConfigurable):
                     if file_reporter is None:
                         raise PluginError(
                             "Plugin {!r} did not provide a file reporter for {!r}.".format(
-                                plugin._coverage_plugin_name, morf
-                            )
+                                plugin._coverage_plugin_name, morf,
+                            ),
                         )
 
         if file_reporter == "python":
@@ -1312,7 +1312,7 @@ class Coverage(TConfigurable):
             ("configs_read", self.config.config_files_read),
             ("config_file", self.config.config_file),
             ("config_contents",
-                repr(self.config._config_contents) if self.config._config_contents else "-none-"
+                repr(self.config._config_contents) if self.config._config_contents else "-none-",
             ),
             ("data_file", self._data.data_filename() if self._data is not None else "-none-"),
             ("python", sys.version.replace("\n", "")),
@@ -1343,7 +1343,7 @@ if int(os.getenv("COVERAGE_DEBUG_CALLS", 0)):               # pragma: debugging
 
     Coverage = decorate_methods(        # type: ignore[misc]
         show_calls(show_args=True),
-        butnot=["get_data"]
+        butnot=["get_data"],
     )(Coverage)
 
 

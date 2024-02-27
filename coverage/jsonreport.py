@@ -59,7 +59,7 @@ class JsonReporter:
         for file_reporter, analysis in get_analysis_to_report(self.coverage, morfs):
             measured_files[file_reporter.relative_filename()] = self.report_one_file(
                 coverage_data,
-                analysis
+                analysis,
             )
 
         self.report_data["files"] = measured_files
@@ -117,10 +117,10 @@ class JsonReporter:
                 "missing_branches": nums.n_missing_branches,
             })
             reported_file["executed_branches"] = list(
-                _convert_branch_arcs(analysis.executed_branch_arcs())
+                _convert_branch_arcs(analysis.executed_branch_arcs()),
             )
             reported_file["missing_branches"] = list(
-                _convert_branch_arcs(analysis.missing_branch_arcs())
+                _convert_branch_arcs(analysis.missing_branch_arcs()),
             )
         return reported_file
 

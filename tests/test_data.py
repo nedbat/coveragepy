@@ -13,7 +13,7 @@ import sqlite3
 import threading
 
 from typing import (
-    Any, Callable, Collection, Dict, Iterable, Mapping, Set, TypeVar, Union
+    Any, Callable, Collection, Dict, Iterable, Mapping, Set, TypeVar, Union,
 )
 from unittest import mock
 
@@ -726,7 +726,7 @@ class CoverageDataFilesTest(CoverageTest):
             r"Opening data file '.*\.coverage'\n" +
             r"Initing data file '.*\.coverage'\n" +
             r"Opening data file '.*\.coverage'\n$",
-            debug.get_output()
+            debug.get_output(),
         )
 
     def test_debug_output_without_debug_option(self) -> None:

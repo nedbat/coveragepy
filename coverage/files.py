@@ -478,12 +478,12 @@ class PathAliases:
                 if not exists(new):
                     self.debugfn(
                         f"Rule {original_pattern!r} changed {path!r} to {new!r} " +
-                        "which doesn't exist, continuing"
+                        "which doesn't exist, continuing",
                     )
                     continue
                 self.debugfn(
                     f"Matched path {path!r} to rule {original_pattern!r} -> {result!r}, " +
-                    f"producing {new!r}"
+                    f"producing {new!r}",
                 )
                 return new
 
@@ -500,7 +500,7 @@ class PathAliases:
                 # Only add a new pattern if we don't already have this pattern.
                 if not any(p == pattern for p, _, _ in self.aliases):
                     self.debugfn(
-                        f"Generating rule: {pattern!r} -> {result!r} using regex {regex_pat!r}"
+                        f"Generating rule: {pattern!r} -> {result!r} using regex {regex_pat!r}",
                     )
                     self.aliases.append((pattern, re.compile(regex_pat), result))
                     return self.map(path, exists=exists)

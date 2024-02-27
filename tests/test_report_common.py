@@ -37,14 +37,14 @@ class ReportMapsPathsTest(CoverageTest):
                 lines={
                     abs_file("ver1/program.py"): [1, 2, 3, 5],
                     abs_file("ver2/program.py"): [1, 3, 4, 5],
-                }
+                },
             )
         else:
             self.make_data_file(
                 arcs={
                     abs_file("ver1/program.py"): arcz_to_arcs(".1 12 23 35 5."),
                     abs_file("ver2/program.py"): arcz_to_arcs(".1 13 34 45 5."),
-                }
+                },
             )
 
         if settings:
@@ -198,7 +198,7 @@ class ReportWithJinjaTest(CoverageTest):
             lines={
                 abs_file("good.j2"): [1, 3, 5, 7, 9],
                 abs_file("bad.j2"): [1, 3, 5, 7, 9],
-            }
+            },
         )
 
     def test_report(self) -> None:
@@ -229,7 +229,7 @@ class ReportWithJinjaTest(CoverageTest):
                 <td>0</td>
                 <td class="right" data-ratio="2 3">67%</td>
             </tr>
-        </tbody>"""
+        </tbody>""",
         )
         doesnt_contain("htmlcov/index.html", "bad.j2")
 
@@ -245,7 +245,7 @@ class ReportWithJinjaTest(CoverageTest):
             '<line number="3" hits="1"/>',
         )
         doesnt_contain("coverage.xml", 'filename="bad.j2"')
-        doesnt_contain("coverage.xml", '<line number="4"',)
+        doesnt_contain("coverage.xml", '<line number="4"')
 
     def test_json(self) -> None:
         self.make_files()

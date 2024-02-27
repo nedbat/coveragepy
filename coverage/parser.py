@@ -153,7 +153,7 @@ class PythonParser:
             if self.show_tokens:                # pragma: debugging
                 print("%10s %5s %-20r %r" % (
                     tokenize.tok_name.get(toktype, toktype),
-                    nice_pair((slineno, elineno)), ttext, ltext
+                    nice_pair((slineno, elineno)), ttext, ltext,
                 ))
             if toktype == token.INDENT:
                 indent += 1
@@ -272,7 +272,7 @@ class PythonParser:
                 lineno = err.args[1][0]     # TokenError
             raise NotPython(
                 f"Couldn't parse '{self.filename}' as Python source: " +
-                f"{err.args[0]!r} at line {lineno}"
+                f"{err.args[0]!r} at line {lineno}",
             ) from err
 
         self.excluded = self.first_lines(self.raw_excluded)
@@ -403,8 +403,8 @@ class ByteParser:
             except SyntaxError as synerr:
                 raise NotPython(
                     "Couldn't parse '%s' as Python source: '%s' at line %d" % (
-                        filename, synerr.msg, synerr.lineno or 0
-                    )
+                        filename, synerr.msg, synerr.lineno or 0,
+                    ),
                 ) from synerr
 
     def child_parsers(self) -> Iterable[ByteParser]:
@@ -756,7 +756,7 @@ class AstArcAnalyzer:
         node_name = node.__class__.__name__
         handler = cast(
             Optional[Callable[[ast.AST], TLineNo]],
-            getattr(self, "_line__" + node_name, None)
+            getattr(self, "_line__" + node_name, None),
         )
         if handler is not None:
             return handler(node)
@@ -830,7 +830,7 @@ class AstArcAnalyzer:
         node_name = node.__class__.__name__
         handler = cast(
             Optional[Callable[[ast.AST], Set[ArcStart]]],
-            getattr(self, "_handle__" + node_name, None)
+            getattr(self, "_handle__" + node_name, None),
         )
         if handler is not None:
             return handler(node)
@@ -848,7 +848,7 @@ class AstArcAnalyzer:
         self,
         body: Sequence[ast.AST],
         from_start: Optional[ArcStart] = None,
-        prev_starts: Optional[Set[ArcStart]] = None
+        prev_starts: Optional[Set[ArcStart]] = None,
     ) -> Set[ArcStart]:
         """Add arcs for the body of a compound statement.
 
@@ -896,7 +896,7 @@ class AstArcAnalyzer:
 
         missing_fn = cast(
             Optional[Callable[[ast.AST], Optional[ast.AST]]],
-            getattr(self, "_missing__" + node.__class__.__name__, None)
+            getattr(self, "_missing__" + node.__class__.__name__, None),
         )
         if missing_fn is not None:
             ret_node = missing_fn(node)
@@ -1223,7 +1223,7 @@ class AstArcAnalyzer:
 
             if try_block.raise_from:
                 self.process_raise_exits(
-                    self._combine_finally_starts(try_block.raise_from, final_exits)
+                    self._combine_finally_starts(try_block.raise_from, final_exits),
                 )
 
             if try_block.return_from:
@@ -1304,15 +1304,15 @@ class AstArcAnalyzer:
                 exits = with_exit
             if with_block.break_from:
                 self.process_break_exits(
-                    self._combine_finally_starts(with_block.break_from, with_exit)
+                    self._combine_finally_starts(with_block.break_from, with_exit),
                 )
             if with_block.continue_from:
                 self.process_continue_exits(
-                    self._combine_finally_starts(with_block.continue_from, with_exit)
+                    self._combine_finally_starts(with_block.continue_from, with_exit),
                 )
             if with_block.return_from:
                 self.process_return_exits(
-                    self._combine_finally_starts(with_block.return_from, with_exit)
+                    self._combine_finally_starts(with_block.return_from, with_exit),
                 )
         return exits
 

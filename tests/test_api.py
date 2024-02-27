@@ -1349,7 +1349,7 @@ class CombiningTest(CoverageTest):
         assert_coverage_warnings(
             warns,
             re.compile(
-                r"Couldn't use data file '.*[/\\]\.coverage\.bad': " + BAD_SQLITE_REGEX
+                r"Couldn't use data file '.*[/\\]\.coverage\.bad': " + BAD_SQLITE_REGEX,
             ),
         )
 
@@ -1380,7 +1380,7 @@ class CombiningTest(CoverageTest):
                 cov.combine(strict=True)
 
         warn_rx = re.compile(
-            r"Couldn't use data file '.*[/\\]\.coverage\.bad[12]': " + BAD_SQLITE_REGEX
+            r"Couldn't use data file '.*[/\\]\.coverage\.bad[12]': " + BAD_SQLITE_REGEX,
         )
         assert_coverage_warnings(warns, warn_rx, warn_rx)
 

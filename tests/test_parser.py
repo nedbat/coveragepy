@@ -47,7 +47,7 @@ class PythonParserTest(PythonParserTestBase):
                 pass
             """)
         assert parser.exit_counts() == {
-            2:1, 3:1, 4:2, 5:1, 7:1, 9:1, 10:1
+            2:1, 3:1, 4:2, 5:1, 7:1, 9:1, 10:1,
         }
 
     def test_generator_exit_counts(self) -> None:
@@ -79,7 +79,7 @@ class PythonParserTest(PythonParserTestBase):
             b = 9
             """)
         assert parser.exit_counts() == {
-            1: 1, 2:1, 3:2, 4:1, 5:2, 6:1, 7:1, 8:1, 9:1
+            1: 1, 2:1, 3:2, 4:1, 5:2, 6:1, 7:1, 8:1, 9:1,
         }
 
     def test_excluded_classes(self) -> None:
@@ -93,7 +93,7 @@ class PythonParserTest(PythonParserTestBase):
                     pass
             """)
         assert parser.exit_counts() == {
-            1:0, 2:1, 3:1
+            1:0, 2:1, 3:1,
         }
 
     def test_missing_branch_to_excluded_code(self) -> None:

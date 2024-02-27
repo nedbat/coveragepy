@@ -86,7 +86,7 @@ setup_args = dict(
         "coverage": [
             "htmlfiles/*.*",
             "py.typed",
-        ]
+        ],
     },
     entry_points={
         # Install a script as "coverage", and as "coverage3", and as
@@ -199,7 +199,7 @@ if compile_extension:
             cmdclass={
                 "build_ext": ve_build_ext,
             },
-        )
+        ),
     )
 
 

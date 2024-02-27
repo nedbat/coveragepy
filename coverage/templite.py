@@ -196,8 +196,8 @@ class Templite:
                         code.add_line(
                             "for c_{} in {}:".format(
                                 words[1],
-                                self._expr_code(words[3])
-                            )
+                                self._expr_code(words[3]),
+                            ),
                         )
                         code.indent()
                     elif words[0] == "joined":
@@ -241,7 +241,7 @@ class Templite:
         self._render_function = cast(
             Callable[
                 [Dict[str, Any], Callable[..., Any]],
-                str
+                str,
             ],
             code.get_globals()["render_function"],
         )
@@ -302,7 +302,7 @@ class Templite:
                     value = value[dot]
                 except (TypeError, KeyError) as exc:
                     raise TempliteValueError(
-                        f"Couldn't evaluate {value!r}.{dot}"
+                        f"Couldn't evaluate {value!r}.{dot}",
                     ) from exc
             if callable(value):
                 value = value()

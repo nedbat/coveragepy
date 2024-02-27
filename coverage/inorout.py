@@ -270,14 +270,14 @@ class InOrOut:
                 if modfile:
                     if self.third_match.match(modfile):
                         _debug(
-                            f"Source in third-party: source_pkg {pkg!r} at {modfile!r}"
+                            f"Source in third-party: source_pkg {pkg!r} at {modfile!r}",
                         )
                         self.source_in_third_paths.add(canonical_path(source_for_file(modfile)))
                 else:
                     for pathdir in path:
                         if self.third_match.match(pathdir):
                             _debug(
-                                f"Source in third-party: {pkg!r} path directory at {pathdir!r}"
+                                f"Source in third-party: {pkg!r} path directory at {pathdir!r}",
                             )
                             self.source_in_third_paths.add(pathdir)
 
@@ -363,7 +363,7 @@ class InOrOut:
                         disp.has_dynamic_filename = True
                     else:
                         disp.source_filename = canonical_filename(
-                            file_tracer.source_filename()
+                            file_tracer.source_filename(),
                         )
                     break
             except Exception:
@@ -380,7 +380,7 @@ class InOrOut:
         if not disp.has_dynamic_filename:
             if not disp.source_filename:
                 raise PluginError(
-                    f"Plugin {plugin!r} didn't set source_filename for '{disp.original_filename}'"
+                    f"Plugin {plugin!r} didn't set source_filename for '{disp.original_filename}'",
                 )
             reason = self.check_include_omit_etc(disp.source_filename, frame)
             if reason:
@@ -483,8 +483,8 @@ class InOrOut:
                 elif self.debug and self.debug.should("trace"):
                     self.debug.write(
                         "Didn't trace already imported file {!r}: {}".format(
-                            disp.original_filename, disp.reason
-                        )
+                            disp.original_filename, disp.reason,
+                        ),
                     )
 
     def warn_unimported_source(self) -> None:

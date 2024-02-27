@@ -59,7 +59,7 @@ def find_module(
         if not spec:
             raise NoSource(
                 f"No module named {mod_main}; " +
-                f"{modulename!r} is a package and cannot be directly executed"
+                f"{modulename!r} is a package and cannot be directly executed",
             )
         pathname = spec.origin
         packagename = spec.name

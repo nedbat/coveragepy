@@ -492,7 +492,7 @@ class MultiprocessingTest(CoverageTest):
             assert all(
                 re.fullmatch(
                     r"(Combined data file|Skipping duplicate data) \.coverage\..*\.\d+\.X\w{6}x",
-                    line
+                    line,
                 )
                 for line in out_lines
             )
@@ -732,7 +732,7 @@ class SigtermTest(CoverageTest):
             [run]
             parallel = True
             concurrency = multiprocessing
-            """ + ("sigterm = true" if sigterm else "")
+            """ + ("sigterm = true" if sigterm else ""),
             )
         out = self.run_command("coverage run clobbered.py")
         # Under Linux, things go wrong. Does that matter?

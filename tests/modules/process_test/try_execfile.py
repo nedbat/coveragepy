@@ -103,7 +103,7 @@ globals_to_check = {
 
 if loader is not None:
     globals_to_check.update({
-        '__loader__.fullname': getattr(loader, 'fullname', None) or getattr(loader, 'name', None)
+        '__loader__.fullname': getattr(loader, 'fullname', None) or getattr(loader, 'name', None),
     })
 
 if spec is not None:

@@ -138,7 +138,7 @@ class SummaryReporter:
         header_items = [formats[item].format(item, name_len=max_name, n=max_n) for item in header]
         header_str = "".join(header_items)
         rule_str = "|" + " ".join(["- |".rjust(len(header_items[0])-1, "-")] +
-            ["-: |".rjust(len(item)-1, "-") for item in header_items[1:]]
+            ["-: |".rjust(len(item)-1, "-") for item in header_items[1:]],
         )
 
         # Write the header
@@ -252,7 +252,7 @@ class SummaryReporter:
         if self.config.skip_covered and self.skipped_count:
             file_suffix = "s" if self.skipped_count>1 else ""
             end_lines.append(
-                f"\n{self.skipped_count} file{file_suffix} skipped due to complete coverage."
+                f"\n{self.skipped_count} file{file_suffix} skipped due to complete coverage.",
             )
         if self.config.skip_empty and self.empty_count:
             file_suffix = "s" if self.empty_count > 1 else ""

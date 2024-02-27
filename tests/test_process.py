@@ -730,7 +730,7 @@ class EnvironmentTest(CoverageTest):
         self.add_test_modules_to_pythonpath()
         expected = self.run_command("python -m process_test.try_execfile")
         actual = self.run_command(
-            "coverage run --source process_test.try_execfile -m process_test.try_execfile"
+            "coverage run --source process_test.try_execfile -m process_test.try_execfile",
         )
         self.assert_tryexecfile_output(expected, actual)
 
@@ -750,7 +750,7 @@ class EnvironmentTest(CoverageTest):
         self.add_test_modules_to_pythonpath()
         expected = self.run_command("python -m process_test.try_execfile")
         actual = self.run_command(
-            "coverage run --source process_test -m process_test.try_execfile"
+            "coverage run --source process_test -m process_test.try_execfile",
         )
         self.assert_tryexecfile_output(expected, actual)
 
@@ -843,7 +843,7 @@ class EnvironmentTest(CoverageTest):
     @pytest.mark.skipif(env.WINDOWS, reason="Windows can't make symlinks")
     @pytest.mark.skipif(
         platform.python_version().endswith("+"),
-        reason="setuptools barfs on dev versions: https://github.com/pypa/packaging/issues/678"
+        reason="setuptools barfs on dev versions: https://github.com/pypa/packaging/issues/678",
         # https://github.com/nedbat/coveragepy/issues/1556
     )
     def test_bug_862(self) -> None:
@@ -927,7 +927,7 @@ class ExcepthookTest(CoverageTest):
         assert line_counts(data)['excepthook.py'] == 7
 
     @pytest.mark.skipif(not env.CPYTHON,
-        reason="non-CPython handles excepthook exits differently, punt for now."
+        reason="non-CPython handles excepthook exits differently, punt for now.",
     )
     def test_excepthook_exit(self) -> None:
         self.make_file("excepthook_exit.py", """\
@@ -1073,7 +1073,7 @@ class FailUnderTest(CoverageTest):
             "a = 1\n" +
             "b = 2\n" * 2000 +
             "if a > 3:\n" +
-            "    c = 4\n"
+            "    c = 4\n",
         )
         self.make_data_file(lines={abs_file("ninety_nine_plus.py"): range(1, 2002)})
         st, out = self.run_command_status("coverage report --fail-under=100")

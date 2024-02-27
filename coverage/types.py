@@ -43,7 +43,7 @@ class TTraceFn(Protocol):
         frame: FrameType,
         event: str,
         arg: Any,
-        lineno: Optional[TLineNo] = None  # Our own twist, see collector.py
+        lineno: Optional[TLineNo] = None,  # Our own twist, see collector.py
     ) -> Optional[TTraceFn]:
         ...
 

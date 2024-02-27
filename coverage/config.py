@@ -138,7 +138,7 @@ class HandyConfigParser(configparser.ConfigParser):
                 re.compile(value)
             except re.error as e:
                 raise ConfigError(
-                    f"Invalid [{section}].{option} value {value!r}: {e}"
+                    f"Invalid [{section}].{option} value {value!r}: {e}",
                 ) from e
             if value:
                 value_list.append(value)
@@ -323,8 +323,8 @@ class CoverageConfig(TConfigurable, TPluginConfig):
                 for unknown in set(cp.options(section)) - options:
                     warn(
                         "Unrecognized option '[{}] {}=' in config file {}".format(
-                            real_section, unknown, filename
-                        )
+                            real_section, unknown, filename,
+                        ),
                     )
 
         # [paths] is special

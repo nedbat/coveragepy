@@ -117,7 +117,7 @@ class TempliteTest(CoverageTest):
         self.try_render(
             "Look: {% for n in nums %}{{n}}, {% endfor %}done.",
             locals(),
-            "Look: 1, 2, 3, 4, done."
+            "Look: 1, 2, 3, 4, done.",
         )
         # Loop iterables can be filtered.
         def rev(l: List[int]) -> List[int]:
@@ -129,21 +129,21 @@ class TempliteTest(CoverageTest):
         self.try_render(
             "Look: {% for n in nums|rev %}{{n}}, {% endfor %}done.",
             locals(),
-            "Look: 4, 3, 2, 1, done."
+            "Look: 4, 3, 2, 1, done.",
         )
 
     def test_empty_loops(self) -> None:
         self.try_render(
             "Empty: {% for n in nums %}{{n}}, {% endfor %}done.",
             {'nums':[]},
-            "Empty: done."
+            "Empty: done.",
         )
 
     def test_multiline_loops(self) -> None:
         self.try_render(
             "Look: \n{% for n in nums %}\n{{n}}, \n{% endfor %}done.",
             {'nums':[1,2,3]},
-            "Look: \n\n1, \n\n2, \n\n3, \ndone."
+            "Look: \n\n1, \n\n2, \n\n3, \ndone.",
         )
 
     def test_multiple_loops(self) -> None:
@@ -151,46 +151,46 @@ class TempliteTest(CoverageTest):
             "{% for n in nums %}{{n}}{% endfor %} and " +
                                     "{% for n in nums %}{{n}}{% endfor %}",
             {'nums': [1,2,3]},
-            "123 and 123"
+            "123 and 123",
         )
 
     def test_comments(self) -> None:
         # Single-line comments work:
         self.try_render(
             "Hello, {# Name goes here: #}{{name}}!",
-            {'name':'Ned'}, "Hello, Ned!"
+            {'name':'Ned'}, "Hello, Ned!",
         )
         # and so do multi-line comments:
         self.try_render(
             "Hello, {# Name\ngoes\nhere: #}{{name}}!",
-            {'name':'Ned'}, "Hello, Ned!"
+            {'name':'Ned'}, "Hello, Ned!",
         )
 
     def test_if(self) -> None:
         self.try_render(
             "Hi, {% if ned %}NED{% endif %}{% if ben %}BEN{% endif %}!",
             {'ned': 1, 'ben': 0},
-            "Hi, NED!"
+            "Hi, NED!",
         )
         self.try_render(
             "Hi, {% if ned %}NED{% endif %}{% if ben %}BEN{% endif %}!",
             {'ned': 0, 'ben': 1},
-            "Hi, BEN!"
+            "Hi, BEN!",
         )
         self.try_render(
             "Hi, {% if ned %}NED{% if ben %}BEN{% endif %}{% endif %}!",
             {'ned': 0, 'ben': 0},
-            "Hi, !"
+            "Hi, !",
         )
         self.try_render(
             "Hi, {% if ned %}NED{% if ben %}BEN{% endif %}{% endif %}!",
             {'ned': 1, 'ben': 0},
-            "Hi, NED!"
+            "Hi, NED!",
         )
         self.try_render(
             "Hi, {% if ned %}NED{% if ben %}BEN{% endif %}{% endif %}!",
             {'ned': 1, 'ben': 1},
-            "Hi, NEDBEN!"
+            "Hi, NEDBEN!",
         )
 
     def test_complex_if(self) -> None:
@@ -207,24 +207,24 @@ class TempliteTest(CoverageTest):
             "{% if obj.getit.y|str %}S{% endif %}" +
             "!",
             { 'obj': obj, 'str': str },
-            "@XS!"
+            "@XS!",
         )
 
     def test_loop_if(self) -> None:
         self.try_render(
             "@{% for n in nums %}{% if n %}Z{% endif %}{{n}}{% endfor %}!",
             {'nums': [0,1,2]},
-            "@0Z1Z2!"
+            "@0Z1Z2!",
         )
         self.try_render(
             "X{%if nums%}@{% for n in nums %}{{n}}{% endfor %}{%endif%}!",
             {'nums': [0,1,2]},
-            "X@012!"
+            "X@012!",
         )
         self.try_render(
             "X{%if nums%}@{% for n in nums %}{{n}}{% endfor %}{%endif%}!",
             {'nums': []},
-            "X!"
+            "X!",
         )
 
     def test_nested_loops(self) -> None:
@@ -235,7 +235,7 @@ class TempliteTest(CoverageTest):
             "{% endfor %}" +
             "!",
             {'nums': [0,1,2], 'abc': ['a', 'b', 'c']},
-            "@a0b0c0a1b1c1a2b2c2!"
+            "@a0b0c0a1b1c1a2b2c2!",
         )
 
     def test_whitespace_handling(self) -> None:
@@ -244,7 +244,7 @@ class TempliteTest(CoverageTest):
             " {% for a in abc %}{{a}}{{n}}{% endfor %}\n" +
             "{% endfor %}!\n",
             {'nums': [0, 1, 2], 'abc': ['a', 'b', 'c']},
-            "@\n a0b0c0\n\n a1b1c1\n\n a2b2c2\n!\n"
+            "@\n a0b0c0\n\n a1b1c1\n\n a2b2c2\n!\n",
         )
         self.try_render(
             "@{% for n in nums -%}\n" +
@@ -256,7 +256,7 @@ class TempliteTest(CoverageTest):
             " {% endfor %}\n" +
             "{% endfor %}!\n",
             {'nums': [0, 1, 2], 'abc': ['a', 'b', 'c']},
-            "@a00b00c00\na11b11c11\na22b22c22\n!\n"
+            "@a00b00c00\na11b11c11\na22b22c22\n!\n",
         )
         self.try_render(
             "@{% for n in nums -%}\n" +
@@ -264,7 +264,7 @@ class TempliteTest(CoverageTest):
             "  x\n" +
             "{% endfor %}!\n",
             {'nums': [0, 1, 2]},
-            "@0x\n1x\n2x\n!\n"
+            "@0x\n1x\n2x\n!\n",
         )
         self.try_render("  hello  ", {}, "  hello  ")
 
@@ -283,14 +283,14 @@ class TempliteTest(CoverageTest):
             "{% endfor %}!\n" +
             "{% endjoined %}\n",
             {'nums': [0, 1, 2], 'abc': ['a', 'b', 'c']},
-            "Hey!\n@XYa0XYb0XYc0XYa1XYb1XYc1XYa2XYb2XYc2!\n"
+            "Hey!\n@XYa0XYb0XYc0XYa1XYb1XYc1XYa2XYb2XYc2!\n",
         )
 
     def test_non_ascii(self) -> None:
         self.try_render(
             "{{where}} ollǝɥ",
             { 'where': 'ǝɹǝɥʇ' },
-            "ǝɹǝɥʇ ollǝɥ"
+            "ǝɹǝɥʇ ollǝɥ",
         )
 
     def test_exception_during_evaluation(self) -> None:
@@ -298,7 +298,7 @@ class TempliteTest(CoverageTest):
         regex = "^Couldn't evaluate None.bar$"
         with pytest.raises(TempliteValueError, match=regex):
             self.try_render(
-                "Hey {{foo.bar.baz}} there", {'foo': None}, "Hey ??? there"
+                "Hey {{foo.bar.baz}} there", {'foo': None}, "Hey ??? there",
             )
 
     def test_bad_names(self) -> None:

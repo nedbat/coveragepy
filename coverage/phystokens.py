@@ -68,7 +68,7 @@ def _phys_tokens(toks: TokenInfos) -> TokenInfos:
                     yield tokenize.TokenInfo(
                         99999, "\\\n",
                         (slineno, ccol), (slineno, ccol+2),
-                        last_line
+                        last_line,
                     )
             last_line = ltext
         if ttype not in (tokenize.NEWLINE, tokenize.NL):

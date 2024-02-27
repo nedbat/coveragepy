@@ -67,23 +67,23 @@ class CoverageTestTest(CoverageTest):
         self.assert_file_count("*.q", 0)
         msg = re.escape(
             "There should be 13 files matching 'a*.txt', but there are these: " +
-            "['abcde.txt', 'afile.txt', 'axczz.txt']"
+            "['abcde.txt', 'afile.txt', 'axczz.txt']",
         )
         with pytest.raises(AssertionError, match=msg):
             self.assert_file_count("a*.txt", 13)
         msg = re.escape(
             "There should be 12 files matching '*c*.txt', but there are these: " +
-            "['abcde.txt', 'axczz.txt']"
+            "['abcde.txt', 'axczz.txt']",
         )
         with pytest.raises(AssertionError, match=msg):
             self.assert_file_count("*c*.txt", 12)
         msg = re.escape(
-            "There should be 11 files matching 'afile.*', but there are these: ['afile.txt']"
+            "There should be 11 files matching 'afile.*', but there are these: ['afile.txt']",
         )
         with pytest.raises(AssertionError, match=msg):
             self.assert_file_count("afile.*", 11)
         msg = re.escape(
-            "There should be 10 files matching '*.q', but there are these: []"
+            "There should be 10 files matching '*.q', but there are these: []",
         )
         with pytest.raises(AssertionError, match=msg):
             self.assert_file_count("*.q", 10)
@@ -297,7 +297,7 @@ class CheckCoverageTest(CoverageTest):
                 self.CODE,
                 arcz=self.ARCZ,
                 arcz_missing=self.ARCZ_MISSING,
-                arcz_unpredicted=self.ARCZ_UNPREDICTED.replace("7", "3")
+                arcz_unpredicted=self.ARCZ_UNPREDICTED.replace("7", "3"),
             )
 
 
@@ -390,7 +390,7 @@ class ArczTest(CoverageTest):
             "(35, -10) # Z-A\n" +
             "(1, 33) # 1X\n" +
             "(100, 7) # ?7\n"
-            )
+            ),
         ),
     ])
     def test_arcs_to_arcz_repr(self, arcs: List[TArc], arcz_repr: str) -> None:

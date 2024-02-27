@@ -447,7 +447,7 @@ class HtmlReporter:
             css_classes = []
             if ldata.category:
                 css_classes.append(
-                    self.template_globals["category"][ldata.category]   # type: ignore[index]
+                    self.template_globals["category"][ldata.category],   # type: ignore[index]
                 )
             ldata.css_class = " ".join(css_classes) or "pln"
 

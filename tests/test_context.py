@@ -169,7 +169,7 @@ class DynamicContextTest(CoverageTest):
         fname = full_names["two_tests.py"]
         assert_count_equal(
             data.measured_contexts(),
-            ["", "two_tests.test_one", "two_tests.test_two"]
+            ["", "two_tests.test_one", "two_tests.test_two"],
         )
 
         def assert_context_lines(context: str, lines: List[TLineNo]) -> None:
@@ -191,7 +191,7 @@ class DynamicContextTest(CoverageTest):
         fname = full_names["two_tests.py"]
         assert_count_equal(
             data.measured_contexts(),
-            ["stat", "stat|two_tests.test_one", "stat|two_tests.test_two"]
+            ["stat", "stat|two_tests.test_one", "stat|two_tests.test_two"],
         )
 
         def assert_context_lines(context: str, lines: List[TLineNo]) -> None:

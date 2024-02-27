@@ -76,7 +76,7 @@ class CoverageTest(
         self,
         cov: Coverage,
         modname: str,
-        modfile: Optional[str] = None
+        modfile: Optional[str] = None,
     ) -> ModuleType:
         """Start coverage, import a file, then stop coverage.
 

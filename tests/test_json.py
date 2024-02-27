@@ -47,7 +47,7 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
         with open(output_path) as result_file:
             parsed_result = json.load(result_file)
         self.assert_recent_datetime(
-            datetime.strptime(parsed_result['meta']['timestamp'], "%Y-%m-%dT%H:%M:%S.%f")
+            datetime.strptime(parsed_result['meta']['timestamp'], "%Y-%m-%dT%H:%M:%S.%f"),
         )
         del (parsed_result['meta']['timestamp'])
         expected_result["meta"].update({
@@ -165,19 +165,19 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
                     'excluded_lines': [],
                     "contexts": {
                         "1": [
-                            "cool_test"
+                            "cool_test",
                         ],
                         "2": [
-                            "cool_test"
+                            "cool_test",
                         ],
                         "4": [
-                            "cool_test"
+                            "cool_test",
                         ],
                         "5": [
-                            "cool_test"
+                            "cool_test",
                         ],
                         "8": [
-                            "cool_test"
+                            "cool_test",
                         ],
                     },
                     'summary': {

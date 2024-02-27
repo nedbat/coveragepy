@@ -73,7 +73,7 @@ if LOG:  # pragma: debugging
     assert sys_monitoring is not None
 
     short_stack = functools.partial(
-        short_stack, full=True, short_filenames=True, frame_ids=True
+        short_stack, full=True, short_filenames=True, frame_ids=True,
     )
     seen_threads: Set[int] = set()
 
@@ -359,7 +359,7 @@ class SysMonitor(TracerCore):
 
     @panopticon("code", "@")
     def sysmon_py_resume_arcs(
-        self, code: CodeType, instruction_offset: int
+        self, code: CodeType, instruction_offset: int,
     ) -> MonitorReturn:
         """Handle sys.monitoring.events.PY_RESUME events for branch coverage."""
         frame = self.callers_frame()
@@ -367,7 +367,7 @@ class SysMonitor(TracerCore):
 
     @panopticon("code", "@", None)
     def sysmon_py_return_arcs(
-        self, code: CodeType, instruction_offset: int, retval: object
+        self, code: CodeType, instruction_offset: int, retval: object,
     ) -> MonitorReturn:
         """Handle sys.monitoring.events.PY_RETURN events for branch coverage."""
         frame = self.callers_frame()
@@ -384,7 +384,7 @@ class SysMonitor(TracerCore):
 
     @panopticon("code", "@", "exc")
     def sysmon_py_unwind_arcs(
-        self, code: CodeType, instruction_offset: int, exception: BaseException
+        self, code: CodeType, instruction_offset: int, exception: BaseException,
     ) -> MonitorReturn:
         """Handle sys.monitoring.events.PY_UNWIND events for branch coverage."""
         frame = self.callers_frame()

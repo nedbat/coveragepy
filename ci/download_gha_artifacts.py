@@ -99,7 +99,7 @@ def main(owner_repo, artifact_pattern, dest_dir):
         print(
             f"Downloading {artifact['name']}, "
             + f"size: {artifact['size_in_bytes']}, "
-            + f"created: {utc2local(artifact['created_at'])}"
+            + f"created: {utc2local(artifact['created_at'])}",
         )
         download_url(artifact["archive_download_url"], temp_zip)
         unpack_zipfile(temp_zip)

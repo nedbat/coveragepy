@@ -82,7 +82,7 @@ def do_remove_extension(*args):
                     "import coverage; print(coverage.__file__)",
                 ],
                 encoding="utf-8",
-            ).strip()
+            ).strip(),
         )
         roots = [root]
     else:
@@ -245,7 +245,7 @@ def do_combine_html():
     cov = coverage.Coverage(config_file="metacov.ini", messages=True)
     cov.load()
     show_contexts = bool(
-        os.getenv("COVERAGE_DYNCTX") or os.getenv("COVERAGE_CONTEXT")
+        os.getenv("COVERAGE_DYNCTX") or os.getenv("COVERAGE_CONTEXT"),
     )
     cov.html_report(show_contexts=show_contexts)
 
@@ -280,7 +280,7 @@ def do_zip_mods():
             assert [ord(c) for c in text] == ords
             print(u"All OK with {encoding}")
             encoding = "{encoding}"
-            """
+            """,
         )
         # These encodings should match the list in tests/test_python.py
         details = [
@@ -333,7 +333,7 @@ def print_banner(label):
 def do_quietly(command):
     """Run a command in a shell, and suppress all output."""
     proc = subprocess.run(
-        command, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+        command, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
     )
     return proc.returncode
 
@@ -388,7 +388,7 @@ def do_edit_for_release():
 
     # NOTICE.txt
     update_file(
-        "NOTICE.txt", r"Copyright 2004.*? Ned", f"Copyright 2004-{facts.now:%Y} Ned"
+        "NOTICE.txt", r"Copyright 2004.*? Ned", f"Copyright 2004-{facts.now:%Y} Ned",
     )
 
     # CHANGES.rst
@@ -411,7 +411,7 @@ def do_edit_for_release():
         # The date of release, in "monthname day, year" format.
         release_date = "{facts.now:%B %-d, %Y}"
         # @@@ end
-        """
+        """,
     )
     update_file("doc/conf.py", r"(?s)# @@@ editable\n.*# @@@ end\n", new_conf)
 
@@ -430,7 +430,7 @@ def do_bump_version():
     # coverage/version.py
     next_version = f"version_info = {facts.next_vi}\n_dev = 1".replace("'", '"')
     update_file(
-        "coverage/version.py", r"(?m)^version_info = .*\n_dev = \d+$", next_version
+        "coverage/version.py", r"(?m)^version_info = .*\n_dev = \d+$", next_version,
     )
 
 
@@ -445,13 +445,13 @@ def do_cheats():
     github = f"https://github.com/{repo}"
     egg = "egg=coverage==0.0"  # to force a re-install
     print(
-        f"https://coverage.readthedocs.io/en/{facts.ver}/changes.html#changes-{facts.anchor}"
+        f"https://coverage.readthedocs.io/en/{facts.ver}/changes.html#changes-{facts.anchor}",
     )
 
     print(
         "\n## For GitHub commenting:\n"
         + "This is now released as part of "
-        + f"[coverage {facts.ver}](https://pypi.org/project/coverage/{facts.ver})."
+        + f"[coverage {facts.ver}](https://pypi.org/project/coverage/{facts.ver}).",
     )
 
     print("\n## To run this code:")
@@ -465,7 +465,7 @@ def do_cheats():
         "\n## For other collaborators:\n"
         + f"git clone {github}\n"
         + f"cd {repo.partition('/')[-1]}\n"
-        + f"git checkout {facts.sha}"
+        + f"git checkout {facts.sha}",
     )
 
 

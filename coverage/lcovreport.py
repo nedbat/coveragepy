@@ -97,10 +97,10 @@ class LcovReporter:
         missing_arcs = analysis.missing_branch_arcs()
         executed_arcs = analysis.executed_branch_arcs()
         for block_number, block_line_number in enumerate(
-            sorted(analysis.branch_stats().keys())
+            sorted(analysis.branch_stats().keys()),
         ):
             for branch_number, line_number in enumerate(
-                sorted(missing_arcs[block_line_number])
+                sorted(missing_arcs[block_line_number]),
             ):
                 # The exit branches have a negative line number,
                 # this will not produce valid lcov. Setting

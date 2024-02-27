@@ -243,7 +243,7 @@ def _needs_to_implement(that: Any, func_name: str) -> NoReturn:
         name = f"{klass.__module__}.{klass.__name__}"
 
     raise NotImplementedError(
-        f"{thing} {name!r} needs to implement {func_name}()"
+        f"{thing} {name!r} needs to implement {func_name}()",
     )
 
 

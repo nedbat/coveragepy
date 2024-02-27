@@ -64,7 +64,7 @@ class SqliteDb:
         if hasattr(sqlite3, "SQLITE_DBCONFIG_DEFENSIVE"):
             # Turn off defensive mode, so that journal_mode=off can succeed.
             self.con.setconfig(                     # type: ignore[attr-defined, unused-ignore]
-                sqlite3.SQLITE_DBCONFIG_DEFENSIVE, False
+                sqlite3.SQLITE_DBCONFIG_DEFENSIVE, False,
             )
 
         # This pragma makes writing faster. It disables rollbacks, but we never need them.

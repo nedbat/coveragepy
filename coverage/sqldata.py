@@ -298,16 +298,16 @@ class CoverageData:
                 else:
                     raise DataError(
                         "Data file {!r} doesn't seem to be a coverage data file: {}".format(
-                            self._filename, exc
-                        )
+                            self._filename, exc,
+                        ),
                     ) from exc
             else:
                 schema_version = row[0]
                 if schema_version != SCHEMA_VERSION:
                     raise DataError(
                         "Couldn't use data file {!r}: wrong schema: {} instead of {}".format(
-                            self._filename, schema_version, SCHEMA_VERSION
-                        )
+                            self._filename, schema_version, SCHEMA_VERSION,
+                        ),
                     )
 
             row = db.execute_one("select value from meta where key = 'has_arcs'")
@@ -396,7 +396,7 @@ class CoverageData:
             self._debug.write(f"Loading data into data file {self._filename!r}")
         if data[:1] != b"z":
             raise DataError(
-                f"Unrecognized serialization: {data[:40]!r} (head of {len(data)} bytes)"
+                f"Unrecognized serialization: {data[:40]!r} (head of {len(data)} bytes)",
             )
         script = zlib.decompress(data[1:]).decode("utf-8")
         self._dbs[threading.get_ident()] = db = SqliteDb(self._filename, self._debug)
@@ -416,7 +416,7 @@ class CoverageData:
                 with self._connect() as con:
                     self._file_map[filename] = con.execute_for_rowid(
                         "insert or replace into file (path) values (?)",
-                        (filename,)
+                        (filename,),
                     )
         return self._file_map.get(filename)
 
@@ -456,7 +456,7 @@ class CoverageData:
             with self._connect() as con:
                 self._current_context_id = con.execute_for_rowid(
                     "insert into context (context) values (?)",
-                    (context,)
+                    (context,),
                 )
 
     def base_filename(self) -> str:
@@ -486,7 +486,7 @@ class CoverageData:
         """
         if self._debug.should("dataop"):
             self._debug.write("Adding lines: %d files, %d lines total" % (
-                len(line_data), sum(len(lines) for lines in line_data.values())
+                len(line_data), sum(len(lines) for lines in line_data.values()),
             ))
             if self._debug.should("dataop2"):
                 for filename, linenos in sorted(line_data.items()):
@@ -524,7 +524,7 @@ class CoverageData:
         """
         if self._debug.should("dataop"):
             self._debug.write("Adding arcs: %d files, %d arcs total" % (
-                len(arc_data), sum(len(arcs) for arcs in arc_data.values())
+                len(arc_data), sum(len(arcs) for arcs in arc_data.values()),
             ))
             if self._debug.should("dataop2"):
                 for filename, arcs in sorted(arc_data.items()):
@@ -564,7 +564,7 @@ class CoverageData:
             with self._connect() as con:
                 con.execute_void(
                     "insert or ignore into meta (key, value) values (?, ?)",
-                    ("has_arcs", str(int(arcs)))
+                    ("has_arcs", str(int(arcs))),
                 )
 
     @_locked
@@ -588,12 +588,12 @@ class CoverageData:
                         raise DataError(
                             "Conflicting file tracer name for '{}': {!r} vs {!r}".format(
                                 filename, existing_plugin, plugin_name,
-                            )
+                            ),
                         )
                 elif plugin_name:
                     con.execute_void(
                         "insert into tracer (file_id, tracer) values (?, ?)",
-                        (file_id, plugin_name)
+                        (file_id, plugin_name),
                     )
 
     def touch_file(self, filename: str, plugin_name: str = "") -> None:
@@ -685,7 +685,7 @@ class CoverageData:
                 "select file.path, context.context, arc.fromno, arc.tono " +
                 "from arc " +
                 "inner join file on file.id = arc.file_id " +
-                "inner join context on context.id = arc.context_id"
+                "inner join context on context.id = arc.context_id",
             ) as cur:
                 arcs = [
                     (files[path], context, fromno, tono)
@@ -697,7 +697,7 @@ class CoverageData:
                 "select file.path, context.context, line_bits.numbits " +
                 "from line_bits " +
                 "inner join file on file.id = line_bits.file_id " +
-                "inner join context on context.id = line_bits.context_id"
+                "inner join context on context.id = line_bits.context_id",
             ) as cur:
                 lines: Dict[Tuple[str, str], bytes] = {}
                 for path, context, numbits in cur:
@@ -710,7 +710,7 @@ class CoverageData:
             with con.execute(
                 "select file.path, tracer " +
                 "from tracer " +
-                "inner join file on file.id = tracer.file_id"
+                "inner join file on file.id = tracer.file_id",
             ) as cur:
                 tracers = {files[path]: tracer for (path, tracer) in cur}
 
@@ -726,7 +726,7 @@ class CoverageData:
                 this_tracers = {path: "" for path, in cur}
             with con.execute(
                 "select file.path, tracer from tracer " +
-                "inner join file on file.id = tracer.file_id"
+                "inner join file on file.id = tracer.file_id",
             ) as cur:
                 this_tracers.update({
                     aliases.map(path): tracer
@@ -736,14 +736,14 @@ class CoverageData:
             # Create all file and context rows in the DB.
             con.executemany_void(
                 "insert or ignore into file (path) values (?)",
-                ((file,) for file in files.values())
+                ((file,) for file in files.values()),
             )
             with con.execute("select id, path from file") as cur:
                 file_ids = {path: id for id, path in cur}
             self._file_map.update(file_ids)
             con.executemany_void(
                 "insert or ignore into context (context) values (?)",
-                ((context,) for context in contexts)
+                ((context,) for context in contexts),
             )
             with con.execute("select id, context from context") as cur:
                 context_ids = {context: id for id, context in cur}
@@ -759,8 +759,8 @@ class CoverageData:
                 if this_tracer is not None and this_tracer != other_tracer:
                     raise DataError(
                         "Conflicting file tracer name for '{}': {!r} vs {!r}".format(
-                            path, this_tracer, other_tracer
-                        )
+                            path, this_tracer, other_tracer,
+                        ),
                     )
                 tracer_map[path] = other_tracer
 
@@ -777,7 +777,7 @@ class CoverageData:
                 "select file.path, context.context, line_bits.numbits " +
                 "from line_bits " +
                 "inner join file on file.id = line_bits.file_id " +
-                "inner join context on context.id = line_bits.context_id"
+                "inner join context on context.id = line_bits.context_id",
             ) as cur:
                 for path, context, numbits in cur:
                     key = (aliases.map(path), context)
@@ -792,7 +792,7 @@ class CoverageData:
                 con.executemany_void(
                     "insert or ignore into arc " +
                     "(file_id, context_id, fromno, tono) values (?, ?, ?, ?)",
-                    arc_rows
+                    arc_rows,
                 )
 
             if lines:
@@ -804,11 +804,11 @@ class CoverageData:
                     [
                         (file_ids[file], context_ids[context], numbits)
                         for (file, context), numbits in lines.items()
-                    ]
+                    ],
                 )
             con.executemany_void(
                 "insert or ignore into tracer (file_id, tracer) values (?, ?)",
-                ((file_ids[filename], tracer) for filename, tracer in tracer_map.items())
+                ((file_ids[filename], tracer) for filename, tracer in tracer_map.items()),
             )
 
         if not self._no_disk:

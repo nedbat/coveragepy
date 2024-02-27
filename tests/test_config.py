@@ -602,7 +602,7 @@ class ConfigFileTest(UsingModulesMixin, CoverageTest):
 
         assert cov.config.paths == {
             'source': ['.', '/home/ned/src/'],
-            'other': ['other', '/home/ned/other', 'c:\\Ned\\etc']
+            'other': ['other', '/home/ned/other', 'c:\\Ned\\etc'],
         }
 
         assert cov.config.get_plugin_options("plugins.a_plugin") == {

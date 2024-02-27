@@ -875,7 +875,7 @@ class CmdLineTest(BaseCmdLineTest):
             show_help('No module specified for -m')
             """,
             ret=ERR,
-            options={"run:command_line": "myprog.py"}
+            options={"run:command_line": "myprog.py"},
         )
 
     def test_cant_append_parallel(self) -> None:

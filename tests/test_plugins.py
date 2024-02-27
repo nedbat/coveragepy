@@ -207,7 +207,7 @@ class PluginTest(CoverageTest):
         cov._debug_file = debug_out
         cov.set_option("run:plugins", ["plugin_sys_info"])
         with swallow_warnings(
-            r"Plugin file tracers \(plugin_sys_info.Plugin\) aren't supported with .*"
+            r"Plugin file tracers \(plugin_sys_info.Plugin\) aren't supported with .*",
         ):
             cov.start()
         cov.stop()      # pragma: nested

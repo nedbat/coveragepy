@@ -165,10 +165,10 @@ class TomlConfigParser:
                 return converter(value)
             except Exception as e:
                 raise ValueError(
-                    f"Option [{section}]{option} couldn't convert to {type_desc}: {value!r}"
+                    f"Option [{section}]{option} couldn't convert to {type_desc}: {value!r}",
                 ) from e
         raise ValueError(
-            f"Option [{section}]{option} is not {type_desc}: {value!r}"
+            f"Option [{section}]{option} is not {type_desc}: {value!r}",
         )
 
     def getboolean(self, section: str, option: str) -> bool:

@@ -113,7 +113,7 @@ class NumbitsSqliteFunctionTest(CoverageTest):
             [
                 (i, nums_to_numbits(range(i, 100, i)))
                 for i in range(1, 11)
-            ]
+            ],
         )
         self.addCleanup(self.cursor.close)
 
@@ -122,7 +122,7 @@ class NumbitsSqliteFunctionTest(CoverageTest):
             "select numbits_union(" +
                 "(select numbits from data where id = 7)," +
                 "(select numbits from data where id = 9)" +
-                ")"
+                ")",
         )
         expected = [
             7, 9, 14, 18, 21, 27, 28, 35, 36, 42, 45, 49,
@@ -136,7 +136,7 @@ class NumbitsSqliteFunctionTest(CoverageTest):
             "select numbits_intersection(" +
                 "(select numbits from data where id = 7)," +
                 "(select numbits from data where id = 9)" +
-                ")"
+                ")",
         )
         answer = numbits_to_nums(list(res)[0][0])
         assert [63] == answer
@@ -144,14 +144,14 @@ class NumbitsSqliteFunctionTest(CoverageTest):
     def test_numbits_any_intersection(self) -> None:
         res = self.cursor.execute(
             "select numbits_any_intersection(?, ?)",
-            (nums_to_numbits([1, 2, 3]), nums_to_numbits([3, 4, 5]))
+            (nums_to_numbits([1, 2, 3]), nums_to_numbits([3, 4, 5])),
         )
         answer = [any_inter for (any_inter,) in res]
         assert [1] == answer
 
         res = self.cursor.execute(
             "select numbits_any_intersection(?, ?)",
-            (nums_to_numbits([1, 2, 3]), nums_to_numbits([7, 8, 9]))
+            (nums_to_numbits([1, 2, 3]), nums_to_numbits([7, 8, 9])),
         )
         answer = [any_inter for (any_inter,) in res]
         assert [0] == answer

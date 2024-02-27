@@ -160,7 +160,7 @@ class PyTracer(TracerCore):
                     "Empty stack!",
                     frame.f_code.co_filename,
                     frame.f_lineno,
-                    frame.f_code.co_name
+                    frame.f_code.co_name,
                 )
             return None
 
@@ -190,7 +190,7 @@ class PyTracer(TracerCore):
                     self.cur_file_name,
                     self.last_line,
                     started_context,
-                )
+                ),
             )
 
             # Improve tracing performance: when calling a function, both caller
