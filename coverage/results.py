@@ -6,10 +6,10 @@
 from __future__ import annotations
 
 import collections
+import dataclasses
 
 from typing import Callable, Iterable, TYPE_CHECKING
 
-from coverage.debug import auto_repr
 from coverage.exceptions import ConfigError
 from coverage.misc import nice_pair
 from coverage.types import TArc, TLineNo
@@ -178,6 +178,7 @@ class Analysis:
         return stats
 
 
+@dataclasses.dataclass
 class Numbers:
     """The numerical results of measuring coverage.
 
@@ -186,38 +187,18 @@ class Numbers:
 
     """
 
-    def __init__(
-        self,
-        precision: int = 0,
-        n_files: int = 0,
-        n_statements: int = 0,
-        n_excluded: int = 0,
-        n_missing: int = 0,
-        n_branches: int = 0,
-        n_partial_branches: int = 0,
-        n_missing_branches: int = 0,
-    ) -> None:
-        assert 0 <= precision < 10
-        self._precision = precision
-        self._near0 = 1.0 / 10**precision
-        self._near100 = 100.0 - self._near0
-        self.n_files = n_files
-        self.n_statements = n_statements
-        self.n_excluded = n_excluded
-        self.n_missing = n_missing
-        self.n_branches = n_branches
-        self.n_partial_branches = n_partial_branches
-        self.n_missing_branches = n_missing_branches
-
-    __repr__ = auto_repr
+    precision: int = 0
+    n_files: int = 0
+    n_statements: int = 0
+    n_excluded: int = 0
+    n_missing: int = 0
+    n_branches: int = 0
+    n_partial_branches: int = 0
+    n_missing_branches: int = 0
 
     def init_args(self) -> list[int]:
         """Return a list for __init__(*args) to recreate this object."""
-        return [
-            self._precision,
-            self.n_files, self.n_statements, self.n_excluded, self.n_missing,
-            self.n_branches, self.n_partial_branches, self.n_missing_branches,
-        ]
+        return list(dataclasses.astuple(self))
 
     @property
     def n_executed(self) -> int:
@@ -258,19 +239,20 @@ class Numbers:
         result in either "0" or "100".
 
         """
-        if 0 < pc < self._near0:
-            pc = self._near0
-        elif self._near100 < pc < 100:
-            pc = self._near100
+        near0 = 1.0 / 10 ** self.precision
+        if 0 < pc < near0:
+            pc = near0
+        elif (100.0 - near0) < pc < 100:
+            pc = 100.0 - near0
         else:
-            pc = round(pc, self._precision)
-        return "%.*f" % (self._precision, pc)
+            pc = round(pc, self.precision)
+        return "%.*f" % (self.precision, pc)
 
     def pc_str_width(self) -> int:
         """How many characters wide can pc_covered_str be?"""
         width = 3   # "100"
-        if self._precision > 0:
-            width += 1 + self._precision
+        if self.precision > 0:
+            width += 1 + self.precision
         return width
 
     @property
@@ -281,19 +263,16 @@ class Numbers:
         return numerator, denominator
 
     def __add__(self, other: Numbers) -> Numbers:
-        nums = Numbers(precision=self._precision)
-        nums.n_files = self.n_files + other.n_files
-        nums.n_statements = self.n_statements + other.n_statements
-        nums.n_excluded = self.n_excluded + other.n_excluded
-        nums.n_missing = self.n_missing + other.n_missing
-        nums.n_branches = self.n_branches + other.n_branches
-        nums.n_partial_branches = (
-            self.n_partial_branches + other.n_partial_branches
+        return Numbers(
+            self.precision,
+            self.n_files + other.n_files,
+            self.n_statements + other.n_statements,
+            self.n_excluded + other.n_excluded,
+            self.n_missing + other.n_missing,
+            self.n_branches + other.n_branches,
+            self.n_partial_branches + other.n_partial_branches,
+            self.n_missing_branches + other.n_missing_branches,
         )
-        nums.n_missing_branches = (
-            self.n_missing_branches + other.n_missing_branches
-        )
-        return nums
 
     def __radd__(self, other: int) -> Numbers:
         # Implementing 0+Numbers allows us to sum() a list of Numbers.
