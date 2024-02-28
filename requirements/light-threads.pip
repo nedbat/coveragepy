@@ -8,7 +8,7 @@ cffi==1.16.0
     # via -r requirements/light-threads.in
 dnspython==2.6.1
     # via eventlet
-eventlet==0.35.1
+eventlet==0.35.2
     # via -r requirements/light-threads.in
 gevent==24.2.1
     # via -r requirements/light-threads.in
@@ -25,7 +25,7 @@ zope-interface==6.2
     # via gevent
 
 # The following packages are considered to be unsafe in a requirements file:
-setuptools==69.1.0
+setuptools==69.1.1
     # via
     #   zope-event
     #   zope-interface

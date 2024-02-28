@@ -38,7 +38,7 @@ tomli==2.0.1
     #   build
     #   cibuildwheel
     #   pyproject-hooks
-typing-extensions==4.9.0
+typing-extensions==4.10.0
     # via cibuildwheel
 wheel==0.42.0
     # via -r requirements/kit.in
@@ -46,5 +46,5 @@ zipp==3.17.0
     # via importlib-metadata
 
 # The following packages are considered to be unsafe in a requirements file:
-setuptools==69.1.0
+setuptools==69.1.1
     # via -r requirements/kit.in
