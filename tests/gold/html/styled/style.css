@@ -154,7 +154,7 @@ kbd { border: 1px solid black; border-color: #888 #333 #333 #888; padding: .1em 
 
 #source p .n.highlight { background: #ffdd00; }
 
-#source p .n a { margin-top: -4em; padding-top: 4em; text-decoration: none; color: #999; }
+#source p .n a { scroll-margin-top: 6em; text-decoration: none; color: #999; }
 
 @media (prefers-color-scheme: dark) { #source p .n a { color: #777; } }
 

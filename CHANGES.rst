@@ -23,7 +23,7 @@ upgrading your version of coverage.py.
 Unreleased
 ----------
 
-Nothing yet.
+- Fix: clicking a line number in the HTML report now positions more accurately.
 
 
 .. scriv-start-here
