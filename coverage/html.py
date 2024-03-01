@@ -112,21 +112,21 @@ class HtmlDataGeneration:
     def __init__(self, cov: Coverage) -> None:
         self.coverage = cov
         self.config = self.coverage.config
-        data = self.coverage.get_data()
-        self.has_arcs = data.has_arcs()
+        self.data = self.coverage.get_data()
+        self.has_arcs = self.data.has_arcs()
         if self.config.show_contexts:
-            if data.measured_contexts() == {""}:
+            if self.data.measured_contexts() == {""}:
                 self.coverage._warn("No contexts were measured")
-        data.set_query_contexts(self.config.report_contexts)
+        self.data.set_query_contexts(self.config.report_contexts)
 
     def data_for_file(self, fr: FileReporter, analysis: Analysis) -> FileData:
         """Produce the data needed for one file's report."""
         if self.has_arcs:
             missing_branch_arcs = analysis.missing_branch_arcs()
-            arcs_executed = analysis.arcs_executed()
+            arcs_executed = analysis.arcs_executed
 
         if self.config.show_contexts:
-            contexts_by_lineno = analysis.data.contexts_by_lineno(analysis.filename)
+            contexts_by_lineno = self.data.contexts_by_lineno(analysis.filename)
 
         lines = []
 

@@ -26,7 +26,7 @@ from coverage.data import combinable_files, debug_data_file
 from coverage.debug import info_header, short_stack, write_formatted_info
 from coverage.exceptions import _BaseCoverageException, _ExceptionDuringRun, NoSource
 from coverage.execfile import PyRunner
-from coverage.results import Numbers, should_fail_under
+from coverage.results import display_covered, should_fail_under
 from coverage.version import __url__
 
 # When adding to this file, alphabetization is important.  Look for
@@ -760,7 +760,7 @@ class CoverageScript:
             precision = cast(int, self.coverage.get_option("report:precision"))
             if should_fail_under(total, fail_under, precision):
                 msg = "total of {total} is less than fail-under={fail_under:.{p}f}".format(
-                    total=Numbers(precision=precision).display_covered(total),
+                    total=display_covered(total, precision),
                     fail_under=fail_under,
                     p=precision,
                 )

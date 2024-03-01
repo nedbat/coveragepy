@@ -81,23 +81,23 @@ def get_analysis_to_report(
     `Analysis` for the morf.
 
     """
-    file_reporters = coverage._get_file_reporters(morfs)
+    fr_morfs = coverage._get_file_reporters(morfs)
     config = coverage.config
 
     if config.report_include:
         matcher = GlobMatcher(prep_patterns(config.report_include), "report_include")
-        file_reporters = [fr for fr in file_reporters if matcher.match(fr.filename)]
+        fr_morfs = [(fr, morf) for (fr, morf) in fr_morfs if matcher.match(fr.filename)]
 
     if config.report_omit:
         matcher = GlobMatcher(prep_patterns(config.report_omit), "report_omit")
-        file_reporters = [fr for fr in file_reporters if not matcher.match(fr.filename)]
+        fr_morfs = [(fr, morf) for (fr, morf) in fr_morfs if not matcher.match(fr.filename)]
 
-    if not file_reporters:
+    if not fr_morfs:
         raise NoDataError("No data to report.")
 
-    for fr in sorted(file_reporters):
+    for fr, morf in sorted(fr_morfs):
         try:
-            analysis = coverage._analyze(fr)
+            analysis = coverage.analyze(morf)
         except NotPython:
             # Only report errors for .py files, and only if we didn't
             # explicitly suppress those errors.

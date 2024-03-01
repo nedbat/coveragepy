@@ -48,7 +48,7 @@ from coverage.plugin_support import Plugins
 from coverage.python import PythonFileReporter
 from coverage.report import SummaryReporter
 from coverage.report_core import render_report
-from coverage.results import Analysis
+from coverage.results import Analysis, analysis_from_file_reporter
 from coverage.types import (
     FilePath, TConfigurable, TConfigSectionIn, TConfigValueIn, TConfigValueOut,
     TFileDisposition, TLineNo, TMorf,
@@ -922,7 +922,7 @@ class Coverage(TConfigurable):
         coverage data.
 
         """
-        analysis = self._analyze(morf)
+        analysis = self.analyze(morf)
         return (
             analysis.filename,
             sorted(analysis.statements),
@@ -931,23 +931,15 @@ class Coverage(TConfigurable):
             analysis.missing_formatted(),
         )
 
-    def _analyze(self, it: FileReporter | TMorf) -> Analysis:
-        """Analyze a single morf or code unit.
-
-        Returns an `Analysis` object.
-
-        """
-        # All reporting comes through here, so do reporting initialization.
+    def analyze(self, morf: TMorf) -> Analysis:
+        """A public API for getting Analysis. TODO!!! """
         self._init()
         self._post_init()
 
         data = self.get_data()
-        if isinstance(it, FileReporter):
-            fr = it
-        else:
-            fr = self._get_file_reporter(it)
-
-        return Analysis(data, self.config.precision, fr, self._file_mapper)
+        file_reporter = self._get_file_reporter(morf)
+        filename = self._file_mapper(file_reporter.filename)
+        return analysis_from_file_reporter(data, self.config.precision, file_reporter, filename)
 
     @functools.lru_cache(maxsize=1)
     def _get_file_reporter(self, morf: TMorf) -> FileReporter:
@@ -977,11 +969,14 @@ class Coverage(TConfigurable):
         assert isinstance(file_reporter, FileReporter)
         return file_reporter
 
-    def _get_file_reporters(self, morfs: Iterable[TMorf] | None = None) -> list[FileReporter]:
-        """Get a list of FileReporters for a list of modules or file names.
+    def _get_file_reporters(
+        self,
+        morfs: Iterable[TMorf] | None = None,
+    ) -> list[tuple[FileReporter, TMorf]]:
+        """Get FileReporters for a list of modules or file names.
 
         For each module or file name in `morfs`, find a FileReporter.  Return
-        the list of FileReporters.
+        a list pairing FileReporters with the morfs.
 
         If `morfs` is a single module or file name, this returns a list of one
         FileReporter.  If `morfs` is empty or None, then the list of all files
@@ -996,8 +991,7 @@ class Coverage(TConfigurable):
         if not isinstance(morfs, (list, tuple, set)):
             morfs = [morfs]     # type: ignore[list-item]
 
-        file_reporters = [self._get_file_reporter(morf) for morf in morfs]
-        return file_reporters
+        return [(self._get_file_reporter(morf), morf) for morf in morfs]
 
     def _prepare_data_for_reporting(self) -> None:
         """Re-map data before reporting, to get implicit "combine" behavior."""
