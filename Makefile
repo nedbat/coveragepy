@@ -117,11 +117,8 @@ _upgrade:
 
 doc_upgrade: export CUSTOM_COMPILE_COMMAND=make doc_upgrade
 doc_upgrade: $(DOCBIN)			## Update the doc/requirements.pip file
-	@# I don't understand why, but pip-tools won't update versions in this
-	@# .pip file unless I remove it first:
-	rm doc/requirements.pip
 	$(DOCBIN)/pip install -q -r requirements/pip-tools.pip
-	$(DOCBIN)/$(PIP_COMPILE) -o doc/requirements.pip doc/requirements.in
+	$(DOCBIN)/$(PIP_COMPILE) --upgrade -o doc/requirements.pip doc/requirements.in
 
 diff_upgrade:				## Summarize the last `make upgrade`
 	@# The sort flags sort by the package name first, then by the -/+, and
