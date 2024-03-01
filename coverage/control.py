@@ -1098,12 +1098,6 @@ class Coverage(TConfigurable):
     ) -> None:
         """Annotate a list of modules.
 
-        .. note::
-
-            This method has been obsoleted by more modern reporting tools,
-            including the :meth:`html_report` method.  It will be removed in a
-            future version.
-
         Each module in `morfs` is annotated.  The source is written to a new
         file, named with a ",cover" suffix, with each line prefixed with a
         marker to indicate the coverage of the line.  Covered lines have ">",
