@@ -21,10 +21,9 @@ import types
 
 from types import ModuleType
 from typing import (
-    Any, Callable, IO, Iterable, Iterator, Mapping, NoReturn, Sequence, TypeVar,
+    Any, IO, Iterable, Iterator, Mapping, NoReturn, Sequence, TypeVar,
 )
 
-from coverage import env
 from coverage.exceptions import CoverageException
 from coverage.types import TArc
 
@@ -114,29 +113,6 @@ def nice_pair(pair: TArc) -> str:
         return "%d" % start
     else:
         return "%d-%d" % (start, end)
-
-
-TSelf = TypeVar("TSelf")
-TRetVal = TypeVar("TRetVal")
-
-def expensive(fn: Callable[[TSelf], TRetVal]) -> Callable[[TSelf], TRetVal]:
-    """A decorator to indicate that a method shouldn't be called more than once.
-
-    Normally, this does nothing.  During testing, this raises an exception if
-    called more than once.
-
-    """
-    if env.TESTING:
-        attr = "_once_" + fn.__name__
-
-        def _wrapper(self: TSelf) -> TRetVal:
-            if hasattr(self, attr):
-                raise AssertionError(f"Shouldn't have called {fn.__name__} more than once")
-            setattr(self, attr, True)
-            return fn(self)
-        return _wrapper
-    else:
-        return fn                   # pragma: not testing
 
 
 def bool_or_none(b: Any) -> bool | None:

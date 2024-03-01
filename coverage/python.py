@@ -14,7 +14,7 @@ from typing import Iterable, TYPE_CHECKING
 from coverage import env
 from coverage.exceptions import CoverageException, NoSource
 from coverage.files import canonical_filename, relative_filename, zip_location
-from coverage.misc import expensive, isolate_module, join_regex
+from coverage.misc import isolate_module, join_regex
 from coverage.parser import PythonParser
 from coverage.phystokens import source_token_lines, source_encoding
 from coverage.plugin import FileReporter
@@ -202,7 +202,6 @@ class PythonFileReporter(FileReporter):
     def translate_arcs(self, arcs: Iterable[TArc]) -> set[TArc]:
         return self.parser.translate_arcs(arcs)
 
-    @expensive
     def no_branch_lines(self) -> set[TLineNo]:
         assert self.coverage is not None
         no_branch = self.parser.lines_matching(
@@ -211,11 +210,9 @@ class PythonFileReporter(FileReporter):
         )
         return no_branch
 
-    @expensive
     def arcs(self) -> set[TArc]:
         return self.parser.arcs()
 
-    @expensive
     def exit_counts(self) -> dict[TLineNo, int]:
         return self.parser.exit_counts()
 

@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 import ast
+import functools
 import io
 import keyword
 import re
@@ -170,35 +171,20 @@ def source_token_lines(source: str) -> TSourceTokenLines:
         yield line
 
 
-class CachedTokenizer:
-    """A one-element cache around tokenize.generate_tokens.
+@functools.lru_cache(maxsize=100)
+def generate_tokens(text: str) -> TokenInfos:
+    """A cached version of `tokenize.generate_tokens`.
 
     When reporting, coverage.py tokenizes files twice, once to find the
     structure of the file, and once to syntax-color it.  Tokenizing is
     expensive, and easily cached.
 
-    This is a one-element cache so that our twice-in-a-row tokenizing doesn't
-    actually tokenize twice.
-
+    Unfortunately, the HTML report code tokenizes all the files the first time
+    before then tokenizing them a second time, so we cache many.  Ideally we'd
+    rearrange the code to tokenize each file twice before moving onto the next.
     """
-    def __init__(self) -> None:
-        self.last_text: str | None = None
-        self.last_tokens: list[tokenize.TokenInfo] = []
-
-    def generate_tokens(self, text: str) -> TokenInfos:
-        """A stand-in for `tokenize.generate_tokens`."""
-        if text != self.last_text:
-            self.last_text = text
-            readline = io.StringIO(text).readline
-            try:
-                self.last_tokens = list(tokenize.generate_tokens(readline))
-            except:
-                self.last_text = None
-                raise
-        return self.last_tokens
-
-# Create our generate_tokens cache as a callable replacement function.
-generate_tokens = CachedTokenizer().generate_tokens
+    readline = io.StringIO(text).readline
+    return list(tokenize.generate_tokens(readline))
 
 
 def source_encoding(source: bytes) -> str:

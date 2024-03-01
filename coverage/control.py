@@ -8,6 +8,7 @@ from __future__ import annotations
 import atexit
 import collections
 import contextlib
+import functools
 import os
 import os.path
 import platform
@@ -948,6 +949,7 @@ class Coverage(TConfigurable):
 
         return Analysis(data, self.config.precision, fr, self._file_mapper)
 
+    @functools.lru_cache(maxsize=1)
     def _get_file_reporter(self, morf: TMorf) -> FileReporter:
         """Get a FileReporter for a module or file name."""
         assert self._data is not None
