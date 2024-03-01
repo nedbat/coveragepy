@@ -15,6 +15,6 @@ sphinx-code-tabs
 sphinxcontrib-restbuilder
 
 # These aren't compatible atm with other library versions:
-#doc8
+doc8
 #pyenchant
 #sphinxcontrib-spelling

@@ -24,8 +24,12 @@ cogapp==3.3.0
     # via -r doc/requirements.in
 colorama==0.4.6
     # via sphinx-autobuild
+doc8==1.1.1
+    # via -r doc/requirements.in
 docutils==0.20.1
     # via
+    #   doc8
+    #   restructuredtext-lint
     #   sphinx
     #   sphinx-rtd-theme
 idna==3.6
@@ -46,12 +50,18 @@ mdurl==0.1.2
     # via markdown-it-py
 packaging==23.2
     # via sphinx
+pbr==6.0.0
+    # via stevedore
 pygments==2.17.2
-    # via sphinx
+    # via
+    #   doc8
+    #   sphinx
 requests==2.31.0
     # via
     #   scriv
     #   sphinx
+restructuredtext-lint==1.4.0
+    # via doc8
 scriv==1.5.1
     # via -r doc/requirements.in
 six==1.16.0
@@ -88,6 +98,8 @@ sphinxcontrib-restbuilder==0.3
     # via -r doc/requirements.in
 sphinxcontrib-serializinghtml==1.1.10
     # via sphinx
+stevedore==5.2.0
+    # via doc8
 tornado==6.4
     # via livereload
 urllib3==2.2.1
