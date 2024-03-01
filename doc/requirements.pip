@@ -52,6 +52,10 @@ packaging==23.2
     # via sphinx
 pbr==6.0.0
     # via stevedore
+pyenchant==3.2.2
+    # via
+    #   -r doc/requirements.in
+    #   sphinxcontrib-spelling
 pygments==2.17.2
     # via
     #   doc8
@@ -76,6 +80,7 @@ sphinx==7.2.6
     #   sphinx-rtd-theme
     #   sphinxcontrib-jquery
     #   sphinxcontrib-restbuilder
+    #   sphinxcontrib-spelling
 sphinx-autobuild==2024.2.4
     # via -r doc/requirements.in
 sphinx-code-tabs==0.5.5
@@ -98,6 +103,8 @@ sphinxcontrib-restbuilder==0.3
     # via -r doc/requirements.in
 sphinxcontrib-serializinghtml==1.1.10
     # via sphinx
+sphinxcontrib-spelling==8.0.0
+    # via -r doc/requirements.in
 stevedore==5.2.0
     # via doc8
 tornado==6.4

@@ -117,6 +117,9 @@ _upgrade:
 
 doc_upgrade: export CUSTOM_COMPILE_COMMAND=make doc_upgrade
 doc_upgrade: $(DOCBIN)			## Update the doc/requirements.pip file
+	@# I don't understand why, but pip-tools won't update versions in this
+	@# .pip file unless I remove it first:
+	rm doc/requirements.pip
 	$(DOCBIN)/pip install -q -r requirements/pip-tools.pip
 	$(DOCBIN)/$(PIP_COMPILE) -o doc/requirements.pip doc/requirements.in
 
@@ -254,7 +257,8 @@ docdev: dochtml				## Build docs, and auto-watch for changes.
 	PATH=$(DOCBIN):$(PATH) $(SPHINXAUTOBUILD) -b html doc doc/_build/html
 
 docspell: $(DOCBIN)			## Run the spell checker on the docs.
-	$(SPHINXBUILD) -b spelling doc doc/_spell
+	# Very mac-specific...
+	PYENCHANT_LIBRARY_PATH=/opt/homebrew/lib/libenchant-2.dylib $(SPHINXBUILD) -b spelling doc doc/_spell
 
 
 ##@ Publishing docs
