@@ -3,6 +3,4 @@
 
 # Version pins, for use as a constraints file.
 
-# sphinx-rtd-theme wants <7
-# https://github.com/readthedocs/sphinx_rtd_theme/issues/1463
-Sphinx<7
+# None for now!
