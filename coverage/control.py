@@ -18,6 +18,7 @@ import threading
 import time
 import warnings
 
+from collections.abc import Container
 from types import FrameType
 from typing import (
     cast,
@@ -948,6 +949,16 @@ class Coverage(TConfigurable):
             fr = self._get_file_reporter(it)
 
         return Analysis(data, self.config.precision, fr, self._file_mapper)
+
+    def analyze(self, morf: TMorf, lines: Container[TLineNo] | None = None) -> Analysis:
+        """A public API for getting Analysis. TODO!!! """
+        self._init()
+        self._post_init()
+
+        data = self.get_data()
+        fr = self._get_file_reporter(morf)
+
+        return Analysis(data, self.config.precision, fr, self._file_mapper, lines)
 
     @functools.lru_cache(maxsize=1)
     def _get_file_reporter(self, morf: TMorf) -> FileReporter:

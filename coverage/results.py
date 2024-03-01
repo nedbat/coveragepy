@@ -8,6 +8,7 @@ from __future__ import annotations
 import collections
 import dataclasses
 
+from collections.abc import Container
 from typing import Callable, Iterable, TYPE_CHECKING
 
 from coverage.exceptions import ConfigError
@@ -28,24 +29,41 @@ class Analysis:
         precision: int,
         file_reporter: FileReporter,
         file_mapper: Callable[[str], str],
+        lines: Container[TLineNo] | None = None,
     ) -> None:
         self.data = data
         self.file_reporter = file_reporter
         self.filename = file_mapper(self.file_reporter.filename)
+
         self.statements = self.file_reporter.lines()
         self.excluded = self.file_reporter.excluded_lines()
+        if lines is not None:
+            self.statements = {lno for lno in self.statements if lno in lines}
+            self.excluded = {lno for lno in self.excluded if lno in lines}
 
         # Identify missing statements.
         executed: Iterable[TLineNo]
         executed = self.data.lines(self.filename) or []
         executed = self.file_reporter.translate_lines(executed)
+        if lines is not None:
+            executed = {lno for lno in executed if lno in lines}
         self.executed = executed
         self.missing = self.statements - self.executed
 
         if self.data.has_arcs():
-            self._arc_possibilities = sorted(self.file_reporter.arcs())
+            arcs = self.file_reporter.arcs()
+            if lines is not None:
+                arcs = {(a, b) for a, b in arcs if a in lines or b in lines}
+            self._arc_possibilities = sorted(arcs)
             self.exit_counts = self.file_reporter.exit_counts()
+            if lines:
+                self.exit_counts = {
+                    lno: num for lno, num in self.exit_counts.items()
+                    if lno in lines
+                }
             self.no_branch = self.file_reporter.no_branch_lines()
+            if lines:
+                self.no_branch = {lno for lno in self.no_branch if lno in lines}
             n_branches = self._total_branches()
             mba = self.missing_branch_arcs()
             n_partial_branches = sum(len(v) for k,v in mba.items() if k not in self.missing)
