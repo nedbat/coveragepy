@@ -15,7 +15,7 @@ import shutil
 import string
 
 from dataclasses import dataclass
-from typing import Any, Iterable, TYPE_CHECKING, cast
+from typing import Any, Iterable, TYPE_CHECKING, TypedDict, cast
 
 import coverage
 from coverage.data import CoverageData, add_data_to_hash
@@ -31,26 +31,23 @@ from coverage.version import __url__
 
 
 if TYPE_CHECKING:
-    # To avoid circular imports:
     from coverage import Coverage
     from coverage.plugins import FileReporter
 
-    # To be able to use 3.8 typing features, and still run on 3.7:
-    from typing import TypedDict
-
-    class IndexInfoDict(TypedDict):
-        """Information for each file, to render the index file."""
-        nums: Numbers
-        html_filename: str
-        relative_filename: str
-
-    class FileInfoDict(TypedDict):
-        """Summary of the information from last rendering, to avoid duplicate work."""
-        hash: str
-        index: IndexInfoDict
-
 
 os = isolate_module(os)
+
+
+class IndexInfoDict(TypedDict):
+    """Information for each file, to render the index file."""
+    nums: Numbers
+    html_filename: str
+    relative_filename: str
+
+class FileInfoDict(TypedDict):
+    """Summary of the information from last rendering, to avoid duplicate work."""
+    hash: str
+    index: IndexInfoDict
 
 
 def data_filename(fname: str) -> str:
