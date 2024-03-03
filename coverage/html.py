@@ -512,9 +512,10 @@ class IncrementalChecker:
     #  The data looks like:
     #
     #  {
+    #      "note": "This file is an internal implementation detail ...",
     #      "format": 2,
-    #      "globals": "540ee119c15d52a68a53fe6f0897346d",
     #      "version": "4.0a1",
+    #      "globals": "540ee119c15d52a68a53fe6f0897346d",
     #      "files": {
     #          "cogapp___init__": {
     #              "hash": "e45581a5b48f879f301c0f30bf77a50c",
