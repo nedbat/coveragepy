@@ -69,8 +69,6 @@ jobs:
 
       - name: "Install dependencies"
         run: |
-          # We run on 3.8, but the pins were made on 3.7, so don't insist on
-          # hashes, which won't match.
           python -m pip install -r requirements/tox.pip
 
       - name: "Tox mypy"
