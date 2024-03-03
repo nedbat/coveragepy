@@ -196,10 +196,6 @@ class Numbers:
     n_partial_branches: int = 0
     n_missing_branches: int = 0
 
-    def init_args(self) -> list[int]:
-        """Return a list for __init__(*args) to recreate this object."""
-        return list(dataclasses.astuple(self))
-
     @property
     def n_executed(self) -> int:
         """Returns the number of executed statements."""

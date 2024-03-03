@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 import collections
+import dataclasses
 import datetime
 import functools
 import json
@@ -40,7 +41,10 @@ os = isolate_module(os)
 
 class IndexInfoDict(TypedDict):
     """Information for each file, to render the index file."""
-    nums: Numbers
+    # For in-memory use, we have Numbers.  For serialization, we write a list
+    # of ints.  Two fields keeps the type-checker happier.
+    nums: Numbers | None
+    numlist: list[int]
     html_filename: str
     relative_filename: str
 
@@ -460,6 +464,7 @@ class HtmlReporter:
         # Save this file's information for the index file.
         index_info: IndexInfoDict = {
             "nums": ftr.analysis.numbers,
+            "numlist": [],
             "html_filename": ftr.html_filename,
             "relative_filename": ftr.fr.relative_filename(),
         }
@@ -565,7 +570,7 @@ class IncrementalChecker:
         if usable:
             self.files = {}
             for filename, fileinfo in status["files"].items():
-                fileinfo["index"]["nums"] = Numbers(*fileinfo["index"]["nums"])
+                fileinfo["index"]["nums"] = Numbers(*fileinfo["index"]["numlist"])
                 self.files[filename] = fileinfo
             self.globals = status["globals"]
         else:
@@ -577,7 +582,9 @@ class IncrementalChecker:
         files = {}
         for filename, fileinfo in self.files.items():
             index = fileinfo["index"]
-            index["nums"] = index["nums"].init_args()   # type: ignore[typeddict-item]
+            assert index["nums"] is not None
+            index["numlist"] = list(dataclasses.astuple(index["nums"]))
+            index["nums"] = None
             files[filename] = fileinfo
 
         status = {
