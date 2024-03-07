@@ -2,7 +2,6 @@
 
 import collections
 import contextlib
-import dataclasses
 import itertools
 import os
 import random
@@ -13,6 +12,7 @@ import sys
 import time
 from pathlib import Path
 
+from dataclasses import dataclass
 from typing import Any, Dict, Iterable, Iterator, List, Optional, Tuple
 
 import tabulate
@@ -480,7 +480,7 @@ class AdHocPython(PyVersion):
         self.toxenv = None
 
 
-@dataclasses.dataclass
+@dataclass
 class Coverage:
     """A version of coverage.py to use, maybe None."""
 
@@ -537,7 +537,7 @@ class CoverageSource(Coverage):
         )
 
 
-@dataclasses.dataclass
+@dataclass
 class Env:
     """An environment to run a test suite in."""
 

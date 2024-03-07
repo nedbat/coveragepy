@@ -5,7 +5,6 @@
 
 from __future__ import annotations
 
-import dataclasses
 import functools
 import inspect
 import os
@@ -14,6 +13,7 @@ import sys
 import threading
 import traceback
 
+from dataclasses import dataclass
 from types import CodeType, FrameType
 from typing import (
     Any,
@@ -151,7 +151,7 @@ else:
         return _decorator
 
 
-@dataclasses.dataclass
+@dataclass
 class CodeInfo:
     """The information we want about each code object."""
 
