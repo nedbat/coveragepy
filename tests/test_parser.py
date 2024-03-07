@@ -902,21 +902,23 @@ class ParserMissingArcDescriptionTest(PythonParserTestBase):
         assert parser.missing_arc_description(2, -3) == "line 3 didn't finish the lambda on line 3"
 
     @pytest.mark.skipif(not env.PYBEHAVIOR.match_case, reason="Match-case is new in 3.10")
-    def test_match_case_with_default(self) -> None:
+    def test_match_case(self) -> None:
         parser = self.parse_text("""\
-            for command in ["huh", "go home", "go n"]:
-                match command.split():
-                    case ["go", direction] if direction in "nesw":
-                        match = f"go: {direction}"
-                    case ["go", _]:
-                        match = "no go"
-                print(match)
+            match command.split():
+                case ["go", direction] if direction in "nesw":      # 2
+                    match = f"go: {direction}"
+                case ["go", _]:                                     # 4
+                    match = "no go"
+            print(match)                                            # 6
             """)
-        assert parser.missing_arc_description(3, 4) == (
-            "line 3 didn't jump to line 4, because the pattern on line 3 never matched"
+        assert parser.missing_arc_description(2, 3) == (
+            "line 2 didn't jump to line 3, because the pattern on line 2 never matched"
         )
-        assert parser.missing_arc_description(3, 5) == (
-            "line 3 didn't jump to line 5, because the pattern on line 3 always matched"
+        assert parser.missing_arc_description(2, 4) == (
+            "line 2 didn't jump to line 4, because the pattern on line 2 always matched"
+        )
+        assert parser.missing_arc_description(4, 6) == (
+            "line 4 didn't jump to line 6, because the pattern on line 4 always matched"
         )
 
 

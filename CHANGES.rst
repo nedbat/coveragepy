@@ -23,6 +23,10 @@ upgrading your version of coverage.py.
 Unreleased
 ----------
 
+- Fix: the last case of a match/case statement had an incorrect message if the
+  branch was missed.  It said the pattern never matched, when actually the
+  branch is missed if the last case always matched.
+
 - Fix: clicking a line number in the HTML report now positions more accurately.
 
 
