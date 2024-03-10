@@ -395,7 +395,7 @@ class CoverageConfig(TConfigurable, TPluginConfig):
         ("exclude_list", "report:exclude_lines", "regexlist"),
         ("exclude_also", "report:exclude_also", "regexlist"),
         ("fail_under", "report:fail_under", "float"),
-        ("format", "report:format", "boolean"),
+        ("format", "report:format"),
         ("ignore_errors", "report:ignore_errors", "boolean"),
         ("include_namespace_packages", "report:include_namespace_packages", "boolean"),
         ("partial_always_list", "report:partial_branches_always", "regexlist"),
