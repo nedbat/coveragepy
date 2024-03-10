@@ -627,6 +627,19 @@ use of the decimal places.  A setting of 100 will fail any value under 100,
 regardless of the number of decimal places of precision.
 
 
+.. _config_report_format:
+
+[report] format
+...............
+
+(string, default "text") The format to use for the textual report.  The default
+is "text" which produces a simple textual table. You can use "markdown" to
+produce a Markdown table, or "total" to output only the total coverage
+percentage.
+
+.. versionadded:: 7.0
+
+
 .. _config_report_ignore_errors:
 
 [report] ignore_errors

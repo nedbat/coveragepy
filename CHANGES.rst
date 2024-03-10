@@ -29,6 +29,12 @@ Unreleased
 
 - Fix: clicking a line number in the HTML report now positions more accurately.
 
+- Fix: the ``report:format`` setting was defined as a boolean, but should be a
+  string.  Thanks, `Tanaydin Sirin <pull 1754_>`_.  It is also now documented
+  on the :ref:`configuration page <config_report_format>`.
+
+.. _pull 1754: https://github.com/nedbat/coveragepy/pull/1754
+
 
 .. scriv-start-here
 
