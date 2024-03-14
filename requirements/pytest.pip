@@ -14,19 +14,19 @@ exceptiongroup==1.2.0
     #   pytest
 execnet==2.0.2
     # via pytest-xdist
-flaky==3.7.0
+flaky==3.8.1
     # via -r requirements/pytest.in
-hypothesis==6.98.13
+hypothesis==6.99.6
     # via -r requirements/pytest.in
 iniconfig==2.0.0
     # via pytest
-packaging==23.2
+packaging==24.0
     # via pytest
 pluggy==1.4.0
     # via pytest
 pygments==2.17.2
     # via -r requirements/pytest.in
-pytest==8.0.2
+pytest==8.1.1
     # via
     #   -r requirements/pytest.in
     #   pytest-xdist

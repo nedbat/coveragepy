@@ -8,7 +8,7 @@ astroid==3.1.0
     # via pylint
 attrs==23.2.0
     # via hypothesis
-build==1.0.3
+build==1.1.1
     # via check-manifest
 cachetools==5.3.3
     # via tox
@@ -20,7 +20,7 @@ charset-normalizer==3.3.2
     # via requests
 check-manifest==0.49
     # via -r requirements/dev.in
-cogapp==3.3.0
+cogapp==3.4.1
     # via -r requirements/dev.in
 colorama==0.4.6
     # via
@@ -43,20 +43,20 @@ filelock==3.13.1
     # via
     #   tox
     #   virtualenv
-flaky==3.7.0
+flaky==3.8.1
     # via -r requirements/pytest.in
 greenlet==3.0.3
     # via -r requirements/dev.in
-hypothesis==6.98.13
+hypothesis==6.99.6
     # via -r requirements/pytest.in
 idna==3.6
     # via requests
-importlib-metadata==7.0.1
+importlib-metadata==7.0.2
     # via
     #   build
     #   keyring
     #   twine
-importlib-resources==6.1.2
+importlib-resources==6.3.0
     # via keyring
 iniconfig==2.0.0
     # via pytest
@@ -80,7 +80,7 @@ more-itertools==10.2.0
     # via jaraco-classes
 nh3==0.2.15
     # via readme-renderer
-packaging==23.2
+packaging==24.0
     # via
     #   build
     #   pudb
@@ -89,7 +89,7 @@ packaging==23.2
     #   tox
 parso==0.8.3
     # via jedi
-pkginfo==1.9.6
+pkginfo==1.10.0
     # via twine
 platformdirs==4.2.0
     # via
@@ -114,7 +114,7 @@ pyproject-api==1.6.1
     # via tox
 pyproject-hooks==1.0.0
     # via build
-pytest==8.0.2
+pytest==8.1.1
     # via
     #   -r requirements/pytest.in
     #   pytest-xdist
@@ -150,7 +150,7 @@ tomli==2.0.1
     #   tox
 tomlkit==0.12.4
     # via pylint
-tox==4.13.0
+tox==4.14.1
     # via
     #   -r requirements/tox.in
     #   tox-gh
@@ -168,7 +168,7 @@ urllib3==2.2.1
     # via
     #   requests
     #   twine
-urwid==2.6.7
+urwid==2.6.9
     # via
     #   pudb
     #   urwid-readline
@@ -180,7 +180,7 @@ virtualenv==20.25.1
     #   tox
 wcwidth==0.2.13
     # via urwid
-zipp==3.17.0
+zipp==3.18.0
     # via
     #   importlib-metadata
     #   importlib-resources
@@ -188,7 +188,7 @@ zipp==3.17.0
 # The following packages are considered to be unsafe in a requirements file:
 pip==24.0
     # via -r requirements/pip.in
-setuptools==69.1.1
+setuptools==69.2.0
     # via
     #   -r requirements/pip.in
     #   check-manifest
