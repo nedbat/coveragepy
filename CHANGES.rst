@@ -28,7 +28,8 @@ Unreleased
   data files, it was random whether the absolute file names would be made
   relative or not. If they weren't, then a file would be listed twice in
   reports, as detailed in `issue 1752`_.  This is now fixed: absolute file
-  names are always made relative when combining.
+  names are always made relative when combining.  Thanks to Bruno Rodrigues dos
+  Santos for support.
 
 - Fix: the last case of a match/case statement had an incorrect message if the
   branch was missed.  It said the pattern never matched, when actually the

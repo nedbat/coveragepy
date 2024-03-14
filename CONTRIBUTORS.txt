@@ -38,6 +38,7 @@ Brett Cannon
 Brian Grohe
 Bruno Oliveira
 Bruno P. Kinoshita
+Bruno Rodrigues dos Santos
 Buck Evan
 Buck Golemon
 Calen Pennington
