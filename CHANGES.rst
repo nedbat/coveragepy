@@ -20,8 +20,12 @@ upgrading your version of coverage.py.
     ..  Version 9.8.1 — 2027-07-27
     ..  --------------------------
 
-Unreleased
-----------
+.. scriv-start-here
+
+.. _changes_7-4-4:
+
+Version 7.4.4 — 2024-03-14
+--------------------------
 
 - Fix: in some cases, even with ``[run] relative_files=True``, a data file
   could be created with absolute path names.  When combined with other relative
@@ -44,8 +48,6 @@ Unreleased
 .. _issue 1752: https://github.com/nedbat/coveragepy/issues/1752
 .. _pull 1754: https://github.com/nedbat/coveragepy/pull/1754
 
-
-.. scriv-start-here
 
 .. _changes_7-4-3:
 
