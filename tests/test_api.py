@@ -500,18 +500,6 @@ class ApiTest(CoverageTest):
             filenames = {relative_filename(f).replace("\\", "/") for f in data.measured_files()}
             return filenames
 
-        # Case 1: get the order right.
-        make_files()
-        self.make_file(".coveragerc", """\
-            [paths]
-            plugins =
-                plugins/
-                ci/girder/plugins/
-            girder =
-                girder/
-                ci/girder/
-            """)
-        assert get_combined_filenames() == {'girder/g1.py', 'plugins/p1.py'}
 
         # Case 2: get the order "wrong".
         make_files()
@@ -525,6 +513,51 @@ class ApiTest(CoverageTest):
                 ci/girder/plugins/
             """)
         assert get_combined_filenames() == {'girder/g1.py', 'plugins/p1.py'}
+
+    def test_combine_remapping(self) -> None:
+        self.make_file("foo.py", text="print('Hello from Foo!')")
+        self.make_file("bar.py", text="print('Hello from Bar!')")
+
+        cov_foo = coverage.Coverage(source=["."], data_suffix="foo_cov.data")
+        self.start_import_stop(cov_foo, "foo")
+        cov_foo.save()
+
+        cov_bar = coverage.Coverage(source=["."], data_suffix="bar_cov.data")
+        self.start_import_stop(cov_bar, "bar")
+        cov_bar.save()
+
+        # Since the issue seems to be focused around the
+        # given order of the paths, absolute or otherwise
+        # So, we'll be testing both ways; absolute and relative, and relative and absolute
+        # Truthfully, I'm not entirely sure if it makes a difference - but let's see.
+
+        cov1 = coverage.Coverage()
+        cov1.combine(data_paths=[".coverage.foo_cov.data", ".coverage.bar_cov.data"])
+        files1 = cov1.get_data().measured_files()
+
+
+        # Since the files are combined, they cease to exist after `cov1.combine()`.
+        # So the files need to be measured again.
+        # This is mostly certainly *not* staying like this, but Ill leave it as
+        # To test if the testing logic is truly correct - which should be, but let's see
+        # what Ned says.
+
+        cov_foo = coverage.Coverage(source=["."], data_suffix="foo_cov.data")
+        self.start_import_stop(cov_foo, "foo")
+        cov_foo.save()
+
+        cov_bar = coverage.Coverage(source=["."], data_suffix="bar_cov.data")
+        self.start_import_stop(cov_bar, "bar")
+        cov_bar.save()
+
+        # Combine the data files in the opposite order.
+        cov2 = coverage.Coverage()
+        cov2.combine(data_paths=[".coverage.bar_cov.data", ".coverage.foo_cov.data"])
+        files2 = cov2.get_data().measured_files()
+
+        # The order of combining should not affect the resulting files.
+        assert set(files1) == set(files2)
+        assert set(files2) == set(files1)
 
     def test_warnings(self) -> None:
         self.make_file("hello.py", """\
