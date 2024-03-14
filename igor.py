@@ -454,15 +454,19 @@ def do_cheats():
         + f"[coverage {facts.ver}](https://pypi.org/project/coverage/{facts.ver}).",
     )
 
-    print("\n## To run this code:")
+    print("\n## To install this code:")
     if facts.branch == "master":
         print(f"python3 -m pip install git+{github}#{egg}")
     else:
         print(f"python3 -m pip install git+{github}@{facts.branch}#{egg}")
     print(f"python3 -m pip install git+{github}@{facts.sha[:20]}#{egg}")
 
+    print("\n## To read this code on GitHub:")
+    print(f"https://github.com/nedbat/coveragepy/commit/{facts.sha}")
+    print(f"https://github.com/nedbat/coveragepy/commits/{facts.sha}")
+
     print(
-        "\n## For other collaborators:\n"
+        "\n## For other collaborators to get this code:\n"
         + f"git clone {github}\n"
         + f"cd {repo.partition('/')[-1]}\n"
         + f"git checkout {facts.sha}",
