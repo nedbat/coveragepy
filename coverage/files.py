@@ -489,6 +489,9 @@ class PathAliases:
 
         # If we get here, no pattern matched.
 
+        if self.relative:
+            path = relative_filename(path)
+
         if self.relative and not isabs_anywhere(path):
             # Auto-generate a pattern to implicitly match relative files
             parts = re.split(r"[/\\]", path)

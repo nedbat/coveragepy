@@ -23,6 +23,13 @@ upgrading your version of coverage.py.
 Unreleased
 ----------
 
+- Fix: in some cases, even with ``[run] relative_files=True``, a data file
+  could be created with absolute path names.  When combined with other relative
+  data files, it was random whether the absolute file names would be made
+  relative or not. If they weren't, then a file would be listed twice in
+  reports, as detailed in `issue 1752`_.  This is now fixed: absolute file
+  names are always made relative when combining.
+
 - Fix: the last case of a match/case statement had an incorrect message if the
   branch was missed.  It said the pattern never matched, when actually the
   branch is missed if the last case always matched.
@@ -33,6 +40,7 @@ Unreleased
   string.  Thanks, `Tanaydin Sirin <pull 1754_>`_.  It is also now documented
   on the :ref:`configuration page <config_report_format>`.
 
+.. _issue 1752: https://github.com/nedbat/coveragepy/issues/1752
 .. _pull 1754: https://github.com/nedbat/coveragepy/pull/1754
 
 

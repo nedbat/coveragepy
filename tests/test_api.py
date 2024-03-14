@@ -1465,3 +1465,23 @@ class CombiningTest(CoverageTest):
         # After combining, the .coverage file & the original combined file should still be there.
         self.assert_exists(".coverage")
         self.assert_file_count(".coverage.*", 2)
+
+    @pytest.mark.parametrize("abs_order, rel_order", [(1, 2), (2, 1)])
+    def test_combine_absolute_then_relative_1752(self, abs_order: int, rel_order: int) -> None:
+        # https://github.com/nedbat/coveragepy/issues/1752
+        # If we're combining a relative data file and an absolute data file,
+        # the absolutes were made relative only if the relative file name was
+        # encountered first.  Test combining in both orders and check that the
+        # absolute file name is properly relative in either order.
+        FILE = "sub/myprog.py"
+        self.make_file(FILE, "a = 1")
+
+        self.make_data_file(suffix=f"{abs_order}.abs", lines={abs_file(FILE): [1]})
+        self.make_data_file(suffix=f"{rel_order}.rel", lines={FILE: [1]})
+
+        self.make_file(".coveragerc", "[run]\nrelative_files = True\n")
+        cov = coverage.Coverage()
+        cov.combine()
+        data = coverage.CoverageData()
+        data.read()
+        assert {os_sep("sub/myprog.py")} == data.measured_files()

@@ -88,7 +88,10 @@ def combinable_files(data_file: str, data_paths: Iterable[str] | None = None) ->
     # We never want to combine those.
     files_to_combine = [fnm for fnm in files_to_combine if not fnm.endswith("-journal")]
 
-    return files_to_combine
+    # Sorting isn't usually needed, since it shouldn't matter what order files
+    # are combined, but sorting makes tests more predictable, and makes
+    # debugging more understandable when things go wrong.
+    return sorted(files_to_combine)
 
 
 def combine_parallel_data(
