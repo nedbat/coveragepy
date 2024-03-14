@@ -198,10 +198,10 @@ kit:					## Make the source distribution.
 	python -m build
 
 kit_upload:				## Upload the built distributions to PyPI.
-	twine upload --verbose dist/*
+	twine upload dist/*
 
 test_upload:				## Upload the distributions to PyPI's testing server.
-	twine upload --verbose --repository testpypi --password $$TWINE_TEST_PASSWORD dist/*
+	twine upload --repository testpypi --password $$TWINE_TEST_PASSWORD dist/*
 
 kit_local:
 	# pip.conf looks like this:
