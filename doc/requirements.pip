@@ -20,7 +20,7 @@ click==8.1.7
     #   scriv
 click-log==0.4.0
     # via scriv
-cogapp==3.3.0
+cogapp==3.4.1
     # via -r doc/requirements.in
 colorama==0.4.6
     # via sphinx-autobuild
@@ -48,7 +48,7 @@ markupsafe==2.1.5
     # via jinja2
 mdurl==0.1.2
     # via markdown-it-py
-packaging==23.2
+packaging==24.0
     # via sphinx
 pbr==6.0.0
     # via stevedore
