@@ -23,7 +23,7 @@ upgrading your version of coverage.py.
 Unreleased
 ----------
 
-Nothing yet.
+- Python 3.13.0a5 is supported.
 
 
 .. scriv-start-here
