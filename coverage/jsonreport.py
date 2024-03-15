@@ -108,7 +108,7 @@ class JsonReporter:
             "excluded_lines": sorted(analysis.excluded),
         }
         if self.config.json_show_contexts:
-            reported_file["contexts"] = analysis.data.contexts_by_lineno(analysis.filename)
+            reported_file["contexts"] = coverage_data.contexts_by_lineno(analysis.filename)
         if coverage_data.has_arcs():
             summary.update({
                 "num_branches": nums.n_branches,

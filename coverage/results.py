@@ -31,47 +31,56 @@ class Analysis:
         file_mapper: Callable[[str], str],
         lines: Container[TLineNo] | None = None,
     ) -> None:
-        self.data = data
-        self.file_reporter = file_reporter
-        self.filename = file_mapper(self.file_reporter.filename)
+        self.filename = file_mapper(file_reporter.filename)
 
-        self.statements = self.file_reporter.lines()
-        self.excluded = self.file_reporter.excluded_lines()
+        # Base data
+
+        self.statements = file_reporter.lines()
+        self.excluded = file_reporter.excluded_lines()
+        self.executed = file_reporter.translate_lines(data.lines(self.filename) or [])
+        self.has_arcs = data.has_arcs()
+
+        if self.has_arcs:
+            self.arc_possibilities = file_reporter.arcs()
+            self.arcs_executed = file_reporter.translate_arcs(data.arcs(self.filename) or [])
+            self.exit_counts = file_reporter.exit_counts()
+            self.no_branch = file_reporter.no_branch_lines()
+        else:
+            self.arc_possibilities = []
+            self.arcs_executed = []
+            self.exit_counts = {}
+            self.no_branch = set()
+
+        # Subsetting
+
         if lines is not None:
             self.statements = {lno for lno in self.statements if lno in lines}
             self.excluded = {lno for lno in self.excluded if lno in lines}
+            self.executed = {lno for lno in self.executed if lno in lines}
 
-        # Identify missing statements.
-        executed: Iterable[TLineNo]
-        executed = self.data.lines(self.filename) or []
-        executed = self.file_reporter.translate_lines(executed)
-        if lines is not None:
-            executed = {lno for lno in executed if lno in lines}
-        self.executed = executed
-        self.missing = self.statements - self.executed
-
-        if self.data.has_arcs():
-            arcs = self.file_reporter.arcs()
-            if lines is not None:
-                arcs = {(a, b) for a, b in arcs if a in lines or b in lines}
-            self._arc_possibilities = sorted(arcs)
-            self.exit_counts = self.file_reporter.exit_counts()
-            if lines:
+            if self.has_arcs:
+                self.arc_possibilities = {
+                    (a, b) for a, b in self.arc_possibilities
+                    if a in lines or b in lines
+                }
                 self.exit_counts = {
                     lno: num for lno, num in self.exit_counts.items()
                     if lno in lines
                 }
-            self.no_branch = self.file_reporter.no_branch_lines()
-            if lines:
                 self.no_branch = {lno for lno in self.no_branch if lno in lines}
+
+        # Follow-on data
+
+        self.arc_possibilities = sorted(self.arc_possibilities)
+        self.arcs_executed = sorted(self.arcs_executed)
+        self.missing = self.statements - self.executed
+
+        if self.has_arcs:
             n_branches = self._total_branches()
             mba = self.missing_branch_arcs()
             n_partial_branches = sum(len(v) for k,v in mba.items() if k not in self.missing)
             n_missing_branches = sum(len(v) for k,v in mba.items())
         else:
-            self._arc_possibilities = []
-            self.exit_counts = {}
-            self.no_branch = set()
             n_branches = n_partial_branches = n_missing_branches = 0
 
         self.numbers = Numbers(
@@ -93,35 +102,18 @@ class Analysis:
         If `branches` is true, includes the missing branch arcs also.
 
         """
-        if branches and self.has_arcs():
+        if branches and self.has_arcs:
             arcs = self.missing_branch_arcs().items()
         else:
             arcs = None
 
         return format_lines(self.statements, self.missing, arcs=arcs)
 
-    def has_arcs(self) -> bool:
-        """Were arcs measured in this result?"""
-        return self.data.has_arcs()
-
-    def arc_possibilities(self) -> list[TArc]:
-        """Returns a sorted list of the arcs in the code."""
-        return self._arc_possibilities
-
-    def arcs_executed(self) -> list[TArc]:
-        """Returns a sorted list of the arcs actually executed in the code."""
-        executed: Iterable[TArc]
-        executed = self.data.arcs(self.filename) or []
-        executed = self.file_reporter.translate_arcs(executed)
-        return sorted(executed)
-
     def arcs_missing(self) -> list[TArc]:
         """Returns a sorted list of the un-executed arcs in the code."""
-        possible = self.arc_possibilities()
-        executed = self.arcs_executed()
         missing = (
-            p for p in possible
-                if p not in executed
+            p for p in self.arc_possibilities
+                if p not in self.arcs_executed
                     and p[0] not in self.no_branch
                     and p[1] not in self.excluded
         )
@@ -129,16 +121,14 @@ class Analysis:
 
     def arcs_unpredicted(self) -> list[TArc]:
         """Returns a sorted list of the executed arcs missing from the code."""
-        possible = self.arc_possibilities()
-        executed = self.arcs_executed()
         # Exclude arcs here which connect a line to itself.  They can occur
         # in executed data in some cases.  This is where they can cause
         # trouble, and here is where it's the least burden to remove them.
         # Also, generators can somehow cause arcs from "enter" to "exit", so
         # make sure we have at least one positive value.
         unpredicted = (
-            e for e in executed
-                if e not in possible
+            e for e in self.arcs_executed
+                if e not in self.arc_possibilities
                     and e[0] != e[1]
                     and (e[0] > 0 or e[1] > 0)
         )
@@ -172,10 +162,9 @@ class Analysis:
         Returns {l1:[l2a,l2b,...], ...}
 
         """
-        executed = self.arcs_executed()
         branch_lines = set(self._branch_lines())
         eba = collections.defaultdict(list)
-        for l1, l2 in executed:
+        for l1, l2 in self.arcs_executed:
             if l1 in branch_lines:
                 eba[l1].append(l2)
         return eba
