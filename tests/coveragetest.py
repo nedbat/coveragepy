@@ -262,6 +262,7 @@ class CoverageTest(
     def make_data_file(
         self,
         basename: str | None = None,
+        *,
         suffix: str | None = None,
         lines: Mapping[str, Collection[TLineNo]] | None = None,
         arcs: Mapping[str, Collection[TArc]] | None = None,
