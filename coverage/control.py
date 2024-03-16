@@ -932,7 +932,12 @@ class Coverage(TConfigurable):
             analysis.missing_formatted(),
         )
 
-    def _analyze(self, it: FileReporter | TMorf) -> Analysis:
+    def _analyze(
+        self,
+        morf: TMorf | None = None,
+        *,
+        file_reporter: FileReporter | None = None,
+    ) -> Analysis:
         """Analyze a single morf or code unit.
 
         Returns an `Analysis` object.
@@ -943,12 +948,14 @@ class Coverage(TConfigurable):
         self._post_init()
 
         data = self.get_data()
-        if isinstance(it, FileReporter):
-            fr = it
+        if morf is not None:
+            assert file_reporter is None
+            file_reporter = self._get_file_reporter(morf)
         else:
-            fr = self._get_file_reporter(it)
+            assert file_reporter is not None
 
-        return Analysis(data, self.config.precision, fr, self._file_mapper)
+        filename = self._file_mapper(file_reporter.filename)
+        return Analysis(data, self.config.precision, file_reporter, filename)
 
     def analyze(self, morf: TMorf, lines: Container[TLineNo] | None = None) -> Analysis:
         """A public API for getting Analysis. TODO!!! """
@@ -956,9 +963,10 @@ class Coverage(TConfigurable):
         self._post_init()
 
         data = self.get_data()
-        fr = self._get_file_reporter(morf)
+        file_reporter = self._get_file_reporter(morf)
 
-        return Analysis(data, self.config.precision, fr, self._file_mapper, lines)
+        filename = self._file_mapper(file_reporter.filename)
+        return Analysis(data, self.config.precision, file_reporter, filename, lines)
 
     @functools.lru_cache(maxsize=1)
     def _get_file_reporter(self, morf: TMorf) -> FileReporter:

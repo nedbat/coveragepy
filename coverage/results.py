@@ -9,7 +9,7 @@ import collections
 import dataclasses
 
 from collections.abc import Container
-from typing import Callable, Iterable, TYPE_CHECKING
+from typing import Iterable, TYPE_CHECKING
 
 from coverage.exceptions import ConfigError
 from coverage.misc import nice_pair
@@ -28,26 +28,26 @@ class Analysis:
         data: CoverageData,
         precision: int,
         file_reporter: FileReporter,
-        file_mapper: Callable[[str], str],
+        filename: str,
         lines: Container[TLineNo] | None = None,
     ) -> None:
-        self.filename = file_mapper(file_reporter.filename)
 
         # Base data
 
+        self.filename = filename
         self.statements = file_reporter.lines()
         self.excluded = file_reporter.excluded_lines()
         self.executed = file_reporter.translate_lines(data.lines(self.filename) or [])
         self.has_arcs = data.has_arcs()
 
         if self.has_arcs:
-            self.arc_possibilities = file_reporter.arcs()
-            self.arcs_executed = file_reporter.translate_arcs(data.arcs(self.filename) or [])
+            self._arc_possibilities_set = file_reporter.arcs()
+            self._arcs_executed_set = file_reporter.translate_arcs(data.arcs(self.filename) or [])
             self.exit_counts = file_reporter.exit_counts()
             self.no_branch = file_reporter.no_branch_lines()
         else:
-            self.arc_possibilities = []
-            self.arcs_executed = []
+            self._arc_possibilities_set = set()
+            self._arcs_executed_set = set()
             self.exit_counts = {}
             self.no_branch = set()
 
@@ -59,8 +59,12 @@ class Analysis:
             self.executed = {lno for lno in self.executed if lno in lines}
 
             if self.has_arcs:
-                self.arc_possibilities = {
-                    (a, b) for a, b in self.arc_possibilities
+                self._arc_possibilities_set = {
+                    (a, b) for a, b in self._arc_possibilities_set
+                    if a in lines or b in lines
+                }
+                self._arcs_executed_set = {
+                    (a, b) for a, b in self._arcs_executed_set
                     if a in lines or b in lines
                 }
                 self.exit_counts = {
@@ -71,8 +75,8 @@ class Analysis:
 
         # Follow-on data
 
-        self.arc_possibilities = sorted(self.arc_possibilities)
-        self.arcs_executed = sorted(self.arcs_executed)
+        self.arc_possibilities = sorted(self._arc_possibilities_set)
+        self.arcs_executed = sorted(self._arcs_executed_set)
         self.missing = self.statements - self.executed
 
         if self.has_arcs:
