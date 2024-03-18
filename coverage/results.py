@@ -34,6 +34,7 @@ class Analysis:
 
         # Base data
 
+        self.precision = precision
         self.filename = filename
         self.statements = file_reporter.lines()
         self.excluded = file_reporter.excluded_lines()
@@ -73,8 +74,10 @@ class Analysis:
                 }
                 self.no_branch = {lno for lno in self.no_branch if lno in lines}
 
-        # Follow-on data
+        self._finish_data()
 
+    def _finish_data(self) -> None:
+        """TODO"""
         self.arc_possibilities = sorted(self._arc_possibilities_set)
         self.arcs_executed = sorted(self._arcs_executed_set)
         self.missing = self.statements - self.executed
@@ -88,7 +91,7 @@ class Analysis:
             n_branches = n_partial_branches = n_missing_branches = 0
 
         self.numbers = Numbers(
-            precision=precision,
+            precision=self.precision,
             n_files=1,
             n_statements=len(self.statements),
             n_excluded=len(self.excluded),
@@ -236,31 +239,7 @@ class Numbers:
         result in either "0" or "100".
 
         """
-        return self.display_covered(self.pc_covered)
-
-    def display_covered(self, pc: float) -> str:
-        """Return a displayable total percentage, as a string.
-
-        Note that "0" is only returned when the value is truly zero, and "100"
-        is only returned when the value is truly 100.  Rounding can never
-        result in either "0" or "100".
-
-        """
-        near0 = 1.0 / 10 ** self.precision
-        if 0 < pc < near0:
-            pc = near0
-        elif (100.0 - near0) < pc < 100:
-            pc = 100.0 - near0
-        else:
-            pc = round(pc, self.precision)
-        return "%.*f" % (self.precision, pc)
-
-    def pc_str_width(self) -> int:
-        """How many characters wide can pc_covered_str be?"""
-        width = 3   # "100"
-        if self.precision > 0:
-            width += 1 + self.precision
-        return width
+        return display_covered(self.pc_covered, self.precision)
 
     @property
     def ratio_covered(self) -> tuple[int, int]:
@@ -285,6 +264,24 @@ class Numbers:
         # Implementing 0+Numbers allows us to sum() a list of Numbers.
         assert other == 0   # we only ever call it this way.
         return self
+
+
+def display_covered(pc: float, precision: int) -> str:
+    """Return a displayable total percentage, as a string.
+
+    Note that "0" is only returned when the value is truly zero, and "100"
+    is only returned when the value is truly 100.  Rounding can never
+    result in either "0" or "100".
+
+    """
+    near0 = 1.0 / 10 ** precision
+    if 0 < pc < near0:
+        pc = near0
+    elif (100.0 - near0) < pc < 100:
+        pc = 100.0 - near0
+    else:
+        pc = round(pc, precision)
+    return "%.*f" % (precision, pc)
 
 
 def _line_ranges(
