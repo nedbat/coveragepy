@@ -48,7 +48,7 @@ from coverage.plugin_support import Plugins
 from coverage.python import PythonFileReporter
 from coverage.report import SummaryReporter
 from coverage.report_core import render_report
-from coverage.results import Analysis
+from coverage.results import Analysis, analysis_from_file_reporter
 from coverage.types import (
     FilePath, TConfigurable, TConfigSectionIn, TConfigValueIn, TConfigValueOut,
     TFileDisposition, TLineNo, TMorf,
@@ -939,7 +939,7 @@ class Coverage(TConfigurable):
         data = self.get_data()
         file_reporter = self._get_file_reporter(morf)
         filename = self._file_mapper(file_reporter.filename)
-        return Analysis(data, self.config.precision, file_reporter, filename)
+        return analysis_from_file_reporter(data, self.config.precision, file_reporter, filename)
 
     @functools.lru_cache(maxsize=1)
     def _get_file_reporter(self, morf: TMorf) -> FileReporter:

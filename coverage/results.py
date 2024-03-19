@@ -20,63 +20,96 @@ if TYPE_CHECKING:
     from coverage.plugin import FileReporter
 
 
+def analysis_from_file_reporter(
+    data: CoverageData,
+    precision: int,
+    file_reporter: FileReporter,
+    filename: str,
+) -> Analysis:
+    has_arcs = data.has_arcs()
+    statements = file_reporter.lines()
+    excluded = file_reporter.excluded_lines()
+    executed = file_reporter.translate_lines(data.lines(filename) or [])
+
+    if has_arcs:
+        _arc_possibilities_set = file_reporter.arcs()
+        _arcs_executed_set = file_reporter.translate_arcs(data.arcs(filename) or [])
+        exit_counts = file_reporter.exit_counts()
+        no_branch = file_reporter.no_branch_lines()
+    else:
+        _arc_possibilities_set = set()
+        _arcs_executed_set = set()
+        exit_counts = {}
+        no_branch = set()
+
+    return Analysis(
+        precision=precision,
+        filename=filename,
+        has_arcs=has_arcs,
+        statements=statements,
+        excluded=excluded,
+        executed=executed,
+        _arc_possibilities_set=_arc_possibilities_set,
+        _arcs_executed_set=_arcs_executed_set,
+        exit_counts=exit_counts,
+        no_branch=no_branch,
+    )
+
+
+@dataclasses.dataclass
 class Analysis:
     """The results of analyzing a FileReporter."""
 
-    def __init__(
-        self,
-        data: CoverageData,
-        precision: int,
-        file_reporter: FileReporter,
-        filename: str,
-        lines: Container[TLineNo] | None = None,
-    ) -> None:
+    precision: int
+    filename: str
+    has_arcs: bool
+    statements: set[TLineNo]
+    excluded: set[TLineNo]
+    executed: set[TLineNo]
+    _arc_possibilities_set: set[TArc]
+    _arcs_executed_set: set[TArc]
+    exit_counts: dict[TLineNo, int]
+    no_branch: set[TLineNo]
 
-        # Base data
-
-        self.precision = precision
-        self.filename = filename
-        self.statements = file_reporter.lines()
-        self.excluded = file_reporter.excluded_lines()
-        self.executed = file_reporter.translate_lines(data.lines(self.filename) or [])
-        self.has_arcs = data.has_arcs()
+    def narrow(self, lines: Container[TLineNo]) -> Analysis:
+        statements = {lno for lno in self.statements if lno in lines}
+        excluded = {lno for lno in self.excluded if lno in lines}
+        executed = {lno for lno in self.executed if lno in lines}
 
         if self.has_arcs:
-            self._arc_possibilities_set = file_reporter.arcs()
-            self._arcs_executed_set = file_reporter.translate_arcs(data.arcs(self.filename) or [])
-            self.exit_counts = file_reporter.exit_counts()
-            self.no_branch = file_reporter.no_branch_lines()
+            _arc_possibilities_set = {
+                (a, b) for a, b in self._arc_possibilities_set
+                if a in lines or b in lines
+            }
+            _arcs_executed_set = {
+                (a, b) for a, b in self._arcs_executed_set
+                if a in lines or b in lines
+            }
+            exit_counts = {
+                lno: num for lno, num in self.exit_counts.items()
+                if lno in lines
+            }
+            no_branch = {lno for lno in self.no_branch if lno in lines}
         else:
-            self._arc_possibilities_set = set()
-            self._arcs_executed_set = set()
-            self.exit_counts = {}
-            self.no_branch = set()
+            _arc_possibilities_set = set()
+            _arcs_executed_set = set()
+            exit_counts = {}
+            no_branch = set()
 
-        # Subsetting
+        return Analysis(
+            precision=self.precision,
+            filename=self.filename,
+            has_arcs=self.has_arcs,
+            statements=statements,
+            excluded=excluded,
+            executed=executed,
+            _arc_possibilities_set=_arc_possibilities_set,
+            _arcs_executed_set=_arcs_executed_set,
+            exit_counts=exit_counts,
+            no_branch=no_branch,
+        )
 
-        if lines is not None:
-            self.statements = {lno for lno in self.statements if lno in lines}
-            self.excluded = {lno for lno in self.excluded if lno in lines}
-            self.executed = {lno for lno in self.executed if lno in lines}
-
-            if self.has_arcs:
-                self._arc_possibilities_set = {
-                    (a, b) for a, b in self._arc_possibilities_set
-                    if a in lines or b in lines
-                }
-                self._arcs_executed_set = {
-                    (a, b) for a, b in self._arcs_executed_set
-                    if a in lines or b in lines
-                }
-                self.exit_counts = {
-                    lno: num for lno, num in self.exit_counts.items()
-                    if lno in lines
-                }
-                self.no_branch = {lno for lno in self.no_branch if lno in lines}
-
-        self._finish_data()
-
-    def _finish_data(self) -> None:
+    def __post_init__(self) -> None:
         """TODO"""
         self.arc_possibilities = sorted(self._arc_possibilities_set)
         self.arcs_executed = sorted(self._arcs_executed_set)
