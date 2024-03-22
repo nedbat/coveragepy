@@ -37,11 +37,10 @@ A different location for the configuration file can be specified with the
 ``--rcfile=FILE`` command line option or with the ``COVERAGE_RCFILE``
 environment variable.
 
-Coverage.py will read settings from other usual configuration files if no other
-configuration file is used.  It will automatically read from "setup.cfg" or
-"tox.ini" if they exist.  In this case, the section names have "coverage:"
-prefixed, so the ``[run]`` options described below will be found in the
-``[coverage:run]`` section of the file.
+If ``.coveragerc`` doesn't exist and another file hasn't been specified, then
+coverage.py will look for settings in other common configuration files, in this
+order: setup.cfg, tox.ini, or pyproject.toml.  The first file found with
+coverage.py settings will be used and other files won't be consulted.
 
 Coverage.py will read from "pyproject.toml" if TOML support is available,
 either because you are running on Python 3.11 or later, or because you
@@ -67,6 +66,10 @@ values on multiple lines.
 
 Boolean values can be specified as ``on``, ``off``, ``true``, ``false``, ``1``,
 or ``0`` and are case-insensitive.
+
+In setup.cfg or tox.ini, the section names have "coverage:" prefixed, so the
+``[run]`` options described below will be found in the ``[coverage:run]``
+section of the file.
 
 TOML Syntax
 ...........
