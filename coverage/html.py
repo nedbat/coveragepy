@@ -22,8 +22,10 @@ import coverage
 from coverage.data import CoverageData, add_data_to_hash
 from coverage.exceptions import NoDataError
 from coverage.files import flat_rootname
-from coverage.misc import ensure_dir, file_be_gone, Hasher, isolate_module, format_local_datetime
-from coverage.misc import human_sorted, plural, stdout_link
+from coverage.misc import (
+    ensure_dir, file_be_gone, Hasher, isolate_module, format_local_datetime,
+    human_sorted, plural, stdout_link,
+)
 from coverage.report_core import get_analysis_to_report
 from coverage.results import Analysis, Numbers
 from coverage.templite import Templite
@@ -188,6 +190,7 @@ class FileToReport:
         self.analysis = analysis
         self.rootname = flat_rootname(fr.relative_filename())
         self.html_filename = self.rootname + ".html"
+        self.prev_html = self.next_html = ""
 
 
 HTML_SAFE = string.ascii_letters + string.digits + "!#$%'()*+,-./:;=?@[]^_`{|}~"
@@ -296,22 +299,20 @@ class HtmlReporter:
 
         for fr, analysis in get_analysis_to_report(self.coverage, morfs):
             ftr = FileToReport(fr, analysis)
-            should = self.should_report_file(ftr)
-            if should:
+            if self.should_report_file(ftr):
                 files_to_report.append(ftr)
             else:
                 file_be_gone(os.path.join(self.directory, ftr.html_filename))
 
-        for i, ftr in enumerate(files_to_report):
-            if i == 0:
-                prev_html = "index.html"
-            else:
-                prev_html = files_to_report[i - 1].html_filename
-            if i == len(files_to_report) - 1:
-                next_html = "index.html"
-            else:
-                next_html = files_to_report[i + 1].html_filename
-            self.write_html_file(ftr, prev_html, next_html)
+        if files_to_report:
+            for ftr1, ftr2 in zip(files_to_report[:-1], files_to_report[1:]):
+                ftr1.next_html = ftr2.html_filename
+                ftr2.prev_html = ftr1.html_filename
+            files_to_report[0].prev_html = "index.html"
+            files_to_report[-1].next_html = "index.html"
+
+            for ftr in files_to_report:
+                self.write_html_file(ftr)
 
         if not self.all_files_nums:
             raise NoDataError("No data to report.")
@@ -364,7 +365,6 @@ class HtmlReporter:
             no_missing_lines = (nums.n_missing == 0)
             no_missing_branches = (nums.n_partial_branches == 0)
             if no_missing_lines and no_missing_branches:
-                # If there's an existing file, remove it.
                 self.skipped_covered_count += 1
                 return False
 
@@ -376,7 +376,7 @@ class HtmlReporter:
 
         return True
 
-    def write_html_file(self, ftr: FileToReport, prev_html: str, next_html: str) -> None:
+    def write_html_file(self, ftr: FileToReport) -> None:
         """Generate an HTML file for one source file."""
         self.make_directory()
 
@@ -456,8 +456,8 @@ class HtmlReporter:
         html = self.source_tmpl.render({
             **file_data.__dict__,
             "contexts_json": contexts_json,
-            "prev_html": prev_html,
-            "next_html": next_html,
+            "prev_html": ftr.prev_html,
+            "next_html": ftr.next_html,
         })
         write_html(html_path, html)
 
@@ -477,11 +477,9 @@ class HtmlReporter:
         index_tmpl = Templite(read_data("index.html"), self.template_globals)
 
         skipped_covered_msg = skipped_empty_msg = ""
-        if self.skipped_covered_count:
-            n = self.skipped_covered_count
+        if n := self.skipped_covered_count:
             skipped_covered_msg = f"{n} file{plural(n)} skipped due to complete coverage."
-        if self.skipped_empty_count:
-            n = self.skipped_empty_count
+        if n := self.skipped_empty_count:
             skipped_empty_msg = f"{n} empty file{plural(n)} skipped."
 
         html = index_tmpl.render({
