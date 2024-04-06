@@ -96,13 +96,13 @@ def flat_rootname(filename: str) -> str:
     the same directory, but need to differentiate same-named files from
     different directories.
 
-    For example, the file a/b/c.py will return 'd_86bbcbe134d28fd2_c_py'
+    For example, the file a/b/c.py will return 'z_86bbcbe134d28fd2_c_py'
 
     """
     dirname, basename = ntpath.split(filename)
     if dirname:
         fp = hashlib.new("sha3_256", dirname.encode("UTF-8")).hexdigest()[:16]
-        prefix = f"d_{fp}_"
+        prefix = f"z_{fp}_"
     else:
         prefix = ""
     return prefix + basename.replace(".", "_")

@@ -109,13 +109,13 @@ class FilesTest(CoverageTest):
 @pytest.mark.parametrize("original, flat", [
     ("abc.py", "abc_py"),
     ("hellothere", "hellothere"),
-    ("a/b/c.py", "d_86bbcbe134d28fd2_c_py"),
-    ("a/b/defghi.py", "d_86bbcbe134d28fd2_defghi_py"),
-    ("/a/b/c.py", "d_bb25e0ada04227c6_c_py"),
-    ("/a/b/defghi.py", "d_bb25e0ada04227c6_defghi_py"),
-    (r"c:\foo\bar.html", "d_e7c107482373f299_bar_html"),
-    (r"d:\foo\bar.html", "d_584a05dcebc67b46_bar_html"),
-    ("Montréal/☺/conf.py", "d_c840497a2c647ce0_conf_py"),
+    ("a/b/c.py", "z_86bbcbe134d28fd2_c_py"),
+    ("a/b/defghi.py", "z_86bbcbe134d28fd2_defghi_py"),
+    ("/a/b/c.py", "z_bb25e0ada04227c6_c_py"),
+    ("/a/b/defghi.py", "z_bb25e0ada04227c6_defghi_py"),
+    (r"c:\foo\bar.html", "z_e7c107482373f299_bar_html"),
+    (r"d:\foo\bar.html", "z_584a05dcebc67b46_bar_html"),
+    ("Montréal/☺/conf.py", "z_c840497a2c647ce0_conf_py"),
     ( # original:
         r"c:\lorem\ipsum\quia\dolor\sit\amet\consectetur\adipisci\velit\sed" +
         r"\quia\non\numquam\eius\modi\tempora\incidunt\ut\labore\et\dolore" +
@@ -123,7 +123,7 @@ class FilesTest(CoverageTest):
         r"\nostrum\exercitationem\ullam\corporis\suscipit\laboriosam" +
         r"\Montréal\☺\my_program.py",
         # flat:
-        "d_e597dfacb73a23d5_my_program_py",
+        "z_e597dfacb73a23d5_my_program_py",
      ),
 ])
 def test_flat_rootname(original: str, flat: str) -> None:

@@ -937,7 +937,7 @@ assert len(math) == 18
         compare_html(
             gold_path("html/other"), "out/other",
             extra_scrubs=[
-                (r'href="d_[0-9a-z]{16}_', 'href="_TEST_TMPDIR_othersrc_'),
+                (r'href="z_[0-9a-z]{16}_', 'href="_TEST_TMPDIR_othersrc_'),
             ],
         )
         contains(
@@ -1129,10 +1129,10 @@ assert len(math) == 18
         cov = coverage.Coverage()
         cov.load()
         cov.html_report()
-        self.assert_exists("htmlcov/d_5786906b6f0ffeb4_accented_py.html")
+        self.assert_exists("htmlcov/z_5786906b6f0ffeb4_accented_py.html")
         with open("htmlcov/index.html") as indexf:
             index = indexf.read()
-        expected = '<a href="d_5786906b6f0ffeb4_accented_py.html">&#226;%saccented.py</a>'
+        expected = '<a href="z_5786906b6f0ffeb4_accented_py.html">&#226;%saccented.py</a>'
         assert expected % os.sep in index
 
 
