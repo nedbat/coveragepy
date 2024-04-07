@@ -83,7 +83,6 @@ class LineData:
     tokens: list[tuple[str, str]]
     number: TLineNo
     category: str
-    statement: bool
     contexts: list[str]
     contexts_label: str
     context_list: list[str]
@@ -166,7 +165,6 @@ class HtmlDataGeneration:
                 tokens=tokens,
                 number=lineno,
                 category=category,
-                statement=(lineno in analysis.statements),
                 contexts=contexts,
                 contexts_label=contexts_label,
                 context_list=context_list,
