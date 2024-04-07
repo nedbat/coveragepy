@@ -41,6 +41,7 @@ defining-attr-methods = [
     "__post_init__",
     "setUp",
     "reset",
+    "_reset",
 ]
 
 [tool.pylint.design]

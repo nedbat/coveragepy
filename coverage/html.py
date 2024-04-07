@@ -15,8 +15,8 @@ import re
 import shutil
 import string
 
-from dataclasses import dataclass
-from typing import Any, Iterable, TYPE_CHECKING, TypedDict, cast
+from dataclasses import dataclass, field
+from typing import Any, Iterable, TYPE_CHECKING, cast
 
 import coverage
 from coverage.data import CoverageData, add_data_to_hash
@@ -39,21 +39,6 @@ if TYPE_CHECKING:
 
 
 os = isolate_module(os)
-
-
-class IndexInfoDict(TypedDict):
-    """Information for each file, to render the index file."""
-    # For in-memory use, we have Numbers.  For serialization, we write a list
-    # of ints.  Two fields keeps the type-checker happier.
-    nums: Numbers | None
-    numlist: list[int]
-    html_filename: str
-    relative_filename: str
-
-class FileInfoDict(TypedDict):
-    """Summary of the information from last rendering, to avoid duplicate work."""
-    hash: str
-    index: IndexInfoDict
 
 
 def data_filename(fname: str) -> str:
@@ -244,7 +229,7 @@ class HtmlReporter:
         self.data = self.coverage.get_data()
         self.has_arcs = self.data.has_arcs()
 
-        self.file_summaries: list[IndexInfoDict] = []
+        self.file_summaries: list[IndexInfo] = []
         self.all_files_nums: list[Numbers] = []
         self.incr = IncrementalChecker(self.directory)
         self.datagen = HtmlDataGeneration(self.coverage)
@@ -380,6 +365,7 @@ class HtmlReporter:
 
         # Find out if the file on disk is already correct.
         if self.incr.can_skip_file(self.data, ftr.fr, ftr.rootname):
+            print("LOOK:",self.incr.index_info(ftr.rootname))
             self.file_summaries.append(self.incr.index_info(ftr.rootname))
             return
 
@@ -460,12 +446,11 @@ class HtmlReporter:
         write_html(html_path, html)
 
         # Save this file's information for the index file.
-        index_info: IndexInfoDict = {
-            "nums": ftr.analysis.numbers,
-            "numlist": [],
-            "html_filename": ftr.html_filename,
-            "relative_filename": ftr.fr.relative_filename(),
-        }
+        index_info = IndexInfo(
+            nums = ftr.analysis.numbers,
+            html_filename = ftr.html_filename,
+            relative_filename = ftr.fr.relative_filename(),
+        )
         self.file_summaries.append(index_info)
         self.incr.set_index_info(ftr.rootname, index_info)
 
@@ -499,108 +484,144 @@ class HtmlReporter:
         self.incr.write()
 
 
+@dataclass
+class IndexInfo:
+    """Information for each file, to render the index file."""
+    html_filename: str = ""
+    relative_filename: str = ""
+    nums: Numbers = field(default_factory=Numbers)
+
+
+@dataclass
+class FileInfo:
+    """Summary of the information from last rendering, to avoid duplicate work."""
+    hash: str = ""
+    index: IndexInfo = field(default_factory=IndexInfo)
+
+
 class IncrementalChecker:
-    """Logic and data to support incremental reporting."""
+    """Logic and data to support incremental reporting.
+
+    When generating an HTML report, often only a few of the source files have
+    changed since the last time we made the HTML report.  This means previously
+    created HTML pages can be reused without generating them again, speeding
+    the command.
+
+    This class manages a JSON data file that captures enough information to
+    know whether an HTML page for a .py file needs to be regenerated or not.
+    The data file also needs to store all the information needed to create the
+    entry for the file on the index page so that if the HTML page is reused,
+    the index page can still be created to refer to it.
+
+    The data looks like::
+
+        {
+            "note": "This file is an internal implementation detail ...",
+            // A fixed number indicating the data format.  STATUS_FORMAT
+            "format": 3,
+            // The version of coverage.py
+            "version": "7.4.4",
+            // A hash of a number of global things, including the configuration
+            // settings and the pyfile.html template itself.
+            "globals": "540ee119c15d52a68a53fe6f0897346d",
+            "files": {
+                // An entry for each source file keyed by the flat_rootname().
+                "z_7b071bdc2a35fa80___init___py": {
+                    // Hash of the source, the text of the .py file.
+                    "hash": "e45581a5b48f879f301c0f30bf77a50c",
+                    // Information for the index.html file.
+                    "index": {
+                        "html_filename": "z_7b071bdc2a35fa80___init___py.html",
+                        "relative_filename": "cogapp/__init__.py",
+                        // The Numbers for this file.
+                        "nums": { "precision": 2, "n_files": 1, "n_statements": 43, ... }
+                    }
+                },
+                ...
+            }
+        }
+
+    """
 
     STATUS_FILE = "status.json"
-    STATUS_FORMAT = 2
+    STATUS_FORMAT = 3
     NOTE = (
         "This file is an internal implementation detail to speed up HTML report"
         + " generation. Its format can change at any time. You might be looking"
         + " for the JSON report: https://coverage.rtfd.io/cmd.html#cmd-json"
     )
 
-    #  The data looks like:
-    #
-    #  {
-    #      "note": "This file is an internal implementation detail ...",
-    #      "format": 2,
-    #      "version": "4.0a1",
-    #      "globals": "540ee119c15d52a68a53fe6f0897346d",
-    #      "files": {
-    #          "cogapp___init__": {
-    #              "hash": "e45581a5b48f879f301c0f30bf77a50c",
-    #              "index": {
-    #                  "html_filename": "cogapp___init__.html",
-    #                  "relative_filename": "cogapp/__init__",
-    #                  "nums": [ 1, 14, 0, 0, 0, 0, 0 ]
-    #              }
-    #          },
-    #          ...
-    #          "cogapp_whiteutils": {
-    #              "hash": "8504bb427fc488c4176809ded0277d51",
-    #              "index": {
-    #                  "html_filename": "cogapp_whiteutils.html",
-    #                  "relative_filename": "cogapp/whiteutils",
-    #                  "nums": [ 1, 59, 0, 1, 28, 2, 2 ]
-    #              }
-    #          }
-    #      }
-    #  }
-
     def __init__(self, directory: str) -> None:
         self.directory = directory
-        self.reset()
+        self._reset()
 
-    def reset(self) -> None:
+    def _reset(self) -> None:
         """Initialize to empty. Causes all files to be reported."""
         self.globals = ""
-        self.files: dict[str, FileInfoDict] = {}
+        self.files: dict[str, FileInfo] = {}
 
     def read(self) -> None:
         """Read the information we stored last time."""
-        usable = False
         try:
             status_file = os.path.join(self.directory, self.STATUS_FILE)
             with open(status_file) as fstatus:
                 status = json.load(fstatus)
         except (OSError, ValueError):
+            # Status file is missing or malformed.
             usable = False
         else:
-            usable = True
             if status["format"] != self.STATUS_FORMAT:
                 usable = False
             elif status["version"] != coverage.__version__:
                 usable = False
+            else:
+                usable = True
 
         if usable:
             self.files = {}
-            for filename, fileinfo in status["files"].items():
-                fileinfo["index"]["nums"] = Numbers(*fileinfo["index"]["numlist"])
+            for filename, filedict in status["files"].items():
+                indexdict = filedict["index"]
+                indexinfo = IndexInfo(**indexdict)
+                indexinfo.nums = Numbers(**indexdict["nums"])
+                fileinfo = FileInfo(
+                    hash=filedict["hash"],
+                    index=indexinfo,
+                )
                 self.files[filename] = fileinfo
             self.globals = status["globals"]
         else:
-            self.reset()
+            self._reset()
 
     def write(self) -> None:
         """Write the current status."""
         status_file = os.path.join(self.directory, self.STATUS_FILE)
-        files = {}
-        for filename, fileinfo in self.files.items():
-            index = fileinfo["index"]
-            assert index["nums"] is not None
-            index["numlist"] = list(dataclasses.astuple(index["nums"]))
-            index["nums"] = None
-            files[filename] = fileinfo
-
-        status = {
+        status_data = {
             "note": self.NOTE,
             "format": self.STATUS_FORMAT,
             "version": coverage.__version__,
             "globals": self.globals,
-            "files": files,
+            "files": {
+                fname: dataclasses.asdict(finfo)
+                for fname, finfo in self.files.items()
+            },
         }
         with open(status_file, "w") as fout:
-            json.dump(status, fout, separators=(",", ":"))
+            json.dump(status_data, fout, separators=(",", ":"))
 
     def check_global_data(self, *data: Any) -> None:
-        """Check the global data that can affect incremental reporting."""
+        """Check the global data that can affect incremental reporting.
+
+        Pass in whatever global information could affect the content of the
+        HTML pages.  If the global data has changed since last time, this will
+        clear the data so that all files are regenerated.
+
+        """
         m = Hasher()
         for d in data:
             m.update(d)
         these_globals = m.hexdigest()
         if self.globals != these_globals:
-            self.reset()
+            self._reset()
             self.globals = these_globals
 
     def can_skip_file(self, data: CoverageData, fr: FileReporter, rootname: str) -> bool:
@@ -608,36 +629,33 @@ class IncrementalChecker:
 
         `data` is a CoverageData object, `fr` is a `FileReporter`, and
         `rootname` is the name being used for the file.
+
+        Returns True if the HTML page is fine as-is, False if we need to recreate
+        the HTML page.
+
         """
         m = Hasher()
         m.update(fr.source().encode("utf-8"))
         add_data_to_hash(data, fr.filename, m)
         this_hash = m.hexdigest()
 
-        that_hash = self.file_hash(rootname)
+        file_info = self.files.setdefault(rootname, FileInfo())
 
-        if this_hash == that_hash:
+        if this_hash == file_info.hash:
             # Nothing has changed to require the file to be reported again.
             return True
         else:
-            self.set_file_hash(rootname, this_hash)
+            # File has changed, record the latest hash and force regeneration.
+            file_info.hash = this_hash
             return False
 
-    def file_hash(self, fname: str) -> str:
-        """Get the hash of `fname`'s contents."""
-        return self.files.get(fname, {}).get("hash", "")    # type: ignore[call-overload]
-
-    def set_file_hash(self, fname: str, val: str) -> None:
-        """Set the hash of `fname`'s contents."""
-        self.files.setdefault(fname, {})["hash"] = val      # type: ignore[typeddict-item]
-
-    def index_info(self, fname: str) -> IndexInfoDict:
+    def index_info(self, fname: str) -> IndexInfo:
         """Get the information for index.html for `fname`."""
-        return self.files.get(fname, {}).get("index", {})   # type: ignore
+        return self.files.get(fname, FileInfo()).index
 
-    def set_index_info(self, fname: str, info: IndexInfoDict) -> None:
+    def set_index_info(self, fname: str, info: IndexInfo) -> None:
         """Set the information for index.html for `fname`."""
-        self.files.setdefault(fname, {})["index"] = info    # type: ignore[typeddict-item]
+        self.files.setdefault(fname, FileInfo()).index = info
 
 
 # Helpers for templates and generating HTML
