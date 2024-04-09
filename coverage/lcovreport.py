@@ -9,7 +9,7 @@ import base64
 import hashlib
 import sys
 
-from typing import IO, Iterable, Optional, TYPE_CHECKING
+from typing import IO, Iterable, TYPE_CHECKING
 
 from coverage.plugin import FileReporter
 from coverage.report_core import get_analysis_to_report
@@ -35,7 +35,7 @@ class LcovReporter:
         self.coverage = coverage
         self.total = Numbers(self.coverage.config.precision)
 
-    def report(self, morfs: Optional[Iterable[TMorf]], outfile: IO[str]) -> float:
+    def report(self, morfs: Iterable[TMorf] | None, outfile: IO[str]) -> float:
         """Renders the full lcov report.
 
         `morfs` is a list of modules or filenames
@@ -97,10 +97,10 @@ class LcovReporter:
         missing_arcs = analysis.missing_branch_arcs()
         executed_arcs = analysis.executed_branch_arcs()
         for block_number, block_line_number in enumerate(
-            sorted(analysis.branch_stats().keys())
+            sorted(analysis.branch_stats().keys()),
         ):
             for branch_number, line_number in enumerate(
-                sorted(missing_arcs[block_line_number])
+                sorted(missing_arcs[block_line_number]),
             ):
                 # The exit branches have a negative line number,
                 # this will not produce valid lcov. Setting

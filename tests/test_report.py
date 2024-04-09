@@ -13,7 +13,6 @@ import os.path
 import py_compile
 import re
 
-from typing import Tuple
 
 import pytest
 
@@ -323,6 +322,18 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         cov = coverage.Coverage(branch=True)
         self.start_import_stop(cov, "mybranch")
         assert self.stdout() == 'x\ny\n'
+        report = self.get_report(cov, show_missing=True)
+
+        # Name           Stmts   Miss Branch BrPart  Cover   Missing
+        # ----------------------------------------------------------
+        # mybranch.py        6      0      4      2    80%   2->4, 4->exit
+        # ----------------------------------------------------------
+        # TOTAL              6      0      4      2    80%
+
+        assert self.line_count(report) == 5
+        squeezed = self.squeezed_lines(report)
+        assert squeezed[2] == "mybranch.py 6 0 4 2 80% 2->4, 4->exit"
+        assert squeezed[4] == "TOTAL 6 0 4 2 80%"
 
     def test_report_show_missing_branches_and_lines(self) -> None:
         self.make_file("main.py", """\
@@ -343,16 +354,27 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         cov = coverage.Coverage(branch=True)
         self.start_import_stop(cov, "main")
         assert self.stdout() == 'x\ny\n'
+        report_lines = self.get_report(cov, squeeze=False, show_missing=True).splitlines()
+
+        expected = [
+            'Name          Stmts   Miss Branch BrPart  Cover   Missing',
+            '---------------------------------------------------------',
+            'main.py           1      0      0      0   100%',
+            'mybranch.py      10      2      8      3    61%   2->4, 4->6, 7-8',
+            '---------------------------------------------------------',
+            'TOTAL            11      2      8      3    63%',
+        ]
+        assert expected == report_lines
 
     def test_report_skip_covered_no_branches(self) -> None:
-        self.make_file("main.py", """
+        self.make_file("main.py", """\
             import not_covered
 
             def normal():
                 print("z")
             normal()
             """)
-        self.make_file("not_covered.py", """
+        self.make_file("not_covered.py", """\
             def not_covered():
                 print("n")
             """)
@@ -377,7 +399,7 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         assert self.last_command_status == 0
 
     def test_report_skip_covered_branches(self) -> None:
-        self.make_file("main.py", """
+        self.make_file("main.py", """\
             import not_covered, covered
 
             def normal(z):
@@ -386,13 +408,13 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
             normal(True)
             normal(False)
             """)
-        self.make_file("not_covered.py", """
+        self.make_file("not_covered.py", """\
             def not_covered(n):
                 if n:
                     print("n")
             not_covered(True)
             """)
-        self.make_file("covered.py", """
+        self.make_file("covered.py", """\
             def foo():
                 pass
             foo()
@@ -417,7 +439,7 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         assert squeezed[6] == "2 files skipped due to complete coverage."
 
     def test_report_skip_covered_branches_with_totals(self) -> None:
-        self.make_file("main.py", """
+        self.make_file("main.py", """\
             import not_covered
             import also_not_run
 
@@ -427,13 +449,13 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
             normal(True)
             normal(False)
             """)
-        self.make_file("not_covered.py", """
+        self.make_file("not_covered.py", """\
             def not_covered(n):
                 if n:
                     print("n")
             not_covered(True)
             """)
-        self.make_file("also_not_run.py", """
+        self.make_file("also_not_run.py", """\
             def does_not_appear_in_this_film(ni):
                 print("Ni!")
             """)
@@ -459,7 +481,7 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         assert squeezed[7] == "1 file skipped due to complete coverage."
 
     def test_report_skip_covered_all_files_covered(self) -> None:
-        self.make_file("main.py", """
+        self.make_file("main.py", """\
             def foo():
                 pass
             foo()
@@ -504,7 +526,7 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         assert total == "100\n"
 
     def test_report_skip_covered_longfilename(self) -> None:
-        self.make_file("long_______________filename.py", """
+        self.make_file("long_______________filename.py", """\
             def foo():
                 pass
             foo()
@@ -534,7 +556,7 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         self.assert_doesnt_exist(".coverage")
 
     def test_report_skip_empty(self) -> None:
-        self.make_file("main.py", """
+        self.make_file("main.py", """\
             import submodule
 
             def normal():
@@ -584,7 +606,7 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
             precision = 3
             omit = */site-packages/*
             """)
-        self.make_file("main.py", """
+        self.make_file("main.py", """\
             import not_covered, covered
 
             def normal(z):
@@ -593,13 +615,13 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
             normal(True)
             normal(False)
             """)
-        self.make_file("not_covered.py", """
+        self.make_file("not_covered.py", """\
             def not_covered(n):
                 if n:
                     print("n")
             not_covered(True)
             """)
-        self.make_file("covered.py", """
+        self.make_file("covered.py", """\
             def foo():
                 pass
             foo()
@@ -624,7 +646,7 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         assert squeezed[6] == "TOTAL 13 0 4 1 94.118%"
 
     def test_report_precision_all_zero(self) -> None:
-        self.make_file("not_covered.py", """
+        self.make_file("not_covered.py", """\
             def not_covered(n):
                 if n:
                     print("n")
@@ -971,7 +993,7 @@ class SummaryReporterConfigurationTest(CoverageTest):
         source += "    a = 2\n" * dont_run
         self.make_file(filename, source)
 
-    def get_summary_text(self, *options: Tuple[str, TConfigValueIn]) -> str:
+    def get_summary_text(self, *options: tuple[str, TConfigValueIn]) -> str:
         """Get text output from the SummaryReporter.
 
         The arguments are tuples: (name, value) for Coverage.set_option.

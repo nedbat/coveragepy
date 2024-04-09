@@ -123,10 +123,5 @@ class AnnotationGoldTest(CoverageTest):
         cov = coverage.Coverage()
         self.start_import_stop(cov, "mae")
         cov.annotate()
-        assert self.stdout() == (
-            "1\n" +
-            "2\n" +
-            "The annotate command will be removed in a future version.\n" +
-            "Get in touch if you still use it: ned@nedbatchelder.com\n"
-        )
+        assert self.stdout() == "1\n2\n"
         compare(gold_path("annotate/mae"), ".", "*,cover")

@@ -384,8 +384,7 @@ COMMAND REFERENCE
         A list of packages or directories of code to be measured.
 
     \--timid
-        Use a simpler but slower trace method. Try this if you get
-        seemingly impossible results!
+        Use the slower Python trace function core.
 
 **xml** [ `options` ... ] [ `MODULES` ... ]
 

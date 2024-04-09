@@ -9,6 +9,9 @@ These changes are listed in decreasing version number order. Note this can be
 different from a strict chronological order when there are two branches in
 development at the same time, such as 4.5.x and 5.0.
 
+See :ref:`migrating` for significant changes that might be required when
+upgrading your version of coverage.py.
+
     .. When updating the "Unreleased" header to a specific version, use this
     .. format.  Don't forget the jump target:
     ..
@@ -22,9 +25,119 @@ Unreleased
 
 - Fix: the PYTHONSAFEPATH environment variable new in Python 3.11 is properly
   supported, closing `issue 1696`_.  Thanks, `Philipp A. <pull 1700_>`_.
+- Python 3.13.0a5 is supported.
+
+
+.. scriv-start-here
+
+.. _changes_7-4-4:
+
+Version 7.4.4 — 2024-03-14
+--------------------------
+
+- Fix: in some cases, even with ``[run] relative_files=True``, a data file
+  could be created with absolute path names.  When combined with other relative
+  data files, it was random whether the absolute file names would be made
+  relative or not. If they weren't, then a file would be listed twice in
+  reports, as detailed in `issue 1752`_.  This is now fixed: absolute file
+  names are always made relative when combining.  Thanks to Bruno Rodrigues dos
+  Santos for support.
+
+- Fix: the last case of a match/case statement had an incorrect message if the
+  branch was missed.  It said the pattern never matched, when actually the
+  branch is missed if the last case always matched.
+
+- Fix: clicking a line number in the HTML report now positions more accurately.
+
+- Fix: the ``report:format`` setting was defined as a boolean, but should be a
+  string.  Thanks, `Tanaydin Sirin <pull 1754_>`_.  It is also now documented
+  on the :ref:`configuration page <config_report_format>`.
+
+.. _issue 1752: https://github.com/nedbat/coveragepy/issues/1752
+.. _pull 1754: https://github.com/nedbat/coveragepy/pull/1754
+
+
+.. _changes_7-4-3:
+
+Version 7.4.3 — 2024-02-23
+--------------------------
+
+- Fix: in some cases, coverage could fail with a RuntimeError: "Set changed
+  size during iteration." This is now fixed, closing `issue 1733`_.
+
+.. _issue 1733: https://github.com/nedbat/coveragepy/issues/1733
+
+
+.. _changes_7-4-2:
+
+Version 7.4.2 — 2024-02-20
+--------------------------
+
+- Fix: setting ``COVERAGE_CORE=sysmon`` no longer errors on 3.11 and lower,
+  thanks `Hugo van Kemenade <pull 1747_>`_.  It now issues a warning that
+  sys.monitoring is not available and falls back to the default core instead.
+
+.. _pull 1747: https://github.com/nedbat/coveragepy/pull/1747
+
+
+.. _changes_7-4-1:
+
+Version 7.4.1 — 2024-01-26
+--------------------------
+
+- Python 3.13.0a3 is supported.
+
+- Fix: the JSON report now includes an explicit format version number, closing
+  `issue 1732`_.
+
+.. _issue 1732: https://github.com/nedbat/coveragepy/issues/1732
+
+
+.. _changes_7-4-0:
+
+Version 7.4.0 — 2023-12-27
+--------------------------
+
+- In Python 3.12 and above, you can try an experimental core based on the new
+  :mod:`sys.monitoring <python:sys.monitoring>` module by defining a
+  ``COVERAGE_CORE=sysmon`` environment variable.  This should be faster for
+  line coverage, but not for branch coverage, and plugins and dynamic contexts
+  are not yet supported with it.  I am very interested to hear how it works (or
+  doesn't!) for you.
+
+
+.. _changes_7-3-4:
+
+Version 7.3.4 — 2023-12-20
+--------------------------
+
+- Fix: the change for multi-line signature exclusions in 7.3.3 broke other
+  forms of nested clauses being excluded properly.  This is now fixed, closing
+  `issue 1713`_.
+
+- Fix: in the HTML report, selecting code for copying won't select the line
+  numbers also. Thanks, `Robert Harris <pull 1717_>`_.
+
+.. _issue 1713: https://github.com/nedbat/coveragepy/issues/1713
+.. _pull 1717: https://github.com/nedbat/coveragepy/pull/1717
+
+
+.. _changes_7-3-3:
+
+Version 7.3.3 — 2023-12-14
+--------------------------
+
 - Fix: function definitions with multi-line signatures can now be excluded by
   matching any of the lines, closing `issue 684`_.  Thanks, `Jan Rusak,
   Maciej Kowalczyk and Joanna Ejzel <pull 1705_>`_.
+
+- Fix: XML reports could fail with a TypeError if files had numeric components
+  that were duplicates except for leading zeroes, like ``file1.py`` and
+  ``file001.py``.  Fixes `issue 1709`_.
+
+- The ``coverage annotate`` command used to announce that it would be removed
+  in a future version. Enough people got in touch to say that they use it, so
+  it will stay.  Don't expect it to keep up with other new features though.
 
 - Added new :ref:`debug options <cmd_run_debug>`:
 
@@ -36,9 +149,8 @@ Unreleased
 .. _pull 1700: https://github.com/nedbat/coveragepy/pull/1700
 .. _issue 684: https://github.com/nedbat/coveragepy/issues/684
 .. _pull 1705: https://github.com/nedbat/coveragepy/pull/1705
+.. _issue 1709: https://github.com/nedbat/coveragepy/issues/1709
 
-
-.. scriv-start-here
 
 .. _changes_7-3-2:
 
@@ -837,10 +949,12 @@ Version 6.3 — 2022-01-25
 Version 6.2 — 2021-11-26
 ------------------------
 
-- Feature: Now the ``--concurrency`` setting can now have a list of values, so
-  that threads and another lightweight threading package can be measured
-  together, such as ``--concurrency=gevent,thread``.  Closes `issue 1012`_ and
-  `issue 1082`_.
+- Feature: Now the ``--concurrency`` setting can have a list of values, so that
+  threads and another lightweight threading package can be measured together,
+  such as ``--concurrency=gevent,thread``.  Closes `issue 1012`_ and `issue
+  1082`_.  This also means that ``thread`` must be explicitly specified in some
+  cases that used to be implicit such as ``--concurrency=multiprocessing``,
+  which must be changed to ``--concurrency=multiprocessing,thread``.
 
 - Fix: A module specified as the ``source`` setting is imported during startup,
   before the user program imports it.  This could cause problems if the rest of

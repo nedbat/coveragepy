@@ -7,19 +7,21 @@ from __future__ import annotations
 
 import atexit
 import dis
+import itertools
 import sys
 import threading
 
 from types import FrameType, ModuleType
-from typing import Any, Callable, Dict, List, Optional, Set, Tuple, cast
+from typing import Any, Callable, Set, cast
 
 from coverage import env
 from coverage.types import (
     TArc, TFileDisposition, TLineNo, TTraceData, TTraceFileData, TTraceFn,
-    TTracer, TWarnFn,
+    TracerCore, TWarnFn,
 )
 
 # We need the YIELD_VALUE opcode below, in a comparison-friendly form.
+# PYVERSIONS: RESUME is new in Python3.11
 RESUME = dis.opmap.get("RESUME")
 RETURN_VALUE = dis.opmap["RETURN_VALUE"]
 if RESUME is None:
@@ -32,7 +34,7 @@ if RESUME is None:
 
 THIS_FILE = __file__.rstrip("co")
 
-class PyTracer(TTracer):
+class PyTracer(TracerCore):
     """Python implementation of the raw data tracer."""
 
     # Because of poor implementations of trace-function-manipulating tools,
@@ -51,27 +53,40 @@ class PyTracer(TTracer):
     # PyTracer to get accurate results.  The command-line --timid argument is
     # used to force the use of this tracer.
 
+    tracer_ids = itertools.count()
+
     def __init__(self) -> None:
+        # Which tracer are we?
+        self.id = next(self.tracer_ids)
+
         # Attributes set from the collector:
         self.data: TTraceData
         self.trace_arcs = False
         self.should_trace: Callable[[str, FrameType], TFileDisposition]
-        self.should_trace_cache: Dict[str, Optional[TFileDisposition]]
-        self.should_start_context: Optional[Callable[[FrameType], Optional[str]]] = None
-        self.switch_context: Optional[Callable[[Optional[str]], None]] = None
+        self.should_trace_cache: dict[str, TFileDisposition | None]
+        self.should_start_context: Callable[[FrameType], str | None] | None = None
+        self.switch_context: Callable[[str | None], None] | None = None
         self.warn: TWarnFn
 
         # The threading module to use, if any.
-        self.threading: Optional[ModuleType] = None
+        self.threading: ModuleType | None = None
 
-        self.cur_file_data: Optional[TTraceFileData] = None
+        self.cur_file_data: TTraceFileData | None = None
         self.last_line: TLineNo = 0
-        self.cur_file_name: Optional[str] = None
-        self.context: Optional[str] = None
+        self.cur_file_name: str | None = None
+        self.context: str | None = None
         self.started_context = False
 
-        self.data_stack: List[Tuple[Optional[TTraceFileData], Optional[str], TLineNo, bool]] = []
-        self.thread: Optional[threading.Thread] = None
+        # The data_stack parallels the Python call stack. Each entry is
+        # information about an active frame, a four-element tuple:
+        #   [0] The TTraceData for this frame's file. Could be None if we
+        #           aren't tracing this frame.
+        #   [1] The current file name for the frame. None if we aren't tracing
+        #           this frame.
+        #   [2] The last line number executed in this frame.
+        #   [3] Boolean: did this frame start a new context?
+        self.data_stack: list[tuple[TTraceFileData | None, str | None, TLineNo, bool]] = []
+        self.thread: threading.Thread | None = None
         self.stopped = False
         self._activity = False
 
@@ -91,11 +106,7 @@ class PyTracer(TTracer):
     def log(self, marker: str, *args: Any) -> None:
         """For hard-core logging of what this tracer is doing."""
         with open("/tmp/debug_trace.txt", "a") as f:
-            f.write("{} {}[{}]".format(
-                marker,
-                id(self),
-                len(self.data_stack),
-            ))
+            f.write(f"{marker} {self.id}[{len(self.data_stack)}]")
             if 0:   # if you want thread ids..
                 f.write(".{:x}.{:x}".format(                    # type: ignore[unreachable]
                     self.thread.ident,
@@ -116,14 +127,15 @@ class PyTracer(TTracer):
         frame: FrameType,
         event: str,
         arg: Any,                               # pylint: disable=unused-argument
-        lineno: Optional[TLineNo] = None,       # pylint: disable=unused-argument
-    ) -> Optional[TTraceFn]:
+        lineno: TLineNo | None = None,       # pylint: disable=unused-argument
+    ) -> TTraceFn | None:
         """The trace function passed to sys.settrace."""
 
         if THIS_FILE in frame.f_code.co_filename:
             return None
 
-        #self.log(":", frame.f_code.co_filename, frame.f_lineno, frame.f_code.co_name + "()", event)
+        # f = frame; code = f.f_code
+        # self.log(":", f"{code.co_filename} {f.f_lineno} {code.co_name}()", event)
 
         if (self.stopped and sys.gettrace() == self._cached_bound_method_trace):    # pylint: disable=comparison-with-callable
             # The PyTrace.stop() method has been called, possibly by another
@@ -144,7 +156,7 @@ class PyTracer(TTracer):
                     "Empty stack!",
                     frame.f_code.co_filename,
                     frame.f_lineno,
-                    frame.f_code.co_name
+                    frame.f_code.co_name,
                 )
             return None
 
@@ -174,7 +186,7 @@ class PyTracer(TTracer):
                     self.cur_file_name,
                     self.last_line,
                     started_context,
-                )
+                ),
             )
 
             # Improve tracing performance: when calling a function, both caller
@@ -241,8 +253,10 @@ class PyTracer(TTracer):
                         # A return from the end of a code object is a real return.
                         real_return = True
                     else:
-                        # it's a real return.
-                        real_return = (code[lasti + 2] != RESUME)
+                        # It is a real return if we aren't going to resume next.
+                        if env.PYBEHAVIOR.lasti_is_yield:
+                            lasti += 2
+                        real_return = (code[lasti] != RESUME)
                 else:
                     if code[lasti] == RETURN_VALUE:
                         real_return = True
@@ -279,13 +293,6 @@ class PyTracer(TTracer):
         if self.threading:
             if self.thread is None:
                 self.thread = self.threading.current_thread()
-            else:
-                if self.thread.ident != self.threading.current_thread().ident:
-                    # Re-starting from a different thread!? Don't set the trace
-                    # function, but we are marked as running again, so maybe it
-                    # will be ok?
-                    #self.log("~", "starting on different threads")
-                    return self._cached_bound_method_trace
 
         sys.settrace(self._cached_bound_method_trace)
         return self._cached_bound_method_trace
@@ -310,12 +317,16 @@ class PyTracer(TTracer):
                 #self.log("~", "stopping on different threads")
                 return
 
-        if self.warn:
-            # PyPy clears the trace function before running atexit functions,
-            # so don't warn if we are in atexit on PyPy and the trace function
-            # has changed to None.
-            dont_warn = (env.PYPY and self.in_atexit and tf is None)
-            if (not dont_warn) and tf != self._cached_bound_method_trace:   # pylint: disable=comparison-with-callable
+        # PyPy clears the trace function before running atexit functions,
+        # so don't warn if we are in atexit on PyPy and the trace function
+        # has changed to None.  Metacoverage also messes this up, so don't
+        # warn if we are measuring ourselves.
+        suppress_warning = (
+            (env.PYPY and self.in_atexit and tf is None)
+            or env.METACOV
+        )
+        if self.warn and not suppress_warning:
+            if tf != self._cached_bound_method_trace:   # pylint: disable=comparison-with-callable
                 self.warn(
                     "Trace function changed, data is likely wrong: " +
                     f"{tf!r} != {self._cached_bound_method_trace!r}",
@@ -330,6 +341,6 @@ class PyTracer(TTracer):
         """Reset the activity() flag."""
         self._activity = False
 
-    def get_stats(self) -> Optional[Dict[str, int]]:
+    def get_stats(self) -> dict[str, int] | None:
         """Return a dictionary of statistics, or None."""
         return None

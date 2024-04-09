@@ -8,7 +8,7 @@ from __future__ import annotations
 import sys
 
 from typing import (
-    Callable, Iterable, Iterator, IO, Optional, Protocol, Tuple, TYPE_CHECKING,
+    Callable, Iterable, Iterator, IO, Protocol, TYPE_CHECKING,
 )
 
 from coverage.exceptions import NoDataError, NotPython
@@ -27,14 +27,14 @@ class Reporter(Protocol):
 
     report_type: str
 
-    def report(self, morfs: Optional[Iterable[TMorf]], outfile: IO[str]) -> float:
+    def report(self, morfs: Iterable[TMorf] | None, outfile: IO[str]) -> float:
         """Generate a report of `morfs`, written to `outfile`."""
 
 
 def render_report(
     output_path: str,
     reporter: Reporter,
-    morfs: Optional[Iterable[TMorf]],
+    morfs: Iterable[TMorf] | None,
     msgfn: Callable[[str], None],
 ) -> float:
     """Run a one-file report generator, managing the output file.
@@ -72,8 +72,8 @@ def render_report(
 
 def get_analysis_to_report(
     coverage: Coverage,
-    morfs: Optional[Iterable[TMorf]],
-) -> Iterator[Tuple[FileReporter, Analysis]]:
+    morfs: Iterable[TMorf] | None,
+) -> Iterator[tuple[FileReporter, Analysis]]:
     """Get the files to report on.
 
     For each morf in `morfs`, if it should be reported on (based on the omit

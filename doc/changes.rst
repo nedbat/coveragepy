@@ -547,7 +547,7 @@ Version 5.0a2 — 2018-09-03
     may need ``parallel=true`` where you didn't before.
 
   - The old data format is still available (for now) by setting the environment
-    variable COVERAGE_STORAGE=json. Please tell me if you think you need to
+    variable ``COVERAGE_STORAGE=json``. Please tell me if you think you need to
     keep the JSON format.
 
   - The database schema is guaranteed to change in the future, to support new
@@ -1521,7 +1521,7 @@ Version 4.0a6 — 2015-06-21
   persisted in pursuing this despite Ned's pessimism.  Fixes `issue 308`_ and
   `issue 324`_.
 
-- The COVERAGE_DEBUG environment variable can be used to set the
+- The ``COVERAGE_DEBUG`` environment variable can be used to set the
   ``[run] debug`` configuration option to control what internal operations are
   logged.
 

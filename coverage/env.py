@@ -9,7 +9,7 @@ import os
 import platform
 import sys
 
-from typing import Any, Iterable, Tuple
+from typing import Any, Iterable
 
 # debug_info() at the bottom wants to show all the globals, but not imports.
 # Grab the global names here to know which names to not show. Nothing defined
@@ -29,6 +29,8 @@ PYPY = (platform.python_implementation() == "PyPy")
 
 # Python versions. We amend version_info with one more value, a zero if an
 # official version, or 1 if built from source beyond an official version.
+# Only use sys.version_info directly where tools like mypy need it to understand
+# version-specfic code, otherwise use PYVERSION.
 PYVERSION = sys.version_info + (int(platform.python_version()[-1] == "+"),)
 
 if PYPY:
@@ -58,13 +60,12 @@ class PYBEHAVIOR:
         optimize_if_not_debug = 2
 
     # 3.7 changed how functions with only docstrings are numbered.
-    docstring_only_function = (not PYPY) and ((3, 7, 0, "beta", 5) <= PYVERSION <= (3, 10))
+    docstring_only_function = (not PYPY) and (PYVERSION <= (3, 10))
 
     # When a break/continue/return statement in a try block jumps to a finally
-    # block, does the finally block do the break/continue/return (pre-3.8), or
-    # does the finally jump back to the break/continue/return (3.8) to do the
-    # work?
-    finally_jumps_back = ((3, 8) <= PYVERSION < (3, 10))
+    # block, does the finally jump back to the break/continue/return (pre-3.10)
+    # to do the work?
+    finally_jumps_back = (PYVERSION < (3, 10))
 
     # CPython 3.11 now jumps to the decorator line again while executing
     # the decorator.
@@ -113,10 +114,16 @@ class PYBEHAVIOR:
     # Changed in https://github.com/python/cpython/pull/101441
     comprehensions_are_functions = (PYVERSION <= (3, 12, 0, "alpha", 7, 0))
 
-# Coverage.py specifics.
+    # PEP669 Low Impact Monitoring: https://peps.python.org/pep-0669/
+    pep669 = bool(getattr(sys, "monitoring", None))
 
-# Are we using the C-implemented trace function?
-C_TRACER = os.getenv("COVERAGE_TEST_TRACER", "c") == "c"
+    # Where does frame.f_lasti point when yielding from a generator?
+    # It used to point at the YIELD, now it points at the RESUME.
+    # https://github.com/python/cpython/issues/113728
+    lasti_is_yield = (PYVERSION < (3, 13))
+
+
+# Coverage.py specifics, about testing scenarios. See tests/testenv.py also.
 
 # Are we coverage-measuring ourselves?
 METACOV = os.getenv("COVERAGE_COVERAGE") is not None
@@ -127,7 +134,7 @@ METACOV = os.getenv("COVERAGE_COVERAGE") is not None
 TESTING = os.getenv("COVERAGE_TESTING") == "True"
 
 
-def debug_info() -> Iterable[Tuple[str, Any]]:
+def debug_info() -> Iterable[tuple[str, Any]]:
     """Return a list of (name, value) pairs for printing debug information."""
     info = [
         (name, value) for name, value in globals().items()

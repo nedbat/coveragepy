@@ -8,6 +8,7 @@
 
 flaky
 hypothesis
+pygments    # so that pytest will syntax-color.
 pytest
 pytest-xdist
 

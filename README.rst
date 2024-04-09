@@ -25,7 +25,7 @@ Coverage.py runs on these versions of Python:
 
 .. PYVERSIONS
 
-* CPython 3.8 through 3.12.
+* Python 3.8 through 3.12, and 3.13.0a3 and up.
 * PyPy3 versions 3.8 through 3.10.
 
 Documentation is on `Read the Docs`_.  Code repository and issue tracker are on
@@ -35,6 +35,7 @@ Documentation is on `Read the Docs`_.  Code repository and issue tracker are on
 .. _GitHub: https://github.com/nedbat/coveragepy
 
 **New in 7.x:**
+experimental support for sys.monitoring;
 dropped support for Python 3.7;
 added ``Coverage.collect()`` context manager;
 improved data combining;

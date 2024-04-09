@@ -9,7 +9,7 @@ import datetime
 import json
 import sys
 
-from typing import Any, Dict, IO, Iterable, List, Optional, Tuple, TYPE_CHECKING
+from typing import Any, IO, Iterable, TYPE_CHECKING
 
 from coverage import __version__
 from coverage.report_core import get_analysis_to_report
@@ -21,6 +21,10 @@ if TYPE_CHECKING:
     from coverage.data import CoverageData
 
 
+# "Version 1" had no format number at all.
+# 2: add the meta.format field.
+FORMAT_VERSION = 2
+
 class JsonReporter:
     """A reporter for writing JSON coverage results."""
 
@@ -30,9 +34,9 @@ class JsonReporter:
         self.coverage = coverage
         self.config = self.coverage.config
         self.total = Numbers(self.config.precision)
-        self.report_data: Dict[str, Any] = {}
+        self.report_data: dict[str, Any] = {}
 
-    def report(self, morfs: Optional[Iterable[TMorf]], outfile: IO[str]) -> float:
+    def report(self, morfs: Iterable[TMorf] | None, outfile: IO[str]) -> float:
         """Generate a json report for `morfs`.
 
         `morfs` is a list of modules or file names.
@@ -44,6 +48,7 @@ class JsonReporter:
         coverage_data = self.coverage.get_data()
         coverage_data.set_query_contexts(self.config.report_contexts)
         self.report_data["meta"] = {
+            "format": FORMAT_VERSION,
             "version": __version__,
             "timestamp": datetime.datetime.now().isoformat(),
             "branch_coverage": coverage_data.has_arcs(),
@@ -54,7 +59,7 @@ class JsonReporter:
         for file_reporter, analysis in get_analysis_to_report(self.coverage, morfs):
             measured_files[file_reporter.relative_filename()] = self.report_one_file(
                 coverage_data,
-                analysis
+                analysis,
             )
 
         self.report_data["files"] = measured_files
@@ -84,7 +89,7 @@ class JsonReporter:
 
         return self.total.n_statements and self.total.pc_covered
 
-    def report_one_file(self, coverage_data: CoverageData, analysis: Analysis) -> Dict[str, Any]:
+    def report_one_file(self, coverage_data: CoverageData, analysis: Analysis) -> dict[str, Any]:
         """Extract the relevant report data for a single file."""
         nums = analysis.numbers
         self.total += nums
@@ -112,17 +117,17 @@ class JsonReporter:
                 "missing_branches": nums.n_missing_branches,
             })
             reported_file["executed_branches"] = list(
-                _convert_branch_arcs(analysis.executed_branch_arcs())
+                _convert_branch_arcs(analysis.executed_branch_arcs()),
             )
             reported_file["missing_branches"] = list(
-                _convert_branch_arcs(analysis.missing_branch_arcs())
+                _convert_branch_arcs(analysis.missing_branch_arcs()),
             )
         return reported_file
 
 
 def _convert_branch_arcs(
-    branch_arcs: Dict[TLineNo, List[TLineNo]],
-) -> Iterable[Tuple[TLineNo, TLineNo]]:
+    branch_arcs: dict[TLineNo, list[TLineNo]],
+) -> Iterable[tuple[TLineNo, TLineNo]]:
     """Convert branch arcs to a list of two-element tuples."""
     for source, targets in branch_arcs.items():
         for target in targets:

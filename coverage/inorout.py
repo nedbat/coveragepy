@@ -17,7 +17,7 @@ import traceback
 
 from types import FrameType, ModuleType
 from typing import (
-    cast, Any, Iterable, List, Optional, Set, Tuple, Type, TYPE_CHECKING,
+    cast, Any, Iterable, TYPE_CHECKING,
 )
 
 from coverage import env
@@ -38,7 +38,7 @@ if TYPE_CHECKING:
 # when deciding where the stdlib is.  These modules are not used for anything,
 # they are modules importable from the pypy lib directories, so that we can
 # find those directories.
-modules_we_happen_to_have: List[ModuleType] = [
+modules_we_happen_to_have: list[ModuleType] = [
     inspect, itertools, os, platform, re, sysconfig, traceback,
 ]
 
@@ -70,7 +70,7 @@ def canonical_path(morf: TMorf, directory: bool = False) -> str:
     return morf_path
 
 
-def name_for_module(filename: str, frame: Optional[FrameType]) -> str:
+def name_for_module(filename: str, frame: FrameType | None) -> str:
     """Get the name of the module for a filename and frame.
 
     For configurability's sake, we allow __main__ modules to be matched by
@@ -117,7 +117,7 @@ def module_has_file(mod: ModuleType) -> bool:
     return os.path.exists(mod__file__)
 
 
-def file_and_path_for_module(modulename: str) -> Tuple[Optional[str], List[str]]:
+def file_and_path_for_module(modulename: str) -> tuple[str | None, list[str]]:
     """Find the file and search path for `modulename`.
 
     Returns:
@@ -138,7 +138,7 @@ def file_and_path_for_module(modulename: str) -> Tuple[Optional[str], List[str]]
     return filename, path
 
 
-def add_stdlib_paths(paths: Set[str]) -> None:
+def add_stdlib_paths(paths: set[str]) -> None:
     """Add paths where the stdlib can be found to the set `paths`."""
     # Look at where some standard modules are located. That's the
     # indication for "installed with the interpreter". In some
@@ -150,7 +150,7 @@ def add_stdlib_paths(paths: Set[str]) -> None:
             paths.add(canonical_path(m, directory=True))
 
 
-def add_third_party_paths(paths: Set[str]) -> None:
+def add_third_party_paths(paths: set[str]) -> None:
     """Add locations for third-party packages to the set `paths`."""
     # Get the paths that sysconfig knows about.
     scheme_names = set(sysconfig.get_scheme_names())
@@ -164,7 +164,7 @@ def add_third_party_paths(paths: Set[str]) -> None:
                 paths.add(config_paths[path_name])
 
 
-def add_coverage_paths(paths: Set[str]) -> None:
+def add_coverage_paths(paths: set[str]) -> None:
     """Add paths where coverage.py code can be found to the set `paths`."""
     cover_path = canonical_path(__file__, directory=True)
     paths.add(cover_path)
@@ -180,15 +180,15 @@ class InOrOut:
         self,
         config: CoverageConfig,
         warn: TWarnFn,
-        debug: Optional[TDebugCtl],
+        debug: TDebugCtl | None,
         include_namespace_packages: bool,
     ) -> None:
         self.warn = warn
         self.debug = debug
         self.include_namespace_packages = include_namespace_packages
 
-        self.source: List[str] = []
-        self.source_pkgs: List[str] = []
+        self.source: list[str] = []
+        self.source_pkgs: list[str] = []
         self.source_pkgs.extend(config.source_pkgs)
         for src in config.source or []:
             if os.path.isdir(src):
@@ -201,17 +201,17 @@ class InOrOut:
         self.omit = prep_patterns(config.run_omit)
 
         # The directories for files considered "installed with the interpreter".
-        self.pylib_paths: Set[str] = set()
+        self.pylib_paths: set[str] = set()
         if not config.cover_pylib:
             add_stdlib_paths(self.pylib_paths)
 
         # To avoid tracing the coverage.py code itself, we skip anything
         # located where we are.
-        self.cover_paths: Set[str] = set()
+        self.cover_paths: set[str] = set()
         add_coverage_paths(self.cover_paths)
 
         # Find where third-party packages are installed.
-        self.third_paths: Set[str] = set()
+        self.third_paths: set[str] = set()
         add_third_party_paths(self.third_paths)
 
         def _debug(msg: str) -> None:
@@ -270,14 +270,14 @@ class InOrOut:
                 if modfile:
                     if self.third_match.match(modfile):
                         _debug(
-                            f"Source in third-party: source_pkg {pkg!r} at {modfile!r}"
+                            f"Source in third-party: source_pkg {pkg!r} at {modfile!r}",
                         )
                         self.source_in_third_paths.add(canonical_path(source_for_file(modfile)))
                 else:
                     for pathdir in path:
                         if self.third_match.match(pathdir):
                             _debug(
-                                f"Source in third-party: {pkg!r} path directory at {pathdir!r}"
+                                f"Source in third-party: {pkg!r} path directory at {pathdir!r}",
                             )
                             self.source_in_third_paths.add(pathdir)
 
@@ -289,9 +289,9 @@ class InOrOut:
         _debug(f"Source in third-party matching: {self.source_in_third_match}")
 
         self.plugins: Plugins
-        self.disp_class: Type[TFileDisposition] = FileDisposition
+        self.disp_class: type[TFileDisposition] = FileDisposition
 
-    def should_trace(self, filename: str, frame: Optional[FrameType] = None) -> TFileDisposition:
+    def should_trace(self, filename: str, frame: FrameType | None = None) -> TFileDisposition:
         """Decide whether to trace execution in `filename`, with a reason.
 
         This function is called from the trace function.  As each new file name
@@ -363,7 +363,7 @@ class InOrOut:
                         disp.has_dynamic_filename = True
                     else:
                         disp.source_filename = canonical_filename(
-                            file_tracer.source_filename()
+                            file_tracer.source_filename(),
                         )
                     break
             except Exception:
@@ -380,7 +380,7 @@ class InOrOut:
         if not disp.has_dynamic_filename:
             if not disp.source_filename:
                 raise PluginError(
-                    f"Plugin {plugin!r} didn't set source_filename for '{disp.original_filename}'"
+                    f"Plugin {plugin!r} didn't set source_filename for '{disp.original_filename}'",
                 )
             reason = self.check_include_omit_etc(disp.source_filename, frame)
             if reason:
@@ -388,7 +388,7 @@ class InOrOut:
 
         return disp
 
-    def check_include_omit_etc(self, filename: str, frame: Optional[FrameType]) -> Optional[str]:
+    def check_include_omit_etc(self, filename: str, frame: FrameType | None) -> str | None:
         """Check a file name against the include, omit, etc, rules.
 
         Returns a string or None.  String means, don't trace, and is the reason
@@ -483,8 +483,8 @@ class InOrOut:
                 elif self.debug and self.debug.should("trace"):
                     self.debug.write(
                         "Didn't trace already imported file {!r}: {}".format(
-                            disp.original_filename, disp.reason
-                        )
+                            disp.original_filename, disp.reason,
+                        ),
                     )
 
     def warn_unimported_source(self) -> None:
@@ -518,7 +518,7 @@ class InOrOut:
         msg = f"Module {pkg} was previously imported, but not measured"
         self.warn(msg, slug="module-not-measured")
 
-    def find_possibly_unexecuted_files(self) -> Iterable[Tuple[str, Optional[str]]]:
+    def find_possibly_unexecuted_files(self) -> Iterable[tuple[str, str | None]]:
         """Find files in the areas of interest that might be untraced.
 
         Yields pairs: file path, and responsible plug-in name.
@@ -533,13 +533,13 @@ class InOrOut:
         for src in self.source:
             yield from self._find_executable_files(src)
 
-    def _find_plugin_files(self, src_dir: str) -> Iterable[Tuple[str, str]]:
+    def _find_plugin_files(self, src_dir: str) -> Iterable[tuple[str, str]]:
         """Get executable files from the plugins."""
         for plugin in self.plugins.file_tracers:
             for x_file in plugin.find_executable_files(src_dir):
                 yield x_file, plugin._coverage_plugin_name
 
-    def _find_executable_files(self, src_dir: str) -> Iterable[Tuple[str, Optional[str]]]:
+    def _find_executable_files(self, src_dir: str) -> Iterable[tuple[str, str | None]]:
         """Find executable files in `src_dir`.
 
         Search for files in `src_dir` that can be executed because they
@@ -563,7 +563,7 @@ class InOrOut:
                 continue
             yield file_path, plugin_name
 
-    def sys_info(self) -> Iterable[Tuple[str, Any]]:
+    def sys_info(self) -> Iterable[tuple[str, Any]]:
         """Our information for Coverage.sys_info.
 
         Returns a list of (key, value) pairs.

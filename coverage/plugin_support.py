@@ -10,7 +10,7 @@ import os.path
 import sys
 
 from types import FrameType
-from typing import Any, Dict, Iterable, Iterator, List, Optional, Set, Tuple, Union
+from typing import Any, Iterable, Iterator
 
 from coverage.exceptions import PluginError
 from coverage.misc import isolate_module
@@ -26,21 +26,21 @@ class Plugins:
     """The currently loaded collection of coverage.py plugins."""
 
     def __init__(self) -> None:
-        self.order: List[CoveragePlugin] = []
-        self.names: Dict[str, CoveragePlugin] = {}
-        self.file_tracers: List[CoveragePlugin] = []
-        self.configurers: List[CoveragePlugin] = []
-        self.context_switchers: List[CoveragePlugin] = []
+        self.order: list[CoveragePlugin] = []
+        self.names: dict[str, CoveragePlugin] = {}
+        self.file_tracers: list[CoveragePlugin] = []
+        self.configurers: list[CoveragePlugin] = []
+        self.context_switchers: list[CoveragePlugin] = []
 
-        self.current_module: Optional[str] = None
-        self.debug: Optional[TDebugCtl]
+        self.current_module: str | None = None
+        self.debug: TDebugCtl | None
 
     @classmethod
     def load_plugins(
         cls,
         modules: Iterable[str],
         config: TPluginConfig,
-        debug: Optional[TDebugCtl] = None,
+        debug: TDebugCtl | None = None,
     ) -> Plugins:
         """Load plugins from `modules`.
 
@@ -58,7 +58,7 @@ class Plugins:
             coverage_init = getattr(mod, "coverage_init", None)
             if not coverage_init:
                 raise PluginError(
-                    f"Plugin module {module!r} didn't define a coverage_init function"
+                    f"Plugin module {module!r} didn't define a coverage_init function",
                 )
 
             options = config.get_plugin_options(module)
@@ -105,7 +105,7 @@ class Plugins:
     def _add_plugin(
         self,
         plugin: CoveragePlugin,
-        specialized: Optional[List[CoveragePlugin]],
+        specialized: list[CoveragePlugin] | None,
     ) -> None:
         """Add a plugin object.
 
@@ -166,7 +166,7 @@ class DebugPluginWrapper(CoveragePlugin):
         self.plugin = plugin
         self.debug = debug
 
-    def file_tracer(self, filename: str) -> Optional[FileTracer]:
+    def file_tracer(self, filename: str) -> FileTracer | None:
         tracer = self.plugin.file_tracer(filename)
         self.debug.write(f"file_tracer({filename!r}) --> {tracer!r}")
         if tracer:
@@ -174,7 +174,7 @@ class DebugPluginWrapper(CoveragePlugin):
             tracer = DebugFileTracerWrapper(tracer, debug)
         return tracer
 
-    def file_reporter(self, filename: str) -> Union[FileReporter, str]:
+    def file_reporter(self, filename: str) -> FileReporter | str:
         reporter = self.plugin.file_reporter(filename)
         assert isinstance(reporter, FileReporter)
         self.debug.write(f"file_reporter({filename!r}) --> {reporter!r}")
@@ -183,7 +183,7 @@ class DebugPluginWrapper(CoveragePlugin):
             reporter = DebugFileReporterWrapper(filename, reporter, debug)
         return reporter
 
-    def dynamic_context(self, frame: FrameType) -> Optional[str]:
+    def dynamic_context(self, frame: FrameType) -> str | None:
         context = self.plugin.dynamic_context(frame)
         self.debug.write(f"dynamic_context({frame!r}) --> {context!r}")
         return context
@@ -197,7 +197,7 @@ class DebugPluginWrapper(CoveragePlugin):
         self.debug.write(f"configure({config!r})")
         self.plugin.configure(config)
 
-    def sys_info(self) -> Iterable[Tuple[str, Any]]:
+    def sys_info(self) -> Iterable[tuple[str, Any]]:
         return self.plugin.sys_info()
 
 
@@ -225,14 +225,14 @@ class DebugFileTracerWrapper(FileTracer):
         self.debug.write(f"has_dynamic_source_filename() --> {has!r}")
         return has
 
-    def dynamic_source_filename(self, filename: str, frame: FrameType) -> Optional[str]:
+    def dynamic_source_filename(self, filename: str, frame: FrameType) -> str | None:
         dyn = self.tracer.dynamic_source_filename(filename, frame)
         self.debug.write("dynamic_source_filename({!r}, {}) --> {!r}".format(
             filename, self._show_frame(frame), dyn,
         ))
         return dyn
 
-    def line_number_range(self, frame: FrameType) -> Tuple[TLineNo, TLineNo]:
+    def line_number_range(self, frame: FrameType) -> tuple[TLineNo, TLineNo]:
         pair = self.tracer.line_number_range(frame)
         self.debug.write(f"line_number_range({self._show_frame(frame)}) --> {pair!r}")
         return pair
@@ -251,37 +251,37 @@ class DebugFileReporterWrapper(FileReporter):
         self.debug.write(f"relative_filename() --> {ret!r}")
         return ret
 
-    def lines(self) -> Set[TLineNo]:
+    def lines(self) -> set[TLineNo]:
         ret = self.reporter.lines()
         self.debug.write(f"lines() --> {ret!r}")
         return ret
 
-    def excluded_lines(self) -> Set[TLineNo]:
+    def excluded_lines(self) -> set[TLineNo]:
         ret = self.reporter.excluded_lines()
         self.debug.write(f"excluded_lines() --> {ret!r}")
         return ret
 
-    def translate_lines(self, lines: Iterable[TLineNo]) -> Set[TLineNo]:
+    def translate_lines(self, lines: Iterable[TLineNo]) -> set[TLineNo]:
         ret = self.reporter.translate_lines(lines)
         self.debug.write(f"translate_lines({lines!r}) --> {ret!r}")
         return ret
 
-    def translate_arcs(self, arcs: Iterable[TArc]) -> Set[TArc]:
+    def translate_arcs(self, arcs: Iterable[TArc]) -> set[TArc]:
         ret = self.reporter.translate_arcs(arcs)
         self.debug.write(f"translate_arcs({arcs!r}) --> {ret!r}")
         return ret
 
-    def no_branch_lines(self) -> Set[TLineNo]:
+    def no_branch_lines(self) -> set[TLineNo]:
         ret = self.reporter.no_branch_lines()
         self.debug.write(f"no_branch_lines() --> {ret!r}")
         return ret
 
-    def exit_counts(self) -> Dict[TLineNo, int]:
+    def exit_counts(self) -> dict[TLineNo, int]:
         ret = self.reporter.exit_counts()
         self.debug.write(f"exit_counts() --> {ret!r}")
         return ret
 
-    def arcs(self) -> Set[TArc]:
+    def arcs(self) -> set[TArc]:
         ret = self.reporter.arcs()
         self.debug.write(f"arcs() --> {ret!r}")
         return ret

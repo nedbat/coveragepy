@@ -13,7 +13,7 @@ import os.path
 import re
 
 from typing import (
-    Any, Callable, Dict, Iterable, List, Optional, Tuple, Union,
+    Any, Callable, Iterable, Union,
 )
 
 from coverage.exceptions import ConfigError
@@ -46,12 +46,12 @@ class HandyConfigParser(configparser.ConfigParser):
     def read( # type: ignore[override]
         self,
         filenames: Iterable[str],
-        encoding_unused: Optional[str] = None,
-    ) -> List[str]:
+        encoding_unused: str | None = None,
+    ) -> list[str]:
         """Read a file name as UTF-8 configuration data."""
         return super().read(filenames, encoding="utf-8")
 
-    def real_section(self, section: str) -> Optional[str]:
+    def real_section(self, section: str) -> str | None:
         """Get the actual name of a section."""
         for section_prefix in self.section_prefixes:
             real_section = section_prefix + section
@@ -69,7 +69,7 @@ class HandyConfigParser(configparser.ConfigParser):
     def has_section(self, section: str) -> bool:
         return bool(self.real_section(section))
 
-    def options(self, section: str) -> List[str]:
+    def options(self, section: str) -> list[str]:
         real_section = self.real_section(section)
         if real_section is not None:
             return super().options(real_section)
@@ -77,7 +77,7 @@ class HandyConfigParser(configparser.ConfigParser):
 
     def get_section(self, section: str) -> TConfigSectionOut:
         """Get the contents of a section, as a dictionary."""
-        d: Dict[str, TConfigValueOut] = {}
+        d: dict[str, TConfigValueOut] = {}
         for opt in self.options(section):
             d[opt] = self.get(section, opt)
         return d
@@ -103,7 +103,7 @@ class HandyConfigParser(configparser.ConfigParser):
         v = substitute_variables(v, os.environ)
         return v
 
-    def getlist(self, section: str, option: str) -> List[str]:
+    def getlist(self, section: str, option: str) -> list[str]:
         """Read a list of strings.
 
         The value of `section` and `option` is treated as a comma- and newline-
@@ -121,7 +121,7 @@ class HandyConfigParser(configparser.ConfigParser):
                     values.append(value)
         return values
 
-    def getregexlist(self, section: str, option: str) -> List[str]:
+    def getregexlist(self, section: str, option: str) -> list[str]:
         """Read a list of full-line regexes.
 
         The value of `section` and `option` is treated as a newline-separated
@@ -138,7 +138,7 @@ class HandyConfigParser(configparser.ConfigParser):
                 re.compile(value)
             except re.error as e:
                 raise ConfigError(
-                    f"Invalid [{section}].{option} value {value!r}: {e}"
+                    f"Invalid [{section}].{option} value {value!r}: {e}",
                 ) from e
             if value:
                 value_list.append(value)
@@ -180,12 +180,12 @@ class CoverageConfig(TConfigurable, TPluginConfig):
         """Initialize the configuration attributes to their defaults."""
         # Metadata about the config.
         # We tried to read these config files.
-        self.attempted_config_files: List[str] = []
+        self.attempted_config_files: list[str] = []
         # We did read these config files, but maybe didn't find any content for us.
-        self.config_files_read: List[str] = []
+        self.config_files_read: list[str] = []
         # The file that gave us our configuration.
-        self.config_file: Optional[str] = None
-        self._config_contents: Optional[bytes] = None
+        self.config_file: str | None = None
+        self._config_contents: bytes | None = None
 
         # Defaults for [run] and [report]
         self._include = None
@@ -193,49 +193,49 @@ class CoverageConfig(TConfigurable, TPluginConfig):
 
         # Defaults for [run]
         self.branch = False
-        self.command_line: Optional[str] = None
-        self.concurrency: List[str] = []
-        self.context: Optional[str] = None
+        self.command_line: str | None = None
+        self.concurrency: list[str] = []
+        self.context: str | None = None
         self.cover_pylib = False
         self.data_file = ".coverage"
-        self.debug: List[str] = []
-        self.debug_file: Optional[str] = None
-        self.disable_warnings: List[str] = []
-        self.dynamic_context: Optional[str] = None
+        self.debug: list[str] = []
+        self.debug_file: str | None = None
+        self.disable_warnings: list[str] = []
+        self.dynamic_context: str | None = None
         self.parallel = False
-        self.plugins: List[str] = []
+        self.plugins: list[str] = []
         self.relative_files = False
-        self.run_include: List[str] = []
-        self.run_omit: List[str] = []
+        self.run_include: list[str] = []
+        self.run_omit: list[str] = []
         self.sigterm = False
-        self.source: Optional[List[str]] = None
-        self.source_pkgs: List[str] = []
+        self.source: list[str] | None = None
+        self.source_pkgs: list[str] = []
         self.timid = False
-        self._crash: Optional[str] = None
+        self._crash: str | None = None
 
         # Defaults for [report]
         self.exclude_list = DEFAULT_EXCLUDE[:]
-        self.exclude_also: List[str] = []
+        self.exclude_also: list[str] = []
         self.fail_under = 0.0
-        self.format: Optional[str] = None
+        self.format: str | None = None
         self.ignore_errors = False
         self.include_namespace_packages = False
-        self.report_include: Optional[List[str]] = None
-        self.report_omit: Optional[List[str]] = None
+        self.report_include: list[str] | None = None
+        self.report_omit: list[str] | None = None
         self.partial_always_list = DEFAULT_PARTIAL_ALWAYS[:]
         self.partial_list = DEFAULT_PARTIAL[:]
         self.precision = 0
-        self.report_contexts: Optional[List[str]] = None
+        self.report_contexts: list[str] | None = None
         self.show_missing = False
         self.skip_covered = False
         self.skip_empty = False
-        self.sort: Optional[str] = None
+        self.sort: str | None = None
 
         # Defaults for [html]
-        self.extra_css: Optional[str] = None
+        self.extra_css: str | None = None
         self.html_dir = "htmlcov"
-        self.html_skip_covered: Optional[bool] = None
-        self.html_skip_empty: Optional[bool] = None
+        self.html_skip_covered: bool | None = None
+        self.html_skip_empty: bool | None = None
         self.html_title = "Coverage report"
         self.show_contexts = False
 
@@ -252,10 +252,10 @@ class CoverageConfig(TConfigurable, TPluginConfig):
         self.lcov_output = "coverage.lcov"
 
         # Defaults for [paths]
-        self.paths: Dict[str, List[str]] = {}
+        self.paths: dict[str, list[str]] = {}
 
         # Options for plugins
-        self.plugin_options: Dict[str, TConfigSectionOut] = {}
+        self.plugin_options: dict[str, TConfigSectionOut] = {}
 
     MUST_BE_LIST = {
         "debug", "concurrency", "plugins",
@@ -323,8 +323,8 @@ class CoverageConfig(TConfigurable, TPluginConfig):
                 for unknown in set(cp.options(section)) - options:
                     warn(
                         "Unrecognized option '[{}] {}=' in config file {}".format(
-                            real_section, unknown, filename
-                        )
+                            real_section, unknown, filename,
+                        ),
                     )
 
         # [paths] is special
@@ -395,7 +395,7 @@ class CoverageConfig(TConfigurable, TPluginConfig):
         ("exclude_list", "report:exclude_lines", "regexlist"),
         ("exclude_also", "report:exclude_also", "regexlist"),
         ("fail_under", "report:fail_under", "float"),
-        ("format", "report:format", "boolean"),
+        ("format", "report:format"),
         ("ignore_errors", "report:ignore_errors", "boolean"),
         ("include_namespace_packages", "report:include_namespace_packages", "boolean"),
         ("partial_always_list", "report:partial_branches_always", "regexlist"),
@@ -453,7 +453,7 @@ class CoverageConfig(TConfigurable, TPluginConfig):
         """Get a dictionary of options for the plugin named `plugin`."""
         return self.plugin_options.get(plugin, {})
 
-    def set_option(self, option_name: str, value: Union[TConfigValueIn, TConfigSectionIn]) -> None:
+    def set_option(self, option_name: str, value: TConfigValueIn | TConfigSectionIn) -> None:
         """Set an option in the configuration.
 
         `option_name` is a colon-separated string indicating the section and
@@ -484,7 +484,7 @@ class CoverageConfig(TConfigurable, TPluginConfig):
         # If we get here, we didn't find the option.
         raise ConfigError(f"No such option: {option_name!r}")
 
-    def get_option(self, option_name: str) -> Optional[TConfigValueOut]:
+    def get_option(self, option_name: str) -> TConfigValueOut | None:
         """Get an option from the configuration.
 
         `option_name` is a colon-separated string indicating the section and
@@ -527,14 +527,14 @@ class CoverageConfig(TConfigurable, TPluginConfig):
         }
         self.exclude_list += self.exclude_also
 
-    def debug_info(self) -> List[Tuple[str, Any]]:
+    def debug_info(self) -> list[tuple[str, Any]]:
         """Make a list of (name, value) pairs for writing debug info."""
         return human_sorted_items(
             (k, v) for k, v in self.__dict__.items() if not k.startswith("_")
         )
 
 
-def config_files_to_try(config_file: Union[bool, str]) -> List[Tuple[str, bool, bool]]:
+def config_files_to_try(config_file: bool | str) -> list[tuple[str, bool, bool]]:
     """What config files should we try to read?
 
     Returns a list of tuples:
@@ -566,7 +566,7 @@ def config_files_to_try(config_file: Union[bool, str]) -> List[Tuple[str, bool, 
 
 
 def read_coverage_config(
-    config_file: Union[bool, str],
+    config_file: bool | str,
     warn: Callable[[str], None],
     **kwargs: TConfigValueIn,
 ) -> CoverageConfig:
@@ -600,11 +600,11 @@ def read_coverage_config(
             if specified_file:
                 raise ConfigError(f"Couldn't read {fname!r} as a config file")
 
-    # $set_env.py: COVERAGE_DEBUG - Options for --debug.
     # 3) from environment variables:
     env_data_file = os.getenv("COVERAGE_FILE")
     if env_data_file:
         config.data_file = env_data_file
+    # $set_env.py: COVERAGE_DEBUG - Debug options: https://coverage.rtfd.io/cmd.html#debug
     debugs = os.getenv("COVERAGE_DEBUG")
     if debugs:
         config.debug.extend(d.strip() for d in debugs.split(","))

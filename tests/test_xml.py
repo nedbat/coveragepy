@@ -9,7 +9,7 @@ import os
 import os.path
 import re
 
-from typing import Any, Dict, Iterator, Tuple, Union
+from typing import Any, Iterator
 from xml.etree import ElementTree
 
 import pytest
@@ -64,7 +64,7 @@ class XmlTestHelpers(CoverageTest):
 
     def assert_source(
         self,
-        xmldom: Union[ElementTree.Element, ElementTree.ElementTree],
+        xmldom: ElementTree.Element | ElementTree.ElementTree,
         src: str,
     ) -> None:
         """Assert that the XML has a <source> element with `src`."""
@@ -322,7 +322,7 @@ class XmlReportTest(XmlTestHelpers, CoverageTest):
     def test_no_duplicate_packages(self) -> None:
         self.make_file(
             "namespace/package/__init__.py",
-            "from . import sample; from . import test; from .subpackage import test"
+            "from . import sample; from . import test; from .subpackage import test",
         )
         self.make_file("namespace/package/sample.py", "print('package.sample')")
         self.make_file("namespace/package/test.py", "print('package.test')")
@@ -350,6 +350,20 @@ class XmlReportTest(XmlTestHelpers, CoverageTest):
         named_sub_package = dom.findall(".//package[@name='namespace.package.subpackage']")
         assert len(named_sub_package) == 1
 
+    def test_bug_1709(self) -> None:
+        # https://github.com/nedbat/coveragepy/issues/1709
+        self.make_file("main.py", "import x1y, x01y, x001y")
+        self.make_file("x1y.py", "print('x1y')")
+        self.make_file("x01y.py", "print('x01y')")
+        self.make_file("x001y.py", "print('x001y')")
+
+        cov = coverage.Coverage()
+        self.start_import_stop(cov, "main")
+        assert self.stdout() == "x1y\nx01y\nx001y\n"
+        # This used to raise:
+        # TypeError: '<' not supported between instances of 'Element' and 'Element'
+        cov.xml_report()
+
 
 def unbackslash(v: Any) -> Any:
     """Find strings in `v`, and replace backslashes with slashes throughout."""
@@ -365,7 +379,7 @@ def unbackslash(v: Any) -> Any:
 class XmlPackageStructureTest(XmlTestHelpers, CoverageTest):
     """Tests about the package structure reported in the coverage.xml file."""
 
-    def package_and_class_tags(self, cov: Coverage) -> Iterator[Tuple[str, Dict[str, Any]]]:
+    def package_and_class_tags(self, cov: Coverage) -> Iterator[tuple[str, dict[str, Any]]]:
         """Run an XML report on `cov`, and get the package and class tags."""
         cov.xml_report()
         dom = ElementTree.parse("coverage.xml")

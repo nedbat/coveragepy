@@ -15,7 +15,7 @@ import sysconfig
 import warnings
 
 from pathlib import Path
-from typing import Iterator, Optional
+from typing import Iterator
 
 import pytest
 
@@ -30,7 +30,10 @@ pytest.register_assert_rewrite("tests.helpers")
 # Pytest can take additional options:
 # $set_env.py: PYTEST_ADDOPTS - Extra arguments to pytest.
 
-pytest_plugins = "tests.balance_xdist_plugin"
+pytest_plugins = [
+    "tests.balance_xdist_plugin",
+    "tests.select_plugin",
+]
 
 
 @pytest.fixture(autouse=True)
@@ -42,26 +45,19 @@ def set_warnings() -> None:
     # Warnings to suppress:
     # How come these warnings are successfully suppressed here, but not in pyproject.toml??
 
-    warnings.filterwarnings(
-        "ignore",
-        category=DeprecationWarning,
-        message=r".*imp module is deprecated in favour of importlib",
-    )
-
-    warnings.filterwarnings(
-        "ignore",
-        category=DeprecationWarning,
-        message=r"module 'sre_constants' is deprecated",
-    )
-
-    warnings.filterwarnings(
-        "ignore",
-        category=pytest.PytestRemovedIn8Warning,
-    )
-
     if env.PYPY:
         # pypy3 warns about unclosed files a lot.
         warnings.filterwarnings("ignore", r".*unclosed file", category=ResourceWarning)
+
+    # Don't warn about unclosed SQLite connections.
+    # We don't close ":memory:" databases because we don't have a way to connect
+    # to them more than once if we close them.  In real coverage.py uses, there
+    # are only a couple of them, but our test suite makes many and we get warned
+    # about them all.
+    # Python3.13 added this warning, but the behavior has been the same all along,
+    # without any reported problems, so just quiet the warning.
+    # https://github.com/python/cpython/issues/105539
+    warnings.filterwarnings("ignore", r"unclosed database", category=ResourceWarning)
 
 
 @pytest.fixture(autouse=True)
@@ -124,7 +120,7 @@ def possible_pth_dirs() -> Iterator[Path]:
     yield Path(sysconfig.get_path("purelib"))       # pragma: cant happen
 
 
-def find_writable_pth_directory() -> Optional[Path]:
+def find_writable_pth_directory() -> Path | None:
     """Find a place to write a .pth file."""
     for pth_dir in possible_pth_dirs():             # pragma: part covered
         try_it = pth_dir / f"touch_{WORKER}.it"

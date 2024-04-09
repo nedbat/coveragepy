@@ -37,11 +37,10 @@ A different location for the configuration file can be specified with the
 ``--rcfile=FILE`` command line option or with the ``COVERAGE_RCFILE``
 environment variable.
 
-Coverage.py will read settings from other usual configuration files if no other
-configuration file is used.  It will automatically read from "setup.cfg" or
-"tox.ini" if they exist.  In this case, the section names have "coverage:"
-prefixed, so the ``[run]`` options described below will be found in the
-``[coverage:run]`` section of the file.
+If ``.coveragerc`` doesn't exist and another file hasn't been specified, then
+coverage.py will look for settings in other common configuration files, in this
+order: setup.cfg, tox.ini, or pyproject.toml.  The first file found with
+coverage.py settings will be used and other files won't be consulted.
 
 Coverage.py will read from "pyproject.toml" if TOML support is available,
 either because you are running on Python 3.11 or later, or because you
@@ -67,6 +66,10 @@ values on multiple lines.
 
 Boolean values can be specified as ``on``, ``off``, ``true``, ``false``, ``1``,
 or ``0`` and are case-insensitive.
+
+In setup.cfg or tox.ini, the section names have "coverage:" prefixed, so the
+``[run]`` options described below will be found in the ``[coverage:run]``
+section of the file.
 
 TOML Syntax
 ...........
@@ -304,8 +307,8 @@ produce very wrong results.
 
 .. _multiprocessing: https://docs.python.org/3/library/multiprocessing.html
 .. _greenlet: https://greenlet.readthedocs.io/
-.. _gevent: http://www.gevent.org/
-.. _eventlet: http://eventlet.net/
+.. _gevent: https://www.gevent.org/
+.. _eventlet: https://eventlet.readthedocs.io/
 
 See :ref:`subprocess` for details of multi-process measurement.
 
@@ -477,9 +480,9 @@ ambiguities between packages and directories.
 [run] timid
 ...........
 
-(boolean, default False) Use a simpler but slower trace method.  This uses
-PyTracer instead of CTracer, and is only needed in very unusual circumstances.
-Try this if you get seemingly impossible results.
+(boolean, default False) Use a simpler but slower trace method.  This uses the
+PyTracer trace function core instead of CTracer, and is only needed in very
+unusual circumstances.
 
 
 .. _config_paths:
@@ -625,6 +628,19 @@ under this value, then exit with a status code of 2.  If you specify a
 non-integral value, you must also set ``[report] precision`` properly to make
 use of the decimal places.  A setting of 100 will fail any value under 100,
 regardless of the number of decimal places of precision.
+
+
+.. _config_report_format:
+
+[report] format
+...............
+
+(string, default "text") The format to use for the textual report.  The default
+is "text" which produces a simple textual table. You can use "markdown" to
+produce a Markdown table, or "total" to output only the total coverage
+percentage.
+
+.. versionadded:: 7.0
 
 
 .. _config_report_ignore_errors:

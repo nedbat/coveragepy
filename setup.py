@@ -31,6 +31,7 @@ Programming Language :: Python :: 3.9
 Programming Language :: Python :: 3.10
 Programming Language :: Python :: 3.11
 Programming Language :: Python :: 3.12
+Programming Language :: Python :: 3.13
 Programming Language :: Python :: Implementation :: CPython
 Programming Language :: Python :: Implementation :: PyPy
 Topic :: Software Development :: Quality Assurance
@@ -85,7 +86,7 @@ setup_args = dict(
         "coverage": [
             "htmlfiles/*.*",
             "py.typed",
-        ]
+        ],
     },
     entry_points={
         # Install a script as "coverage", and as "coverage3", and as
@@ -198,7 +199,7 @@ if compile_extension:
             cmdclass={
                 "build_ext": ve_build_ext,
             },
-        )
+        ),
     )
 
 

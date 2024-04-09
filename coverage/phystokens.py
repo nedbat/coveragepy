@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 import ast
+import functools
 import io
 import keyword
 import re
@@ -13,7 +14,7 @@ import sys
 import token
 import tokenize
 
-from typing import Iterable, List, Optional, Set, Tuple
+from typing import Iterable
 
 from coverage import env
 from coverage.types import TLineNo, TSourceTokenLines
@@ -32,7 +33,7 @@ def _phys_tokens(toks: TokenInfos) -> TokenInfos:
     Returns the same values as generate_tokens()
 
     """
-    last_line: Optional[str] = None
+    last_line: str | None = None
     last_lineno = -1
     last_ttext: str = ""
     for ttype, ttext, (slineno, scol), (elineno, ecol), ltext in toks:
@@ -68,7 +69,7 @@ def _phys_tokens(toks: TokenInfos) -> TokenInfos:
                     yield tokenize.TokenInfo(
                         99999, "\\\n",
                         (slineno, ccol), (slineno, ccol+2),
-                        last_line
+                        last_line,
                     )
             last_line = ltext
         if ttype not in (tokenize.NEWLINE, tokenize.NL):
@@ -81,7 +82,7 @@ class SoftKeywordFinder(ast.NodeVisitor):
     """Helper for finding lines with soft keywords, like match/case lines."""
     def __init__(self, source: str) -> None:
         # This will be the set of line numbers that start with a soft keyword.
-        self.soft_key_lines: Set[TLineNo] = set()
+        self.soft_key_lines: set[TLineNo] = set()
         self.visit(ast.parse(source))
 
     if sys.version_info >= (3, 10):
@@ -116,7 +117,7 @@ def source_token_lines(source: str) -> TSourceTokenLines:
     """
 
     ws_tokens = {token.INDENT, token.DEDENT, token.NEWLINE, tokenize.NL}
-    line: List[Tuple[str, str]] = []
+    line: list[tuple[str, str]] = []
     col = 0
 
     source = source.expandtabs(8).replace("\r\n", "\n")
@@ -170,35 +171,20 @@ def source_token_lines(source: str) -> TSourceTokenLines:
         yield line
 
 
-class CachedTokenizer:
-    """A one-element cache around tokenize.generate_tokens.
+@functools.lru_cache(maxsize=100)
+def generate_tokens(text: str) -> TokenInfos:
+    """A cached version of `tokenize.generate_tokens`.
 
     When reporting, coverage.py tokenizes files twice, once to find the
     structure of the file, and once to syntax-color it.  Tokenizing is
     expensive, and easily cached.
 
-    This is a one-element cache so that our twice-in-a-row tokenizing doesn't
-    actually tokenize twice.
-
+    Unfortunately, the HTML report code tokenizes all the files the first time
+    before then tokenizing them a second time, so we cache many.  Ideally we'd
+    rearrange the code to tokenize each file twice before moving onto the next.
     """
-    def __init__(self) -> None:
-        self.last_text: Optional[str] = None
-        self.last_tokens: List[tokenize.TokenInfo] = []
-
-    def generate_tokens(self, text: str) -> TokenInfos:
-        """A stand-in for `tokenize.generate_tokens`."""
-        if text != self.last_text:
-            self.last_text = text
-            readline = io.StringIO(text).readline
-            try:
-                self.last_tokens = list(tokenize.generate_tokens(readline))
-            except:
-                self.last_text = None
-                raise
-        return self.last_tokens
-
-# Create our generate_tokens cache as a callable replacement function.
-generate_tokens = CachedTokenizer().generate_tokens
+    readline = io.StringIO(text).readline
+    return list(tokenize.generate_tokens(readline))
 
 
 def source_encoding(source: bytes) -> str:

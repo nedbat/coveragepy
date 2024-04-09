@@ -32,14 +32,14 @@ class SimpleArcTest(CoverageTest):
             a = 1
             b = 2
             """,
-            arcz=".1 12 2."
+            arcz=".1 12 2.",
         )
         self.check_coverage("""\
             a = 1
 
             b = 3
             """,
-            arcz=".1 13 3."
+            arcz=".1 13 3.",
         )
         line1 = 1 if env.PYBEHAVIOR.module_firstline_1 else 2
         self.check_coverage("""\
@@ -49,7 +49,7 @@ class SimpleArcTest(CoverageTest):
 
             c = 5
             """,
-            arcz="-{0}2 23 35 5-{0}".format(line1)
+            arcz=f"-{line1}2 23 35 5-{line1}",
         )
 
     def test_function_def(self) -> None:
@@ -59,7 +59,7 @@ class SimpleArcTest(CoverageTest):
 
             foo()
             """,
-            arcz=".1 .2 14 2. 4."
+            arcz=".1 .2 14 2. 4.",
         )
 
     def test_if(self) -> None:
@@ -69,7 +69,7 @@ class SimpleArcTest(CoverageTest):
                 a = 3
             assert a == 3
             """,
-            arcz=".1 12 23 24 34 4.", arcz_missing="24"
+            arcz=".1 12 23 24 34 4.", arcz_missing="24",
         )
         self.check_coverage("""\
             a = 1
@@ -77,7 +77,7 @@ class SimpleArcTest(CoverageTest):
                 a = 3
             assert a == 1
             """,
-            arcz=".1 12 23 24 34 4.", arcz_missing="23 34"
+            arcz=".1 12 23 24 34 4.", arcz_missing="23 34",
         )
 
     def test_if_else(self) -> None:
@@ -88,7 +88,7 @@ class SimpleArcTest(CoverageTest):
                 a = 4
             assert a == 2
             """,
-            arcz=".1 12 25 14 45 5.", arcz_missing="14 45"
+            arcz=".1 12 25 14 45 5.", arcz_missing="14 45",
         )
         self.check_coverage("""\
             if len([]) == 1:
@@ -97,7 +97,7 @@ class SimpleArcTest(CoverageTest):
                 a = 4
             assert a == 4
             """,
-            arcz=".1 12 25 14 45 5.", arcz_missing="12 25"
+            arcz=".1 12 25 14 45 5.", arcz_missing="12 25",
         )
 
     def test_compact_if(self) -> None:
@@ -115,7 +115,7 @@ class SimpleArcTest(CoverageTest):
             a = fn(1)
             assert a is True
             """,
-            arcz=".1 14 45 5.  .2 2. 23 3.", arcz_missing="23 3."
+            arcz=".1 14 45 5.  .2 2. 23 3.", arcz_missing="23 3.",
         )
 
     def test_multiline(self) -> None:
@@ -153,7 +153,7 @@ class SimpleArcTest(CoverageTest):
                 return a
             assert foo() == 3 # 7
             """,
-            arcz=".1 17 7.  .2 23 36 25 56 6.", arcz_missing="25 56"
+            arcz=".1 17 7.  .2 23 36 25 56 6.", arcz_missing="25 56",
         )
         self.check_coverage("""\
             def foo():
@@ -163,7 +163,7 @@ class SimpleArcTest(CoverageTest):
                     a = 5
             foo() # 6
             """,
-            arcz=".1 16 6.  .2 23 3. 25 5.", arcz_missing="25 5."
+            arcz=".1 16 6.  .2 23 3. 25 5.", arcz_missing="25 5.",
         )
 
     def test_what_is_the_sound_of_no_lines_clapping(self) -> None:
@@ -363,7 +363,7 @@ class LoopArcTest(CoverageTest):
                 a = i
             assert a == -1
             """,
-            arcz=".1 12 23 32 24 4.", arcz_missing="23 32"
+            arcz=".1 12 23 32 24 4.", arcz_missing="23 32",
         )
 
     def test_nested_loop(self) -> None:
@@ -391,7 +391,7 @@ class LoopArcTest(CoverageTest):
                 a = 99
             assert a == 0   # 5
             """,
-            arcz=arcz, arcz_missing=arcz_missing
+            arcz=arcz, arcz_missing=arcz_missing,
         )
 
     def test_continue(self) -> None:
@@ -409,7 +409,7 @@ class LoopArcTest(CoverageTest):
                 a = 99
             assert a == 9   # 5
             """,
-            arcz=arcz, arcz_missing=arcz_missing
+            arcz=arcz, arcz_missing=arcz_missing,
         )
 
     def test_nested_breaks(self) -> None:
@@ -422,7 +422,7 @@ class LoopArcTest(CoverageTest):
                     break
             assert a == 2 and i == 2    # 7
             """,
-            arcz=".1 12 23 34 45 25 56 51 67 17 7.", arcz_missing="17 25"
+            arcz=".1 12 23 34 45 25 56 51 67 17 7.", arcz_missing="17 25",
         )
 
     def test_while_1(self) -> None:
@@ -477,7 +477,7 @@ class LoopArcTest(CoverageTest):
             num_stmts = 3
         else:
             num_stmts = 2
-        expected = "zero.py {n} {n} 0 0 0% 1-3".format(n=num_stmts)
+        expected = f"zero.py {num_stmts} {num_stmts} 0 0 0% 1-3"
         report = self.get_report(cov, show_missing=True)
         squeezed = self.squeezed_lines(report)
         assert expected in squeezed[3]
@@ -498,7 +498,7 @@ class LoopArcTest(CoverageTest):
                 i = "line 6"
                 break
             """,
-            arcz=arcz
+            arcz=arcz,
         )
 
     def test_for_if_else_for(self) -> None:
@@ -525,7 +525,7 @@ class LoopArcTest(CoverageTest):
                 ".1 18 8G GH H. " +
                 ".2 23 34 43 26 3. 6. " +
                 "-89 9A 9-8 AB BC CB B9 AE E9",
-            arcz_missing="26 6."
+            arcz_missing="26 6.",
         )
 
     def test_for_else(self) -> None:
@@ -540,7 +540,7 @@ class LoopArcTest(CoverageTest):
             forelse([1,2])
             forelse([1,6])
             """,
-            arcz=".1 .2 23 32 34 47 26 67 7. 18 89 9."
+            arcz=".1 .2 23 32 34 47 26 67 7. 18 89 9.",
         )
 
     def test_while_else(self) -> None:
@@ -724,7 +724,7 @@ class ExceptionArcTest(CoverageTest):
                 b = 5
             assert a == 3 and b == 1
             """,
-            arcz=".1 12 23 36 45 56 6.", arcz_missing="45 56"
+            arcz=".1 12 23 36 45 56 6.", arcz_missing="45 56",
         )
 
     def test_raise_followed_by_statement(self) -> None:
@@ -986,7 +986,7 @@ class ExceptionArcTest(CoverageTest):
                 c = 7
             assert a == 3 and b == 1 and c == 7
             """,
-            arcz=".1 12 23 45 37 57 78 8.", arcz_missing="45 57"
+            arcz=".1 12 23 45 37 57 78 8.", arcz_missing="45 57",
         )
         self.check_coverage("""\
             a, b, c = 1, 1, 1
@@ -1003,7 +1003,7 @@ class ExceptionArcTest(CoverageTest):
             assert a == 5 and b == 9 and c == 11
             """,
             arcz=".1 12 -23 3-2 24 45 56 67 7B 89 9B BC C.",
-            arcz_missing="67 7B", arcz_unpredicted="68"
+            arcz_missing="67 7B", arcz_unpredicted="68",
         )
 
     def test_multiple_except_clauses(self) -> None:
@@ -1516,13 +1516,13 @@ class OptimizedIfTest(CoverageTest):
         # Check that executed code has __debug__
         self.check_coverage("""\
             assert __debug__, "assert __debug__"
-            """
+            """,
         )
         # Check that if it didn't have debug, it would let us know.
         with pytest.raises(AssertionError):
             self.check_coverage("""\
                 assert not __debug__, "assert not __debug__"
-                """
+                """,
             )
 
     def test_if_debug(self) -> None:
@@ -1612,7 +1612,7 @@ class MiscArcTest(CoverageTest):
             }
             assert weird['b'] == 3
             """,
-            arcz=".1 15 5A A."
+            arcz=".1 15 5A A.",
         )
         self.check_coverage("""\
             l = [
@@ -1626,7 +1626,7 @@ class MiscArcTest(CoverageTest):
             ]
             assert weird[1] == 3
             """,
-            arcz=".1 15 5A A."
+            arcz=".1 15 5A A.",
         )
 
     @pytest.mark.parametrize("n", [10, 50, 100, 500, 1000, 2000, 10000])
@@ -1637,10 +1637,10 @@ class MiscArcTest(CoverageTest):
         # line-number packing.
         code = """\
             data = [
-            """ + "".join("""\
+            """ + "".join(f"""\
                 [
                     {i}, {i}, {i}, {i}, {i}, {i}, {i}, {i}, {i}, {i}],
-            """.format(i=i) for i in range(n)
+            """ for i in range(n)
             ) + """\
             ]
 
@@ -1851,7 +1851,11 @@ class LambdaArcTest(CoverageTest):
         )
 
 
-xfail_eventlet_670 = pytest.mark.xfail(
+# This had been a failure on Mac 3.9, but it started passing on GitHub
+# actions (running macOS 12) but still failed on my laptop (macOS 14).
+# I don't understand why it failed, I don't understand why it passed,
+# so just skip the whole thing.
+skip_eventlet_670 = pytest.mark.skipif(
     env.PYVERSION[:2] == (3, 9) and env.CPYTHON and env.OSX,
     reason="Avoid an eventlet bug on Mac 3.9: eventlet#670",
     # https://github.com/eventlet/eventlet/issues/670
@@ -1861,7 +1865,7 @@ xfail_eventlet_670 = pytest.mark.xfail(
 class AsyncTest(CoverageTest):
     """Tests of the new async and await keywords in Python 3.5"""
 
-    @xfail_eventlet_670
+    @skip_eventlet_670
     def test_async(self) -> None:
         self.check_coverage("""\
             import asyncio
@@ -1888,7 +1892,7 @@ class AsyncTest(CoverageTest):
         )
         assert self.stdout() == "Compute 1 + 2 ...\n1 + 2 = 3\n"
 
-    @xfail_eventlet_670
+    @skip_eventlet_670
     def test_async_for(self) -> None:
         self.check_coverage("""\
             import asyncio
@@ -1985,7 +1989,7 @@ class AsyncTest(CoverageTest):
 
     # https://github.com/nedbat/coveragepy/issues/1176
     # https://bugs.python.org/issue44622
-    @xfail_eventlet_670
+    @skip_eventlet_670
     def test_bug_1176(self) -> None:
         self.check_coverage("""\
             import asyncio

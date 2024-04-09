@@ -21,8 +21,8 @@ import threading
 import zlib
 
 from typing import (
-    cast, Any, Collection, Dict, List, Mapping,
-    Optional, Sequence, Set, Tuple, Union,
+    cast, Any, Collection, Mapping,
+    Sequence,
 )
 
 from coverage.debug import NoDebugging, auto_repr
@@ -212,11 +212,11 @@ class CoverageData:
 
     def __init__(
         self,
-        basename: Optional[FilePath] = None,
-        suffix: Optional[Union[str, bool]] = None,
+        basename: FilePath | None = None,
+        suffix: str | bool | None = None,
         no_disk: bool = False,
-        warn: Optional[TWarnFn] = None,
-        debug: Optional[TDebugCtl] = None,
+        warn: TWarnFn | None = None,
+        debug: TDebugCtl | None = None,
     ) -> None:
         """Create a :class:`CoverageData` object to hold coverage-measured data.
 
@@ -240,9 +240,9 @@ class CoverageData:
 
         self._choose_filename()
         # Maps filenames to row ids.
-        self._file_map: Dict[str, int] = {}
+        self._file_map: dict[str, int] = {}
         # Maps thread ids to SqliteDb objects.
-        self._dbs: Dict[int, SqliteDb] = {}
+        self._dbs: dict[int, SqliteDb] = {}
         self._pid = os.getpid()
         # Synchronize the operations used during collection.
         self._lock = threading.RLock()
@@ -253,9 +253,9 @@ class CoverageData:
         self._has_lines = False
         self._has_arcs = False
 
-        self._current_context: Optional[str] = None
-        self._current_context_id: Optional[int] = None
-        self._query_context_ids: Optional[List[int]] = None
+        self._current_context: str | None = None
+        self._current_context_id: int | None = None
+        self._query_context_ids: list[int] | None = None
 
     __repr__ = auto_repr
 
@@ -298,16 +298,16 @@ class CoverageData:
                 else:
                     raise DataError(
                         "Data file {!r} doesn't seem to be a coverage data file: {}".format(
-                            self._filename, exc
-                        )
+                            self._filename, exc,
+                        ),
                     ) from exc
             else:
                 schema_version = row[0]
                 if schema_version != SCHEMA_VERSION:
                     raise DataError(
                         "Couldn't use data file {!r}: wrong schema: {} instead of {}".format(
-                            self._filename, schema_version, SCHEMA_VERSION
-                        )
+                            self._filename, schema_version, SCHEMA_VERSION,
+                        ),
                     )
 
             row = db.execute_one("select value from meta where key = 'has_arcs'")
@@ -396,7 +396,7 @@ class CoverageData:
             self._debug.write(f"Loading data into data file {self._filename!r}")
         if data[:1] != b"z":
             raise DataError(
-                f"Unrecognized serialization: {data[:40]!r} (head of {len(data)} bytes)"
+                f"Unrecognized serialization: {data[:40]!r} (head of {len(data)} bytes)",
             )
         script = zlib.decompress(data[1:]).decode("utf-8")
         self._dbs[threading.get_ident()] = db = SqliteDb(self._filename, self._debug)
@@ -405,7 +405,7 @@ class CoverageData:
         self._read_db()
         self._have_used = True
 
-    def _file_id(self, filename: str, add: bool = False) -> Optional[int]:
+    def _file_id(self, filename: str, add: bool = False) -> int | None:
         """Get the file id for `filename`.
 
         If filename is not in the database yet, add it if `add` is True.
@@ -416,11 +416,11 @@ class CoverageData:
                 with self._connect() as con:
                     self._file_map[filename] = con.execute_for_rowid(
                         "insert or replace into file (path) values (?)",
-                        (filename,)
+                        (filename,),
                     )
         return self._file_map.get(filename)
 
-    def _context_id(self, context: str) -> Optional[int]:
+    def _context_id(self, context: str) -> int | None:
         """Get the id for a context."""
         assert context is not None
         self._start_using()
@@ -432,7 +432,7 @@ class CoverageData:
                 return None
 
     @_locked
-    def set_context(self, context: Optional[str]) -> None:
+    def set_context(self, context: str | None) -> None:
         """Set the current context for future :meth:`add_lines` etc.
 
         `context` is a str, the name of the context to use for the next data
@@ -456,7 +456,7 @@ class CoverageData:
             with self._connect() as con:
                 self._current_context_id = con.execute_for_rowid(
                     "insert into context (context) values (?)",
-                    (context,)
+                    (context,),
                 )
 
     def base_filename(self) -> str:
@@ -486,7 +486,7 @@ class CoverageData:
         """
         if self._debug.should("dataop"):
             self._debug.write("Adding lines: %d files, %d lines total" % (
-                len(line_data), sum(len(lines) for lines in line_data.values())
+                len(line_data), sum(len(lines) for lines in line_data.values()),
             ))
             if self._debug.should("dataop2"):
                 for filename, linenos in sorted(line_data.items()):
@@ -524,7 +524,7 @@ class CoverageData:
         """
         if self._debug.should("dataop"):
             self._debug.write("Adding arcs: %d files, %d arcs total" % (
-                len(arc_data), sum(len(arcs) for arcs in arc_data.values())
+                len(arc_data), sum(len(arcs) for arcs in arc_data.values()),
             ))
             if self._debug.should("dataop2"):
                 for filename, arcs in sorted(arc_data.items()):
@@ -564,7 +564,7 @@ class CoverageData:
             with self._connect() as con:
                 con.execute_void(
                     "insert or ignore into meta (key, value) values (?, ?)",
-                    ("has_arcs", str(int(arcs)))
+                    ("has_arcs", str(int(arcs))),
                 )
 
     @_locked
@@ -588,12 +588,12 @@ class CoverageData:
                         raise DataError(
                             "Conflicting file tracer name for '{}': {!r} vs {!r}".format(
                                 filename, existing_plugin, plugin_name,
-                            )
+                            ),
                         )
                 elif plugin_name:
                     con.execute_void(
                         "insert into tracer (file_id, tracer) values (?, ?)",
-                        (file_id, plugin_name)
+                        (file_id, plugin_name),
                     )
 
     def touch_file(self, filename: str, plugin_name: str = "") -> None:
@@ -604,7 +604,7 @@ class CoverageData:
         """
         self.touch_files([filename], plugin_name)
 
-    def touch_files(self, filenames: Collection[str], plugin_name: Optional[str] = None) -> None:
+    def touch_files(self, filenames: Collection[str], plugin_name: str | None = None) -> None:
         """Ensure that `filenames` appear in the data, empty if needed.
 
         `plugin_name` is the name of the plugin responsible for these files.
@@ -647,7 +647,7 @@ class CoverageData:
                     continue
                 con.execute_void(sql, (file_id,))
 
-    def update(self, other_data: CoverageData, aliases: Optional[PathAliases] = None) -> None:
+    def update(self, other_data: CoverageData, aliases: PathAliases | None = None) -> None:
         """Update this data with data from several other :class:`CoverageData` instances.
 
         If `aliases` is provided, it's a `PathAliases` object that is used to
@@ -685,7 +685,7 @@ class CoverageData:
                 "select file.path, context.context, arc.fromno, arc.tono " +
                 "from arc " +
                 "inner join file on file.id = arc.file_id " +
-                "inner join context on context.id = arc.context_id"
+                "inner join context on context.id = arc.context_id",
             ) as cur:
                 arcs = [
                     (files[path], context, fromno, tono)
@@ -697,9 +697,9 @@ class CoverageData:
                 "select file.path, context.context, line_bits.numbits " +
                 "from line_bits " +
                 "inner join file on file.id = line_bits.file_id " +
-                "inner join context on context.id = line_bits.context_id"
+                "inner join context on context.id = line_bits.context_id",
             ) as cur:
-                lines: Dict[Tuple[str, str], bytes] = {}
+                lines: dict[tuple[str, str], bytes] = {}
                 for path, context, numbits in cur:
                     key = (files[path], context)
                     if key in lines:
@@ -710,7 +710,7 @@ class CoverageData:
             with con.execute(
                 "select file.path, tracer " +
                 "from tracer " +
-                "inner join file on file.id = tracer.file_id"
+                "inner join file on file.id = tracer.file_id",
             ) as cur:
                 tracers = {files[path]: tracer for (path, tracer) in cur}
 
@@ -726,7 +726,7 @@ class CoverageData:
                 this_tracers = {path: "" for path, in cur}
             with con.execute(
                 "select file.path, tracer from tracer " +
-                "inner join file on file.id = tracer.file_id"
+                "inner join file on file.id = tracer.file_id",
             ) as cur:
                 this_tracers.update({
                     aliases.map(path): tracer
@@ -736,14 +736,14 @@ class CoverageData:
             # Create all file and context rows in the DB.
             con.executemany_void(
                 "insert or ignore into file (path) values (?)",
-                ((file,) for file in files.values())
+                ((file,) for file in files.values()),
             )
             with con.execute("select id, path from file") as cur:
                 file_ids = {path: id for id, path in cur}
             self._file_map.update(file_ids)
             con.executemany_void(
                 "insert or ignore into context (context) values (?)",
-                ((context,) for context in contexts)
+                ((context,) for context in contexts),
             )
             with con.execute("select id, context from context") as cur:
                 context_ids = {context: id for id, context in cur}
@@ -759,8 +759,8 @@ class CoverageData:
                 if this_tracer is not None and this_tracer != other_tracer:
                     raise DataError(
                         "Conflicting file tracer name for '{}': {!r} vs {!r}".format(
-                            path, this_tracer, other_tracer
-                        )
+                            path, this_tracer, other_tracer,
+                        ),
                     )
                 tracer_map[path] = other_tracer
 
@@ -777,7 +777,7 @@ class CoverageData:
                 "select file.path, context.context, line_bits.numbits " +
                 "from line_bits " +
                 "inner join file on file.id = line_bits.file_id " +
-                "inner join context on context.id = line_bits.context_id"
+                "inner join context on context.id = line_bits.context_id",
             ) as cur:
                 for path, context, numbits in cur:
                     key = (aliases.map(path), context)
@@ -792,7 +792,7 @@ class CoverageData:
                 con.executemany_void(
                     "insert or ignore into arc " +
                     "(file_id, context_id, fromno, tono) values (?, ?, ?, ?)",
-                    arc_rows
+                    arc_rows,
                 )
 
             if lines:
@@ -804,11 +804,11 @@ class CoverageData:
                     [
                         (file_ids[file], context_ids[context], numbits)
                         for (file, context), numbits in lines.items()
-                    ]
+                    ],
                 )
             con.executemany_void(
                 "insert or ignore into tracer (file_id, tracer) values (?, ?)",
-                ((file_ids[filename], tracer) for filename, tracer in tracer_map.items())
+                ((file_ids[filename], tracer) for filename, tracer in tracer_map.items()),
             )
 
         if not self._no_disk:
@@ -863,7 +863,7 @@ class CoverageData:
         """Does the database have arcs (True) or lines (False)."""
         return bool(self._has_arcs)
 
-    def measured_files(self) -> Set[str]:
+    def measured_files(self) -> set[str]:
         """A set of all files that have been measured.
 
         Note that a file may be mentioned as measured even though no lines or
@@ -872,7 +872,7 @@ class CoverageData:
         """
         return set(self._file_map)
 
-    def measured_contexts(self) -> Set[str]:
+    def measured_contexts(self) -> set[str]:
         """A set of all contexts that have been measured.
 
         .. versionadded:: 5.0
@@ -884,7 +884,7 @@ class CoverageData:
                 contexts = {row[0] for row in cur}
         return contexts
 
-    def file_tracer(self, filename: str) -> Optional[str]:
+    def file_tracer(self, filename: str) -> str | None:
         """Get the plugin name of the file tracer for a file.
 
         Returns the name of the plugin that handles this file.  If the file was
@@ -918,7 +918,7 @@ class CoverageData:
             with con.execute("select id from context where context = ?", (context,)) as cur:
                 self._query_context_ids = [row[0] for row in cur.fetchall()]
 
-    def set_query_contexts(self, contexts: Optional[Sequence[str]]) -> None:
+    def set_query_contexts(self, contexts: Sequence[str] | None) -> None:
         """Set a number of contexts for subsequent querying.
 
         The next :meth:`lines`, :meth:`arcs`, or :meth:`contexts_by_lineno`
@@ -939,7 +939,7 @@ class CoverageData:
         else:
             self._query_context_ids = None
 
-    def lines(self, filename: str) -> Optional[List[TLineNo]]:
+    def lines(self, filename: str) -> list[TLineNo] | None:
         """Get the list of lines executed for a source file.
 
         If the file was not measured, returns None.  A file might be measured,
@@ -974,7 +974,7 @@ class CoverageData:
                     nums.update(numbits_to_nums(row[0]))
                 return list(nums)
 
-    def arcs(self, filename: str) -> Optional[List[TArc]]:
+    def arcs(self, filename: str) -> list[TArc] | None:
         """Get the list of arcs executed for a file.
 
         If the file was not measured, returns None.  A file might be measured,
@@ -1006,7 +1006,7 @@ class CoverageData:
                 with con.execute(query, data) as cur:
                     return list(cur)
 
-    def contexts_by_lineno(self, filename: str) -> Dict[TLineNo, List[str]]:
+    def contexts_by_lineno(self, filename: str) -> dict[TLineNo, list[str]]:
         """Get the contexts for each line in a file.
 
         Returns:
@@ -1058,7 +1058,7 @@ class CoverageData:
         return {lineno: list(contexts) for lineno, contexts in lineno_contexts_map.items()}
 
     @classmethod
-    def sys_info(cls) -> List[Tuple[str, Any]]:
+    def sys_info(cls) -> list[tuple[str, Any]]:
         """Our information for `Coverage.sys_info`.
 
         Returns a list of (key, value) pairs.
@@ -1078,7 +1078,7 @@ class CoverageData:
         ]
 
 
-def filename_suffix(suffix: Union[str, bool, None]) -> Union[str, None]:
+def filename_suffix(suffix: str | bool | None) -> str | None:
     """Compute a filename suffix for a data file.
 
     If `suffix` is a string or None, simply return it. If `suffix` is True,

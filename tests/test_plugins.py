@@ -10,13 +10,13 @@ import io
 import math
 import os.path
 
-from typing import Any, Dict, List, Optional
+from typing import Any
 from xml.etree import ElementTree
 
 import pytest
 
 import coverage
-from coverage import Coverage, env
+from coverage import Coverage
 from coverage.control import Plugins
 from coverage.data import line_counts, sorted_lines
 from coverage.exceptions import CoverageWarning, NoSource, PluginError
@@ -25,6 +25,7 @@ from coverage.types import TConfigSectionOut, TLineNo, TPluginConfig
 
 import coverage.plugin
 
+from tests import testenv
 from tests.coveragetest import CoverageTest
 from tests.helpers import CheckUniqueFilenames, swallow_warnings
 
@@ -38,10 +39,10 @@ class NullConfig(TPluginConfig):
 class FakeConfig(TPluginConfig):
     """A fake config for use in tests."""
 
-    def __init__(self, plugin: str, options: Dict[str, Any]) -> None:
+    def __init__(self, plugin: str, options: dict[str, Any]) -> None:
         self.plugin = plugin
         self.options = options
-        self.asked_for: List[str] = []
+        self.asked_for: list[str] = []
 
     def get_plugin_options(self, plugin: str) -> TConfigSectionOut:
         """Just return the options for `plugin` if this is the right module."""
@@ -206,13 +207,13 @@ class PluginTest(CoverageTest):
         cov._debug_file = debug_out
         cov.set_option("run:plugins", ["plugin_sys_info"])
         with swallow_warnings(
-            r"Plugin file tracers \(plugin_sys_info.Plugin\) aren't supported with PyTracer"
+            r"Plugin file tracers \(plugin_sys_info.Plugin\) aren't supported with .*",
         ):
             cov.start()
         cov.stop()      # pragma: nested
 
         out_lines = [line.strip() for line in debug_out.getvalue().splitlines()]
-        if env.C_TRACER:
+        if testenv.C_TRACER:
             assert 'plugins.file_tracers: plugin_sys_info.Plugin' in out_lines
         else:
             assert 'plugins.file_tracers: plugin_sys_info.Plugin (disabled)' in out_lines
@@ -272,23 +273,28 @@ class PluginTest(CoverageTest):
         assert out == ""
 
 
-@pytest.mark.skipif(env.C_TRACER, reason="This test is only about PyTracer.")
+@pytest.mark.skipif(testenv.PLUGINS, reason="This core doesn't support plugins.")
 class PluginWarningOnPyTracerTest(CoverageTest):
-    """Test that we get a controlled exception with plugins on PyTracer."""
+    """Test that we get a controlled exception when plugins aren't supported."""
     def test_exception_if_plugins_on_pytracer(self) -> None:
         self.make_file("simple.py", "a = 1")
 
         cov = coverage.Coverage()
         cov.set_option("run:plugins", ["tests.plugin1"])
 
+        if testenv.PY_TRACER:
+            core = "PyTracer"
+        elif testenv.SYS_MON:
+            core = "SysMonitor"
+
         expected_warnings = [
-            r"Plugin file tracers \(tests.plugin1.Plugin\) aren't supported with PyTracer",
+            fr"Plugin file tracers \(tests.plugin1.Plugin\) aren't supported with {core}",
         ]
         with self.assert_warnings(cov, expected_warnings):
             self.start_import_stop(cov, "simple")
 
 
-@pytest.mark.skipif(not env.C_TRACER, reason="Plugins are only supported with the C tracer.")
+@pytest.mark.skipif(not testenv.PLUGINS, reason="Plugins are not supported with this core.")
 class FileTracerTest(CoverageTest):
     """Tests of plugins that implement file_tracer."""
 
@@ -625,8 +631,8 @@ class BadFileTracerTest(FileTracerTest):
         module_name: str,
         plugin_name: str,
         our_error: bool = True,
-        excmsg: Optional[str] = None,
-        excmsgs: Optional[List[str]] = None,
+        excmsg: str | None = None,
+        excmsgs: list[str] | None = None,
     ) -> None:
         """Run a file, and see that the plugin failed.
 
@@ -961,6 +967,7 @@ class ConfigurerPluginTest(CoverageTest):
         assert "pragma: or whatever" in excluded
 
 
+@pytest.mark.skipif(not testenv.DYN_CONTEXTS, reason="No dynamic contexts with this core")
 class DynamicContextPluginTest(CoverageTest):
     """Tests of plugins that implement `dynamic_context`."""
 
@@ -1118,7 +1125,7 @@ class DynamicContextPluginTest(CoverageTest):
         ]
         assert expected == sorted(data.measured_contexts())
 
-        def assert_context_lines(context: str, lines: List[TLineNo]) -> None:
+        def assert_context_lines(context: str, lines: list[TLineNo]) -> None:
             data.set_query_context(context)
             assert lines == sorted_lines(data, filenames['rendering.py'])
 
@@ -1156,7 +1163,7 @@ class DynamicContextPluginTest(CoverageTest):
         ]
         assert expected == sorted(data.measured_contexts())
 
-        def assert_context_lines(context: str, lines: List[TLineNo]) -> None:
+        def assert_context_lines(context: str, lines: list[TLineNo]) -> None:
             data.set_query_context(context)
             assert lines == sorted_lines(data, filenames['rendering.py'])
 

@@ -18,9 +18,9 @@ from coverage.data import sorted_lines
 from coverage.files import abs_file
 from coverage.misc import import_local_file
 
+from tests import osinfo, testenv
 from tests.coveragetest import CoverageTest
 from tests.helpers import swallow_warnings
-from tests import osinfo
 
 
 class ThreadingTest(CoverageTest):
@@ -44,7 +44,7 @@ class ThreadingTest(CoverageTest):
             fromMainThread()
             other.join()
             """,
-            [1, 3, 4, 6, 7, 9, 10, 12, 13, 14, 15], "10"
+            [1, 3, 4, 6, 7, 9, 10, 12, 13, 14, 15], "10",
         )
 
     def test_thread_run(self) -> None:
@@ -64,7 +64,7 @@ class ThreadingTest(CoverageTest):
             thd.start()
             thd.join()
             """,
-            [1, 3, 4, 5, 6, 7, 9, 10, 12, 13, 14], ""
+            [1, 3, 4, 5, 6, 7, 9, 10, 12, 13, 14], "",
         )
 
 
@@ -83,7 +83,7 @@ class RecursionTest(CoverageTest):
             recur(495)  # We can get at least this many stack frames.
             i = 8       # and this line will be traced
             """,
-            [1, 2, 3, 5, 7, 8], ""
+            [1, 2, 3, 5, 7, 8], "",
         )
 
     def test_long_recursion(self) -> None:
@@ -99,7 +99,7 @@ class RecursionTest(CoverageTest):
 
                     recur(100000)  # This is definitely too many frames.
                     """,
-                    [1, 2, 3, 5, 7], ""
+                    [1, 2, 3, 5, 7], "",
                 )
 
     def test_long_recursion_recovery(self) -> None:
@@ -112,6 +112,7 @@ class RecursionTest(CoverageTest):
         # will be traced.
 
         self.make_file("recur.py", """\
+            import sys #; sys.setrecursionlimit(70)
             def recur(n):
                 if n == 0:
                     return 0    # never hit
@@ -121,8 +122,8 @@ class RecursionTest(CoverageTest):
             try:
                 recur(100000)  # This is definitely too many frames.
             except RuntimeError:
-                i = 10
-            i = 11
+                i = 11
+            i = 12
             """)
 
         cov = coverage.Coverage()
@@ -131,21 +132,21 @@ class RecursionTest(CoverageTest):
 
         assert cov._collector is not None
         pytrace = (cov._collector.tracer_name() == "PyTracer")
-        expected_missing = [3]
+        expected_missing = [4]
         if pytrace:                                 # pragma: no metacov
-            expected_missing += [9, 10, 11]
+            expected_missing += [10, 11, 12]
 
         _, statements, missing, _ = cov.analysis("recur.py")
-        assert statements == [1, 2, 3, 5, 7, 8, 9, 10, 11]
+        assert statements == [1, 2, 3, 4, 6, 8, 9, 10, 11, 12]
         assert expected_missing == missing
 
         # Get a warning about the stackoverflow effect on the tracing function.
-        if pytrace:                                 # pragma: no metacov
+        if pytrace and not env.METACOV:                     # pragma: no metacov
             assert len(cov._warnings) == 1
             assert re.fullmatch(
                 r"Trace function changed, data is likely wrong: None != " +
                 r"<bound method PyTracer._trace of " +
-                "<PyTracer at 0x[0-9a-fA-F]+: 5 data points in 1 files>>",
+                "<PyTracer at 0x[0-9a-fA-F]+: 6 data points in 1 files>>",
                 cov._warnings[0],
             )
         else:
@@ -162,7 +163,7 @@ class MemoryLeakTest(CoverageTest):
 
     """
     @flaky      # type: ignore[misc]
-    @pytest.mark.skipif(not env.C_TRACER, reason="Only the C tracer has refcounting issues")
+    @pytest.mark.skipif(not testenv.C_TRACER, reason="Only the C tracer has refcounting issues")
     def test_for_leaks(self) -> None:
         # Our original bad memory leak only happened on line numbers > 255, so
         # make a code object with more lines than that.  Ugly string mumbo
@@ -209,7 +210,7 @@ class MemoryLeakTest(CoverageTest):
 class MemoryFumblingTest(CoverageTest):
     """Test that we properly manage the None refcount."""
 
-    @pytest.mark.skipif(not env.C_TRACER, reason="Only the C tracer has refcounting issues")
+    @pytest.mark.skipif(not testenv.C_TRACER, reason="Only the C tracer has refcounting issues")
     def test_dropping_none(self) -> None:                     # pragma: not covered
         # TODO: Mark this so it will only be run sometimes.
         pytest.skip("This is too expensive for now (30s)")
@@ -474,21 +475,25 @@ class GettraceTest(CoverageTest):
 
     def test_setting_new_trace_function(self) -> None:
         # https://github.com/nedbat/coveragepy/issues/436
+        if testenv.SETTRACE_CORE:
+            missing = "5-7, 13-14"
+        else:
+            missing = "5-7"
         self.check_coverage('''\
             import os.path
             import sys
 
             def tracer(frame, event, arg):
-                filename = os.path.basename(frame.f_code.co_filename)
-                print(f"{event}: {filename} @ {frame.f_lineno}")
-                return tracer
+                filename = os.path.basename(frame.f_code.co_filename)   # 5
+                print(f"{event}: {filename} @ {frame.f_lineno}")        # 6
+                return tracer                                           # 7
 
             def begin():
                 sys.settrace(tracer)
 
             def collect():
-                t = sys.gettrace()
-                assert t is tracer, t
+                t = sys.gettrace()              # 13
+                assert t is tracer, t           # 14
 
             def test_unsets_trace() -> None:
                 begin()
@@ -501,7 +506,7 @@ class GettraceTest(CoverageTest):
             b = 22
             ''',
             lines=[1, 2, 4, 5, 6, 7, 9, 10, 12, 13, 14, 16, 17, 18, 20, 21, 22, 23, 24],
-            missing="5-7, 13-14",
+            missing=missing,
         )
 
         assert self.last_module_name is not None

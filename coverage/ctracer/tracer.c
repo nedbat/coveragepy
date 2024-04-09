@@ -710,7 +710,10 @@ CTracer_handle_return(CTracer *self, PyFrameObject *frame)
                 real_return = TRUE;
             }
             else {
-                real_return = (code_bytes[lasti + 2] != RESUME);
+#if ENV_LASTI_IS_YIELD
+                lasti += 2;
+#endif
+                real_return = (code_bytes[lasti] != RESUME);
             }
 #else
             /* Need to distinguish between RETURN_VALUE and YIELD_VALUE. Read

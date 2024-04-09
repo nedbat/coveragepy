@@ -15,7 +15,7 @@ import shutil
 import sys
 import textwrap
 
-from typing import cast, Callable, Dict, Iterable, List, Optional, Set
+from typing import cast, Callable, Iterable
 
 import pytest
 
@@ -27,6 +27,7 @@ from coverage.files import abs_file, relative_filename
 from coverage.misc import import_local_file
 from coverage.types import FilePathClasses, FilePathType, TCovKwargs
 
+from tests import testenv
 from tests.coveragetest import CoverageTest, TESTS_DIR, UsingModulesMixin
 from tests.helpers import assert_count_equal, assert_coverage_warnings
 from tests.helpers import change_dir, nice_file, os_sep
@@ -36,7 +37,7 @@ BAD_SQLITE_REGEX = r"file( is encrypted or)? is not a database"
 class ApiTest(CoverageTest):
     """Api-oriented tests for coverage.py."""
 
-    def clean_files(self, files: List[str], pats: List[str]) -> List[str]:
+    def clean_files(self, files: list[str], pats: list[str]) -> list[str]:
         """Remove names matching `pats` from `files`, a list of file names."""
         good = []
         for f in files:
@@ -47,7 +48,7 @@ class ApiTest(CoverageTest):
                 good.append(f)
         return good
 
-    def assertFiles(self, files: List[str]) -> None:
+    def assertFiles(self, files: list[str]) -> None:
         """Assert that the files here are `files`, ignoring the usual junk."""
         here = os.listdir(".")
         here = self.clean_files(here, ["*.pyc", "__pycache__", "*$py.class"])
@@ -490,7 +491,7 @@ class ApiTest(CoverageTest):
                 },
             )
 
-        def get_combined_filenames() -> Set[str]:
+        def get_combined_filenames() -> set[str]:
             cov = coverage.Coverage()
             cov.combine()
             assert self.stdout() == ""
@@ -625,6 +626,7 @@ class ApiTest(CoverageTest):
         assert cast(str, d['data_file']).endswith(".coverage")
 
 
+@pytest.mark.skipif(not testenv.DYN_CONTEXTS, reason="No dynamic contexts with this core.")
 class SwitchContextTest(CoverageTest):
     """Tests of the .switch_context() method."""
 
@@ -746,7 +748,7 @@ class CurrentInstanceTest(CoverageTest):
 
     run_in_temp_dir = False
 
-    def assert_current_is_none(self, current: Optional[Coverage]) -> None:
+    def assert_current_is_none(self, current: Coverage | None) -> None:
         """Assert that a current we expect to be None is correct."""
         # During meta-coverage, the None answers will be wrong because the
         # overall coverage measurement will still be on the current-stack.
@@ -876,7 +878,7 @@ class SourceIncludeOmitTest(IncludeOmitTestsMixin, CoverageTest):
         )
         sys.path.insert(0, abs_file("tests_dir_modules"))
 
-    def coverage_usepkgs_counts(self, **kwargs: TCovKwargs) -> Dict[str, int]:
+    def coverage_usepkgs_counts(self, **kwargs: TCovKwargs) -> dict[str, int]:
         """Run coverage on usepkgs and return a line summary.
 
         Arguments are passed to the `coverage.Coverage` constructor.
@@ -1347,7 +1349,7 @@ class CombiningTest(CoverageTest):
         assert_coverage_warnings(
             warns,
             re.compile(
-                r"Couldn't use data file '.*[/\\]\.coverage\.bad': " + BAD_SQLITE_REGEX
+                r"Couldn't use data file '.*[/\\]\.coverage\.bad': " + BAD_SQLITE_REGEX,
             ),
         )
 
@@ -1378,7 +1380,7 @@ class CombiningTest(CoverageTest):
                 cov.combine(strict=True)
 
         warn_rx = re.compile(
-            r"Couldn't use data file '.*[/\\]\.coverage\.bad[12]': " + BAD_SQLITE_REGEX
+            r"Couldn't use data file '.*[/\\]\.coverage\.bad[12]': " + BAD_SQLITE_REGEX,
         )
         assert_coverage_warnings(warns, warn_rx, warn_rx)
 
@@ -1463,3 +1465,23 @@ class CombiningTest(CoverageTest):
         # After combining, the .coverage file & the original combined file should still be there.
         self.assert_exists(".coverage")
         self.assert_file_count(".coverage.*", 2)
+
+    @pytest.mark.parametrize("abs_order, rel_order", [(1, 2), (2, 1)])
+    def test_combine_absolute_then_relative_1752(self, abs_order: int, rel_order: int) -> None:
+        # https://github.com/nedbat/coveragepy/issues/1752
+        # If we're combining a relative data file and an absolute data file,
+        # the absolutes were made relative only if the relative file name was
+        # encountered first.  Test combining in both orders and check that the
+        # absolute file name is properly relative in either order.
+        FILE = "sub/myprog.py"
+        self.make_file(FILE, "a = 1")
+
+        self.make_data_file(suffix=f"{abs_order}.abs", lines={abs_file(FILE): [1]})
+        self.make_data_file(suffix=f"{rel_order}.rel", lines={FILE: [1]})
+
+        self.make_file(".coveragerc", "[run]\nrelative_files = True\n")
+        cov = coverage.Coverage()
+        cov.combine()
+        data = coverage.CoverageData()
+        data.read()
+        assert {os_sep("sub/myprog.py")} == data.measured_files()

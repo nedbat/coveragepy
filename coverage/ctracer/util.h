@@ -59,6 +59,11 @@
 #define MyCode_FreeCode(code)
 #endif
 
+// Where does frame.f_lasti point when yielding from a generator?
+// It used to point at the YIELD, now it points at the RESUME.
+// https://github.com/python/cpython/issues/113728
+#define ENV_LASTI_IS_YIELD (PY_VERSION_HEX < 0x030D0000)
+
 /* The values returned to indicate ok or error. */
 #define RET_OK      0
 #define RET_ERROR   -1

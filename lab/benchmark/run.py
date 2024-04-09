@@ -54,22 +54,78 @@ if 0:
     )
 
 
-if 1:
-    # Compare 3.11 vs 3.12
+if 0:
+    # Compare 3.10 vs 3.12
+    v1 = 10
+    v2 = 12
     run_experiment(
         py_versions=[
-            Python(3, 11),
-            Python(3, 12),
+            Python(3, v1),
+            Python(3, v2),
         ],
         cov_versions=[
             Coverage("732", "coverage==7.3.2"),
         ],
         projects=[
-            ProjectDateutil(),
+            ProjectMashumaro(),
         ],
         rows=["cov", "proj"],
         column="pyver",
         ratios=[
-            ("3.12 vs 3.11", "python3.12", "python3.11"),
+            (f"3.{v2} vs 3.{v1}", f"python3.{v2}", f"python3.{v1}"),
+        ],
+    )
+
+if 0:
+    # Compare 3.12 coverage vs no coverage
+    run_experiment(
+        py_versions=[
+            Python(3, 12),
+        ],
+        cov_versions=[
+            NoCoverage("nocov"),
+            Coverage("732", "coverage==7.3.2"),
+            CoverageSource(
+                slug="sysmon",
+                directory="/Users/nbatchelder/coverage/trunk",
+                env_vars={"COVERAGE_CORE": "sysmon"},
+            ),
+        ],
+        projects=[
+            ProjectMashumaro(),     # small: "-k ck"
+            ProjectOperator(),      # small: "-k irk"
+        ],
+        rows=["pyver", "proj"],
+        column="cov",
+        ratios=[
+            (f"732%", "732", "nocov"),
+            (f"sysmon%", "sysmon", "nocov"),
+        ],
+    )
+
+if 1:
+    # Compare 3.12 coverage vs no coverage
+    run_experiment(
+        py_versions=[
+            Python(3, 12),
+        ],
+        cov_versions=[
+            NoCoverage("nocov"),
+            Coverage("732", "coverage==7.3.2"),
+            CoverageSource(
+                slug="sysmon",
+                directory="/Users/nbatchelder/coverage/trunk",
+                env_vars={"COVERAGE_CORE": "sysmon"},
+            ),
+        ],
+        projects=[
+            ProjectMashumaro(),     # small: "-k ck"
+            ProjectMashumaroBranch(),     # small: "-k ck"
+        ],
+        rows=["pyver", "proj"],
+        column="cov",
+        ratios=[
+            (f"732%", "732", "nocov"),
+            (f"sysmon%", "sysmon", "nocov"),
         ],
     )

@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 import collections
+import dataclasses
 import datetime
 import functools
 import json
@@ -15,14 +16,16 @@ import shutil
 import string
 
 from dataclasses import dataclass
-from typing import Any, Dict, Iterable, List, Optional, Tuple, TYPE_CHECKING, cast
+from typing import Any, Iterable, TYPE_CHECKING, TypedDict, cast
 
 import coverage
 from coverage.data import CoverageData, add_data_to_hash
 from coverage.exceptions import NoDataError
 from coverage.files import flat_rootname
-from coverage.misc import ensure_dir, file_be_gone, Hasher, isolate_module, format_local_datetime
-from coverage.misc import human_sorted, plural, stdout_link
+from coverage.misc import (
+    ensure_dir, file_be_gone, Hasher, isolate_module, format_local_datetime,
+    human_sorted, plural, stdout_link,
+)
 from coverage.report_core import get_analysis_to_report
 from coverage.results import Analysis, Numbers
 from coverage.templite import Templite
@@ -31,26 +34,26 @@ from coverage.version import __url__
 
 
 if TYPE_CHECKING:
-    # To avoid circular imports:
     from coverage import Coverage
     from coverage.plugins import FileReporter
 
-    # To be able to use 3.8 typing features, and still run on 3.7:
-    from typing import TypedDict
-
-    class IndexInfoDict(TypedDict):
-        """Information for each file, to render the index file."""
-        nums: Numbers
-        html_filename: str
-        relative_filename: str
-
-    class FileInfoDict(TypedDict):
-        """Summary of the information from last rendering, to avoid duplicate work."""
-        hash: str
-        index: IndexInfoDict
-
 
 os = isolate_module(os)
+
+
+class IndexInfoDict(TypedDict):
+    """Information for each file, to render the index file."""
+    # For in-memory use, we have Numbers.  For serialization, we write a list
+    # of ints.  Two fields keeps the type-checker happier.
+    nums: Numbers | None
+    numlist: list[int]
+    html_filename: str
+    relative_filename: str
+
+class FileInfoDict(TypedDict):
+    """Summary of the information from last rendering, to avoid duplicate work."""
+    hash: str
+    index: IndexInfoDict
 
 
 def data_filename(fname: str) -> str:
@@ -77,19 +80,19 @@ def write_html(fname: str, html: str) -> None:
 @dataclass
 class LineData:
     """The data for each source line of HTML output."""
-    tokens: List[Tuple[str, str]]
+    tokens: list[tuple[str, str]]
     number: TLineNo
     category: str
     statement: bool
-    contexts: List[str]
+    contexts: list[str]
     contexts_label: str
-    context_list: List[str]
-    short_annotations: List[str]
-    long_annotations: List[str]
+    context_list: list[str]
+    short_annotations: list[str]
+    long_annotations: list[str]
     html: str = ""
-    context_str: Optional[str] = None
-    annotate: Optional[str] = None
-    annotate_long: Optional[str] = None
+    context_str: str | None = None
+    annotate: str | None = None
+    annotate_long: str | None = None
     css_class: str = ""
 
 
@@ -98,7 +101,7 @@ class FileData:
     """The data for each source file of HTML output."""
     relative_filename: str
     nums: Numbers
-    lines: List[LineData]
+    lines: list[LineData]
 
 
 class HtmlDataGeneration:
@@ -187,6 +190,7 @@ class FileToReport:
         self.analysis = analysis
         self.rootname = flat_rootname(fr.relative_filename())
         self.html_filename = self.rootname + ".html"
+        self.prev_html = self.next_html = ""
 
 
 HTML_SAFE = string.ascii_letters + string.digits + "!#$%'()*+,-./:;=?@[]^_`{|}~"
@@ -233,7 +237,7 @@ class HtmlReporter:
 
         title = self.config.html_title
 
-        self.extra_css: Optional[str]
+        self.extra_css: str | None
         if self.config.extra_css:
             self.extra_css = os.path.basename(self.config.extra_css)
         else:
@@ -242,8 +246,8 @@ class HtmlReporter:
         self.data = self.coverage.get_data()
         self.has_arcs = self.data.has_arcs()
 
-        self.file_summaries: List[IndexInfoDict] = []
-        self.all_files_nums: List[Numbers] = []
+        self.file_summaries: list[IndexInfoDict] = []
+        self.all_files_nums: list[Numbers] = []
         self.incr = IncrementalChecker(self.directory)
         self.datagen = HtmlDataGeneration(self.coverage)
         self.totals = Numbers(precision=self.config.precision)
@@ -278,7 +282,7 @@ class HtmlReporter:
         self.pyfile_html_source = read_data("pyfile.html")
         self.source_tmpl = Templite(self.pyfile_html_source, self.template_globals)
 
-    def report(self, morfs: Optional[Iterable[TMorf]]) -> float:
+    def report(self, morfs: Iterable[TMorf] | None) -> float:
         """Generate an HTML report for `morfs`.
 
         `morfs` is a list of modules or file names.
@@ -295,22 +299,20 @@ class HtmlReporter:
 
         for fr, analysis in get_analysis_to_report(self.coverage, morfs):
             ftr = FileToReport(fr, analysis)
-            should = self.should_report_file(ftr)
-            if should:
+            if self.should_report_file(ftr):
                 files_to_report.append(ftr)
             else:
                 file_be_gone(os.path.join(self.directory, ftr.html_filename))
 
-        for i, ftr in enumerate(files_to_report):
-            if i == 0:
-                prev_html = "index.html"
-            else:
-                prev_html = files_to_report[i - 1].html_filename
-            if i == len(files_to_report) - 1:
-                next_html = "index.html"
-            else:
-                next_html = files_to_report[i + 1].html_filename
-            self.write_html_file(ftr, prev_html, next_html)
+        if files_to_report:
+            for ftr1, ftr2 in zip(files_to_report[:-1], files_to_report[1:]):
+                ftr1.next_html = ftr2.html_filename
+                ftr2.prev_html = ftr1.html_filename
+            files_to_report[0].prev_html = "index.html"
+            files_to_report[-1].next_html = "index.html"
+
+            for ftr in files_to_report:
+                self.write_html_file(ftr)
 
         if not self.all_files_nums:
             raise NoDataError("No data to report.")
@@ -363,7 +365,6 @@ class HtmlReporter:
             no_missing_lines = (nums.n_missing == 0)
             no_missing_branches = (nums.n_partial_branches == 0)
             if no_missing_lines and no_missing_branches:
-                # If there's an existing file, remove it.
                 self.skipped_covered_count += 1
                 return False
 
@@ -375,7 +376,7 @@ class HtmlReporter:
 
         return True
 
-    def write_html_file(self, ftr: FileToReport, prev_html: str, next_html: str) -> None:
+    def write_html_file(self, ftr: FileToReport) -> None:
         """Generate an HTML file for one source file."""
         self.make_directory()
 
@@ -447,7 +448,7 @@ class HtmlReporter:
             css_classes = []
             if ldata.category:
                 css_classes.append(
-                    self.template_globals["category"][ldata.category]   # type: ignore[index]
+                    self.template_globals["category"][ldata.category],   # type: ignore[index]
                 )
             ldata.css_class = " ".join(css_classes) or "pln"
 
@@ -455,14 +456,15 @@ class HtmlReporter:
         html = self.source_tmpl.render({
             **file_data.__dict__,
             "contexts_json": contexts_json,
-            "prev_html": prev_html,
-            "next_html": next_html,
+            "prev_html": ftr.prev_html,
+            "next_html": ftr.next_html,
         })
         write_html(html_path, html)
 
         # Save this file's information for the index file.
         index_info: IndexInfoDict = {
             "nums": ftr.analysis.numbers,
+            "numlist": [],
             "html_filename": ftr.html_filename,
             "relative_filename": ftr.fr.relative_filename(),
         }
@@ -475,11 +477,9 @@ class HtmlReporter:
         index_tmpl = Templite(read_data("index.html"), self.template_globals)
 
         skipped_covered_msg = skipped_empty_msg = ""
-        if self.skipped_covered_count:
-            n = self.skipped_covered_count
+        if n := self.skipped_covered_count:
             skipped_covered_msg = f"{n} file{plural(n)} skipped due to complete coverage."
-        if self.skipped_empty_count:
-            n = self.skipped_empty_count
+        if n := self.skipped_empty_count:
             skipped_empty_msg = f"{n} empty file{plural(n)} skipped."
 
         html = index_tmpl.render({
@@ -506,13 +506,19 @@ class IncrementalChecker:
 
     STATUS_FILE = "status.json"
     STATUS_FORMAT = 2
+    NOTE = (
+        "This file is an internal implementation detail to speed up HTML report"
+        + " generation. Its format can change at any time. You might be looking"
+        + " for the JSON report: https://coverage.rtfd.io/cmd.html#cmd-json"
+    )
 
     #  The data looks like:
     #
     #  {
+    #      "note": "This file is an internal implementation detail ...",
     #      "format": 2,
-    #      "globals": "540ee119c15d52a68a53fe6f0897346d",
     #      "version": "4.0a1",
+    #      "globals": "540ee119c15d52a68a53fe6f0897346d",
     #      "files": {
     #          "cogapp___init__": {
     #              "hash": "e45581a5b48f879f301c0f30bf77a50c",
@@ -541,7 +547,7 @@ class IncrementalChecker:
     def reset(self) -> None:
         """Initialize to empty. Causes all files to be reported."""
         self.globals = ""
-        self.files: Dict[str, FileInfoDict] = {}
+        self.files: dict[str, FileInfoDict] = {}
 
     def read(self) -> None:
         """Read the information we stored last time."""
@@ -562,7 +568,7 @@ class IncrementalChecker:
         if usable:
             self.files = {}
             for filename, fileinfo in status["files"].items():
-                fileinfo["index"]["nums"] = Numbers(*fileinfo["index"]["nums"])
+                fileinfo["index"]["nums"] = Numbers(*fileinfo["index"]["numlist"])
                 self.files[filename] = fileinfo
             self.globals = status["globals"]
         else:
@@ -574,10 +580,13 @@ class IncrementalChecker:
         files = {}
         for filename, fileinfo in self.files.items():
             index = fileinfo["index"]
-            index["nums"] = index["nums"].init_args()   # type: ignore[typeddict-item]
+            assert index["nums"] is not None
+            index["numlist"] = list(dataclasses.astuple(index["nums"]))
+            index["nums"] = None
             files[filename] = fileinfo
 
         status = {
+            "note": self.NOTE,
             "format": self.STATUS_FORMAT,
             "version": coverage.__version__,
             "globals": self.globals,
@@ -645,6 +654,6 @@ def escape(t: str) -> str:
     return t.replace("&", "&amp;").replace("<", "&lt;")
 
 
-def pair(ratio: Tuple[int, int]) -> str:
+def pair(ratio: tuple[int, int]) -> str:
     """Format a pair of numbers so JavaScript can read them in an attribute."""
-    return "%s %s" % ratio
+    return "{} {}".format(*ratio)

@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import math
 
-from typing import Dict, Iterable, List, Tuple, cast
+from typing import Iterable, cast
 
 import pytest
 
@@ -60,7 +60,7 @@ class NumbersTest(CoverageTest):
         (dict(precision=1, n_files=1, n_statements=10000, n_missing=9999), "0.1"),
         (dict(precision=1, n_files=1, n_statements=10000, n_missing=10000), "0.0"),
     ])
-    def test_pc_covered_str(self, kwargs: Dict[str, int], res: str) -> None:
+    def test_pc_covered_str(self, kwargs: dict[str, int], res: str) -> None:
         assert Numbers(**kwargs).pc_covered_str == res
 
     @pytest.mark.parametrize("prec, pc, res", [
@@ -147,25 +147,25 @@ def test_format_lines(
         {1,2,3,4,5,10,11,12,13,14},
         {1,2,5,10,11,13,14},
         (),
-        "1-2, 5-11, 13-14"
+        "1-2, 5-11, 13-14",
     ),
     (
         [1,2,3,4,5,10,11,12,13,14,98,99],
         [1,2,5,10,11,13,14,99],
         [(3, [4]), (5, [10, 11]), (98, [100, -1])],
-        "1-2, 3->4, 5-11, 13-14, 98->100, 98->exit, 99"
+        "1-2, 3->4, 5-11, 13-14, 98->100, 98->exit, 99",
     ),
     (
         [1,2,3,4,98,99,100,101,102,103,104],
         [1,2,99,102,103,104],
         [(3, [4]), (104, [-1])],
-        "1-2, 3->4, 99, 102-104"
+        "1-2, 3->4, 99, 102-104",
     ),
 ])
 def test_format_lines_with_arcs(
     statements: Iterable[TLineNo],
     lines: Iterable[TLineNo],
-    arcs: Iterable[Tuple[TLineNo, List[TLineNo]]],
+    arcs: Iterable[tuple[TLineNo, list[TLineNo]]],
     result: str,
 ) -> None:
     assert format_lines(statements, lines, arcs) == result

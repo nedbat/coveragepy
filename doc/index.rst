@@ -18,7 +18,7 @@ supported on:
 
 .. PYVERSIONS
 
-* Python versions 3.8 through 3.12.
+* Python 3.8 through 3.12, and 3.13.0a3 and up.
 * PyPy3 versions 3.8 through 3.10.
 
 .. ifconfig:: prerelease
@@ -111,9 +111,14 @@ Getting started is easy:
 
                 $ coverage run -m nose arg1 arg2
 
+    Coverage doesn't distinguish between tests and the code being tested.
+    We `recommend that you include your tests in coverage measurement <include
+    tests_>`_.
+
     To limit coverage measurement to code in the current directory, and also
     find files that weren't executed at all, add the ``--source=.`` argument to
-    your coverage command line.
+    your coverage command line.  You can also :ref:`specify source files to
+    measure <source>` or :ref:`exclude code from measurement <excluding>`.
 
 #.  Use ``coverage report`` to report on the results::
 
@@ -144,6 +149,8 @@ Getting started is easy:
 .. _report like this: https://nedbatchelder.com/files/sample_coverage_html/index.html
 .. _report like this one: https://nedbatchelder.com/files/sample_coverage_html_beta/index.html
 .. _nose state: https://github.com/nose-devs/nose/commit/0f40fa995384afad77e191636c89eb7d5b8870ca
+.. _include tests: https://nedbatchelder.com/blog/202008/you_should_include_your_tests_in_coverage.html
+
 
 
 Capabilities
@@ -233,6 +240,7 @@ More information
     api
     howitworks
     plugins
+    other
     contributing
     trouble
     faq

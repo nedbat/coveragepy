@@ -7,14 +7,12 @@
 -c ../requirements/pins.pip
 
 cogapp
+doc8
+pyenchant
 scriv       # for writing GitHub releases
 sphinx
 sphinx-autobuild
 sphinx_rtd_theme
 sphinx-code-tabs
 sphinxcontrib-restbuilder
-
-# These aren't compatible atm with other library versions:
-#doc8
-#pyenchant
-#sphinxcontrib-spelling
+sphinxcontrib-spelling

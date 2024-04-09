@@ -26,7 +26,7 @@ class SetupPyTest(CoverageTest):
 
     def test_metadata(self) -> None:
         status, output = self.run_command_status(
-            "python setup.py --description --version --url --author"
+            "python setup.py --description --version --url --author",
         )
         assert status == 0
         out = output.splitlines()

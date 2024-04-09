@@ -16,7 +16,7 @@ import glob
 import hashlib
 import os.path
 
-from typing import Callable, Dict, Iterable, List, Optional
+from typing import Callable, Iterable
 
 from coverage.exceptions import CoverageException, NoDataError
 from coverage.files import PathAliases
@@ -24,7 +24,7 @@ from coverage.misc import Hasher, file_be_gone, human_sorted, plural
 from coverage.sqldata import CoverageData
 
 
-def line_counts(data: CoverageData, fullpath: bool = False) -> Dict[str, int]:
+def line_counts(data: CoverageData, fullpath: bool = False) -> dict[str, int]:
     """Return a dict summarizing the line coverage data.
 
     Keys are based on the file names, and values are the number of executed
@@ -63,7 +63,7 @@ def add_data_to_hash(data: CoverageData, filename: str, hasher: Hasher) -> None:
     hasher.update(data.file_tracer(filename))
 
 
-def combinable_files(data_file: str, data_paths: Optional[Iterable[str]] = None) -> List[str]:
+def combinable_files(data_file: str, data_paths: Iterable[str] | None = None) -> list[str]:
     """Make a list of data files to be combined.
 
     `data_file` is a path to a data file.  `data_paths` is a list of files or
@@ -88,16 +88,19 @@ def combinable_files(data_file: str, data_paths: Optional[Iterable[str]] = None)
     # We never want to combine those.
     files_to_combine = [fnm for fnm in files_to_combine if not fnm.endswith("-journal")]
 
-    return files_to_combine
+    # Sorting isn't usually needed, since it shouldn't matter what order files
+    # are combined, but sorting makes tests more predictable, and makes
+    # debugging more understandable when things go wrong.
+    return sorted(files_to_combine)
 
 
 def combine_parallel_data(
     data: CoverageData,
-    aliases: Optional[PathAliases] = None,
-    data_paths: Optional[Iterable[str]] = None,
+    aliases: PathAliases | None = None,
+    data_paths: Iterable[str] | None = None,
     strict: bool = False,
     keep: bool = False,
-    message: Optional[Callable[[str], None]] = None,
+    message: Callable[[str], None] | None = None,
 ) -> None:
     """Combine a number of data files together.
 
@@ -212,7 +215,7 @@ def debug_data_file(filename: str) -> None:
         print(line)
 
 
-def sorted_lines(data: CoverageData, filename: str) -> List[int]:
+def sorted_lines(data: CoverageData, filename: str) -> list[int]:
     """Get the sorted lines for a file, for tests."""
     lines = data.lines(filename)
     return sorted(lines or [])

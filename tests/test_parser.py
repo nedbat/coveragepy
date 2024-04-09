@@ -5,37 +5,36 @@
 
 from __future__ import annotations
 
-import ast
-import os.path
 import textwrap
-import warnings
-
-from typing import List
 
 import pytest
 
 from coverage import env
 from coverage.exceptions import NotPython
-from coverage.parser import ast_dump, PythonParser
+from coverage.parser import PythonParser
 
-from tests.coveragetest import CoverageTest, TESTS_DIR
-from tests.helpers import arcz_to_arcs, re_lines, xfail_pypy38
+from tests.coveragetest import CoverageTest
+from tests.helpers import arcz_to_arcs, xfail_pypy38
 
 
-class PythonParserTest(CoverageTest):
+class PythonParserTestBase(CoverageTest):
     """Tests for coverage.py's Python code parsing."""
 
     run_in_temp_dir = False
 
-    def parse_source(self, text: str) -> PythonParser:
+    def parse_text(self, text: str, exclude: str = "nocover") -> PythonParser:
         """Parse `text` as source, and return the `PythonParser` used."""
         text = textwrap.dedent(text)
-        parser = PythonParser(text=text, exclude="nocover")
+        parser = PythonParser(text=text, exclude=exclude)
         parser.parse_source()
         return parser
 
+
+class PythonParserTest(PythonParserTestBase):
+    """Tests of coverage.parser."""
+
     def test_exit_counts(self) -> None:
-        parser = self.parse_source("""\
+        parser = self.parse_text("""\
             # check some basic branch counting
             class Foo:
                 def foo(self, a):
@@ -48,12 +47,12 @@ class PythonParserTest(CoverageTest):
                 pass
             """)
         assert parser.exit_counts() == {
-            2:1, 3:1, 4:2, 5:1, 7:1, 9:1, 10:1
+            2:1, 3:1, 4:2, 5:1, 7:1, 9:1, 10:1,
         }
 
     def test_generator_exit_counts(self) -> None:
         # https://github.com/nedbat/coveragepy/issues/324
-        parser = self.parse_source("""\
+        parser = self.parse_text("""\
             def gen(input):
                 for n in inp:
                     yield (i * 2 for i in range(n))
@@ -68,7 +67,7 @@ class PythonParserTest(CoverageTest):
         }
 
     def test_try_except(self) -> None:
-        parser = self.parse_source("""\
+        parser = self.parse_text("""\
             try:
                 a = 2
             except ValueError:
@@ -80,11 +79,11 @@ class PythonParserTest(CoverageTest):
             b = 9
             """)
         assert parser.exit_counts() == {
-            1: 1, 2:1, 3:2, 4:1, 5:2, 6:1, 7:1, 8:1, 9:1
+            1: 1, 2:1, 3:2, 4:1, 5:2, 6:1, 7:1, 8:1, 9:1,
         }
 
     def test_excluded_classes(self) -> None:
-        parser = self.parse_source("""\
+        parser = self.parse_text("""\
             class Foo:
                 def __init__(self):
                     pass
@@ -94,11 +93,11 @@ class PythonParserTest(CoverageTest):
                     pass
             """)
         assert parser.exit_counts() == {
-            1:0, 2:1, 3:1
+            1:0, 2:1, 3:1,
         }
 
     def test_missing_branch_to_excluded_code(self) -> None:
-        parser = self.parse_source("""\
+        parser = self.parse_text("""\
             if fooey:
                 a = 2
             else:   # nocover
@@ -106,7 +105,7 @@ class PythonParserTest(CoverageTest):
             b = 5
             """)
         assert parser.exit_counts() == { 1:1, 2:1, 5:1 }
-        parser = self.parse_source("""\
+        parser = self.parse_text("""\
             def foo():
                 if fooey:
                     a = 3
@@ -115,7 +114,7 @@ class PythonParserTest(CoverageTest):
             b = 6
             """)
         assert parser.exit_counts() == { 1:1, 2:2, 3:1, 5:1, 6:1 }
-        parser = self.parse_source("""\
+        parser = self.parse_text("""\
             def foo():
                 if fooey:
                     a = 3
@@ -131,7 +130,7 @@ class PythonParserTest(CoverageTest):
             "'unindent does not match any outer indentation level.*' at line 3"
         )
         with pytest.raises(NotPython, match=msg):
-            _ = self.parse_source("""\
+            _ = self.parse_text("""\
                 0 spaces
                   2
                  1
@@ -148,77 +147,10 @@ class PythonParserTest(CoverageTest):
             + r"' at line 1"
         )
         with pytest.raises(NotPython, match=msg):
-            _ = self.parse_source("'''")
-
-    @xfail_pypy38
-    def test_decorator_pragmas(self) -> None:
-        parser = self.parse_source("""\
-            # 1
-
-            @foo(3)                     # nocover
-            @bar
-            def func(x, y=5):
-                return 6
-
-            class Foo:      # this is the only statement.
-                '''9'''
-                @foo                    # nocover
-                def __init__(self):
-                    '''12'''
-                    return 13
-
-                @foo(                   # nocover
-                    16,
-                    17,
-                )
-                def meth(self):
-                    return 20
-
-            @foo(                       # nocover
-                23
-            )
-            def func(x=25):
-                return 26
-            """)
-        raw_statements = {3, 4, 5, 6, 8, 9, 10, 11, 13, 15, 16, 17, 19, 20, 22, 23, 25, 26}
-        assert parser.raw_statements == raw_statements
-        assert parser.statements == {8}
-
-    @xfail_pypy38
-    def test_decorator_pragmas_with_colons(self) -> None:
-        # A colon in a decorator expression would confuse the parser,
-        # ending the exclusion of the decorated function.
-        parser = self.parse_source("""\
-            @decorate(X)        # nocover
-            @decorate("Hello"[2])
-            def f():
-                x = 4
-
-            @decorate(X)        # nocover
-            @decorate("Hello"[:7])
-            def g():
-                x = 9
-            """)
-        raw_statements = {1, 2, 3, 4, 6, 7, 8, 9}
-        assert parser.raw_statements == raw_statements
-        assert parser.statements == set()
-
-    def test_class_decorator_pragmas(self) -> None:
-        parser = self.parse_source("""\
-            class Foo(object):
-                def __init__(self):
-                    self.x = 3
-
-            @foo                        # nocover
-            class Bar(object):
-                def __init__(self):
-                    self.x = 8
-            """)
-        assert parser.raw_statements == {1, 2, 3, 5, 6, 7, 8}
-        assert parser.statements == {1, 2, 3}
+            _ = self.parse_text("'''")
 
     def test_empty_decorated_function(self) -> None:
-        parser = self.parse_source("""\
+        parser = self.parse_text("""\
             def decorator(func):
                 return func
 
@@ -256,21 +188,557 @@ class PythonParserTest(CoverageTest):
             + r"|(unmatched ']')"                   # after 3.12.0b1
         )
         with pytest.raises(NotPython, match=msg):
-            self.parse_source("]")
+            self.parse_text("]")
         with pytest.raises(NotPython, match=msg):
-            self.parse_source("]")
+            self.parse_text("]")
 
 
-class ParserMissingArcDescriptionTest(CoverageTest):
+class ExclusionParserTest(PythonParserTestBase):
+    """Tests for the exclusion code in PythonParser."""
+
+    def test_simple(self) -> None:
+        parser = self.parse_text("""\
+            a = 1; b = 2
+
+            if len([]):
+                a = 4   # nocover
+            """,
+        )
+        assert parser.statements == {1,3}
+
+    def test_excluding_if_suite(self) -> None:
+        parser = self.parse_text("""\
+            a = 1; b = 2
+
+            if len([]):     # nocover
+                a = 4
+                b = 5
+                c = 6
+            assert a == 1 and b == 2
+            """,
+        )
+        assert parser.statements == {1,7}
+
+    def test_excluding_if_but_not_else_suite(self) -> None:
+        parser = self.parse_text("""\
+            a = 1; b = 2
+
+            if len([]):     # nocover
+                a = 4
+                b = 5
+                c = 6
+            else:
+                a = 8
+                b = 9
+            assert a == 8 and b == 9
+            """,
+        )
+        assert parser.statements == {1,8,9,10}
+
+    def test_excluding_else_suite(self) -> None:
+        parser = self.parse_text("""\
+            a = 1; b = 2
+
+            if 1==1:
+                a = 4
+                b = 5
+                c = 6
+            else:          # nocover
+                a = 8
+                b = 9
+            assert a == 4 and b == 5 and c == 6
+            """,
+        )
+        assert parser.statements == {1,3,4,5,6,10}
+        parser = self.parse_text("""\
+            a = 1; b = 2
+
+            if 1==1:
+                a = 4
+                b = 5
+                c = 6
+
+            # Lots of comments to confuse the else handler.
+            # more.
+
+            else:          # nocover
+
+            # Comments here too.
+
+                a = 8
+                b = 9
+            assert a == 4 and b == 5 and c == 6
+            """,
+        )
+        assert parser.statements == {1,3,4,5,6,17}
+
+    def test_excluding_oneline_if(self) -> None:
+        parser = self.parse_text("""\
+            def foo():
+                a = 2
+                if len([]): x = 3       # nocover
+                b = 4
+
+            foo()
+            """,
+        )
+        assert parser.statements == {1,2,4,6}
+
+    def test_excluding_a_colon_not_a_suite(self) -> None:
+        parser = self.parse_text("""\
+            def foo():
+                l = list(range(10))
+                a = l[:3]   # nocover
+                b = 4
+
+            foo()
+            """,
+        )
+        assert parser.statements == {1,2,4,6}
+
+    def test_excluding_for_suite(self) -> None:
+        parser = self.parse_text("""\
+            a = 0
+            for i in [1,2,3,4,5]:     # nocover
+                a += i
+            assert a == 15
+            """,
+        )
+        assert parser.statements == {1,4}
+        parser = self.parse_text("""\
+            a = 0
+            for i in [1,
+                2,3,4,
+                5]:                # nocover
+                a += i
+            assert a == 15
+            """,
+        )
+        assert parser.statements == {1,6}
+        parser = self.parse_text("""\
+            a = 0
+            for i in [1,2,3,4,5
+                ]:                        # nocover
+                a += i
+                break
+                a = 99
+            assert a == 1
+            """,
+        )
+        assert parser.statements == {1,7}
+
+    def test_excluding_for_else(self) -> None:
+        parser = self.parse_text("""\
+            a = 0
+            for i in range(5):
+                a += i+1
+                break
+            else:               # nocover
+                a = 123
+            assert a == 1
+            """,
+        )
+        assert parser.statements == {1,2,3,4,7}
+
+    def test_excluding_while(self) -> None:
+        parser = self.parse_text("""\
+            a = 3; b = 0
+            while a*b:           # nocover
+                b += 1
+                break
+            assert a == 3 and b == 0
+            """,
+        )
+        assert parser.statements == {1,5}
+        parser = self.parse_text("""\
+            a = 3; b = 0
+            while (
+                a*b
+                ):           # nocover
+                b += 1
+                break
+            assert a == 3 and b == 0
+            """,
+        )
+        assert parser.statements == {1,7}
+
+    def test_excluding_while_else(self) -> None:
+        parser = self.parse_text("""\
+            a = 3; b = 0
+            while a:
+                b += 1
+                break
+            else:           # nocover
+                b = 123
+            assert a == 3 and b == 1
+            """,
+        )
+        assert parser.statements == {1,2,3,4,7}
+
+    def test_excluding_try_except(self) -> None:
+        parser = self.parse_text("""\
+            a = 0
+            try:
+                a = 1
+            except:           # nocover
+                a = 99
+            assert a == 1
+            """,
+        )
+        assert parser.statements == {1,2,3,6}
+        parser = self.parse_text("""\
+            a = 0
+            try:
+                a = 1
+                raise Exception("foo")
+            except:
+                a = 99
+            assert a == 99
+            """,
+        )
+        assert parser.statements == {1,2,3,4,5,6,7}
+        parser = self.parse_text("""\
+            a = 0
+            try:
+                a = 1
+                raise Exception("foo")
+            except ImportError:    # nocover
+                a = 99
+            except:
+                a = 123
+            assert a == 123
+            """,
+        )
+        assert parser.statements == {1,2,3,4,7,8,9}
+
+    def test_excluding_if_pass(self) -> None:
+        # From a comment on the coverage.py page by Michael McNeil Forbes:
+        parser = self.parse_text("""\
+            def f():
+                if False:    # pragma: nocover
+                    pass     # This line still reported as missing
+                if False:    # pragma: nocover
+                    x = 1    # Now it is skipped.
+
+            f()
+            """,
+        )
+        assert parser.statements == {1,7}
+
+    def test_excluding_function(self) -> None:
+        parser = self.parse_text("""\
+            def fn(foo):      # nocover
+                a = 1
+                b = 2
+                c = 3
+
+            x = 1
+            assert x == 1
+            """,
+        )
+        assert parser.statements == {6,7}
+        parser = self.parse_text("""\
+            a = 0
+            def very_long_function_to_exclude_name(very_long_argument1,
+            very_long_argument2):
+                pass
+            assert a == 0
+            """,
+            exclude="function_to_exclude",
+        )
+        assert parser.statements == {1,5}
+        parser = self.parse_text("""\
+            a = 0
+            def very_long_function_to_exclude_name(
+                very_long_argument1,
+                very_long_argument2
+            ):
+                pass
+            assert a == 0
+            """,
+            exclude="function_to_exclude",
+        )
+        assert parser.statements == {1,7}
+        parser = self.parse_text("""\
+            def my_func(
+                super_long_input_argument_0=0,
+                super_long_input_argument_1=1,
+                super_long_input_argument_2=2):
+                pass
+
+            def my_func_2(super_long_input_argument_0=0, super_long_input_argument_1=1, super_long_input_argument_2=2):
+                pass
+            """,
+            exclude="my_func",
+        )
+        assert parser.statements == set()
+        parser = self.parse_text("""\
+            def my_func(
+                super_long_input_argument_0=0,
+                super_long_input_argument_1=1,
+                super_long_input_argument_2=2):
+                pass
+
+            def my_func_2(super_long_input_argument_0=0, super_long_input_argument_1=1, super_long_input_argument_2=2):
+                pass
+            """,
+            exclude="my_func_2",
+        )
+        assert parser.statements == {1,5}
+        parser = self.parse_text("""\
+            def my_func       (
+                super_long_input_argument_0=0,
+                super_long_input_argument_1=1,
+                super_long_input_argument_2=2):
+                pass
+
+            def my_func_2    (super_long_input_argument_0=0, super_long_input_argument_1=1, super_long_input_argument_2=2):
+                pass
+            """,
+            exclude="my_func_2",
+        )
+        assert parser.statements == {1,5}
+        parser = self.parse_text("""\
+            def my_func       (
+                super_long_input_argument_0=0,
+                super_long_input_argument_1=1,
+                super_long_input_argument_2=2):
+                pass
+
+            def my_func_2    (super_long_input_argument_0=0, super_long_input_argument_1=1, super_long_input_argument_2=2):
+                pass
+            """,
+            exclude="my_func",
+        )
+        assert parser.statements == set()
+        parser = self.parse_text("""\
+            def my_func \
+                (
+                super_long_input_argument_0=0,
+                super_long_input_argument_1=1
+                ):
+                pass
+
+            def my_func_2(super_long_input_argument_0=0, super_long_input_argument_1=1, super_long_input_argument_2=2):
+                pass
+            """,
+            exclude="my_func_2",
+        )
+        assert parser.statements == {1,5}
+        parser = self.parse_text("""\
+            def my_func \
+                (
+                super_long_input_argument_0=0,
+                super_long_input_argument_1=1
+                ):
+                pass
+
+            def my_func_2(super_long_input_argument_0=0, super_long_input_argument_1=1, super_long_input_argument_2=2):
+                pass
+            """,
+            exclude="my_func",
+        )
+        assert parser.statements == set()
+
+    def test_excluding_bug1713(self) -> None:
+        if env.PYVERSION >= (3, 10):
+            parser = self.parse_text("""\
+                print("1")
+
+                def hello_3(a):  # pragma: nocover
+                    match a:
+                        case ("5"
+                              | "6"):
+                            print("7")
+                        case "8":
+                            print("9")
+
+                print("11")
+                """,
+            )
+            assert parser.statements == {1, 11}
+        parser = self.parse_text("""\
+            print("1")
+
+            def hello_3(a):  # nocover
+                if ("4" or
+                    "5"):
+                    print("6")
+                else:
+                    print("8")
+
+            print("10")
+            """,
+        )
+        assert parser.statements == {1, 10}
+        parser = self.parse_text("""\
+            print(1)
+
+            def func(a, b):
+                if a == 4:      # nocover
+                    func5()
+                    if b:
+                        print(7)
+                    func8()
+
+            print(10)
+            """,
+        )
+        assert parser.statements == {1, 3, 10}
+        parser = self.parse_text("""\
+            class Foo:  # pragma: nocover
+                def greet(self):
+                    print("hello world")
+            """,
+        )
+        assert parser.statements == set()
+
+    def test_excluding_method(self) -> None:
+        parser = self.parse_text("""\
+            class Fooey:
+                def __init__(self):
+                    self.a = 1
+
+                def foo(self):     # nocover
+                    return self.a
+
+            x = Fooey()
+            assert x.a == 1
+            """,
+        )
+        assert parser.statements == {1,2,3,8,9}
+        parser = self.parse_text("""\
+            class Fooey:
+                def __init__(self):
+                    self.a = 1
+
+                def very_long_method_to_exclude_name(
+                    very_long_argument1,
+                    very_long_argument2
+                ):
+                    pass
+
+            x = Fooey()
+            assert x.a == 1
+            """,
+            exclude="method_to_exclude",
+        )
+        assert parser.statements == {1,2,3,11,12}
+
+    def test_excluding_class(self) -> None:
+        parser = self.parse_text("""\
+            class Fooey:            # nocover
+                def __init__(self):
+                    self.a = 1
+
+                def foo(self):
+                    return self.a
+
+            x = 1
+            assert x == 1
+            """,
+        )
+        assert parser.statements == {8,9}
+
+    def test_excludes_non_ascii(self) -> None:
+        parser = self.parse_text("""\
+            # coding: utf-8
+            a = 1; b = 2
+
+            if len([]):
+                a = 5   # ✘cover
+            """,
+            exclude="✘cover",
+        )
+        assert parser.statements == {2, 4}
+
+    def test_formfeed(self) -> None:
+        # https://github.com/nedbat/coveragepy/issues/461
+        parser = self.parse_text("""\
+            x = 1
+            assert len([]) == 0, (
+                "This won't happen %s" % ("hello",)
+            )
+            \f
+            x = 6
+            assert len([]) == 0, (
+                "This won't happen %s" % ("hello",)
+            )
+            """,
+            exclude="assert",
+        )
+        assert parser.statements == {1, 6}
+
+    @xfail_pypy38
+    def test_decorator_pragmas(self) -> None:
+        parser = self.parse_text("""\
+            # 1
+
+            @foo(3)                     # nocover
+            @bar
+            def func(x, y=5):
+                return 6
+
+            class Foo:      # this is the only statement.
+                '''9'''
+                @foo                    # nocover
+                def __init__(self):
+                    '''12'''
+                    return 13
+
+                @foo(                   # nocover
+                    16,
+                    17,
+                )
+                def meth(self):
+                    return 20
+
+            @foo(                       # nocover
+                23
+            )
+            def func(x=25):
+                return 26
+            """)
+        raw_statements = {3, 4, 5, 6, 8, 9, 10, 11, 13, 15, 16, 17, 19, 20, 22, 23, 25, 26}
+        assert parser.raw_statements == raw_statements
+        assert parser.statements == {8}
+
+    @xfail_pypy38
+    def test_decorator_pragmas_with_colons(self) -> None:
+        # A colon in a decorator expression would confuse the parser,
+        # ending the exclusion of the decorated function.
+        parser = self.parse_text("""\
+            @decorate(X)        # nocover
+            @decorate("Hello"[2])
+            def f():
+                x = 4
+
+            @decorate(X)        # nocover
+            @decorate("Hello"[:7])
+            def g():
+                x = 9
+            """)
+        raw_statements = {1, 2, 3, 4, 6, 7, 8, 9}
+        assert parser.raw_statements == raw_statements
+        assert parser.statements == set()
+
+    def test_class_decorator_pragmas(self) -> None:
+        parser = self.parse_text("""\
+            class Foo(object):
+                def __init__(self):
+                    self.x = 3
+
+            @foo                        # nocover
+            class Bar(object):
+                def __init__(self):
+                    self.x = 8
+            """)
+        assert parser.raw_statements == {1, 2, 3, 5, 6, 7, 8}
+        assert parser.statements == {1, 2, 3}
+
+
+class ParserMissingArcDescriptionTest(PythonParserTestBase):
     """Tests for PythonParser.missing_arc_description."""
-
-    run_in_temp_dir = False
-
-    def parse_text(self, source: str) -> PythonParser:
-        """Parse Python source, and return the parser object."""
-        parser = PythonParser(text=textwrap.dedent(source))
-        parser.parse_source()
-        return parser
 
     def test_missing_arc_description(self) -> None:
         # This code is never run, so the actual values don't matter.
@@ -434,21 +902,23 @@ class ParserMissingArcDescriptionTest(CoverageTest):
         assert parser.missing_arc_description(2, -3) == "line 3 didn't finish the lambda on line 3"
 
     @pytest.mark.skipif(not env.PYBEHAVIOR.match_case, reason="Match-case is new in 3.10")
-    def test_match_case_with_default(self) -> None:
+    def test_match_case(self) -> None:
         parser = self.parse_text("""\
-            for command in ["huh", "go home", "go n"]:
-                match command.split():
-                    case ["go", direction] if direction in "nesw":
-                        match = f"go: {direction}"
-                    case ["go", _]:
-                        match = "no go"
-                print(match)
+            match command.split():
+                case ["go", direction] if direction in "nesw":      # 2
+                    match = f"go: {direction}"
+                case ["go", _]:                                     # 4
+                    match = "no go"
+            print(match)                                            # 6
             """)
-        assert parser.missing_arc_description(3, 4) == (
-            "line 3 didn't jump to line 4, because the pattern on line 3 never matched"
+        assert parser.missing_arc_description(2, 3) == (
+            "line 2 didn't jump to line 3, because the pattern on line 2 never matched"
         )
-        assert parser.missing_arc_description(3, 5) == (
-            "line 3 didn't jump to line 5, because the pattern on line 3 always matched"
+        assert parser.missing_arc_description(2, 4) == (
+            "line 2 didn't jump to line 4, because the pattern on line 2 always matched"
+        )
+        assert parser.missing_arc_description(4, 6) == (
+            "line 4 didn't jump to line 6, because the pattern on line 4 always matched"
         )
 
 
@@ -517,32 +987,3 @@ class ParserFileTest(CoverageTest):
 
         parser = self.parse_file("abrupt.py")
         assert parser.statements == {1}
-
-
-def test_ast_dump() -> None:
-    # Run the AST_DUMP code to make sure it doesn't fail, with some light
-    # assertions. Use parser.py as the test code since it is the longest file,
-    # and fitting, since it's the AST_DUMP code.
-    import coverage.parser
-    files = [
-        coverage.parser.__file__,
-        os.path.join(TESTS_DIR, "stress_phystoken.tok"),
-    ]
-    for fname in files:
-        with open(fname) as f:
-            source = f.read()
-            num_lines = len(source.splitlines())
-            with warnings.catch_warnings():
-                # stress_phystoken.tok has deprecation warnings, suppress them.
-                warnings.filterwarnings("ignore", message=r".*invalid escape sequence")
-                ast_root = ast.parse(source)
-        result: List[str] = []
-        ast_dump(ast_root, print=result.append)
-        if num_lines < 100:
-            continue
-        assert len(result) > 5 * num_lines
-        assert result[0] == "<Module"
-        assert result[-1] == ">"
-        result_text = "\n".join(result)
-        assert len(re_lines(r"^\s+>", result_text)) > num_lines
-        assert len(re_lines(r"<Name @ \d+,\d+(:\d+)? id: '\w+'>", result_text)) > num_lines // 2

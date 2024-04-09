@@ -6,30 +6,26 @@
 #
 cffi==1.16.0
     # via -r requirements/light-threads.in
-dnspython==2.4.2
+dnspython==2.6.1
     # via eventlet
-eventlet==0.33.3
+eventlet==0.35.2
     # via -r requirements/light-threads.in
-gevent==23.7.0
-    # via
-    #   -c requirements/pins.pip
-    #   -r requirements/light-threads.in
-greenlet==2.0.2
+gevent==24.2.1
+    # via -r requirements/light-threads.in
+greenlet==3.0.3
     # via
     #   -r requirements/light-threads.in
     #   eventlet
     #   gevent
 pycparser==2.21
     # via cffi
-six==1.16.0
-    # via eventlet
 zope-event==5.0
     # via gevent
-zope-interface==6.0
+zope-interface==6.2
     # via gevent
 
 # The following packages are considered to be unsafe in a requirements file:
-setuptools==68.2.2
+setuptools==69.2.0
     # via
     #   zope-event
     #   zope-interface

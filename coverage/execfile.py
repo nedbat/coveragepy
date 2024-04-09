@@ -15,7 +15,7 @@ import sys
 
 from importlib.machinery import ModuleSpec
 from types import CodeType, ModuleType
-from typing import Any, List, Optional, Tuple
+from typing import Any
 
 from coverage import env
 from coverage.exceptions import CoverageException, _ExceptionDuringRun, NoCode, NoSource
@@ -39,7 +39,7 @@ class DummyLoader:
 
 def find_module(
     modulename: str,
-) -> Tuple[Optional[str], str, ModuleSpec]:
+) -> tuple[str | None, str, ModuleSpec]:
     """Find the module named `modulename`.
 
     Returns the file path of the module, the name of the enclosing
@@ -59,7 +59,7 @@ def find_module(
         if not spec:
             raise NoSource(
                 f"No module named {mod_main}; " +
-                f"{modulename!r} is a package and cannot be directly executed"
+                f"{modulename!r} is a package and cannot be directly executed",
             )
         pathname = spec.origin
         packagename = spec.name
@@ -73,23 +73,23 @@ class PyRunner:
     This is meant to emulate real Python execution as closely as possible.
 
     """
-    def __init__(self, args: List[str], as_module: bool = False) -> None:
+    def __init__(self, args: list[str], as_module: bool = False) -> None:
         self.args = args
         self.as_module = as_module
 
         self.arg0 = args[0]
-        self.package: Optional[str] = None
-        self.modulename: Optional[str] = None
-        self.pathname: Optional[str] = None
-        self.loader: Optional[DummyLoader] = None
-        self.spec: Optional[ModuleSpec] = None
+        self.package: str | None = None
+        self.modulename: str | None = None
+        self.pathname: str | None = None
+        self.loader: DummyLoader | None = None
+        self.spec: ModuleSpec | None = None
 
     def prepare(self) -> None:
         """Set sys.path properly.
 
         This needs to happen before any importing, and without importing anything.
         """
-        path0: Optional[str]
+        path0: str | None
         if env.PYVERSION >= (3, 11) and os.getenv('PYTHONSAFEPATH'):
             # See https://docs.python.org/3/using/cmdline.html#cmdoption-P
             path0 = None
@@ -260,7 +260,7 @@ class PyRunner:
             os.chdir(cwd)
 
 
-def run_python_module(args: List[str]) -> None:
+def run_python_module(args: list[str]) -> None:
     """Run a Python module, as though with ``python -m name args...``.
 
     `args` is the argument array to present as sys.argv, including the first
@@ -274,7 +274,7 @@ def run_python_module(args: List[str]) -> None:
     runner.run()
 
 
-def run_python_file(args: List[str]) -> None:
+def run_python_file(args: list[str]) -> None:
     """Run a Python file as if it were the main program on the command line.
 
     `args` is the argument array to present as sys.argv, including the first

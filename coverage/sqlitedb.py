@@ -9,7 +9,7 @@ import contextlib
 import re
 import sqlite3
 
-from typing import cast, Any, Iterable, Iterator, List, Optional, Tuple
+from typing import cast, Any, Iterable, Iterator, Tuple
 
 from coverage.debug import auto_repr, clipped_repr, exc_one_line
 from coverage.exceptions import DataError
@@ -32,7 +32,7 @@ class SqliteDb:
         self.debug = debug
         self.filename = filename
         self.nest = 0
-        self.con: Optional[sqlite3.Connection] = None
+        self.con: sqlite3.Connection | None = None
 
     __repr__ = auto_repr
 
@@ -53,6 +53,9 @@ class SqliteDb:
         except sqlite3.Error as exc:
             raise DataError(f"Couldn't use data file {self.filename!r}: {exc}") from exc
 
+        if self.debug.should("sql"):
+            self.debug.write(f"Connected to {self.filename!r} as {self.con!r}")
+
         self.con.create_function("REGEXP", 2, lambda txt, pat: re.search(txt, pat) is not None)
 
         # Turning off journal_mode can speed up writing. It can't always be
@@ -61,7 +64,7 @@ class SqliteDb:
         if hasattr(sqlite3, "SQLITE_DBCONFIG_DEFENSIVE"):
             # Turn off defensive mode, so that journal_mode=off can succeed.
             self.con.setconfig(                     # type: ignore[attr-defined, unused-ignore]
-                sqlite3.SQLITE_DBCONFIG_DEFENSIVE, False
+                sqlite3.SQLITE_DBCONFIG_DEFENSIVE, False,
             )
 
         # This pragma makes writing faster. It disables rollbacks, but we never need them.
@@ -75,6 +78,8 @@ class SqliteDb:
     def close(self) -> None:
         """If needed, close the connection."""
         if self.con is not None and self.filename != ":memory:":
+            if self.debug.should("sql"):
+                self.debug.write(f"Closing {self.con!r} on {self.filename!r}")
             self.con.close()
             self.con = None
 
@@ -169,7 +174,7 @@ class SqliteDb:
             self.debug.write(f"Row id result: {rowid!r}")
         return rowid
 
-    def execute_one(self, sql: str, parameters: Iterable[Any] = ()) -> Optional[Tuple[Any, ...]]:
+    def execute_one(self, sql: str, parameters: Iterable[Any] = ()) -> tuple[Any, ...] | None:
         """Execute a statement and return the one row that results.
 
         This is like execute(sql, parameters).fetchone(), except it is
@@ -187,7 +192,7 @@ class SqliteDb:
         else:
             raise AssertionError(f"SQL {sql!r} shouldn't return {len(rows)} rows")
 
-    def _executemany(self, sql: str, data: List[Any]) -> sqlite3.Cursor:
+    def _executemany(self, sql: str, data: list[Any]) -> sqlite3.Cursor:
         """Same as :meth:`python:sqlite3.Connection.executemany`."""
         if self.debug.should("sql"):
             final = ":" if self.debug.should("sqldata") else ""

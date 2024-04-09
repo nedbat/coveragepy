@@ -25,8 +25,9 @@ from coverage import env
 from coverage.data import line_counts
 from coverage.files import abs_file, python_reported_file
 
+from tests import testenv
 from tests.coveragetest import CoverageTest, TESTS_DIR
-from tests.helpers import re_lines, re_lines_text
+from tests.helpers import re_line, re_lines, re_lines_text
 
 
 class ProcessTest(CoverageTest):
@@ -480,6 +481,7 @@ class ProcessTest(CoverageTest):
         assert "Hello\n" in out
         assert "warning" not in out
 
+    @pytest.mark.skipif(env.METACOV, reason="Can't test tracers changing during metacoverage")
     def test_warning_trace_function_changed(self) -> None:
         self.make_file("settrace.py", """\
             import sys
@@ -534,10 +536,12 @@ class ProcessTest(CoverageTest):
         assert py_out == "None\n"
 
         cov_out = self.run_command("coverage run showtrace.py")
-        if os.getenv('COVERAGE_TEST_TRACER', 'c') == 'c':
+        if testenv.C_TRACER:
             # If the C trace function is being tested, then regular running should have
             # the C function, which registers itself as f_trace.
             assert cov_out == "CTracer\n"
+        elif testenv.SYS_MON:
+            assert cov_out == "None\n"
         else:
             # If the Python trace function is being tested, then regular running will
             # also show the Python function.
@@ -726,7 +730,7 @@ class EnvironmentTest(CoverageTest):
         self.add_test_modules_to_pythonpath()
         expected = self.run_command("python -m process_test.try_execfile")
         actual = self.run_command(
-            "coverage run --source process_test.try_execfile -m process_test.try_execfile"
+            "coverage run --source process_test.try_execfile -m process_test.try_execfile",
         )
         self.assert_tryexecfile_output(expected, actual)
 
@@ -746,7 +750,7 @@ class EnvironmentTest(CoverageTest):
         self.add_test_modules_to_pythonpath()
         expected = self.run_command("python -m process_test.try_execfile")
         actual = self.run_command(
-            "coverage run --source process_test -m process_test.try_execfile"
+            "coverage run --source process_test -m process_test.try_execfile",
         )
         self.assert_tryexecfile_output(expected, actual)
 
@@ -830,7 +834,7 @@ class EnvironmentTest(CoverageTest):
             SOMETHING = "hello-xyzzy"
             """)
         abc = os.path.abspath("a/b/c")
-        self.make_file("run_coverage.py", """\
+        self.make_file("run_coverage.py", f"""\
             import sys
             sys.path[0:0] = [
                 r'{abc}',
@@ -841,7 +845,7 @@ class EnvironmentTest(CoverageTest):
 
             if __name__ == '__main__':
                 sys.exit(coverage.cmdline.main())
-            """.format(abc=abc))
+            """)
         self.make_file("how_is_it.py", """\
             import pprint, sys
             pprint.pprint(sys.path)
@@ -858,7 +862,7 @@ class EnvironmentTest(CoverageTest):
     @pytest.mark.skipif(env.WINDOWS, reason="Windows can't make symlinks")
     @pytest.mark.skipif(
         platform.python_version().endswith("+"),
-        reason="setuptools barfs on dev versions: https://github.com/pypa/packaging/issues/678"
+        reason="setuptools barfs on dev versions: https://github.com/pypa/packaging/issues/678",
         # https://github.com/nedbat/coveragepy/issues/1556
     )
     def test_bug_862(self) -> None:
@@ -942,7 +946,7 @@ class ExcepthookTest(CoverageTest):
         assert line_counts(data)['excepthook.py'] == 7
 
     @pytest.mark.skipif(not env.CPYTHON,
-        reason="non-CPython handles excepthook exits differently, punt for now."
+        reason="non-CPython handles excepthook exits differently, punt for now.",
     )
     def test_excepthook_exit(self) -> None:
         self.make_file("excepthook_exit.py", """\
@@ -1001,8 +1005,8 @@ class AliasedCommandTest(CoverageTest):
 
     def test_wrong_alias_doesnt_work(self) -> None:
         # "coverage2" doesn't work on py3
-        assert sys.version_info[0] in [2, 3]    # Let us know when Python 4 is out...
-        badcmd = "coverage%d" % (5 - sys.version_info[0])
+        assert sys.version_info[0] == 3    # Let us know when Python 4 is out...
+        badcmd = "coverage2"
         out = self.run_command(badcmd)
         assert "Code coverage for Python" not in out
 
@@ -1088,13 +1092,69 @@ class FailUnderTest(CoverageTest):
             "a = 1\n" +
             "b = 2\n" * 2000 +
             "if a > 3:\n" +
-            "    c = 4\n"
+            "    c = 4\n",
         )
         self.make_data_file(lines={abs_file("ninety_nine_plus.py"): range(1, 2002)})
         st, out = self.run_command_status("coverage report --fail-under=100")
         assert st == 2
         expected = "Coverage failure: total of 99 is less than fail-under=100"
         assert expected == self.last_line_squeezed(out)
+
+
+class CoverageCoreTest(CoverageTest):
+    """Test that cores are chosen correctly."""
+    # This doesn't test failure modes, only successful requests.
+    try:
+        from coverage.tracer import CTracer
+        has_ctracer = True
+    except ImportError:
+        has_ctracer = False
+
+    def test_core_default(self) -> None:
+        self.del_environ("COVERAGE_TEST_CORES")
+        self.del_environ("COVERAGE_CORE")
+        self.make_file("numbers.py", "print(123, 456)")
+        out = self.run_command("coverage run --debug=sys numbers.py")
+        assert out.endswith("123 456\n")
+        core = re_line(r" core:", out).strip()
+        if self.has_ctracer:
+            assert core == "core: CTracer"
+        else:
+            assert core == "core: PyTracer"
+
+    @pytest.mark.skipif(not has_ctracer, reason="No CTracer to request")
+    def test_core_request_ctrace(self) -> None:
+        self.del_environ("COVERAGE_TEST_CORES")
+        self.set_environ("COVERAGE_CORE", "ctrace")
+        self.make_file("numbers.py", "print(123, 456)")
+        out = self.run_command("coverage run --debug=sys numbers.py")
+        assert out.endswith("123 456\n")
+        core = re_line(r" core:", out).strip()
+        assert core == "core: CTracer"
+
+    def test_core_request_pytrace(self) -> None:
+        self.del_environ("COVERAGE_TEST_CORES")
+        self.set_environ("COVERAGE_CORE", "pytrace")
+        self.make_file("numbers.py", "print(123, 456)")
+        out = self.run_command("coverage run --debug=sys numbers.py")
+        assert out.endswith("123 456\n")
+        core = re_line(r" core:", out).strip()
+        assert core == "core: PyTracer"
+
+    def test_core_request_sysmon(self) -> None:
+        self.del_environ("COVERAGE_TEST_CORES")
+        self.set_environ("COVERAGE_CORE", "sysmon")
+        self.make_file("numbers.py", "print(123, 456)")
+        out = self.run_command("coverage run --debug=sys numbers.py")
+        assert out.endswith("123 456\n")
+        core = re_line(r" core:", out).strip()
+        warns = re_lines(r"CoverageWarning: sys.monitoring isn't available", out)
+        if env.PYBEHAVIOR.pep669:
+            assert core == "core: SysMonitor"
+            assert not warns
+        else:
+            assert core in ("core: CTracer", "core: PyTracer")
+            assert warns
 
 
 class FailUnderNoFilesTest(CoverageTest):

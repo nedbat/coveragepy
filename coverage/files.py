@@ -13,7 +13,7 @@ import posixpath
 import re
 import sys
 
-from typing import Callable, Dict, Iterable, List, Optional, Tuple
+from typing import Callable, Iterable
 
 from coverage import env
 from coverage.exceptions import ConfigError
@@ -24,7 +24,7 @@ os = isolate_module(os)
 
 
 RELATIVE_DIR: str = ""
-CANONICAL_FILENAME_CACHE: Dict[str, str] = {}
+CANONICAL_FILENAME_CACHE: dict[str, str] = {}
 
 def set_relative_directory() -> None:
     """Set the directory that `relative_filename` will be relative to."""
@@ -96,13 +96,13 @@ def flat_rootname(filename: str) -> str:
     the same directory, but need to differentiate same-named files from
     different directories.
 
-    For example, the file a/b/c.py will return 'd_86bbcbe134d28fd2_c_py'
+    For example, the file a/b/c.py will return 'z_86bbcbe134d28fd2_c_py'
 
     """
     dirname, basename = ntpath.split(filename)
     if dirname:
         fp = hashlib.new("sha3_256", dirname.encode("UTF-8")).hexdigest()[:16]
-        prefix = f"d_{fp}_"
+        prefix = f"z_{fp}_"
     else:
         prefix = ""
     return prefix + basename.replace(".", "_")
@@ -110,8 +110,8 @@ def flat_rootname(filename: str) -> str:
 
 if env.WINDOWS:
 
-    _ACTUAL_PATH_CACHE: Dict[str, str] = {}
-    _ACTUAL_PATH_LIST_CACHE: Dict[str, List[str]] = {}
+    _ACTUAL_PATH_CACHE: dict[str, str] = {}
+    _ACTUAL_PATH_LIST_CACHE: dict[str, list[str]] = {}
 
     def actual_path(path: str) -> str:
         """Get the actual path of `path`, including the correct case."""
@@ -156,7 +156,7 @@ def abs_file(path: str) -> str:
     return actual_path(os.path.abspath(os.path.realpath(path)))
 
 
-def zip_location(filename: str) -> Optional[Tuple[str, str]]:
+def zip_location(filename: str) -> tuple[str, str] | None:
     """Split a filename into a zipfile / inner name pair.
 
     Only return a pair if the zipfile exists.  No check is made if the inner
@@ -197,7 +197,7 @@ def isabs_anywhere(filename: str) -> bool:
     return ntpath.isabs(filename) or posixpath.isabs(filename)
 
 
-def prep_patterns(patterns: Iterable[str]) -> List[str]:
+def prep_patterns(patterns: Iterable[str]) -> list[str]:
     """Prepare the file patterns for use in a `GlobMatcher`.
 
     If a pattern starts with a wildcard, it is used as a pattern
@@ -224,7 +224,7 @@ class TreeMatcher:
 
     """
     def __init__(self, paths: Iterable[str], name: str = "unknown") -> None:
-        self.original_paths: List[str] = human_sorted(paths)
+        self.original_paths: list[str] = human_sorted(paths)
         #self.paths = list(map(os.path.normcase, paths))
         self.paths = [os.path.normcase(p) for p in paths]
         self.name = name
@@ -232,7 +232,7 @@ class TreeMatcher:
     def __repr__(self) -> str:
         return f"<TreeMatcher {self.name} {self.original_paths!r}>"
 
-    def info(self) -> List[str]:
+    def info(self) -> list[str]:
         """A list of strings for displaying when dumping state."""
         return self.original_paths
 
@@ -259,7 +259,7 @@ class ModuleMatcher:
     def __repr__(self) -> str:
         return f"<ModuleMatcher {self.name} {self.modules!r}>"
 
-    def info(self) -> List[str]:
+    def info(self) -> list[str]:
         """A list of strings for displaying when dumping state."""
         return self.modules
 
@@ -289,7 +289,7 @@ class GlobMatcher:
     def __repr__(self) -> str:
         return f"<GlobMatcher {self.name} {self.pats!r}>"
 
-    def info(self) -> List[str]:
+    def info(self) -> list[str]:
         """A list of strings for displaying when dumping state."""
         return self.pats
 
@@ -389,11 +389,11 @@ class PathAliases:
     """
     def __init__(
         self,
-        debugfn: Optional[Callable[[str], None]] = None,
+        debugfn: Callable[[str], None] | None = None,
         relative: bool = False,
     ) -> None:
         # A list of (original_pattern, regex, result)
-        self.aliases: List[Tuple[str, re.Pattern[str], str]] = []
+        self.aliases: list[tuple[str, re.Pattern[str], str]] = []
         self.debugfn = debugfn or (lambda msg: 0)
         self.relative = relative
         self.pprinted = False
@@ -478,16 +478,19 @@ class PathAliases:
                 if not exists(new):
                     self.debugfn(
                         f"Rule {original_pattern!r} changed {path!r} to {new!r} " +
-                        "which doesn't exist, continuing"
+                        "which doesn't exist, continuing",
                     )
                     continue
                 self.debugfn(
                     f"Matched path {path!r} to rule {original_pattern!r} -> {result!r}, " +
-                    f"producing {new!r}"
+                    f"producing {new!r}",
                 )
                 return new
 
         # If we get here, no pattern matched.
+
+        if self.relative:
+            path = relative_filename(path)
 
         if self.relative and not isabs_anywhere(path):
             # Auto-generate a pattern to implicitly match relative files
@@ -500,7 +503,7 @@ class PathAliases:
                 # Only add a new pattern if we don't already have this pattern.
                 if not any(p == pattern for p, _, _ in self.aliases):
                     self.debugfn(
-                        f"Generating rule: {pattern!r} -> {result!r} using regex {regex_pat!r}"
+                        f"Generating rule: {pattern!r} -> {result!r} using regex {regex_pat!r}",
                     )
                     self.aliases.append((pattern, re.compile(regex_pat), result))
                     return self.map(path, exists=exists)

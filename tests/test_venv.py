@@ -16,6 +16,7 @@ import pytest
 
 from coverage import env
 
+from tests import testenv
 from tests.coveragetest import CoverageTest, COVERAGE_INSTALL_ARGS
 from tests.helpers import change_dir, make_file
 from tests.helpers import re_lines, run_command
@@ -144,7 +145,7 @@ def venv_world_fixture(tmp_path_factory: pytest.TempPathFactory) -> Path:
             "./third_pkg " +
             "-e ./another_pkg " +
             "-e ./bug888/app -e ./bug888/plugin " +
-            COVERAGE_INSTALL_ARGS
+            COVERAGE_INSTALL_ARGS,
         )
         shutil.rmtree("third_pkg")
 
@@ -197,7 +198,7 @@ class VirtualenvTest(CoverageTest):
 
     @pytest.mark.parametrize('install_source_in_venv', [True, False])
     def test_third_party_venv_isnt_measured(
-        self, coverage_command: str, install_source_in_venv: bool
+        self, coverage_command: str, install_source_in_venv: bool,
     ) -> None:
         if install_source_in_venv:
             make_file("setup.py", """\
@@ -282,7 +283,7 @@ class VirtualenvTest(CoverageTest):
         assert "coverage" not in out
         assert "colorsys" not in out
 
-    @pytest.mark.skipif(not env.C_TRACER, reason="Plugins are only supported with the C tracer.")
+    @pytest.mark.skipif(not testenv.C_TRACER, reason="No plugins with this core.")
     def test_venv_with_dynamic_plugin(self, coverage_command: str) -> None:
         # https://github.com/nedbat/coveragepy/issues/1150
         # Django coverage plugin was incorrectly getting warnings:
@@ -344,7 +345,7 @@ class VirtualenvTest(CoverageTest):
     def test_bug_888(self, coverage_command: str) -> None:
         out = run_in_venv(
             coverage_command +
-            " run --source=bug888/app,bug888/plugin bug888/app/testcov/main.py"
+            " run --source=bug888/app,bug888/plugin bug888/app/testcov/main.py",
         )
         # When the test fails, the output includes "Already imported a file that will be measured"
         assert out == "Plugin here\n"

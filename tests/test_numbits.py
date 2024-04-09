@@ -8,7 +8,7 @@ from __future__ import annotations
 import json
 import sqlite3
 
-from typing import Iterable, Set
+from typing import Iterable
 
 from hypothesis import example, given, settings
 from hypothesis.strategies import sets, integers
@@ -28,7 +28,7 @@ line_number_sets = sets(line_numbers)
 # When coverage-testing ourselves, hypothesis complains about a test being
 # flaky because the first run exceeds the deadline (and fails), and the second
 # run succeeds.  Disable the deadline if we are coverage-testing.
-default_settings = settings()
+default_settings = settings(deadline=400)   # milliseconds
 if env.METACOV:
     default_settings = settings(default_settings, deadline=None)
 
@@ -54,7 +54,7 @@ class NumbitsOpTest(CoverageTest):
 
     @given(line_number_sets, line_number_sets)
     @settings(default_settings)
-    def test_union(self, nums1: Set[int], nums2: Set[int]) -> None:
+    def test_union(self, nums1: set[int], nums2: set[int]) -> None:
         nb1 = nums_to_numbits(nums1)
         good_numbits(nb1)
         nb2 = nums_to_numbits(nums2)
@@ -66,7 +66,7 @@ class NumbitsOpTest(CoverageTest):
 
     @given(line_number_sets, line_number_sets)
     @settings(default_settings)
-    def test_intersection(self, nums1: Set[int], nums2: Set[int]) -> None:
+    def test_intersection(self, nums1: set[int], nums2: set[int]) -> None:
         nb1 = nums_to_numbits(nums1)
         good_numbits(nb1)
         nb2 = nums_to_numbits(nums2)
@@ -78,7 +78,7 @@ class NumbitsOpTest(CoverageTest):
 
     @given(line_number_sets, line_number_sets)
     @settings(default_settings)
-    def test_any_intersection(self, nums1: Set[int], nums2: Set[int]) -> None:
+    def test_any_intersection(self, nums1: set[int], nums2: set[int]) -> None:
         nb1 = nums_to_numbits(nums1)
         good_numbits(nb1)
         nb2 = nums_to_numbits(nums2)
@@ -113,7 +113,7 @@ class NumbitsSqliteFunctionTest(CoverageTest):
             [
                 (i, nums_to_numbits(range(i, 100, i)))
                 for i in range(1, 11)
-            ]
+            ],
         )
         self.addCleanup(self.cursor.close)
 
@@ -122,7 +122,7 @@ class NumbitsSqliteFunctionTest(CoverageTest):
             "select numbits_union(" +
                 "(select numbits from data where id = 7)," +
                 "(select numbits from data where id = 9)" +
-                ")"
+                ")",
         )
         expected = [
             7, 9, 14, 18, 21, 27, 28, 35, 36, 42, 45, 49,
@@ -136,7 +136,7 @@ class NumbitsSqliteFunctionTest(CoverageTest):
             "select numbits_intersection(" +
                 "(select numbits from data where id = 7)," +
                 "(select numbits from data where id = 9)" +
-                ")"
+                ")",
         )
         answer = numbits_to_nums(list(res)[0][0])
         assert [63] == answer
@@ -144,14 +144,14 @@ class NumbitsSqliteFunctionTest(CoverageTest):
     def test_numbits_any_intersection(self) -> None:
         res = self.cursor.execute(
             "select numbits_any_intersection(?, ?)",
-            (nums_to_numbits([1, 2, 3]), nums_to_numbits([3, 4, 5]))
+            (nums_to_numbits([1, 2, 3]), nums_to_numbits([3, 4, 5])),
         )
         answer = [any_inter for (any_inter,) in res]
         assert [1] == answer
 
         res = self.cursor.execute(
             "select numbits_any_intersection(?, ?)",
-            (nums_to_numbits([1, 2, 3]), nums_to_numbits([7, 8, 9]))
+            (nums_to_numbits([1, 2, 3]), nums_to_numbits([7, 8, 9])),
         )
         answer = [any_inter for (any_inter,) in res]
         assert [0] == answer

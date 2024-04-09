@@ -15,7 +15,7 @@ from __future__ import annotations
 import re
 
 from typing import (
-    Any, Callable, Dict, List, NoReturn, Optional, Set, Union, cast,
+    Any, Callable, Dict, NoReturn, cast,
 )
 
 
@@ -33,7 +33,7 @@ class CodeBuilder:
     """Build source code conveniently."""
 
     def __init__(self, indent: int = 0) -> None:
-        self.code: List[Union[str, CodeBuilder]] = []
+        self.code: list[str | CodeBuilder] = []
         self.indent_level = indent
 
     def __str__(self) -> str:
@@ -63,14 +63,14 @@ class CodeBuilder:
         """Decrease the current indent for following lines."""
         self.indent_level -= self.INDENT_STEP
 
-    def get_globals(self) -> Dict[str, Any]:
+    def get_globals(self) -> dict[str, Any]:
         """Execute the code, and return a dict of globals it defines."""
         # A check that the caller really finished all the blocks they started.
         assert self.indent_level == 0
         # Get the Python source as a single string.
         python_source = str(self)
         # Execute the source, defining globals, and return them.
-        global_namespace: Dict[str, Any] = {}
+        global_namespace: dict[str, Any] = {}
         exec(python_source, global_namespace)
         return global_namespace
 
@@ -117,7 +117,7 @@ class Templite:
         })
 
     """
-    def __init__(self, text: str, *contexts: Dict[str, Any]) -> None:
+    def __init__(self, text: str, *contexts: dict[str, Any]) -> None:
         """Construct a Templite with the given `text`.
 
         `contexts` are dictionaries of values to use for future renderings.
@@ -128,8 +128,8 @@ class Templite:
         for context in contexts:
             self.context.update(context)
 
-        self.all_vars: Set[str] = set()
-        self.loop_vars: Set[str] = set()
+        self.all_vars: set[str] = set()
+        self.loop_vars: set[str] = set()
 
         # We construct a function in source form, then compile it and hold onto
         # it, and execute it to render the template.
@@ -143,7 +143,7 @@ class Templite:
         code.add_line("extend_result = result.extend")
         code.add_line("to_str = str")
 
-        buffered: List[str] = []
+        buffered: list[str] = []
 
         def flush_output() -> None:
             """Force `buffered` to the code builder."""
@@ -194,10 +194,7 @@ class Templite:
                         ops_stack.append("for")
                         self._variable(words[1], self.loop_vars)
                         code.add_line(
-                            "for c_{} in {}:".format(
-                                words[1],
-                                self._expr_code(words[3])
-                            )
+                            f"for c_{words[1]} in {self._expr_code(words[3])}:",
                         )
                         code.indent()
                     elif words[0] == "joined":
@@ -241,7 +238,7 @@ class Templite:
         self._render_function = cast(
             Callable[
                 [Dict[str, Any], Callable[..., Any]],
-                str
+                str,
             ],
             code.get_globals()["render_function"],
         )
@@ -268,7 +265,7 @@ class Templite:
         """Raise a syntax error using `msg`, and showing `thing`."""
         raise TempliteSyntaxError(f"{msg}: {thing!r}")
 
-    def _variable(self, name: str, vars_set: Set[str]) -> None:
+    def _variable(self, name: str, vars_set: set[str]) -> None:
         """Track that `name` is used as a variable.
 
         Adds the name to `vars_set`, a set of variable names.
@@ -280,7 +277,7 @@ class Templite:
             self._syntax_error("Not a valid name", name)
         vars_set.add(name)
 
-    def render(self, context: Optional[Dict[str, Any]] = None) -> str:
+    def render(self, context: dict[str, Any] | None = None) -> str:
         """Render this template by applying it to `context`.
 
         `context` is a dictionary of values to use in this rendering.
@@ -302,7 +299,7 @@ class Templite:
                     value = value[dot]
                 except (TypeError, KeyError) as exc:
                     raise TempliteValueError(
-                        f"Couldn't evaluate {value!r}.{dot}"
+                        f"Couldn't evaluate {value!r}.{dot}",
                     ) from exc
             if callable(value):
                 value = value()

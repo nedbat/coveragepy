@@ -25,6 +25,7 @@ from coverage.debug import (
 )
 from coverage.exceptions import DataError
 
+from tests import testenv
 from tests.coveragetest import CoverageTest
 from tests.helpers import DebugControlString, re_line, re_lines, re_lines_text
 
@@ -196,7 +197,7 @@ class DebugTraceTest(CoverageTest):
     def test_debug_sys_ctracer(self) -> None:
         out_text = self.f1_debug_output(["sys"])
         tracer_line = re_line(r"CTracer:", out_text).strip()
-        if env.C_TRACER:
+        if testenv.C_TRACER or testenv.SYS_MON:
             expected = "CTracer: available"
         else:
             expected = "CTracer: unavailable"
@@ -224,7 +225,7 @@ def assert_good_debug_sys(out_text: str) -> None:
     """Assert that `str` is good output for debug=sys."""
     labels = """
         coverage_version coverage_module coverage_paths stdlib_paths third_party_paths
-        tracer configs_attempted config_file configs_read data_file
+        core configs_attempted config_file configs_read data_file
         python platform implementation executable
         pid cwd path environment command_line cover_match pylib_match
         """.split()
@@ -232,6 +233,14 @@ def assert_good_debug_sys(out_text: str) -> None:
         label_pat = fr"^\s*{label}: "
         msg = f"Incorrect lines for {label!r}"
         assert 1 == len(re_lines(label_pat, out_text)), msg
+    tracer_line = re_line(" core:", out_text).strip()
+    if testenv.C_TRACER:
+        assert tracer_line == "core: CTracer"
+    elif testenv.PY_TRACER:
+        assert tracer_line == "core: PyTracer"
+    else:
+        assert testenv.SYS_MON
+        assert tracer_line == "core: SysMonitor"
 
 
 class DebugOutputTest(CoverageTest):

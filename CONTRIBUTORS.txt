@@ -38,6 +38,7 @@ Brett Cannon
 Brian Grohe
 Bruno Oliveira
 Bruno P. Kinoshita
+Bruno Rodrigues dos Santos
 Buck Evan
 Buck Golemon
 Calen Pennington
@@ -182,6 +183,7 @@ Peter Portante
 Phebe Polk
 Reya B
 Ricardo Newbery
+Robert Harris
 Rodrigue Cloutier
 Roger Hu
 Roland Illig
@@ -208,6 +210,7 @@ Steve Leonard
 Steve Oswald
 Steve Peak
 Sviatoslav Sydorenko
+Tanaydin Sirin
 Teake Nutma
 Ted Wexler
 Thijs Triemstra

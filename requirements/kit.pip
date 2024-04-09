@@ -4,31 +4,32 @@
 #
 #    make upgrade
 #
-auditwheel==5.4.0
+auditwheel==6.0.0
     # via -r requirements/kit.in
 bashlex==0.18
     # via cibuildwheel
 bracex==2.4
     # via cibuildwheel
-build==1.0.3
+build==1.1.1
     # via -r requirements/kit.in
-certifi==2023.7.22
+certifi==2024.2.2
     # via cibuildwheel
-cibuildwheel==2.16.1
+cibuildwheel==2.17.0
     # via -r requirements/kit.in
 colorama==0.4.6
     # via -r requirements/kit.in
-filelock==3.12.4
+filelock==3.13.1
     # via cibuildwheel
-importlib-metadata==6.8.0
+importlib-metadata==7.0.2
     # via build
-packaging==23.2
+packaging==24.0
     # via
+    #   auditwheel
     #   build
     #   cibuildwheel
-platformdirs==3.11.0
+platformdirs==4.2.0
     # via cibuildwheel
-pyelftools==0.30
+pyelftools==0.31
     # via auditwheel
 pyproject-hooks==1.0.0
     # via build
@@ -37,13 +38,13 @@ tomli==2.0.1
     #   build
     #   cibuildwheel
     #   pyproject-hooks
-typing-extensions==4.8.0
+typing-extensions==4.10.0
     # via cibuildwheel
-wheel==0.41.2
+wheel==0.43.0
     # via -r requirements/kit.in
-zipp==3.17.0
+zipp==3.18.0
     # via importlib-metadata
 
 # The following packages are considered to be unsafe in a requirements file:
-setuptools==68.2.2
+setuptools==69.2.0
     # via -r requirements/kit.in

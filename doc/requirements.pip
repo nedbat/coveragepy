@@ -4,57 +4,75 @@
 #
 #    make doc_upgrade
 #
-alabaster==0.7.13
+alabaster==0.7.16
     # via sphinx
-attrs==23.1.0
+attrs==23.2.0
     # via scriv
-babel==2.12.1
+babel==2.14.0
     # via sphinx
-certifi==2023.5.7
+certifi==2024.2.2
     # via requests
-charset-normalizer==3.1.0
+charset-normalizer==3.3.2
     # via requests
-click==8.1.3
+click==8.1.7
     # via
     #   click-log
     #   scriv
 click-log==0.4.0
     # via scriv
-cogapp==3.3.0
+cogapp==3.4.1
     # via -r doc/requirements.in
 colorama==0.4.6
     # via sphinx-autobuild
-docutils==0.18.1
+doc8==1.1.1
+    # via -r doc/requirements.in
+docutils==0.20.1
     # via
+    #   doc8
+    #   restructuredtext-lint
     #   sphinx
     #   sphinx-rtd-theme
-idna==3.4
+idna==3.6
     # via requests
 imagesize==1.4.1
     # via sphinx
-jinja2==3.1.2
+jinja2==3.1.3
     # via
     #   scriv
     #   sphinx
 livereload==2.6.3
     # via sphinx-autobuild
-markupsafe==2.1.3
+markdown-it-py==3.0.0
+    # via scriv
+markupsafe==2.1.5
     # via jinja2
-packaging==23.1
+mdurl==0.1.2
+    # via markdown-it-py
+packaging==24.0
     # via sphinx
-pygments==2.15.1
-    # via sphinx
+pbr==6.0.0
+    # via stevedore
+pyenchant==3.2.2
+    # via
+    #   -r doc/requirements.in
+    #   sphinxcontrib-spelling
+pygments==2.17.2
+    # via
+    #   doc8
+    #   sphinx
 requests==2.31.0
     # via
     #   scriv
     #   sphinx
-scriv==1.3.1
+restructuredtext-lint==1.4.0
+    # via doc8
+scriv==1.5.1
     # via -r doc/requirements.in
 six==1.16.0
     # via livereload
 snowballstemmer==2.2.0
     # via sphinx
-sphinx==6.2.1
+sphinx==7.2.6
     # via
     #   -r doc/requirements.in
     #   sphinx-autobuild
@@ -62,29 +80,34 @@ sphinx==6.2.1
     #   sphinx-rtd-theme
     #   sphinxcontrib-jquery
     #   sphinxcontrib-restbuilder
-sphinx-autobuild==2021.3.14
+    #   sphinxcontrib-spelling
+sphinx-autobuild==2024.2.4
     # via -r doc/requirements.in
-sphinx-code-tabs==0.5.3
+sphinx-code-tabs==0.5.5
     # via -r doc/requirements.in
-sphinx-rtd-theme==1.2.2
+sphinx-rtd-theme==2.0.0
     # via -r doc/requirements.in
-sphinxcontrib-applehelp==1.0.4
+sphinxcontrib-applehelp==1.0.8
     # via sphinx
-sphinxcontrib-devhelp==1.0.2
+sphinxcontrib-devhelp==1.0.6
     # via sphinx
-sphinxcontrib-htmlhelp==2.0.1
+sphinxcontrib-htmlhelp==2.0.5
     # via sphinx
 sphinxcontrib-jquery==4.1
     # via sphinx-rtd-theme
 sphinxcontrib-jsmath==1.0.1
     # via sphinx
-sphinxcontrib-qthelp==1.0.3
+sphinxcontrib-qthelp==1.0.7
     # via sphinx
 sphinxcontrib-restbuilder==0.3
     # via -r doc/requirements.in
-sphinxcontrib-serializinghtml==1.1.5
+sphinxcontrib-serializinghtml==1.1.10
     # via sphinx
-tornado==6.3.2
+sphinxcontrib-spelling==8.0.0
+    # via -r doc/requirements.in
+stevedore==5.2.0
+    # via doc8
+tornado==6.4
     # via livereload
-urllib3==2.0.3
+urllib3==2.2.1
     # via requests

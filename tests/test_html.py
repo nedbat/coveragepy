@@ -15,7 +15,7 @@ import re
 import sys
 
 from unittest import mock
-from typing import Any, Dict, IO, List, Optional, Set, Tuple
+from typing import Any, IO
 
 import pytest
 
@@ -27,6 +27,7 @@ import coverage.html
 from coverage.report_core import get_analysis_to_report
 from coverage.types import TLineNo, TMorf
 
+from tests import testenv
 from tests.coveragetest import CoverageTest, TESTS_DIR
 from tests.goldtest import gold_path
 from tests.goldtest import compare, contains, contains_rx, doesnt_contain, contains_any
@@ -55,8 +56,8 @@ class HtmlTestHelpers(CoverageTest):
 
     def run_coverage(
         self,
-        covargs: Optional[Dict[str, Any]] = None,
-        htmlargs: Optional[Dict[str, Any]] = None,
+        covargs: dict[str, Any] | None = None,
+        htmlargs: dict[str, Any] | None = None,
     ) -> float:
         """Run coverage.py on main_file.py, and create an HTML report."""
         self.clean_local_file_imports()
@@ -133,7 +134,7 @@ class HtmlTestHelpers(CoverageTest):
 
 class FileWriteTracker:
     """A fake object to track how `open` is used to write files."""
-    def __init__(self, written: Set[str]) -> None:
+    def __init__(self, written: set[str]) -> None:
         self.written = written
 
     def open(self, filename: str, mode: str = "r") -> IO[str]:
@@ -154,12 +155,12 @@ class HtmlDeltaTest(HtmlTestHelpers, CoverageTest):
         self.real_coverage_version = coverage.__version__
         self.addCleanup(setattr, coverage, "__version__", self.real_coverage_version)
 
-        self.files_written: Set[str]
+        self.files_written: set[str]
 
     def run_coverage(
         self,
-        covargs: Optional[Dict[str, Any]] = None,
-        htmlargs: Optional[Dict[str, Any]] = None,
+        covargs: dict[str, Any] | None = None,
+        htmlargs: dict[str, Any] | None = None,
     ) -> float:
         """Run coverage in-process for the delta tests.
 
@@ -570,14 +571,14 @@ class HtmlTest(HtmlTestHelpers, CoverageTest):
 
     def make_main_and_not_covered(self) -> None:
         """Helper to create files for skip_covered scenarios."""
-        self.make_file("main_file.py", """
+        self.make_file("main_file.py", """\
             import not_covered
 
             def normal():
                 print("z")
             normal()
         """)
-        self.make_file("not_covered.py", """
+        self.make_file("not_covered.py", """\
             def not_covered():
                 print("n")
         """)
@@ -607,7 +608,7 @@ class HtmlTest(HtmlTestHelpers, CoverageTest):
         self.assert_exists("htmlcov/not_covered_py.html")
 
     def test_report_skip_covered_100(self) -> None:
-        self.make_file("main_file.py", """
+        self.make_file("main_file.py", """\
             def normal():
                 print("z")
             normal()
@@ -619,7 +620,7 @@ class HtmlTest(HtmlTestHelpers, CoverageTest):
     def make_init_and_main(self) -> None:
         """Helper to create files for skip_empty scenarios."""
         self.make_file("submodule/__init__.py", "")
-        self.make_file("main_file.py", """
+        self.make_file("main_file.py", """\
             import submodule
 
             def normal():
@@ -658,7 +659,7 @@ def filepath_to_regex(path: str) -> str:
 def compare_html(
     expected: str,
     actual: str,
-    extra_scrubs: Optional[List[Tuple[str, str]]] = None,
+    extra_scrubs: list[tuple[str, str]] | None = None,
 ) -> None:
     """Specialized compare function for our HTML files."""
     __tracebackhide__ = True    # pytest, please don't show me this function.
@@ -936,7 +937,7 @@ assert len(math) == 18
         compare_html(
             gold_path("html/other"), "out/other",
             extra_scrubs=[
-                (r'href="d_[0-9a-z]{16}_', 'href="_TEST_TMPDIR_othersrc_'),
+                (r'href="z_[0-9a-z]{16}_', 'href="_TEST_TMPDIR_othersrc_'),
             ],
         )
         contains(
@@ -1128,13 +1129,14 @@ assert len(math) == 18
         cov = coverage.Coverage()
         cov.load()
         cov.html_report()
-        self.assert_exists("htmlcov/d_5786906b6f0ffeb4_accented_py.html")
+        self.assert_exists("htmlcov/z_5786906b6f0ffeb4_accented_py.html")
         with open("htmlcov/index.html") as indexf:
             index = indexf.read()
-        expected = '<a href="d_5786906b6f0ffeb4_accented_py.html">&#226;%saccented.py</a>'
+        expected = '<a href="z_5786906b6f0ffeb4_accented_py.html">&#226;%saccented.py</a>'
         assert expected % os.sep in index
 
 
+@pytest.mark.skipif(not testenv.DYN_CONTEXTS, reason="No dynamic contexts with this core.")
 class HtmlWithContextsTest(HtmlTestHelpers, CoverageTest):
     """Tests of the HTML reports with shown contexts."""
 
@@ -1206,7 +1208,7 @@ class HtmlWithContextsTest(HtmlTestHelpers, CoverageTest):
         d = self.html_data_from_cov(cov, mod)
 
         context_labels = [self.EMPTY, 'two_tests.test_one', 'two_tests.test_two']
-        expected_lines: List[List[TLineNo]] = [[], self.TEST_ONE_LINES, []]
+        expected_lines: list[list[TLineNo]] = [[], self.TEST_ONE_LINES, []]
         for label, expected in zip(context_labels, expected_lines):
             actual = [ld.number for ld in d.lines if label in (ld.contexts or ())]
             assert sorted(expected) == sorted(actual)

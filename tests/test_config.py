@@ -5,13 +5,12 @@
 
 from __future__ import annotations
 
-import sys
 from unittest import mock
 
 import pytest
 
 import coverage
-from coverage import Coverage
+from coverage import Coverage, env
 from coverage.config import HandyConfigParser
 from coverage.exceptions import ConfigError, CoverageWarning
 from coverage.tomlconfig import TomlConfigParser
@@ -603,7 +602,7 @@ class ConfigFileTest(UsingModulesMixin, CoverageTest):
 
         assert cov.config.paths == {
             'source': ['.', '/home/ned/src/'],
-            'other': ['other', '/home/ned/other', 'c:\\Ned\\etc']
+            'other': ['other', '/home/ned/other', 'c:\\Ned\\etc'],
         }
 
         assert cov.config.get_plugin_options("plugins.a_plugin") == {
@@ -738,7 +737,7 @@ class ConfigFileTest(UsingModulesMixin, CoverageTest):
             with pytest.raises(ConfigError, match=msg):
                 coverage.Coverage(config_file="cov.toml")
 
-    @pytest.mark.skipif(sys.version_info >= (3, 11), reason="Python 3.11 has toml in stdlib")
+    @pytest.mark.skipif(env.PYVERSION >= (3, 11), reason="Python 3.11 has toml in stdlib")
     def test_no_toml_installed_explicit_toml(self) -> None:
         # Can't specify a toml config file if toml isn't installed.
         self.make_file("cov.toml", "# A toml file!")
@@ -747,7 +746,7 @@ class ConfigFileTest(UsingModulesMixin, CoverageTest):
             with pytest.raises(ConfigError, match=msg):
                 coverage.Coverage(config_file="cov.toml")
 
-    @pytest.mark.skipif(sys.version_info >= (3, 11), reason="Python 3.11 has toml in stdlib")
+    @pytest.mark.skipif(env.PYVERSION >= (3, 11), reason="Python 3.11 has toml in stdlib")
     def test_no_toml_installed_pyproject_toml(self) -> None:
         # Can't have coverage config in pyproject.toml without toml installed.
         self.make_file("pyproject.toml", """\
@@ -760,7 +759,7 @@ class ConfigFileTest(UsingModulesMixin, CoverageTest):
             with pytest.raises(ConfigError, match=msg):
                 coverage.Coverage()
 
-    @pytest.mark.skipif(sys.version_info >= (3, 11), reason="Python 3.11 has toml in stdlib")
+    @pytest.mark.skipif(env.PYVERSION >= (3, 11), reason="Python 3.11 has toml in stdlib")
     def test_no_toml_installed_pyproject_toml_shorter_syntax(self) -> None:
         # Can't have coverage config in pyproject.toml without toml installed.
         self.make_file("pyproject.toml", """\
@@ -773,7 +772,7 @@ class ConfigFileTest(UsingModulesMixin, CoverageTest):
             with pytest.raises(ConfigError, match=msg):
                 coverage.Coverage()
 
-    @pytest.mark.skipif(sys.version_info >= (3, 11), reason="Python 3.11 has toml in stdlib")
+    @pytest.mark.skipif(env.PYVERSION >= (3, 11), reason="Python 3.11 has toml in stdlib")
     def test_no_toml_installed_pyproject_no_coverage(self) -> None:
         # It's ok to have non-coverage pyproject.toml without toml installed.
         self.make_file("pyproject.toml", """\

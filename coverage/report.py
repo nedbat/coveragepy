@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import sys
 
-from typing import Any, IO, Iterable, List, Optional, Tuple, TYPE_CHECKING
+from typing import Any, IO, Iterable, TYPE_CHECKING
 
 from coverage.exceptions import ConfigError, NoDataError
 from coverage.misc import human_sorted_items
@@ -27,11 +27,11 @@ class SummaryReporter:
         self.coverage = coverage
         self.config = self.coverage.config
         self.branches = coverage.get_data().has_arcs()
-        self.outfile: Optional[IO[str]] = None
+        self.outfile: IO[str] | None = None
         self.output_format = self.config.format or "text"
         if self.output_format not in {"text", "markdown", "total"}:
             raise ConfigError(f"Unknown report format choice: {self.output_format!r}")
-        self.fr_analysis: List[Tuple[FileReporter, Analysis]] = []
+        self.fr_analysis: list[tuple[FileReporter, Analysis]] = []
         self.skipped_count = 0
         self.empty_count = 0
         self.total = Numbers(precision=self.config.precision)
@@ -48,10 +48,10 @@ class SummaryReporter:
 
     def _report_text(
         self,
-        header: List[str],
-        lines_values: List[List[Any]],
-        total_line: List[Any],
-        end_lines: List[str],
+        header: list[str],
+        lines_values: list[list[Any]],
+        total_line: list[Any],
+        end_lines: list[str],
     ) -> None:
         """Internal method that prints report data in text format.
 
@@ -109,10 +109,10 @@ class SummaryReporter:
 
     def _report_markdown(
         self,
-        header: List[str],
-        lines_values: List[List[Any]],
-        total_line: List[Any],
-        end_lines: List[str],
+        header: list[str],
+        lines_values: list[list[Any]],
+        total_line: list[Any],
+        end_lines: list[str],
     ) -> None:
         """Internal method that prints report data in markdown format.
 
@@ -138,7 +138,7 @@ class SummaryReporter:
         header_items = [formats[item].format(item, name_len=max_name, n=max_n) for item in header]
         header_str = "".join(header_items)
         rule_str = "|" + " ".join(["- |".rjust(len(header_items[0])-1, "-")] +
-            ["-: |".rjust(len(item)-1, "-") for item in header_items[1:]]
+            ["-: |".rjust(len(item)-1, "-") for item in header_items[1:]],
         )
 
         # Write the header
@@ -156,7 +156,7 @@ class SummaryReporter:
 
         # Write the TOTAL line
         formats.update(dict(Name="|{:>{name_len}} |", Cover="{:>{n}} |"))
-        total_line_items: List[str] = []
+        total_line_items: list[str] = []
         for item, value in zip(header, total_line):
             if value == "":
                 insert = value
@@ -169,7 +169,7 @@ class SummaryReporter:
         for end_line in end_lines:
             self.write(end_line)
 
-    def report(self, morfs: Optional[Iterable[TMorf]], outfile: Optional[IO[str]] = None) -> float:
+    def report(self, morfs: Iterable[TMorf] | None, outfile: IO[str] | None = None) -> float:
         """Writes a report summarizing coverage statistics per module.
 
         `outfile` is a text-mode file object to write the summary to.
@@ -252,7 +252,7 @@ class SummaryReporter:
         if self.config.skip_covered and self.skipped_count:
             file_suffix = "s" if self.skipped_count>1 else ""
             end_lines.append(
-                f"\n{self.skipped_count} file{file_suffix} skipped due to complete coverage."
+                f"\n{self.skipped_count} file{file_suffix} skipped due to complete coverage.",
             )
         if self.config.skip_empty and self.empty_count:
             file_suffix = "s" if self.empty_count > 1 else ""

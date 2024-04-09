@@ -13,19 +13,19 @@ import sys
 import textwrap
 
 from unittest import mock
-from typing import Any, List, Mapping, Optional, Tuple
+from typing import Any, Mapping
 
 import pytest
 
 import coverage
 import coverage.cmdline
-from coverage import env
 from coverage.control import DEFAULT_DATAFILE
 from coverage.config import CoverageConfig
 from coverage.exceptions import _ExceptionDuringRun
 from coverage.types import TConfigValueIn, TConfigValueOut
 from coverage.version import __url__
 
+from tests import testenv
 from tests.coveragetest import CoverageTest, OK, ERR, command_line
 from tests.helpers import os_sep, re_line
 
@@ -99,8 +99,8 @@ class BaseCmdLineTest(CoverageTest):
     def mock_command_line(
         self,
         args: str,
-        options: Optional[Mapping[str, TConfigValueIn]] = None,
-    ) -> Tuple[mock.Mock, int]:
+        options: Mapping[str, TConfigValueIn] | None = None,
+    ) -> tuple[mock.Mock, int]:
         """Run `args` through the command line, with a Mock.
 
         `options` is a dict of names and values to pass to `set_option`.
@@ -133,7 +133,7 @@ class BaseCmdLineTest(CoverageTest):
         args: str,
         code: str,
         ret: int = OK,
-        options: Optional[Mapping[str, TConfigValueIn]] = None,
+        options: Mapping[str, TConfigValueIn] | None = None,
     ) -> None:
         """Assert that the `args` end up executing the sequence in `code`."""
         called, status = self.mock_command_line(args, options=options)
@@ -176,8 +176,8 @@ class BaseCmdLineTest(CoverageTest):
     def cmd_help(
         self,
         args: str,
-        help_msg: Optional[str] = None,
-        topic: Optional[str] = None,
+        help_msg: str | None = None,
+        topic: str | None = None,
         ret: int = ERR,
     ) -> None:
         """Run a command line, and check that it prints the right help.
@@ -875,7 +875,7 @@ class CmdLineTest(BaseCmdLineTest):
             show_help('No module specified for -m')
             """,
             ret=ERR,
-            options={"run:command_line": "myprog.py"}
+            options={"run:command_line": "myprog.py"},
         )
 
     def test_cant_append_parallel(self) -> None:
@@ -1008,7 +1008,7 @@ class CmdLineStdoutTest(BaseCmdLineTest):
         self.command_line("--version")
         out = self.stdout()
         assert "ersion " in out
-        if env.C_TRACER:
+        if testenv.C_TRACER or testenv.SYS_MON:
             assert "with C extension" in out
         else:
             assert "without C extension" in out
@@ -1085,7 +1085,7 @@ class CmdMainTest(CoverageTest):
     class CoverageScriptStub:
         """A stub for coverage.cmdline.CoverageScript, used by CmdMainTest."""
 
-        def command_line(self, argv: List[str]) -> int:
+        def command_line(self, argv: list[str]) -> int:
             """Stub for command_line, the arg determines what it will do."""
             if argv[0] == 'hello':
                 print("Hello, world!")
@@ -1207,8 +1207,8 @@ class FailUnderTest(CoverageTest):
     ])
     def test_fail_under(
         self,
-        results: Tuple[float, float, float, float, float],
-        fail_under: Optional[float],
+        results: tuple[float, float, float, float, float],
+        fail_under: float | None,
         cmd: str,
         ret: int,
     ) -> None:

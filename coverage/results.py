@@ -6,10 +6,10 @@
 from __future__ import annotations
 
 import collections
+import dataclasses
 
-from typing import Callable, Dict, Iterable, List, Optional, Tuple, TYPE_CHECKING
+from typing import Callable, Iterable, TYPE_CHECKING
 
-from coverage.debug import auto_repr
 from coverage.exceptions import ConfigError
 from coverage.misc import nice_pair
 from coverage.types import TArc, TLineNo
@@ -86,18 +86,18 @@ class Analysis:
         """Were arcs measured in this result?"""
         return self.data.has_arcs()
 
-    def arc_possibilities(self) -> List[TArc]:
+    def arc_possibilities(self) -> list[TArc]:
         """Returns a sorted list of the arcs in the code."""
         return self._arc_possibilities
 
-    def arcs_executed(self) -> List[TArc]:
+    def arcs_executed(self) -> list[TArc]:
         """Returns a sorted list of the arcs actually executed in the code."""
         executed: Iterable[TArc]
         executed = self.data.arcs(self.filename) or []
         executed = self.file_reporter.translate_arcs(executed)
         return sorted(executed)
 
-    def arcs_missing(self) -> List[TArc]:
+    def arcs_missing(self) -> list[TArc]:
         """Returns a sorted list of the un-executed arcs in the code."""
         possible = self.arc_possibilities()
         executed = self.arcs_executed()
@@ -109,7 +109,7 @@ class Analysis:
         )
         return sorted(missing)
 
-    def arcs_unpredicted(self) -> List[TArc]:
+    def arcs_unpredicted(self) -> list[TArc]:
         """Returns a sorted list of the executed arcs missing from the code."""
         possible = self.arc_possibilities()
         executed = self.arcs_executed()
@@ -126,7 +126,7 @@ class Analysis:
         )
         return sorted(unpredicted)
 
-    def _branch_lines(self) -> List[TLineNo]:
+    def _branch_lines(self) -> list[TLineNo]:
         """Returns a list of line numbers that have more than one exit."""
         return [l1 for l1,count in self.exit_counts.items() if count > 1]
 
@@ -134,7 +134,7 @@ class Analysis:
         """How many total branches are there?"""
         return sum(count for count in self.exit_counts.values() if count > 1)
 
-    def missing_branch_arcs(self) -> Dict[TLineNo, List[TLineNo]]:
+    def missing_branch_arcs(self) -> dict[TLineNo, list[TLineNo]]:
         """Return arcs that weren't executed from branch lines.
 
         Returns {l1:[l2a,l2b,...], ...}
@@ -148,7 +148,7 @@ class Analysis:
                 mba[l1].append(l2)
         return mba
 
-    def executed_branch_arcs(self) -> Dict[TLineNo, List[TLineNo]]:
+    def executed_branch_arcs(self) -> dict[TLineNo, list[TLineNo]]:
         """Return arcs that were executed from branch lines.
 
         Returns {l1:[l2a,l2b,...], ...}
@@ -162,7 +162,7 @@ class Analysis:
                 eba[l1].append(l2)
         return eba
 
-    def branch_stats(self) -> Dict[TLineNo, Tuple[int, int]]:
+    def branch_stats(self) -> dict[TLineNo, tuple[int, int]]:
         """Get stats about branches.
 
         Returns a dict mapping line numbers to a tuple:
@@ -178,6 +178,7 @@ class Analysis:
         return stats
 
 
+@dataclasses.dataclass
 class Numbers:
     """The numerical results of measuring coverage.
 
@@ -186,38 +187,14 @@ class Numbers:
 
     """
 
-    def __init__(
-        self,
-        precision: int = 0,
-        n_files: int = 0,
-        n_statements: int = 0,
-        n_excluded: int = 0,
-        n_missing: int = 0,
-        n_branches: int = 0,
-        n_partial_branches: int = 0,
-        n_missing_branches: int = 0,
-    ) -> None:
-        assert 0 <= precision < 10
-        self._precision = precision
-        self._near0 = 1.0 / 10**precision
-        self._near100 = 100.0 - self._near0
-        self.n_files = n_files
-        self.n_statements = n_statements
-        self.n_excluded = n_excluded
-        self.n_missing = n_missing
-        self.n_branches = n_branches
-        self.n_partial_branches = n_partial_branches
-        self.n_missing_branches = n_missing_branches
-
-    __repr__ = auto_repr
-
-    def init_args(self) -> List[int]:
-        """Return a list for __init__(*args) to recreate this object."""
-        return [
-            self._precision,
-            self.n_files, self.n_statements, self.n_excluded, self.n_missing,
-            self.n_branches, self.n_partial_branches, self.n_missing_branches,
-        ]
+    precision: int = 0
+    n_files: int = 0
+    n_statements: int = 0
+    n_excluded: int = 0
+    n_missing: int = 0
+    n_branches: int = 0
+    n_partial_branches: int = 0
+    n_missing_branches: int = 0
 
     @property
     def n_executed(self) -> int:
@@ -258,42 +235,40 @@ class Numbers:
         result in either "0" or "100".
 
         """
-        if 0 < pc < self._near0:
-            pc = self._near0
-        elif self._near100 < pc < 100:
-            pc = self._near100
+        near0 = 1.0 / 10 ** self.precision
+        if 0 < pc < near0:
+            pc = near0
+        elif (100.0 - near0) < pc < 100:
+            pc = 100.0 - near0
         else:
-            pc = round(pc, self._precision)
-        return "%.*f" % (self._precision, pc)
+            pc = round(pc, self.precision)
+        return "%.*f" % (self.precision, pc)
 
     def pc_str_width(self) -> int:
         """How many characters wide can pc_covered_str be?"""
         width = 3   # "100"
-        if self._precision > 0:
-            width += 1 + self._precision
+        if self.precision > 0:
+            width += 1 + self.precision
         return width
 
     @property
-    def ratio_covered(self) -> Tuple[int, int]:
+    def ratio_covered(self) -> tuple[int, int]:
         """Return a numerator and denominator for the coverage ratio."""
         numerator = self.n_executed + self.n_executed_branches
         denominator = self.n_statements + self.n_branches
         return numerator, denominator
 
     def __add__(self, other: Numbers) -> Numbers:
-        nums = Numbers(precision=self._precision)
-        nums.n_files = self.n_files + other.n_files
-        nums.n_statements = self.n_statements + other.n_statements
-        nums.n_excluded = self.n_excluded + other.n_excluded
-        nums.n_missing = self.n_missing + other.n_missing
-        nums.n_branches = self.n_branches + other.n_branches
-        nums.n_partial_branches = (
-            self.n_partial_branches + other.n_partial_branches
+        return Numbers(
+            self.precision,
+            self.n_files + other.n_files,
+            self.n_statements + other.n_statements,
+            self.n_excluded + other.n_excluded,
+            self.n_missing + other.n_missing,
+            self.n_branches + other.n_branches,
+            self.n_partial_branches + other.n_partial_branches,
+            self.n_missing_branches + other.n_missing_branches,
         )
-        nums.n_missing_branches = (
-            self.n_missing_branches + other.n_missing_branches
-        )
-        return nums
 
     def __radd__(self, other: int) -> Numbers:
         # Implementing 0+Numbers allows us to sum() a list of Numbers.
@@ -304,7 +279,7 @@ class Numbers:
 def _line_ranges(
     statements: Iterable[TLineNo],
     lines: Iterable[TLineNo],
-) -> List[Tuple[TLineNo, TLineNo]]:
+) -> list[tuple[TLineNo, TLineNo]]:
     """Produce a list of ranges for `format_lines`."""
     statements = sorted(statements)
     lines = sorted(lines)
@@ -331,7 +306,7 @@ def _line_ranges(
 def format_lines(
     statements: Iterable[TLineNo],
     lines: Iterable[TLineNo],
-    arcs: Optional[Iterable[Tuple[TLineNo, List[TLineNo]]]] = None,
+    arcs: Iterable[tuple[TLineNo, list[TLineNo]]] | None = None,
 ) -> str:
     """Nicely format a list of line numbers.
 

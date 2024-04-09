@@ -25,3 +25,6 @@ libsass
 
 # Just so I have a debugger if I want it.
 pudb
+
+# For lab/benchmark
+tabulate

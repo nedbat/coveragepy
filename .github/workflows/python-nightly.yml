@@ -39,6 +39,9 @@ jobs:
     # https://github.com/deadsnakes/issues/issues/234
     # bionic: 18, focal: 20, jammy: 22
     runs-on: ubuntu-20.04
+    # If it doesn't finish in an hour, it's not going to. Don't spin for six
+    # hours needlessly.
+    timeout-minutes: 60
 
     strategy:
       matrix:
@@ -49,6 +52,7 @@ jobs:
           # https://launchpad.net/~deadsnakes/+archive/ubuntu/nightly/+packages
           - "3.11-dev"
           - "3.12-dev"
+          - "3.13-dev"
           # https://github.com/actions/setup-python#available-versions-of-pypy
           - "pypy-3.8-nightly"
           - "pypy-3.9-nightly"
@@ -78,6 +82,7 @@ jobs:
           python -m site
           python -m coverage debug sys
           python -m coverage debug pybehave
+          env
 
       - name: "Install dependencies"
         run: |

@@ -8,7 +8,7 @@ from __future__ import annotations
 import os
 import re
 
-from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, Type, TypeVar
+from typing import Any, Callable, Iterable, TypeVar
 
 from coverage import env
 from coverage.exceptions import ConfigError
@@ -40,9 +40,9 @@ class TomlConfigParser:
 
     def __init__(self, our_file: bool) -> None:
         self.our_file = our_file
-        self.data: Dict[str, Any] = {}
+        self.data: dict[str, Any] = {}
 
-    def read(self, filenames: Iterable[str]) -> List[str]:
+    def read(self, filenames: Iterable[str]) -> list[str]:
         # RawConfigParser takes a filename or list of filenames, but we only
         # ever call this with a single filename.
         assert isinstance(filenames, (bytes, str, os.PathLike))
@@ -67,7 +67,7 @@ class TomlConfigParser:
                 raise ConfigError(msg.format(filename))
             return []
 
-    def _get_section(self, section: str) -> Tuple[Optional[str], Optional[TConfigSectionOut]]:
+    def _get_section(self, section: str) -> tuple[str | None, TConfigSectionOut | None]:
         """Get a section from the data.
 
         Arguments:
@@ -94,7 +94,7 @@ class TomlConfigParser:
             return None, None
         return real_section, data
 
-    def _get(self, section: str, option: str) -> Tuple[str, TConfigValueOut]:
+    def _get(self, section: str, option: str) -> tuple[str, TConfigValueOut]:
         """Like .get, but returns the real section name and the value."""
         name, data = self._get_section(section)
         if data is None:
@@ -123,7 +123,7 @@ class TomlConfigParser:
             return False
         return option in data
 
-    def real_section(self, section: str) -> Optional[str]:
+    def real_section(self, section: str) -> str | None:
         name, _ = self._get_section(section)
         return name
 
@@ -131,7 +131,7 @@ class TomlConfigParser:
         name, _ = self._get_section(section)
         return bool(name)
 
-    def options(self, section: str) -> List[str]:
+    def options(self, section: str) -> list[str]:
         _, data = self._get_section(section)
         if data is None:
             raise ConfigError(f"No section: {section!r}")
@@ -150,8 +150,8 @@ class TomlConfigParser:
         section: str,
         option: str,
         value: Any,
-        type_: Type[TWant],
-        converter: Optional[Callable[[Any], TWant]],
+        type_: type[TWant],
+        converter: Callable[[Any], TWant] | None,
         type_desc: str,
     ) -> TWant:
         """Check that `value` has the type we want, converting if needed.
@@ -165,10 +165,10 @@ class TomlConfigParser:
                 return converter(value)
             except Exception as e:
                 raise ValueError(
-                    f"Option [{section}]{option} couldn't convert to {type_desc}: {value!r}"
+                    f"Option [{section}]{option} couldn't convert to {type_desc}: {value!r}",
                 ) from e
         raise ValueError(
-            f"Option [{section}]{option} is not {type_desc}: {value!r}"
+            f"Option [{section}]{option} is not {type_desc}: {value!r}",
         )
 
     def getboolean(self, section: str, option: str) -> bool:
@@ -176,18 +176,18 @@ class TomlConfigParser:
         bool_strings = {"true": True, "false": False}
         return self._check_type(name, option, value, bool, bool_strings.__getitem__, "a boolean")
 
-    def _get_list(self, section: str, option: str) -> Tuple[str, List[str]]:
+    def _get_list(self, section: str, option: str) -> tuple[str, list[str]]:
         """Get a list of strings, substituting environment variables in the elements."""
         name, values = self._get(section, option)
         values = self._check_type(name, option, values, list, None, "a list")
         values = [substitute_variables(value, os.environ) for value in values]
         return name, values
 
-    def getlist(self, section: str, option: str) -> List[str]:
+    def getlist(self, section: str, option: str) -> list[str]:
         _, values = self._get_list(section, option)
         return values
 
-    def getregexlist(self, section: str, option: str) -> List[str]:
+    def getregexlist(self, section: str, option: str) -> list[str]:
         name, values = self._get_list(section, option)
         for value in values:
             value = value.strip()

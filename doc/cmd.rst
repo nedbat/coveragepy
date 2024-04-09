@@ -136,15 +136,14 @@ There are many options:
       --source=SRC1,SRC2,...
                             A list of directories or importable names of code to
                             measure.
-      --timid               Use a simpler but slower trace method. Try this if you
-                            get seemingly impossible results!
+      --timid               Use the slower Python trace function core.
       --debug=OPTS          Debug options, separated by commas. [env:
                             COVERAGE_DEBUG]
       -h, --help            Get help on this command.
       --rcfile=RCFILE       Specify configuration file. By default '.coveragerc',
                             'setup.cfg', 'tox.ini', and 'pyproject.toml' are
                             tried. [env: COVERAGE_RCFILE]
-.. [[[end]]] (checksum: 05d15818e42e6f989c42894fb2b3c753)
+.. [[[end]]] (checksum: b1a0fffe2768fc142f1d97ae556b621d)
 
 If you want :ref:`branch coverage <branch>` measurement, use the ``--branch``
 flag.  Otherwise only statement coverage is measured.
@@ -184,8 +183,8 @@ configuration file for all options.
 
 .. _multiprocessing: https://docs.python.org/3/library/multiprocessing.html
 .. _greenlet: https://greenlet.readthedocs.io/
-.. _gevent: http://www.gevent.org/
-.. _eventlet: http://eventlet.net/
+.. _gevent: https://www.gevent.org/
+.. _eventlet: https://eventlet.readthedocs.io/
 
 If you are measuring coverage in a multi-process program, or across a number of
 machines, you'll want the ``--parallel-mode`` switch to keep the data separate
@@ -202,6 +201,11 @@ code as well as your own, add the ``-L`` (or ``--pylib``) flag.
 If your coverage results seem to be overlooking code that you know has been
 executed, try running coverage.py again with the ``--timid`` flag.  This uses a
 simpler but slower trace method, and might be needed in rare cases.
+
+In Python 3.12 and above, you can try an experimental core based on the new
+:mod:`sys.monitoring <python:sys.monitoring>` module by defining a
+``COVERAGE_CORE=sysmon`` environment variable.  This should be faster, though
+plugins and dynamic contexts are not yet supported with it.
 
 Coverage.py sets an environment variable, ``COVERAGE_RUN`` to indicate that
 your code is running under coverage measurement.  The value is not relevant,
@@ -269,6 +273,11 @@ Conflicting dynamic contexts (dynamic-conflict)
   :meth:`.Coverage.switch_context` function to change the context. Only one of
   these mechanisms should be in use at a time.
 
+sys.monitoring isn't available, using default core (no-sysmon)
+  You requested to use the sys.monitoring measurement core, but are running on
+  Python 3.11 or lower where it isn't available.  A default core will be used
+  instead.
+
 Individual warnings can be disabled with the :ref:`disable_warnings
 <config_run_disable_warnings>` configuration setting.  To silence "No data was
 collected," add this to your configuration file:
@@ -315,8 +324,8 @@ Data file
 .........
 
 Coverage.py collects execution data in a file called ".coverage".  If need be,
-you can set a new file name with the COVERAGE_FILE environment variable.  This
-can include a path to another directory.
+you can set a new file name with the ``COVERAGE_FILE`` environment variable.
+This can include a path to another directory.
 
 By default, each run of your program starts with an empty data set. If you need
 to run your program multiple times to get complete data (for example, because
@@ -906,8 +915,7 @@ Text annotation: ``coverage annotate``
 .. note::
 
     The **annotate** command has been obsoleted by more modern reporting tools,
-    including the **html** command.  **annotate** will be removed in a future
-    version.
+    including the **html** command.
 
 The **annotate** command produces a text annotation of your source code.  With
 a ``-d`` argument specifying an output directory, each Python file becomes a

@@ -26,7 +26,7 @@ warn_unused_configs = true
 warn_unused_ignores = true
 
 exclude = """(?x)(
-    ^tests/balance_xdist_plugin\\.py$           # not part of our test suite.
+    ^tests/.*_plugin\\.py$           # not part of our test suite.
     )"""
 
 ## PYLINT
@@ -116,15 +116,18 @@ markers = [
 
 # How come these warnings are suppressed successfully here, but not in conftest.py??
 filterwarnings = [
-    "ignore:the imp module is deprecated in favour of importlib:DeprecationWarning",
-    "ignore:distutils Version classes are deprecated:DeprecationWarning",
-    "ignore:The distutils package is deprecated and slated for removal in Python 3.12:DeprecationWarning",
-    # Pytest warns if it can't collect things that seem to be tests. This should be an error.
+    # Sample 'ignore':
+    #"ignore:the imp module is deprecated in favour of importlib:DeprecationWarning",
+
+    ## Pytest warns if it can't collect things that seem to be tests. This should be an error.
     "error::pytest.PytestCollectionWarning",
 ]
 
 # xfail tests that pass should fail the test suite
 xfail_strict = true
+
+# https://docs.pytest.org/en/stable/reference/reference.html#confval-verbosity_assertions
+verbosity_assertions = 5
 
 balanced_clumps = [
     # Because of expensive session-scoped fixture:
@@ -133,6 +136,20 @@ balanced_clumps = [
     "CompareTest",
     # No idea why this one fails if run on separate workers:
     "GetZipBytesTest",
+]
+
+## RUFF
+# We aren't using ruff for real yet...
+
+[tool.ruff]
+target-version = "py38"     # Can't use [project] 
+line-length = 100
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+    "ANN101",       # Missing type annotation for `self` in method
+    "ERA001",       # Found commented-out code
 ]
 
 ## SCRIV

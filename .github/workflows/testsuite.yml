@@ -50,9 +50,18 @@ jobs:
           - "3.10"
           - "3.11"
           - "3.12"
+          - "3.13"
           - "pypy-3.8"
           - "pypy-3.9"
           - "pypy-3.10"
+        exclude:
+          # Windows pypy 3.9 and 3.10 get stuck with PyPy 7.3.15.  I hope to
+          # unstick them, but I don't want that to block all other progress, so
+          # skip them for now.
+          - os: windows
+            python-version: "pypy-3.9"
+          - os: windows
+            python-version: "pypy-3.10"
       fail-fast: false
 
     steps:
@@ -64,17 +73,25 @@ jobs:
         with:
           python-version: "${{ matrix.python-version }}"
           allow-prereleases: true
-          cache: pip
-          cache-dependency-path: 'requirements/*.pip'
+          # At a certain point, installing dependencies failed on pypy 3.9 and
+          # 3.10 on Windows.  Commenting out the cache here fixed it.  Someday
+          # try using the cache again.
+          #cache: pip
+          #cache-dependency-path: 'requirements/*.pip'
 
-      - name: "Install dependencies"
+      - name: "Show environment"
         run: |
           set -xe
           python -VV
           python -m site
-          python -m pip install -r requirements/tox.pip
           # For extreme debugging:
           # python -c "import urllib.request as r; exec(r.urlopen('https://bit.ly/pydoctor').read())"
+          env
+
+      - name: "Install dependencies"
+        run: |
+          set -xe
+          python -m pip install -r requirements/tox.pip
 
       - name: "Run tox for ${{ matrix.python-version }}"
         run: |

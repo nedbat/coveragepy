@@ -15,7 +15,7 @@ help:					## Show this help.
 	@echo Available targets:
 	@awk -F ':.*##' '/^[^: ]+:.*##/{printf "  \033[1m%-20s\033[m %s\n",$$1,$$2} /^##@/{printf "\n%s\n",substr($$0,5)}' $(MAKEFILE_LIST)
 
-clean_platform:
+_clean_platform:
 	@rm -f *.so */*.so
 	@rm -f *.pyd */*.pyd
 	@rm -rf __pycache__ */__pycache__ */*/__pycache__ */*/*/__pycache__ */*/*/*/__pycache__ */*/*/*/*/__pycache__
@@ -23,7 +23,10 @@ clean_platform:
 	@rm -f *.pyo */*.pyo */*/*.pyo */*/*/*.pyo */*/*/*/*.pyo */*/*/*/*/*.pyo
 	@rm -f *$$py.class */*$$py.class */*/*$$py.class */*/*/*$$py.class */*/*/*/*$$py.class */*/*/*/*/*$$py.class
 
-clean: clean_platform			## Remove artifacts of test execution, installation, etc.
+debug_clean:				## Delete various debugging artifacts.
+	@rm -rf /tmp/dis $$COVERAGE_DEBUG_FILE
+
+clean: debug_clean _clean_platform	## Remove artifacts of test execution, installation, etc.
 	@echo "Cleaning..."
 	@-pip uninstall -yq coverage
 	@mkdir -p build	# so the chmod won't fail if build doesn't exist
@@ -58,7 +61,7 @@ lint:					## Run linters and checkers.
 PYTEST_SMOKE_ARGS = -n auto -m "not expensive" --maxfail=3 $(ARGS)
 
 smoke: 					## Run tests quickly with the C tracer in the lowest supported Python versions.
-	COVERAGE_NO_PYTRACER=1 tox -q -e py38 -- $(PYTEST_SMOKE_ARGS)
+	COVERAGE_TEST_CORES=ctrace tox -q -e py38 -- $(PYTEST_SMOKE_ARGS)
 
 
 ##@ Metacov: coverage measurement of coverage.py itself
@@ -73,7 +76,7 @@ metahtml:				## Produce meta-coverage HTML reports.
 	python igor.py combine_html
 
 metasmoke:
-	COVERAGE_NO_PYTRACER=1 ARGS="-e py39" make metacov metahtml
+	COVERAGE_TEST_CORES=ctrace ARGS="-e py39" make metacov metahtml
 
 
 ##@ Requirements management
@@ -96,7 +99,7 @@ PIP_COMPILE = pip-compile ${COMPILE_OPTS} --allow-unsafe --resolver=backtracking
 upgrade: 				## Update the *.pip files with the latest packages satisfying *.in files.
 	$(MAKE) _upgrade COMPILE_OPTS="--upgrade"
 
-upgrade-one:				## Update the *.pip files for one package. `make upgrade-one package=...`
+upgrade_one:				## Update the *.pip files for one package. `make upgrade-one package=...`
 	@test -n "$(package)" || { echo "\nUsage: make upgrade-one package=...\n"; exit 1; }
 	$(MAKE) _upgrade COMPILE_OPTS="--upgrade-package $(package)"
 
@@ -115,7 +118,7 @@ _upgrade:
 doc_upgrade: export CUSTOM_COMPILE_COMMAND=make doc_upgrade
 doc_upgrade: $(DOCBIN)			## Update the doc/requirements.pip file
 	$(DOCBIN)/pip install -q -r requirements/pip-tools.pip
-	$(DOCBIN)/$(PIP_COMPILE) -o doc/requirements.pip doc/requirements.in
+	$(DOCBIN)/$(PIP_COMPILE) --upgrade -o doc/requirements.pip doc/requirements.in
 
 diff_upgrade:				## Summarize the last `make upgrade`
 	@# The sort flags sort by the package name first, then by the -/+, and
@@ -176,29 +179,29 @@ sample_html_beta: _sample_cog_html	## Generate sample HTML report for a beta rel
 
 REPO_OWNER = nedbat/coveragepy
 
-edit_for_release:			## Edit sources to insert release facts.
+edit_for_release:			#: Edit sources to insert release facts (see howto.txt).
 	python igor.py edit_for_release
 
 cheats:					## Create some useful snippets for releasing.
 	python igor.py cheats | tee cheats.txt
 
-relbranch:				## Create the branch for releasing.
+relbranch:				#: Create the branch for releasing (see howto.txt).
 	git switch -c nedbat/release-$$(date +%Y%m%d)
 
-relcommit1:				## Commit the first release changes.
+relcommit1:				#: Commit the first release changes (see howto.txt).
 	git commit -am "docs: prep for $$(python setup.py --version)"
 
-relcommit2:				## Commit the latest sample HTML report.
+relcommit2:				#: Commit the latest sample HTML report (see howto.txt).
 	git commit -am "docs: sample HTML for $$(python setup.py --version)"
 
 kit:					## Make the source distribution.
 	python -m build
 
 kit_upload:				## Upload the built distributions to PyPI.
-	twine upload --verbose dist/*
+	twine upload dist/*
 
 test_upload:				## Upload the distributions to PyPI's testing server.
-	twine upload --verbose --repository testpypi --password $$TWINE_TEST_PASSWORD dist/*
+	twine upload --repository testpypi --password $$TWINE_TEST_PASSWORD dist/*
 
 kit_local:
 	# pip.conf looks like this:
@@ -213,16 +216,17 @@ build_kits:				## Trigger GitHub to build kits
 	python ci/trigger_build_kits.py $(REPO_OWNER)
 
 download_kits:				## Download the built kits from GitHub.
-	python ci/download_gha_artifacts.py $(REPO_OWNER)
+	python ci/download_gha_artifacts.py $(REPO_OWNER) 'dist-*' dist
 
 check_kits:				## Check that dist/* are well-formed.
 	python -m twine check dist/*
+	@echo $$(ls -1 dist | wc -l) distribution kits
 
-tag:					## Make a git tag with the version number.
-	git tag -a -m "Version $$(python setup.py --version)" $$(python setup.py --version)
+tag:					#: Make a git tag with the version number (see howto.txt).
+	git tag -s -m "Version $$(python setup.py --version)" $$(python setup.py --version)
 	git push --follow-tags
 
-bump_version:				## Edit sources to bump the version after a release.
+bump_version:				#: Edit sources to bump the version after a release (see howto.txt).
 	git switch -c nedbat/bump-version
 	python igor.py bump_version
 	git commit -a -m "build: bump version"
@@ -250,7 +254,8 @@ docdev: dochtml				## Build docs, and auto-watch for changes.
 	PATH=$(DOCBIN):$(PATH) $(SPHINXAUTOBUILD) -b html doc doc/_build/html
 
 docspell: $(DOCBIN)			## Run the spell checker on the docs.
-	$(SPHINXBUILD) -b spelling doc doc/_spell
+	# Very mac-specific...
+	PYENCHANT_LIBRARY_PATH=/opt/homebrew/lib/libenchant-2.dylib $(SPHINXBUILD) -b spelling doc doc/_spell
 
 
 ##@ Publishing docs
@@ -283,7 +288,7 @@ $(RELNOTES_JSON): $(CHANGES_MD)
 	$(DOCBIN)/python ci/parse_relnotes.py tmp/rst_rst/changes.md $(RELNOTES_JSON)
 
 github_releases: $(DOCBIN)		## Update GitHub releases.
-	$(DOCBIN)/python -m scriv github-release
+	$(DOCBIN)/python -m scriv github-release --all
 
 comment_on_fixes: $(RELNOTES_JSON)	## Add a comment to issues that were fixed.
 	python ci/comment_on_fixes.py $(REPO_OWNER)

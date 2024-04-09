@@ -12,8 +12,9 @@ import os.path
 import sys
 import traceback
 
-from typing import Any, Dict
+from typing import Any
 
+from coverage.debug import DebugControl
 
 # An attribute that will be set on the module to indicate that it has been
 # monkey-patched.
@@ -28,28 +29,36 @@ class ProcessWithCoverage(OriginalProcess):         # pylint: disable=abstract-m
 
     def _bootstrap(self, *args, **kwargs):          # type: ignore[no-untyped-def]
         """Wrapper around _bootstrap to start coverage."""
+        debug: DebugControl | None = None
         try:
             from coverage import Coverage       # avoid circular import
             cov = Coverage(data_suffix=True, auto_data=True)
             cov._warn_preimported_source = False
             cov.start()
-            debug = cov._debug
-            assert debug is not None
-            if debug.should("multiproc"):
+            _debug = cov._debug
+            assert _debug is not None
+            if _debug.should("multiproc"):
+                debug = _debug
+            if debug:
                 debug.write("Calling multiprocessing bootstrap")
         except Exception:
-            print("Exception during multiprocessing bootstrap init:")
-            traceback.print_exc(file=sys.stdout)
-            sys.stdout.flush()
+            print("Exception during multiprocessing bootstrap init:", file=sys.stderr)
+            traceback.print_exc(file=sys.stderr)
+            sys.stderr.flush()
             raise
         try:
             return original_bootstrap(self, *args, **kwargs)
         finally:
-            if debug.should("multiproc"):
+            if debug:
                 debug.write("Finished multiprocessing bootstrap")
-            cov.stop()
-            cov.save()
-            if debug.should("multiproc"):
+            try:
+                cov.stop()
+                cov.save()
+            except Exception as exc:
+                if debug:
+                    debug.write("Exception during multiprocessing bootstrap cleanup", exc=exc)
+                raise
+            if debug:
                 debug.write("Saved multiprocessing data")
 
 class Stowaway:
@@ -57,10 +66,10 @@ class Stowaway:
     def __init__(self, rcfile: str) -> None:
         self.rcfile = rcfile
 
-    def __getstate__(self) -> Dict[str, str]:
+    def __getstate__(self) -> dict[str, str]:
         return {"rcfile": self.rcfile}
 
-    def __setstate__(self, state: Dict[str, str]) -> None:
+    def __setstate__(self, state: dict[str, str]) -> None:
         patch_multiprocessing(state["rcfile"])
 
 
@@ -86,7 +95,7 @@ def patch_multiprocessing(rcfile: str) -> None:
     # When spawning processes rather than forking them, we have no state in the
     # new process.  We sneak in there with a Stowaway: we stuff one of our own
     # objects into the data that gets pickled and sent to the sub-process. When
-    # the Stowaway is unpickled, it's __setstate__ method is called, which
+    # the Stowaway is unpickled, its __setstate__ method is called, which
     # re-applies the monkey-patch.
     # Windows only spawns, so this is needed to keep Windows working.
     try:
@@ -95,7 +104,7 @@ def patch_multiprocessing(rcfile: str) -> None:
     except (ImportError, AttributeError):
         pass
     else:
-        def get_preparation_data_with_stowaway(name: str) -> Dict[str, Any]:
+        def get_preparation_data_with_stowaway(name: str) -> dict[str, Any]:
             """Get the original preparation data, and also insert our stowaway."""
             d = original_get_preparation_data(name)
             d["stowaway"] = Stowaway(rcfile)

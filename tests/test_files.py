@@ -10,7 +10,7 @@ import os
 import os.path
 import re
 
-from typing import Any, Iterable, Iterator, List, Protocol
+from typing import Any, Iterable, Iterator, Protocol
 from unittest import mock
 
 import pytest
@@ -78,7 +78,7 @@ class FilesTest(CoverageTest):
         "curdir, sep", [
             ("/", "/"),
             ("X:\\", "\\"),
-        ]
+        ],
     )
     def test_relative_dir_for_root(self, curdir: str, sep: str) -> None:
         with mock.patch.object(files.os, 'curdir', new=curdir):
@@ -97,7 +97,7 @@ class FilesTest(CoverageTest):
             ("src/files.pex", "src/files.pex/foo.py", True),
             ("src/files.zip", "src/morefiles.zip/foo.py", False),
             ("src/files.pex", "src/files.pex/zipfiles/files.zip/foo.py", True),
-        ]
+        ],
     )
     def test_source_exists(self, to_make: str, to_check: str, answer: bool) -> None:
         # source_exists won't look inside the zipfile, so it's fine to make
@@ -109,13 +109,13 @@ class FilesTest(CoverageTest):
 @pytest.mark.parametrize("original, flat", [
     ("abc.py", "abc_py"),
     ("hellothere", "hellothere"),
-    ("a/b/c.py", "d_86bbcbe134d28fd2_c_py"),
-    ("a/b/defghi.py", "d_86bbcbe134d28fd2_defghi_py"),
-    ("/a/b/c.py", "d_bb25e0ada04227c6_c_py"),
-    ("/a/b/defghi.py", "d_bb25e0ada04227c6_defghi_py"),
-    (r"c:\foo\bar.html", "d_e7c107482373f299_bar_html"),
-    (r"d:\foo\bar.html", "d_584a05dcebc67b46_bar_html"),
-    ("Montréal/☺/conf.py", "d_c840497a2c647ce0_conf_py"),
+    ("a/b/c.py", "z_86bbcbe134d28fd2_c_py"),
+    ("a/b/defghi.py", "z_86bbcbe134d28fd2_defghi_py"),
+    ("/a/b/c.py", "z_bb25e0ada04227c6_c_py"),
+    ("/a/b/defghi.py", "z_bb25e0ada04227c6_defghi_py"),
+    (r"c:\foo\bar.html", "z_e7c107482373f299_bar_html"),
+    (r"d:\foo\bar.html", "z_584a05dcebc67b46_bar_html"),
+    ("Montréal/☺/conf.py", "z_c840497a2c647ce0_conf_py"),
     ( # original:
         r"c:\lorem\ipsum\quia\dolor\sit\amet\consectetur\adipisci\velit\sed" +
         r"\quia\non\numquam\eius\modi\tempora\incidunt\ut\labore\et\dolore" +
@@ -123,7 +123,7 @@ class FilesTest(CoverageTest):
         r"\nostrum\exercitationem\ullam\corporis\suscipit\laboriosam" +
         r"\Montréal\☺\my_program.py",
         # flat:
-        "d_e597dfacb73a23d5_my_program_py"
+        "z_e597dfacb73a23d5_my_program_py",
      ),
 ])
 def test_flat_rootname(original: str, flat: str) -> None:
@@ -263,7 +263,7 @@ def globs_to_regex_params(
             matches=["a+b/foo", "a+b/foobar", "x{y}z/foobar"],
             nomatches=["aab/foo", "ab/foo", "xyz/foo"],
         ),
-    ]))
+    ])),
 )
 def test_globs_to_regex(
     patterns: Iterable[str],
@@ -464,7 +464,7 @@ class PathAliasesTest(CoverageTest):
 
     def test_multiple_patterns(self, rel_yn: bool) -> None:
         # also test the debugfn...
-        msgs: List[str] = []
+        msgs: list[str] = []
         aliases = PathAliases(debugfn=msgs.append, relative=rel_yn)
         aliases.add('/home/*/src', './mysrc')
         aliases.add('/lib/*/libsrc', './mylib')
