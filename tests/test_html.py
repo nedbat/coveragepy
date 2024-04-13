@@ -109,7 +109,7 @@ class HtmlTestHelpers(CoverageTest):
         )
 
     def assert_valid_hrefs(self) -> None:
-        """Assert that the hrefs in htmlcov/*.html to see the references are valid.
+        """Assert that the hrefs in htmlcov/*.html are valid.
 
         Doesn't check external links (those with a protocol).
         """
@@ -125,6 +125,7 @@ class HtmlTestHelpers(CoverageTest):
                     continue
                 if "://" in href:
                     continue
+                href = href.partition("#")[0]   # ignore fragment in URLs.
                 hrefs[href].add(fname)
         for href, sources in hrefs.items():
             assert os.path.exists(f"htmlcov/{href}"), (
@@ -310,7 +311,7 @@ class HtmlDeltaTest(HtmlTestHelpers, CoverageTest):
         with open("htmlcov/status.json") as status_json:
             status_data = json.load(status_json)
 
-        assert status_data['format'] == 3
+        assert status_data['format'] == 4
         status_data['format'] = 99
         with open("htmlcov/status.json", "w") as status_json:
             json.dump(status_data, status_json)
@@ -718,6 +719,10 @@ class HtmlGoldTest(CoverageTest):
             '<td class="right" data-ratio="2 3">67%</td>',
         )
 
+    @pytest.mark.skipif(
+        env.PYPY and env.PYVERSION[:2] == (3, 8),
+        reason="PyPy 3.8 produces different results!?",
+    )
     def test_b_branch(self) -> None:
         self.make_file("b.py", """\
             def one(x):

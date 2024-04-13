@@ -222,7 +222,7 @@ class ReportWithJinjaTest(CoverageTest):
         cov.html_report()
         contains("htmlcov/index.html", """\
         <tbody>
-            <tr class="file">
+            <tr class="region">
                 <td class="name left"><a href="good_j2.html">good.j2</a></td>
                 <td>3</td>
                 <td>1</td>

@@ -681,7 +681,7 @@ $border-indicator-width: .2em;
         border-top: 1px solid #ccc;
         border-bottom: none;
     }
-    tr.file:hover {
+    tr.region:hover {
         background: $light-gray2;
         @include background-dark($dark-gray2);
         td.name {

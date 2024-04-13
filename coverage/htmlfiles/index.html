@@ -81,17 +81,17 @@
             </tr>
         </thead>
         <tbody>
-            {% for file in files %}
-            <tr class="file">
-                <td class="name left"><a href="{{file.html_filename}}">{{file.relative_filename}}</a></td>
-                <td>{{file.nums.n_statements}}</td>
-                <td>{{file.nums.n_missing}}</td>
-                <td>{{file.nums.n_excluded}}</td>
+            {% for region in regions %}
+            <tr class="region">
+                <td class="name left"><a href="{{region.url}}">{{region.description}}</a></td>
+                <td>{{region.nums.n_statements}}</td>
+                <td>{{region.nums.n_missing}}</td>
+                <td>{{region.nums.n_excluded}}</td>
                 {% if has_arcs %}
-                <td>{{file.nums.n_branches}}</td>
-                <td>{{file.nums.n_partial_branches}}</td>
+                <td>{{region.nums.n_branches}}</td>
+                <td>{{region.nums.n_partial_branches}}</td>
                 {% endif %}
-                <td class="right" data-ratio="{{file.nums.ratio_covered|pair}}">{{file.nums.pc_covered_str}}%</td>
+                <td class="right" data-ratio="{{region.nums.ratio_covered|pair}}">{{region.nums.pc_covered_str}}%</td>
             </tr>
             {% endfor %}
         </tbody>

@@ -26,6 +26,7 @@ from coverage.misc import (
     ensure_dir, file_be_gone, Hasher, isolate_module, format_local_datetime,
     human_sorted, plural, stdout_link,
 )
+from coverage.regions import code_regions
 from coverage.report_core import get_analysis_to_report
 from coverage.results import Analysis, Numbers
 from coverage.templite import Templite
@@ -295,7 +296,7 @@ class HtmlReporter:
             files_to_report[-1].next_html = "index.html"
 
             for ftr in files_to_report:
-                self.write_html_file(ftr)
+                self.write_html_page(ftr)
 
         if not self.all_files_nums:
             raise NoDataError("No data to report.")
@@ -308,7 +309,10 @@ class HtmlReporter:
             final_html = files_to_report[-1].html_filename
         else:
             first_html = final_html = "index.html"
-        self.index_file(first_html, final_html)
+        self.index_page(first_html, final_html)
+
+        # Write function and class index pages.
+        self.region_pages(files_to_report)
 
         self.make_local_static_report_files()
         return self.totals.n_statements and self.totals.pc_covered
@@ -359,13 +363,12 @@ class HtmlReporter:
 
         return True
 
-    def write_html_file(self, ftr: FileToReport) -> None:
-        """Generate an HTML file for one source file."""
+    def write_html_page(self, ftr: FileToReport) -> None:
+        """Generate an HTML page for one source file."""
         self.make_directory()
 
         # Find out if the file on disk is already correct.
         if self.incr.can_skip_file(self.data, ftr.fr, ftr.rootname):
-            print("LOOK:",self.incr.index_info(ftr.rootname))
             self.file_summaries.append(self.incr.index_info(ftr.rootname))
             return
 
@@ -447,14 +450,14 @@ class HtmlReporter:
 
         # Save this file's information for the index file.
         index_info = IndexInfo(
+            url = ftr.html_filename,
+            description = ftr.fr.relative_filename(),
             nums = ftr.analysis.numbers,
-            html_filename = ftr.html_filename,
-            relative_filename = ftr.fr.relative_filename(),
         )
         self.file_summaries.append(index_info)
         self.incr.set_index_info(ftr.rootname, index_info)
 
-    def index_file(self, first_html: str, final_html: str) -> None:
+    def index_page(self, first_html: str, final_html: str) -> None:
         """Write the index.html file for this report."""
         self.make_directory()
         index_tmpl = Templite(read_data("index.html"), self.template_globals)
@@ -466,7 +469,7 @@ class HtmlReporter:
             skipped_empty_msg = f"{n} empty file{plural(n)} skipped."
 
         html = index_tmpl.render({
-            "files": self.file_summaries,
+            "regions": self.file_summaries,
             "totals": self.totals,
             "skipped_covered_msg": skipped_covered_msg,
             "skipped_empty_msg": skipped_empty_msg,
@@ -483,12 +486,55 @@ class HtmlReporter:
         # Write the latest hashes for next time.
         self.incr.write()
 
+    def region_pages(self, files_to_report: list[FileToReport]) -> None:
+        """Write the functions.html file for this report."""
+        index_tmpl = Templite(read_data("index.html"), self.template_globals)
+        for noun in ["function", "class"]:
+            summaries = []
+            totals = Numbers(precision=self.config.precision)
+            for ftr in files_to_report:
+                num_lines = len(ftr.fr.source().splitlines())
+                outside_lines = set(range(1, num_lines + 1))
+                regions = code_regions(ftr.fr.source())
+
+                for name, lines in regions[noun].items():
+                    if not lines:
+                        continue
+                    outside_lines -= lines
+                    analysis = ftr.analysis.narrow(lines)
+                    summaries.append(IndexInfo(
+                        url = f"{ftr.html_filename}#t{min(lines)}",
+                        description = f"{ftr.fr.relative_filename()}:{name}",
+                        nums = analysis.numbers,
+                    ))
+                    totals += analysis.numbers
+
+                analysis = ftr.analysis.narrow(outside_lines)
+                summaries.append(IndexInfo(
+                    url = ftr.html_filename,
+                    description = f"{ftr.fr.relative_filename()} (no {noun})",
+                    nums = analysis.numbers,
+                ))
+                totals += analysis.numbers
+
+            html = index_tmpl.render({
+                "regions": summaries,
+                "totals": totals,
+                "skipped_covered_msg": "",
+                "skipped_empty_msg": "",
+                "first_html": "index.html",
+                "final_html": "index.html",
+            })
+
+            file = os.path.join(self.directory, f"{noun}_index.html")
+            write_html(file, html)
+
 
 @dataclass
 class IndexInfo:
-    """Information for each file, to render the index file."""
-    html_filename: str = ""
-    relative_filename: str = ""
+    """Information for each index entry, to render the index page."""
+    url: str = ""
+    description: str = ""
     nums: Numbers = field(default_factory=Numbers)
 
 
@@ -518,7 +564,7 @@ class IncrementalChecker:
         {
             "note": "This file is an internal implementation detail ...",
             // A fixed number indicating the data format.  STATUS_FORMAT
-            "format": 3,
+            "format": 4,
             // The version of coverage.py
             "version": "7.4.4",
             // A hash of a number of global things, including the configuration
@@ -531,8 +577,8 @@ class IncrementalChecker:
                     "hash": "e45581a5b48f879f301c0f30bf77a50c",
                     // Information for the index.html file.
                     "index": {
-                        "html_filename": "z_7b071bdc2a35fa80___init___py.html",
-                        "relative_filename": "cogapp/__init__.py",
+                        "url": "z_7b071bdc2a35fa80___init___py.html",
+                        "description": "cogapp/__init__.py",
                         // The Numbers for this file.
                         "nums": { "precision": 2, "n_files": 1, "n_statements": 43, ... }
                     }
@@ -544,7 +590,7 @@ class IncrementalChecker:
     """
 
     STATUS_FILE = "status.json"
-    STATUS_FORMAT = 3
+    STATUS_FORMAT = 4
     NOTE = (
         "This file is an internal implementation detail to speed up HTML report"
         + " generation. Its format can change at any time. You might be looking"
