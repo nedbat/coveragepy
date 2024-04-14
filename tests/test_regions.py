@@ -13,6 +13,7 @@ import pytest
 
 import coverage
 from coverage import env
+from coverage.plugin import CodeRegion
 from coverage.regions import code_regions
 
 
@@ -42,8 +43,8 @@ def test_code_regions() -> None:
                     class DeepInside:
                         def method_b():
                             self.x = 17
-                        class EvenDeeper:
-                            def method_bb():
+                        class Deeper:
+                            def bb():
                                 self.x = 20
                 self.y = 21
 
@@ -71,26 +72,26 @@ def test_code_regions() -> None:
     """))
 
     assert regions == {
-        "function": {
-            "MyClass.InnerClass.method_c": {26},
-            "MyClass.__init__": {9},
-            "MyClass.method_a": {12, 13, 21},
-            "MyClass.method_a.inmethod": {14, 15, 16, 18, 19},
-            "MyClass.method_a.inmethod.DeepInside.method_b": {17},
-            "MyClass.method_a.inmethod.DeepInside.EvenDeeper.method_bb": {20},
-            "afunc": {43},
-            "func": {29, 30, 31, 35, 36, 37, 39, 40},
-            "func.InsideFunc.method_d": {38},
-            "func.inner": {32, 33},
-            "func.inner.inner_inner": {34},
-        },
-        "class": {
-            "MyClass": {9, 12, 13, 14, 15, 16, 18, 19, 21},
-            "MyClass.InnerClass": {26},
-            "MyClass.method_a.inmethod.DeepInside": {17},
-            "MyClass.method_a.inmethod.DeepInside.EvenDeeper": {20},
-            "func.InsideFunc": {38},
-        },
+        "function": [
+            CodeRegion("MyClass.__init__", start=8, lines={9}),
+            CodeRegion("MyClass.method_a", start=11, lines={12, 13, 21}),
+            CodeRegion("MyClass.method_a.inmethod", start=13, lines={14, 15, 16, 18, 19}),
+            CodeRegion("MyClass.method_a.inmethod.DeepInside.method_b", start=16, lines={17}),
+            CodeRegion("MyClass.method_a.inmethod.DeepInside.Deeper.bb", start=19, lines={20}),
+            CodeRegion("MyClass.InnerClass.method_c", start=25, lines={26}),
+            CodeRegion("func", start=28, lines={29, 30, 31, 35, 36, 37, 39, 40}),
+            CodeRegion("func.inner", start=31, lines={32, 33}),
+            CodeRegion("func.inner.inner_inner", start=33, lines={34}),
+            CodeRegion("func.InsideFunc.method_d", start=37, lines={38}),
+            CodeRegion("afunc", start=42, lines={43}),
+        ],
+        "class": [
+            CodeRegion("MyClass", start=5, lines={9, 12, 13, 14, 15, 16, 18, 19, 21}),
+            CodeRegion("MyClass.method_a.inmethod.DeepInside", start=15, lines={17}),
+            CodeRegion("MyClass.method_a.inmethod.DeepInside.Deeper", start=18, lines={20}),
+            CodeRegion("MyClass.InnerClass", start=23, lines={26}),
+            CodeRegion("func.InsideFunc", start=36, lines={38}),
+        ],
     }
 
 
@@ -107,7 +108,7 @@ def test_real_code_regions() -> None:
         for source_file in (cov_dir / sub).glob("*.py"):
             regions = code_regions(source_file.read_text(encoding="utf-8"))
             for kind, regs in regions.items():
-                line_counts = collections.Counter(lno for lnos in regs.values() for lno in lnos)
+                line_counts = collections.Counter(lno for reg in regs for lno in reg.lines)
                 overlaps = [line for line, count in line_counts.items() if count > 1]
                 if overlaps:    # pragma: only failure
                     print(

@@ -17,7 +17,8 @@ from coverage.files import canonical_filename, relative_filename, zip_location
 from coverage.misc import isolate_module, join_regex
 from coverage.parser import PythonParser
 from coverage.phystokens import source_token_lines, source_encoding
-from coverage.plugin import FileReporter
+from coverage.plugin import CodeRegion, FileReporter
+from coverage.regions import code_regions
 from coverage.types import TArc, TLineNo, TMorf, TSourceTokenLines
 
 if TYPE_CHECKING:
@@ -251,3 +252,6 @@ class PythonFileReporter(FileReporter):
 
     def source_token_lines(self) -> TSourceTokenLines:
         return source_token_lines(self.source())
+
+    def code_regions(self) -> dict[str, list[CodeRegion]]:
+        return code_regions(self.source())

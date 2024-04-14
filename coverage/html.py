@@ -26,7 +26,6 @@ from coverage.misc import (
     ensure_dir, file_be_gone, Hasher, isolate_module, format_local_datetime,
     human_sorted, plural, stdout_link,
 )
-from coverage.regions import code_regions
 from coverage.report_core import get_analysis_to_report
 from coverage.results import Analysis, Numbers
 from coverage.templite import Templite
@@ -489,37 +488,51 @@ class HtmlReporter:
     def region_pages(self, files_to_report: list[FileToReport]) -> None:
         """Write the functions.html file for this report."""
         index_tmpl = Templite(read_data("index.html"), self.template_globals)
-        for noun in ["function", "class"]:
-            summaries = []
-            totals = Numbers(precision=self.config.precision)
-            for ftr in files_to_report:
-                num_lines = len(ftr.fr.source().splitlines())
-                outside_lines = set(range(1, num_lines + 1))
-                regions = code_regions(ftr.fr.source())
 
-                for name, lines in regions[noun].items():
-                    if not lines:
+        @dataclass
+        class PageData:
+            """Data for each index page."""
+            summaries: list[IndexInfo]
+            totals: Numbers
+
+        region_kinds: dict[str, PageData] = {}
+
+        for ftr in files_to_report:
+            num_lines = len(ftr.fr.source().splitlines())
+            outside_lines = set(range(1, num_lines + 1))
+            regions = ftr.fr.code_regions()
+
+            for noun, region_list in regions.items():
+                if noun not in region_kinds:
+                    region_kinds[noun] = PageData(
+                        summaries=[],
+                        totals=Numbers(precision=self.config.precision),
+                    )
+
+                for region in region_list:
+                    if not region.lines:
                         continue
-                    outside_lines -= lines
-                    analysis = ftr.analysis.narrow(lines)
-                    summaries.append(IndexInfo(
-                        url = f"{ftr.html_filename}#t{min(lines)}",
-                        description = f"{ftr.fr.relative_filename()}:{name}",
-                        nums = analysis.numbers,
+                    outside_lines -= region.lines
+                    analysis = ftr.analysis.narrow(region.lines)
+                    region_kinds[noun].summaries.append(IndexInfo(
+                        url=f"{ftr.html_filename}#t{region.start}",
+                        description=f"{ftr.fr.relative_filename()}:{region.name}",
+                        nums=analysis.numbers,
                     ))
-                    totals += analysis.numbers
+                    region_kinds[noun].totals += analysis.numbers
 
                 analysis = ftr.analysis.narrow(outside_lines)
-                summaries.append(IndexInfo(
-                    url = ftr.html_filename,
-                    description = f"{ftr.fr.relative_filename()} (no {noun})",
-                    nums = analysis.numbers,
+                region_kinds[noun].summaries.append(IndexInfo(
+                    url=ftr.html_filename,
+                    description=f"{ftr.fr.relative_filename()} (no {noun})",
+                    nums=analysis.numbers,
                 ))
-                totals += analysis.numbers
+                region_kinds[noun].totals += analysis.numbers
 
+        for noun, region_data in region_kinds.items():
             html = index_tmpl.render({
-                "regions": summaries,
-                "totals": totals,
+                "regions": region_data.summaries,
+                "totals": region_data.totals,
                 "skipped_covered_msg": "",
                 "skipped_empty_msg": "",
                 "first_html": "index.html",

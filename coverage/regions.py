@@ -10,6 +10,8 @@ import dataclasses
 
 from typing import cast
 
+from coverage.plugin import CodeRegion
+
 
 @dataclasses.dataclass
 class Context:
@@ -27,9 +29,9 @@ class RegionFinder(ast.NodeVisitor):
 
     """
     def __init__(self) -> None:
-        self.regions: dict[str, dict[str, set[int]]] = {
-            "function": {},
-            "class": {},
+        self.regions: dict[str, list[CodeRegion]] = {
+            "function": [],
+            "class": [],
         }
         self.context: list[Context] = []
 
@@ -53,7 +55,9 @@ class RegionFinder(ast.NodeVisitor):
                 ancestor.lines -= lines
                 break
         self.context.append(Context(node.name, "function", lines))
-        self.regions["function"][self.fq_node_name()] = lines
+        self.regions["function"].append(
+            CodeRegion(name=self.fq_node_name(), start=node.lineno, lines=lines)
+        )
         self.generic_visit(node)
         self.context.pop()
 
@@ -66,7 +70,9 @@ class RegionFinder(ast.NodeVisitor):
         # finds.
         lines: set[int] = set()
         self.context.append(Context(node.name, "class", lines))
-        self.regions["class"][self.fq_node_name()] = lines
+        self.regions["class"].append(
+            CodeRegion(name=self.fq_node_name(), start=node.lineno, lines=lines)
+        )
         self.generic_visit(node)
         self.context.pop()
         # Class bodies should be excluded from the enclosing classes.
@@ -75,7 +81,7 @@ class RegionFinder(ast.NodeVisitor):
                 ancestor.lines -= lines
 
 
-def code_regions(source: str) -> dict[str, dict[str, set[int]]]:
+def code_regions(source: str) -> dict[str, list[CodeRegion]]:
     """Find function and class regions in source code.
 
     Takes the program `source`, and returns a dict: the keys are "function" and
