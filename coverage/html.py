@@ -282,7 +282,7 @@ class HtmlReporter:
 
         for fr, analysis in get_analysis_to_report(self.coverage, morfs):
             ftr = FileToReport(fr, analysis)
-            if self.should_report_file(ftr):
+            if self.should_report(analysis):
                 files_to_report.append(ftr)
             else:
                 file_be_gone(os.path.join(self.directory, ftr.html_filename))
@@ -340,10 +340,10 @@ class HtmlReporter:
             assert self.config.extra_css is not None
             shutil.copyfile(self.config.extra_css, os.path.join(self.directory, self.extra_css))
 
-    def should_report_file(self, ftr: FileToReport) -> bool:
-        """Determine if we'll report this file."""
+    def should_report(self, analysis: Analysis) -> bool:
+        """Determine if we'll report this file or region."""
         # Get the numbers for this file.
-        nums = ftr.analysis.numbers
+        nums = analysis.numbers
         self.all_files_nums.append(nums)
 
         if self.skip_covered:
@@ -510,10 +510,13 @@ class HtmlReporter:
                     )
 
                 for region in region_list:
-                    if not region.lines:
-                        continue
                     outside_lines -= region.lines
                     analysis = ftr.analysis.narrow(region.lines)
+                    # TODO: should_report updates counts that could instead be
+                    # collected in PageData, and PageData could be used for
+                    # index.html also.
+                    if not self.should_report(analysis):
+                        continue
                     region_kinds[noun].summaries.append(IndexInfo(
                         url=f"{ftr.html_filename}#t{region.start}",
                         description=f"{ftr.fr.relative_filename()}:{region.name}",
@@ -522,12 +525,13 @@ class HtmlReporter:
                     region_kinds[noun].totals += analysis.numbers
 
                 analysis = ftr.analysis.narrow(outside_lines)
-                region_kinds[noun].summaries.append(IndexInfo(
-                    url=ftr.html_filename,
-                    description=f"{ftr.fr.relative_filename()} (no {noun})",
-                    nums=analysis.numbers,
-                ))
-                region_kinds[noun].totals += analysis.numbers
+                if self.should_report(analysis):
+                    region_kinds[noun].summaries.append(IndexInfo(
+                        url=ftr.html_filename,
+                        description=f"{ftr.fr.relative_filename()} (no {noun})",
+                        nums=analysis.numbers,
+                    ))
+                    region_kinds[noun].totals += analysis.numbers
 
         for noun, region_data in region_kinds.items():
             html = index_tmpl.render({
