@@ -36,11 +36,12 @@ function on_click(sel, fn) {
 function getCellValue(row, column = 0) {
     const cell = row.cells[column]  // nosemgrep: eslint.detect-object-injection
     if (cell.childElementCount == 1) {
-        const child = cell.firstElementChild
-        if (child instanceof HTMLTimeElement && child.dateTime) {
-            return child.dateTime
-        } else if (child instanceof HTMLDataElement && child.value) {
-            return child.value
+        var child = cell.firstElementChild;
+        if (child.tagName === "A") {
+            child = child.firstElementChild;
+        }
+        if (child instanceof HTMLDataElement && child.value) {
+            return child.value;
         }
     }
     return cell.innerText || cell.textContent;
@@ -50,7 +51,7 @@ function rowComparator(rowA, rowB, column = 0) {
     let valueA = getCellValue(rowA, column);
     let valueB = getCellValue(rowB, column);
     if (!isNaN(valueA) && !isNaN(valueB)) {
-        return valueA - valueB
+        return valueA - valueB;
     }
     return valueA.localeCompare(valueB, undefined, {numeric: true});
 }
@@ -104,7 +105,23 @@ coverage.wire_up_filter = function () {
 
         // Hide / show elements.
         table_body_rows.forEach(row => {
-            if (!row.cells[0].textContent.includes(event.target.value)) {
+            var show = false;
+            var target = event.target.value;
+            var casefold = (target === target.toLowerCase());
+            for (let column = 0; column < totals.length; column++) {
+                cell = row.cells[column];
+                if (cell.classList.contains("name")) {
+                    var celltext = cell.textContent;
+                    if (casefold) {
+                        celltext = celltext.toLowerCase();
+                    }
+                    if (celltext.includes(target)) {
+                        show = true;
+                    }
+                }
+            }
+
+            if (!show) {
                 // hide
                 row.classList.add("hidden");
                 return;
@@ -114,9 +131,12 @@ coverage.wire_up_filter = function () {
             row.classList.remove("hidden");
             totals[0]++;
 
-            for (let column = 1; column < totals.length; column++) {
+            for (let column = 0; column < totals.length; column++) {
                 // Accumulate dynamic totals
                 cell = row.cells[column]  // nosemgrep: eslint.detect-object-injection
+                if (cell.classList.contains("name")) {
+                    continue;
+                }
                 if (column === totals.length - 1) {
                     // Last column contains percentage
                     const [numer, denom] = cell.dataset.ratio.split(" ");
@@ -142,9 +162,12 @@ coverage.wire_up_filter = function () {
 
         const footer = table.tFoot.rows[0];
         // Calculate new dynamic sum values based on visible rows.
-        for (let column = 1; column < totals.length; column++) {
+        for (let column = 0; column < totals.length; column++) {
             // Get footer cell element.
             const cell = footer.cells[column];  // nosemgrep: eslint.detect-object-injection
+            if (cell.classList.contains("name")) {
+                continue;
+            }
 
             // Set value into dynamic footer cell element.
             if (column === totals.length - 1) {

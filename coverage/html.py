@@ -450,7 +450,7 @@ class HtmlReporter:
         # Save this file's information for the index file.
         index_info = IndexInfo(
             url = ftr.html_filename,
-            description = ftr.fr.relative_filename(),
+            file = escape(ftr.fr.relative_filename()),
             nums = ftr.analysis.numbers,
         )
         self.file_summaries.append(index_info)
@@ -470,6 +470,7 @@ class HtmlReporter:
         html = index_tmpl.render({
             "regions": self.file_summaries,
             "totals": self.totals,
+            "column2": "",
             "skipped_covered_msg": skipped_covered_msg,
             "skipped_empty_msg": skipped_empty_msg,
             "first_html": first_html,
@@ -517,9 +518,15 @@ class HtmlReporter:
                     # index.html also.
                     if not self.should_report(analysis):
                         continue
+                    sorting_name = region.name.rpartition(".")[-1].lstrip("_")
                     region_kinds[noun].summaries.append(IndexInfo(
-                        url=f"{escape(ftr.html_filename)}#t{region.start}",
-                        description=f"{escape(ftr.fr.relative_filename())}:{region.name}",
+                        url=f"{ftr.html_filename}#t{region.start}",
+                        file=escape(ftr.fr.relative_filename()),
+                        description=(
+                            f"<data value='{escape(sorting_name)}'>"
+                            + escape(region.name)
+                            + "</data>"
+                        ),
                         nums=analysis.numbers,
                     ))
                     region_kinds[noun].totals += analysis.numbers
@@ -528,9 +535,11 @@ class HtmlReporter:
                 if self.should_report(analysis):
                     region_kinds[noun].summaries.append(IndexInfo(
                         url=ftr.html_filename,
+                        file=escape(ftr.fr.relative_filename()),
                         description=(
-                            f"{escape(ftr.fr.relative_filename())} "
+                            "<data value=''>"
                             + f"<span class='no-noun'>(no {escape(noun)})</span>"
+                            + "</data>"
                         ),
                         nums=analysis.numbers,
                     ))
@@ -540,6 +549,7 @@ class HtmlReporter:
             html = index_tmpl.render({
                 "regions": region_data.summaries,
                 "totals": region_data.totals,
+                "column2": noun,
                 "skipped_covered_msg": "",
                 "skipped_empty_msg": "",
                 "first_html": "index.html",
@@ -554,6 +564,7 @@ class HtmlReporter:
 class IndexInfo:
     """Information for each index entry, to render the index page."""
     url: str = ""
+    file: str = ""
     description: str = ""
     nums: Numbers = field(default_factory=Numbers)
 
@@ -584,7 +595,7 @@ class IncrementalChecker:
         {
             "note": "This file is an internal implementation detail ...",
             // A fixed number indicating the data format.  STATUS_FORMAT
-            "format": 4,
+            "format": 5,
             // The version of coverage.py
             "version": "7.4.4",
             // A hash of a number of global things, including the configuration
@@ -598,7 +609,8 @@ class IncrementalChecker:
                     // Information for the index.html file.
                     "index": {
                         "url": "z_7b071bdc2a35fa80___init___py.html",
-                        "description": "cogapp/__init__.py",
+                        "file": "cogapp/__init__.py",
+                        "description": "",
                         // The Numbers for this file.
                         "nums": { "precision": 2, "n_files": 1, "n_statements": 43, ... }
                     }
@@ -610,7 +622,7 @@ class IncrementalChecker:
     """
 
     STATUS_FILE = "status.json"
-    STATUS_FORMAT = 4
+    STATUS_FORMAT = 5
     NOTE = (
         "This file is an internal implementation detail to speed up HTML report"
         + " generation. Its format can change at any time. You might be looking"

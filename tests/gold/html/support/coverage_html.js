@@ -40,6 +40,7 @@ function getCellValue(row, column = 0) {
         if (child instanceof HTMLTimeElement && child.dateTime) {
             return child.dateTime
         } else if (child instanceof HTMLDataElement && child.value) {
+            console.log("child.value", child.value);
             return child.value
         }
     }
@@ -104,7 +105,17 @@ coverage.wire_up_filter = function () {
 
         // Hide / show elements.
         table_body_rows.forEach(row => {
-            if (!row.cells[0].textContent.includes(event.target.value)) {
+            show = false;
+            for (let column = 0; column < totals.length; column++) {
+                cell = row.cells[column];
+                if (cell.classList.contains("name")) {
+                    if (cell.textContent.includes(event.target.value)) {
+                        show = true;
+                    }
+                }
+            }
+
+            if (!show) {
                 // hide
                 row.classList.add("hidden");
                 return;
@@ -114,9 +125,12 @@ coverage.wire_up_filter = function () {
             row.classList.remove("hidden");
             totals[0]++;
 
-            for (let column = 1; column < totals.length; column++) {
+            for (let column = 0; column < totals.length; column++) {
                 // Accumulate dynamic totals
                 cell = row.cells[column]  // nosemgrep: eslint.detect-object-injection
+                if (cell.classList.contains("name")) {
+                    continue;
+                }
                 if (column === totals.length - 1) {
                     // Last column contains percentage
                     const [numer, denom] = cell.dataset.ratio.split(" ");
@@ -142,9 +156,12 @@ coverage.wire_up_filter = function () {
 
         const footer = table.tFoot.rows[0];
         // Calculate new dynamic sum values based on visible rows.
-        for (let column = 1; column < totals.length; column++) {
+        for (let column = 0; column < totals.length; column++) {
             // Get footer cell element.
             const cell = footer.cells[column];  // nosemgrep: eslint.detect-object-injection
+            if (cell.classList.contains("name")) {
+                continue;
+            }
 
             // Set value into dynamic footer cell element.
             if (column === totals.length - 1) {

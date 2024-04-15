@@ -311,7 +311,7 @@ class HtmlDeltaTest(HtmlTestHelpers, CoverageTest):
         with open("htmlcov/status.json") as status_json:
             status_data = json.load(status_json)
 
-        assert status_data['format'] == 4
+        assert status_data['format'] == 5
         status_data['format'] = 99
         with open("htmlcov/status.json", "w") as status_json:
             json.dump(status_data, status_json)
