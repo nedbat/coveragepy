@@ -23,6 +23,11 @@ upgrading your version of coverage.py.
 Unreleased
 ----------
 
+- Added initial support for function and class reporting in the HTML report.
+  There are now three index pages which link to each other: files, functions,
+  and classes.  Other reports don't yet have this information, but it will be
+  added in the future where it makes sense.  Feedback gladly accepted!
+
 - The debug output showing which configuration files were tried now shows
   absolute paths to help diagnose problems where settings aren't taking effect,
   and is renamed from "attempted_config_files" to the more logical
