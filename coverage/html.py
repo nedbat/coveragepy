@@ -518,8 +518,8 @@ class HtmlReporter:
                     if not self.should_report(analysis):
                         continue
                     region_kinds[noun].summaries.append(IndexInfo(
-                        url=f"{ftr.html_filename}#t{region.start}",
-                        description=f"{ftr.fr.relative_filename()}:{region.name}",
+                        url=f"{escape(ftr.html_filename)}#t{region.start}",
+                        description=f"{escape(ftr.fr.relative_filename())}:{region.name}",
                         nums=analysis.numbers,
                     ))
                     region_kinds[noun].totals += analysis.numbers
@@ -528,7 +528,10 @@ class HtmlReporter:
                 if self.should_report(analysis):
                     region_kinds[noun].summaries.append(IndexInfo(
                         url=ftr.html_filename,
-                        description=f"{ftr.fr.relative_filename()} (no {noun})",
+                        description=(
+                            f"{escape(ftr.fr.relative_filename())} "
+                            + f"<span class='no-noun'>(no {escape(noun)})</span>"
+                        ),
                         nums=analysis.numbers,
                     ))
                     region_kinds[noun].totals += analysis.numbers

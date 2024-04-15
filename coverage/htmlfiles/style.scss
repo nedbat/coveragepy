@@ -143,7 +143,8 @@ table tr.hidden {
 
 p#no_rows {
     display: none;
-    font-size: 1.2em;
+    font-size: 1.15em;
+    font-family: $font-normal;
 }
 
 a.nav {
@@ -637,16 +638,18 @@ $border-indicator-width: .2em;
     }
     td, th {
         text-align: right;
-        width: 5em;
         padding: .25em .5em;
         border-bottom: 1px solid $light-gray2;
         @include border-color-dark($dark-gray2);
         &.name {
             text-align: left;
             width: auto;
+            font-family: $font-normal;
+            min-width: 15em;
         }
     }
     th {
+        font-family: $font-normal;
         font-style: italic;
         color: $light-gray6;
         @include color-dark($dark-gray6);
@@ -670,9 +673,15 @@ $border-indicator-width: .2em;
             content: " ↓";
         }
     }
-    td.name a {
-        text-decoration: none;
-        color: inherit;
+    td.name {
+        font-size: 1.15em;
+        a {
+          text-decoration: none;
+          color: inherit;
+        }
+        & .no-noun {
+          font-style: italic;
+        }
     }
 
     tr.total td,
