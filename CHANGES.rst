@@ -28,6 +28,11 @@ Unreleased
   and classes.  Other reports don't yet have this information, but it will be
   added in the future where it makes sense.  Feedback gladly accepted!
 
+- Other HTML report improvements:
+
+  - The index page is always sorted by one of its columns, with clearer
+    indications of the sorting.
+
 - The debug output showing which configuration files were tried now shows
   absolute paths to help diagnose problems where settings aren't taking effect,
   and is renamed from "attempted_config_files" to the more logical

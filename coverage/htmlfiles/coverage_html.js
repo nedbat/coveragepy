@@ -203,14 +203,15 @@ coverage.index_ready = function () {
     );
 
     // Look for a localStorage item containing previous sort settings:
+    var column = 0, direction = "ascending";
     const stored_list = localStorage.getItem(coverage.INDEX_SORT_STORAGE);
 
     if (stored_list) {
-        const {column, direction} = JSON.parse(stored_list);
-        const th = document.querySelector("[data-sortable]").tHead.rows[0].cells[column];  // nosemgrep: eslint.detect-object-injection
-        th.setAttribute("aria-sort", direction === "ascending" ? "descending" : "ascending");
-        th.click()
+        ({column, direction} = JSON.parse(stored_list));
     }
+    const th = document.querySelector("[data-sortable]").tHead.rows[0].cells[column];  // nosemgrep: eslint.detect-object-injection
+    th.setAttribute("aria-sort", direction === "ascending" ? "descending" : "ascending");
+    th.click()
 
     // Watch for page unload events so we can save the final sort settings:
     window.addEventListener("unload", function () {

@@ -658,19 +658,24 @@ $border-indicator-width: .2em;
             background: $light-gray2;
             @include background-dark($dark-gray2);
         }
+        .arrows {
+            color: #666;
+            font-size: 85%;
+            font-family: sans-serif;
+            font-style: normal;
+            pointer-events: none;
+        }
         &[aria-sort="ascending"], &[aria-sort="descending"] {
             white-space: nowrap;
             background: $light-gray2;
             @include background-dark($dark-gray2);
             padding-left: .5em;
         }
-        &[aria-sort="ascending"]::after {
-            font-family: sans-serif;
-            content: " ↑";
+        &[aria-sort="ascending"] .arrows::after {
+            content: " ▲";
         }
-        &[aria-sort="descending"]::after {
-            font-family: sans-serif;
-            content: " ↓";
+        &[aria-sort="descending"] .arrows::after {
+            content: " ▼";
         }
     }
     td.name {
