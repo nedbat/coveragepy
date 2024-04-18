@@ -151,7 +151,8 @@ coverage.wire_up_filter = function () {
                     const [numer, denom] = cell.dataset.ratio.split(" ");
                     totals[column]["numer"] += parseInt(numer, 10);  // nosemgrep: eslint.detect-object-injection
                     totals[column]["denom"] += parseInt(denom, 10);  // nosemgrep: eslint.detect-object-injection
-                } else {
+                }
+                else {
                     totals[column] += parseInt(cell.textContent, 10);  // nosemgrep: eslint.detect-object-injection
                 }
             }
@@ -190,7 +191,8 @@ coverage.wire_up_filter = function () {
                 cell.textContent = denom
                     ? `${(numer * 100 / denom).toFixed(places)}%`
                     : `${(100).toFixed(places)}%`;
-            } else {
+            }
+            else {
                 cell.textContent = totals[column];  // nosemgrep: eslint.detect-object-injection
             }
         }
@@ -243,7 +245,8 @@ coverage.pyfile_ready = function () {
     if (frag.length > 2 && frag[1] === "t") {
         document.querySelector(frag).closest(".n").classList.add("highlight");
         coverage.set_sel(parseInt(frag.substr(2), 10));
-    } else {
+    }
+    else {
         coverage.set_sel(0);
     }
 
@@ -467,7 +470,8 @@ coverage.to_next_chunk_nicely = function () {
         if (line.parentElement !== document.getElementById("source")) {
             // The element is not a source line but the header or similar
             coverage.select_line_or_chunk(1);
-        } else {
+        }
+        else {
             // We extract the line number from the id
             coverage.select_line_or_chunk(parseInt(line.id.substring(1), 10));
         }
@@ -486,7 +490,8 @@ coverage.to_prev_chunk_nicely = function () {
         if (line.parentElement !== document.getElementById("source")) {
             // The element is not a source line but the header or similar
             coverage.select_line_or_chunk(coverage.lines_len);
-        } else {
+        }
+        else {
             // We extract the line number from the id
             coverage.select_line_or_chunk(parseInt(line.id.substring(1), 10));
         }
@@ -588,7 +593,8 @@ coverage.build_scroll_markers = function () {
         if (line_number === previous_line + 1) {
             // If this solid missed block just make previous mark higher.
             last_mark.style.height = `${line_top + line_height - last_top}px`;
-        } else {
+        }
+        else {
             // Add colored line in scroll_marker block.
             last_mark = document.createElement("div");
             last_mark.id = `m${line_number}`;
@@ -616,7 +622,8 @@ coverage.wire_up_sticky_header = function () {
     function updateHeader() {
         if (window.scrollY > header_bottom) {
             header.classList.add("sticky");
-        } else {
+        }
+        else {
             header.classList.remove("sticky");
         }
     }
@@ -644,7 +651,8 @@ coverage.expand_contexts = function (e) {
 document.addEventListener("DOMContentLoaded", () => {
     if (document.body.classList.contains("indexfile")) {
         coverage.index_ready();
-    } else {
+    }
+    else {
         coverage.pyfile_ready();
     }
 });
