@@ -5,7 +5,7 @@
 Coverage.py
 ===========
 
-Code coverage testing for Python.
+Code coverage measurement for Python.
 
 .. image:: https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/banner2-direct.svg
     :target: https://vshymanskyy.github.io/StandWithUkraine
