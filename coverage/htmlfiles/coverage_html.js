@@ -58,21 +58,30 @@ function rowComparator(rowA, rowB, column = 0) {
 
 function sortColumn(th) {
     // Get the current sorting direction of the selected header,
-    // clear state on other headers and then set the new sorting direction
+    // clear state on other headers and then set the new sorting direction.
     const currentSortOrder = th.getAttribute("aria-sort");
     [...th.parentElement.cells].forEach(header => header.setAttribute("aria-sort", "none"));
+    var direction;
     if (currentSortOrder === "none") {
-        th.setAttribute("aria-sort", th.dataset.defaultSortOrder || "ascending");
-    } else {
-        th.setAttribute("aria-sort", currentSortOrder === "ascending" ? "descending" : "ascending");
+        direction = th.dataset.defaultSortOrder || "ascending";
     }
+    else if (currentSortOrder === "ascending") {
+        direction = "descending";
+    }
+    else {
+        direction = "ascending";
+    }
+    th.setAttribute("aria-sort", direction);
 
     const column = [...th.parentElement.cells].indexOf(th)
 
-    // Sort all rows and afterwards append them in order to move them in the DOM
+    // Sort all rows and afterwards append them in order to move them in the DOM.
     Array.from(th.closest("table").querySelectorAll("tbody tr"))
-        .sort((rowA, rowB) => rowComparator(rowA, rowB, column) * (th.getAttribute("aria-sort") === "ascending" ? 1 : -1))
-        .forEach(tr => tr.parentElement.appendChild(tr) );
+        .sort((rowA, rowB) => rowComparator(rowA, rowB, column) * (direction === "ascending" ? 1 : -1))
+        .forEach(tr => tr.parentElement.appendChild(tr));
+
+    // Save the sort order for next time.
+    localStorage.setItem(coverage.INDEX_SORT_STORAGE, JSON.stringify({column, direction}));
 }
 
 // Find all the elements with data-shortcut attribute, and use them to assign a shortcut key.
@@ -192,12 +201,8 @@ coverage.wire_up_filter = function () {
     document.getElementById("filter").dispatchEvent(new Event("input"));
 };
 
-coverage.INDEX_SORT_STORAGE = "COVERAGE_INDEX_SORT_2";
-
-// Loaded on index.html
-coverage.index_ready = function () {
-    coverage.assign_shortkeys();
-    coverage.wire_up_filter();
+// Set up the click-to-sort columns.
+coverage.wire_up_sorting = function () {
     document.querySelectorAll("[data-sortable] th[aria-sort]").forEach(
         th => th.addEventListener("click", e => sortColumn(e.target))
     );
@@ -205,25 +210,22 @@ coverage.index_ready = function () {
     // Look for a localStorage item containing previous sort settings:
     var column = 0, direction = "ascending";
     const stored_list = localStorage.getItem(coverage.INDEX_SORT_STORAGE);
-
     if (stored_list) {
         ({column, direction} = JSON.parse(stored_list));
     }
+
     const th = document.querySelector("[data-sortable]").tHead.rows[0].cells[column];  // nosemgrep: eslint.detect-object-injection
     th.setAttribute("aria-sort", direction === "ascending" ? "descending" : "ascending");
     th.click()
+};
 
-    // Watch for page unload events so we can save the final sort settings:
-    window.addEventListener("unload", function () {
-        const th = document.querySelector('[data-sortable] th[aria-sort="ascending"], [data-sortable] [aria-sort="descending"]');
-        if (!th) {
-            return;
-        }
-        localStorage.setItem(coverage.INDEX_SORT_STORAGE, JSON.stringify({
-            column: [...th.parentElement.cells].indexOf(th),
-            direction: th.getAttribute("aria-sort"),
-        }));
-    });
+coverage.INDEX_SORT_STORAGE = "COVERAGE_INDEX_SORT_2";
+
+// Loaded on index.html
+coverage.index_ready = function () {
+    coverage.assign_shortkeys();
+    coverage.wire_up_filter();
+    coverage.wire_up_sorting();
 
     on_click(".button_prev_file", coverage.to_prev_file);
     on_click(".button_next_file", coverage.to_next_file);
