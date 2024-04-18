@@ -23,6 +23,11 @@ upgrading your version of coverage.py.
 Unreleased
 ----------
 
+- The debug output showing which configuration files were tried now shows
+  absolute paths to help diagnose problems where settings aren't taking effect,
+  and is renamed from "attempted_config_files" to the more logical
+  "config_files_attempted."
+
 - Python 3.13.0a5 is supported.
 
 
