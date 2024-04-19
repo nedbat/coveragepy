@@ -25,6 +25,11 @@ Unreleased
 
 - Fix: the PYTHONSAFEPATH environment variable new in Python 3.11 is properly
   supported, closing `issue 1696`_.  Thanks, `Philipp A. <pull 1700_>`_.
+- The debug output showing which configuration files were tried now shows
+  absolute paths to help diagnose problems where settings aren't taking effect,
+  and is renamed from "attempted_config_files" to the more logical
+  "config_files_attempted."
+
 - Python 3.13.0a5 is supported.
 
 

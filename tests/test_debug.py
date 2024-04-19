@@ -179,7 +179,7 @@ class DebugTraceTest(CoverageTest):
         out_text = self.f1_debug_output(["config"])
 
         labels = """
-            attempted_config_files branch config_files_read config_file cover_pylib data_file
+            branch config_file config_files_attempted config_files_read cover_pylib data_file
             debug exclude_list extra_css html_dir html_title ignore_errors
             run_include run_omit parallel partial_always_list partial_list paths
             precision show_missing source timid xml_output

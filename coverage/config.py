@@ -180,7 +180,7 @@ class CoverageConfig(TConfigurable, TPluginConfig):
         """Initialize the configuration attributes to their defaults."""
         # Metadata about the config.
         # We tried to read these config files.
-        self.attempted_config_files: list[str] = []
+        self.config_files_attempted: list[str] = []
         # We did read these config files, but maybe didn't find any content for us.
         self.config_files_read: list[str] = []
         # The file that gave us our configuration.
@@ -291,7 +291,7 @@ class CoverageConfig(TConfigurable, TPluginConfig):
         else:
             cp = HandyConfigParser(our_file)
 
-        self.attempted_config_files.append(filename)
+        self.config_files_attempted.append(os.path.abspath(filename))
 
         try:
             files_read = cp.read(filename)
