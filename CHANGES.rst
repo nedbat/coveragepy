@@ -30,6 +30,9 @@ Unreleased
 
 - Other HTML report improvements:
 
+  - There is now a "hide covered" checkbox to filter out 100% files, finishing
+    `issue 1384`_.
+
   - The index page is always sorted by one of its columns, with clearer
     indications of the sorting.
 
@@ -39,6 +42,8 @@ Unreleased
   "config_files_attempted."
 
 - Python 3.13.0a5 is supported.
+
+.. _issue 1384: https://github.com/nedbat/coveragepy/issues/1384
 
 
 .. scriv-start-here

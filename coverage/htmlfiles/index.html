@@ -58,6 +58,10 @@
 
         <form id="filter_container">
             <input id="filter" type="text" value="" placeholder="filter..." />
+            <div>
+                <input id="hide100" type="checkbox" {% if skip_covered %}checked disabled {% endif %}/>
+                <label for="hide100">hide covered</label>
+            </div>
         </form>
 
         <p class="text">

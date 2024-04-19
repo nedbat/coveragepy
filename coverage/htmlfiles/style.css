@@ -68,17 +68,25 @@ footer .content { padding: 0; color: #666; font-style: italic; }
 
 h1 { font-size: 1.25em; display: inline-block; }
 
-#filter_container { float: right; margin: 0 2em 0 0; }
+#filter_container { float: right; margin: 0 2em 0 0; line-height: 1.66em; }
 
-#filter_container input { width: 10em; padding: 0.2em 0.5em; border: 2px solid #ccc; background: #fff; color: #000; }
+#filter_container #filter { width: 10em; padding: 0.2em 0.5em; border: 2px solid #ccc; background: #fff; color: #000; }
 
-@media (prefers-color-scheme: dark) { #filter_container input { border-color: #444; } }
+@media (prefers-color-scheme: dark) { #filter_container #filter { border-color: #444; } }
 
-@media (prefers-color-scheme: dark) { #filter_container input { background: #1e1e1e; } }
+@media (prefers-color-scheme: dark) { #filter_container #filter { background: #1e1e1e; } }
 
-@media (prefers-color-scheme: dark) { #filter_container input { color: #eee; } }
+@media (prefers-color-scheme: dark) { #filter_container #filter { color: #eee; } }
 
-#filter_container input:focus { border-color: #007acc; }
+#filter_container #filter:focus { border-color: #007acc; }
+
+#filter_container :disabled ~ label { color: #ccc; }
+
+@media (prefers-color-scheme: dark) { #filter_container :disabled ~ label { color: #444; } }
+
+#filter_container label { font-size: .875em; color: #666; }
+
+@media (prefers-color-scheme: dark) { #filter_container label { color: #aaa; } }
 
 header button { font-family: inherit; font-size: inherit; border: 1px solid; border-radius: .2em; color: inherit; padding: .1em .5em; margin: 1px calc(.1em + 1px); cursor: pointer; border-color: #ccc; }
 

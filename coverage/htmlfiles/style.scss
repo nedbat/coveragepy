@@ -245,8 +245,9 @@ h1 {
 #filter_container {
     float: right;
     margin: 0 2em 0 0;
+    line-height: 1.66em;
 
-    input {
+    #filter {
         width: 10em;
         padding: 0.2em 0.5em;
         border: 2px solid $light-gray3;
@@ -258,6 +259,17 @@ h1 {
         &:focus {
             border-color: $focus-color;
         }
+    }
+
+    :disabled ~ label{
+        color: $light-gray3;
+        @include color-dark($dark-gray3);
+    }
+
+    label {
+        font-size: .875em;
+        color: $light-gray5;
+        @include color-dark($dark-gray5);
     }
 }
 
