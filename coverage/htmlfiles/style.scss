@@ -96,6 +96,22 @@ $dark-context-bg-color:   #056;
     }
 }
 
+@mixin button-shape {
+    font-family: inherit;
+    font-size: inherit;
+    border: 1px solid;
+    border-radius: .2em;
+    background: $light-gray2;
+    @include background-dark($dark-gray2);
+    color: inherit;
+    text-decoration: none;
+    padding: .1em .5em;
+    margin: 1px calc(.1em + 1px);
+    cursor: pointer;
+    border-color: $light-gray3;
+    @include border-color-dark($dark-gray3);
+}
+
 // Page-wide styles
 html, body, h1, h2, h3, p, table, td, th {
     margin: 0;
@@ -177,6 +193,18 @@ header {
     h2 {
         margin-top: .5em;
         font-size: 1em;
+
+        a.button {
+            @include button-shape;
+            &.current {
+                border: 2px solid;
+                background: $light-bg;
+                @include background-dark($dark-bg);
+                border-color: $light-gray4;
+                @include border-color-dark($dark-gray4);
+                cursor: default;
+            }
+        }
     }
 
     p.text {
@@ -274,16 +302,7 @@ h1 {
 }
 
 header button {
-    font-family: inherit;
-    font-size: inherit;
-    border: 1px solid;
-    border-radius: .2em;
-    color: inherit;
-    padding: .1em .5em;
-    margin: 1px calc(.1em + 1px);
-    cursor: pointer;
-    border-color: $light-gray3;
-    @include border-color-dark($dark-gray3);
+    @include button-shape;
     @include focus-border;
 
     &.run {

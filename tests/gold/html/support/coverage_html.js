@@ -106,17 +106,20 @@ coverage.wire_up_filter = function () {
     const no_rows = document.getElementById("no_rows");
 
     // Observe filter keyevents.
-    document.getElementById("filter").addEventListener("input", debounce(event => {
+    const filter_handler = (event => {
         // Keep running total of each metric, first index contains number of shown rows
         const totals = new Array(table.rows[0].cells.length).fill(0);
         // Accumulate the percentage as fraction
         totals[totals.length - 1] = { "numer": 0, "denom": 0 };  // nosemgrep: eslint.detect-object-injection
 
+        var text = document.getElementById("filter").value;
+        const casefold = (text === text.toLowerCase());
+        const hide100 = document.getElementById("hide100").checked;
+
         // Hide / show elements.
         table_body_rows.forEach(row => {
             var show = false;
-            var target = event.target.value;
-            var casefold = (target === target.toLowerCase());
+            // Check the text filter.
             for (let column = 0; column < totals.length; column++) {
                 cell = row.cells[column];
                 if (cell.classList.contains("name")) {
@@ -124,10 +127,16 @@ coverage.wire_up_filter = function () {
                     if (casefold) {
                         celltext = celltext.toLowerCase();
                     }
-                    if (celltext.includes(target)) {
+                    if (celltext.includes(text)) {
                         show = true;
                     }
                 }
+            }
+
+            // Check the "hide covered" filter.
+            if (show && hide100) {
+                const [numer, denom] = row.cells[row.cells.length - 1].dataset.ratio.split(" ");
+                show = (numer !== denom);
             }
 
             if (!show) {
@@ -196,11 +205,15 @@ coverage.wire_up_filter = function () {
                 cell.textContent = totals[column];  // nosemgrep: eslint.detect-object-injection
             }
         }
-    }));
+    });
+
+    document.getElementById("filter").addEventListener("input", debounce(filter_handler));
+    document.getElementById("hide100").addEventListener("input", debounce(filter_handler));
 
     // Trigger change event on setup, to force filter on page refresh
     // (filter value may still be present).
     document.getElementById("filter").dispatchEvent(new Event("input"));
+    document.getElementById("hide100").dispatchEvent(new Event("input"));
 };
 
 // Set up the click-to-sort columns.

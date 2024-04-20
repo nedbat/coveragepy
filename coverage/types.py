@@ -7,6 +7,7 @@ Types for use throughout coverage.py.
 
 from __future__ import annotations
 
+import dataclasses
 import os
 import pathlib
 
@@ -160,6 +161,28 @@ class TPluginConfig(Protocol):
 TMorf = Union[ModuleType, str]
 
 TSourceTokenLines = Iterable[List[Tuple[str, str]]]
+
+
+@dataclasses.dataclass
+class CodeRegion:
+    """Data for each region found by FileReporter.code_regions.
+
+    `kind`: the kind of region.
+    `name`: the description of the region.
+    `start`: the first line of the named region.
+    `lines`: a super-set of the executable source lines in the region.
+    """
+    kind: str
+    name: str
+    start: int
+    lines: set[int]
+
+    def __lt__(self, other: CodeRegion) -> bool:
+        """To support sorting to make test-writing easier."""
+        if self.name == other.name:
+            return min(self.lines) < min(other.lines)
+        return self.name < other.name
+
 
 ## Plugins
 

@@ -253,5 +253,11 @@ class PythonFileReporter(FileReporter):
     def source_token_lines(self) -> TSourceTokenLines:
         return source_token_lines(self.source())
 
-    def code_regions(self) -> dict[str, list[CodeRegion]]:
+    def code_regions(self) -> Iterable[CodeRegion]:
         return code_regions(self.source())
+
+    def code_region_kinds(self) -> Iterable[tuple[str, str]]:
+        return [
+            ("function", "functions"),
+            ("class", "classes"),
+        ]

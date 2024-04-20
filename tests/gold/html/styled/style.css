@@ -40,6 +40,18 @@ header .content { padding: 1rem 3.5rem; }
 
 header h2 { margin-top: .5em; font-size: 1em; }
 
+header h2 a.button { font-family: inherit; font-size: inherit; border: 1px solid; border-radius: .2em; background: #eee; color: inherit; text-decoration: none; padding: .1em .5em; margin: 1px calc(.1em + 1px); cursor: pointer; border-color: #ccc; }
+
+@media (prefers-color-scheme: dark) { header h2 a.button { background: #333; } }
+
+@media (prefers-color-scheme: dark) { header h2 a.button { border-color: #444; } }
+
+header h2 a.button.current { border: 2px solid; background: #fff; border-color: #999; cursor: default; }
+
+@media (prefers-color-scheme: dark) { header h2 a.button.current { background: #1e1e1e; } }
+
+@media (prefers-color-scheme: dark) { header h2 a.button.current { border-color: #777; } }
+
 header p.text { margin: .5em 0 -.5em; color: #666; font-style: italic; }
 
 @media (prefers-color-scheme: dark) { header p.text { color: #aaa; } }
@@ -88,7 +100,9 @@ h1 { font-size: 1.25em; display: inline-block; }
 
 @media (prefers-color-scheme: dark) { #filter_container label { color: #aaa; } }
 
-header button { font-family: inherit; font-size: inherit; border: 1px solid; border-radius: .2em; color: inherit; padding: .1em .5em; margin: 1px calc(.1em + 1px); cursor: pointer; border-color: #ccc; }
+header button { font-family: inherit; font-size: inherit; border: 1px solid; border-radius: .2em; background: #eee; color: inherit; text-decoration: none; padding: .1em .5em; margin: 1px calc(.1em + 1px); cursor: pointer; border-color: #ccc; }
+
+@media (prefers-color-scheme: dark) { header button { background: #333; } }
 
 @media (prefers-color-scheme: dark) { header button { border-color: #444; } }
 

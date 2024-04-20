@@ -114,7 +114,6 @@ register your dynamic context switcher.
 
 from __future__ import annotations
 
-import dataclasses
 import functools
 
 from types import FrameType
@@ -122,7 +121,9 @@ from typing import Any, Iterable
 
 from coverage import files
 from coverage.misc import _needs_to_implement
-from coverage.types import TArc, TConfigurable, TLineNo, TSourceTokenLines
+from coverage.types import (
+    CodeRegion, TArc, TConfigurable, TLineNo, TSourceTokenLines,
+)
 
 
 class CoveragePlugin:
@@ -345,19 +346,6 @@ class FileTracer(CoveragePluginBase):
         return lineno, lineno
 
 
-@dataclasses.dataclass
-class CodeRegion:
-    """Data for each region found by FileReporter.code_regions.
-
-    `name`: the description of the regions.
-    `start`: the first line of the named region.
-    `lines`: a super-set of the executable source lines in the region.
-    """
-    name: str
-    start: int
-    lines: set[int]
-
-
 @functools.total_ordering
 class FileReporter(CoveragePluginBase):
     """Support needed for files during the analysis and reporting phases.
@@ -557,9 +545,13 @@ class FileReporter(CoveragePluginBase):
         for line in self.source().splitlines():
             yield [("txt", line)]
 
-    def code_regions(self) -> dict[str, list[CodeRegion]]:
+    def code_regions(self) -> Iterable[CodeRegion]:
         """TODO XXX"""
-        return {}
+        return []
+
+    def code_region_kinds(self) -> Iterable[tuple[str, str]]:
+        """TODO XXX"""
+        return []
 
     def __eq__(self, other: Any) -> bool:
         return isinstance(other, FileReporter) and self.filename == other.filename

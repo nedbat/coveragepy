@@ -10,7 +10,7 @@ import dataclasses
 
 from typing import cast
 
-from coverage.plugin import CodeRegion
+from coverage.types import CodeRegion
 
 
 @dataclasses.dataclass
@@ -29,10 +29,7 @@ class RegionFinder(ast.NodeVisitor):
 
     """
     def __init__(self) -> None:
-        self.regions: dict[str, list[CodeRegion]] = {
-            "function": [],
-            "class": [],
-        }
+        self.regions: list[CodeRegion] = []
         self.context: list[Context] = []
 
     def parse_source(self, source: str) -> None:
@@ -55,8 +52,13 @@ class RegionFinder(ast.NodeVisitor):
                 ancestor.lines -= lines
                 break
         self.context.append(Context(node.name, "function", lines))
-        self.regions["function"].append(
-            CodeRegion(name=self.fq_node_name(), start=node.lineno, lines=lines)
+        self.regions.append(
+            CodeRegion(
+                kind="function",
+                name=self.fq_node_name(),
+                start=node.lineno,
+                lines=lines,
+            )
         )
         self.generic_visit(node)
         self.context.pop()
@@ -70,8 +72,13 @@ class RegionFinder(ast.NodeVisitor):
         # finds.
         lines: set[int] = set()
         self.context.append(Context(node.name, "class", lines))
-        self.regions["class"].append(
-            CodeRegion(name=self.fq_node_name(), start=node.lineno, lines=lines)
+        self.regions.append(
+            CodeRegion(
+                kind="class",
+                name=self.fq_node_name(),
+                start=node.lineno,
+                lines=lines,
+            )
         )
         self.generic_visit(node)
         self.context.pop()
@@ -81,8 +88,10 @@ class RegionFinder(ast.NodeVisitor):
                 ancestor.lines -= lines
 
 
-def code_regions(source: str) -> dict[str, list[CodeRegion]]:
+def code_regions(source: str) -> list[CodeRegion]:
     """Find function and class regions in source code.
+
+    TODO: Fix this description.
 
     Takes the program `source`, and returns a dict: the keys are "function" and
     "class".  Each has a value which is a dict: the keys are fully qualified

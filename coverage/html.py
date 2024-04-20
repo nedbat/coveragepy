@@ -16,7 +16,7 @@ import shutil
 import string
 
 from dataclasses import dataclass, field
-from typing import Any, Iterable, TYPE_CHECKING, cast
+from typing import Any, Iterable, TYPE_CHECKING
 
 import coverage
 from coverage.data import CoverageData, add_data_to_hash
@@ -86,6 +86,27 @@ class FileData:
     relative_filename: str
     nums: Numbers
     lines: list[LineData]
+
+
+@dataclass
+class IndexItem:
+    """Information for each index entry, to render an index page."""
+    url: str = ""
+    file: str = ""
+    description: str = ""
+    nums: Numbers = field(default_factory=Numbers)
+
+
+@dataclass
+class IndexPage:
+    """Data for each index page."""
+    noun: str
+    plural: str
+    filename: str
+    summaries: list[IndexItem]
+    totals: Numbers
+    skipped_covered_count: int
+    skipped_empty_count: int
 
 
 class HtmlDataGeneration:
@@ -215,8 +236,6 @@ class HtmlReporter:
         self.skip_empty = self.config.html_skip_empty
         if self.skip_empty is None:
             self.skip_empty = self.config.skip_empty
-        self.skipped_covered_count = 0
-        self.skipped_empty_count = 0
 
         title = self.config.html_title
 
@@ -229,11 +248,11 @@ class HtmlReporter:
         self.data = self.coverage.get_data()
         self.has_arcs = self.data.has_arcs()
 
-        self.file_summaries: list[IndexInfo] = []
-        self.all_files_nums: list[Numbers] = []
+        self.index_pages: dict[str, IndexPage] = {
+            "file": self.new_index_page("file", "files"),
+        }
         self.incr = IncrementalChecker(self.directory)
         self.datagen = HtmlDataGeneration(self.coverage)
-        self.totals = Numbers(precision=self.config.precision)
         self.directory_was_empty = False
         self.first_fr = None
         self.final_fr = None
@@ -262,8 +281,21 @@ class HtmlReporter:
                 "run": "run",
             },
         }
+        self.index_tmpl = Templite(read_data("index.html"), self.template_globals)
         self.pyfile_html_source = read_data("pyfile.html")
         self.source_tmpl = Templite(self.pyfile_html_source, self.template_globals)
+
+    def new_index_page(self, noun: str, plural_noun: str) -> IndexPage:
+        """Create an IndexPage for a kind of region."""
+        return IndexPage(
+            noun=noun,
+            plural=plural_noun,
+            filename="index.html" if noun == "file" else f"{noun}_index.html",
+            summaries=[],
+            totals=Numbers(precision=self.config.precision),
+            skipped_covered_count=0,
+            skipped_empty_count=0,
+        )
 
     def report(self, morfs: Iterable[TMorf] | None) -> float:
         """Generate an HTML report for `morfs`.
@@ -280,12 +312,17 @@ class HtmlReporter:
         # to the next and previous page.
         files_to_report = []
 
+        have_data = False
         for fr, analysis in get_analysis_to_report(self.coverage, morfs):
+            have_data = True
             ftr = FileToReport(fr, analysis)
-            if self.should_report(analysis):
+            if self.should_report(analysis, self.index_pages["file"]):
                 files_to_report.append(ftr)
             else:
                 file_be_gone(os.path.join(self.directory, ftr.html_filename))
+
+        if not have_data:
+            raise NoDataError("No data to report.")
 
         if files_to_report:
             for ftr1, ftr2 in zip(files_to_report[:-1], files_to_report[1:]):
@@ -294,27 +331,28 @@ class HtmlReporter:
             files_to_report[0].prev_html = "index.html"
             files_to_report[-1].next_html = "index.html"
 
-            for ftr in files_to_report:
-                self.write_html_page(ftr)
+        for ftr in files_to_report:
+            self.write_html_page(ftr)
+            for noun, plural_noun in ftr.fr.code_region_kinds():
+                if noun not in self.index_pages:
+                    self.index_pages[noun] = self.new_index_page(noun, plural_noun)
 
-        if not self.all_files_nums:
-            raise NoDataError("No data to report.")
-
-        self.totals = cast(Numbers, sum(self.all_files_nums))
-
-        # Write the index file.
+        # Write the index page.
         if files_to_report:
             first_html = files_to_report[0].html_filename
             final_html = files_to_report[-1].html_filename
         else:
             first_html = final_html = "index.html"
-        self.index_page(first_html, final_html)
+        self.write_file_index_page(first_html, final_html)
 
         # Write function and class index pages.
-        self.region_pages(files_to_report)
+        self.write_region_index_pages(files_to_report)
 
         self.make_local_static_report_files()
-        return self.totals.n_statements and self.totals.pc_covered
+        return (
+            self.index_pages["file"].totals.n_statements
+            and self.index_pages["file"].totals.pc_covered
+        )
 
     def make_directory(self) -> None:
         """Make sure our htmlcov directory exists."""
@@ -340,38 +378,44 @@ class HtmlReporter:
             assert self.config.extra_css is not None
             shutil.copyfile(self.config.extra_css, os.path.join(self.directory, self.extra_css))
 
-    def should_report(self, analysis: Analysis) -> bool:
+    def should_report(self, analysis: Analysis, index_page: IndexPage) -> bool:
         """Determine if we'll report this file or region."""
         # Get the numbers for this file.
         nums = analysis.numbers
-        self.all_files_nums.append(nums)
+        index_page.totals += nums
 
         if self.skip_covered:
             # Don't report on 100% files.
             no_missing_lines = (nums.n_missing == 0)
             no_missing_branches = (nums.n_partial_branches == 0)
             if no_missing_lines and no_missing_branches:
-                self.skipped_covered_count += 1
+                index_page.skipped_covered_count += 1
                 return False
 
         if self.skip_empty:
             # Don't report on empty files.
             if nums.n_statements == 0:
-                self.skipped_empty_count += 1
+                index_page.skipped_empty_count += 1
                 return False
 
         return True
 
     def write_html_page(self, ftr: FileToReport) -> None:
-        """Generate an HTML page for one source file."""
+        """Generate an HTML page for one source file.
+
+        If the page on disk is already correct based on our incremental status
+        checking, then the page doesn't have to be generated, and this function
+        only does page summary bookkeeping.
+
+        """
         self.make_directory()
 
-        # Find out if the file on disk is already correct.
+        # Find out if the page on disk is already correct.
         if self.incr.can_skip_file(self.data, ftr.fr, ftr.rootname):
-            self.file_summaries.append(self.incr.index_info(ftr.rootname))
+            self.index_pages["file"].summaries.append(self.incr.index_info(ftr.rootname))
             return
 
-        # Write the HTML page for this file.
+        # Write the HTML page for this source file.
         file_data = self.datagen.data_for_file(ftr.fr, ftr.analysis)
 
         contexts = collections.Counter(c for cline in file_data.lines for c in cline.contexts)
@@ -447,39 +491,24 @@ class HtmlReporter:
         })
         write_html(html_path, html)
 
-        # Save this file's information for the index file.
-        index_info = IndexInfo(
+        # Save this file's information for the index page.
+        index_info = IndexItem(
             url = ftr.html_filename,
             file = escape(ftr.fr.relative_filename()),
             nums = ftr.analysis.numbers,
         )
-        self.file_summaries.append(index_info)
+        self.index_pages["file"].summaries.append(index_info)
         self.incr.set_index_info(ftr.rootname, index_info)
 
-    def index_page(self, first_html: str, final_html: str) -> None:
-        """Write the index.html file for this report."""
+    def write_file_index_page(self, first_html: str, final_html: str) -> None:
+        """Write the file index page for this report."""
         self.make_directory()
-        index_tmpl = Templite(read_data("index.html"), self.template_globals)
 
-        skipped_covered_msg = skipped_empty_msg = ""
-        if n := self.skipped_covered_count:
-            skipped_covered_msg = f"{n} file{plural(n)} skipped due to complete coverage."
-        if n := self.skipped_empty_count:
-            skipped_empty_msg = f"{n} empty file{plural(n)} skipped."
-
-        html = index_tmpl.render({
-            "regions": self.file_summaries,
-            "totals": self.totals,
-            "column2": "",
-            "skip_covered": self.skip_covered,
-            "skipped_covered_msg": skipped_covered_msg,
-            "skipped_empty_msg": skipped_empty_msg,
-            "first_html": first_html,
-            "final_html": final_html,
-        })
-
-        index_file = os.path.join(self.directory, "index.html")
-        write_html(index_file, html)
+        index_file = self.write_index_page(
+            self.index_pages["file"],
+            first_html=first_html,
+            final_html=final_html,
+        )
 
         print_href = stdout_link(index_file, f"file://{os.path.abspath(index_file)}")
         self.coverage._message(f"Wrote HTML report to {print_href}")
@@ -487,40 +516,26 @@ class HtmlReporter:
         # Write the latest hashes for next time.
         self.incr.write()
 
-    def region_pages(self, files_to_report: list[FileToReport]) -> None:
-        """Write the functions.html file for this report."""
-        index_tmpl = Templite(read_data("index.html"), self.template_globals)
-
-        @dataclass
-        class PageData:
-            """Data for each index page."""
-            summaries: list[IndexInfo]
-            totals: Numbers
-
-        region_kinds: dict[str, PageData] = {}
-
+    def write_region_index_pages(self, files_to_report: Iterable[FileToReport]) -> None:
+        """Write the other index pages for this report."""
         for ftr in files_to_report:
+            region_nouns = [pair[0] for pair in ftr.fr.code_region_kinds()]
             num_lines = len(ftr.fr.source().splitlines())
             outside_lines = set(range(1, num_lines + 1))
             regions = ftr.fr.code_regions()
 
-            for noun, region_list in regions.items():
-                if noun not in region_kinds:
-                    region_kinds[noun] = PageData(
-                        summaries=[],
-                        totals=Numbers(precision=self.config.precision),
-                    )
+            for noun in region_nouns:
+                page_data = self.index_pages[noun]
 
-                for region in region_list:
+                for region in regions:
+                    if region.kind != noun:
+                        continue
                     outside_lines -= region.lines
                     analysis = ftr.analysis.narrow(region.lines)
-                    # TODO: should_report updates counts that could instead be
-                    # collected in PageData, and PageData could be used for
-                    # index.html also.
-                    if not self.should_report(analysis):
+                    if not self.should_report(analysis, page_data):
                         continue
                     sorting_name = region.name.rpartition(".")[-1].lstrip("_")
-                    region_kinds[noun].summaries.append(IndexInfo(
+                    page_data.summaries.append(IndexItem(
                         url=f"{ftr.html_filename}#t{region.start}",
                         file=escape(ftr.fr.relative_filename()),
                         description=(
@@ -530,11 +545,10 @@ class HtmlReporter:
                         ),
                         nums=analysis.numbers,
                     ))
-                    region_kinds[noun].totals += analysis.numbers
 
                 analysis = ftr.analysis.narrow(outside_lines)
-                if self.should_report(analysis):
-                    region_kinds[noun].summaries.append(IndexInfo(
+                if self.should_report(analysis, page_data):
+                    page_data.summaries.append(IndexItem(
                         url=ftr.html_filename,
                         file=escape(ftr.fr.relative_filename()),
                         description=(
@@ -544,38 +558,57 @@ class HtmlReporter:
                         ),
                         nums=analysis.numbers,
                     ))
-                    region_kinds[noun].totals += analysis.numbers
 
-        for noun, region_data in region_kinds.items():
-            html = index_tmpl.render({
-                "regions": region_data.summaries,
-                "totals": region_data.totals,
-                "column2": noun,
-                "skip_covered": self.skip_covered,
-                "skipped_covered_msg": "",
-                "skipped_empty_msg": "",
-                "first_html": "index.html",
-                "final_html": "index.html",
-            })
+        for noun, index_page in self.index_pages.items():
+            if noun != "file":
+                self.write_index_page(index_page)
 
-            file = os.path.join(self.directory, f"{noun}_index.html")
-            write_html(file, html)
+    def write_index_page(self, index_page: IndexPage, **kwargs: str) -> str:
+        """Write an index page specified by `index_page`.
 
+        Returns the filename created.
+        """
+        skipped_covered_msg = skipped_empty_msg = ""
+        if n := index_page.skipped_covered_count:
+            word = plural(n, index_page.noun, index_page.plural)
+            skipped_covered_msg = f"{n} {word} skipped due to complete coverage."
+        if n := index_page.skipped_empty_count:
+            word = plural(n, index_page.noun, index_page.plural)
+            skipped_empty_msg = f"{n} empty {word} skipped."
 
-@dataclass
-class IndexInfo:
-    """Information for each index entry, to render the index page."""
-    url: str = ""
-    file: str = ""
-    description: str = ""
-    nums: Numbers = field(default_factory=Numbers)
+        index_buttons = [
+            {
+                "label": ip.plural.title(),
+                "url": ip.filename if ip.noun != index_page.noun else "",
+                "current": ip.noun == index_page.noun,
+            }
+            for ip in self.index_pages.values()
+        ]
+        render_data = {
+            "regions": index_page.summaries,
+            "totals": index_page.totals,
+            "noun": index_page.noun,
+            "column2": index_page.noun if index_page.noun != "file" else "",
+            "skip_covered": self.skip_covered,
+            "skipped_covered_msg": skipped_covered_msg,
+            "skipped_empty_msg": skipped_empty_msg,
+            "first_html": "",
+            "final_html": "",
+            "index_buttons": index_buttons,
+        }
+        render_data.update(kwargs)
+        html = self.index_tmpl.render(render_data)
+
+        index_file = os.path.join(self.directory, index_page.filename)
+        write_html(index_file, html)
+        return index_file
 
 
 @dataclass
 class FileInfo:
     """Summary of the information from last rendering, to avoid duplicate work."""
     hash: str = ""
-    index: IndexInfo = field(default_factory=IndexInfo)
+    index: IndexItem = field(default_factory=IndexItem)
 
 
 class IncrementalChecker:
@@ -661,11 +694,11 @@ class IncrementalChecker:
             self.files = {}
             for filename, filedict in status["files"].items():
                 indexdict = filedict["index"]
-                indexinfo = IndexInfo(**indexdict)
-                indexinfo.nums = Numbers(**indexdict["nums"])
+                index_item = IndexItem(**indexdict)
+                index_item.nums = Numbers(**indexdict["nums"])
                 fileinfo = FileInfo(
                     hash=filedict["hash"],
-                    index=indexinfo,
+                    index=index_item,
                 )
                 self.files[filename] = fileinfo
             self.globals = status["globals"]
@@ -729,11 +762,11 @@ class IncrementalChecker:
             file_info.hash = this_hash
             return False
 
-    def index_info(self, fname: str) -> IndexInfo:
+    def index_info(self, fname: str) -> IndexItem:
         """Get the information for index.html for `fname`."""
         return self.files.get(fname, FileInfo()).index
 
-    def set_index_info(self, fname: str, info: IndexInfo) -> None:
+    def set_index_info(self, fname: str, info: IndexItem) -> None:
         """Set the information for index.html for `fname`."""
         self.files.setdefault(fname, FileInfo()).index = info
 
