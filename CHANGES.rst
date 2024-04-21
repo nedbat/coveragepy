@@ -36,6 +36,9 @@ Unreleased
   - The index page is always sorted by one of its columns, with clearer
     indications of the sorting.
 
+  - The "previous file" shortcut key didn't work on the index page, but now it
+    does, fixing `issue 1765`_.
+
 - The debug output showing which configuration files were tried now shows
   absolute paths to help diagnose problems where settings aren't taking effect,
   and is renamed from "attempted_config_files" to the more logical
@@ -44,6 +47,7 @@ Unreleased
 - Python 3.13.0a5 is supported.
 
 .. _issue 1384: https://github.com/nedbat/coveragepy/issues/1384
+.. _issue 1765: https://github.com/nedbat/coveragepy/issues/1765
 
 
 .. scriv-start-here
