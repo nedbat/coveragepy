@@ -10,7 +10,7 @@ import dataclasses
 
 from typing import cast
 
-from coverage.types import CodeRegion
+from coverage.plugin import CodeRegion
 
 
 @dataclasses.dataclass
@@ -91,22 +91,14 @@ class RegionFinder(ast.NodeVisitor):
 def code_regions(source: str) -> list[CodeRegion]:
     """Find function and class regions in source code.
 
-    TODO: Fix this description.
+    Analyzes the code in `source`, and returns a list of :class:`CodeRegion`
+    objects describing functions and classes as regions of the code::
 
-    Takes the program `source`, and returns a dict: the keys are "function" and
-    "class".  Each has a value which is a dict: the keys are fully qualified
-    names, the values are sets of line numbers included in that region::
-
-        {
-            "function": {
-                "func1": {10, 11, 12},
-                "func2": {20, 21, 22},
-                "MyClass.method: {34, 35, 36},
-            },
-            "class": {
-                "MyClass": {34, 35, 36},
-            },
-        }
+        [
+            CodeRegion(kind="function", name="func1", start=8, lines={10, 11, 12}),
+            CodeRegion(kind="function", name="MyClass.method", start=30, lines={34, 35, 36}),
+            CodeRegion(kind="class", name="MyClass", start=25, lines={34, 35, 36}),
+        ]
 
     The line numbers will include comments and blank lines.  Later processing
     will need to ignore those lines as needed.

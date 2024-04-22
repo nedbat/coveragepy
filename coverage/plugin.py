@@ -114,6 +114,7 @@ register your dynamic context switcher.
 
 from __future__ import annotations
 
+import dataclasses
 import functools
 
 from types import FrameType
@@ -121,9 +122,7 @@ from typing import Any, Iterable
 
 from coverage import files
 from coverage.misc import _needs_to_implement
-from coverage.types import (
-    CodeRegion, TArc, TConfigurable, TLineNo, TSourceTokenLines,
-)
+from coverage.types import TArc, TConfigurable, TLineNo, TSourceTokenLines
 
 
 class CoveragePlugin:
@@ -346,6 +345,35 @@ class FileTracer(CoveragePluginBase):
         return lineno, lineno
 
 
+@dataclasses.dataclass
+class CodeRegion:
+    """Data for a region of code found by :meth:`FileReporter.code_regions`."""
+
+    #: The kind of region, like `"function"` or `"class"`. Must be one of the
+    #: singular values returned by :meth:`FileReporter.code_region_kinds`.
+    kind: str
+
+    #: The name of the region. For example, a function or class name.
+    name: str
+
+    #: The line in the source file to link to when navigating to the region.
+    #: Can be a line not mentioned in `lines`.
+    start: int
+
+    #: The lines in the region. Should be lines that could be executed in the
+    #: region.  For example, a class region includes all of the lines in the
+    #: methods of the class, but not the lines defining class attributes, since
+    #: they are executed on import, not as part of exercising the class.  The
+    #: set can include non-executable lines like blanks and comments.
+    lines: set[int]
+
+    def __lt__(self, other: CodeRegion) -> bool:
+        """To support sorting to make test-writing easier."""
+        if self.name == other.name:
+            return min(self.lines) < min(other.lines)
+        return self.name < other.name
+
+
 @functools.total_ordering
 class FileReporter(CoveragePluginBase):
     """Support needed for files during the analysis and reporting phases.
@@ -546,11 +574,28 @@ class FileReporter(CoveragePluginBase):
             yield [("txt", line)]
 
     def code_regions(self) -> Iterable[CodeRegion]:
-        """TODO XXX"""
+        """Identify regions in the source file for finer reporting than by file.
+
+        Returns an iterable of :class:`CodeRegion` objects.  The kinds reported
+        should be in the possibilities returned by :meth:`code_region_kinds`.
+
+        """
         return []
 
     def code_region_kinds(self) -> Iterable[tuple[str, str]]:
-        """TODO XXX"""
+        """Return the kinds of code regions this plugin can find.
+
+        The returned pairs are the singular and plural forms of the kinds::
+
+            [
+                ("function", "functions"),
+                ("class", "classes"),
+            ]
+
+        This will usually be hard-coded, but could also differ by the specific
+        source file involved.
+
+        """
         return []
 
     def __eq__(self, other: Any) -> bool:

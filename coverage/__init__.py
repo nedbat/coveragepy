@@ -28,6 +28,7 @@ from coverage.control import (
 from coverage.data import CoverageData as CoverageData
 from coverage.exceptions import CoverageException as CoverageException
 from coverage.plugin import (
+    CodeRegion as CodeRegion,
     CoveragePlugin as CoveragePlugin,
     FileReporter as FileReporter,
     FileTracer as FileTracer,
