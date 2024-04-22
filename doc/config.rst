@@ -583,6 +583,17 @@ See :ref:`cmd_combine_remapping` and :ref:`source_glob` for more information.
 Settings common to many kinds of reporting.
 
 
+.. _config_report_disable_block_exclusion:
+
+[report] disable_block_exclusion
+................................
+
+(boolean, default False) The default behavior when excluding a line from coverage
+is if the matched line introduces a block, the entire block is excluded from
+reporting. Setting this to True will disable this behavior and only report the
+line that was actually matched as excluded from coverage.
+
+
 .. _config_report_exclude_also:
 
 [report] exclude_also

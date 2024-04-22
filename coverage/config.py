@@ -216,6 +216,7 @@ class CoverageConfig(TConfigurable, TPluginConfig):
         # Defaults for [report]
         self.exclude_list = DEFAULT_EXCLUDE[:]
         self.exclude_also: list[str] = []
+        self.disable_block_exclusion: bool = False
         self.fail_under = 0.0
         self.format: str | None = None
         self.ignore_errors = False
@@ -394,6 +395,7 @@ class CoverageConfig(TConfigurable, TPluginConfig):
         # [report]
         ("exclude_list", "report:exclude_lines", "regexlist"),
         ("exclude_also", "report:exclude_also", "regexlist"),
+        ("disable_block_exclusion", "report:disable_block_exclusion", "boolean"),
         ("fail_under", "report:fail_under", "float"),
         ("format", "report:format"),
         ("ignore_errors", "report:ignore_errors", "boolean"),

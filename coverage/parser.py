@@ -42,6 +42,7 @@ class PythonParser:
         text: str | None = None,
         filename: str | None = None,
         exclude: str | None = None,
+        disable_block_exclusion: bool | None = False,
     ) -> None:
         """
         Source can be provided as `text`, the text itself, or `filename`, from
@@ -61,6 +62,8 @@ class PythonParser:
                 raise NoSource(f"No source for code: '{self.filename}': {err}") from err
 
         self.exclude = exclude
+
+        self.disable_block_exclusion = disable_block_exclusion
 
         # The text lines of the parsed code.
         self.lines: list[str] = self.text.split("\n")
@@ -217,7 +220,7 @@ class PythonParser:
                     # Check whether to end an excluded suite.
                     if excluding and indent <= exclude_indent:
                         excluding = False
-                    if excluding:
+                    if excluding and not self.disable_block_exclusion:
                         self.raw_excluded.add(elineno)
                     first_on_line = False
 

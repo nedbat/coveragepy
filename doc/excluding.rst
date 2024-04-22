@@ -36,8 +36,9 @@ code, the "if debug" clause is excluded from reporting::
 
 Any line with a comment of "pragma: no cover" is excluded.  If that line
 introduces a clause, for example, an if clause, or a function or class
-definition, then the entire clause is also excluded.  Here the __repr__
-function is not reported as missing::
+definition, then the entire clause is also excluded (see
+:ref:`config_report_disable_block_exclusion` for disabling this feature). 
+Here the __repr__ function is not reported as missing::
 
     class MyObject(object):
         def __init__(self):
@@ -81,7 +82,8 @@ exclude them all at once without littering your code with exclusion pragmas.
 
 If the matched line introduces a block, the entire block is excluded from
 reporting.  Matching a ``def`` line or decorator line will exclude an entire
-function.
+function (see :ref:`config_report_disable_block_exclusion` for disabling this
+feature).
 
 .. highlight:: ini
 
