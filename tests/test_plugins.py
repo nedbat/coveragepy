@@ -409,7 +409,7 @@ class GoodFileTracerTest(FileTracerTest):
         # The way plugin2 works, a file named foo_7.html will be claimed to
         # have 7 lines in it.  If render() was called with line number 4,
         # then the plugin will claim that lines 4 and 5 were executed.
-        analysis = cov.analyze("foo_7.html")
+        analysis = cov._analyze("foo_7.html")
         assert analysis.statements == {1, 2, 3, 4, 5, 6, 7}
         # Plugins don't do branch coverage yet.
         assert analysis.has_arcs is True

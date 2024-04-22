@@ -97,7 +97,7 @@ def get_analysis_to_report(
 
     for fr, morf in sorted(fr_morfs):
         try:
-            analysis = coverage.analyze(morf)
+            analysis = coverage._analyze(morf)
         except NotPython:
             # Only report errors for .py files, and only if we didn't
             # explicitly suppress those errors.
