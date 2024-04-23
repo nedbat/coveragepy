@@ -20,8 +20,12 @@ upgrading your version of coverage.py.
     ..  Version 9.8.1 — 2027-07-27
     ..  --------------------------
 
-Unreleased
-----------
+.. scriv-start-here
+
+.. _changes_7-5-0:
+
+Version 7.5.0 — 2024-04-23
+--------------------------
 
 - Added initial support for function and class reporting in the HTML report.
   There are now three index pages which link to each other: files, functions,
@@ -44,13 +48,11 @@ Unreleased
   and is renamed from "attempted_config_files" to the more logical
   "config_files_attempted."
 
-- Python 3.13.0a5 is supported.
+- Python 3.13.0a6 is supported.
 
 .. _issue 1384: https://github.com/nedbat/coveragepy/issues/1384
 .. _issue 1765: https://github.com/nedbat/coveragepy/issues/1765
 
-
-.. scriv-start-here
 
 .. _changes_7-4-4:
 
