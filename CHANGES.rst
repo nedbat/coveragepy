@@ -37,6 +37,7 @@ Version 7.5.0 — 2024-04-23
   There are now three index pages which link to each other: files, functions,
   and classes.  Other reports don't yet have this information, but it will be
   added in the future where it makes sense.  Feedback gladly accepted!
+  Finishes `issue 780`_.
 
 - Other HTML report improvements:
 
@@ -56,6 +57,7 @@ Version 7.5.0 — 2024-04-23
 
 - Python 3.13.0a6 is supported.
 
+.. _issue 780: https://github.com/nedbat/coveragepy/issues/780
 .. _issue 1384: https://github.com/nedbat/coveragepy/issues/1384
 .. _issue 1765: https://github.com/nedbat/coveragepy/issues/1765
 
