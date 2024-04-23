@@ -36,11 +36,12 @@ function on_click(sel, fn) {
 function getCellValue(row, column = 0) {
     const cell = row.cells[column]  // nosemgrep: eslint.detect-object-injection
     if (cell.childElementCount == 1) {
-        const child = cell.firstElementChild
-        if (child instanceof HTMLTimeElement && child.dateTime) {
-            return child.dateTime
-        } else if (child instanceof HTMLDataElement && child.value) {
-            return child.value
+        var child = cell.firstElementChild;
+        if (child.tagName === "A") {
+            child = child.firstElementChild;
+        }
+        if (child instanceof HTMLDataElement && child.value) {
+            return child.value;
         }
     }
     return cell.innerText || cell.textContent;
@@ -50,28 +51,37 @@ function rowComparator(rowA, rowB, column = 0) {
     let valueA = getCellValue(rowA, column);
     let valueB = getCellValue(rowB, column);
     if (!isNaN(valueA) && !isNaN(valueB)) {
-        return valueA - valueB
+        return valueA - valueB;
     }
     return valueA.localeCompare(valueB, undefined, {numeric: true});
 }
 
 function sortColumn(th) {
     // Get the current sorting direction of the selected header,
-    // clear state on other headers and then set the new sorting direction
+    // clear state on other headers and then set the new sorting direction.
     const currentSortOrder = th.getAttribute("aria-sort");
     [...th.parentElement.cells].forEach(header => header.setAttribute("aria-sort", "none"));
+    var direction;
     if (currentSortOrder === "none") {
-        th.setAttribute("aria-sort", th.dataset.defaultSortOrder || "ascending");
-    } else {
-        th.setAttribute("aria-sort", currentSortOrder === "ascending" ? "descending" : "ascending");
+        direction = th.dataset.defaultSortOrder || "ascending";
     }
+    else if (currentSortOrder === "ascending") {
+        direction = "descending";
+    }
+    else {
+        direction = "ascending";
+    }
+    th.setAttribute("aria-sort", direction);
 
     const column = [...th.parentElement.cells].indexOf(th)
 
-    // Sort all rows and afterwards append them in order to move them in the DOM
+    // Sort all rows and afterwards append them in order to move them in the DOM.
     Array.from(th.closest("table").querySelectorAll("tbody tr"))
-        .sort((rowA, rowB) => rowComparator(rowA, rowB, column) * (th.getAttribute("aria-sort") === "ascending" ? 1 : -1))
-        .forEach(tr => tr.parentElement.appendChild(tr) );
+        .sort((rowA, rowB) => rowComparator(rowA, rowB, column) * (direction === "ascending" ? 1 : -1))
+        .forEach(tr => tr.parentElement.appendChild(tr));
+
+    // Save the sort order for next time.
+    localStorage.setItem(coverage.INDEX_SORT_STORAGE, JSON.stringify({column, direction}));
 }
 
 // Find all the elements with data-shortcut attribute, and use them to assign a shortcut key.
@@ -96,15 +106,40 @@ coverage.wire_up_filter = function () {
     const no_rows = document.getElementById("no_rows");
 
     // Observe filter keyevents.
-    document.getElementById("filter").addEventListener("input", debounce(event => {
+    const filter_handler = (event => {
         // Keep running total of each metric, first index contains number of shown rows
         const totals = new Array(table.rows[0].cells.length).fill(0);
         // Accumulate the percentage as fraction
         totals[totals.length - 1] = { "numer": 0, "denom": 0 };  // nosemgrep: eslint.detect-object-injection
 
+        var text = document.getElementById("filter").value;
+        const casefold = (text === text.toLowerCase());
+        const hide100 = document.getElementById("hide100").checked;
+
         // Hide / show elements.
         table_body_rows.forEach(row => {
-            if (!row.cells[0].textContent.includes(event.target.value)) {
+            var show = false;
+            // Check the text filter.
+            for (let column = 0; column < totals.length; column++) {
+                cell = row.cells[column];
+                if (cell.classList.contains("name")) {
+                    var celltext = cell.textContent;
+                    if (casefold) {
+                        celltext = celltext.toLowerCase();
+                    }
+                    if (celltext.includes(text)) {
+                        show = true;
+                    }
+                }
+            }
+
+            // Check the "hide covered" filter.
+            if (show && hide100) {
+                const [numer, denom] = row.cells[row.cells.length - 1].dataset.ratio.split(" ");
+                show = (numer !== denom);
+            }
+
+            if (!show) {
                 // hide
                 row.classList.add("hidden");
                 return;
@@ -114,15 +149,19 @@ coverage.wire_up_filter = function () {
             row.classList.remove("hidden");
             totals[0]++;
 
-            for (let column = 1; column < totals.length; column++) {
+            for (let column = 0; column < totals.length; column++) {
                 // Accumulate dynamic totals
                 cell = row.cells[column]  // nosemgrep: eslint.detect-object-injection
+                if (cell.classList.contains("name")) {
+                    continue;
+                }
                 if (column === totals.length - 1) {
                     // Last column contains percentage
                     const [numer, denom] = cell.dataset.ratio.split(" ");
                     totals[column]["numer"] += parseInt(numer, 10);  // nosemgrep: eslint.detect-object-injection
                     totals[column]["denom"] += parseInt(denom, 10);  // nosemgrep: eslint.detect-object-injection
-                } else {
+                }
+                else {
                     totals[column] += parseInt(cell.textContent, 10);  // nosemgrep: eslint.detect-object-injection
                 }
             }
@@ -142,9 +181,12 @@ coverage.wire_up_filter = function () {
 
         const footer = table.tFoot.rows[0];
         // Calculate new dynamic sum values based on visible rows.
-        for (let column = 1; column < totals.length; column++) {
+        for (let column = 0; column < totals.length; column++) {
             // Get footer cell element.
             const cell = footer.cells[column];  // nosemgrep: eslint.detect-object-injection
+            if (cell.classList.contains("name")) {
+                continue;
+            }
 
             // Set value into dynamic footer cell element.
             if (column === totals.length - 1) {
@@ -158,15 +200,38 @@ coverage.wire_up_filter = function () {
                 cell.textContent = denom
                     ? `${(numer * 100 / denom).toFixed(places)}%`
                     : `${(100).toFixed(places)}%`;
-            } else {
+            }
+            else {
                 cell.textContent = totals[column];  // nosemgrep: eslint.detect-object-injection
             }
         }
-    }));
+    });
+
+    document.getElementById("filter").addEventListener("input", debounce(filter_handler));
+    document.getElementById("hide100").addEventListener("input", debounce(filter_handler));
 
     // Trigger change event on setup, to force filter on page refresh
     // (filter value may still be present).
     document.getElementById("filter").dispatchEvent(new Event("input"));
+    document.getElementById("hide100").dispatchEvent(new Event("input"));
+};
+
+// Set up the click-to-sort columns.
+coverage.wire_up_sorting = function () {
+    document.querySelectorAll("[data-sortable] th[aria-sort]").forEach(
+        th => th.addEventListener("click", e => sortColumn(e.target))
+    );
+
+    // Look for a localStorage item containing previous sort settings:
+    var column = 0, direction = "ascending";
+    const stored_list = localStorage.getItem(coverage.INDEX_SORT_STORAGE);
+    if (stored_list) {
+        ({column, direction} = JSON.parse(stored_list));
+    }
+
+    const th = document.querySelector("[data-sortable]").tHead.rows[0].cells[column];  // nosemgrep: eslint.detect-object-injection
+    th.setAttribute("aria-sort", direction === "ascending" ? "descending" : "ascending");
+    th.click()
 };
 
 coverage.INDEX_SORT_STORAGE = "COVERAGE_INDEX_SORT_2";
@@ -175,31 +240,7 @@ coverage.INDEX_SORT_STORAGE = "COVERAGE_INDEX_SORT_2";
 coverage.index_ready = function () {
     coverage.assign_shortkeys();
     coverage.wire_up_filter();
-    document.querySelectorAll("[data-sortable] th[aria-sort]").forEach(
-        th => th.addEventListener("click", e => sortColumn(e.target))
-    );
-
-    // Look for a localStorage item containing previous sort settings:
-    const stored_list = localStorage.getItem(coverage.INDEX_SORT_STORAGE);
-
-    if (stored_list) {
-        const {column, direction} = JSON.parse(stored_list);
-        const th = document.querySelector("[data-sortable]").tHead.rows[0].cells[column];  // nosemgrep: eslint.detect-object-injection
-        th.setAttribute("aria-sort", direction === "ascending" ? "descending" : "ascending");
-        th.click()
-    }
-
-    // Watch for page unload events so we can save the final sort settings:
-    window.addEventListener("unload", function () {
-        const th = document.querySelector('[data-sortable] th[aria-sort="ascending"], [data-sortable] [aria-sort="descending"]');
-        if (!th) {
-            return;
-        }
-        localStorage.setItem(coverage.INDEX_SORT_STORAGE, JSON.stringify({
-            column: [...th.parentElement.cells].indexOf(th),
-            direction: th.getAttribute("aria-sort"),
-        }));
-    });
+    coverage.wire_up_sorting();
 
     on_click(".button_prev_file", coverage.to_prev_file);
     on_click(".button_next_file", coverage.to_next_file);
@@ -217,7 +258,8 @@ coverage.pyfile_ready = function () {
     if (frag.length > 2 && frag[1] === "t") {
         document.querySelector(frag).closest(".n").classList.add("highlight");
         coverage.set_sel(parseInt(frag.substr(2), 10));
-    } else {
+    }
+    else {
         coverage.set_sel(0);
     }
 
@@ -441,7 +483,8 @@ coverage.to_next_chunk_nicely = function () {
         if (line.parentElement !== document.getElementById("source")) {
             // The element is not a source line but the header or similar
             coverage.select_line_or_chunk(1);
-        } else {
+        }
+        else {
             // We extract the line number from the id
             coverage.select_line_or_chunk(parseInt(line.id.substring(1), 10));
         }
@@ -460,7 +503,8 @@ coverage.to_prev_chunk_nicely = function () {
         if (line.parentElement !== document.getElementById("source")) {
             // The element is not a source line but the header or similar
             coverage.select_line_or_chunk(coverage.lines_len);
-        } else {
+        }
+        else {
             // We extract the line number from the id
             coverage.select_line_or_chunk(parseInt(line.id.substring(1), 10));
         }
@@ -562,7 +606,8 @@ coverage.build_scroll_markers = function () {
         if (line_number === previous_line + 1) {
             // If this solid missed block just make previous mark higher.
             last_mark.style.height = `${line_top + line_height - last_top}px`;
-        } else {
+        }
+        else {
             // Add colored line in scroll_marker block.
             last_mark = document.createElement("div");
             last_mark.id = `m${line_number}`;
@@ -590,7 +635,8 @@ coverage.wire_up_sticky_header = function () {
     function updateHeader() {
         if (window.scrollY > header_bottom) {
             header.classList.add("sticky");
-        } else {
+        }
+        else {
             header.classList.remove("sticky");
         }
     }
@@ -618,7 +664,8 @@ coverage.expand_contexts = function (e) {
 document.addEventListener("DOMContentLoaded", () => {
     if (document.body.classList.contains("indexfile")) {
         coverage.index_ready();
-    } else {
+    }
+    else {
         coverage.pyfile_ready();
     }
 });

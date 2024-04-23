@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>Cog coverage</title>
     <link rel="icon" sizes="32x32" href="favicon_32.png">
     <link rel="stylesheet" href="style.css" type="text/css">
-    <script type="text/javascript" src="coverage_html.js" defer></script>
+    <script src="coverage_html.js" defer></script>
 </head>
 <body class="indexfile">
 <header>
@@ -16,13 +16,13 @@
         <aside id="help_panel_wrapper">
             <input id="help_panel_state" type="checkbox">
             <label for="help_panel_state">
-                <img id="keyboard_icon" src="keybd_closed.png" alt="Show/hide keyboard shortcuts" />
+                <img id="keyboard_icon" src="keybd_closed.png" alt="Show/hide keyboard shortcuts">
             </label>
             <div id="help_panel">
                 <p class="legend">Shortcuts on this page</p>
                 <div class="keyhelp">
                     <p>
-                        <kbd>n</kbd>
+                        <kbd>f</kbd>
                         <kbd>s</kbd>
                         <kbd>m</kbd>
                         <kbd>x</kbd>
@@ -43,11 +43,20 @@
             </div>
         </aside>
         <form id="filter_container">
-            <input id="filter" type="text" value="" placeholder="filter..." />
+            <input id="filter" type="text" value="" placeholder="filter...">
+            <div>
+                <input id="hide100" type="checkbox" >
+                <label for="hide100">hide covered</label>
+            </div>
         </form>
+        <h2>
+                <a class="button current">Files</a>
+                <a class="button" href="function_index.html">Functions</a>
+                <a class="button" href="class_index.html">Classes</a>
+        </h2>
         <p class="text">
-            <a class="nav" href="https://coverage.readthedocs.io/en/7.4.5a0.dev1">coverage.py v7.4.5a0.dev1</a>,
-            created at 2024-04-06 12:54 -0400
+            <a class="nav" href="https://coverage.readthedocs.io/en/7.5.0">coverage.py v7.5.0</a>,
+            created at 2024-04-23 13:00 -0400
         </p>
     </div>
 </header>
@@ -55,17 +64,17 @@
     <table class="index" data-sortable>
         <thead>
             <tr class="tablehead" title="Click to sort">
-                <th class="name left" aria-sort="none" data-shortcut="n">Module</th>
-                <th aria-sort="none" data-default-sort-order="descending" data-shortcut="s">statements</th>
-                <th aria-sort="none" data-default-sort-order="descending" data-shortcut="m">missing</th>
-                <th aria-sort="none" data-default-sort-order="descending" data-shortcut="x">excluded</th>
-                <th aria-sort="none" data-default-sort-order="descending" data-shortcut="b">branches</th>
-                <th aria-sort="none" data-default-sort-order="descending" data-shortcut="p">partial</th>
-                <th class="right" aria-sort="none" data-shortcut="c">coverage</th>
+                <th class="name left" aria-sort="none" data-shortcut="f">File<span class="arrows"></span></th>
+                <th aria-sort="none" data-default-sort-order="descending" data-shortcut="s">statements<span class="arrows"></span></th>
+                <th aria-sort="none" data-default-sort-order="descending" data-shortcut="m">missing<span class="arrows"></span></th>
+                <th aria-sort="none" data-default-sort-order="descending" data-shortcut="x">excluded<span class="arrows"></span></th>
+                <th aria-sort="none" data-default-sort-order="descending" data-shortcut="b">branches<span class="arrows"></span></th>
+                <th aria-sort="none" data-default-sort-order="descending" data-shortcut="p">partial<span class="arrows"></span></th>
+                <th class="right" aria-sort="none" data-shortcut="c">coverage<span class="arrows"></span></th>
             </tr>
         </thead>
         <tbody>
-            <tr class="file">
+            <tr class="region">
                 <td class="name left"><a href="z_7b071bdc2a35fa80___init___py.html">cogapp/__init__.py</a></td>
                 <td>1</td>
                 <td>0</td>
@@ -74,7 +83,7 @@
                 <td>0</td>
                 <td class="right" data-ratio="1 1">100.00%</td>
             </tr>
-            <tr class="file">
+            <tr class="region">
                 <td class="name left"><a href="z_7b071bdc2a35fa80___main___py.html">cogapp/__main__.py</a></td>
                 <td>3</td>
                 <td>3</td>
@@ -83,7 +92,7 @@
                 <td>0</td>
                 <td class="right" data-ratio="0 3">0.00%</td>
             </tr>
-            <tr class="file">
+            <tr class="region">
                 <td class="name left"><a href="z_7b071bdc2a35fa80_cogapp_py.html">cogapp/cogapp.py</a></td>
                 <td>483</td>
                 <td>228</td>
@@ -92,7 +101,7 @@
                 <td>28</td>
                 <td class="right" data-ratio="323 691">46.74%</td>
             </tr>
-            <tr class="file">
+            <tr class="region">
                 <td class="name left"><a href="z_7b071bdc2a35fa80_makefiles_py.html">cogapp/makefiles.py</a></td>
                 <td>22</td>
                 <td>18</td>
@@ -101,7 +110,7 @@
                 <td>0</td>
                 <td class="right" data-ratio="4 36">11.11%</td>
             </tr>
-            <tr class="file">
+            <tr class="region">
                 <td class="name left"><a href="z_7b071bdc2a35fa80_test_cogapp_py.html">cogapp/test_cogapp.py</a></td>
                 <td>854</td>
                 <td>598</td>
@@ -110,7 +119,7 @@
                 <td>1</td>
                 <td class="right" data-ratio="259 878">29.50%</td>
             </tr>
-            <tr class="file">
+            <tr class="region">
                 <td class="name left"><a href="z_7b071bdc2a35fa80_test_makefiles_py.html">cogapp/test_makefiles.py</a></td>
                 <td>68</td>
                 <td>51</td>
@@ -119,7 +128,7 @@
                 <td>0</td>
                 <td class="right" data-ratio="17 74">22.97%</td>
             </tr>
-            <tr class="file">
+            <tr class="region">
                 <td class="name left"><a href="z_7b071bdc2a35fa80_test_whiteutils_py.html">cogapp/test_whiteutils.py</a></td>
                 <td>68</td>
                 <td>50</td>
@@ -128,7 +137,7 @@
                 <td>0</td>
                 <td class="right" data-ratio="18 68">26.47%</td>
             </tr>
-            <tr class="file">
+            <tr class="region">
                 <td class="name left"><a href="z_7b071bdc2a35fa80_utils_py.html">cogapp/utils.py</a></td>
                 <td>37</td>
                 <td>8</td>
@@ -137,7 +146,7 @@
                 <td>2</td>
                 <td class="right" data-ratio="33 43">76.74%</td>
             </tr>
-            <tr class="file">
+            <tr class="region">
                 <td class="name left"><a href="z_7b071bdc2a35fa80_whiteutils_py.html">cogapp/whiteutils.py</a></td>
                 <td>43</td>
                 <td>5</td>
@@ -166,16 +175,16 @@
 <footer>
     <div class="content">
         <p>
-            <a class="nav" href="https://coverage.readthedocs.io/en/7.4.5a0.dev1">coverage.py v7.4.5a0.dev1</a>,
-            created at 2024-04-06 12:54 -0400
+            <a class="nav" href="https://coverage.readthedocs.io/en/7.5.0">coverage.py v7.5.0</a>,
+            created at 2024-04-23 13:00 -0400
         </p>
     </div>
     <aside class="hidden">
-        <a id="prevFileLink" class="nav" href="z_7b071bdc2a35fa80_whiteutils_py.html"/>
-        <a id="nextFileLink" class="nav" href="z_7b071bdc2a35fa80___init___py.html"/>
-        <button type="button" class="button_prev_file" data-shortcut="["/>
-        <button type="button" class="button_next_file" data-shortcut="]"/>
-        <button type="button" class="button_show_hide_help" data-shortcut="?"/>
+        <a id="prevFileLink" class="nav" href="z_7b071bdc2a35fa80_whiteutils_py.html"></a>
+        <a id="nextFileLink" class="nav" href="z_7b071bdc2a35fa80___init___py.html"></a>
+        <button type="button" class="button_prev_file" data-shortcut="["></button>
+        <button type="button" class="button_next_file" data-shortcut="]"></button>
+        <button type="button" class="button_show_hide_help" data-shortcut="?"></button>
     </aside>
 </footer>
 </body>
