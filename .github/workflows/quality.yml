@@ -31,7 +31,9 @@ jobs:
     # Because pylint can report different things on different OS's (!)
     # (https://github.com/PyCQA/pylint/issues/3489), run this on Mac where local
     # pylint gets run.
-    runs-on: macos-latest
+    # GitHub is rolling out macos 14, but it doesn't have Python 3.8 or 3.9.
+    # https://mastodon.social/@hugovk/112320493602782374
+    runs-on: macos-13
 
     steps:
       - name: "Check out the repo"

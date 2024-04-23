@@ -30,7 +30,7 @@ concurrency:
 jobs:
   coverage:
     name: "${{ matrix.python-version }} on ${{ matrix.os }}"
-    runs-on: "${{ matrix.os }}-latest"
+    runs-on: "${{ matrix.os }}-${{ matrix.os-version || 'latest' }}"
     env:
       MATRIX_ID: "${{ matrix.python-version }}.${{ matrix.os }}"
 
@@ -69,6 +69,15 @@ jobs:
             python-version: "pypy-3.9"
           - os: windows
             python-version: "pypy-3.10"
+        # GitHub is rolling out macos 14, but it doesn't have Python 3.8 or 3.9.
+        # https://mastodon.social/@hugovk/112320493602782374
+        include:
+          - python-version: "3.8"
+            os: "macos"
+            os-version: "13"
+          - python-version: "3.9"
+            os: "macos"
+            os-version: "13"
       # If one job fails, stop the whole thing.
       fail-fast: true
 

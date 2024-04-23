@@ -30,7 +30,7 @@ concurrency:
 jobs:
   tests:
     name: "${{ matrix.python-version }} on ${{ matrix.os }}"
-    runs-on: "${{ matrix.os }}-latest"
+    runs-on: "${{ matrix.os }}-${{ matrix.os-version || 'latest' }}"
     # Don't run tests if the branch name includes "-notests"
     if: "!contains(github.ref, '-notests')"
     strategy:
@@ -62,6 +62,16 @@ jobs:
             python-version: "pypy-3.9"
           - os: windows
             python-version: "pypy-3.10"
+        # GitHub is rolling out macos 14, but it doesn't have Python 3.8 or 3.9.
+        # https://mastodon.social/@hugovk/112320493602782374
+        include:
+          - python-version: "3.8"
+            os: "macos"
+            os-version: "13"
+          - python-version: "3.9"
+            os: "macos"
+            os-version: "13"
+
       fail-fast: false
 
     steps:
