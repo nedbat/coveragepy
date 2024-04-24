@@ -108,13 +108,13 @@ class HtmlTestHelpers(CoverageTest):
             msg=f"Time stamp is wrong: {timestamp}",
         )
 
-    def assert_valid_hrefs(self) -> None:
+    def assert_valid_hrefs(self, directory: str = "htmlcov") -> None:
         """Assert that the hrefs in htmlcov/*.html are valid.
 
         Doesn't check external links (those with a protocol).
         """
         hrefs = collections.defaultdict(set)
-        for fname in glob.glob("htmlcov/*.html"):
+        for fname in glob.glob(f"{directory}/*.html"):
             with open(fname) as fhtml:
                 html = fhtml.read()
             for href in re.findall(r""" href=['"]([^'"]*)['"]""", html):
@@ -128,7 +128,7 @@ class HtmlTestHelpers(CoverageTest):
                 href = href.partition("#")[0]   # ignore fragment in URLs.
                 hrefs[href].add(fname)
         for href, sources in hrefs.items():
-            assert os.path.exists(f"htmlcov/{href}"), (
+            assert os.path.exists(f"{directory}/{href}"), (
                 f"These files link to {href!r}, which doesn't exist: {', '.join(sources)}"
             )
 
@@ -185,9 +185,16 @@ class HtmlDeltaTest(HtmlTestHelpers, CoverageTest):
         self.assert_exists("htmlcov/main_file_py.html")
         self.assert_exists("htmlcov/helper1_py.html")
         self.assert_exists("htmlcov/helper2_py.html")
-        self.assert_exists("htmlcov/style.css")
-        self.assert_exists("htmlcov/coverage_html.js")
         self.assert_exists("htmlcov/.gitignore")
+        # Cache-busted files have random data in the name, but they should all
+        # be there, and there should only be one of each.
+        statics = ["style.css", "coverage_html.js", "keybd_closed.png", "favicon_32.png"]
+        files = os.listdir("htmlcov")
+        for static in statics:
+            base, ext = os.path.splitext(static)
+            busted_file_pattern = fr"{base}_cb_\w{{8}}{ext}"
+            matches = [m for f in files if (m := re.fullmatch(busted_file_pattern, f))]
+            assert len(matches) == 1, f"Found {len(matches)} files for {static}"
 
     def test_html_created(self) -> None:
         # Test basic HTML generation: files should be created.
@@ -691,6 +698,8 @@ def compare_html(
         (r'coverage\.py v[\d.abcdev]+', 'coverage.py vVER'),
         (r'created at \d\d\d\d-\d\d-\d\d \d\d:\d\d [-+]\d\d\d\d', 'created at DATE'),
         (r'created at \d\d\d\d-\d\d-\d\d \d\d:\d\d', 'created at DATE'),
+        # Static files have cache busting.
+        (r'_cb_\w{8}\.', '_CB.'),
         # Occasionally an absolute path is in the HTML report.
         (filepath_to_regex(TESTS_DIR), 'TESTS_DIR'),
         (filepath_to_regex(flat_rootname(str(TESTS_DIR))), '_TESTS_DIR'),
@@ -709,7 +718,20 @@ def compare_html(
     compare(expected, actual, file_pattern="*.html", scrubs=scrubs)
 
 
-class HtmlGoldTest(CoverageTest):
+def unbust(directory: str) -> None:
+    """Find files with cache busting, and rename them to simple names.
+
+    This makes it possible for us to compare gold files.
+    """
+    with change_dir(directory):
+        for fname in os.listdir("."):
+            base, ext = os.path.splitext(fname)
+            base, _, _ = base.partition("_cb_")
+            if base != fname:
+                os.rename(fname, base + ext)
+
+
+class HtmlGoldTest(HtmlTestHelpers, CoverageTest):
     """Tests of HTML reporting that use gold files."""
 
     def test_a(self) -> None:
@@ -1050,28 +1072,29 @@ assert len(math) == 18
                 a = 4
             """)
 
-        self.make_file("extra.css", "/* Doesn't matter what goes in here, it gets copied. */\n")
+        self.make_file("myfile/myextra.css", "/* Doesn't matter what's here, it gets copied. */\n")
 
         cov = coverage.Coverage()
         a = self.start_import_stop(cov, "a")
-        cov.html_report(a, directory="out/styled", extra_css="extra.css")
-
+        cov.html_report(a, directory="out/styled", extra_css="myfile/myextra.css")
+        self.assert_valid_hrefs("out/styled")
         compare_html(gold_path("html/styled"), "out/styled")
+        unbust("out/styled")
         compare(gold_path("html/styled"), "out/styled", file_pattern="*.css")
-        contains(
+        contains_rx(
             "out/styled/a_py.html",
-            '<link rel="stylesheet" href="extra.css" type="text/css">',
-            ('<span class="key">if</span> <span class="num">1</span> ' +
-             '<span class="op">&lt;</span> <span class="num">2</span>'),
-            ('    <span class="nam">a</span> <span class="op">=</span> ' +
-             '<span class="num">3</span>'),
-            '<span class="pc_cov">67%</span>',
+            r'<link rel="stylesheet" href="myextra_cb_\w{8}.css" type="text/css">',
+            (r'<span class="key">if</span> <span class="num">1</span> ' +
+             r'<span class="op">&lt;</span> <span class="num">2</span>'),
+            (r'    <span class="nam">a</span> <span class="op">=</span> ' +
+             r'<span class="num">3</span>'),
+            r'<span class="pc_cov">67%</span>',
         )
-        contains(
+        contains_rx(
             "out/styled/index.html",
-            '<link rel="stylesheet" href="extra.css" type="text/css">',
-            '<a href="a_py.html">a.py</a>',
-            '<span class="pc_cov">67%</span>',
+            r'<link rel="stylesheet" href="myextra_cb_\w{8}.css" type="text/css">',
+            r'<a href="a_py.html">a.py</a>',
+            r'<span class="pc_cov">67%</span>',
         )
 
     def test_tabbed(self) -> None:

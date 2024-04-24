@@ -6,10 +6,10 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>Coverage for {{relative_filename|escape}}: {{nums.pc_covered_str}}%</title>
-    <link rel="icon" sizes="32x32" href="favicon_32.png">
-    <link rel="stylesheet" href="style.css" type="text/css">
+    <link rel="icon" sizes="32x32" href="{{ statics.favicon_32_png }}">
+    <link rel="stylesheet" href="{{ statics.style_css }}" type="text/css">
     {% if extra_css %}
-        <link rel="stylesheet" href="{{ extra_css }}" type="text/css">
+        <link rel="stylesheet" href="{{ statics.extra_css }}" type="text/css">
     {% endif %}
 
     {% if contexts_json %}
@@ -18,7 +18,7 @@
     </script>
     {% endif %}
 
-    <script src="coverage_html.js" defer></script>
+    <script src="{{ statics.coverage_html_js }}" defer></script>
 </head>
 <body class="pyfile">
 
@@ -32,7 +32,7 @@
         <aside id="help_panel_wrapper">
             <input id="help_panel_state" type="checkbox">
             <label for="help_panel_state">
-                <img id="keyboard_icon" src="keybd_closed.png" alt="Show/hide keyboard shortcuts">
+                <img id="keyboard_icon" src="{{ statics.keybd_closed_png }}" alt="Show/hide keyboard shortcuts">
             </label>
             <div id="help_panel">
                 <p class="legend">Shortcuts on this page</p>

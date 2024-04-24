@@ -23,7 +23,9 @@ upgrading your version of coverage.py.
 Unreleased
 ----------
 
-Nothing yet.
+- Support files (JavaScript and CSS) referenced by the HTML report now have
+  hashes added to their names to ensure updated files are used instead of stale
+  cached copies.
 
 
 .. scriv-start-here

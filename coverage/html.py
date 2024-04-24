@@ -12,7 +12,6 @@ import functools
 import json
 import os
 import re
-import shutil
 import string
 
 from dataclasses import dataclass, field
@@ -238,11 +237,7 @@ class HtmlReporter:
 
         title = self.config.html_title
 
-        self.extra_css: str | None
-        if self.config.extra_css:
-            self.extra_css = os.path.basename(self.config.extra_css)
-        else:
-            self.extra_css = None
+        self.extra_css = bool(self.config.extra_css)
 
         self.data = self.coverage.get_data()
         self.has_arcs = self.data.has_arcs()
@@ -270,6 +265,7 @@ class HtmlReporter:
             "extra_css": self.extra_css,
             "has_arcs": self.has_arcs,
             "show_contexts": self.config.show_contexts,
+            "statics": {},
 
             # Constants for all reports.
             # These css classes determine which lines are highlighted by default.
@@ -323,6 +319,9 @@ class HtmlReporter:
         if not have_data:
             raise NoDataError("No data to report.")
 
+        self.make_directory()
+        self.make_local_static_report_files()
+
         if files_to_report:
             for ftr1, ftr2 in zip(files_to_report[:-1], files_to_report[1:]):
                 ftr1.next_html = ftr2.html_filename
@@ -347,7 +346,6 @@ class HtmlReporter:
         # Write function and class index pages.
         self.write_region_index_pages(files_to_report)
 
-        self.make_local_static_report_files()
         return (
             self.index_pages["file"].totals.n_statements
             and self.index_pages["file"].totals.pc_covered
@@ -359,23 +357,39 @@ class HtmlReporter:
         if not os.listdir(self.directory):
             self.directory_was_empty = True
 
+    def copy_static_file(self, src: str, slug: str = "") -> None:
+        """Copy a static file into the output directory with cache busting."""
+        with open(src, "rb") as f:
+            text = f.read()
+        h = Hasher()
+        h.update(text)
+        cache_bust = h.hexdigest()[:8]
+        src_base = os.path.basename(src)
+        dest = src_base.replace(".", f"_cb_{cache_bust}.")
+        if not slug:
+            slug = src_base.replace(".", "_")
+        self.template_globals["statics"][slug] = dest # type: ignore
+        with open(os.path.join(self.directory, dest), "wb") as f:
+            f.write(text)
+
     def make_local_static_report_files(self) -> None:
         """Make local instances of static files for HTML report."""
+
         # The files we provide must always be copied.
         for static in self.STATIC_FILES:
-            shutil.copyfile(data_filename(static), os.path.join(self.directory, static))
-
-        # Only write the .gitignore file if the directory was originally empty.
-        # .gitignore can't be copied from the source tree because it would
-        # prevent the static files from being checked in.
-        if self.directory_was_empty:
-            with open(os.path.join(self.directory, ".gitignore"), "w") as fgi:
-                fgi.write("# Created by coverage.py\n*\n")
+            self.copy_static_file(data_filename(static))
 
         # The user may have extra CSS they want copied.
         if self.extra_css:
             assert self.config.extra_css is not None
-            shutil.copyfile(self.config.extra_css, os.path.join(self.directory, self.extra_css))
+            self.copy_static_file(self.config.extra_css, slug="extra_css")
+
+        # Only write the .gitignore file if the directory was originally empty.
+        # .gitignore can't be copied from the source tree because if it was in
+        # the source tree, it would stop the static files from being checked in.
+        if self.directory_was_empty:
+            with open(os.path.join(self.directory, ".gitignore"), "w") as fgi:
+                fgi.write("# Created by coverage.py\n*\n")
 
     def should_report(self, analysis: Analysis, index_page: IndexPage) -> bool:
         """Determine if we'll report this file or region."""
@@ -407,8 +421,6 @@ class HtmlReporter:
         only does page summary bookkeeping.
 
         """
-        self.make_directory()
-
         # Find out if the page on disk is already correct.
         if self.incr.can_skip_file(self.data, ftr.fr, ftr.rootname):
             self.index_pages["file"].summaries.append(self.incr.index_info(ftr.rootname))
@@ -501,8 +513,6 @@ class HtmlReporter:
 
     def write_file_index_page(self, first_html: str, final_html: str) -> None:
         """Write the file index page for this report."""
-        self.make_directory()
-
         index_file = self.write_index_page(
             self.index_pages["file"],
             first_html=first_html,
