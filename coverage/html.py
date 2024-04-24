@@ -221,7 +221,6 @@ class HtmlReporter:
         "style.css",
         "coverage_html.js",
         "keybd_closed.png",
-        "keybd_open.png",
         "favicon_32.png",
     ]
 
