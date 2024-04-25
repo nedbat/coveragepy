@@ -813,17 +813,17 @@ class HtmlGoldTest(HtmlTestHelpers, CoverageTest):
 
             ('<span class="annotate short">3&#x202F;&#x219B;&#x202F;6</span>' +
              '<span class="annotate long">line 3 didn\'t jump to line 6, ' +
-                            'because the condition on line 3 was never false</span>'),
+                            'because the condition on line 3 was always true</span>'),
             ('<span class="annotate short">12&#x202F;&#x219B;&#x202F;exit</span>' +
              '<span class="annotate long">line 12 didn\'t return from function \'two\', ' +
-                            'because the condition on line 12 was never false</span>'),
+                            'because the condition on line 12 was always true</span>'),
             ('<span class="annotate short">20&#x202F;&#x219B;&#x202F;21,&nbsp;&nbsp; ' +
                             '20&#x202F;&#x219B;&#x202F;23</span>' +
              '<span class="annotate long">2 missed branches: ' +
                             '1) line 20 didn\'t jump to line 21, ' +
                                 'because the condition on line 20 was never true, ' +
                             '2) line 20 didn\'t jump to line 23, ' +
-                                'because the condition on line 20 was never false</span>'),
+                                'because the condition on line 20 was always true</span>'),
         )
         contains(
             "out/b_branch/index.html",

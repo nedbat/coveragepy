@@ -759,7 +759,7 @@ class ParserMissingArcDescriptionTest(PythonParserTestBase):
             """)
         expected = "line 1 didn't jump to line 2, because the condition on line 1 was never true"
         assert expected == parser.missing_arc_description(1, 2)
-        expected = "line 1 didn't jump to line 3, because the condition on line 1 was never false"
+        expected = "line 1 didn't jump to line 3, because the condition on line 1 was always true"
         assert expected == parser.missing_arc_description(1, 3)
         expected = (
             "line 6 didn't return from function 'func5', " +
@@ -772,7 +772,7 @@ class ParserMissingArcDescriptionTest(PythonParserTestBase):
         assert expected == parser.missing_arc_description(11, 12)
         expected = (
             "line 11 didn't jump to line 13, " +
-            "because the condition on line 11 was never false"
+            "because the condition on line 11 was always true"
         )
         assert expected == parser.missing_arc_description(11, 13)
 

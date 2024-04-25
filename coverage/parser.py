@@ -1093,7 +1093,7 @@ class AstArcAnalyzer:
         start = self.line_for_node(node.test)
         from_start = ArcStart(start, cause="the condition on line {lineno} was never true")
         exits = self.add_body_arcs(node.body, from_start=from_start)
-        from_start = ArcStart(start, cause="the condition on line {lineno} was never false")
+        from_start = ArcStart(start, cause="the condition on line {lineno} was always true")
         exits |= self.add_body_arcs(node.orelse, from_start=from_start)
         return exits
 
@@ -1287,7 +1287,7 @@ class AstArcAnalyzer:
         my_block = self.block_stack.pop()
         assert isinstance(my_block, LoopBlock)
         exits.update(my_block.break_exits)
-        from_start = ArcStart(start, cause="the condition on line {lineno} was never false")
+        from_start = ArcStart(start, cause="the condition on line {lineno} was always true")
         if node.orelse:
             else_exits = self.add_body_arcs(node.orelse, from_start=from_start)
             exits |= else_exits
