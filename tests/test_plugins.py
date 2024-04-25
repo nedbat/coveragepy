@@ -33,7 +33,7 @@ from tests.helpers import CheckUniqueFilenames, swallow_warnings
 class NullConfig(TPluginConfig):
     """A plugin configure thing when we don't really need one."""
     def get_plugin_options(self, plugin: str) -> TConfigSectionOut:
-        return {}
+        return {}   # pragma: never called
 
 
 class FakeConfig(TPluginConfig):
@@ -284,7 +284,8 @@ class PluginWarningOnPyTracerTest(CoverageTest):
 
         if testenv.PY_TRACER:
             core = "PyTracer"
-        elif testenv.SYS_MON:
+        else:
+            assert testenv.SYS_MON
             core = "SysMonitor"
 
         expected_warnings = [
