@@ -81,7 +81,31 @@ function sortColumn(th) {
         .forEach(tr => tr.parentElement.appendChild(tr));
 
     // Save the sort order for next time.
-    localStorage.setItem(coverage.INDEX_SORT_STORAGE, JSON.stringify({column, direction}));
+    if (th.id !== "function_or_class") {
+        var th_id = "";
+        const stored_list = localStorage.getItem(coverage.INDEX_SORT_STORAGE);
+        if (stored_list) {
+            ({th_id, direction} = JSON.parse(stored_list))
+        }
+        localStorage.setItem(coverage.INDEX_SORT_STORAGE, JSON.stringify({
+            "th_id": th.id,
+            "direction": direction
+        }));
+        if (th.id !== th_id || document.getElementById("function_or_class")) {
+            // Sort column has changed, unset sorting by function or class.
+            localStorage.setItem(coverage.SORTED_BY_FUNCTION_OR_CLASS, JSON.stringify({
+                "by_function_or_class": false,
+                "direction_fc": direction
+            }));
+        }
+    }
+    else {
+        // Sort column has changed to by function or class, remember that.
+        localStorage.setItem(coverage.SORTED_BY_FUNCTION_OR_CLASS, JSON.stringify({
+            "by_function_or_class": true,
+            "direction_fc": direction
+        }));
+    }
 }
 
 // Find all the elements with data-shortcut attribute, and use them to assign a shortcut key.
@@ -223,18 +247,38 @@ coverage.wire_up_sorting = function () {
     );
 
     // Look for a localStorage item containing previous sort settings:
-    var column = 0, direction = "ascending";
+    var th_id = "file", direction = "ascending";
     const stored_list = localStorage.getItem(coverage.INDEX_SORT_STORAGE);
     if (stored_list) {
-        ({column, direction} = JSON.parse(stored_list));
+        ({th_id, direction} = JSON.parse(stored_list));
+    }
+    var by_function_or_class = false, direction_fc = "ascending";
+    const sorted_by_function_or_class = localStorage.getItem(coverage.SORTED_BY_FUNCTION_OR_CLASS);
+    if (sorted_by_function_or_class) {
+        ({
+            by_function_or_class,
+            direction_fc
+        } = JSON.parse(sorted_by_function_or_class));
     }
 
-    const th = document.querySelector("[data-sortable]").tHead.rows[0].cells[column];  // nosemgrep: eslint.detect-object-injection
+    const fcid = "function_or_class";
+    if (by_function_or_class && document.getElementById(fcid)) {
+        direction = direction_fc;
+    }
+    // If we are in a page that has a column with id of "function_or_class", sort on
+    // it if the last sort was by function or class.
+    if (document.getElementById(fcid)) {
+        var th = document.getElementById(by_function_or_class ? fcid : th_id);
+    }
+    else {
+        var th = document.getElementById(th_id);
+    }
     th.setAttribute("aria-sort", direction === "ascending" ? "descending" : "ascending");
     th.click()
 };
 
 coverage.INDEX_SORT_STORAGE = "COVERAGE_INDEX_SORT_2";
+coverage.SORTED_BY_FUNCTION_OR_CLASS = "COVERAGE_SORT_FUNCTION";
 
 // Loaded on index.html
 coverage.index_ready = function () {
