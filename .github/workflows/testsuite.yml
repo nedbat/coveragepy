@@ -63,15 +63,12 @@ jobs:
             python-version: "pypy-3.9"
           - os: windows
             python-version: "pypy-3.10"
-        # GitHub is rolling out macos 14, but it doesn't have Python 3.8 or 3.9.
-        # https://mastodon.social/@hugovk/112320493602782374
-        include:
-          - python-version: "3.8"
-            os: "macos"
-            os-version: "13"
-          - python-version: "3.9"
-            os: "macos"
-            os-version: "13"
+        # If we need to tweak the os version we can do it with an include like
+        # this:
+        #  include:
+        #    - python-version: "3.8"
+        #      os: "macos"
+        #      os-version: "13"
 
       fail-fast: false
 
