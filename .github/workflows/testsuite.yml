@@ -57,7 +57,8 @@ jobs:
         exclude:
           # Windows pypy 3.9 and 3.10 get stuck with PyPy 7.3.15.  I hope to
           # unstick them, but I don't want that to block all other progress, so
-          # skip them for now.
+          # skip them for now. These excludes can be removed once GitHub uses
+          # PyPy 7.3.16 on Windows.  https://github.com/pypy/pypy/issues/4876
           - os: windows
             python-version: "pypy-3.9"
           - os: windows
