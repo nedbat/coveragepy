@@ -83,20 +83,20 @@ function sortColumn(th) {
     // Save the sort order for next time.
     if (th.id !== "region") {
         var th_id = "file";  // Sort by file if we don't have a column id
-
+        var current_direction = direction;
         const stored_list = localStorage.getItem(coverage.INDEX_SORT_STORAGE);
         if (stored_list) {
             ({th_id, direction} = JSON.parse(stored_list))
         }
         localStorage.setItem(coverage.INDEX_SORT_STORAGE, JSON.stringify({
             "th_id": th.id,
-            "direction": direction
+            "direction": current_direction
         }));
         if (th.id !== th_id || document.getElementById("region")) {
             // Sort column has changed, unset sorting by function or class.
             localStorage.setItem(coverage.SORTED_BY_REGION, JSON.stringify({
                 "by_region": false,
-                "region_direction": direction
+                "region_direction": current_direction
             }));
         }
     }
@@ -104,7 +104,7 @@ function sortColumn(th) {
         // Sort column has changed to by function or class, remember that.
         localStorage.setItem(coverage.SORTED_BY_REGION, JSON.stringify({
             "by_region": true,
-            "   region_direction": direction
+            "region_direction": direction
         }));
     }
 }
