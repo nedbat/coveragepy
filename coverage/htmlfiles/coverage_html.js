@@ -82,8 +82,8 @@ function sortColumn(th) {
 
     // Save the sort order for next time.
     if (th.id !== "region") {
-        var th_id = "file";  // Sort by file if we don't have a column id
-        var current_direction = direction;
+        let th_id = "file";  // Sort by file if we don't have a column id
+        let current_direction = direction;
         const stored_list = localStorage.getItem(coverage.INDEX_SORT_STORAGE);
         if (stored_list) {
             ({th_id, direction} = JSON.parse(stored_list))
@@ -248,12 +248,12 @@ coverage.wire_up_sorting = function () {
     );
 
     // Look for a localStorage item containing previous sort settings:
-    var th_id = "file", direction = "ascending";
+    let th_id = "file", direction = "ascending";
     const stored_list = localStorage.getItem(coverage.INDEX_SORT_STORAGE);
     if (stored_list) {
         ({th_id, direction} = JSON.parse(stored_list));
     }
-    var by_region = false, region_direction = "ascending";
+    let by_region = false, region_direction = "ascending";
     const sorted_by_region = localStorage.getItem(coverage.SORTED_BY_REGION);
     if (sorted_by_region) {
         ({
@@ -268,11 +268,12 @@ coverage.wire_up_sorting = function () {
     }
     // If we are in a page that has a column with id of "region", sort on
     // it if the last sort was by function or class.
+    let th;
     if (document.getElementById(region_id)) {
-        var th = document.getElementById(by_region ? region_id : th_id);
+        th = document.getElementById(by_region ? region_id : th_id);
     }
     else {
-        var th = document.getElementById(th_id);
+        th = document.getElementById(th_id);
     }
     th.setAttribute("aria-sort", direction === "ascending" ? "descending" : "ascending");
     th.click()
