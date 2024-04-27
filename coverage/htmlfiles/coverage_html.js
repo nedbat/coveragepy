@@ -81,7 +81,7 @@ function sortColumn(th) {
         .forEach(tr => tr.parentElement.appendChild(tr));
 
     // Save the sort order for next time.
-    if (th.id !== "function_or_class") {
+    if (th.id !== "region") {
         var th_id = "";
         const stored_list = localStorage.getItem(coverage.INDEX_SORT_STORAGE);
         if (stored_list) {
@@ -91,19 +91,19 @@ function sortColumn(th) {
             "th_id": th.id,
             "direction": direction
         }));
-        if (th.id !== th_id || document.getElementById("function_or_class")) {
+        if (th.id !== th_id || document.getElementById("region")) {
             // Sort column has changed, unset sorting by function or class.
-            localStorage.setItem(coverage.SORTED_BY_FUNCTION_OR_CLASS, JSON.stringify({
-                "by_function_or_class": false,
-                "direction_fc": direction
+            localStorage.setItem(coverage.SORTED_BY_REGION, JSON.stringify({
+                "by_region": false,
+                "region_direction": direction
             }));
         }
     }
     else {
         // Sort column has changed to by function or class, remember that.
-        localStorage.setItem(coverage.SORTED_BY_FUNCTION_OR_CLASS, JSON.stringify({
-            "by_function_or_class": true,
-            "direction_fc": direction
+        localStorage.setItem(coverage.SORTED_BY_REGION, JSON.stringify({
+            "by_region": true,
+            "   region_direction": direction
         }));
     }
 }
@@ -252,23 +252,23 @@ coverage.wire_up_sorting = function () {
     if (stored_list) {
         ({th_id, direction} = JSON.parse(stored_list));
     }
-    var by_function_or_class = false, direction_fc = "ascending";
-    const sorted_by_function_or_class = localStorage.getItem(coverage.SORTED_BY_FUNCTION_OR_CLASS);
-    if (sorted_by_function_or_class) {
+    var by_region = false, region_direction = "ascending";
+    const sorted_by_region = localStorage.getItem(coverage.SORTED_BY_REGION);
+    if (sorted_by_region) {
         ({
-            by_function_or_class,
-            direction_fc
-        } = JSON.parse(sorted_by_function_or_class));
+            by_region,
+            region_direction
+        } = JSON.parse(sorted_by_region));
     }
 
-    const fcid = "function_or_class";
-    if (by_function_or_class && document.getElementById(fcid)) {
-        direction = direction_fc;
+    const region_id = "region";
+    if (by_region && document.getElementById(region_id)) {
+        direction = region_direction;
     }
-    // If we are in a page that has a column with id of "function_or_class", sort on
+    // If we are in a page that has a column with id of "region", sort on
     // it if the last sort was by function or class.
-    if (document.getElementById(fcid)) {
-        var th = document.getElementById(by_function_or_class ? fcid : th_id);
+    if (document.getElementById(region_id)) {
+        var th = document.getElementById(by_region ? region_id : th_id);
     }
     else {
         var th = document.getElementById(th_id);
@@ -278,7 +278,7 @@ coverage.wire_up_sorting = function () {
 };
 
 coverage.INDEX_SORT_STORAGE = "COVERAGE_INDEX_SORT_2";
-coverage.SORTED_BY_FUNCTION_OR_CLASS = "COVERAGE_SORT_FUNCTION";
+coverage.SORTED_BY_REGION = "COVERAGE_SORT_REGION";
 
 // Loaded on index.html
 coverage.index_ready = function () {
