@@ -87,8 +87,6 @@ def canonical_filename(filename: str) -> str:
     return CANONICAL_FILENAME_CACHE[filename]
 
 
-MAX_FLAT = 100
-
 def flat_rootname(filename: str) -> str:
     """A base for a flat file name to correspond to this file.
 
