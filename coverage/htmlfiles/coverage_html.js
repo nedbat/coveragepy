@@ -82,7 +82,8 @@ function sortColumn(th) {
 
     // Save the sort order for next time.
     if (th.id !== "region") {
-        var th_id = "";
+        var th_id = "file";  // Sort by file if we don't have a column id
+
         const stored_list = localStorage.getItem(coverage.INDEX_SORT_STORAGE);
         if (stored_list) {
             ({th_id, direction} = JSON.parse(stored_list))
