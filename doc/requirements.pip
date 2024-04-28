@@ -6,6 +6,10 @@
 #
 alabaster==0.7.16
     # via sphinx
+anyio==4.3.0
+    # via
+    #   starlette
+    #   watchfiles
 attrs==23.2.0
     # via scriv
 babel==2.14.0
@@ -18,6 +22,7 @@ click==8.1.7
     # via
     #   click-log
     #   scriv
+    #   uvicorn
 click-log==0.4.0
     # via scriv
 cogapp==3.4.1
@@ -32,16 +37,18 @@ docutils==0.20.1
     #   restructuredtext-lint
     #   sphinx
     #   sphinx-rtd-theme
-idna==3.6
-    # via requests
+h11==0.14.0
+    # via uvicorn
+idna==3.7
+    # via
+    #   anyio
+    #   requests
 imagesize==1.4.1
     # via sphinx
 jinja2==3.1.3
     # via
     #   scriv
     #   sphinx
-livereload==2.6.3
-    # via sphinx-autobuild
 markdown-it-py==3.0.0
     # via scriv
 markupsafe==2.1.5
@@ -68,11 +75,11 @@ restructuredtext-lint==1.4.0
     # via doc8
 scriv==1.5.1
     # via -r doc/requirements.in
-six==1.16.0
-    # via livereload
+sniffio==1.3.1
+    # via anyio
 snowballstemmer==2.2.0
     # via sphinx
-sphinx==7.2.6
+sphinx==7.3.7
     # via
     #   -r doc/requirements.in
     #   sphinx-autobuild
@@ -81,7 +88,7 @@ sphinx==7.2.6
     #   sphinxcontrib-jquery
     #   sphinxcontrib-restbuilder
     #   sphinxcontrib-spelling
-sphinx-autobuild==2024.2.4
+sphinx-autobuild==2024.4.16
     # via -r doc/requirements.in
 sphinx-code-tabs==0.5.5
     # via -r doc/requirements.in
@@ -105,9 +112,15 @@ sphinxcontrib-serializinghtml==1.1.10
     # via sphinx
 sphinxcontrib-spelling==8.0.0
     # via -r doc/requirements.in
+starlette==0.37.2
+    # via sphinx-autobuild
 stevedore==5.2.0
     # via doc8
-tornado==6.4
-    # via livereload
 urllib3==2.2.1
     # via requests
+uvicorn==0.29.0
+    # via sphinx-autobuild
+watchfiles==0.21.0
+    # via sphinx-autobuild
+websockets==12.0
+    # via sphinx-autobuild
