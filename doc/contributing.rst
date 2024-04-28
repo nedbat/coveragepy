@@ -56,8 +56,9 @@ these steps:
     $ git clone https://github.com/GITHUB_USER/coveragepy
     $ cd coveragepy
 
-#.  Install the requirements::
+#.  Install the requirements with either of these commands::
 
+    $ make install
     $ python3 -m pip install -r requirements/dev.pip
 
     Note: You may need to upgrade pip to install the requirements.

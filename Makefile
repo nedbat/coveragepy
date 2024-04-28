@@ -8,7 +8,7 @@
 
 ##@ Utilities
 
-.PHONY: help clean_platform clean sterile
+.PHONY: help clean_platform clean sterile install
 
 help:					## Show this help.
 	@# Adapted from https://www.thapaliya.com/en/writings/well-documented-makefiles/
@@ -49,6 +49,9 @@ clean: debug_clean _clean_platform	## Remove artifacts of test execution, instal
 sterile: clean				## Remove all non-controlled content, even if expensive.
 	rm -rf .tox
 	rm -f cheats.txt
+
+install:				## Install the developer tools
+	python3 -m pip install -r requirements/dev.pip
 
 
 ##@ Tests and quality checks
