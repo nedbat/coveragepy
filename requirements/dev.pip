@@ -8,7 +8,7 @@ astroid==3.1.0
     # via pylint
 attrs==23.2.0
     # via hypothesis
-backports-tarfile==1.1.0
+backports-tarfile==1.1.1
     # via jaraco-context
 build==1.2.1
     # via check-manifest
@@ -49,7 +49,7 @@ flaky==3.8.1
     # via -r requirements/pytest.in
 greenlet==3.0.3
     # via -r requirements/dev.in
-hypothesis==6.100.1
+hypothesis==6.100.2
     # via -r requirements/pytest.in
 idna==3.7
     # via requests
@@ -72,7 +72,7 @@ jaraco-functools==4.0.1
     # via keyring
 jedi==0.19.1
     # via pudb
-keyring==25.1.0
+keyring==25.2.0
     # via twine
 libsass==0.23.0
     # via -r requirements/dev.in
@@ -99,7 +99,7 @@ parso==0.8.4
     # via jedi
 pkginfo==1.10.0
     # via twine
-platformdirs==4.2.0
+platformdirs==4.2.1
     # via
     #   pylint
     #   tox
@@ -122,7 +122,7 @@ pyproject-api==1.6.1
     # via tox
 pyproject-hooks==1.0.0
     # via build
-pytest==8.1.1
+pytest==8.2.0
     # via
     #   -r requirements/pytest.in
     #   pytest-xdist
@@ -158,7 +158,7 @@ tomli==2.0.1
     #   tox
 tomlkit==0.12.4
     # via pylint
-tox==4.14.2
+tox==4.15.0
     # via
     #   -r requirements/tox.in
     #   tox-gh
@@ -176,13 +176,13 @@ urllib3==2.2.1
     # via
     #   requests
     #   twine
-urwid==2.6.10
+urwid==2.6.11
     # via
     #   pudb
     #   urwid-readline
 urwid-readline==0.14
     # via pudb
-virtualenv==20.25.3
+virtualenv==20.26.0
     # via
     #   -r requirements/pip.in
     #   tox
