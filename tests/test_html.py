@@ -712,6 +712,7 @@ def compare_html(
     ]
     if env.WINDOWS:
         # For file paths...
+        scrubs += [(r'[A-Z]:\\Users\\[\w\\]+\\pytest-of-\w+\\pytest-\d+\\(popen-gw\d+\\)?t\d+', 'TEST_TMPDIR')]
         scrubs += [(r"\\", "/")]
     if extra_scrubs:
         scrubs += extra_scrubs
