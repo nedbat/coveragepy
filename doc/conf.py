@@ -126,10 +126,9 @@ intersphinx_mapping = {
 }
 
 nitpick_ignore = [
-    ("py:class", "frame"),
-    ("py:class", "module"),
     ("py:class", "DefaultValue"),
     ("py:class", "FilePath"),
+    ("py:class", "types.FrameType"),
     ("py:class", "TWarnFn"),
     ("py:class", "TDebugCtl"),
 ]
