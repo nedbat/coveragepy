@@ -709,13 +709,10 @@ def compare_html(
         (filepath_to_regex(abs_file(os.getcwd())), 'TEST_TMPDIR'),
         (filepath_to_regex(flat_rootname(str(abs_file(os.getcwd())))), '_TEST_TMPDIR'),
         (r'/private/var/[\w/]+/pytest-of-\w+/pytest-\d+/(popen-gw\d+/)?t\d+', 'TEST_TMPDIR'),
+        (r'[A-Z]:\\Users\\[\w\\]+\\pytest-of-\w+\\pytest-\d+\\(popen-gw\d+\\)?t\d+', 'TEST_TMPDIR'),
     ]
     if env.WINDOWS:
         # For file paths...
-        scrubs += [
-            (r'[A-Z]:\\Users\\[\w\\]+\\pytest-of-\w+\\pytest-\d+\\(popen-gw\d+\\)?t\d+',
-             'TEST_TMPDIR')
-        ]
         scrubs += [(r"\\", "/")]
     if extra_scrubs:
         scrubs += extra_scrubs
