@@ -709,14 +709,9 @@ def compare_html(
         (filepath_to_regex(abs_file(os.getcwd())), 'TEST_TMPDIR'),
         (filepath_to_regex(flat_rootname(str(abs_file(os.getcwd())))), '_TEST_TMPDIR'),
         (r'/private/var/[\w/]+/pytest-of-\w+/pytest-\d+/(popen-gw\d+/)?t\d+', 'TEST_TMPDIR'),
+        # If the gold files were created on Windows, we need to scrub Windows paths also:
+        (r'[A-Z]:\\Users\\[\w\\]+\\pytest-of-\w+\\pytest-\d+\\(popen-gw\d+\\)?t\d+', 'TEST_TMPDIR'),
     ]
-    if env.WINDOWS:
-        # For file paths...
-        scrubs += [
-            (r'[A-Z]:\\Users\\[\w\\]+\\pytest-of-\w+\\pytest-\d+\\(popen-gw\d+\\)?t\d+',
-             'TEST_TMPDIR')
-        ]
-        scrubs += [(r"\\", "/")]
     if extra_scrubs:
         scrubs += extra_scrubs
     compare(expected, actual, file_pattern="*.html", scrubs=scrubs)
@@ -990,7 +985,8 @@ assert len(math) == 18
         compare_html(
             gold_path("html/other"), "out/other",
             extra_scrubs=[
-                (r'href="z_[0-9a-z]{16}_', 'href="_TEST_TMPDIR_othersrc_'),
+                (r'href="z_[0-9a-z]{16}_other_', 'href="_TEST_TMPDIR_other_othersrc_'),
+                (r'TEST_TMPDIR\\othersrc\\other.py', 'TEST_TMPDIR/othersrc/other.py'),
             ],
         )
         contains(
