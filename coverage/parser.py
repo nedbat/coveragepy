@@ -115,7 +115,7 @@ class PythonParser:
         matches = set()
         for i, ltext in enumerate(self.lines, start=1):
             if regex_c.search(ltext):
-                matches.add(i)
+                matches.add(self._multiline.get(i, i))
         return matches
 
     def _raw_parse(self) -> None:
