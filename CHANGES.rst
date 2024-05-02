@@ -23,6 +23,11 @@ upgrading your version of coverage.py.
 Unreleased
 ----------
 
+- Fix: a pragma comment on the continuation lines of a multi-line statement
+  now excludes the statement and its body, the same as if the pragma is
+  on the first line. This closes `issue 754`_. The fixed was contributed by
+  `Daniel Diniz <pull 1773_>`_.
+
 - HTML report improvements:
 
   - Support files (JavaScript and CSS) referenced by the HTML report now have
@@ -36,8 +41,10 @@ Unreleased
   - Column sort order is remembered better as you move between the index pages,
     fixing `issue 1766`_.  Thanks, `Daniel Diniz <pull 1768_>`_.
 
+.. _issue 754: https://github.com/nedbat/coveragepy/issues/754
 .. _issue 1766: https://github.com/nedbat/coveragepy/issues/1766
 .. _pull 1768: https://github.com/nedbat/coveragepy/pull/1768
+.. _pull 1773: https://github.com/nedbat/coveragepy/pull/1773
 
 
 .. scriv-start-here
