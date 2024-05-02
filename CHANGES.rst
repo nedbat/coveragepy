@@ -25,7 +25,7 @@ Unreleased
 
 - Fix: a pragma comment on the continuation lines of a multi-line statement
   now excludes the statement and its body, the same as if the pragma is
-  on the first line. This closes `issue 754`_. The fixed was contributed by
+  on the first line. This closes `issue 754`_. The fix was contributed by
   `Daniel Diniz <pull 1773_>`_.
 
 - HTML report improvements:
