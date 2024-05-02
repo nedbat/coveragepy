@@ -23,12 +23,21 @@ upgrading your version of coverage.py.
 Unreleased
 ----------
 
-- Support files (JavaScript and CSS) referenced by the HTML report now have
-  hashes added to their names to ensure updated files are used instead of stale
-  cached copies.
+- HTML report improvements:
 
-- Missing branch coverage explanations that said "the condition was never
-  false" now read "was always true" because it's easier to understand.
+  - Support files (JavaScript and CSS) referenced by the HTML report now have
+    hashes added to their names to ensure updated files are used instead of
+    stale cached copies.
+
+  - Missing branch coverage explanations that said "the condition was never
+    false" now read "the condition was always true" because it's easier to
+    understand.
+
+  - Column sort order is remembered better as you move between the index pages,
+    fixing `issue 1766`_.  Thanks, `Daniel Diniz <pull 1768_>`_.
+
+.. _issue 1766: https://github.com/nedbat/coveragepy/issues/1766
+.. _pull 1768: https://github.com/nedbat/coveragepy/pull/1768
 
 
 .. scriv-start-here
