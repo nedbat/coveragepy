@@ -8,6 +8,7 @@ from __future__ import annotations
 import contextlib
 import datetime
 import errno
+import functools
 import hashlib
 import importlib
 import importlib.util
@@ -313,6 +314,7 @@ def import_local_file(modname: str, modfile: str | None = None) -> ModuleType:
     return mod
 
 
+@functools.lru_cache(maxsize=None)
 def _human_key(s: str) -> tuple[list[str | int], str]:
     """Turn a string into a list of string and number chunks.
 
