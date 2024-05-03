@@ -12,7 +12,7 @@ from typing import Iterable, cast
 import pytest
 
 from coverage.exceptions import ConfigError
-from coverage.results import format_lines, Numbers, should_fail_under
+from coverage.results import Numbers, display_covered, format_lines, should_fail_under
 from coverage.types import TLineNo
 
 from tests.coveragetest import CoverageTest
@@ -70,15 +70,7 @@ class NumbersTest(CoverageTest):
         (2, 99.99995, "99.99"),
     ])
     def test_display_covered(self, prec: int, pc: float, res: str) -> None:
-        assert Numbers(precision=prec).display_covered(pc) == res
-
-    @pytest.mark.parametrize("prec, width", [
-        (0, 3),     # 100
-        (1, 5),     # 100.0
-        (4, 8),     # 100.0000
-    ])
-    def test_pc_str_width(self, prec: int, width: int) -> None:
-        assert Numbers(precision=prec).pc_str_width() == width
+        assert display_covered(pc, prec) == res
 
     def test_covered_ratio(self) -> None:
         n = Numbers(n_files=1, n_statements=200, n_missing=47)

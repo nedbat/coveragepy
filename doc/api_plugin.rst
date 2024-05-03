@@ -32,3 +32,10 @@ The FileReporter class
 .. autoclass:: FileReporter
     :members:
     :member-order: bysource
+
+The CodeRegion class
+--------------------
+
+.. autoclass:: CodeRegion
+    :members:
+    :member-order: bysource

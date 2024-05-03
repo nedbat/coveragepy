@@ -161,6 +161,7 @@ TMorf = Union[ModuleType, str]
 
 TSourceTokenLines = Iterable[List[Tuple[str, str]]]
 
+
 ## Plugins
 
 class TPlugin(Protocol):

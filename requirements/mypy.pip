@@ -8,29 +8,29 @@ attrs==23.2.0
     # via hypothesis
 colorama==0.4.6
     # via -r requirements/pytest.in
-exceptiongroup==1.2.0
+exceptiongroup==1.2.1
     # via
     #   hypothesis
     #   pytest
-execnet==2.0.2
+execnet==2.1.1
     # via pytest-xdist
 flaky==3.8.1
     # via -r requirements/pytest.in
-hypothesis==6.99.6
+hypothesis==6.100.2
     # via -r requirements/pytest.in
 iniconfig==2.0.0
     # via pytest
-mypy==1.9.0
+mypy==1.10.0
     # via -r requirements/mypy.in
 mypy-extensions==1.0.0
     # via mypy
 packaging==24.0
     # via pytest
-pluggy==1.4.0
+pluggy==1.5.0
     # via pytest
 pygments==2.17.2
     # via -r requirements/pytest.in
-pytest==8.1.1
+pytest==8.2.0
     # via
     #   -r requirements/pytest.in
     #   pytest-xdist
@@ -42,5 +42,5 @@ tomli==2.0.1
     # via
     #   mypy
     #   pytest
-typing-extensions==4.10.0
+typing-extensions==4.11.0
     # via mypy

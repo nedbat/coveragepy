@@ -30,7 +30,7 @@ concurrency:
 jobs:
   tests:
     name: "${{ matrix.python-version }} on ${{ matrix.os }}"
-    runs-on: "${{ matrix.os }}-latest"
+    runs-on: "${{ matrix.os }}-${{ matrix.os-version || 'latest' }}"
     # Don't run tests if the branch name includes "-notests"
     if: "!contains(github.ref, '-notests')"
     strategy:
@@ -57,11 +57,19 @@ jobs:
         exclude:
           # Windows pypy 3.9 and 3.10 get stuck with PyPy 7.3.15.  I hope to
           # unstick them, but I don't want that to block all other progress, so
-          # skip them for now.
+          # skip them for now. These excludes can be removed once GitHub uses
+          # PyPy 7.3.16 on Windows.  https://github.com/pypy/pypy/issues/4876
           - os: windows
             python-version: "pypy-3.9"
           - os: windows
             python-version: "pypy-3.10"
+        # If we need to tweak the os version we can do it with an include like
+        # this:
+        #  include:
+        #    - python-version: "3.8"
+        #      os: "macos"
+        #      os-version: "13"
+
       fail-fast: false
 
     steps:

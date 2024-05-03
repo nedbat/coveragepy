@@ -96,6 +96,22 @@ $dark-context-bg-color:   #056;
     }
 }
 
+@mixin button-shape {
+    font-family: inherit;
+    font-size: inherit;
+    border: 1px solid;
+    border-radius: .2em;
+    background: $light-gray2;
+    @include background-dark($dark-gray2);
+    color: inherit;
+    text-decoration: none;
+    padding: .1em .5em;
+    margin: 1px calc(.1em + 1px);
+    cursor: pointer;
+    border-color: $light-gray3;
+    @include border-color-dark($dark-gray3);
+}
+
 // Page-wide styles
 html, body, h1, h2, h3, p, table, td, th {
     margin: 0;
@@ -143,7 +159,8 @@ table tr.hidden {
 
 p#no_rows {
     display: none;
-    font-size: 1.2em;
+    font-size: 1.15em;
+    font-family: $font-normal;
 }
 
 a.nav {
@@ -176,6 +193,18 @@ header {
     h2 {
         margin-top: .5em;
         font-size: 1em;
+
+        a.button {
+            @include button-shape;
+            &.current {
+                border: 2px solid;
+                background: $light-bg;
+                @include background-dark($dark-bg);
+                border-color: $light-gray4;
+                @include border-color-dark($dark-gray4);
+                cursor: default;
+            }
+        }
     }
 
     p.text {
@@ -244,8 +273,9 @@ h1 {
 #filter_container {
     float: right;
     margin: 0 2em 0 0;
+    line-height: 1.66em;
 
-    input {
+    #filter {
         width: 10em;
         padding: 0.2em 0.5em;
         border: 2px solid $light-gray3;
@@ -258,19 +288,21 @@ h1 {
             border-color: $focus-color;
         }
     }
+
+    :disabled ~ label{
+        color: $light-gray3;
+        @include color-dark($dark-gray3);
+    }
+
+    label {
+        font-size: .875em;
+        color: $light-gray5;
+        @include color-dark($dark-gray5);
+    }
 }
 
 header button {
-    font-family: inherit;
-    font-size: inherit;
-    border: 1px solid;
-    border-radius: .2em;
-    color: inherit;
-    padding: .1em .5em;
-    margin: 1px calc(.1em + 1px);
-    cursor: pointer;
-    border-color: $light-gray3;
-    @include border-color-dark($dark-gray3);
+    @include button-shape;
     @include focus-border;
 
     &.run {
@@ -637,16 +669,18 @@ $border-indicator-width: .2em;
     }
     td, th {
         text-align: right;
-        width: 5em;
         padding: .25em .5em;
         border-bottom: 1px solid $light-gray2;
         @include border-color-dark($dark-gray2);
         &.name {
             text-align: left;
             width: auto;
+            font-family: $font-normal;
+            min-width: 15em;
         }
     }
     th {
+        font-family: $font-normal;
         font-style: italic;
         color: $light-gray6;
         @include color-dark($dark-gray6);
@@ -655,24 +689,35 @@ $border-indicator-width: .2em;
             background: $light-gray2;
             @include background-dark($dark-gray2);
         }
+        .arrows {
+            color: #666;
+            font-size: 85%;
+            font-family: sans-serif;
+            font-style: normal;
+            pointer-events: none;
+        }
         &[aria-sort="ascending"], &[aria-sort="descending"] {
             white-space: nowrap;
             background: $light-gray2;
             @include background-dark($dark-gray2);
             padding-left: .5em;
         }
-        &[aria-sort="ascending"]::after {
-            font-family: sans-serif;
-            content: " ↑";
+        &[aria-sort="ascending"] .arrows::after {
+            content: " ▲";
         }
-        &[aria-sort="descending"]::after {
-            font-family: sans-serif;
-            content: " ↓";
+        &[aria-sort="descending"] .arrows::after {
+            content: " ▼";
         }
     }
-    td.name a {
-        text-decoration: none;
-        color: inherit;
+    td.name {
+        font-size: 1.15em;
+        a {
+          text-decoration: none;
+          color: inherit;
+        }
+        & .no-noun {
+          font-style: italic;
+        }
     }
 
     tr.total td,
@@ -681,7 +726,7 @@ $border-indicator-width: .2em;
         border-top: 1px solid #ccc;
         border-bottom: none;
     }
-    tr.file:hover {
+    tr.region:hover {
         background: $light-gray2;
         @include background-dark($dark-gray2);
         td.name {

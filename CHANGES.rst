@@ -25,15 +25,65 @@ Unreleased
 
 - Fix: the PYTHONSAFEPATH environment variable new in Python 3.11 is properly
   supported, closing `issue 1696`_.  Thanks, `Philipp A. <pull 1700_>`_.
+- Fix: a pragma comment on the continuation lines of a multi-line statement
+  now excludes the statement and its body, the same as if the pragma is
+  on the first line. This closes `issue 754`_. The fix was contributed by
+  `Daniel Diniz <pull 1773_>`_.
+
+- HTML report improvements:
+
+  - Support files (JavaScript and CSS) referenced by the HTML report now have
+    hashes added to their names to ensure updated files are used instead of
+    stale cached copies.
+
+  - Missing branch coverage explanations that said "the condition was never
+    false" now read "the condition was always true" because it's easier to
+    understand.
+
+  - Column sort order is remembered better as you move between the index pages,
+    fixing `issue 1766`_.  Thanks, `Daniel Diniz <pull 1768_>`_.
+
+.. _issue 754: https://github.com/nedbat/coveragepy/issues/754
+.. _issue 1766: https://github.com/nedbat/coveragepy/issues/1766
+.. _pull 1768: https://github.com/nedbat/coveragepy/pull/1768
+.. _pull 1773: https://github.com/nedbat/coveragepy/pull/1773
+
+
+.. scriv-start-here
+
+.. _changes_7-5-0:
+
+Version 7.5.0 — 2024-04-23
+--------------------------
+
+- Added initial support for function and class reporting in the HTML report.
+  There are now three index pages which link to each other: files, functions,
+  and classes.  Other reports don't yet have this information, but it will be
+  added in the future where it makes sense.  Feedback gladly accepted!
+  Finishes `issue 780`_.
+
+- Other HTML report improvements:
+
+  - There is now a "hide covered" checkbox to filter out 100% files, finishing
+    `issue 1384`_.
+
+  - The index page is always sorted by one of its columns, with clearer
+    indications of the sorting.
+
+  - The "previous file" shortcut key didn't work on the index page, but now it
+    does, fixing `issue 1765`_.
+
 - The debug output showing which configuration files were tried now shows
   absolute paths to help diagnose problems where settings aren't taking effect,
   and is renamed from "attempted_config_files" to the more logical
   "config_files_attempted."
 
-- Python 3.13.0a5 is supported.
+- Python 3.13.0a6 is supported.
 
+.. _issue 780: https://github.com/nedbat/coveragepy/issues/780
+.. _issue 1384: https://github.com/nedbat/coveragepy/issues/1384
+.. _issue 1765: https://github.com/nedbat/coveragepy/issues/1765
 
-.. scriv-start-here
 
 .. _changes_7-4-4:
 

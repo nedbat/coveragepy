@@ -33,7 +33,7 @@ from tests.helpers import CheckUniqueFilenames, swallow_warnings
 class NullConfig(TPluginConfig):
     """A plugin configure thing when we don't really need one."""
     def get_plugin_options(self, plugin: str) -> TConfigSectionOut:
-        return {}
+        return {}   # pragma: never called
 
 
 class FakeConfig(TPluginConfig):
@@ -284,7 +284,8 @@ class PluginWarningOnPyTracerTest(CoverageTest):
 
         if testenv.PY_TRACER:
             core = "PyTracer"
-        elif testenv.SYS_MON:
+        else:
+            assert testenv.SYS_MON
             core = "SysMonitor"
 
         expected_warnings = [
@@ -412,8 +413,8 @@ class GoodFileTracerTest(FileTracerTest):
         analysis = cov._analyze("foo_7.html")
         assert analysis.statements == {1, 2, 3, 4, 5, 6, 7}
         # Plugins don't do branch coverage yet.
-        assert analysis.has_arcs() is True
-        assert analysis.arc_possibilities() == []
+        assert analysis.has_arcs is True
+        assert analysis.arc_possibilities == []
 
         assert analysis.missing == {1, 2, 3, 6, 7}
 

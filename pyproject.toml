@@ -38,8 +38,10 @@ no-docstring-rgx = "__.*__|test[A-Z_].*|setUp|_decorator|_wrapper|_.*__.*"
 defining-attr-methods = [
     "__init__",
     "__new__",
+    "__post_init__",
     "setUp",
     "reset",
+    "_reset",
 ]
 
 [tool.pylint.design]
@@ -142,7 +144,7 @@ balanced_clumps = [
 # We aren't using ruff for real yet...
 
 [tool.ruff]
-target-version = "py38"     # Can't use [project] 
+target-version = "py38"     # Can't use [project]
 line-length = 100
 
 [tool.ruff.lint]

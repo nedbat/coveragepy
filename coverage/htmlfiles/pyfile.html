@@ -2,14 +2,14 @@
 {# For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt #}
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>Coverage for {{relative_filename|escape}}: {{nums.pc_covered_str}}%</title>
-    <link rel="icon" sizes="32x32" href="favicon_32.png">
-    <link rel="stylesheet" href="style.css" type="text/css">
+    <link rel="icon" sizes="32x32" href="{{ statics.favicon_32_png }}">
+    <link rel="stylesheet" href="{{ statics.style_css }}" type="text/css">
     {% if extra_css %}
-        <link rel="stylesheet" href="{{ extra_css }}" type="text/css">
+        <link rel="stylesheet" href="{{ statics.extra_css }}" type="text/css">
     {% endif %}
 
     {% if contexts_json %}
@@ -18,7 +18,7 @@
     </script>
     {% endif %}
 
-    <script type="text/javascript" src="coverage_html.js" defer></script>
+    <script src="{{ statics.coverage_html_js }}" defer></script>
 </head>
 <body class="pyfile">
 
@@ -32,7 +32,7 @@
         <aside id="help_panel_wrapper">
             <input id="help_panel_state" type="checkbox">
             <label for="help_panel_state">
-                <img id="keyboard_icon" src="keybd_closed.png" alt="Show/hide keyboard shortcuts" />
+                <img id="keyboard_icon" src="{{ statics.keybd_closed_png }}" alt="Show/hide keyboard shortcuts">
             </label>
             <div id="help_panel">
                 <p class="legend">Shortcuts on this page</p>
@@ -92,14 +92,14 @@
         </p>
 
         <aside class="hidden">
-            <button type="button" class="button_next_chunk" data-shortcut="j"/>
-            <button type="button" class="button_prev_chunk" data-shortcut="k"/>
-            <button type="button" class="button_top_of_page" data-shortcut="0"/>
-            <button type="button" class="button_first_chunk" data-shortcut="1"/>
-            <button type="button" class="button_prev_file" data-shortcut="["/>
-            <button type="button" class="button_next_file" data-shortcut="]"/>
-            <button type="button" class="button_to_index" data-shortcut="u"/>
-            <button type="button" class="button_show_hide_help" data-shortcut="?"/>
+            <button type="button" class="button_next_chunk" data-shortcut="j"></button>
+            <button type="button" class="button_prev_chunk" data-shortcut="k"></button>
+            <button type="button" class="button_top_of_page" data-shortcut="0"></button>
+            <button type="button" class="button_first_chunk" data-shortcut="1"></button>
+            <button type="button" class="button_prev_file" data-shortcut="["></button>
+            <button type="button" class="button_next_file" data-shortcut="]"></button>
+            <button type="button" class="button_to_index" data-shortcut="u"></button>
+            <button type="button" class="button_show_hide_help" data-shortcut="?"></button>
         </aside>
     </div>
 </header>
@@ -111,7 +111,7 @@
             <span class="n"><a id="t{{line.number}}" href="#t{{line.number}}">{{line.number}}</a></span>
             <span class="t">{{line.html}}&nbsp;</span>
             {% if line.context_list %}
-                <input type="checkbox" id="ctxs{{line.number}}" />
+                <input type="checkbox" id="ctxs{{line.number}}">
             {% endif %}
             {# Things that should float right in the line. #}
             <span class="r">
@@ -135,9 +135,9 @@
 <footer>
     <div class="content">
         <p>
-            <a id="prevFileLink" class="nav" href="{{ prev_html }}">&#xab; prev</a> &nbsp; &nbsp;
-            <a id="indexLink" class="nav" href="index.html">&Hat; index</a> &nbsp; &nbsp;
-            <a id="nextFileLink" class="nav" href="{{ next_html }}">&#xbb; next</a>
+            <a class="nav" href="{{ prev_html }}">&#xab; prev</a> &nbsp; &nbsp;
+            <a class="nav" href="index.html">&Hat; index</a> &nbsp; &nbsp;
+            <a class="nav" href="{{ next_html }}">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="{{__url__}}">coverage.py v{{__version__}}</a>,
             created at {{ time_stamp }}
