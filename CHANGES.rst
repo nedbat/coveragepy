@@ -28,6 +28,10 @@ Unreleased
   on the first line. This closes `issue 754`_. The fix was contributed by
   `Daniel Diniz <pull 1773_>`_.
 
+- Fix: very complex source files like `this one <resolvent_lookup_>`_ could
+  cause a maximum recursion error when creating an HTML report.  This is now
+  fixed, closing `issue 1774`_.
+
 - HTML report improvements:
 
   - Support files (JavaScript and CSS) referenced by the HTML report now have
@@ -41,10 +45,13 @@ Unreleased
   - Column sort order is remembered better as you move between the index pages,
     fixing `issue 1766`_.  Thanks, `Daniel Diniz <pull 1768_>`_.
 
+
+.. _resolvent_lookup: https://github.com/sympy/sympy/blob/130950f3e6b3f97fcc17f4599ac08f70fdd2e9d4/sympy/polys/numberfields/resolvent_lookup.py
 .. _issue 754: https://github.com/nedbat/coveragepy/issues/754
 .. _issue 1766: https://github.com/nedbat/coveragepy/issues/1766
 .. _pull 1768: https://github.com/nedbat/coveragepy/pull/1768
 .. _pull 1773: https://github.com/nedbat/coveragepy/pull/1773
+.. _issue 1774: https://github.com/nedbat/coveragepy/issues/1774
 
 
 .. scriv-start-here

@@ -78,26 +78,19 @@ def _phys_tokens(toks: TokenInfos) -> TokenInfos:
         last_lineno = elineno
 
 
-class SoftKeywordFinder(ast.NodeVisitor):
+def find_soft_key_lines(source: str) -> set[TLineNo]:
     """Helper for finding lines with soft keywords, like match/case lines."""
-    def __init__(self, source: str) -> None:
-        # This will be the set of line numbers that start with a soft keyword.
-        self.soft_key_lines: set[TLineNo] = set()
-        self.visit(ast.parse(source))
+    soft_key_lines: set[TLineNo] = set()
 
-    if sys.version_info >= (3, 10):
-        def visit_Match(self, node: ast.Match) -> None:
-            """Invoked by ast.NodeVisitor.visit"""
-            self.soft_key_lines.add(node.lineno)
+    for node in ast.walk(ast.parse(source)):
+        if sys.version_info >= (3, 10) and isinstance(node, ast.Match):
+            soft_key_lines.add(node.lineno)
             for case in node.cases:
-                self.soft_key_lines.add(case.pattern.lineno)
-            self.generic_visit(node)
+                soft_key_lines.add(case.pattern.lineno)
+        elif sys.version_info >= (3, 12) and isinstance(node, ast.TypeAlias):
+            soft_key_lines.add(node.lineno)
 
-    if sys.version_info >= (3, 12):
-        def visit_TypeAlias(self, node: ast.TypeAlias) -> None:
-            """Invoked by ast.NodeVisitor.visit"""
-            self.soft_key_lines.add(node.lineno)
-            self.generic_visit(node)
+    return soft_key_lines
 
 
 def source_token_lines(source: str) -> TSourceTokenLines:
@@ -124,7 +117,7 @@ def source_token_lines(source: str) -> TSourceTokenLines:
     tokgen = generate_tokens(source)
 
     if env.PYBEHAVIOR.soft_keywords:
-        soft_key_lines = SoftKeywordFinder(source).soft_key_lines
+        soft_key_lines = find_soft_key_lines(source)
 
     for ttype, ttext, (sline, scol), (_, ecol), _ in _phys_tokens(tokgen):
         mark_start = True
@@ -151,8 +144,7 @@ def source_token_lines(source: str) -> TSourceTokenLines:
                         # Need the version_info check to keep mypy from borking
                         # on issoftkeyword here.
                         if env.PYBEHAVIOR.soft_keywords and keyword.issoftkeyword(ttext):
-                            # Soft keywords appear at the start of the line,
-                            # on lines that start match or case statements.
+                            # Soft keywords appear at the start of their line.
                             if len(line) == 0:
                                 is_start_of_line = True
                             elif (len(line) == 1) and line[0][0] == "ws":

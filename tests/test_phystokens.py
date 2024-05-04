@@ -135,6 +135,7 @@ class SoftKeywordTest(CoverageTest):
                 global case
             """)
         tokens = list(source_token_lines(source))
+        print(tokens)
         assert tokens[0][0] == ("key", "match")
         assert tokens[0][4] == ("nam", "match")
         assert tokens[1][1] == ("key", "case")

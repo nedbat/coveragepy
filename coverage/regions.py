@@ -21,7 +21,7 @@ class Context:
     lines: set[int]
 
 
-class RegionFinder(ast.NodeVisitor):
+class RegionFinder:
     """An ast visitor that will find and track regions of code.
 
     Functions and classes are tracked by name. Results are in the .regions
@@ -34,13 +34,27 @@ class RegionFinder(ast.NodeVisitor):
 
     def parse_source(self, source: str) -> None:
         """Parse `source` and walk the ast to populate the .regions attribute."""
-        self.visit(ast.parse(source))
+        self.handle_node(ast.parse(source))
 
     def fq_node_name(self) -> str:
         """Get the current fully qualified name we're processing."""
         return ".".join(c.name for c in self.context)
 
-    def visit_FunctionDef(self, node: ast.FunctionDef) -> None:
+    def handle_node(self, node: ast.AST) -> None:
+        """Recursively handle any node."""
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            self.handle_FunctionDef(node)
+        elif isinstance(node, ast.ClassDef):
+            self.handle_ClassDef(node)
+        else:
+            self.handle_node_body(node)
+
+    def handle_node_body(self, node: ast.AST) -> None:
+        """Recursively handle the nodes in this node's body, if any."""
+        for body_node in getattr(node, "body", ()):
+            self.handle_node(body_node)
+
+    def handle_FunctionDef(self, node: ast.FunctionDef | ast.AsyncFunctionDef) -> None:
         """Called for `def` or `async def`."""
         lines = set(range(node.body[0].lineno, cast(int, node.body[-1].end_lineno) + 1))
         if self.context and self.context[-1].kind == "class":
@@ -60,12 +74,10 @@ class RegionFinder(ast.NodeVisitor):
                 lines=lines,
             )
         )
-        self.generic_visit(node)
+        self.handle_node_body(node)
         self.context.pop()
 
-    visit_AsyncFunctionDef = visit_FunctionDef  # type: ignore[assignment]
-
-    def visit_ClassDef(self, node: ast.ClassDef) -> None:
+    def handle_ClassDef(self, node: ast.ClassDef) -> None:
         """Called for `class`."""
         # The lines for a class are the lines in the methods of the class.
         # We start empty, and count on visit_FunctionDef to add the lines it
@@ -80,7 +92,7 @@ class RegionFinder(ast.NodeVisitor):
                 lines=lines,
             )
         )
-        self.generic_visit(node)
+        self.handle_node_body(node)
         self.context.pop()
         # Class bodies should be excluded from the enclosing classes.
         for ancestor in reversed(self.context):
