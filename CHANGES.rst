@@ -20,8 +20,12 @@ upgrading your version of coverage.py.
     ..  Version 9.8.1 — 2027-07-27
     ..  --------------------------
 
-Unreleased
-----------
+.. scriv-start-here
+
+.. _changes_7-5-1:
+
+Version 7.5.1 — 2024-05-04
+--------------------------
 
 - Fix: a pragma comment on the continuation lines of a multi-line statement
   now excludes the statement and its body, the same as if the pragma is
@@ -53,8 +57,6 @@ Unreleased
 .. _pull 1773: https://github.com/nedbat/coveragepy/pull/1773
 .. _issue 1774: https://github.com/nedbat/coveragepy/issues/1774
 
-
-.. scriv-start-here
 
 .. _changes_7-5-0:
 
