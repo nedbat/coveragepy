@@ -5,8 +5,8 @@
 Use this to copy some indented code from the coverage.py test suite into a
 standalone file for deeper testing, or writing bug reports.
 
-Give it a file name and a line number, and it will find the indentend
-multiline string containing that line number, and output the dedented
+Give it a file name and a line number, and it will find the indented
+multi-line string containing that line number, and output the dedented
 contents of the string.
 
 If tests/test_arcs.py has this (partial) content::
