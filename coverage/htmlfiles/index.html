@@ -31,7 +31,7 @@
                 <div class="keyhelp">
                     <p>
                         <kbd>f</kbd>
-                        {% if column2 %}
+                        {% if region_noun %}
                         <kbd>n</kbd>
                         {% endif %}
                         <kbd>s</kbd>
@@ -83,8 +83,8 @@
             {# The title="" attr doesn't work in Safari. #}
             <tr class="tablehead" title="Click to sort">
                 <th id="file" class="name left" aria-sort="none" data-shortcut="f">File<span class="arrows"></span></th>
-                {% if column2 %}
-                <th id="region" class="name left" aria-sort="none" data-default-sort-order="ascending" data-shortcut="n">{{ column2 }}<span class="arrows"></span></th>
+                {% if region_noun %}
+                <th id="region" class="name left" aria-sort="none" data-default-sort-order="ascending" data-shortcut="n">{{ region_noun }}<span class="arrows"></span></th>
                 {% endif %}
                 <th id="statements" aria-sort="none" data-default-sort-order="descending" data-shortcut="s">statements<span class="arrows"></span></th>
                 <th id="missing" aria-sort="none" data-default-sort-order="descending" data-shortcut="m">missing<span class="arrows"></span></th>
@@ -100,7 +100,7 @@
             {% for region in regions %}
             <tr class="region">
                 <td class="name left"><a href="{{region.url}}">{{region.file}}</a></td>
-                {% if column2 %}
+                {% if region_noun %}
                 <td class="name left"><a href="{{region.url}}">{{region.description}}</a></td>
                 {% endif %}
                 <td>{{region.nums.n_statements}}</td>
@@ -117,7 +117,7 @@
         <tfoot>
             <tr class="total">
                 <td class="name left">Total</td>
-                {% if column2 %}
+                {% if region_noun %}
                 <td class="name left">&nbsp;</td>
                 {% endif %}
                 <td>{{totals.n_statements}}</td>

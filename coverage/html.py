@@ -597,7 +597,7 @@ class HtmlReporter:
             "regions": index_page.summaries,
             "totals": index_page.totals,
             "noun": index_page.noun,
-            "column2": index_page.noun if index_page.noun != "file" else "",
+            "region_noun": index_page.noun if index_page.noun != "file" else "",
             "skip_covered": self.skip_covered,
             "skipped_covered_msg": skipped_covered_msg,
             "skipped_empty_msg": skipped_empty_msg,

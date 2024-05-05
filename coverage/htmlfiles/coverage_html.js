@@ -125,12 +125,12 @@ coverage.assign_shortkeys = function () {
 
 // Create the events for the filter box.
 coverage.wire_up_filter = function () {
-    // Populate the filter and hide inputs if there are saved values for them
+    // Populate the filter and hide100 inputs if there are saved values for them.
     const saved_filter_value = localStorage.getItem(coverage.FILTER_STORAGE);
     if (saved_filter_value) {
         document.getElementById("filter").value = saved_filter_value;
     }
-    const saved_hide100_value = localStorage.getItem(coverage.HIDE_STORAGE);
+    const saved_hide100_value = localStorage.getItem(coverage.HIDE100_STORAGE);
     if (saved_hide100_value) {
         document.getElementById("hide100").checked = JSON.parse(saved_hide100_value);
     }
@@ -152,8 +152,8 @@ coverage.wire_up_filter = function () {
         localStorage.setItem(coverage.FILTER_STORAGE, text);
         const casefold = (text === text.toLowerCase());
         const hide100 = document.getElementById("hide100").checked;
-        // Store hide value
-        localStorage.setItem(coverage.HIDE_STORAGE, JSON.stringify(hide100));
+        // Store hide value.
+        localStorage.setItem(coverage.HIDE100_STORAGE, JSON.stringify(hide100));
 
         // Hide / show elements.
         table_body_rows.forEach(row => {
@@ -255,7 +255,7 @@ coverage.wire_up_filter = function () {
     document.getElementById("hide100").dispatchEvent(new Event("input"));
 };
 coverage.FILTER_STORAGE = "COVERAGE_FILTER_VALUE";
-coverage.HIDE_STORAGE = "COVERAGE_HIDE_VALUE";
+coverage.HIDE100_STORAGE = "COVERAGE_HIDE100_VALUE";
 
 // Set up the click-to-sort columns.
 coverage.wire_up_sorting = function () {
