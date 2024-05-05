@@ -23,7 +23,11 @@ upgrading your version of coverage.py.
 Unreleased
 ----------
 
-Nothing yet.
+- In the HTML report, the filter term and "hide covered" checkbox settings are
+  remembered between viewings, thanks to `Daniel Diniz <pull 1776_>`_.
+
+
+.. _pull 1776: https://github.com/nedbat/coveragepy/pull/1776
 
 
 .. scriv-start-here
