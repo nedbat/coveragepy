@@ -35,22 +35,13 @@ function on_click(sel, fn) {
 // Helpers for table sorting
 function getCellValue(row, column = 0) {
     const cell = row.cells[column]  // nosemgrep: eslint.detect-object-injection
-    if (cell.childElementCount == 1) {
-        var child = cell.firstElementChild;
-        if (child.tagName === "A") {
-            child = child.firstElementChild;
-        }
-        if (child instanceof HTMLDataElement && child.value) {
-            return child.value;
-        }
-    }
     return cell.innerText || cell.textContent;
 }
 
 function rowComparator(rowA, rowB, column = 0) {
     let valueA = getCellValue(rowA, column);
     let valueB = getCellValue(rowB, column);
-    if (!isNaN(valueA) && !isNaN(valueB)) {
+    if (!Number.isNaN(valueA - valueB)) {
         return valueA - valueB;
     }
     return valueA.localeCompare(valueB, undefined, {numeric: true});
@@ -60,7 +51,6 @@ function sortColumn(th) {
     // Get the current sorting direction of the selected header,
     // clear state on other headers and then set the new sorting direction.
     const currentSortOrder = th.getAttribute("aria-sort");
-    [...th.parentElement.cells].forEach(header => header.setAttribute("aria-sort", "none"));
     var direction;
     if (currentSortOrder === "none") {
         direction = th.dataset.defaultSortOrder || "ascending";
@@ -71,14 +61,20 @@ function sortColumn(th) {
     else {
         direction = "ascending";
     }
-    th.setAttribute("aria-sort", direction);
 
     const column = [...th.parentElement.cells].indexOf(th)
+    const tbody = th.closest("table").querySelector("tbody");
+    // Sort all rows
+    const sorted = Array.from(tbody.rows)
+        .sort((rowA, rowB) => rowComparator(rowA, rowB, column) * (direction === "ascending" ? 1 : -1));
 
-    // Sort all rows and afterwards append them in order to move them in the DOM.
-    Array.from(th.closest("table").querySelectorAll("tbody tr"))
-        .sort((rowA, rowB) => rowComparator(rowA, rowB, column) * (direction === "ascending" ? 1 : -1))
-        .forEach(tr => tr.parentElement.appendChild(tr));
+    // Use a document fragment to attach rows
+    const doc_fragment = document.createDocumentFragment();
+    sorted.forEach(row => doc_fragment.appendChild(row));
+    tbody.replaceChildren(doc_fragment);
+
+    [...th.parentElement.cells].forEach(header => header.setAttribute("aria-sort", "none"));
+    th.setAttribute("aria-sort", direction);
 
     // Save the sort order for next time.
     if (th.id !== "region") {
@@ -250,9 +246,11 @@ coverage.wire_up_filter = function () {
     document.getElementById("hide100").addEventListener("input", debounce(filter_handler));
 
     // Trigger change event on setup, to force filter on page refresh
-    // (filter value may still be present).
-    document.getElementById("filter").dispatchEvent(new Event("input"));
-    document.getElementById("hide100").dispatchEvent(new Event("input"));
+    // if there is either a saved filter or hide 100% value.
+     if (saved_hide100_value || saved_filter_value) {
+         document.getElementById("filter").dispatchEvent(new Event("input"));
+         document.getElementById("hide100").dispatchEvent(new Event("input"));
+     }
 };
 coverage.FILTER_STORAGE = "COVERAGE_FILTER_VALUE";
 coverage.HIDE100_STORAGE = "COVERAGE_HIDE100_VALUE";
