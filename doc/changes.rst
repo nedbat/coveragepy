@@ -845,10 +845,10 @@ Version 4.3.2 — 2017-01-16
   would cause a "No data to report" error, as reported in `issue 549`_. This is
   now fixed; thanks, Loïc Dachary.
 
-- If-statements can be optimized away during compilation, for example, `if 0:`
-  or `if __debug__:`.  Coverage.py had problems properly understanding these
-  statements which existed in the source, but not in the compiled bytecode.
-  This problem, reported in `issue 522`_, is now fixed.
+- If-statements can be optimized away during compilation, for example,
+  ``if 0:`` or ``if __debug__:``.  Coverage.py had problems properly
+  understanding these statements which existed in the source, but not in the
+  compiled bytecode.  This problem, reported in `issue 522`_, is now fixed.
 
 - If you specified ``--source`` as a directory, then coverage.py would look for
   importable Python files in that directory, and could identify ones that had
