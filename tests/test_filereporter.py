@@ -103,7 +103,7 @@ class FileReporterTest(UsingModulesMixin, CoverageTest):
         assert z1.source() == ""
         assert "# My zip file!" in z1z1.source().splitlines()
 
-    def test_python_extensions(self):
+    def test_python_extensions(self) -> None:
         f1 = PythonFileReporter("afile.py")
         f2 = PythonFileReporter("Makefile")
         f3 = PythonFileReporter("template.jinja")
