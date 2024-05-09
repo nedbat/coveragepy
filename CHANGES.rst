@@ -26,6 +26,8 @@ Unreleased
 - In the HTML report, the filter term and "hide covered" checkbox settings are
   remembered between viewings, thanks to `Daniel Diniz <pull 1776_>`_.
 
+- Python 3.13.0b1 is supported.
+
 
 .. _pull 1776: https://github.com/nedbat/coveragepy/pull/1776
 
