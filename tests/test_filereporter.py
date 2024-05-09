@@ -106,6 +106,8 @@ class FileReporterTest(UsingModulesMixin, CoverageTest):
     def test_python_extensions(self):
         f1 = PythonFileReporter("afile.py")
         f2 = PythonFileReporter("Makefile")
+        f3 = PythonFileReporter("template.jinja")
 
         assert f1.should_be_python()
         assert not f2.should_be_python()
+        assert f3.should_be_python()

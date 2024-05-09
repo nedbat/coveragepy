@@ -244,6 +244,9 @@ class PythonFileReporter(FileReporter):
         # Anything named *.py* should be Python.
         if ext.startswith(".py"):
             return True
+        # Jinja templates are evaluated using Python.
+        if ext.startswith('.jinja'):
+            return True
         # Everything else is probably not Python.
         return False
 
