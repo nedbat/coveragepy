@@ -9,6 +9,7 @@ import collections
 import contextlib
 import dis
 import io
+import locale
 import os
 import os.path
 import re
@@ -62,7 +63,8 @@ def run_command(cmd: str) -> tuple[int, str]:
     status = proc.returncode
 
     # Get the output, and canonicalize it to strings with newlines.
-    output_str = output.decode(output_encoding()).replace("\r", "")
+    encoding = os.device_encoding(0) or locale.getpreferredencoding()
+    output_str = output.decode(encoding).replace("\r", "")
     return status, output_str
 
 
