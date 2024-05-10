@@ -63,7 +63,7 @@ def run_command(cmd: str) -> tuple[int, str]:
     status = proc.returncode
 
     # Get the output, and canonicalize it to strings with newlines.
-    encoding = os.device_encoding(0) or locale.getpreferredencoding()
+    encoding = os.device_encoding(1) or locale.getpreferredencoding()
     output_str = output.decode(encoding).replace("\r", "")
     return status, output_str
 
