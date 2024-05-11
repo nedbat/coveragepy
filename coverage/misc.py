@@ -13,7 +13,6 @@ import hashlib
 import importlib
 import importlib.util
 import inspect
-import locale
 import os
 import os.path
 import re
@@ -22,7 +21,7 @@ import types
 
 from types import ModuleType
 from typing import (
-    Any, IO, Iterable, Iterator, Mapping, NoReturn, Sequence, TypeVar,
+    Any, Iterable, Iterator, Mapping, NoReturn, Sequence, TypeVar,
 )
 
 from coverage.exceptions import CoverageException
@@ -154,18 +153,6 @@ def ensure_dir(directory: str) -> None:
 def ensure_dir_for_file(path: str) -> None:
     """Make sure the directory for the path exists."""
     ensure_dir(os.path.dirname(path))
-
-
-def output_encoding(outfile: IO[str] | None = None) -> str:
-    """Determine the encoding to use for output written to `outfile` or stdout."""
-    if outfile is None:
-        outfile = sys.stdout
-    encoding = (
-        getattr(outfile, "encoding", None) or
-        getattr(sys.__stdout__, "encoding", None) or
-        locale.getpreferredencoding()
-    )
-    return encoding
 
 
 class Hasher:
