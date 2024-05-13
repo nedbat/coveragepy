@@ -151,7 +151,7 @@ class CoverageTest(
         self,
         text: str,
         lines: Sequence[TLineNo] | Sequence[list[TLineNo]] | None = None,
-        missing: str | Sequence[str] = "",
+        missing: str = "",
         report: str = "",
         excludes: Iterable[str] | None = None,
         partials: Iterable[str] = (),
@@ -226,15 +226,8 @@ class CoverageTest(
                     assert False, f"None of the lines choices matched {statements!r}"
 
             missing_formatted = analysis.missing_formatted()
-            if isinstance(missing, str):
-                msg = f"missing: {missing_formatted!r} != {missing!r}"
-                assert missing_formatted == missing, msg
-            else:
-                for missing_list in missing:
-                    if missing_formatted == missing_list:
-                        break
-                else:
-                    assert False, f"None of the missing choices matched {missing_formatted!r}"
+            msg = f"missing: {missing_formatted!r} != {missing!r}"
+            assert missing_formatted == missing, msg
 
         if arcs is not None:
             # print("Possible arcs:")
