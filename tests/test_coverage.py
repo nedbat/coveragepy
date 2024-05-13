@@ -664,12 +664,12 @@ class SimpleStatementTest(CoverageTest):
             [2, 3],
         )
         self.check_coverage("""\
-            # Start with a comment, because it changes the behavior(!?)
+            # Start with a comment, even though it doesn't change the behavior.
             '''I am a module docstring.'''
             a = 3
             b = 4
             """,
-            [2, 3, 4],
+            [3, 4],
         )
 
 

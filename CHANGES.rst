@@ -23,6 +23,9 @@ upgrading your version of coverage.py.
 Unreleased
 ----------
 
+- Fix: nested matches of exclude patterns could exclude too much code, as
+  reported in `issue 1779`_.  This is now fixed.
+
 - In the HTML report, the filter term and "hide covered" checkbox settings are
   remembered between viewings, thanks to `Daniel Diniz <pull 1776_>`_.
 
@@ -30,6 +33,7 @@ Unreleased
 
 
 .. _pull 1776: https://github.com/nedbat/coveragepy/pull/1776
+.. _issue 1779: https://github.com/nedbat/coveragepy/issues/1779
 
 
 .. scriv-start-here

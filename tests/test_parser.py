@@ -124,30 +124,15 @@ class PythonParserTest(PythonParserTestBase):
             """)
         assert parser.exit_counts() == { 1:1, 2:1, 3:1, 6:1 }
 
-    def test_indentation_error(self) -> None:
-        msg = (
-            "Couldn't parse '<code>' as Python source: " +
-            "'unindent does not match any outer indentation level.*' at line 3"
-        )
+    @pytest.mark.parametrize("text", [
+        pytest.param("0 spaces\n  2\n 1", id="bad_indent"),
+        pytest.param("'''", id="string_eof"),
+        pytest.param("$hello", id="dollar"),
+    ])
+    def test_not_python(self, text: str) -> None:
+        msg = r"Couldn't parse '<code>' as Python source: '.*' at line \d+"
         with pytest.raises(NotPython, match=msg):
-            _ = self.parse_text("""\
-                0 spaces
-                  2
-                 1
-                """)
-
-    def test_token_error(self) -> None:
-        submsgs = [
-            r"EOF in multi-line string",                                        # before 3.12.0b1
-            r"unterminated triple-quoted string literal .detected at line 1.",  # after 3.12.0b1
-        ]
-        msg = (
-            r"Couldn't parse '<code>' as Python source: '"
-            + r"(" + "|".join(submsgs) + ")"
-            + r"' at line 1"
-        )
-        with pytest.raises(NotPython, match=msg):
-            _ = self.parse_text("'''")
+            _ = self.parse_text(text)
 
     def test_empty_decorated_function(self) -> None:
         parser = self.parse_text("""\
@@ -740,6 +725,10 @@ class ExclusionParserTest(PythonParserTestBase):
         assert parser.raw_statements == raw_statements
         assert parser.statements == set()
 
+    @pytest.mark.xfail(
+        env.PYPY and env.PYVERSION[:2] == (3, 8),
+        reason="AST doesn't mark end of classes correctly",
+    )
     def test_class_decorator_pragmas(self) -> None:
         parser = self.parse_text("""\
             class Foo(object):
@@ -753,6 +742,22 @@ class ExclusionParserTest(PythonParserTestBase):
             """)
         assert parser.raw_statements == {1, 2, 3, 5, 6, 7, 8}
         assert parser.statements == {1, 2, 3}
+
+    def test_over_exclusion_bug1779(self) -> None:
+        # https://github.com/nedbat/coveragepy/issues/1779
+        parser = self.parse_text("""\
+            import abc
+
+            class MyProtocol:               # nocover 3
+                @abc.abstractmethod         # nocover 4
+                def my_method(self) -> int:
+                    ...     # 6
+
+            def function() -> int:
+                return 9
+            """)
+        assert parser.raw_statements == {1, 3, 4, 5, 6, 8, 9}
+        assert parser.statements == {1, 8, 9}
 
 
 class ParserMissingArcDescriptionTest(PythonParserTestBase):

@@ -25,7 +25,7 @@ from coverage import env
 from coverage.bytecode import code_objects
 from coverage.debug import short_stack
 from coverage.exceptions import NoSource, NotPython
-from coverage.misc import join_regex, nice_pair
+from coverage.misc import nice_pair
 from coverage.phystokens import generate_tokens
 from coverage.types import TArc, TLineNo
 
@@ -62,8 +62,8 @@ class PythonParser:
 
         self.exclude = exclude
 
-        # The text lines of the parsed code.
-        self.lines: list[str] = self.text.split("\n")
+        # The parsed AST of the text.
+        self._ast_root: ast.AST | None = None
 
         # The normalized line numbers of the statements in the code. Exclusions
         # are taken into account, and statements are adjusted to their first
@@ -101,19 +101,16 @@ class PythonParser:
         self._all_arcs: set[TArc] | None = None
         self._missing_arc_fragments: TArcFragments | None = None
 
-    @functools.lru_cache()
-    def lines_matching(self, *regexes: str) -> set[TLineNo]:
-        """Find the lines matching one of a list of regexes.
+    def lines_matching(self, regex: str) -> set[TLineNo]:
+        """Find the lines matching a regex.
 
-        Returns a set of line numbers, the lines that contain a match for one
-        of the regexes in `regexes`.  The entire line needn't match, just a
-        part of it.
+        Returns a set of line numbers, the lines that contain a match for
+        `regex`.  The entire line needn't match, just a part of it.
 
         """
-        combined = join_regex(regexes)
-        regex_c = re.compile(combined)
+        regex_c = re.compile(regex)
         matches = set()
-        for i, ltext in enumerate(self.lines, start=1):
+        for i, ltext in enumerate(self.text.split("\n"), start=1):
             if regex_c.search(ltext):
                 matches.add(self._multiline.get(i, i))
         return matches
@@ -127,26 +124,18 @@ class PythonParser:
         # Find lines which match an exclusion pattern.
         if self.exclude:
             self.raw_excluded = self.lines_matching(self.exclude)
+            self.excluded = set(self.raw_excluded)
 
-        # Tokenize, to find excluded suites, to find docstrings, and to find
-        # multi-line statements.
-
-        # The last token seen. Start with INDENT to get module docstrings
-        prev_toktype: int = token.INDENT
         # The current number of indents.
         indent: int = 0
         # An exclusion comment will exclude an entire clause at this indent.
         exclude_indent: int = 0
         # Are we currently excluding lines?
         excluding: bool = False
-        # Are we excluding decorators now?
-        excluding_decorators: bool = False
         # The line number of the first line in a multi-line statement.
         first_line: int = 0
         # Is the file empty?
         empty: bool = True
-        # Is this the first token on a line?
-        first_on_line: bool = True
         # Parenthesis (and bracket) nesting level.
         nesting: int = 0
 
@@ -162,42 +151,22 @@ class PythonParser:
                 indent += 1
             elif toktype == token.DEDENT:
                 indent -= 1
-            elif toktype == token.NAME:
-                if ttext == "class":
-                    # Class definitions look like branches in the bytecode, so
-                    # we need to exclude them.  The simplest way is to note the
-                    # lines with the "class" keyword.
-                    self.raw_classdefs.add(slineno)
             elif toktype == token.OP:
                 if ttext == ":" and nesting == 0:
                     should_exclude = (
-                        self.raw_excluded.intersection(range(first_line, elineno + 1))
-                        or excluding_decorators
+                        self.excluded.intersection(range(first_line, elineno + 1))
                     )
                     if not excluding and should_exclude:
                         # Start excluding a suite.  We trigger off of the colon
                         # token so that the #pragma comment will be recognized on
                         # the same line as the colon.
-                        self.raw_excluded.add(elineno)
+                        self.excluded.add(elineno)
                         exclude_indent = indent
                         excluding = True
-                        excluding_decorators = False
-                elif ttext == "@" and first_on_line:
-                    # A decorator.
-                    if elineno in self.raw_excluded:
-                        excluding_decorators = True
-                    if excluding_decorators:
-                        self.raw_excluded.add(elineno)
                 elif ttext in "([{":
                     nesting += 1
                 elif ttext in ")]}":
                     nesting -= 1
-            elif toktype == token.STRING:
-                if prev_toktype == token.INDENT:
-                    # Strings that are first on an indented line are docstrings.
-                    # (a trick from trace.py in the stdlib.) This works for
-                    # 99.9999% of cases.
-                    self.raw_docstrings.update(range(slineno, elineno+1))
             elif toktype == token.NEWLINE:
                 if first_line and elineno != first_line:
                     # We're at the end of a line, and we've ended on a
@@ -206,7 +175,6 @@ class PythonParser:
                     for l in range(first_line, elineno+1):
                         self._multiline[l] = first_line
                 first_line = 0
-                first_on_line = True
 
             if ttext.strip() and toktype != tokenize.COMMENT:
                 # A non-white-space token.
@@ -218,10 +186,7 @@ class PythonParser:
                     if excluding and indent <= exclude_indent:
                         excluding = False
                     if excluding:
-                        self.raw_excluded.add(elineno)
-                    first_on_line = False
-
-            prev_toktype = toktype
+                        self.excluded.add(elineno)
 
         # Find the starts of the executable statements.
         if not empty:
@@ -233,6 +198,34 @@ class PythonParser:
         # module.
         if env.PYBEHAVIOR.module_firstline_1 and self._multiline:
             self._multiline[1] = min(self.raw_statements)
+
+        self.excluded = self.first_lines(self.excluded)
+
+        # AST lets us find classes, docstrings, and decorator-affected
+        # functions and classes.
+        assert self._ast_root is not None
+        for node in ast.walk(self._ast_root):
+            # Find class definitions.
+            if isinstance(node, ast.ClassDef):
+                self.raw_classdefs.add(node.lineno)
+            # Find docstrings.
+            if isinstance(node, (ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef, ast.Module)):
+                if node.body:
+                    first = node.body[0]
+                    if (
+                        isinstance(first, ast.Expr)
+                        and isinstance(first.value, ast.Constant)
+                        and isinstance(first.value.value, str)
+                    ):
+                        self.raw_docstrings.update(
+                            range(first.lineno, cast(int, first.end_lineno) + 1)
+                        )
+            # Exclusions carry from decorators and signatures to the bodies of
+            # functions and classes.
+            if isinstance(node, (ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef)):
+                first_line = min((d.lineno for d in node.decorator_list), default=node.lineno)
+                if self.excluded.intersection(range(first_line, node.lineno + 1)):
+                    self.excluded.update(range(first_line, cast(int, node.end_lineno) + 1))
 
     @functools.lru_cache(maxsize=1000)
     def first_line(self, lineno: TLineNo) -> TLineNo:
@@ -268,18 +261,13 @@ class PythonParser:
 
         """
         try:
+            self._ast_root = ast.parse(self.text)
             self._raw_parse()
-        except (tokenize.TokenError, IndentationError, SyntaxError) as err:
-            if hasattr(err, "lineno"):
-                lineno = err.lineno         # IndentationError
-            else:
-                lineno = err.args[1][0]     # TokenError
+        except (IndentationError, SyntaxError) as err:
             raise NotPython(
                 f"Couldn't parse '{self.filename}' as Python source: " +
-                f"{err.args[0]!r} at line {lineno}",
+                f"{err.args[0]!r} at line {err.lineno}",
             ) from err
-
-        self.excluded = self.first_lines(self.raw_excluded)
 
         ignore = self.excluded | self.raw_docstrings
         starts = self.raw_statements - ignore
@@ -303,7 +291,8 @@ class PythonParser:
         `_all_arcs` is the set of arcs in the code.
 
         """
-        aaa = AstArcAnalyzer(self.text, self.raw_statements, self._multiline)
+        assert self._ast_root is not None
+        aaa = AstArcAnalyzer(self._ast_root, self.raw_statements, self._multiline)
         aaa.analyze()
 
         self._all_arcs = set()
@@ -403,14 +392,9 @@ class ByteParser:
             self.code = code
         else:
             assert filename is not None
-            try:
-                self.code = compile(text, filename, "exec", dont_inherit=True)
-            except SyntaxError as synerr:
-                raise NotPython(
-                    "Couldn't parse '%s' as Python source: '%s' at line %d" % (
-                        filename, synerr.msg, synerr.lineno or 0,
-                    ),
-                ) from synerr
+            # We only get here if earlier ast parsing succeeded, so no need to
+            # catch errors.
+            self.code = compile(text, filename, "exec", dont_inherit=True)
 
     def child_parsers(self) -> Iterable[ByteParser]:
         """Iterate over all the code objects nested within this one.
@@ -685,11 +669,11 @@ class AstArcAnalyzer:
 
     def __init__(
         self,
-        text: str,
+        root_node: ast.AST,
         statements: set[TLineNo],
         multiline: dict[TLineNo, TLineNo],
     ) -> None:
-        self.root_node = ast.parse(text)
+        self.root_node = root_node
         # TODO: I think this is happening in too many places.
         self.statements = {multiline.get(l, l) for l in statements}
         self.multiline = multiline
