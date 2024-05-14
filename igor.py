@@ -248,6 +248,7 @@ def do_combine_html():
         os.getenv("COVERAGE_DYNCTX") or os.getenv("COVERAGE_CONTEXT"),
     )
     cov.html_report(show_contexts=show_contexts)
+    cov.json_report(show_contexts=show_contexts, pretty_print=True)
 
 
 def do_test_with_core(core, *runner_args):
