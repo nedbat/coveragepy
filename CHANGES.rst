@@ -26,6 +26,13 @@ Unreleased
 - Fix: nested matches of exclude patterns could exclude too much code, as
   reported in `issue 1779`_.  This is now fixed.
 
+- Changed: previously, coverage.py would consider a module docstring to be an
+  executable statement if it appeared after line 1 in the file, but not
+  executable if it was the first line.  Now module docstrings are never counted
+  as executable statements.  This can change coverage.py's count of the number
+  of statements in a file, which can slightly change the coverage percentage
+  reported.
+
 - In the HTML report, the filter term and "hide covered" checkbox settings are
   remembered between viewings, thanks to `Daniel Diniz <pull 1776_>`_.
 
