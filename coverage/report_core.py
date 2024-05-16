@@ -94,7 +94,7 @@ def get_analysis_to_report(
         fr_morfs = [(fr, morf) for (fr, morf) in fr_morfs if not matcher.match(fr.filename)]
 
     if not fr_morfs:
-        raise DataFileOrDirectoryNotFoundError.new_for_data_file_or_directory(
+        raise DataFileOrDirectoryNotFoundError.new(
             os.path.dirname(coverage.get_data().base_filename())
         )
 

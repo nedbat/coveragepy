@@ -915,7 +915,7 @@ class CoverageDataFilesTest(CoverageTest):
 
     def test_combining_from_nonexistent_directories(self) -> None:
         covdata = DebugCoverageData()
-        msg = r"^The data file or directory `(.+?)` could not be found.$"
+        msg = r"^The data file or directory '(.+?)' could not be found.$"
         with pytest.raises(NoDataError, match=msg):
             combine_parallel_data(covdata, data_paths=['xyzzy'])
 

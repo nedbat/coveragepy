@@ -82,7 +82,7 @@ def combinable_files(data_file: str, data_paths: Iterable[str] | None = None) ->
             pattern = glob.escape(os.path.join(os.path.abspath(p), local)) +".*"
             files_to_combine.extend(glob.glob(pattern))
         else:
-            raise DataFileOrDirectoryNotFoundError.new_for_data_file_or_directory(
+            raise DataFileOrDirectoryNotFoundError.new(
                 p, is_combining=True
             )
 
@@ -91,7 +91,7 @@ def combinable_files(data_file: str, data_paths: Iterable[str] | None = None) ->
     files_to_combine = [fnm for fnm in files_to_combine if not fnm.endswith("-journal")]
 
     if not files_to_combine:
-        raise NoDataFilesFoundError.new_for_data_directory(data_dir)
+        raise NoDataFilesFoundError.new(data_dir)
 
     # Sorting isn't usually needed, since it shouldn't matter what order files
     # are combined, but sorting makes tests more predictable, and makes
@@ -197,7 +197,7 @@ def combine_parallel_data(
             file_be_gone(f)
 
     if strict and not combined_any:
-        raise UnusableDataFilesError.new_for_data_files(*files_to_combine)
+        raise UnusableDataFilesError.new(*files_to_combine)
 
 
 def debug_data_file(filename: str) -> None:

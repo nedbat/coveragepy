@@ -183,7 +183,7 @@ class SummaryReporter:
             self.report_one_file(fr, analysis)
 
         if not self.total.n_files and not self.skipped_count:
-            raise DataFileOrDirectoryNotFoundError.new_for_data_file_or_directory(
+            raise DataFileOrDirectoryNotFoundError.new(
                 os.path.dirname(self.coverage.get_data().base_filename())
             )
 

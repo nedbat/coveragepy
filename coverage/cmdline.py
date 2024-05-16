@@ -25,8 +25,9 @@ from coverage.config import CoverageConfig
 from coverage.control import DEFAULT_DATAFILE
 from coverage.data import combinable_files, debug_data_file
 from coverage.debug import info_header, short_stack, write_formatted_info
-from coverage.exceptions import _BaseCoverageException, _ExceptionDuringRun, NoSource, \
-    NoDataFilesFoundError
+from coverage.exceptions import (
+    _BaseCoverageException, _ExceptionDuringRun, NoSource, NoDataFilesFoundError,
+)
 from coverage.execfile import PyRunner
 from coverage.results import display_covered, should_fail_under
 from coverage.version import __url__

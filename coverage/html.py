@@ -317,7 +317,7 @@ class HtmlReporter:
                 file_be_gone(os.path.join(self.directory, ftr.html_filename))
 
         if not have_data:
-            raise DataFileOrDirectoryNotFoundError.new_for_data_file_or_directory(
+            raise DataFileOrDirectoryNotFoundError.new(
                 os.path.dirname(self.coverage.get_data().base_filename())
             )
 

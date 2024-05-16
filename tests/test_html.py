@@ -429,8 +429,8 @@ class HtmlWithUnparsableFilesTest(HtmlTestHelpers, CoverageTest):
         with pytest.raises(
             NoDataError,
             match=(
-                r"^The data file or directory `(.+?)` could not be found\. Perhaps `coverage "
-                r"combine` must be run first\.$"
+                r"^The data file or directory '(.+?)' could not be found\. Perhaps 'coverage "
+                r"combine' must be run first\.$"
             )
         ):
             cov.html_report()

@@ -1145,8 +1145,8 @@ class FailUnderNoFilesTest(CoverageTest):
         st, out = self.run_command_status("coverage report")
         assert re.match(
             (
-                r"The data file or directory `([^`]+?)` could not be found\. Perhaps `coverage "
-                r"combine` must be run first\."
+                r"The data file or directory '([^']+?)' could not be found\. Perhaps 'coverage "
+                + r"combine' must be run first\."
             ),
             out
         )

@@ -554,8 +554,8 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         with pytest.raises(
             NoDataError,
             match=(
-                r"^The data file or directory `(.+?)` could not be found\. Perhaps `coverage "
-                r"combine` must be run first\.$"
+                r"^The data file or directory '(.+?)' could not be found\. Perhaps 'coverage "
+                r"combine' must be run first\.$"
             )
         ):
             self.get_report(cov, skip_covered=True)
@@ -753,8 +753,8 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         with pytest.raises(
             NoDataError,
             match=(
-                r"^The data file or directory `(.+?)` could not be found\. Perhaps `coverage "
-                r"combine` must be run first\.$"
+                r"^The data file or directory '(.+?)' could not be found\. Perhaps 'coverage "
+                r"combine' must be run first\.$"
             )
         ):
             with pytest.warns(Warning) as warns:
@@ -776,8 +776,8 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         with pytest.raises(
             NoDataError,
             match=(
-                r"^The data file or directory `(.+?)` could not be found\. Perhaps `coverage "
-                r"combine` must be run first\.$"
+                r"^The data file or directory '(.+?)' could not be found\. Perhaps 'coverage "
+                r"combine' must be run first\.$"
             )
         ):
             self.get_report(cov, morfs=["mycode.html"])

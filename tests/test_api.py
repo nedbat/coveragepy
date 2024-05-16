@@ -303,8 +303,8 @@ class ApiTest(CoverageTest):
         with pytest.raises(
             NoDataError,
             match=(
-                r"^The data file or directory `(.+?)` could not be found\. Perhaps `coverage "
-                r"combine` must be run first\.$"
+                r"^The data file or directory '(.+?)' could not be found\. Perhaps 'coverage "
+                r"combine' must be run first\.$"
             )
         ):
             cov.report()
@@ -455,8 +455,8 @@ class ApiTest(CoverageTest):
         with pytest.raises(
             NoDataError,
             match=(
-                r"^The data directory `(.+?)` does not contain any data files. Perhaps `coverage "
-                r"combine` must be run first.$"
+                r"^The data directory '(.+?)' does not contain any data files. Perhaps 'coverage "
+                r"combine' must be run first.$"
             )
         ):
             cov2.combine(strict=True, keep=False)
@@ -1392,7 +1392,7 @@ class CombiningTest(CoverageTest):
                 NoDataError,
                 match=(
                     r"^The following data files are unusable, perhaps because they do not contain "
-                    r"valid coverage information:\n- `(.+?)`\n- `(.+?)`$"
+                    r"valid coverage information:\n- '(.+?)'\n- '(.+?)'$"
                 )
             ):
                 cov.combine(strict=True)

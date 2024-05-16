@@ -11,7 +11,7 @@ import os.path
 def _message_append_combine_hint(message: str, is_combining: bool) -> str:
     """Append information about the combine command to error messages."""
     if not is_combining:
-        message += " Perhaps `coverage combine` must be run first."
+        message += " Perhaps 'coverage combine' must be run first."
     return message
 
 
@@ -43,15 +43,15 @@ class NoDataError(CoverageException):
 class DataFileOrDirectoryNotFoundError(NoDataError):
     """A data file or data directory could be found."""
     @classmethod
-    def new_for_data_file_or_directory(
+    def new(
         cls, data_file_or_directory_path: str, *, is_combining: bool = False
-    ) -> 'DataFileOrDirectoryNotFoundError':
+    ) -> DataFileOrDirectoryNotFoundError:
         """
         Create a new instance.
         """
         message = (
-            f"The data file or directory `{os.path.abspath(data_file_or_directory_path)}` could not"
-            " be found."
+            f"The data file or directory '{os.path.abspath(data_file_or_directory_path)}' could not"
+            + " be found."
         )
         return cls(_message_append_combine_hint(message, is_combining))
 
@@ -59,15 +59,15 @@ class DataFileOrDirectoryNotFoundError(NoDataError):
 class NoDataFilesFoundError(NoDataError):
     """No data files could be found in a data directory."""
     @classmethod
-    def new_for_data_directory(
+    def new(
         cls, data_directory_path: str, *, is_combining: bool = False
     ) -> 'NoDataFilesFoundError':
         """
         Create a new instance.
         """
         message = (
-            f"The data directory `{os.path.abspath(data_directory_path)}` does not contain any data"
-            " files."
+            f"The data directory '{os.path.abspath(data_directory_path)}' does not contain any data"
+            + " files."
         )
         return cls(_message_append_combine_hint(message, is_combining))
 
@@ -75,16 +75,16 @@ class NoDataFilesFoundError(NoDataError):
 class UnusableDataFilesError(NoDataError):
     """The given data files are unusable."""
     @classmethod
-    def new_for_data_files(cls, *data_file_paths: str) -> 'UnusableDataFilesError':
+    def new(cls, *data_file_paths: str) -> 'UnusableDataFilesError':
         """
         Create a new instance.
         """
         message = (
             "The following data files are unusable, perhaps because they do not contain valid"
-            " coverage information:"
+            + " coverage information:"
         )
         for data_file_path in data_file_paths:
-            message += f"\n- `{os.path.abspath(data_file_path)}`"
+            message += f"\n- '{os.path.abspath(data_file_path)}'"
 
         return cls(message)
 
