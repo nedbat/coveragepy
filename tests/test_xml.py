@@ -149,7 +149,7 @@ class XmlReportTest(XmlTestHelpers, CoverageTest):
             NoDataError,
             match=(
                 r"^The data file or directory '(.+?)' could not be found\. Perhaps 'coverage "
-                r"combine' must be run first\.$"
+                + r"combine' must be run first\.$"
             )
         ):
             self.run_xml_report()

@@ -1639,7 +1639,7 @@ class ReportingTest(CoverageTest):
             NoDataError,
             match=(
                 r"^The data file or directory '(.+?)' could not be found\. Perhaps 'coverage "
-                r"combine' must be run first\.$"
+                + r"combine' must be run first\.$"
             )
         ):
             self.command_line("annotate -d ann")
@@ -1652,7 +1652,7 @@ class ReportingTest(CoverageTest):
             NoDataError,
             match=(
                 r"^The data file or directory '(.+?)' could not be found\. Perhaps 'coverage "
-                r"combine' must be run first\.$"
+                + r"combine' must be run first\.$"
             )
         ):
             self.command_line("html -d htmlcov")
@@ -1664,7 +1664,7 @@ class ReportingTest(CoverageTest):
             NoDataError,
             match=(
                 r"^The data file or directory '(.+?)' could not be found\. Perhaps 'coverage "
-                r"combine' must be run first\.$"
+                + r"combine' must be run first\.$"
             )
         ):
             self.command_line("xml")
