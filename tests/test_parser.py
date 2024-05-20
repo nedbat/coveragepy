@@ -133,7 +133,7 @@ class PythonParserTest(PythonParserTestBase):
             "\r'\\\n'''",
             id="leading_newline_eof",
             marks=[
-                pytest.mark.skipif(env.PYVERSION >= (3, 12), reason="parses fine in 3.12")
+                pytest.mark.skipif(env.PYVERSION >= (3, 12), reason="parses fine in 3.12"),
             ]
         )
     ])
