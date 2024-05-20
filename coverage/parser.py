@@ -263,10 +263,14 @@ class PythonParser:
         try:
             self._ast_root = ast.parse(self.text)
             self._raw_parse()
-        except (IndentationError, SyntaxError) as err:
+        except (tokenize.TokenError, IndentationError, SyntaxError) as err:
+            if hasattr(err, "lineno"):
+                lineno = err.lineno         # IndentationError
+            else:
+                lineno = err.args[1][0]     # TokenError
             raise NotPython(
                 f"Couldn't parse '{self.filename}' as Python source: " +
-                f"{err.args[0]!r} at line {err.lineno}",
+                f"{err.args[0]!r} at line {lineno}",
             ) from err
 
         ignore = self.excluded | self.raw_docstrings
