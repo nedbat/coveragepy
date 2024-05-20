@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 import textwrap
+import sys
 
 import pytest
 
@@ -128,6 +129,14 @@ class PythonParserTest(PythonParserTestBase):
         pytest.param("0 spaces\n  2\n 1", id="bad_indent"),
         pytest.param("'''", id="string_eof"),
         pytest.param("$hello", id="dollar"),
+        # on 3.10 this passes ast.parse but fails on tokenize.generate_tokens
+        pytest.param(
+            "\r'\\\n'''",
+            id="ledaing_newline_eof",
+            marks=[
+                pytest.mark.skipif(sys.version_info >= (3, 12), reason="parses fine in 3.11")
+            ]
+        )
     ])
     def test_not_python(self, text: str) -> None:
         msg = r"Couldn't parse '<code>' as Python source: '.*' at line \d+"
