@@ -38,9 +38,14 @@ Unreleased
 
 - Python 3.13.0b1 is supported.
 
+- Fix: parsing error handling is improved to ensure bizarre source files are
+  handled gracefully, and to unblock oss-fuzz fuzzing, thanks to `Liam DeVoe
+  <pull 1788_>`_. Closes `issue 1787`_.
 
 .. _pull 1776: https://github.com/nedbat/coveragepy/pull/1776
 .. _issue 1779: https://github.com/nedbat/coveragepy/issues/1779
+.. _issue 1787: https://github.com/nedbat/coveragepy/issues/1787
+.. _pull 1788: https://github.com/nedbat/coveragepy/pull/1788
 
 
 .. scriv-start-here
