@@ -166,12 +166,12 @@ class PyTracer(TracerCore):
         if event == "call":
             # Should we start a new context?
             if self.should_start_context and self.context is None:
-                context_maybe = self.should_start_context(frame)
+                context_maybe = self.should_start_context(frame)    # pylint: disable=not-callable
                 if context_maybe is not None:
                     self.context = context_maybe
                     started_context = True
                     assert self.switch_context is not None
-                    self.switch_context(self.context)
+                    self.switch_context(self.context)   # pylint: disable=not-callable
                 else:
                     started_context = False
             else:
@@ -280,7 +280,7 @@ class PyTracer(TracerCore):
             if self.started_context:
                 assert self.switch_context is not None
                 self.context = None
-                self.switch_context(None)
+                self.switch_context(None)   # pylint: disable=not-callable
         return self._cached_bound_method_trace
 
     def start(self) -> TTraceFn:
