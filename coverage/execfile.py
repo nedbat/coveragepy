@@ -20,6 +20,8 @@ from typing import Any
 from coverage import env
 from coverage.exceptions import CoverageException, _ExceptionDuringRun, NoCode, NoSource
 from coverage.files import canonical_filename, python_reported_file
+from coverage.importer import InstrumentingImportManager
+from coverage.instrument import compile_instrumented
 from coverage.misc import isolate_module
 from coverage.python import get_python_source
 
@@ -208,7 +210,8 @@ class PyRunner:
         # a non-existent directory.
         cwd = os.getcwd()
         try:
-            exec(code, main_mod.__dict__)
+            with InstrumentingImportManager():
+                exec(code, main_mod.__dict__)
         except SystemExit:                          # pylint: disable=try-except-raise
             # The user called sys.exit().  Just pass it along to the upper
             # layers, where it will be handled.
@@ -294,7 +297,9 @@ def make_code_from_py(filename: str) -> CodeType:
     except (OSError, NoSource) as exc:
         raise NoSource(f"No file to run: '{filename}'") from exc
 
-    return compile(source, filename, "exec", dont_inherit=True)
+    code = compile_instrumented(source, filename)
+    return code
+    # compile(source, filename, "exec", dont_inherit=True)
 
 
 def make_code_from_pyc(filename: str) -> CodeType:

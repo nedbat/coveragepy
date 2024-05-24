@@ -24,6 +24,7 @@ from typing import (
 )
 
 from coverage.debug import short_filename, short_stack
+from coverage.instrument import is_branch, decode_branch
 from coverage.types import (
     AnyCallable,
     TArc,
@@ -359,7 +360,7 @@ class SysMonitor(TracerCore):
         if tracing_code and self.trace_arcs:
             frame = self.callers_frame()
             self.last_lines[frame] = -code.co_firstlineno
-            return None
+            return sys.monitoring.DISABLE
         else:
             return sys.monitoring.DISABLE
 
@@ -420,13 +421,13 @@ class SysMonitor(TracerCore):
     def sysmon_line_arcs(self, code: CodeType, line_number: int) -> MonitorReturn:
         """Handle sys.monitoring.events.LINE events for branch coverage."""
         code_info = self.code_infos[id(code)]
-        ret = None
         if code_info.file_data is not None:
-            frame = self.callers_frame()
-            last_line = self.last_lines.get(frame)
-            if last_line is not None:
-                arc = (last_line, line_number)
-                cast(Set[TArc], code_info.file_data).add(arc)
+            if is_branch(line_number):
+                from_no, to_no = decode_branch(line_number)
+            else:
+                from_no = to_no = line_number
+            arc = (from_no, to_no)
+            cast(Set[TArc], code_info.file_data).add(arc)
             # log(f"adding {arc=}")
-            self.last_lines[frame] = line_number
-        return ret
+            #self.last_lines[frame] = line_number
+        return sys.monitoring.DISABLE
