@@ -20,8 +20,12 @@ upgrading your version of coverage.py.
     ..  Version 9.8.1 — 2027-07-27
     ..  --------------------------
 
-Unreleased
-----------
+.. scriv-start-here
+
+.. _changes_7-5-2:
+
+Version 7.5.2 — 2024-05-24
+--------------------------
 
 - Fix: nested matches of exclude patterns could exclude too much code, as
   reported in `issue 1779`_.  This is now fixed.
@@ -47,8 +51,6 @@ Unreleased
 .. _issue 1787: https://github.com/nedbat/coveragepy/issues/1787
 .. _pull 1788: https://github.com/nedbat/coveragepy/pull/1788
 
-
-.. scriv-start-here
 
 .. _changes_7-5-1:
 
