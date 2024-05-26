@@ -34,10 +34,11 @@
         - check in the new sample html
             $ make relcommit2
 - Done with changes to source files
-    - check them in on the release prep branch
-    - wait for ci to finish
-    - merge to master
-    - git push
+    - g puo; gshipit
+        - check them in on the release prep branch
+        - wait for ci to finish
+        - merge to master
+        - git push
 - Start the kits:
     - opvars github
     - Trigger the kit GitHub Action
@@ -77,10 +78,8 @@
     - IF NOT PRE-RELEASE:
         - @ https://readthedocs.org/dashboard/coverage/advanced/
             - change the "default version" to the new version
-        - @ https://readthedocs.org/projects/coverage/builds/
-            - manually build "latest"
-            - wait for the new tag build to finish successfully.
 - Once CI passes, merge the bump-version branch to master and push it
+    - gshipit
 
 - things to automate:
     - readthedocs api to do the readthedocs changes
