@@ -9,7 +9,10 @@ import sys
 
 from typing import List, cast
 
+import pytest
+
 import coverage
+from coverage import env
 
 from tests.coveragetest import CoverageTest
 
@@ -35,6 +38,10 @@ class SetupPyTest(CoverageTest):
         assert "github.com/nedbat/coveragepy" in out[2]
         assert "Ned Batchelder" in out[3]
 
+    @pytest.mark.skipif(
+        env.PYVERSION[3:5] == ("alpha", 0),
+        reason="don't expect classifiers until labelled builds",
+    )
     def test_more_metadata(self) -> None:
         # Let's be sure we pick up our own setup.py
         # CoverageTest restores the original sys.path for us.
