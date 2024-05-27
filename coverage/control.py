@@ -998,7 +998,7 @@ class Coverage(TConfigurable):
         if self.config.paths:
             mapped_data = CoverageData(warn=self._warn, debug=self._debug, no_disk=True)
             if self._data is not None:
-                mapped_data.update(self._data, aliases=self._make_aliases())
+                mapped_data.update(self._data, map_path=self._make_aliases().map)
             self._data = mapped_data
 
     def report(

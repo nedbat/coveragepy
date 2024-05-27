@@ -23,7 +23,7 @@ upgrading your version of coverage.py.
 Unreleased
 ----------
 
-Nothing yet.
+- Performance improvement for combining data files.
 
 
 .. scriv-start-here

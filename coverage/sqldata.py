@@ -21,13 +21,12 @@ import threading
 import zlib
 
 from typing import (
-    cast, Any, Collection, Mapping,
+    cast, Any, Callable, Collection, Mapping,
     Sequence,
 )
 
 from coverage.debug import NoDebugging, auto_repr
 from coverage.exceptions import CoverageException, DataError
-from coverage.files import PathAliases
 from coverage.misc import file_be_gone, isolate_module
 from coverage.numbits import numbits_to_nums, numbits_union, nums_to_numbits
 from coverage.sqlitedb import SqliteDb
@@ -647,12 +646,16 @@ class CoverageData:
                     continue
                 con.execute_void(sql, (file_id,))
 
-    def update(self, other_data: CoverageData, aliases: PathAliases | None = None) -> None:
-        """Update this data with data from several other :class:`CoverageData` instances.
+    def update(
+        self,
+        other_data: CoverageData,
+        map_path: Callable[[str], str] | None = None,
+    ) -> None:
+        """Update this data with data from another :class:`CoverageData`.
 
-        If `aliases` is provided, it's a `PathAliases` object that is used to
-        re-map paths to match the local machine's.  Note: `aliases` is None
-        only when called directly from the test suite.
+        If `map_path` is provided, it's a function that re-map paths to match
+        the local machine's.  Note: `map_path` is None only when called
+        directly from the test suite.
 
         """
         if self._debug.should("dataop"):
@@ -664,7 +667,7 @@ class CoverageData:
         if self._has_arcs and other_data._has_lines:
             raise DataError("Can't combine line data with arc data")
 
-        aliases = aliases or PathAliases()
+        map_path = map_path or (lambda p: p)
 
         # Force the database we're writing to to exist before we start nesting contexts.
         self._start_using()
@@ -674,7 +677,7 @@ class CoverageData:
         with other_data._connect() as con:
             # Get files data.
             with con.execute("select path from file") as cur:
-                files = {path: aliases.map(path) for (path,) in cur}
+                files = {path: map_path(path) for (path,) in cur}
 
             # Get contexts data.
             with con.execute("select context from context") as cur:
@@ -729,7 +732,7 @@ class CoverageData:
                 "inner join file on file.id = tracer.file_id",
             ) as cur:
                 this_tracers.update({
-                    aliases.map(path): tracer
+                    map_path(path): tracer
                     for path, tracer in cur
                 })
 
@@ -768,30 +771,6 @@ class CoverageData:
             # and context strings with integer ids. Then use the efficient
             # `executemany()` to insert all rows at once.
 
-            # Get line data.
-            if lines:
-                self._choose_lines_or_arcs(lines=True)
-
-                with con.execute(
-                    "select file.path, context.context, line_bits.numbits " +
-                    "from line_bits " +
-                    "inner join file on file.id = line_bits.file_id " +
-                    "inner join context on context.id = line_bits.context_id",
-                ) as cur:
-                    for path, context, numbits in cur:
-                        key = (aliases.map(path), context)
-                        if key in lines:
-                            lines[key] = numbits_union(lines[key], numbits)
-
-                con.executemany_void(
-                    "insert or replace into line_bits " +
-                    "(file_id, context_id, numbits) values (?, ?, ?)",
-                    [
-                        (file_ids[file], context_ids[context], numbits)
-                        for (file, context), numbits in lines.items()
-                    ],
-                )
-
             if arcs:
                 self._choose_lines_or_arcs(arcs=True)
 
@@ -805,6 +784,29 @@ class CoverageData:
                     "insert or ignore into arc " +
                     "(file_id, context_id, fromno, tono) values (?, ?, ?, ?)",
                     arc_rows,
+                )
+
+            if lines:
+                self._choose_lines_or_arcs(lines=True)
+
+                with con.execute(
+                    "select file.path, context.context, line_bits.numbits " +
+                    "from line_bits " +
+                    "inner join file on file.id = line_bits.file_id " +
+                    "inner join context on context.id = line_bits.context_id",
+                ) as cur:
+                    for path, context, numbits in cur:
+                        key = (aliases_map(path), context)
+                        if key in lines:
+                            lines[key] = numbits_union(lines[key], numbits)
+
+                con.executemany_void(
+                    "insert or replace into line_bits " +
+                    "(file_id, context_id, numbits) values (?, ?, ?)",
+                    [
+                        (file_ids[file], context_ids[context], numbits)
+                        for (file, context), numbits in lines.items()
+                    ],
                 )
 
             con.executemany_void(
