@@ -767,26 +767,38 @@ class CoverageData:
             # Prepare arc and line rows to be inserted by converting the file
             # and context strings with integer ids. Then use the efficient
             # `executemany()` to insert all rows at once.
-            arc_rows = (
-                (file_ids[file], context_ids[context], fromno, tono)
-                for file, context, fromno, tono in arcs
-            )
 
             # Get line data.
-            with con.execute(
-                "select file.path, context.context, line_bits.numbits " +
-                "from line_bits " +
-                "inner join file on file.id = line_bits.file_id " +
-                "inner join context on context.id = line_bits.context_id",
-            ) as cur:
-                for path, context, numbits in cur:
-                    key = (aliases.map(path), context)
-                    if key in lines:
-                        numbits = numbits_union(lines[key], numbits)
-                    lines[key] = numbits
+            if lines:
+                self._choose_lines_or_arcs(lines=True)
+
+                with con.execute(
+                    "select file.path, context.context, line_bits.numbits " +
+                    "from line_bits " +
+                    "inner join file on file.id = line_bits.file_id " +
+                    "inner join context on context.id = line_bits.context_id",
+                ) as cur:
+                    for path, context, numbits in cur:
+                        key = (aliases.map(path), context)
+                        if key in lines:
+                            lines[key] = numbits_union(lines[key], numbits)
+
+                con.executemany_void(
+                    "insert or replace into line_bits " +
+                    "(file_id, context_id, numbits) values (?, ?, ?)",
+                    [
+                        (file_ids[file], context_ids[context], numbits)
+                        for (file, context), numbits in lines.items()
+                    ],
+                )
 
             if arcs:
                 self._choose_lines_or_arcs(arcs=True)
+
+                arc_rows = (
+                    (file_ids[file], context_ids[context], fromno, tono)
+                    for file, context, fromno, tono in arcs
+                )
 
                 # Write the combined data.
                 con.executemany_void(
@@ -795,17 +807,6 @@ class CoverageData:
                     arc_rows,
                 )
 
-            if lines:
-                self._choose_lines_or_arcs(lines=True)
-                con.execute_void("delete from line_bits")
-                con.executemany_void(
-                    "insert into line_bits " +
-                    "(file_id, context_id, numbits) values (?, ?, ?)",
-                    [
-                        (file_ids[file], context_ids[context], numbits)
-                        for (file, context), numbits in lines.items()
-                    ],
-                )
             con.executemany_void(
                 "insert or ignore into tracer (file_id, tracer) values (?, ?)",
                 ((file_ids[filename], tracer) for filename, tracer in tracer_map.items()),
