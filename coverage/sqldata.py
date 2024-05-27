@@ -789,16 +789,14 @@ class CoverageData:
             if lines:
                 self._choose_lines_or_arcs(lines=True)
 
-                with con.execute(
-                    "select file.path, context.context, line_bits.numbits " +
-                    "from line_bits " +
-                    "inner join file on file.id = line_bits.file_id " +
-                    "inner join context on context.id = line_bits.context_id",
-                ) as cur:
-                    for path, context, numbits in cur:
-                        key = (aliases_map(path), context)
-                        if key in lines:
-                            lines[key] = numbits_union(lines[key], numbits)
+                for (file, context), numbits in lines.items():
+                    with con.execute(
+                        "select numbits from line_bits where file_id = ? and context_id = ?",
+                        (file_ids[file], context_ids[context]),
+                    ) as cur:
+                        existing = list(cur)
+                    if existing:
+                        lines[(file, context)] = numbits_union(numbits, existing[0][0])
 
                 con.executemany_void(
                     "insert or replace into line_bits " +
