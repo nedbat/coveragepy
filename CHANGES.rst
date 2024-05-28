@@ -23,7 +23,10 @@ upgrading your version of coverage.py.
 Unreleased
 ----------
 
-- Performance improvement for combining data files.
+- Performance improvements for combining data files, especially when measuring
+  line coverage. A few different quadratic behaviors were eliminated. In one
+  extreme case of combining 700+ data files, the time dropped from more than
+  three hours to seven minutes.  Thanks for Kraken Tech for funding the fix.
 
 
 .. scriv-start-here
