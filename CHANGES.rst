@@ -20,8 +20,12 @@ upgrading your version of coverage.py.
     ..  Version 9.8.1 — 2027-07-27
     ..  --------------------------
 
-Unreleased
-----------
+.. scriv-start-here
+
+.. _changes_7-5-3:
+
+Version 7.5.3 — 2024-05-28
+--------------------------
 
 - Performance improvements for combining data files, especially when measuring
   line coverage. A few different quadratic behaviors were eliminated. In one
@@ -34,8 +38,6 @@ Unreleased
 
 .. _issue 1791: https://github.com/nedbat/coveragepy/issues/1791
 
-
-.. scriv-start-here
 
 .. _changes_7-5-2:
 
