@@ -497,18 +497,18 @@ class CoverageData:
         with self._connect() as con:
             self._set_context_id()
             for filename, linenos in line_data.items():
-                linemap = nums_to_numbits(linenos)
+                line_bits = nums_to_numbits(linenos)
                 file_id = self._file_id(filename, add=True)
                 query = "select numbits from line_bits where file_id = ? and context_id = ?"
                 with con.execute(query, (file_id, self._current_context_id)) as cur:
                     existing = list(cur)
                 if existing:
-                    linemap = numbits_union(linemap, existing[0][0])
+                    line_bits = numbits_union(line_bits, existing[0][0])
 
                 con.execute_void(
                     "insert or replace into line_bits " +
                     " (file_id, context_id, numbits) values (?, ?, ?)",
-                    (file_id, self._current_context_id, linemap),
+                    (file_id, self._current_context_id, line_bits),
                 )
 
     @_locked
