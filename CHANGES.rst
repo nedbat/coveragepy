@@ -28,6 +28,12 @@ Unreleased
   extreme case of combining 700+ data files, the time dropped from more than
   three hours to seven minutes.  Thanks for Kraken Tech for funding the fix.
 
+- Performance improvements for generating HTML reports, with a side benefit of
+  reducing memory use, closing `issue 1791`_.  Thanks to Daniel Diniz for
+  helping to diagnose the problem.
+
+.. _issue 1791: https://github.com/nedbat/coveragepy/issues/1791
+
 
 .. scriv-start-here
 

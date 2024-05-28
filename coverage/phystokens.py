@@ -6,7 +6,6 @@
 from __future__ import annotations
 
 import ast
-import functools
 import io
 import keyword
 import re
@@ -163,20 +162,15 @@ def source_token_lines(source: str) -> TSourceTokenLines:
         yield line
 
 
-@functools.lru_cache(maxsize=100)
 def generate_tokens(text: str) -> TokenInfos:
-    """A cached version of `tokenize.generate_tokens`.
+    """A helper around `tokenize.generate_tokens`.
 
-    When reporting, coverage.py tokenizes files twice, once to find the
-    structure of the file, and once to syntax-color it.  Tokenizing is
-    expensive, and easily cached.
+    Originally this was used to cache the results, but it didn't seem to make
+    reporting go faster, and caused issues with using too much memory.
 
-    Unfortunately, the HTML report code tokenizes all the files the first time
-    before then tokenizing them a second time, so we cache many.  Ideally we'd
-    rearrange the code to tokenize each file twice before moving onto the next.
     """
     readline = io.StringIO(text).readline
-    return list(tokenize.generate_tokens(readline))
+    return tokenize.generate_tokens(readline)
 
 
 def source_encoding(source: bytes) -> str:
