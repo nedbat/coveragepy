@@ -117,6 +117,8 @@ def source_token_lines(source: str) -> TSourceTokenLines:
 
     if env.PYBEHAVIOR.soft_keywords:
         soft_key_lines = find_soft_key_lines(source)
+    else:
+        soft_key_lines = set()
 
     for ttype, ttext, (sline, scol), (_, ecol), _ in _phys_tokens(tokgen):
         mark_start = True

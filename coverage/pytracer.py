@@ -28,6 +28,8 @@ if RESUME is None:
     YIELD_VALUE = dis.opmap["YIELD_VALUE"]
     YIELD_FROM = dis.opmap["YIELD_FROM"]
     YIELD_FROM_OFFSET = 0 if env.PYPY else 2
+else:
+    YIELD_VALUE = YIELD_FROM = YIELD_FROM_OFFSET = -1
 
 # When running meta-coverage, this file can try to trace itself, which confuses
 # everything.  Don't trace ourselves.
