@@ -14,11 +14,11 @@ build==1.2.1
     # via -r requirements/kit.in
 certifi==2024.2.2
     # via cibuildwheel
-cibuildwheel==2.17.0
+cibuildwheel==2.18.1
     # via -r requirements/kit.in
 colorama==0.4.6
     # via -r requirements/kit.in
-filelock==3.13.4
+filelock==3.14.0
     # via cibuildwheel
 importlib-metadata==7.1.0
     # via build
@@ -27,24 +27,23 @@ packaging==24.0
     #   auditwheel
     #   build
     #   cibuildwheel
-platformdirs==4.2.1
+platformdirs==4.2.2
     # via cibuildwheel
 pyelftools==0.31
     # via auditwheel
-pyproject-hooks==1.0.0
+pyproject-hooks==1.1.0
     # via build
 tomli==2.0.1
     # via
     #   build
     #   cibuildwheel
-    #   pyproject-hooks
-typing-extensions==4.11.0
+typing-extensions==4.12.0
     # via cibuildwheel
 wheel==0.43.0
     # via -r requirements/kit.in
-zipp==3.18.1
+zipp==3.19.0
     # via importlib-metadata
 
 # The following packages are considered to be unsafe in a requirements file:
-setuptools==69.5.1
+setuptools==70.0.0
     # via -r requirements/kit.in

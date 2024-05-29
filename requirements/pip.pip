@@ -6,15 +6,15 @@
 #
 distlib==0.3.8
     # via virtualenv
-filelock==3.13.4
+filelock==3.14.0
     # via virtualenv
-platformdirs==4.2.1
+platformdirs==4.2.2
     # via virtualenv
-virtualenv==20.26.0
+virtualenv==20.26.2
     # via -r requirements/pip.in
 
 # The following packages are considered to be unsafe in a requirements file:
 pip==24.0
     # via -r requirements/pip.in
-setuptools==69.5.1
+setuptools==70.0.0
     # via -r requirements/pip.in

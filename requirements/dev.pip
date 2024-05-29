@@ -4,11 +4,11 @@
 #
 #    make upgrade
 #
-astroid==3.1.0
+astroid==3.2.2
     # via pylint
 attrs==23.2.0
     # via hypothesis
-backports-tarfile==1.1.1
+backports-tarfile==1.2.0
     # via jaraco-context
 build==1.2.1
     # via check-manifest
@@ -41,7 +41,7 @@ exceptiongroup==1.2.1
     #   pytest
 execnet==2.1.1
     # via pytest-xdist
-filelock==3.13.4
+filelock==3.14.0
     # via
     #   tox
     #   virtualenv
@@ -49,7 +49,7 @@ flaky==3.8.1
     # via -r requirements/pytest.in
 greenlet==3.0.3
     # via -r requirements/dev.in
-hypothesis==6.100.2
+hypothesis==6.103.0
     # via -r requirements/pytest.in
 idna==3.7
     # via requests
@@ -72,7 +72,7 @@ jaraco-functools==4.0.1
     # via keyring
 jedi==0.19.1
     # via pudb
-keyring==25.2.0
+keyring==25.2.1
     # via twine
 libsass==0.23.0
     # via -r requirements/dev.in
@@ -99,7 +99,7 @@ parso==0.8.4
     # via jedi
 pkginfo==1.10.0
     # via twine
-platformdirs==4.2.1
+platformdirs==4.2.2
     # via
     #   pylint
     #   tox
@@ -110,29 +110,29 @@ pluggy==1.5.0
     #   tox
 pudb==2024.1
     # via -r requirements/dev.in
-pygments==2.17.2
+pygments==2.18.0
     # via
     #   -r requirements/pytest.in
     #   pudb
     #   readme-renderer
     #   rich
-pylint==3.1.0
+pylint==3.2.2
     # via -r requirements/dev.in
 pyproject-api==1.6.1
     # via tox
-pyproject-hooks==1.0.0
+pyproject-hooks==1.1.0
     # via build
-pytest==8.2.0
+pytest==8.2.1
     # via
     #   -r requirements/pytest.in
     #   pytest-xdist
-pytest-xdist==3.5.0
+pytest-xdist==3.6.1
     # via -r requirements/pytest.in
 readme-renderer==43.0
     # via
     #   -r requirements/dev.in
     #   twine
-requests==2.31.0
+requests==2.32.3
     # via
     #   -r requirements/dev.in
     #   requests-toolbelt
@@ -153,10 +153,9 @@ tomli==2.0.1
     #   check-manifest
     #   pylint
     #   pyproject-api
-    #   pyproject-hooks
     #   pytest
     #   tox
-tomlkit==0.12.4
+tomlkit==0.12.5
     # via pylint
 tox==4.15.0
     # via
@@ -164,9 +163,9 @@ tox==4.15.0
     #   tox-gh
 tox-gh==1.3.1
     # via -r requirements/tox.in
-twine==5.0.0
+twine==5.1.0
     # via -r requirements/dev.in
-typing-extensions==4.11.0
+typing-extensions==4.12.0
     # via
     #   astroid
     #   pylint
@@ -176,19 +175,19 @@ urllib3==2.2.1
     # via
     #   requests
     #   twine
-urwid==2.6.11
+urwid==2.6.12
     # via
     #   pudb
     #   urwid-readline
 urwid-readline==0.14
     # via pudb
-virtualenv==20.26.0
+virtualenv==20.26.2
     # via
     #   -r requirements/pip.in
     #   tox
 wcwidth==0.2.13
     # via urwid
-zipp==3.18.1
+zipp==3.19.0
     # via
     #   importlib-metadata
     #   importlib-resources
@@ -196,7 +195,7 @@ zipp==3.18.1
 # The following packages are considered to be unsafe in a requirements file:
 pip==24.0
     # via -r requirements/pip.in
-setuptools==69.5.1
+setuptools==70.0.0
     # via
     #   -r requirements/pip.in
     #   check-manifest
