@@ -2,7 +2,7 @@
 name: Support request
 about: Ask for help using coverage.py
 title: ''
-labels: support, needs triage
+labels: support
 assignees: ''
 
 ---
