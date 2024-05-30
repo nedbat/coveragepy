@@ -375,7 +375,7 @@ class PythonParser:
 
             msg = f"line {actual_start} {emsg}"
             if smsg is not None:
-                msg += f", because {smsg.format(lineno=actual_start)}"
+                msg += f" because {smsg.format(lineno=actual_start)}"
 
             msgs.append(msg)
 
@@ -656,7 +656,6 @@ class NodeList(ast.AST):
         self.lineno = body[0].lineno
 
 # TODO: some add_arcs methods here don't add arcs, they return them. Rename them.
-# TODO: the cause messages have too many commas.
 # TODO: Shouldn't the cause messages join with "and" instead of "or"?
 
 def _make_expression_code_method(noun: str) -> Callable[[AstArcAnalyzer, ast.AST], None]:

@@ -802,21 +802,21 @@ class ParserMissingArcDescriptionTest(PythonParserTestBase):
                     thing(12)
                 more_stuff(13)
             """)
-        expected = "line 1 didn't jump to line 2, because the condition on line 1 was never true"
+        expected = "line 1 didn't jump to line 2 because the condition on line 1 was never true"
         assert expected == parser.missing_arc_description(1, 2)
-        expected = "line 1 didn't jump to line 3, because the condition on line 1 was always true"
+        expected = "line 1 didn't jump to line 3 because the condition on line 1 was always true"
         assert expected == parser.missing_arc_description(1, 3)
         expected = (
-            "line 6 didn't return from function 'func5', " +
+            "line 6 didn't return from function 'func5' " +
             "because the loop on line 6 didn't complete"
         )
         assert expected == parser.missing_arc_description(6, -5)
-        expected = "line 6 didn't jump to line 7, because the loop on line 6 never started"
+        expected = "line 6 didn't jump to line 7 because the loop on line 6 never started"
         assert expected == parser.missing_arc_description(6, 7)
-        expected = "line 11 didn't jump to line 12, because the condition on line 11 was never true"
+        expected = "line 11 didn't jump to line 12 because the condition on line 11 was never true"
         assert expected == parser.missing_arc_description(11, 12)
         expected = (
-            "line 11 didn't jump to line 13, " +
+            "line 11 didn't jump to line 13 " +
             "because the condition on line 11 was always true"
         )
         assert expected == parser.missing_arc_description(11, 13)
@@ -851,12 +851,12 @@ class ParserMissingArcDescriptionTest(PythonParserTestBase):
                 print("yikes")
             """)
         expected = (
-            "line 3 didn't jump to line 4, " +
+            "line 3 didn't jump to line 4 " +
             "because the exception caught by line 3 didn't happen"
         )
         assert expected == parser.missing_arc_description(3, 4)
         expected = (
-            "line 5 didn't jump to line 6, " +
+            "line 5 didn't jump to line 6 " +
             "because the exception caught by line 5 didn't happen"
         )
         assert expected == parser.missing_arc_description(5, 6)
@@ -884,53 +884,53 @@ class ParserMissingArcDescriptionTest(PythonParserTestBase):
                 that_thing(19)
             """)
         if env.PYBEHAVIOR.finally_jumps_back:
-            expected = "line 18 didn't jump to line 5, because the break on line 5 wasn't executed"
+            expected = "line 18 didn't jump to line 5 because the break on line 5 wasn't executed"
             assert expected == parser.missing_arc_description(18, 5)
-            expected = "line 5 didn't jump to line 19, because the break on line 5 wasn't executed"
+            expected = "line 5 didn't jump to line 19 because the break on line 5 wasn't executed"
             assert expected == parser.missing_arc_description(5, 19)
             expected = (
-                "line 18 didn't jump to line 10, " +
+                "line 18 didn't jump to line 10 " +
                 "because the continue on line 10 wasn't executed"
             )
             assert expected == parser.missing_arc_description(18, 10)
             expected = (
-                "line 10 didn't jump to line 2, " +
+                "line 10 didn't jump to line 2 " +
                 "because the continue on line 10 wasn't executed"
             )
             assert expected == parser.missing_arc_description(10, 2)
             expected = (
-                "line 18 didn't jump to line 14, " +
+                "line 18 didn't jump to line 14 " +
                 "because the return on line 14 wasn't executed"
             )
             assert expected == parser.missing_arc_description(18, 14)
             expected = (
-                "line 14 didn't return from function 'function', " +
+                "line 14 didn't return from function 'function' " +
                 "because the return on line 14 wasn't executed"
             )
             assert expected == parser.missing_arc_description(14, -1)
             expected = (
-                "line 18 didn't except from function 'function', " +
+                "line 18 didn't except from function 'function' " +
                 "because the raise on line 16 wasn't executed"
             )
             assert expected == parser.missing_arc_description(18, -1)
         else:
             expected = (
-                "line 18 didn't jump to line 19, " +
+                "line 18 didn't jump to line 19 " +
                 "because the break on line 5 wasn't executed"
             )
             assert expected == parser.missing_arc_description(18, 19)
             expected = (
-                "line 18 didn't jump to line 2, " +
+                "line 18 didn't jump to line 2 " +
                     "because the continue on line 10 wasn't executed" +
                 " or " +
                     "the continue on line 12 wasn't executed"
             )
             assert expected == parser.missing_arc_description(18, 2)
             expected = (
-                "line 18 didn't except from function 'function', " +
+                "line 18 didn't except from function 'function' " +
                     "because the raise on line 16 wasn't executed" +
                 " or " +
-                "line 18 didn't return from function 'function', " +
+                "line 18 didn't return from function 'function' " +
                     "because the return on line 14 wasn't executed"
             )
             assert expected == parser.missing_arc_description(18, -1)
@@ -957,13 +957,13 @@ class ParserMissingArcDescriptionTest(PythonParserTestBase):
             print(match)                                            # 6
             """)
         assert parser.missing_arc_description(2, 3) == (
-            "line 2 didn't jump to line 3, because the pattern on line 2 never matched"
+            "line 2 didn't jump to line 3 because the pattern on line 2 never matched"
         )
         assert parser.missing_arc_description(2, 4) == (
-            "line 2 didn't jump to line 4, because the pattern on line 2 always matched"
+            "line 2 didn't jump to line 4 because the pattern on line 2 always matched"
         )
         assert parser.missing_arc_description(4, 6) == (
-            "line 4 didn't jump to line 6, because the pattern on line 4 always matched"
+            "line 4 didn't jump to line 6 because the pattern on line 4 always matched"
         )
 
 
