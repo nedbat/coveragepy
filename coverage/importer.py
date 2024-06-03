@@ -59,26 +59,36 @@ class InstrumentingMetaPathFinder(MetaPathFinder):
 
     def find_spec(self, fullname, path, target=None):
 
-        for f in sys.meta_path:
-            # skip ourselves
-            if isinstance(f, self.__class__):
-                continue
+        import contextlib
+        with open("/tmp/foo.out", "a") as f:
+            with contextlib.redirect_stdout(f):
+                import inspect;print("\n".join("%30s : %s:%d" % (t[3], t[1], t[2]) for t in inspect.stack()[99:0:-1])) 
+                print(f"@ 0 {fullname = }, {path = }")
+                for f in sys.meta_path:
+                    # skip ourselves
+                    if isinstance(f, self.__class__):
+                        print("@ 1")
+                        continue
 
-            if not hasattr(f, "find_spec"):
-                continue
+                    if not hasattr(f, "find_spec"):
+                        print("@ 2")
+                        continue
 
-            spec = f.find_spec(fullname, path, target)
-            if spec is None or spec.loader is None:
-                continue
+                    spec = f.find_spec(fullname, path, target)
+                    print(f"@ 3 {spec = }")
+                    if spec is None or spec.loader is None:
+                        continue
 
-            # can't instrument extension files
-            if isinstance(spec.loader, machinery.ExtensionFileLoader):
-                return None
+                    # can't instrument extension files
+                    if isinstance(spec.loader, machinery.ExtensionFileLoader):
+                        print("@ 4")
+                        return None
 
-            #if self.file_matcher.matches(spec.origin):
-            spec.loader = InstrumentingLoader(spec.loader, spec.origin)
+                    #if self.file_matcher.matches(spec.origin):
+                    spec.loader = InstrumentingLoader(spec.loader, spec.origin)
+                    print("@ 5")
 
-            return spec
+                    return spec
 
         return None
 

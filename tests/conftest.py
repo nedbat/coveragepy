@@ -21,6 +21,7 @@ import pytest
 
 from coverage import env
 from coverage.files import set_relative_directory
+from coverage.importer import InstrumentingImportManager
 
 # Pytest will rewrite assertions in test modules, but not elsewhere.
 # This tells pytest to also rewrite assertions in these files:
@@ -133,3 +134,8 @@ def find_writable_pth_directory() -> Path | None:
         return pth_dir
 
     return None                                     # pragma: cant happen
+
+@pytest.fixture(autouse=True, scope="session")
+def instrument_stuff() -> Iterator[None]:
+    with InstrumentingImportManager():
+        yield None

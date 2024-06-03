@@ -289,6 +289,10 @@ def import_local_file(modname: str, modfile: str | None = None) -> ModuleType:
     import if it isn't in the current directory.
 
     """
+    import contextlib, sys
+    with open("/tmp/foo.out", "a") as f:
+        with contextlib.redirect_stdout(f):
+            print(f"@@ {sys.meta_path = }")
     if modfile is None:
         modfile = modname + ".py"
     spec = importlib.util.spec_from_file_location(modname, modfile)

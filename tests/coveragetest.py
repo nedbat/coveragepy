@@ -100,13 +100,15 @@ class CoverageTest(
         # metacov runs.  Putting back the old code below fixes it, but I don't
         # understand the difference.
 
-        cov.start()
-        try:                                    # pragma: nested
-            # Import the Python file, executing it.
-            mod = import_local_file(modname, modfile)
-        finally:                                # pragma: nested
-            # Stop coverage.py.
-            cov.stop()
+        from coverage.importer import InstrumentingImportManager
+        with InstrumentingImportManager():
+            cov.start()
+            try:                                    # pragma: nested
+                # Import the Python file, executing it.
+                mod = import_local_file(modname, modfile)
+            finally:                                # pragma: nested
+                # Stop coverage.py.
+                cov.stop()
         return mod
 
     def get_report(self, cov: Coverage, squeeze: bool = True, **kwargs: Any) -> str:
