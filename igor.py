@@ -465,6 +465,7 @@ def do_cheats():
     print("\n## To read this code on GitHub:")
     print(f"https://github.com/nedbat/coveragepy/commit/{facts.sha}")
     print(f"https://github.com/nedbat/coveragepy/commits/{facts.sha}")
+    print(f"https://github.com/nedbat/coveragepy/tree/{facts.branch}")
 
     print(
         "\n## For other collaborators to get this code:\n"
