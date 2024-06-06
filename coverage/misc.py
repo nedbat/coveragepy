@@ -295,12 +295,20 @@ def import_local_file(modname: str, modfile: str | None = None) -> ModuleType:
             print(f"@@ {sys.meta_path = }")
     if modfile is None:
         modfile = modname + ".py"
-    spec = importlib.util.spec_from_file_location(modname, modfile)
-    assert spec is not None
-    mod = importlib.util.module_from_spec(spec)
+
+    from pathlib import Path
+
+    sys.path.insert(0, str(Path(modfile).parent))
+    mod = importlib.import_module(modname)
     sys.modules[modname] = mod
-    assert spec.loader is not None
-    spec.loader.exec_module(mod)
+    sys.path.pop(0)
+
+    # spec = importlib.util.spec_from_file_location(modname, modfile)
+    # assert spec is not None
+    # mod = importlib.util.module_from_spec(spec)
+    # sys.modules[modname] = mod
+    # assert spec.loader is not None
+    # spec.loader.exec_module(mod)
 
     return mod
 
