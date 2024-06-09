@@ -157,7 +157,7 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         self.make_file("submodule/mycode.py", "import mycode")
 
         cov = coverage.Coverage()
-        self.start_import_stop(cov, "submodule/mycode")
+        self.start_import_stop(cov, "submodule.mycode")
         report = self.get_report(cov, include="submodule/mycode.py")
 
         # Name                Stmts   Miss  Cover
@@ -179,7 +179,7 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         self.make_file("nested/submodule/mycode.py", "import mycode")
 
         cov = coverage.Coverage()
-        self.start_import_stop(cov, "submodule/mycode")
+        self.start_import_stop(cov, "submodule.mycode")
         report = self.get_report(cov, include="*/submodule/mycode.py")
 
         # Name                          Stmts   Miss  Cover

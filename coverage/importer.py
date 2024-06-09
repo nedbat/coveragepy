@@ -46,10 +46,10 @@ class InstrumentingLoader(Loader):
     def exec_module(self, module):
         if isinstance(self.orig_loader, machinery.SourceFileLoader) and self.origin.exists():
             code = compile_instrumented(self.origin.read_bytes(), str(self.origin))
+            exec(code, module.__dict__)
         else:
-            code = self.orig_loader.get_code(module.__name__)
+            self.orig_loader.exec_module(module)
 
-        exec(code, module.__dict__)
 
 
 class InstrumentingMetaPathFinder(MetaPathFinder):

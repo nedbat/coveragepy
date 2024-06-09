@@ -332,7 +332,7 @@ class XmlReportTest(XmlTestHelpers, CoverageTest):
         # problem occurs when they are dynamically generated during xml report
         cov = coverage.Coverage()
         with cov.collect():
-            import_local_file("foo", "namespace/package/__init__.py")
+            import_local_file("namespace.package", "namespace/package/__init__.py")
 
         cov.xml_report()
 

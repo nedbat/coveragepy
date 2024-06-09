@@ -19,6 +19,7 @@ import re
 import sys
 import types
 
+from pathlib import Path
 from types import ModuleType
 from typing import (
     Any, Iterable, Iterator, Mapping, NoReturn, Sequence, TypeVar,
@@ -289,26 +290,13 @@ def import_local_file(modname: str, modfile: str | None = None) -> ModuleType:
     import if it isn't in the current directory.
 
     """
-    import contextlib, sys
-    with open("/tmp/foo.out", "a") as f:
-        with contextlib.redirect_stdout(f):
-            print(f"@@ {sys.meta_path = }")
     if modfile is None:
         modfile = modname + ".py"
 
-    from pathlib import Path
-
-    sys.path.insert(0, str(Path(modfile).parent))
+    sys.path.insert(0, str(Path(modfile).parent.resolve()))
     mod = importlib.import_module(modname)
     sys.modules[modname] = mod
     sys.path.pop(0)
-
-    # spec = importlib.util.spec_from_file_location(modname, modfile)
-    # assert spec is not None
-    # mod = importlib.util.module_from_spec(spec)
-    # sys.modules[modname] = mod
-    # assert spec.loader is not None
-    # spec.loader.exec_module(mod)
 
     return mod
 

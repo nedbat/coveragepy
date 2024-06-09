@@ -135,7 +135,7 @@ def find_writable_pth_directory() -> Path | None:
 
     return None                                     # pragma: cant happen
 
-@pytest.fixture(autouse=True, scope="session")
-def instrument_stuff() -> Iterator[None]:
-    with InstrumentingImportManager():
-        yield None
+# @pytest.fixture(autouse=True, scope="session")
+# def instrument_stuff() -> Iterator[None]:
+#     with InstrumentingImportManager():
+#         yield None
