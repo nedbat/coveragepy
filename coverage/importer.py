@@ -13,13 +13,11 @@ Many thanks to Juan Altmayer Pizzorno and Emery Berger.
 
 from __future__ import annotations
 
-import ast
 import sys
 
 from importlib.abc import MetaPathFinder, Loader
 from importlib import machinery
 from pathlib import Path
-from typing import Any
 
 from coverage.instrument import compile_instrumented
 
@@ -51,63 +49,40 @@ class InstrumentingLoader(Loader):
             self.orig_loader.exec_module(module)
 
 
+class Instrumenter(MetaPathFinder):
+    def __init__(self, should_instrument):
+        self.should_instrument = should_instrument
 
-class InstrumentingMetaPathFinder(MetaPathFinder):
-    def __init__(self):
-        # TODO: pass in should_trace function
-        pass
+    def start(self):
+        sys.meta_path.insert(0, self)
+
+    def stop(self):
+        for i, mpf in enumerate(sys.meta_path):
+            if mpf is self:
+                sys.meta_path.pop(i)
+                break
 
     def find_spec(self, fullname, path, target=None):
 
-        import contextlib
-        with open("/tmp/foo.out", "a") as f:
-            with contextlib.redirect_stdout(f):
-                import inspect;print("\n".join("%30s : %s:%d" % (t[3], t[1], t[2]) for t in inspect.stack()[99:0:-1])) 
-                print(f"@ 0 {fullname = }, {path = }")
-                for f in sys.meta_path:
-                    # skip ourselves
-                    if isinstance(f, self.__class__):
-                        print("@ 1")
-                        continue
+        for f in sys.meta_path:
+            # skip ourselves
+            if isinstance(f, self.__class__):
+                continue
 
-                    if not hasattr(f, "find_spec"):
-                        print("@ 2")
-                        continue
+            if not hasattr(f, "find_spec"):
+                continue
 
-                    spec = f.find_spec(fullname, path, target)
-                    print(f"@ 3 {spec = }")
-                    if spec is None or spec.loader is None:
-                        continue
+            spec = f.find_spec(fullname, path, target)
+            if spec is None or spec.loader is None:
+                continue
 
-                    # can't instrument extension files
-                    if isinstance(spec.loader, machinery.ExtensionFileLoader):
-                        print("@ 4")
-                        return None
+            # can't instrument extension files
+            if isinstance(spec.loader, machinery.ExtensionFileLoader):
+                return None
 
-                    #if self.file_matcher.matches(spec.origin):
-                    spec.loader = InstrumentingLoader(spec.loader, spec.origin)
-                    print("@ 5")
+            if self.should_instrument(spec.origin):
+                spec.loader = InstrumentingLoader(spec.loader, spec.origin)
 
-                    return spec
+            return spec
 
         return None
-
-
-class InstrumentingImportManager:
-    """A context manager that enables instrumentation while active."""
-
-    def __init__(self):
-        self.mpf = InstrumentingMetaPathFinder()
-
-    def __enter__(self) -> InstrumentingImportManager:
-        sys.meta_path.insert(0, self.mpf)
-        return self
-
-    def __exit__(self, *args: Any) -> None:
-        # TODO: better way to remove the one?
-        i = 0
-        while i < len(sys.meta_path):
-            if sys.meta_path[i] is self.mpf:
-                sys.meta_path.pop(i)
-                break
-            i += 1

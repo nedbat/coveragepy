@@ -23,7 +23,7 @@ from typing import (
 )
 
 import coverage
-from coverage import Coverage
+from coverage import Coverage, env
 from coverage.cmdline import CoverageScript
 from coverage.data import CoverageData
 from coverage.misc import import_local_file
@@ -100,15 +100,13 @@ class CoverageTest(
         # metacov runs.  Putting back the old code below fixes it, but I don't
         # understand the difference.
 
-        from coverage.importer import InstrumentingImportManager
-        with InstrumentingImportManager():
-            cov.start()
-            try:                                    # pragma: nested
-                # Import the Python file, executing it.
-                mod = import_local_file(modname, modfile)
-            finally:                                # pragma: nested
-                # Stop coverage.py.
-                cov.stop()
+        cov.start()
+        try:                                    # pragma: nested
+            # Import the Python file, executing it.
+            mod = import_local_file(modname, modfile)
+        finally:                                # pragma: nested
+            # Stop coverage.py.
+            cov.stop()
         return mod
 
     def get_report(self, cov: Coverage, squeeze: bool = True, **kwargs: Any) -> str:
@@ -231,20 +229,21 @@ class CoverageTest(
             msg = f"missing: {missing_formatted!r} != {missing!r}"
             assert missing_formatted == missing, msg
 
-        # if arcs is not None:
-        #     # print("Possible arcs:")
-        #     # print(" expected:", arcs)
-        #     # print(" actual:", analysis.arc_possibilities)
-        #     # print("Executed:")
-        #     # print(" actual:", sorted(set(analysis.arcs_executed)))
-        #     # TODO: this would be nicer with pytest-check, once we can run that.
-        #     msg = (
-        #         self._check_arcs(arcs, analysis.arc_possibilities, "Possible") +
-        #         self._check_arcs(arcs_missing, analysis.arcs_missing(), "Missing") +
-        #         self._check_arcs(arcs_unpredicted, analysis.arcs_unpredicted(), "Unpredicted")
-        #     )
-        #     if msg:
-        #         assert False, msg
+        if env.CHECK_ARCS:
+            if arcs is not None:
+                # print("Possible arcs:")
+                # print(" expected:", arcs)
+                # print(" actual:", analysis.arc_possibilities)
+                # print("Executed:")
+                # print(" actual:", sorted(set(analysis.arcs_executed)))
+                # TODO: this would be nicer with pytest-check, once we can run that.
+                msg = (
+                    self._check_arcs(arcs, analysis.arc_possibilities, "Possible") +
+                    self._check_arcs(arcs_missing, analysis.arcs_missing(), "Missing") +
+                    self._check_arcs(arcs_unpredicted, analysis.arcs_unpredicted(), "Unpredicted")
+                )
+                if msg:
+                    assert False, msg
 
         if report:
             frep = io.StringIO()

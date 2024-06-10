@@ -135,6 +135,9 @@ METACOV = os.getenv("COVERAGE_COVERAGE") is not None
 # test-specific behavior like AST checking.
 TESTING = os.getenv("COVERAGE_TESTING") == "True"
 
+# Are we checking the arcs collected as intermediate results?
+CHECK_ARCS = (PYVERSION < (3, 12))
+
 
 def debug_info() -> Iterable[tuple[str, Any]]:
     """Return a list of (name, value) pairs for printing debug information."""

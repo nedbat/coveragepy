@@ -413,6 +413,10 @@ class SysMonitor(TracerCore):
         """Handle sys.monitoring.events.LINE events for line coverage."""
         code_info = self.code_infos[id(code)]
         if code_info.file_data is not None:
+            import contextlib
+            with open("/tmp/foo.out", "a") as f:
+                with contextlib.redirect_stdout(f):
+                    print(f"adding {line_number = }, {code = }")
             cast(Set[TLineNo], code_info.file_data).add(line_number)
             # log(f"adding {line_number=}")
         return sys.monitoring.DISABLE
@@ -428,6 +432,10 @@ class SysMonitor(TracerCore):
                 from_no = to_no = line_number
             arc = (from_no, to_no)
             cast(Set[TArc], code_info.file_data).add(arc)
+            import contextlib
+            with open("/tmp/foo.out", "a") as f:
+                with contextlib.redirect_stdout(f):
+                    print(f"adding {arc = }")
             # log(f"adding {arc=}")
             #self.last_lines[frame] = line_number
         return sys.monitoring.DISABLE

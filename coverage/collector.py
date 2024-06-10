@@ -21,6 +21,7 @@ from coverage.data import CoverageData
 from coverage.debug import short_stack
 from coverage.disposition import FileDisposition
 from coverage.exceptions import ConfigError
+from coverage.importer import Instrumenter
 from coverage.misc import human_sorted_items, isolate_module
 from coverage.plugin import CoveragePlugin
 from coverage.pytracer import PyTracer
@@ -145,6 +146,7 @@ class Collector:
 
         self._trace_class: type[TracerCore]
         self.file_disposition_class: type[TFileDisposition]
+        self.instrumenter: Instrumenter | None = None
 
         core: str | None
         if timid:
@@ -172,6 +174,10 @@ class Collector:
             self.supports_plugins = False
             self.packed_arcs = False
             self.systrace = False
+            if self.branch:
+                self.instrumenter = Instrumenter(
+                    should_instrument=lambda fname: self.should_trace(fname, None).trace
+                )
         elif core == "ctrace":
             self._trace_class = CTracer
             self._core_kwargs = {}
@@ -387,6 +393,11 @@ class Collector:
         if self._collectors:
             self._collectors[-1].pause()
 
+        if self.instrumenter is not None:
+            # TODO: only do this if there isn't a collector on the stack that
+            # did this already.
+            self.instrumenter.start()
+
         self.tracers = []
 
         try:
@@ -418,6 +429,9 @@ class Collector:
         )
 
         self.pause()
+
+        if self.instrumenter is not None:
+            self.instrumenter.stop()
 
         # Remove this Collector from the stack, and resume the one underneath (if any).
         self._collectors.pop()

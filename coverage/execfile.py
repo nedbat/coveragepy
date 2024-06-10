@@ -20,7 +20,6 @@ from typing import Any
 from coverage import env
 from coverage.exceptions import CoverageException, _ExceptionDuringRun, NoCode, NoSource
 from coverage.files import canonical_filename, python_reported_file
-from coverage.importer import InstrumentingImportManager
 from coverage.instrument import compile_instrumented
 from coverage.misc import isolate_module
 from coverage.python import get_python_source
@@ -210,8 +209,7 @@ class PyRunner:
         # a non-existent directory.
         cwd = os.getcwd()
         try:
-            with InstrumentingImportManager():
-                exec(code, main_mod.__dict__)
+            exec(code, main_mod.__dict__)
         except SystemExit:                          # pylint: disable=try-except-raise
             # The user called sys.exit().  Just pass it along to the upper
             # layers, where it will be handled.

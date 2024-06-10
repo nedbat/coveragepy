@@ -98,8 +98,6 @@ class FakeBranchLineTransformer(ast.NodeTransformer):
 
 
 def compile_instrumented(source: str, filename: str): # -> code object
-    """Prepares an AST for Slipcover instrumentation, inserting assignments indicating where branches happen."""
-
     tree = ast.parse(source)
 
     match_type = ast.Match if sys.version_info >= (3,10) else tuple() # empty tuple matches nothing

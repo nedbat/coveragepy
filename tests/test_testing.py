@@ -15,6 +15,7 @@ import warnings
 import pytest
 
 import coverage
+from coverage import env
 from coverage.exceptions import CoverageWarning
 from coverage.files import actual_path
 from coverage.types import TArc
@@ -249,6 +250,7 @@ class CheckUniqueFilenamesTest(CoverageTest):
             stub.method("file1")
 
 
+@pytest.mark.skipif(not env.CHECK_ARCS, reason="We aren't checking arcs")
 class CheckCoverageTest(CoverageTest):
     """Tests of the failure assertions in check_coverage."""
 
