@@ -34,10 +34,10 @@ code, the "if debug" clause is excluded from reporting::
         log_message(msg, a)
     b = my_function2()
 
-Any line with a comment of "pragma: no cover" is excluded.  If that line
-introduces a clause, for example, an if clause, or a function or class
-definition, then the entire clause is also excluded.  Here the __repr__
-function is not reported as missing::
+By default, any line with a comment of ``pragma: no cover`` is excluded.
+If that line introduces a clause, for example, an ``if`` clause, or a function
+or class definition, then the entire clause is also excluded.
+Here the ``__repr__`` function is not reported as missing::
 
     class MyObject(object):
         def __init__(self):
