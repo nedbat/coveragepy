@@ -924,6 +924,9 @@ class ExcepthookTest(CoverageTest):
         # executed.
         data = coverage.CoverageData()
         data.read()
+        print(f"{line_counts(data) = }")
+        print(f"{data = }")
+        print("data.lines excepthook.py:", data.lines(os.path.abspath('excepthook.py')))
         assert line_counts(data)['excepthook.py'] == 7
 
     @pytest.mark.skipif(not env.CPYTHON,

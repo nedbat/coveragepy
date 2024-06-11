@@ -41,7 +41,7 @@ class FakeBranchLineTransformer(ast.NodeTransformer):
 
     def _mark_branch(self, from_lineno: int, to_lineno: int) -> list[ast.stmt]:
         mark = ast.Expr(ast.Constant(1))
-        assert sys.version_info[0:2] >= (3,12)
+        #assert sys.version_info[0:2] >= (3,12)
         for node in ast.walk(mark):
             node.lineno = node.end_lineno = encode_branch(from_lineno, to_lineno)
             # Leaving the columns unitialized can lead to invalid positions despite
@@ -149,12 +149,12 @@ def compile_instrumented(source: str, filename: str): # -> code object
     tree = FakeBranchLineTransformer().visit(tree)
     ast.fix_missing_locations(tree)
     code = compile(tree, filename, "exec", dont_inherit=True)
-    import contextlib, os
-    with open("/tmp/foo.out", "a") as f:
-        with contextlib.redirect_stdout(f):
-            import dis
-            print("=" * 80)
-            print(f"--- test: {os.getenv('PYTEST_CURRENT_TEST')}")
-            print(f"--- {filename} -------")
-            dis.dis(code)
+    # import contextlib, os
+    # with open("/tmp/foo.out", "a") as f:
+    #     with contextlib.redirect_stdout(f):
+    #         import dis
+    #         print("=" * 80)
+    #         print(f"--- test: {os.getenv('PYTEST_CURRENT_TEST')}")
+    #         print(f"--- {filename} -------")
+    #         dis.dis(code)
     return code

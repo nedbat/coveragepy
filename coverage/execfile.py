@@ -296,8 +296,8 @@ def make_code_from_py(filename: str) -> CodeType:
         raise NoSource(f"No file to run: '{filename}'") from exc
 
     code = compile_instrumented(source, filename)
+    #code = compile(source, filename, "exec", dont_inherit=True)
     return code
-    # compile(source, filename, "exec", dont_inherit=True)
 
 
 def make_code_from_pyc(filename: str) -> CodeType:
