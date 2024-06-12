@@ -54,17 +54,17 @@ if 0:
     )
 
 
-if 0:
-    # Compare 3.10 vs 3.12
+if 1:
+    # Compare two Python versions
     v1 = 10
-    v2 = 12
+    v2 = 11
     run_experiment(
         py_versions=[
             Python(3, v1),
             Python(3, v2),
         ],
         cov_versions=[
-            Coverage("732", "coverage==7.3.2"),
+            Coverage("753", "coverage==7.5.3"),
         ],
         projects=[
             ProjectMashumaro(),
@@ -103,7 +103,7 @@ if 0:
         ],
     )
 
-if 1:
+if 0:
     # Compare 3.12 coverage vs no coverage
     run_experiment(
         py_versions=[
@@ -119,8 +119,8 @@ if 1:
             ),
         ],
         projects=[
-            ProjectMashumaro(),     # small: "-k ck"
-            ProjectMashumaroBranch(),     # small: "-k ck"
+            ProjectMashumaro(),         # small: "-k ck"
+            ProjectMashumaroBranch(),   # small: "-k ck"
         ],
         rows=["pyver", "proj"],
         column="cov",
