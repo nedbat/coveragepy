@@ -14,7 +14,7 @@ virtualenv==20.26.2
     # via -r requirements/pip.in
 
 # The following packages are considered to be unsafe in a requirements file:
-pip==24.0
+pip==24.1b2
     # via -r requirements/pip.in
 setuptools==70.0.0
     # via -r requirements/pip.in

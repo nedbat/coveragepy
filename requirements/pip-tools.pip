@@ -10,7 +10,7 @@ click==8.1.7
     # via pip-tools
 importlib-metadata==7.1.0
     # via build
-packaging==24.0
+packaging==24.1
     # via build
 pip-tools==7.4.1
     # via -r requirements/pip-tools.in
@@ -24,7 +24,7 @@ tomli==2.0.1
     #   pip-tools
 wheel==0.43.0
     # via pip-tools
-zipp==3.19.0
+zipp==3.19.2
     # via importlib-metadata
 
 # The following packages are considered to be unsafe in a requirements file:
