@@ -92,7 +92,7 @@ jobs:
           python -m site
           python -m coverage debug sys
           python -m coverage debug pybehave
-          env
+          env | sort
 
       - name: "Install dependencies"
         run: |

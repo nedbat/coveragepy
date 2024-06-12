@@ -94,7 +94,7 @@ jobs:
           python -m site
           # For extreme debugging:
           # python -c "import urllib.request as r; exec(r.urlopen('https://bit.ly/pydoctor').read())"
-          env
+          env | sort
 
       - name: "Install dependencies"
         run: |

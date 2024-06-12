@@ -97,7 +97,7 @@ jobs:
           set -xe
           python -VV
           python -m site
-          env
+          env | sort
 
       - name: "Install dependencies"
         run: |

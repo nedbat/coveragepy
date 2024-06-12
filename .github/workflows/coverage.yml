@@ -158,7 +158,7 @@ jobs:
           set -xe
           python -VV
           python -m site
-          env
+          env | sort
 
       - name: "Install dependencies"
         run: |
@@ -200,13 +200,11 @@ jobs:
       - name: "Show environment"
         run: |
           set -xe
-          env
+          env | sort
 
       - name: "Compute info for later steps"
         id: info
         run: |
-          set -xe
-          env
           export SHA10=$(echo ${{ github.sha }} | cut -c 1-10)
           export SLUG=$(date +'%Y%m%d')_$SHA10
           export REPORT_DIR=reports/$SLUG/htmlcov
