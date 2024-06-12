@@ -23,7 +23,12 @@ upgrading your version of coverage.py.
 Unreleased
 ----------
 
-Nothing yet.
+- If you attempt to combine statement coverage data with branch coverage data,
+  coverage.py used to fail with the message "Can't combine arc data with line
+  data" or its reverse, "Can't combine line data with arc data."  These
+  messages used internal terminology, making it hard for people to understand
+  the problem.  They are now changed to mention "branch coverage data" and
+  "statement coverage data."
 
 
 .. scriv-start-here

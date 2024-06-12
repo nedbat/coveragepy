@@ -663,9 +663,9 @@ class CoverageData:
                 getattr(other_data, "_filename", "???"),
             ))
         if self._has_lines and other_data._has_arcs:
-            raise DataError("Can't combine arc data with line data")
+            raise DataError("Can't combine branch coverage data with statement data")
         if self._has_arcs and other_data._has_lines:
-            raise DataError("Can't combine line data with arc data")
+            raise DataError("Can't combine statement coverage data with branch data")
 
         map_path = map_path or (lambda p: p)
 
