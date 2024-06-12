@@ -5,6 +5,7 @@
 
 # "make upgrade" turns this into requirements/pip.pip.
 
+--pre
 pip
 setuptools
 virtualenv
