@@ -200,6 +200,7 @@ class SysMonitor(TracerCore):
         # Map id(code_object) -> code_object
         self.local_event_codes: dict[int, CodeType] = {}
         self.sysmon_on = False
+        self.lock = threading.Lock()
 
         self.stats = {
             "starts": 0,
@@ -248,10 +249,11 @@ class SysMonitor(TracerCore):
             return
         assert sys_monitoring is not None
         sys_monitoring.set_events(self.myid, 0)
-        self.sysmon_on = False
-        for code in self.local_event_codes.values():
-            sys_monitoring.set_local_events(self.myid, code, 0)
-        self.local_event_codes = {}
+        with self.lock:
+            self.sysmon_on = False
+            for code in self.local_event_codes.values():
+                sys_monitoring.set_local_events(self.myid, code, 0)
+            self.local_event_codes = {}
         sys_monitoring.free_tool_id(self.myid)
 
     @panopticon()
@@ -332,20 +334,21 @@ class SysMonitor(TracerCore):
 
             if tracing_code:
                 events = sys.monitoring.events
-                if self.sysmon_on:
-                    assert sys_monitoring is not None
-                    sys_monitoring.set_local_events(
-                        self.myid,
-                        code,
-                        events.PY_RETURN
-                        #
-                        | events.PY_RESUME
-                        # | events.PY_YIELD
-                        | events.LINE,
-                        # | events.BRANCH
-                        # | events.JUMP
-                    )
-                    self.local_event_codes[id(code)] = code
+                with self.lock:
+                    if self.sysmon_on:
+                        assert sys_monitoring is not None
+                        sys_monitoring.set_local_events(
+                            self.myid,
+                            code,
+                            events.PY_RETURN
+                            #
+                            | events.PY_RESUME
+                            # | events.PY_YIELD
+                            | events.LINE,
+                            # | events.BRANCH
+                            # | events.JUMP
+                        )
+                        self.local_event_codes[id(code)] = code
 
         if tracing_code and self.trace_arcs:
             frame = self.callers_frame()
