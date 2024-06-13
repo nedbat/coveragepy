@@ -1,5 +1,7 @@
 """Run performance comparisons for versions of coverage"""
 
+from __future__ import annotations
+
 import collections
 import contextlib
 import itertools
@@ -10,10 +12,11 @@ import statistics
 import subprocess
 import sys
 import time
+
 from pathlib import Path
 
 from dataclasses import dataclass
-from typing import Any, Dict, Iterable, Iterator, List, Optional, Tuple
+from typing import Any, Iterable, Iterator, Tuple
 
 import tabulate
 
@@ -137,8 +140,8 @@ class ProjectToTest:
     """Information about a project to use as a test case."""
 
     # Where can we clone the project from?
-    git_url: Optional[str] = None
-    slug: Optional[str] = None
+    git_url: str | None = None
+    slug: str | None = None
 
     def __init__(self):
         if not self.slug:
@@ -166,7 +169,7 @@ class ProjectToTest:
 
     @contextlib.contextmanager
     def tweak_coverage_settings(
-        self, settings: Iterable[Tuple[str, Any]]
+        self, settings: Iterable[tuple[str, Any]]
     ) -> Iterator[None]:
         """Tweak the coverage settings.
 
@@ -285,7 +288,7 @@ class ProjectAttrs(ToxProject):
     git_url = "https://github.com/python-attrs/attrs"
 
     def tweak_coverage_settings(
-        self, tweaks: Iterable[Tuple[str, Any]]
+        self, tweaks: Iterable[tuple[str, Any]]
     ) -> Iterator[None]:
         return tweak_toml_coverage_settings("pyproject.toml", tweaks)
 
@@ -378,7 +381,7 @@ class ProjectOperator(ProjectToTest):
 
 
 def tweak_toml_coverage_settings(
-    toml_file: str, tweaks: Iterable[Tuple[str, Any]]
+    toml_file: str, tweaks: Iterable[tuple[str, Any]]
 ) -> Iterator[None]:
     if tweaks:
         toml_inserts = []
@@ -487,11 +490,11 @@ class Coverage:
     # Short word for messages, directories, etc
     slug: str
     # Arguments for "pip install ..."
-    pip_args: Optional[str] = None
+    pip_args: str | None = None
     # Tweaks to the .coveragerc file
-    tweaks: Optional[Iterable[Tuple[str, Any]]] = None
+    tweaks: Iterable[tuple[str, Any]] | None = None
     # Environment variables to set
-    env_vars: Optional[Dict[str, str]] = None
+    env_vars: dict[str, str] | None = None
 
 
 class NoCoverage(Coverage):
@@ -556,14 +559,14 @@ class Experiment:
 
     def __init__(
         self,
-        py_versions: List[PyVersion],
-        cov_versions: List[Coverage],
-        projects: List[ProjectToTest],
+        py_versions: list[PyVersion],
+        cov_versions: list[Coverage],
+        projects: list[ProjectToTest],
     ):
         self.py_versions = py_versions
         self.cov_versions = cov_versions
         self.projects = projects
-        self.result_data: Dict[ResultKey, List[float]] = {}
+        self.result_data: dict[ResultKey, list[float]] = {}
 
     def run(self, num_runs: int = 3) -> None:
         total_runs = (
@@ -601,7 +604,7 @@ class Experiment:
         all_runs *= num_runs
         random.shuffle(all_runs)
 
-        run_data: Dict[ResultKey, List[float]] = collections.defaultdict(list)
+        run_data: dict[ResultKey, list[float]] = collections.defaultdict(list)
 
         for proj, pyver, cov_ver, env in all_runs:
             with env.shell:
@@ -649,9 +652,9 @@ class Experiment:
 
     def show_results(
         self,
-        rows: List[str],
+        rows: list[str],
         column: str,
-        ratios: Iterable[Tuple[str, str, str]] = (),
+        ratios: Iterable[tuple[str, str, str]] = (),
     ) -> None:
         dimensions = {
             "cov": [cov_ver.slug for cov_ver in self.cov_versions],
@@ -694,12 +697,12 @@ PERF_DIR = Path("/tmp/covperf")
 
 
 def run_experiment(
-    py_versions: List[PyVersion],
-    cov_versions: List[Coverage],
-    projects: List[ProjectToTest],
-    rows: List[str],
+    py_versions: list[PyVersion],
+    cov_versions: list[Coverage],
+    projects: list[ProjectToTest],
+    rows: list[str],
     column: str,
-    ratios: Iterable[Tuple[str, str, str]] = (),
+    ratios: Iterable[tuple[str, str, str]] = (),
 ):
     slugs = [v.slug for v in py_versions + cov_versions + projects]
     if len(set(slugs)) != len(slugs):
