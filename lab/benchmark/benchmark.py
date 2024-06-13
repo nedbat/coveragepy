@@ -1,3 +1,6 @@
+# Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
+# For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
+
 """Run performance comparisons for versions of coverage"""
 
 from __future__ import annotations
@@ -703,7 +706,22 @@ def run_experiment(
     rows: list[str],
     column: str,
     ratios: Iterable[tuple[str, str, str]] = (),
+    num_runs: int = int(sys.argv[1]),
 ):
+    """
+    Run a benchmarking experiment and print a table of results.
+
+    Arguments:
+
+        py_versions: The Python versions to test.
+        cov_versions: The coverage versions to test.
+        projects: The projects to run.
+        rows: A list of strings chosen from `"pyver"`, `"cov"`, and `"proj"`.
+        column: The remaining dimension not used in `rows`.
+        ratios: A list of triples: (title, slug1, slug2).
+        num_runs: The number of times to run each matrix element.
+
+    """
     slugs = [v.slug for v in py_versions + cov_versions + projects]
     if len(set(slugs)) != len(slugs):
         raise Exception(f"Slugs must be unique: {slugs}")
@@ -724,5 +742,5 @@ def run_experiment(
         exp = Experiment(
             py_versions=py_versions, cov_versions=cov_versions, projects=projects
         )
-        exp.run(num_runs=int(sys.argv[1]))
+        exp.run(num_runs=int(num_runs))
         exp.show_results(rows=rows, column=column, ratios=ratios)
