@@ -68,6 +68,8 @@ class PyTracer(TracerCore):
         self.should_trace_cache: dict[str, TFileDisposition | None]
         self.should_start_context: Callable[[FrameType], str | None] | None = None
         self.switch_context: Callable[[str | None], None] | None = None
+        self.lock_data: Callable[[], None]
+        self.unlock_data: Callable[[], None]
         self.warn: TWarnFn
 
         # The threading module to use, if any.
@@ -209,8 +211,12 @@ class PyTracer(TracerCore):
                 if disp.trace:
                     tracename = disp.source_filename
                     assert tracename is not None
-                    if tracename not in self.data:
-                        self.data[tracename] = set()
+                    self.lock_data()
+                    try:
+                        if tracename not in self.data:
+                            self.data[tracename] = set()
+                    finally:
+                        self.unlock_data()
                     self.cur_file_data = self.data[tracename]
                 else:
                     frame.f_trace_lines = False

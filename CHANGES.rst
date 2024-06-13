@@ -30,6 +30,9 @@ Unreleased
   the problem.  They are now changed to mention "branch coverage data" and
   "statement coverage data."
 
+- Started testing on 3.13 free-threading (nogil) builds of Python.  I'm not
+  claiming full support yet.
+
 
 .. scriv-start-here
 

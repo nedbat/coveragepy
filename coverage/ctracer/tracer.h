@@ -27,6 +27,8 @@ typedef struct CTracer {
     PyObject * trace_arcs;
     PyObject * should_start_context;
     PyObject * switch_context;
+    PyObject * lock_data;
+    PyObject * unlock_data;
     PyObject * disable_plugin;
 
     /* Has the tracer been started? */

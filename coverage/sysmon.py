@@ -186,6 +186,8 @@ class SysMonitor(TracerCore):
         # Change tests/testenv.py:DYN_CONTEXTS when this is updated.
         self.should_start_context: Callable[[FrameType], str | None] | None = None
         self.switch_context: Callable[[str | None], None] | None = None
+        self.lock_data: Callable[[], None]
+        self.unlock_data: Callable[[], None]
         # TODO: warn is unused.
         self.warn: TWarnFn
 
@@ -317,8 +319,12 @@ class SysMonitor(TracerCore):
             if tracing_code:
                 tracename = disp.source_filename
                 assert tracename is not None
-                if tracename not in self.data:
-                    self.data[tracename] = set()
+                self.lock_data()
+                try:
+                    if tracename not in self.data:
+                        self.data[tracename] = set()
+                finally:
+                    self.unlock_data()
                 file_data = self.data[tracename]
                 b2l = bytes_to_lines(code)
             else:
