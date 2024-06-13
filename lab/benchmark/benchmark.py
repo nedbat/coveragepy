@@ -21,6 +21,7 @@ from pathlib import Path
 from dataclasses import dataclass
 from typing import Any, Iterable, Iterator, Tuple
 
+import requests
 import tabulate
 
 
@@ -139,6 +140,32 @@ def file_replace(file_name: Path, old_text: str, new_text: str) -> Iterator[None
             file_name.write_text(file_text)
 
 
+def file_must_exist(file_name: str, kind: str = "file") -> Path:
+    """
+    Check that a file exists, for early validation of pip (etc) arguments.
+
+    Raises an exception if it doesn't exist.  Returns the resolved path if it
+    does exist so we can use relative paths and they'll still work once we've
+    cd'd to the temporary workspace.
+    """
+    path = Path(file_name).expanduser().resolve()
+    if not path.exists():
+        kind = kind[0].upper() + kind[1:]
+        raise RuntimeError(f"{kind} {file_name!r} doesn't exist")
+    return path
+
+
+def url_must_exist(url: str) -> bool:
+    """
+    Check that a URL exists, for early validation of pip (etc) arguments.
+
+    Raises an exception if it doesn't exist.
+    """
+    resp = requests.head(url)
+    resp.raise_for_status()
+    return True
+
+
 class ProjectToTest:
     """Information about a project to use as a test case."""
 
@@ -147,6 +174,7 @@ class ProjectToTest:
     slug: str | None = None
 
     def __init__(self):
+        url_must_exist(self.git_url)
         if not self.slug:
             if self.git_url:
                 self.slug = self.git_url.split("/")[-1]
@@ -482,6 +510,7 @@ class AdHocPython(PyVersion):
 
     def __init__(self, path, slug):
         self.command = f"{path}/bin/python3"
+        file_must_exist(self.command, "python command")
         self.slug = slug
         self.toxenv = None
 
@@ -511,9 +540,11 @@ class CoveragePR(Coverage):
     """A version of coverage.py from a pull request."""
 
     def __init__(self, number, tweaks=None, env_vars=None):
+        url = f"https://github.com/nedbat/coveragepy.git@refs/pull/{number}/merge"
+        url_must_exist(url)
         super().__init__(
             slug=f"#{number}",
-            pip_args=f"git+https://github.com/nedbat/coveragepy.git@refs/pull/{number}/merge",
+            pip_args=f"git+{url}",
             tweaks=tweaks,
             env_vars=env_vars,
         )
@@ -523,9 +554,11 @@ class CoverageCommit(Coverage):
     """A version of coverage.py from a specific commit."""
 
     def __init__(self, sha, tweaks=None, env_vars=None):
+        url = f"https://github.com/nedbat/coveragepy.git@{sha}",
+        url_must_exist(url)
         super().__init__(
             slug=sha,
-            pip_args=f"git+https://github.com/nedbat/coveragepy.git@{sha}",
+            pip_args=f"git+{url}",
             tweaks=tweaks,
             env_vars=env_vars,
         )
@@ -535,9 +568,10 @@ class CoverageSource(Coverage):
     """The coverage.py in a working tree."""
 
     def __init__(self, directory, slug="source", tweaks=None, env_vars=None):
+        directory = file_must_exist(directory, "coverage directory")
         super().__init__(
             slug=slug,
-            pip_args=directory,
+            pip_args=str(directory),
             tweaks=tweaks,
             env_vars=env_vars,
         )
