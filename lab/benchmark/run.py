@@ -54,7 +54,7 @@ if 0:
     )
 
 
-if 1:
+if 0:
     # Compare two Python versions
     v1 = 10
     v2 = 11
@@ -76,6 +76,27 @@ if 1:
         ],
     )
 
+if 1:
+    # Compare current Coverage source against shipped version
+    run_experiment(
+        py_versions=[
+            Python(3, 11),
+        ],
+        cov_versions=[
+            Coverage("pip", "coverage"),
+            CoverageSource("../..", "latest"),
+        ],
+        projects=[
+            ProjectMashumaro(),
+            ProjectOperator(),
+        ],
+        rows=["pyver", "proj"],
+        column="cov",
+        ratios=[
+            (f"Latest vs shipped", "latest", "pip"),
+        ],
+    )
+
 if 0:
     # Compare 3.12 coverage vs no coverage
     run_experiment(
@@ -87,7 +108,7 @@ if 0:
             Coverage("732", "coverage==7.3.2"),
             CoverageSource(
                 slug="sysmon",
-                directory="/Users/nbatchelder/coverage/trunk",
+                directory="../..",
                 env_vars={"COVERAGE_CORE": "sysmon"},
             ),
         ],
