@@ -160,7 +160,7 @@ if 0:
             Coverage("732", "coverage==7.3.2"),
             CoverageSource(
                 slug="sysmon",
-                directory="../..",
+                directory_name="../..",
                 env_vars={"COVERAGE_CORE": "sysmon"},
             ),
         ],
@@ -187,7 +187,7 @@ if 0:
             Coverage("732", "coverage==7.3.2"),
             CoverageSource(
                 slug="sysmon",
-                directory="/Users/nbatchelder/coverage/trunk",
+                directory_name="/Users/nbatchelder/coverage/trunk",
                 env_vars={"COVERAGE_CORE": "sysmon"},
             ),
         ],
