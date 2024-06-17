@@ -1375,7 +1375,7 @@ class MatchCaseTest(CoverageTest):
         )
         assert self.stdout() == "None\nno go\ngo: n\n"
 
-    def test_absurd_wildcard(self) -> None:
+    def test_absurd_wildcards(self) -> None:
         # https://github.com/nedbat/coveragepy/issues/1421
         self.check_coverage("""\
             def absurd(x):
@@ -1384,9 +1384,47 @@ class MatchCaseTest(CoverageTest):
                         print("default")
             absurd(5)
             """,
+            # No arc from 3 to 5 because 3 always matches.
             arcz=".1 15 5.  .2 23 34 4.",
         )
         assert self.stdout() == "default\n"
+        self.check_coverage("""\
+            def absurd(x):
+                match x:
+                    case (3 | 99 | 999 as y):
+                        print("not default")
+            absurd(5)
+            """,
+            arcz=".1 15 5.  .2 23 34 3. 4.",
+            arcz_missing="34 4.",
+        )
+        assert self.stdout() == ""
+        self.check_coverage("""\
+            def absurd(x):
+                match x:
+                    case (3 | 17 as y):
+                        print("not default")
+                    case 7: # 5
+                        print("also not default")
+            absurd(7)
+            """,
+            arcz=".1 17 7.  .2 23 34 4. 35 56 5. 6.",
+            arcz_missing="34 4. 5.",
+        )
+        assert self.stdout() == "also not default\n"
+        self.check_coverage("""\
+            def absurd(x):
+                match x:
+                    case 3:
+                        print("not default")
+                    case _ if x == 7: # 5
+                        print("also not default")
+            absurd(7)
+            """,
+            arcz=".1 17 7.  .2 23 34 4. 35 56 5. 6.",
+            arcz_missing="34 4. 5.",
+        )
+        assert self.stdout() == "also not default\n"
 
 
 class OptimizedIfTest(CoverageTest):
