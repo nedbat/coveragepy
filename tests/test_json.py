@@ -33,13 +33,13 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
         self.make_file("a.py", """\
             a = {'b': 1}
             if a.get('a'):
-                b = 1
-            elif a.get('b'):
-                b = 2
-            else:
                 b = 3
+            elif a.get('b'):
+                b = 5
+            else:
+                b = 7
             if not a:
-                b = 4
+                b = 9
             """)
         a = self.start_import_stop(cov, "a")
         output_path = os.path.join(self.temp_dir, "a.json")
@@ -49,6 +49,12 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
         self.assert_recent_datetime(
             datetime.strptime(parsed_result['meta']['timestamp'], "%Y-%m-%dT%H:%M:%S.%f"),
         )
+        import contextlib
+        with open("/tmp/foo.out", "a") as f:
+            with contextlib.redirect_stdout(f):
+                print("=" * 120)
+                print(f'running {os.getenv("PYTEST_CURRENT_TEST")}')
+                print(json.dumps(parsed_result, indent=4))
         del (parsed_result['meta']['timestamp'])
         expected_result["meta"].update({
             "format": FORMAT_VERSION,

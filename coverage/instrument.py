@@ -40,7 +40,7 @@ def decode_branch(lineno):
 class FakeBranchLineTransformer(ast.NodeTransformer):
 
     def _mark_branch(self, from_lineno: int, to_lineno: int) -> list[ast.stmt]:
-        mark = ast.Expr(ast.Constant(1))
+        mark = ast.Expr(ast.Constant(1723))
         #assert sys.version_info[0:2] >= (3,12)
         for node in ast.walk(mark):
             node.lineno = node.end_lineno = encode_branch(from_lineno, to_lineno)
@@ -85,8 +85,10 @@ class FakeBranchLineTransformer(ast.NodeTransformer):
         for case in node.cases:
             case.body = self._mark_branch(node.lineno, case.body[0].lineno) + case.body
 
-        has_wildcard = isinstance(node.cases[-1].pattern, ast.MatchAs) and \
-                       node.cases[-1].pattern.pattern is None
+        pattern = node.cases[-1].pattern
+        while isinstance(pattern, ast.MatchOr):
+            pattern = pattern.patterns[-1]
+        has_wildcard = isinstance(pattern, ast.MatchAs)
 
         if not has_wildcard:
             to_line = node.next_node.lineno if node.next_node else 0 # exit
@@ -148,13 +150,18 @@ def compile_instrumented(source: str, filename: str): # -> code object
 
     tree = FakeBranchLineTransformer().visit(tree)
     ast.fix_missing_locations(tree)
+    import contextlib, os
+    with open("/tmp/foo.out", "a") as f:
+        with contextlib.redirect_stdout(f):
+            print("=" * 80)
+            print(f"--- test: {os.getenv('PYTEST_CURRENT_TEST')}")
+            print(f"--- {filename} -------")
+            print(ast.dump(tree, indent=4))
     code = compile(tree, filename, "exec", dont_inherit=True)
-    # import contextlib, os
-    # with open("/tmp/foo.out", "a") as f:
-    #     with contextlib.redirect_stdout(f):
-    #         import dis
-    #         print("=" * 80)
-    #         print(f"--- test: {os.getenv('PYTEST_CURRENT_TEST')}")
-    #         print(f"--- {filename} -------")
-    #         dis.dis(code)
+    import contextlib, os
+    with open("/tmp/foo.out", "a") as f:
+        with contextlib.redirect_stdout(f):
+            import dis
+            print("----------------------------")
+            dis.dis(code)
     return code

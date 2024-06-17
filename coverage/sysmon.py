@@ -383,6 +383,10 @@ class SysMonitor(TracerCore):
             last_line = self.last_lines.get(frame)
             if last_line is not None:
                 arc = (last_line, -code.co_firstlineno)
+                import contextlib
+                with open("/tmp/foo.out", "a") as f:
+                    with contextlib.redirect_stdout(f):
+                        print(f"sysmon adding {arc = } (return)")
                 # log(f"adding {arc=}")
                 cast(Set[TArc], code_info.file_data).add(arc)
 
@@ -429,16 +433,22 @@ class SysMonitor(TracerCore):
         """Handle sys.monitoring.events.LINE events for branch coverage."""
         code_info = self.code_infos[id(code)]
         if code_info.file_data is not None:
+            was_branch = is_branch(line_number)
             if is_branch(line_number):
                 from_no, to_no = decode_branch(line_number)
+                if to_no == 0:
+                    to_no = -code.co_firstlineno
+                arc = (from_no, to_no)
             else:
                 from_no = to_no = line_number
-            arc = (from_no, to_no)
-            cast(Set[TArc], code_info.file_data).add(arc)
-            import contextlib
-            # with open("/tmp/foo.out", "a") as f:
-            #     with contextlib.redirect_stdout(f):
-            #         print(f"adding {arc = }")
+                arc = None
+                arc = (from_no, to_no)
+            if arc is not None:
+                cast(Set[TArc], code_info.file_data).add(arc)
+                import contextlib
+                with open("/tmp/foo.out", "a") as f:
+                    with contextlib.redirect_stdout(f):
+                        print(f"sysmon adding {arc = } was_branch: {was_branch}")
             # log(f"adding {arc=}")
             #self.last_lines[frame] = line_number
         return sys.monitoring.DISABLE
