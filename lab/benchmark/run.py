@@ -1,4 +1,23 @@
+import optparse
+from pathlib import Path
+
 from benchmark import *
+
+parser = optparse.OptionParser()
+parser.add_option(
+    "--clean",
+    action="store_true",
+    dest="clean",
+    default=False,
+    help="Delete the results.json file before running benchmarks"
+)
+options, args = parser.parse_args()
+
+if options.clean:
+    results_file = Path("results.json")
+    if results_file.exists():
+        results_file.unlink()
+        print("Deleted results.json")
 
 if 0:
     run_experiment(
@@ -90,7 +109,7 @@ if 1:
         ],
         projects=[
             # ProjectSphinx(),  # Works, slow
-            ProjectPygments(),  # Works
+            # ProjectPygments(),  # Works
             # ProjectRich(),  # Doesn't work
             # ProjectTornado(),  # Works, tests fail
             ProjectDulwich(),  # Works
