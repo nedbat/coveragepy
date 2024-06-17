@@ -187,9 +187,16 @@ class ProjectToTest:
         if self.dir.exists():
             rmrf(self.dir)
 
-    def get_source(self, shell):
+    def get_source(self, shell, retries=5):
         """Get the source of the project."""
-        shell.run_command(f"git clone {self.git_url} {self.dir}")
+        for retry in range(retries):
+            try:
+                shell.run_command(f"git clone {self.git_url} {self.dir}")
+                return
+            except Exception as e:
+                print(f"Retrying to clone {self.git_url} due to error:\n{e}")
+                if retry == retries - 1:
+                    raise e
 
     def prep_environment(self, env):
         """Prepare the environment to run the test suite.
