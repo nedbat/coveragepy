@@ -912,14 +912,17 @@ class Experiment:
                 env.shell.print_banner(banner)
                 with change_dir(proj.dir):
                     with env.shell.set_env(cov_ver.env_vars):
-                        if cov_ver.pip_args is None:
-                            dur = proj.run_no_coverage(env)
-                        else:
-                            dur = proj.run_with_coverage(
-                                env,
-                                cov_ver.pip_args,
-                                cov_ver.tweaks,
-                            )
+                        try:
+                            if cov_ver.pip_args is None:
+                                dur = proj.run_no_coverage(env)
+                            else:
+                                dur = proj.run_with_coverage(
+                                    env,
+                                    cov_ver.pip_args,
+                                    cov_ver.tweaks,
+                                )
+                        except Exception:
+                            dur = float("NaN")
             print(f"Tests took {dur:.3f}s")
             if result_key not in self.result_data:
                 self.result_data[result_key] = []
