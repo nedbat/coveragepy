@@ -411,6 +411,231 @@ class ProjectOperator(ProjectToTest):
         return duration
 
 
+class ProjectPygments(ToxProject):
+    git_url = "https://github.com/pygments/pygments"
+
+    def run_with_coverage(self, env, pip_args, cov_tweaks):
+        self.run_tox(env, env.pyver.toxenv, "--notest")
+        env.shell.run_command(
+            f".tox/{env.pyver.toxenv}/bin/python -m pip install {pip_args}"
+        )
+        with self.tweak_coverage_settings(cov_tweaks):
+            self.pre_check(env)  # NOTE: Not properly factored, and only used from here.
+            duration = self.run_tox(env, env.pyver.toxenv, "--skip-pkg-install -- --cov")
+            self.post_check(
+                env
+            )  # NOTE: Not properly factored, and only used from here.
+        return duration
+
+
+class ProjectRich(ToxProject):
+    git_url = "https://github.com/Textualize/rich"
+
+    def prep_environment(self, env):
+        raise Exception("Doesn't work due to poetry install error.")
+
+
+class ProjectTornado(ToxProject):
+    git_url = "https://github.com/tornadoweb/tornado"
+
+    def run_no_coverage(self, env):
+        env.shell.run_command(f"{env.python} -m tornado.test")
+        return env.shell.last_duration
+
+    def run_with_coverage(self, env, pip_args, cov_tweaks):
+        env.shell.run_command(f"{env.python} -m pip install {pip_args}")
+        env.shell.run_command(
+            f"{env.python} -m coverage run -m tornado.test"
+        )
+        duration = env.shell.last_duration
+        report = env.shell.run_command(f"{env.python} -m coverage report --precision=6")
+        print("Results:", report.splitlines()[-1])
+        return duration
+
+
+class ProjectDulwich(ToxProject):
+    git_url = "https://github.com/jelmer/dulwich"
+
+    def prep_environment(self, env):
+        env.shell.run_command(f"{env.python} -m pip install -r requirements.txt")
+        env.shell.run_command(f"{env.python} -m pip install .")
+
+    def run_no_coverage(self, env):
+        env.shell.run_command(f"{env.python} -m unittest tests.test_suite")
+        return env.shell.last_duration
+
+    def run_with_coverage(self, env, pip_args, cov_tweaks):
+        env.shell.run_command(f"{env.python} -m pip install {pip_args}")
+        env.shell.run_command(
+            f"{env.python} -m coverage run -m unittest tests.test_suite"
+        )
+        duration = env.shell.last_duration
+        report = env.shell.run_command(f"{env.python} -m coverage report --precision=6")
+        print("Results:", report.splitlines()[-1])
+        return duration
+
+
+class ProjectBlack(ToxProject):
+    git_url = "https://github.com/psf/black"
+
+    def prep_environment(self, env):
+        env.shell.run_command(f"{env.python} -m pip install -r test_requirements.txt")
+        env.shell.run_command(f"{env.python} -m pip install -e .[d]")
+
+    def run_no_coverage(self, env):
+        env.shell.run_command(
+            f"{env.python} -m pytest tests --run-optional no_jupyter --no-cov --numprocesses 1"
+        )
+        return env.shell.last_duration
+
+    def run_with_coverage(self, env, pip_args, cov_tweaks):
+        env.shell.run_command(f"{env.python} -m pip install {pip_args}")
+        env.shell.run_command(
+            f"{env.python} -m pytest tests --run-optional no_jupyter --cov --numprocesses 1"
+        )
+        duration = env.shell.last_duration
+        report = env.shell.run_command(f"{env.python} -m coverage report --precision=6")
+        print("Results:", report.splitlines()[-1])
+        return duration
+
+
+class ProjectMpmath(ProjectToTest):
+    git_url = "https://github.com/mpmath/mpmath"
+    select = "-k 'not (torture or extra or functions2 or calculus or cli or elliptic or quad)'"
+
+    def prep_environment(self, env):
+        env.shell.run_command(f"{env.python} -m pip install .[develop]")
+
+    def run_no_coverage(self, env):
+        env.shell.run_command(f"{env.python} -m pytest {self.select} --no-cov")
+        return env.shell.last_duration
+
+    def run_with_coverage(self, env, pip_args, cov_tweaks):
+        env.shell.run_command(
+            f"{env.python} -m pytest {self.select} --cov=mpmath"
+        )
+        duration = env.shell.last_duration
+        report = env.shell.run_command(f"{env.python} -m coverage report --precision=6")
+        print("Results:", report.splitlines()[-1])
+        return duration
+
+
+class ProjectMypy(ToxProject):
+    git_url = "https://github.com/python/mypy"
+
+    # Slow test suites
+    CMDLINE = "PythonCmdline"
+    PEP561 = "PEP561Suite"
+    EVALUATION = "PythonEvaluation"
+    DAEMON = "testdaemon"
+    STUBGEN_CMD = "StubgenCmdLine"
+    STUBGEN_PY = "StubgenPythonSuite"
+    MYPYC_RUN = "TestRun"
+    MYPYC_RUN_MULTI = "TestRunMultiFile"
+    MYPYC_EXTERNAL = "TestExternal"
+    MYPYC_COMMAND_LINE = "TestCommandLine"
+    ERROR_STREAM = "ErrorStreamSuite"
+
+    ALL_NON_FAST = [
+        CMDLINE,
+        PEP561,
+        EVALUATION,
+        DAEMON,
+        STUBGEN_CMD,
+        STUBGEN_PY,
+        MYPYC_RUN,
+        MYPYC_RUN_MULTI,
+        MYPYC_EXTERNAL,
+        MYPYC_COMMAND_LINE,
+        ERROR_STREAM,
+    ]
+
+    FAST = "pytest", "-k", f"\"not ({' or '.join(ALL_NON_FAST)})\""
+
+    def prep_environment(self, env):
+        env.shell.run_command(f"{env.python} -m pip install -r test-requirements.txt")
+
+    def run_no_coverage(self, env):
+        env.shell.run_command(f"{env.python} -m {' '.join(self.FAST)} --no-cov")
+        return env.shell.last_duration
+
+    def run_with_coverage(self, env, pip_args, cov_tweaks):
+        env.shell.run_command(f"{env.python} -m pip install {pip_args}")
+        env.shell.run_command(
+            f"{env.python} -m {' '.join(self.FAST)} --cov"
+        )
+        duration = env.shell.last_duration
+        report = env.shell.run_command(f"{env.python} -m coverage report --precision=6")
+        print("Results:", report.splitlines()[-1])
+        return duration
+
+
+class ProjectHtml5lib(ToxProject):
+    git_url = "https://github.com/html5lib/html5lib-python"
+
+    def prep_environment(self, env):
+        env.shell.run_command(f"{env.python} -m pip install -r requirements-test.txt")
+        env.shell.run_command(f"{env.python} -m pip install .")
+
+    def run_no_coverage(self, env):
+        env.shell.run_command(f"{env.python} -m pytest")
+        return env.shell.last_duration
+
+    def run_with_coverage(self, env, pip_args, cov_tweaks):
+        env.shell.run_command(f"{env.python} -m pip install {pip_args}")
+        env.shell.run_command(
+            f"{env.python} -m coverage run -m pytest"
+        )
+        duration = env.shell.last_duration
+        report = env.shell.run_command(f"{env.python} -m coverage report --precision=6")
+        print("Results:", report.splitlines()[-1])
+        return duration
+
+
+class ProjectSphinx(ToxProject):
+    git_url = "https://github.com/sphinx-doc/sphinx"
+
+    def prep_environment(self, env):
+        env.shell.run_command(f"{env.python} -m pip install .[test]")
+
+    def run_no_coverage(self, env):
+        env.shell.run_command(f"{env.python} -m pytest")
+        return env.shell.last_duration
+
+    def run_with_coverage(self, env, pip_args, cov_tweaks):
+        env.shell.run_command(f"{env.python} -m pip install {pip_args}")
+        env.shell.run_command(
+            f"{env.python} -m coverage run -m pytest"
+        )
+        duration = env.shell.last_duration
+        env.shell.run_command(f"{env.python} -m coverage combine")
+        report = env.shell.run_command(f"{env.python} -m coverage report --precision=6")
+        print("Results:", report.splitlines()[-1])
+        return duration
+
+
+class ProjectUrllib3(ProjectToTest):
+    git_url = "https://github.com/urllib3/urllib3"
+
+    def prep_environment(self, env):
+        env.shell.run_command(f"{env.python} -m pip install -r dev-requirements.txt")
+        env.shell.run_command(f"{env.python} -m pip install .")
+
+    def run_no_coverage(self, env):
+        env.shell.run_command(f"{env.python} -m pytest")
+        return env.shell.last_duration
+
+    def run_with_coverage(self, env, pip_args, cov_tweaks):
+        env.shell.run_command(f"{env.python} -m pip install {pip_args}")
+        env.shell.run_command(
+            f"{env.python} -m coverage run -m pytest"
+        )
+        duration = env.shell.last_duration
+        report = env.shell.run_command(f"{env.python} -m coverage report --precision=6")
+        print("Results:", report.splitlines()[-1])
+        return duration
+
+
 def tweak_toml_coverage_settings(
     toml_file: str, tweaks: Iterable[tuple[str, Any]]
 ) -> Iterator[None]:
