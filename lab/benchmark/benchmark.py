@@ -8,6 +8,7 @@ from __future__ import annotations
 import collections
 import contextlib
 import itertools
+import json
 import os
 import random
 import shutil
@@ -831,11 +832,29 @@ class Experiment:
         py_versions: list[PyVersion],
         cov_versions: list[Coverage],
         projects: list[ProjectToTest],
+        results_file: str = "results.json",
+        load: bool = False,
+        cwd: str = "",
     ):
         self.py_versions = py_versions
         self.cov_versions = cov_versions
         self.projects = projects
-        self.result_data: dict[ResultKey, list[float]] = {}
+        self.results_file = Path(cwd) / Path(results_file)
+        self.result_data: dict[ResultKey, list[float]] = self.load_results() if load else {}
+        self.summary_data: dict[ResultKey, float] = {}
+
+    def save_results(self):
+        """Save current results to the JSON file."""
+        with self.results_file.open("w") as f:
+            json.dump({ " ".join(k): v for k, v in self.result_data.items()}, f)
+
+    def load_results(self) -> dict[ResultKey, list[float]]:
+        """Load results from the JSON file if it exists."""
+        if self.results_file.exists():
+            with self.results_file.open("r") as f:
+                data: dict[str, list[float]] = json.load(f)
+            return {tuple(k.split()): v for k, v in data.items()}
+        return {}
 
     def run(self, num_runs: int = 3) -> None:
         total_runs = (
@@ -874,10 +893,16 @@ class Experiment:
         random.shuffle(all_runs)
 
         run_data: dict[ResultKey, list[float]] = collections.defaultdict(list)
+        run_data.update(self.result_data)
 
         for proj, pyver, cov_ver, env in all_runs:
+            result_key = (proj.slug, pyver.slug, cov_ver.slug)
+            total_run_num = next(total_run_nums)
+            if result_key in self.result_data and len(self.result_data[result_key]) >= num_runs:
+                print(f"Skipping {result_key} as results already exist.")
+                continue
+
             with env.shell:
-                total_run_num = next(total_run_nums)
                 banner = (
                     "Running tests: "
                     + f"proj={proj.slug}, py={pyver.slug}, cov={cov_ver.slug}, "
@@ -896,9 +921,11 @@ class Experiment:
                                 cov_ver.tweaks,
                             )
             print(f"Tests took {dur:.3f}s")
-            result_key = (proj.slug, pyver.slug, cov_ver.slug)
+            if result_key not in self.result_data:
+                self.result_data[result_key] = []
+            self.result_data[result_key].append(dur)
             run_data[result_key].append(dur)
-
+            self.save_results()
         # Summarize and collect the data.
         print("# Results")
         for proj in self.projects:
@@ -907,7 +934,7 @@ class Experiment:
                     result_key = (proj.slug, pyver.slug, cov_ver.slug)
                     data = run_data[result_key]
                     med = statistics.median(data)
-                    self.result_data[result_key] = med
+                    self.summary_data[result_key] = med
                     stdev = statistics.stdev(data) if len(data) > 1 else 0.0
                     summary = (
                         f"Median for {proj.slug}, {pyver.slug}, {cov_ver.slug}: "
@@ -950,7 +977,7 @@ class Experiment:
             for col in dimensions[column]:
                 key = (*tup, col)
                 key = tuple(key[i] for i in remap)
-                result_time = self.result_data[key]  # type: ignore
+                result_time = self.summary_data[key]
                 row.append(f"{result_time:.1f}s")
                 col_data[col] = result_time
             for _, num, denom in ratios:
@@ -973,6 +1000,7 @@ def run_experiment(
     column: str,
     ratios: Iterable[tuple[str, str, str]] = (),
     num_runs: int = int(sys.argv[1]),
+    load: bool = False,
 ):
     """
     Run a benchmarking experiment and print a table of results.
@@ -1004,9 +1032,10 @@ def run_experiment(
     print(f"Removing and re-making {PERF_DIR}")
     rmrf(PERF_DIR)
 
+    cwd = str(Path.cwd())
     with change_dir(PERF_DIR):
         exp = Experiment(
-            py_versions=py_versions, cov_versions=cov_versions, projects=projects
+            py_versions=py_versions, cov_versions=cov_versions, projects=projects, load=load, cwd=cwd
         )
         exp.run(num_runs=int(num_runs))
         exp.show_results(rows=rows, column=column, ratios=ratios)
