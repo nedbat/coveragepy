@@ -229,13 +229,27 @@ class CoverageTest(
             msg = f"missing: {missing_formatted!r} != {missing!r}"
             assert missing_formatted == missing, msg
 
-        if env.CHECK_ARCS:
-            if arcs is not None:
+        def arcs_to_branches(arcs):
+            import collections
+            if arcs is None:
+                return {}
+            arcs_combined = collections.defaultdict(set)
+            for fromno, tono in arcs:
+                arcs_combined[fromno].add(tono)
+            branches = {}
+            for fromno, tonos in arcs_combined.items():
+                if len(tonos) > 1:
+                    branches[fromno] = tonos
+            return branches
+
+        if arcs is not None:
+            if env.CHECK_ARCS:
                 # print("Possible arcs:")
                 # print(" expected:", arcs)
                 # print(" actual:", analysis.arc_possibilities)
                 # print("Executed:")
                 # print(" actual:", sorted(set(analysis.arcs_executed)))
+                print(f"branches: {branches}")
                 # TODO: this would be nicer with pytest-check, once we can run that.
                 msg = (
                     self._check_arcs(arcs, analysis.arc_possibilities, "Possible") +
@@ -244,6 +258,9 @@ class CoverageTest(
                 )
                 if msg:
                     assert False, msg
+            else:
+                assert arcs == analysis.arc_possibilities
+                assert arcs_to_branches(arcs_missing) == analysis.missing_branch_arcs()
 
         if report:
             frep = io.StringIO()
