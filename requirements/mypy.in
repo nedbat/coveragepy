@@ -7,3 +7,5 @@
 -r pytest.in
 
 mypy
+types-requests
+types-tabulate

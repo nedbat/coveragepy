@@ -41,7 +41,7 @@ exceptiongroup==1.2.1
     #   pytest
 execnet==2.1.1
     # via pytest-xdist
-filelock==3.14.0
+filelock==3.15.1
     # via
     #   tox
     #   virtualenv
@@ -49,7 +49,7 @@ flaky==3.8.1
     # via -r requirements/pytest.in
 greenlet==3.0.3
     # via -r requirements/dev.in
-hypothesis==6.103.1
+hypothesis==6.103.2
     # via -r requirements/pytest.in
 idna==3.7
     # via requests
@@ -171,11 +171,11 @@ typing-extensions==4.12.2
     #   pylint
     #   rich
     #   urwid
-urllib3==2.2.1
+urllib3==2.2.2
     # via
     #   requests
     #   twine
-urwid==2.6.13
+urwid==2.6.14
     # via
     #   pudb
     #   urwid-readline

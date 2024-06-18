@@ -22,13 +22,13 @@ from pathlib import Path
 from dataclasses import dataclass
 from io import TextIOWrapper
 from types import TracebackType
-from typing import Any, Iterable, Iterator, Mapping, Tuple, Type, cast
+from typing import Any, Dict, Iterable, Iterator, Mapping, Optional, Tuple, Type, cast
 
 import requests
 import tabulate
 
-TweaksType = Iterable[tuple[str, Any]] | None
-Env_VarsType = dict[str, str] | None
+TweaksType = Optional[Iterable[Tuple[str, Any]]]
+Env_VarsType = Optional[Dict[str, str]]
 
 
 class ShellSession:
@@ -310,7 +310,7 @@ class ProjectPytestHtml(ToxProject):
         self, env: Env, pip_args: str, cov_tweaks: Iterable[tuple[str, Any]]
     ) -> float:
         raise Exception("This doesn't work because options changed to tweaks")
-        covenv = env.pyver.toxenv + "-cov"
+        covenv = env.pyver.toxenv + "-cov"  # type: ignore[unreachable]
         self.run_tox(env, covenv, "--notest")
         env.shell.run_command(f".tox/{covenv}/bin/python -m pip install {pip_args}")
         if cov_tweaks:
