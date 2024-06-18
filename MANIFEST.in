@@ -28,6 +28,7 @@ include tox.ini
 
 recursive-include ci *
 recursive-include lab *
+exclude lab/benchmark/results.json
 recursive-include .github *
 
 recursive-include coverage *.pyi
