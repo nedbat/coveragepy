@@ -215,9 +215,7 @@ class ProjectToTest:
         """
 
     @contextlib.contextmanager
-    def tweak_coverage_settings(
-        self, settings: Iterable[tuple[str, Any]]
-    ) -> Iterator[None]:
+    def tweak_coverage_settings(self, settings: TweaksType) -> Iterator[None]:
         """Tweak the coverage settings.
 
         NOTE: This is not properly factored, and is only used by ToxProject now!!!
@@ -238,7 +236,7 @@ class ProjectToTest:
         return 0.0
 
     def run_with_coverage(
-        self, env: Env, pip_args: str, cov_tweaks: Iterable[tuple[str, Any]]
+        self, env: Env, pip_args: str, cov_tweaks: TweaksType
     ) -> float:
         """Run the test suite with coverage measurement.
 
@@ -264,7 +262,7 @@ class EmptyProject(ProjectToTest):
         return next(self.durations)
 
     def run_with_coverage(
-        self, env: Env, pip_args: str, cov_tweaks: Iterable[tuple[str, Any]]
+        self, env: Env, pip_args: str, cov_tweaks: TweaksType
     ) -> float:
         """Run the test suite with coverage measurement."""
         return next(self.durations)
@@ -286,7 +284,7 @@ class ToxProject(ProjectToTest):
         return self.run_tox(env, env.pyver.toxenv, "--skip-pkg-install")
 
     def run_with_coverage(
-        self, env: Env, pip_args: str, cov_tweaks: Iterable[tuple[str, Any]]
+        self, env: Env, pip_args: str, cov_tweaks: TweaksType
     ) -> float:
         self.run_tox(env, env.pyver.toxenv, "--notest")
         env.shell.run_command(
@@ -307,7 +305,7 @@ class ProjectPytestHtml(ToxProject):
     git_url = "https://github.com/pytest-dev/pytest-html"
 
     def run_with_coverage(
-        self, env: Env, pip_args: str, cov_tweaks: Iterable[tuple[str, Any]]
+        self, env: Env, pip_args: str, cov_tweaks: TweaksType
     ) -> float:
         raise Exception("This doesn't work because options changed to tweaks")
         covenv = env.pyver.toxenv + "-cov"  # type: ignore[unreachable]
@@ -342,9 +340,8 @@ class ProjectAttrs(ToxProject):
 
     git_url = "https://github.com/python-attrs/attrs"
 
-    def tweak_coverage_settings(   # type: ignore
-        self, tweaks: Iterable[tuple[str, Any]]
-    ) -> Iterator[None]:
+    @contextlib.contextmanager
+    def tweak_coverage_settings(self, tweaks: TweaksType) -> Iterator[None]:
         return tweak_toml_coverage_settings("pyproject.toml", tweaks)
 
     def pre_check(self, env: Env) -> None:
@@ -389,7 +386,7 @@ class ProjectMashumaro(ProjectToTest):
         return env.shell.last_duration
 
     def run_with_coverage(
-        self, env: Env, pip_args: str, cov_tweaks: Iterable[tuple[str, Any]]
+        self, env: Env, pip_args: str, cov_tweaks: TweaksType
     ) -> float:
         env.shell.run_command(f"{env.python} -m pip install {pip_args}")
         env.shell.run_command(
@@ -427,7 +424,7 @@ class ProjectOperator(ProjectToTest):
         return env.shell.last_duration
 
     def run_with_coverage(
-        self, env: Env, pip_args: str, cov_tweaks: Iterable[tuple[str, Any]]
+        self, env: Env, pip_args: str, cov_tweaks: TweaksType
     ) -> float:
         env.shell.run_command(f"{env.python} -m pip install {pip_args}")
         env.shell.run_command(
@@ -443,7 +440,7 @@ class ProjectPygments(ToxProject):
     git_url = "https://github.com/pygments/pygments"
 
     def run_with_coverage(
-        self, env: Env, pip_args: str, cov_tweaks: Iterable[tuple[str, Any]]
+        self, env: Env, pip_args: str, cov_tweaks: TweaksType
     ) -> float:
         self.run_tox(env, env.pyver.toxenv, "--notest")
         env.shell.run_command(
@@ -473,7 +470,7 @@ class ProjectTornado(ToxProject):
         return env.shell.last_duration
 
     def run_with_coverage(
-        self, env: Env, pip_args: str, cov_tweaks: Iterable[tuple[str, Any]]
+        self, env: Env, pip_args: str, cov_tweaks: TweaksType
     ) -> float:
         env.shell.run_command(f"{env.python} -m pip install {pip_args}")
         env.shell.run_command(
@@ -497,7 +494,7 @@ class ProjectDulwich(ToxProject):
         return env.shell.last_duration
 
     def run_with_coverage(
-        self, env: Env, pip_args: str, cov_tweaks: Iterable[tuple[str, Any]]
+        self, env: Env, pip_args: str, cov_tweaks: TweaksType
     ) -> float:
         env.shell.run_command(f"{env.python} -m pip install {pip_args}")
         env.shell.run_command(
@@ -523,7 +520,7 @@ class ProjectBlack(ToxProject):
         return env.shell.last_duration
 
     def run_with_coverage(
-        self, env: Env, pip_args: str, cov_tweaks: Iterable[tuple[str, Any]]
+        self, env: Env, pip_args: str, cov_tweaks: TweaksType
     ) -> float:
         env.shell.run_command(f"{env.python} -m pip install {pip_args}")
         env.shell.run_command(
@@ -547,7 +544,7 @@ class ProjectMpmath(ProjectToTest):
         return env.shell.last_duration
 
     def run_with_coverage(
-        self, env: Env, pip_args: str, cov_tweaks: Iterable[tuple[str, Any]]
+        self, env: Env, pip_args: str, cov_tweaks: TweaksType
     ) -> float:
         env.shell.run_command(
             f"{env.python} -m pytest {self.select} --cov=mpmath"
@@ -598,7 +595,7 @@ class ProjectMypy(ToxProject):
         return env.shell.last_duration
 
     def run_with_coverage(
-        self, env: Env, pip_args: str, cov_tweaks: Iterable[tuple[str, Any]]
+        self, env: Env, pip_args: str, cov_tweaks: TweaksType
     ) -> float:
         env.shell.run_command(f"{env.python} -m pip install {pip_args}")
         env.shell.run_command(
@@ -622,7 +619,7 @@ class ProjectHtml5lib(ToxProject):
         return env.shell.last_duration
 
     def run_with_coverage(
-        self, env: Env, pip_args: str, cov_tweaks: Iterable[tuple[str, Any]]
+        self, env: Env, pip_args: str, cov_tweaks: TweaksType
     ) -> float:
         env.shell.run_command(f"{env.python} -m pip install {pip_args}")
         env.shell.run_command(
@@ -645,7 +642,7 @@ class ProjectSphinx(ToxProject):
         return env.shell.last_duration
 
     def run_with_coverage(
-        self, env: Env, pip_args: str, cov_tweaks: Iterable[tuple[str, Any]]
+        self, env: Env, pip_args: str, cov_tweaks: TweaksType
     ) -> float:
         env.shell.run_command(f"{env.python} -m pip install {pip_args}")
         env.shell.run_command(
@@ -670,7 +667,7 @@ class ProjectUrllib3(ProjectToTest):
         return env.shell.last_duration
 
     def run_with_coverage(
-        self, env: Env, pip_args: str, cov_tweaks: Iterable[tuple[str, Any]]
+        self, env: Env, pip_args: str, cov_tweaks: TweaksType
     ) -> float:
         env.shell.run_command(f"{env.python} -m pip install {pip_args}")
         env.shell.run_command(
@@ -682,9 +679,7 @@ class ProjectUrllib3(ProjectToTest):
         return duration
 
 
-def tweak_toml_coverage_settings(
-    toml_file: str, tweaks: Iterable[tuple[str, Any]]
-) -> Iterator[None]:
+def tweak_toml_coverage_settings(toml_file: str, tweaks: TweaksType) -> Iterator[None]:
     if tweaks:
         toml_inserts = []
         for name, value in tweaks:
@@ -727,7 +722,7 @@ class AdHocProject(ProjectToTest):
         return env.shell.last_duration
 
     def run_with_coverage(
-        self, env: Env, pip_args: str, cov_tweaks: Iterable[tuple[str, Any]]
+        self, env: Env, pip_args: str, cov_tweaks: TweaksType
     ) -> float:
         env.shell.run_command(f"{env.python} -m pip install {pip_args}")
         with change_dir(self.cur_dir):
@@ -962,13 +957,13 @@ class Experiment:
                             if cov_ver.pip_args is None:
                                 dur = proj.run_no_coverage(env)
                             else:
-                                assert cov_ver.tweaks is not None
                                 dur = proj.run_with_coverage(
                                     env,
                                     cov_ver.pip_args,
                                     cov_ver.tweaks,
                                 )
-                        except Exception:
+                        except Exception as exc:
+                            print(f"!!! {exc = }")
                             dur = float("NaN")
             print(f"Tests took {dur:.3f}s")
             if result_key not in self.result_data:

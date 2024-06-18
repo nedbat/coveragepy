@@ -109,15 +109,15 @@ if 1:
         ],
         projects=[
             # ProjectSphinx(),  # Works, slow
-            # ProjectPygments(),  # Works
+            ProjectPygments(),  # Works
             # ProjectRich(),  # Doesn't work
             # ProjectTornado(),  # Works, tests fail
-            ProjectDulwich(),  # Works
+            # ProjectDulwich(),  # Works
             # ProjectBlack(),  # Works, slow
             # ProjectMpmath(),  # Works, slow
             # ProjectMypy(),  # Works, slow
-            ProjectHtml5lib(),  # Works
-            ProjectUrllib3(),  # Works
+            # ProjectHtml5lib(),  # Works
+            # ProjectUrllib3(),  # Works
         ],
         rows=["pyver", "proj"],
         column="cov",
