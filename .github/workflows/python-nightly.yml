@@ -86,11 +86,6 @@ jobs:
       - name: "Check out the repo"
         uses: "actions/checkout@v4"
 
-      - name: "Set PYTHON_GIL"
-        if: "${{ matrix.nogil }}"
-        run: |
-          echo "PYTHON_GIL=0" >> $GITHUB_ENV
-
       - name: "Install ${{ matrix.python-version }} with deadsnakes"
         uses: deadsnakes/action@6c8b9b82fe0b4344f4b98f2775fcc395df45e494
         if: "!startsWith(matrix.python-version, 'pypy-')"
