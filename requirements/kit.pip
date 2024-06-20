@@ -18,9 +18,9 @@ cibuildwheel==2.19.1
     # via -r requirements/kit.in
 colorama==0.4.6
     # via -r requirements/kit.in
-filelock==3.15.1
+filelock==3.15.3
     # via cibuildwheel
-importlib-metadata==7.1.0
+importlib-metadata==7.2.0
     # via build
 packaging==24.1
     # via
@@ -45,5 +45,5 @@ zipp==3.19.2
     # via importlib-metadata
 
 # The following packages are considered to be unsafe in a requirements file:
-setuptools==70.0.0
+setuptools==70.1.0
     # via -r requirements/kit.in

@@ -41,7 +41,7 @@ exceptiongroup==1.2.1
     #   pytest
 execnet==2.1.1
     # via pytest-xdist
-filelock==3.15.1
+filelock==3.15.3
     # via
     #   tox
     #   virtualenv
@@ -53,7 +53,7 @@ hypothesis==6.103.2
     # via -r requirements/pytest.in
 idna==3.7
     # via requests
-importlib-metadata==7.1.0
+importlib-metadata==7.2.0
     # via
     #   build
     #   keyring
@@ -193,9 +193,9 @@ zipp==3.19.2
     #   importlib-resources
 
 # The following packages are considered to be unsafe in a requirements file:
-pip==24.1b2
+pip==24.1
     # via -r requirements/pip.in
-setuptools==70.0.0
+setuptools==70.1.0
     # via
     #   -r requirements/pip.in
     #   check-manifest
