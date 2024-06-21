@@ -49,7 +49,10 @@ class ShellSession:
         return self
 
     def __exit__(
-        self, exc_type: Type[BaseException] | None, exc_value: BaseException | None, traceback: TracebackType | None
+        self,
+        exc_type: Type[BaseException] | None,
+        exc_value: BaseException | None,
+        traceback: TracebackType | None,
     ) -> None:
         if self.foutput is not None:
             self.foutput.close()
@@ -363,6 +366,7 @@ class ProjectDjangoAuthToolkit(ToxProject):
 
 class ProjectDjango(ToxProject):
     """django/django"""
+
     # brew install libmemcached
     # pip install -e .
     # coverage run tests/runtests.py --settings=test_sqlite
@@ -419,7 +423,8 @@ class ProjectOperator(ProjectToTest):
 
     def run_no_coverage(self, env: Env) -> float:
         env.shell.run_command(
-            f"TMPDIR=/tmp/operator_tmp {env.python} -m tox -e unitnocov --skip-pkg-install -- {self.more_pytest_args}"
+            f"TMPDIR=/tmp/operator_tmp {env.python} -m tox -e unitnocov --skip-pkg-install"
+            + f" -- {self.more_pytest_args}"
         )
         return env.shell.last_duration
 
@@ -428,7 +433,8 @@ class ProjectOperator(ProjectToTest):
     ) -> float:
         env.shell.run_command(f"{env.python} -m pip install {pip_args}")
         env.shell.run_command(
-            f"TMPDIR=/tmp/operator_tmp {env.python} -m tox -e unit --skip-pkg-install -- {self.more_pytest_args}"
+            f"TMPDIR=/tmp/operator_tmp {env.python} -m tox -e unit --skip-pkg-install"
+            + f" -- {self.more_pytest_args}"
         )
         duration = env.shell.last_duration
         report = env.shell.run_command(f"{env.python} -m coverage report --precision=6")
@@ -448,7 +454,9 @@ class ProjectPygments(ToxProject):
         )
         with self.tweak_coverage_settings(cov_tweaks):
             self.pre_check(env)  # NOTE: Not properly factored, and only used from here.
-            duration = self.run_tox(env, env.pyver.toxenv, "--skip-pkg-install -- --cov")
+            duration = self.run_tox(
+                env, env.pyver.toxenv, "--skip-pkg-install -- --cov"
+            )
             self.post_check(
                 env
             )  # NOTE: Not properly factored, and only used from here.
@@ -473,9 +481,7 @@ class ProjectTornado(ToxProject):
         self, env: Env, pip_args: str, cov_tweaks: TweaksType
     ) -> float:
         env.shell.run_command(f"{env.python} -m pip install {pip_args}")
-        env.shell.run_command(
-            f"{env.python} -m coverage run -m tornado.test"
-        )
+        env.shell.run_command(f"{env.python} -m coverage run -m tornado.test")
         duration = env.shell.last_duration
         report = env.shell.run_command(f"{env.python} -m coverage report --precision=6")
         print("Results:", report.splitlines()[-1])
@@ -546,9 +552,7 @@ class ProjectMpmath(ProjectToTest):
     def run_with_coverage(
         self, env: Env, pip_args: str, cov_tweaks: TweaksType
     ) -> float:
-        env.shell.run_command(
-            f"{env.python} -m pytest {self.select} --cov=mpmath"
-        )
+        env.shell.run_command(f"{env.python} -m pytest {self.select} --cov=mpmath")
         duration = env.shell.last_duration
         report = env.shell.run_command(f"{env.python} -m coverage report --precision=6")
         print("Results:", report.splitlines()[-1])
@@ -598,9 +602,7 @@ class ProjectMypy(ToxProject):
         self, env: Env, pip_args: str, cov_tweaks: TweaksType
     ) -> float:
         env.shell.run_command(f"{env.python} -m pip install {pip_args}")
-        env.shell.run_command(
-            f"{env.python} -m {' '.join(self.FAST)} --cov"
-        )
+        env.shell.run_command(f"{env.python} -m {' '.join(self.FAST)} --cov")
         duration = env.shell.last_duration
         report = env.shell.run_command(f"{env.python} -m coverage report --precision=6")
         print("Results:", report.splitlines()[-1])
@@ -622,9 +624,7 @@ class ProjectHtml5lib(ToxProject):
         self, env: Env, pip_args: str, cov_tweaks: TweaksType
     ) -> float:
         env.shell.run_command(f"{env.python} -m pip install {pip_args}")
-        env.shell.run_command(
-            f"{env.python} -m coverage run -m pytest"
-        )
+        env.shell.run_command(f"{env.python} -m coverage run -m pytest")
         duration = env.shell.last_duration
         report = env.shell.run_command(f"{env.python} -m coverage report --precision=6")
         print("Results:", report.splitlines()[-1])
@@ -645,9 +645,7 @@ class ProjectSphinx(ToxProject):
         self, env: Env, pip_args: str, cov_tweaks: TweaksType
     ) -> float:
         env.shell.run_command(f"{env.python} -m pip install {pip_args}")
-        env.shell.run_command(
-            f"{env.python} -m coverage run -m pytest"
-        )
+        env.shell.run_command(f"{env.python} -m coverage run -m pytest")
         duration = env.shell.last_duration
         env.shell.run_command(f"{env.python} -m coverage combine")
         report = env.shell.run_command(f"{env.python} -m coverage report --precision=6")
@@ -670,9 +668,7 @@ class ProjectUrllib3(ProjectToTest):
         self, env: Env, pip_args: str, cov_tweaks: TweaksType
     ) -> float:
         env.shell.run_command(f"{env.python} -m pip install {pip_args}")
-        env.shell.run_command(
-            f"{env.python} -m coverage run -m pytest"
-        )
+        env.shell.run_command(f"{env.python} -m coverage run -m pytest")
         duration = env.shell.last_duration
         report = env.shell.run_command(f"{env.python} -m coverage report --precision=6")
         print("Results:", report.splitlines()[-1])
@@ -699,7 +695,9 @@ def tweak_toml_coverage_settings(toml_file: str, tweaks: TweaksType) -> Iterator
 class AdHocProject(ProjectToTest):
     """A standalone program to run locally."""
 
-    def __init__(self, python_file: str, cur_dir: str | None = None, pip_args: str = ""):
+    def __init__(
+        self, python_file: str, cur_dir: str | None = None, pip_args: str = ""
+    ):
         super().__init__()
         self.python_file = Path(python_file)
         if not self.python_file.exists():
@@ -825,7 +823,7 @@ class CoverageCommit(Coverage):
 
     def __init__(
         self, sha: str, tweaks: TweaksType = None, env_vars: Env_VarsType = None
-                 ):
+    ):
         url = f"https://github.com/nedbat/coveragepy.git@{sha}"
         url_must_exist(url)
         super().__init__(
@@ -840,7 +838,11 @@ class CoverageSource(Coverage):
     """The coverage.py in a working tree."""
 
     def __init__(
-        self, directory_name: str, slug: str = "source", tweaks: TweaksType = None, env_vars: Env_VarsType = None
+        self,
+        directory_name: str,
+        slug: str = "source",
+        tweaks: TweaksType = None,
+        env_vars: Env_VarsType = None,
     ):
         directory = file_must_exist(directory_name, "coverage directory")
         super().__init__(
@@ -881,7 +883,9 @@ class Experiment:
         self.cov_versions = cov_versions
         self.projects = projects
         self.results_file = Path(cwd) / Path(results_file)
-        self.result_data: dict[ResultKey, list[float]] = self.load_results() if load else {}
+        self.result_data: dict[ResultKey, list[float]] = (
+            self.load_results() if load else {}
+        )
         self.summary_data: dict[ResultKey, float] = {}
 
     def save_results(self) -> None:
@@ -894,7 +898,9 @@ class Experiment:
         if self.results_file.exists():
             with self.results_file.open("r") as f:
                 data: dict[str, list[float]] = json.load(f)
-            return {(k.split()[0], k.split()[1], k.split()[2]): v for k, v in data.items()}
+            return {
+                (k.split()[0], k.split()[1], k.split()[2]): v for k, v in data.items()
+            }
         return {}
 
     def run(self, num_runs: int = 3) -> None:
@@ -939,7 +945,10 @@ class Experiment:
         for proj, pyver, cov_ver, env in all_runs:
             result_key = (proj.slug, pyver.slug, cov_ver.slug)
             total_run_num = next(total_run_nums)
-            if result_key in self.result_data and len(self.result_data[result_key]) >= num_runs:
+            if (
+                result_key in self.result_data
+                and len(self.result_data[result_key]) >= num_runs
+            ):
                 print(f"Skipping {result_key} as results already exist.")
                 continue
 
@@ -1081,7 +1090,11 @@ def run_experiment(
     cwd = str(Path.cwd())
     with change_dir(PERF_DIR):
         exp = Experiment(
-            py_versions=py_versions, cov_versions=cov_versions, projects=projects, load=load, cwd=cwd
+            py_versions=py_versions,
+            cov_versions=cov_versions,
+            projects=projects,
+            load=load,
+            cwd=cwd,
         )
         exp.run(num_runs=int(num_runs))
         exp.show_results(rows=rows, column=column, ratios=ratios)
