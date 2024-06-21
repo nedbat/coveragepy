@@ -238,12 +238,10 @@ class ProjectToTest:
         """
         return 0.0
 
-    def run_with_coverage(
-        self, env: Env, pip_args: str, cov_tweaks: TweaksType
-    ) -> float:
+    def run_with_coverage(self, env: Env, cov_ver: Coverage) -> float:
         """Run the test suite with coverage measurement.
 
-        Must install a particular version of coverage using `pip_args`.
+        Must install a particular version of coverage using `cov_ver.pip_args`.
 
         Returns the duration of the run.
         """
@@ -264,9 +262,7 @@ class EmptyProject(ProjectToTest):
         """Run the test suite with coverage measurement."""
         return next(self.durations)
 
-    def run_with_coverage(
-        self, env: Env, pip_args: str, cov_tweaks: TweaksType
-    ) -> float:
+    def run_with_coverage(self, env: Env, cov_ver: Coverage) -> float:
         """Run the test suite with coverage measurement."""
         return next(self.durations)
 
@@ -286,14 +282,12 @@ class ToxProject(ProjectToTest):
     def run_no_coverage(self, env: Env) -> float:
         return self.run_tox(env, env.pyver.toxenv, "--skip-pkg-install")
 
-    def run_with_coverage(
-        self, env: Env, pip_args: str, cov_tweaks: TweaksType
-    ) -> float:
+    def run_with_coverage(self, env: Env, cov_ver: Coverage) -> float:
         self.run_tox(env, env.pyver.toxenv, "--notest")
         env.shell.run_command(
-            f".tox/{env.pyver.toxenv}/bin/python -m pip install {pip_args}"
+            f".tox/{env.pyver.toxenv}/bin/python -m pip install {cov_ver.pip_args}"
         )
-        with self.tweak_coverage_settings(cov_tweaks):
+        with self.tweak_coverage_settings(cov_ver.tweaks):
             self.pre_check(env)  # NOTE: Not properly factored, and only used from here.
             duration = self.run_tox(env, env.pyver.toxenv, "--skip-pkg-install")
             self.post_check(
@@ -307,15 +301,15 @@ class ProjectPytestHtml(ToxProject):
 
     git_url = "https://github.com/pytest-dev/pytest-html"
 
-    def run_with_coverage(
-        self, env: Env, pip_args: str, cov_tweaks: TweaksType
-    ) -> float:
+    def run_with_coverage(self, env: Env, cov_ver: Coverage) -> float:
         raise Exception("This doesn't work because options changed to tweaks")
         covenv = env.pyver.toxenv + "-cov"  # type: ignore[unreachable]
         self.run_tox(env, covenv, "--notest")
-        env.shell.run_command(f".tox/{covenv}/bin/python -m pip install {pip_args}")
-        if cov_tweaks:
-            replace = ("# reference: https", f"[run]\n{cov_tweaks}\n#")
+        env.shell.run_command(
+            f".tox/{covenv}/bin/python -m pip install {cov_ver.pip_args}"
+        )
+        if cov_ver.tweaks:
+            replace = ("# reference: https", f"[run]\n{cov_ver.tweaks}\n#")
         else:
             replace = ("", "")
         with file_replace(Path(".coveragerc"), *replace):
@@ -389,10 +383,8 @@ class ProjectMashumaro(ProjectToTest):
         env.shell.run_command(f"{env.python} -m pytest {self.more_pytest_args}")
         return env.shell.last_duration
 
-    def run_with_coverage(
-        self, env: Env, pip_args: str, cov_tweaks: TweaksType
-    ) -> float:
-        env.shell.run_command(f"{env.python} -m pip install {pip_args}")
+    def run_with_coverage(self, env: Env, cov_ver: Coverage) -> float:
+        env.shell.run_command(f"{env.python} -m pip install {cov_ver.pip_args}")
         env.shell.run_command(
             f"{env.python} -m pytest --cov=mashumaro --cov=tests {self.more_pytest_args}"
         )
@@ -428,10 +420,8 @@ class ProjectOperator(ProjectToTest):
         )
         return env.shell.last_duration
 
-    def run_with_coverage(
-        self, env: Env, pip_args: str, cov_tweaks: TweaksType
-    ) -> float:
-        env.shell.run_command(f"{env.python} -m pip install {pip_args}")
+    def run_with_coverage(self, env: Env, cov_ver: Coverage) -> float:
+        env.shell.run_command(f"{env.python} -m pip install {cov_ver.pip_args}")
         env.shell.run_command(
             f"TMPDIR=/tmp/operator_tmp {env.python} -m tox -e unit --skip-pkg-install"
             + f" -- {self.more_pytest_args}"
@@ -445,14 +435,12 @@ class ProjectOperator(ProjectToTest):
 class ProjectPygments(ToxProject):
     git_url = "https://github.com/pygments/pygments"
 
-    def run_with_coverage(
-        self, env: Env, pip_args: str, cov_tweaks: TweaksType
-    ) -> float:
+    def run_with_coverage(self, env: Env, cov_ver: Coverage) -> float:
         self.run_tox(env, env.pyver.toxenv, "--notest")
         env.shell.run_command(
-            f".tox/{env.pyver.toxenv}/bin/python -m pip install {pip_args}"
+            f".tox/{env.pyver.toxenv}/bin/python -m pip install {cov_ver.pip_args}"
         )
-        with self.tweak_coverage_settings(cov_tweaks):
+        with self.tweak_coverage_settings(cov_ver.tweaks):
             self.pre_check(env)  # NOTE: Not properly factored, and only used from here.
             duration = self.run_tox(
                 env, env.pyver.toxenv, "--skip-pkg-install -- --cov"
@@ -477,10 +465,8 @@ class ProjectTornado(ToxProject):
         env.shell.run_command(f"{env.python} -m tornado.test")
         return env.shell.last_duration
 
-    def run_with_coverage(
-        self, env: Env, pip_args: str, cov_tweaks: TweaksType
-    ) -> float:
-        env.shell.run_command(f"{env.python} -m pip install {pip_args}")
+    def run_with_coverage(self, env: Env, cov_ver: Coverage) -> float:
+        env.shell.run_command(f"{env.python} -m pip install {cov_ver.pip_args}")
         env.shell.run_command(f"{env.python} -m coverage run -m tornado.test")
         duration = env.shell.last_duration
         report = env.shell.run_command(f"{env.python} -m coverage report --precision=6")
@@ -499,10 +485,8 @@ class ProjectDulwich(ToxProject):
         env.shell.run_command(f"{env.python} -m unittest tests.test_suite")
         return env.shell.last_duration
 
-    def run_with_coverage(
-        self, env: Env, pip_args: str, cov_tweaks: TweaksType
-    ) -> float:
-        env.shell.run_command(f"{env.python} -m pip install {pip_args}")
+    def run_with_coverage(self, env: Env, cov_ver: Coverage) -> float:
+        env.shell.run_command(f"{env.python} -m pip install {cov_ver.pip_args}")
         env.shell.run_command(
             f"{env.python} -m coverage run -m unittest tests.test_suite"
         )
@@ -525,10 +509,8 @@ class ProjectBlack(ToxProject):
         )
         return env.shell.last_duration
 
-    def run_with_coverage(
-        self, env: Env, pip_args: str, cov_tweaks: TweaksType
-    ) -> float:
-        env.shell.run_command(f"{env.python} -m pip install {pip_args}")
+    def run_with_coverage(self, env: Env, cov_ver: Coverage) -> float:
+        env.shell.run_command(f"{env.python} -m pip install {cov_ver.pip_args}")
         env.shell.run_command(
             f"{env.python} -m pytest tests --run-optional no_jupyter --cov --numprocesses 1"
         )
@@ -549,9 +531,8 @@ class ProjectMpmath(ProjectToTest):
         env.shell.run_command(f"{env.python} -m pytest {self.select} --no-cov")
         return env.shell.last_duration
 
-    def run_with_coverage(
-        self, env: Env, pip_args: str, cov_tweaks: TweaksType
-    ) -> float:
+    def run_with_coverage(self, env: Env, cov_ver: Coverage) -> float:
+        env.shell.run_command(f"{env.python} -m pip install {cov_ver.pip_args}")
         env.shell.run_command(f"{env.python} -m pytest {self.select} --cov=mpmath")
         duration = env.shell.last_duration
         report = env.shell.run_command(f"{env.python} -m coverage report --precision=6")
@@ -598,10 +579,8 @@ class ProjectMypy(ToxProject):
         env.shell.run_command(f"{env.python} -m {' '.join(self.FAST)} --no-cov")
         return env.shell.last_duration
 
-    def run_with_coverage(
-        self, env: Env, pip_args: str, cov_tweaks: TweaksType
-    ) -> float:
-        env.shell.run_command(f"{env.python} -m pip install {pip_args}")
+    def run_with_coverage(self, env: Env, cov_ver: Coverage) -> float:
+        env.shell.run_command(f"{env.python} -m pip install {cov_ver.pip_args}")
         env.shell.run_command(f"{env.python} -m {' '.join(self.FAST)} --cov")
         duration = env.shell.last_duration
         report = env.shell.run_command(f"{env.python} -m coverage report --precision=6")
@@ -620,10 +599,8 @@ class ProjectHtml5lib(ToxProject):
         env.shell.run_command(f"{env.python} -m pytest")
         return env.shell.last_duration
 
-    def run_with_coverage(
-        self, env: Env, pip_args: str, cov_tweaks: TweaksType
-    ) -> float:
-        env.shell.run_command(f"{env.python} -m pip install {pip_args}")
+    def run_with_coverage(self, env: Env, cov_ver: Coverage) -> float:
+        env.shell.run_command(f"{env.python} -m pip install {cov_ver.pip_args}")
         env.shell.run_command(f"{env.python} -m coverage run -m pytest")
         duration = env.shell.last_duration
         report = env.shell.run_command(f"{env.python} -m coverage report --precision=6")
@@ -641,10 +618,8 @@ class ProjectSphinx(ToxProject):
         env.shell.run_command(f"{env.python} -m pytest")
         return env.shell.last_duration
 
-    def run_with_coverage(
-        self, env: Env, pip_args: str, cov_tweaks: TweaksType
-    ) -> float:
-        env.shell.run_command(f"{env.python} -m pip install {pip_args}")
+    def run_with_coverage(self, env: Env, cov_ver: Coverage) -> float:
+        env.shell.run_command(f"{env.python} -m pip install {cov_ver.pip_args}")
         env.shell.run_command(f"{env.python} -m coverage run -m pytest")
         duration = env.shell.last_duration
         env.shell.run_command(f"{env.python} -m coverage combine")
@@ -664,10 +639,8 @@ class ProjectUrllib3(ProjectToTest):
         env.shell.run_command(f"{env.python} -m pytest")
         return env.shell.last_duration
 
-    def run_with_coverage(
-        self, env: Env, pip_args: str, cov_tweaks: TweaksType
-    ) -> float:
-        env.shell.run_command(f"{env.python} -m pip install {pip_args}")
+    def run_with_coverage(self, env: Env, cov_ver: Coverage) -> float:
+        env.shell.run_command(f"{env.python} -m pip install {cov_ver.pip_args}")
         env.shell.run_command(f"{env.python} -m coverage run -m pytest")
         duration = env.shell.last_duration
         report = env.shell.run_command(f"{env.python} -m coverage report --precision=6")
@@ -719,10 +692,8 @@ class AdHocProject(ProjectToTest):
             env.shell.run_command(f"{env.python} {self.python_file}")
         return env.shell.last_duration
 
-    def run_with_coverage(
-        self, env: Env, pip_args: str, cov_tweaks: TweaksType
-    ) -> float:
-        env.shell.run_command(f"{env.python} -m pip install {pip_args}")
+    def run_with_coverage(self, env: Env, cov_ver: Coverage) -> float:
+        env.shell.run_command(f"{env.python} -m pip install {cov_ver.pip_args}")
         with change_dir(self.cur_dir):
             env.shell.run_command(f"{env.python} -m coverage run {self.python_file}")
         return env.shell.last_duration
@@ -966,11 +937,7 @@ class Experiment:
                             if cov_ver.pip_args is None:
                                 dur = proj.run_no_coverage(env)
                             else:
-                                dur = proj.run_with_coverage(
-                                    env,
-                                    cov_ver.pip_args,
-                                    cov_ver.tweaks,
-                                )
+                                dur = proj.run_with_coverage(env, cov_ver)
                         except Exception as exc:
                             print(f"!!! {exc = }")
                             dur = float("NaN")
