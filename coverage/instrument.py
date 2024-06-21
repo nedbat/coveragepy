@@ -165,3 +165,34 @@ def compile_instrumented(source: str, filename: str): # -> code object
             print("----------------------------")
             dis.dis(code)
     return code
+
+
+def wrap_pytest():
+    try:
+        import _pytest.assertion.rewrite as pyrewrite
+    except ModuleNotFoundError:
+        return
+
+    import inspect
+
+    expected_pars = {
+        'rewrite_asserts': ['mod', 'source', 'module_path', 'config'],
+        '_read_pyc': ['source', 'pyc', 'trace'],
+        '_write_pyc': ['state', 'co', 'source_stat', 'pyc']
+    }
+
+    for fun, expected in expected_pars.items():
+        sig = inspect.signature(pyrewrite.__dict__[fun])
+        if list(sig.parameters) != expected:
+            import warnings
+            warnings.warn(f"Unable to activate pytest branch coverage: unexpected {fun} signature {str(sig)}"
+                          +"; please open an issue at https://github.com/netbat/coveragepy .",
+                          RuntimeWarning)
+            return
+
+    orig_rewrite_asserts = pyrewrite.rewrite_asserts
+    def rewrite_asserts_wrapper(mod: ast.Module, *args):
+        return orig_rewrite_asserts(br.preinstrument(mod), *args)
+
+    pyrewrite._read_pyc = pyrewrite._write_pyc = lambda *args, **kwargs: None
+    pyrewrite.rewrite_asserts = rewrite_asserts_wrapper
