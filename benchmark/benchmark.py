@@ -58,11 +58,16 @@ class ShellSession:
             self.foutput.close()
 
     @contextlib.contextmanager
-    def set_env(self, env_vars: dict[str, str] | None) -> Iterator[None]:
+    def set_env(self, *env_varss: dict[str, str] | None) -> Iterator[None]:
+        """Set environment variables.
+
+        All the arguments are dicts of name:value, or None.  All are applied
+        to the environment variables.
+        """
         old_env_vars = self.env_vars
-        if env_vars:
-            self.env_vars = dict(old_env_vars)
-            self.env_vars.update(env_vars)
+        self.env_vars = dict(old_env_vars)
+        for env_vars in env_varss:
+            self.env_vars.update(env_vars or {})
         try:
             yield
         finally:
@@ -185,6 +190,7 @@ class ProjectToTest:
     # Where can we clone the project from?
     git_url: str = ""
     slug: str = ""
+    env_vars: Env_VarsType = {}
 
     def __init__(self) -> None:
         url_must_exist(self.git_url)
@@ -269,6 +275,12 @@ class EmptyProject(ProjectToTest):
 
 class ToxProject(ProjectToTest):
     """A project using tox to run the test suite."""
+
+    env_vars: Env_VarsType = {
+        **(ProjectToTest.env_vars or {}),
+        # Allow some environment variables into the tox execution.
+        "TOX_OVERRIDE": "testenv.pass_env+=COVERAGE_DEBUG,COVERAGE_CORE",
+    }
 
     def prep_environment(self, env: Env) -> None:
         env.shell.run_command(f"{env.python} -m pip install tox")
@@ -441,13 +453,11 @@ class ProjectPygments(ToxProject):
             f".tox/{env.pyver.toxenv}/bin/python -m pip install {cov_ver.pip_args}"
         )
         with self.tweak_coverage_settings(cov_ver.tweaks):
-            self.pre_check(env)  # NOTE: Not properly factored, and only used from here.
+            self.pre_check(env)  # NOTE: Not properly factored, and only used here.
             duration = self.run_tox(
                 env, env.pyver.toxenv, "--skip-pkg-install -- --cov"
             )
-            self.post_check(
-                env
-            )  # NOTE: Not properly factored, and only used from here.
+            self.post_check(env)  # NOTE: Not properly factored, and only used here.
         return duration
 
 
@@ -932,7 +942,7 @@ class Experiment:
                 print(banner)
                 env.shell.print_banner(banner)
                 with change_dir(proj.dir):
-                    with env.shell.set_env(cov_ver.env_vars):
+                    with env.shell.set_env(proj.env_vars, cov_ver.env_vars):
                         try:
                             if cov_ver.pip_args is None:
                                 dur = proj.run_no_coverage(env)
