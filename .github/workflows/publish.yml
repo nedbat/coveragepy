@@ -1,0 +1,70 @@
+# Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
+# For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
+
+name: "Publish"
+
+on:
+  workflow_dispatch:
+  repository_dispatch:
+    types:
+      - publish-testpypi
+      - publish-pypi
+
+defaults:
+  run:
+    shell: bash
+
+permissions:
+  contents: read
+
+concurrency:
+  group: "${{ github.workflow }}-${{ github.ref }}"
+  cancel-in-progress: true
+
+jobs:
+  publish-to-test-pypi:
+    name: "Publish to Test PyPI"
+    if: ${{ github.event.client_payload.event_type == 'publish-testpypi' }}
+    permissions:
+      id-token: write # Needed for trusted publishing to PyPI.
+    runs-on: "ubuntu-latest"
+    environment:
+      name: "testpypi"
+
+    steps:
+    - name: "Download dists"
+      uses: actions/download-artifact@v4
+      with:
+        pattern: "dist-*"
+        merge-multiple: true
+        path: "dist/"
+
+    - name: "Publish dists to Test PyPI"
+      uses: pypa/gh-action-pypi-publish@v1
+      with:
+        repository-url: https://test.pypi.org/legacy/
+        print-hash: true
+        verbose: true
+
+  publish-to-pypi:
+    name: "Publish to PyPI"
+    if: ${{ github.event.client_payload.event_type == 'publish-pypi' }}
+    permissions:
+      id-token: write # Needed for trusted publishing to PyPI.
+    runs-on: "ubuntu-latest"
+    environment:
+      name: "pypi"
+
+    steps:
+    - name: "Download dists"
+      uses: actions/download-artifact@v4
+      with:
+        pattern: "dist-*"
+        merge-multiple: true
+        path: "dist/"
+
+    - name: "Publish dists to PyPI"
+      uses: pypa/gh-action-pypi-publish@v1
+      with:
+        print-hash: true
+        verbose: true
