@@ -217,7 +217,7 @@ kit_local:
 	find ~/Library/Caches/pip/wheels -name 'coverage-*' -delete
 
 build_kits:				## Trigger GitHub to build kits
-	python ci/trigger_build_kits.py $(REPO_OWNER)
+	python ci/trigger_action.py $(REPO_OWNER) build-kits
 
 download_kits:				## Download the built kits from GitHub.
 	python ci/download_gha_artifacts.py $(REPO_OWNER) 'dist-*' dist
