@@ -34,7 +34,9 @@ Unreleased
   names or guard clauses.
 
 - Started testing on 3.13 free-threading (nogil) builds of Python.  I'm not
-  claiming full support yet.
+  claiming full support yet.  Closes `issue 1799`_.
+
+.. _issue 1799: https://github.com/nedbat/coveragepy/issues/1799
 
 
 .. scriv-start-here
