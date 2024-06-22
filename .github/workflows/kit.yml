@@ -176,6 +176,10 @@ jobs:
         run: |
           ls -al wheelhouse/
 
+      - name: "Check wheels"
+        run: |
+          python -m twine check wheelhouse/*
+
       - name: "Upload wheels"
         uses: actions/upload-artifact@v4
         with:
@@ -206,9 +210,13 @@ jobs:
         run: |
           python -m build
 
-      - name: "List tarballs"
+      - name: "List sdist"
         run: |
           ls -al dist/
+
+      - name: "Check sdist"
+        run: |
+          python -m twine check dist/*
 
       - name: "Upload sdist"
         uses: actions/upload-artifact@v4
@@ -247,6 +255,10 @@ jobs:
       - name: "List wheels"
         run: |
           ls -al dist/
+
+      - name: "Check wheels"
+        run: |
+          python -m twine check dist/*
 
       - name: "Upload wheels"
         uses: actions/upload-artifact@v4

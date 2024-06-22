@@ -10,6 +10,7 @@ auditwheel
 build
 cibuildwheel
 setuptools
+twine
 wheel
 
 # Build has a windows-only dependency on colorama:

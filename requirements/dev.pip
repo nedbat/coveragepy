@@ -118,7 +118,7 @@ pygments==2.18.0
     #   rich
 pylint==3.2.3
     # via -r requirements/dev.in
-pyproject-api==1.6.1
+pyproject-api==1.7.1
     # via tox
 pyproject-hooks==1.1.0
     # via build
@@ -181,7 +181,7 @@ urwid==2.6.14
     #   urwid-readline
 urwid-readline==0.14
     # via pudb
-virtualenv==20.26.2
+virtualenv==20.26.3
     # via
     #   -r requirements/pip.in
     #   tox
