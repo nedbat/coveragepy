@@ -22,7 +22,7 @@ concurrency:
 
 jobs:
   find-run:
-    name: "Find latest dist run"
+    name: "Find latest kit.yml run"
     runs-on: "ubuntu-latest"
     outputs:
       run-id: ${{ steps.run-id.outputs.run-id }}
@@ -73,8 +73,6 @@ jobs:
       uses: pypa/gh-action-pypi-publish@4bb033805d9e19112d8c697528791ff53f6c2f74 # v1.9.0
       with:
         repository-url: https://test.pypi.org/legacy/
-        print-hash: true
-        verbose: true
 
   publish-to-pypi:
     name: "Publish to PyPI"
@@ -106,6 +104,3 @@ jobs:
 
     - name: "Publish dists to PyPI"
       uses: pypa/gh-action-pypi-publish@4bb033805d9e19112d8c697528791ff53f6c2f74 # v1.9.0
-      with:
-        print-hash: true
-        verbose: true
