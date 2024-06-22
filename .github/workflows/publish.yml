@@ -30,7 +30,7 @@ jobs:
     steps:
     - name: "Find latest kit.yml run"
       id: runs
-      uses: octokit/request-action@v2.3.1
+      uses: octokit/request-action@872c5c97b3c85c23516a572f02b31401ef82415d # v2.3.1
       with:
         route: GET /repos/nedbat/coveragepy/actions/workflows/kit.yml/runs
       env:
