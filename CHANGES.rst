@@ -20,8 +20,12 @@ upgrading your version of coverage.py.
     ..  Version 9.8.1 — 2027-07-27
     ..  --------------------------
 
-Unreleased
-----------
+.. scriv-start-here
+
+.. _changes_7-5-4:
+
+Version 7.5.4 — 2024-06-22
+--------------------------
 
 - If you attempt to combine statement coverage data with branch coverage data,
   coverage.py used to fail with the message "Can't combine arc data with line
@@ -38,8 +42,6 @@ Unreleased
 
 .. _issue 1799: https://github.com/nedbat/coveragepy/issues/1799
 
-
-.. scriv-start-here
 
 .. _changes_7-5-3:
 
