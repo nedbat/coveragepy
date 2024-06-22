@@ -52,15 +52,13 @@
 - Kits:
     - Wait for kits to finish:
         - https://github.com/nedbat/coveragepy/actions/workflows/kit.yml
-    - Download and check built kits from GitHub Actions:
-        $ make clean download_kits check_kits
         - there should be 52
-    - examine the dist directory, and remove anything that looks malformed.
-    - opvars
     - test the pypi upload:
         $ make test_upload
+        - you'll need to approve the action
     - upload kits:
         $ make kit_upload
+        - you'll need to approve the action
 - Tag the tree
     $ make tag
 - Update GitHub releases:

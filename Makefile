@@ -177,7 +177,7 @@ sample_html_beta: _sample_cog_html	## Generate sample HTML report for a beta rel
 ##@ Kitting: making releases
 
 .PHONY: edit_for_release cheats relbranch relcommit1 relcommit2
-.PHONY: kit kit_upload test_upload kit_local build_kits download_kits check_kits
+.PHONY: kit kit_upload test_upload kit_local build_kits
 .PHONY: tag bump_version
 
 REPO_OWNER = nedbat/coveragepy
@@ -218,13 +218,6 @@ kit_local:
 
 build_kits:				## Trigger GitHub to build kits
 	python ci/trigger_action.py $(REPO_OWNER) build-kits
-
-download_kits:				## Download the built kits from GitHub.
-	python ci/download_gha_artifacts.py $(REPO_OWNER) 'dist-*' dist
-
-check_kits:				## Check that dist/* are well-formed.
-	python -m twine check dist/*
-	@echo $$(ls -1 dist | wc -l) distribution kits
 
 tag:					#: Make a git tag with the version number (see howto.txt).
 	git tag -s -m "Version $$(python setup.py --version)" $$(python setup.py --version)
