@@ -167,6 +167,24 @@ class ConfigTest(CoverageTest):
         with pytest.raises(ConfigError, match=msg):
             coverage.Coverage()
 
+    @pytest.mark.parametrize("force", [False, True])
+    def test_force_environment(self, force: bool) -> None:
+        self.make_file(".coveragerc", """\
+            [run]
+            debug = dataio, pids
+            """)
+        self.make_file("force.ini", """\
+            [run]
+            debug = callers, fooey
+            """)
+        if force:
+            self.set_environ("COVERAGE_FORCE_CONFIG", "force.ini")
+        cov = coverage.Coverage()
+        if force:
+            assert cov.config.debug == ["callers", "fooey"]
+        else:
+            assert cov.config.debug == ["dataio", "pids"]
+
     @pytest.mark.parametrize("bad_config, msg", [
         ("[run]\ntimid = maybe?\n", r"maybe[?]"),
         ("timid = 1\n", r"no section headers"),

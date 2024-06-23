@@ -612,6 +612,11 @@ def read_coverage_config(
     # 4) from constructor arguments:
     config.from_args(**kwargs)
 
+    # 5) for our benchmark, force settings using a secret environment variable:
+    force_file = os.getenv("COVERAGE_FORCE_CONFIG")
+    if force_file:
+        config.from_file(force_file, warn, our_file=True)
+
     # Once all the config has been collected, there's a little post-processing
     # to do.
     config.post_process()
