@@ -808,7 +808,7 @@ class CoverageSource(Coverage):
 
     def __init__(
         self,
-        directory_name: str,
+        directory_name: str = "..",
         slug: str = "source",
         tweaks: TweaksType = None,
         env_vars: Env_VarsType = None,

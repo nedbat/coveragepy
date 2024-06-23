@@ -136,7 +136,7 @@ if 0:
         ],
         cov_versions=[
             Coverage("pip", "coverage"),
-            CoverageSource("../..", "latest"),
+            CoverageSource(slug="latest"),
         ],
         projects=[
             ProjectMashumaro(),
@@ -160,7 +160,6 @@ if 0:
             Coverage("732", "coverage==7.3.2"),
             CoverageSource(
                 slug="sysmon",
-                directory_name="../..",
                 env_vars={"COVERAGE_CORE": "sysmon"},
             ),
         ],
@@ -187,7 +186,6 @@ if 0:
             Coverage("732", "coverage==7.3.2"),
             CoverageSource(
                 slug="sysmon",
-                directory_name="/Users/nbatchelder/coverage/trunk",
                 env_vars={"COVERAGE_CORE": "sysmon"},
             ),
         ],
