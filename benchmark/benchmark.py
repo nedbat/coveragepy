@@ -16,6 +16,7 @@ import statistics
 import subprocess
 import sys
 import time
+import traceback
 
 from pathlib import Path
 
@@ -937,6 +938,7 @@ class Experiment:
                                 dur = proj.run_with_coverage(env, cov_ver)
                         except Exception as exc:
                             print(f"!!! {exc = }")
+                            traceback.print_exc(file=env.shell.foutput)
                             dur = float("NaN")
             print(f"Tests took {dur:.3f}s")
             if result_key not in self.result_data:
