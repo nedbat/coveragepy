@@ -104,8 +104,8 @@ if 1:
         ],
         cov_versions=[
             NoCoverage("nocov"),
-            Coverage("753", "coverage==7.5.3"),
-            Coverage("sysmon", "coverage==7.5.3", env_vars={"COVERAGE_CORE": "sysmon"}),
+            CoverageSource(slug="ctrace", env_vars={"COVERAGE_CORE": "ctrace"}),
+            CoverageSource(slug="sysmon", env_vars={"COVERAGE_CORE": "sysmon"}),
         ],
         projects=[
             # ProjectSphinx(),  # Works, slow
@@ -115,14 +115,14 @@ if 1:
             # ProjectDulwich(),  # Works
             # ProjectBlack(),  # Works, slow
             # ProjectMpmath(),  # Works, slow
-            # ProjectMypy(),  # Works, slow
+            ProjectMypy(),  # Works, slow
             # ProjectHtml5lib(),  # Works
             # ProjectUrllib3(),  # Works
         ],
         rows=["pyver", "proj"],
         column="cov",
         ratios=[
-            (f"753%", "753", "nocov"),
+            (f"ctrace%", "ctrace", "nocov"),
             (f"sysmon%", "sysmon", "nocov"),
         ],
         load=True,

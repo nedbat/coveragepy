@@ -280,7 +280,8 @@ class ToxProject(ProjectToTest):
     env_vars: Env_VarsType = {
         **(ProjectToTest.env_vars or {}),
         # Allow some environment variables into the tox execution.
-        "TOX_OVERRIDE": "testenv.pass_env+=COVERAGE_DEBUG,COVERAGE_CORE",
+        "TOX_OVERRIDE": "testenv.pass_env+=COVERAGE_DEBUG,COVERAGE_CORE,COVERAGE_FORCE_CONFIG",
+        "COVERAGE_DEBUG": "config,sys",
     }
 
     def prep_environment(self, env: Env) -> None:
@@ -579,9 +580,12 @@ class ProjectMypy(ToxProject):
 
     def run_with_coverage(self, env: Env, cov_ver: Coverage) -> float:
         env.shell.run_command(f"{env.python} -m pip install {cov_ver.pip_args}")
-        env.shell.run_command(f"{env.python} -m pytest {self.FAST} --cov")
-        duration = env.shell.last_duration
-        report = env.shell.run_command(f"{env.python} -m coverage report --precision=6")
+        pforce = Path("force.ini")
+        pforce.write_text("[run]\nbranch=false\n")
+        with env.shell.set_env({"COVERAGE_FORCE_CONFIG": str(pforce.resolve())}):
+            env.shell.run_command(f"{env.python} -m pytest {self.FAST} --cov")
+            duration = env.shell.last_duration
+            report = env.shell.run_command(f"{env.python} -m coverage report --precision=6")
         print("Results:", report.splitlines()[-1])
         return duration
 
