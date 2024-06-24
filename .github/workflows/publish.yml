@@ -70,7 +70,7 @@ jobs:
         ls -1 dist | wc -l
 
     - name: "Publish dists to Test PyPI"
-      uses: pypa/gh-action-pypi-publish@4bb033805d9e19112d8c697528791ff53f6c2f74 # v1.9.0
+      uses: pypa/gh-action-pypi-publish@ec4db0b4ddc65acdf4bff5fa45ac92d78b56bdf0 # v1.9.0
       with:
         repository-url: https://test.pypi.org/legacy/
 
@@ -103,4 +103,4 @@ jobs:
         ls -1 dist | wc -l
 
     - name: "Publish dists to PyPI"
-      uses: pypa/gh-action-pypi-publish@4bb033805d9e19112d8c697528791ff53f6c2f74 # v1.9.0
+      uses: pypa/gh-action-pypi-publish@ec4db0b4ddc65acdf4bff5fa45ac92d78b56bdf0 # v1.9.0
