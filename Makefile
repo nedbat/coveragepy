@@ -177,7 +177,7 @@ sample_html_beta: _sample_cog_html	## Generate sample HTML report for a beta rel
 ##@ Kitting: making releases
 
 .PHONY: edit_for_release cheats relbranch relcommit1 relcommit2
-.PHONY: kit kit_upload test_upload kit_local build_kits
+.PHONY: kit pypi_upload test_upload kit_local build_kits
 .PHONY: tag bump_version
 
 REPO_OWNER = nedbat/coveragepy
@@ -201,7 +201,7 @@ relcommit2:				#: Commit the latest sample HTML report (see howto.txt).
 kit:					## Make the source distribution.
 	python -m build
 
-kit_upload:				## Upload the built distributions to PyPI.
+pypi_upload:				## Upload the built distributions to PyPI.
 	python ci/trigger_action.py $(REPO_OWNER) publish-pypi
 
 test_upload:				## Upload the distributions to PyPI's testing server.

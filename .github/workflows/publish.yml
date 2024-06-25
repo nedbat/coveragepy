@@ -5,9 +5,10 @@ name: "Publish"
 
 on:
   repository_dispatch:
+    # Triggered with `make` targets:
     types:
-      - publish-testpypi
-      - publish-pypi
+      - publish-testpypi    # `make test_upload`
+      - publish-pypi        # `make pypi_upload`
 
 defaults:
   run:

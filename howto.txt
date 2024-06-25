@@ -57,7 +57,7 @@
         $ make test_upload
         - you'll need to approve the action
     - upload kits:
-        $ make kit_upload
+        $ make pypi_upload
         - you'll need to approve the action
 - Tag the tree
     $ make tag
