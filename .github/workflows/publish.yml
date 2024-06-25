@@ -45,7 +45,8 @@ jobs:
     name: "Publish to Test PyPI"
     if: ${{ github.event.action == 'publish-testpypi' }}
     permissions:
-      id-token: write # Needed for trusted publishing to PyPI.
+      id-token: write
+      attestations: write
     runs-on: "ubuntu-latest"
     environment:
       name: "testpypi"
@@ -69,6 +70,11 @@ jobs:
         echo "Number of dists:"
         ls -1 dist | wc -l
 
+    - name: "Generate attestations"
+      uses: actions/attest-build-provenance@bdd51370e0416ac948727f861e03c2f05d32d78e # v1.3.2
+      with:
+        subject-path: "dist/*"
+
     - name: "Publish dists to Test PyPI"
       uses: pypa/gh-action-pypi-publish@ec4db0b4ddc65acdf4bff5fa45ac92d78b56bdf0 # v1.9.0
       with:
@@ -78,7 +84,8 @@ jobs:
     name: "Publish to PyPI"
     if: ${{ github.event.action == 'publish-pypi' }}
     permissions:
-      id-token: write # Needed for trusted publishing to PyPI.
+      id-token: write
+      attestations: write
     runs-on: "ubuntu-latest"
     environment:
       name: "pypi"
@@ -101,6 +108,11 @@ jobs:
         ls -alR
         echo "Number of dists:"
         ls -1 dist | wc -l
+
+    - name: "Generate attestations"
+      uses: actions/attest-build-provenance@bdd51370e0416ac948727f861e03c2f05d32d78e # v1.3.2
+      with:
+        subject-path: "dist/*"
 
     - name: "Publish dists to PyPI"
       uses: pypa/gh-action-pypi-publish@ec4db0b4ddc65acdf4bff5fa45ac92d78b56bdf0 # v1.9.0
