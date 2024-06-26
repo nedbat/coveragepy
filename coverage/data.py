@@ -12,6 +12,7 @@ imports working.
 
 from __future__ import annotations
 
+import functools
 import glob
 import hashlib
 import os.path
@@ -134,6 +135,11 @@ def combine_parallel_data(
     if strict and not files_to_combine:
         raise NoDataError("No data to combine")
 
+    if aliases is None:
+        map_path = None
+    else:
+        map_path = functools.lru_cache(maxsize=None)(aliases.map)
+
     file_hashes = set()
     combined_any = False
 
@@ -176,7 +182,7 @@ def combine_parallel_data(
                     message(f"Couldn't combine data file {rel_file_name}: {exc}")
                 delete_this_one = False
             else:
-                data.update(new_data, aliases=aliases)
+                data.update(new_data, map_path=map_path)
                 combined_any = True
                 if message:
                     message(f"Combined data file {rel_file_name}")

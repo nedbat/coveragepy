@@ -9,6 +9,7 @@ import collections
 import contextlib
 import dis
 import io
+import locale
 import os
 import os.path
 import re
@@ -28,7 +29,6 @@ import pytest
 from coverage import env
 from coverage.debug import DebugControl
 from coverage.exceptions import CoverageWarning
-from coverage.misc import output_encoding
 from coverage.types import TArc, TLineNo
 
 
@@ -44,11 +44,13 @@ def run_command(cmd: str) -> tuple[int, str]:
         with open("/tmp/processes.txt", "a") as proctxt:  # type: ignore[unreachable]
             print(os.getenv("PYTEST_CURRENT_TEST", "unknown"), file=proctxt, flush=True)
 
+    encoding = os.device_encoding(1) or locale.getpreferredencoding()
+
     # In some strange cases (PyPy3 in a virtualenv!?) the stdout encoding of
     # the subprocess is set incorrectly to ascii.  Use an environment variable
     # to force the encoding to be the same as ours.
     sub_env = dict(os.environ)
-    sub_env['PYTHONIOENCODING'] = output_encoding()
+    sub_env['PYTHONIOENCODING'] = encoding
 
     proc = subprocess.Popen(
         cmd,
@@ -62,7 +64,7 @@ def run_command(cmd: str) -> tuple[int, str]:
     status = proc.returncode
 
     # Get the output, and canonicalize it to strings with newlines.
-    output_str = output.decode(output_encoding()).replace("\r", "")
+    output_str = output.decode(encoding).replace("\r", "")
     return status, output_str
 
 
@@ -114,8 +116,11 @@ def make_file(
             print(f"# {os.path.abspath(filename)}", file=fdis)
             cur_test = os.getenv("PYTEST_CURRENT_TEST", "unknown")
             print(f"# PYTEST_CURRENT_TEST = {cur_test}", file=fdis)
+            kwargs = {}
+            if env.PYVERSION >= (3, 13):
+                kwargs["show_offsets"] = True
             try:
-                dis.dis(text, file=fdis)
+                dis.dis(text, file=fdis, **kwargs)
             except Exception as exc:
                 # Some tests make .py files that aren't Python, so dis will
                 # fail, which is expected.

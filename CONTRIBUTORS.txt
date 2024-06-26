@@ -92,6 +92,7 @@ George-Cristian Bîrzan
 Greg Rogers
 Guido van Rossum
 Guillaume Chazarain
+Guillaume Pujol
 Holger Krekel
 Hugo van Kemenade
 Ian Moore
@@ -132,6 +133,7 @@ Latrice Wilgus
 Leonardo Pistone
 Lewis Gaul
 Lex Berezhny
+Liam DeVoe
 Loïc Dachary
 Lorenzo Micò
 Louis Heredero

@@ -25,10 +25,91 @@ Unreleased
 
 - Fix: the PYTHONSAFEPATH environment variable new in Python 3.11 is properly
   supported, closing `issue 1696`_.  Thanks, `Philipp A. <pull 1700_>`_.
+
+
+.. scriv-start-here
+
+.. _changes_7-5-4:
+
+Version 7.5.4 — 2024-06-22
+--------------------------
+
+- If you attempt to combine statement coverage data with branch coverage data,
+  coverage.py used to fail with the message "Can't combine arc data with line
+  data" or its reverse, "Can't combine line data with arc data."  These
+  messages used internal terminology, making it hard for people to understand
+  the problem.  They are now changed to mention "branch coverage data" and
+  "statement coverage data."
+
+- Fixed a minor branch coverage problem with wildcard match/case cases using
+  names or guard clauses.
+
+- Started testing on 3.13 free-threading (nogil) builds of Python.  I'm not
+  claiming full support yet.  Closes `issue 1799`_.
+
+.. _issue 1799: https://github.com/nedbat/coveragepy/issues/1799
+
+
+.. _changes_7-5-3:
+
+Version 7.5.3 — 2024-05-28
+--------------------------
+
+- Performance improvements for combining data files, especially when measuring
+  line coverage. A few different quadratic behaviors were eliminated. In one
+  extreme case of combining 700+ data files, the time dropped from more than
+  three hours to seven minutes.  Thanks for Kraken Tech for funding the fix.
+
+- Performance improvements for generating HTML reports, with a side benefit of
+  reducing memory use, closing `issue 1791`_.  Thanks to Daniel Diniz for
+  helping to diagnose the problem.
+
+.. _issue 1791: https://github.com/nedbat/coveragepy/issues/1791
+
+
+.. _changes_7-5-2:
+
+Version 7.5.2 — 2024-05-24
+--------------------------
+
+- Fix: nested matches of exclude patterns could exclude too much code, as
+  reported in `issue 1779`_.  This is now fixed.
+
+- Changed: previously, coverage.py would consider a module docstring to be an
+  executable statement if it appeared after line 1 in the file, but not
+  executable if it was the first line.  Now module docstrings are never counted
+  as executable statements.  This can change coverage.py's count of the number
+  of statements in a file, which can slightly change the coverage percentage
+  reported.
+
+- In the HTML report, the filter term and "hide covered" checkbox settings are
+  remembered between viewings, thanks to `Daniel Diniz <pull 1776_>`_.
+
+- Python 3.13.0b1 is supported.
+
+- Fix: parsing error handling is improved to ensure bizarre source files are
+  handled gracefully, and to unblock oss-fuzz fuzzing, thanks to `Liam DeVoe
+  <pull 1788_>`_. Closes `issue 1787`_.
+
+.. _pull 1776: https://github.com/nedbat/coveragepy/pull/1776
+.. _issue 1779: https://github.com/nedbat/coveragepy/issues/1779
+.. _issue 1787: https://github.com/nedbat/coveragepy/issues/1787
+.. _pull 1788: https://github.com/nedbat/coveragepy/pull/1788
+
+
+.. _changes_7-5-1:
+
+Version 7.5.1 — 2024-05-04
+--------------------------
+
 - Fix: a pragma comment on the continuation lines of a multi-line statement
   now excludes the statement and its body, the same as if the pragma is
   on the first line. This closes `issue 754`_. The fix was contributed by
   `Daniel Diniz <pull 1773_>`_.
+
+- Fix: very complex source files like `this one <resolvent_lookup_>`_ could
+  cause a maximum recursion error when creating an HTML report.  This is now
+  fixed, closing `issue 1774`_.
 
 - HTML report improvements:
 
@@ -43,13 +124,14 @@ Unreleased
   - Column sort order is remembered better as you move between the index pages,
     fixing `issue 1766`_.  Thanks, `Daniel Diniz <pull 1768_>`_.
 
+
+.. _resolvent_lookup: https://github.com/sympy/sympy/blob/130950f3e6b3f97fcc17f4599ac08f70fdd2e9d4/sympy/polys/numberfields/resolvent_lookup.py
 .. _issue 754: https://github.com/nedbat/coveragepy/issues/754
 .. _issue 1766: https://github.com/nedbat/coveragepy/issues/1766
 .. _pull 1768: https://github.com/nedbat/coveragepy/pull/1768
 .. _pull 1773: https://github.com/nedbat/coveragepy/pull/1773
+.. _issue 1774: https://github.com/nedbat/coveragepy/issues/1774
 
-
-.. scriv-start-here
 
 .. _changes_7-5-0:
 

@@ -29,6 +29,8 @@ class CTracer(TracerCore):
     should_trace: Any
     should_trace_cache: Any
     switch_context: Any
+    lock_data: Any
+    unlock_data: Any
     trace_arcs: Any
     warn: Any
     def __init__(self) -> None: ...

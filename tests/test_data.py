@@ -405,10 +405,12 @@ class CoverageDataTest(CoverageTest):
         covdata2 = DebugCoverageData(suffix='2')
         covdata2.add_arcs(ARCS_3)
 
-        with pytest.raises(DataError, match="Can't combine arc data with line data"):
+        msg = "Can't combine branch coverage data with statement data"
+        with pytest.raises(DataError, match=msg):
             covdata1.update(covdata2)
 
-        with pytest.raises(DataError, match="Can't combine line data with arc data"):
+        msg = "Can't combine statement coverage data with branch data"
+        with pytest.raises(DataError, match=msg):
             covdata2.update(covdata1)
 
     def test_update_file_tracers(self) -> None:

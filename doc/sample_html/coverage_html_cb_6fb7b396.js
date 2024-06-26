@@ -81,7 +81,32 @@ function sortColumn(th) {
         .forEach(tr => tr.parentElement.appendChild(tr));
 
     // Save the sort order for next time.
-    localStorage.setItem(coverage.INDEX_SORT_STORAGE, JSON.stringify({column, direction}));
+    if (th.id !== "region") {
+        let th_id = "file";  // Sort by file if we don't have a column id
+        let current_direction = direction;
+        const stored_list = localStorage.getItem(coverage.INDEX_SORT_STORAGE);
+        if (stored_list) {
+            ({th_id, direction} = JSON.parse(stored_list))
+        }
+        localStorage.setItem(coverage.INDEX_SORT_STORAGE, JSON.stringify({
+            "th_id": th.id,
+            "direction": current_direction
+        }));
+        if (th.id !== th_id || document.getElementById("region")) {
+            // Sort column has changed, unset sorting by function or class.
+            localStorage.setItem(coverage.SORTED_BY_REGION, JSON.stringify({
+                "by_region": false,
+                "region_direction": current_direction
+            }));
+        }
+    }
+    else {
+        // Sort column has changed to by function or class, remember that.
+        localStorage.setItem(coverage.SORTED_BY_REGION, JSON.stringify({
+            "by_region": true,
+            "region_direction": direction
+        }));
+    }
 }
 
 // Find all the elements with data-shortcut attribute, and use them to assign a shortcut key.
@@ -100,6 +125,16 @@ coverage.assign_shortkeys = function () {
 
 // Create the events for the filter box.
 coverage.wire_up_filter = function () {
+    // Populate the filter and hide100 inputs if there are saved values for them.
+    const saved_filter_value = localStorage.getItem(coverage.FILTER_STORAGE);
+    if (saved_filter_value) {
+        document.getElementById("filter").value = saved_filter_value;
+    }
+    const saved_hide100_value = localStorage.getItem(coverage.HIDE100_STORAGE);
+    if (saved_hide100_value) {
+        document.getElementById("hide100").checked = JSON.parse(saved_hide100_value);
+    }
+
     // Cache elements.
     const table = document.querySelector("table.index");
     const table_body_rows = table.querySelectorAll("tbody tr");
@@ -113,8 +148,12 @@ coverage.wire_up_filter = function () {
         totals[totals.length - 1] = { "numer": 0, "denom": 0 };  // nosemgrep: eslint.detect-object-injection
 
         var text = document.getElementById("filter").value;
+        // Store filter value
+        localStorage.setItem(coverage.FILTER_STORAGE, text);
         const casefold = (text === text.toLowerCase());
         const hide100 = document.getElementById("hide100").checked;
+        // Store hide value.
+        localStorage.setItem(coverage.HIDE100_STORAGE, JSON.stringify(hide100));
 
         // Hide / show elements.
         table_body_rows.forEach(row => {
@@ -215,6 +254,8 @@ coverage.wire_up_filter = function () {
     document.getElementById("filter").dispatchEvent(new Event("input"));
     document.getElementById("hide100").dispatchEvent(new Event("input"));
 };
+coverage.FILTER_STORAGE = "COVERAGE_FILTER_VALUE";
+coverage.HIDE100_STORAGE = "COVERAGE_HIDE100_VALUE";
 
 // Set up the click-to-sort columns.
 coverage.wire_up_sorting = function () {
@@ -223,18 +264,39 @@ coverage.wire_up_sorting = function () {
     );
 
     // Look for a localStorage item containing previous sort settings:
-    var column = 0, direction = "ascending";
+    let th_id = "file", direction = "ascending";
     const stored_list = localStorage.getItem(coverage.INDEX_SORT_STORAGE);
     if (stored_list) {
-        ({column, direction} = JSON.parse(stored_list));
+        ({th_id, direction} = JSON.parse(stored_list));
+    }
+    let by_region = false, region_direction = "ascending";
+    const sorted_by_region = localStorage.getItem(coverage.SORTED_BY_REGION);
+    if (sorted_by_region) {
+        ({
+            by_region,
+            region_direction
+        } = JSON.parse(sorted_by_region));
     }
 
-    const th = document.querySelector("[data-sortable]").tHead.rows[0].cells[column];  // nosemgrep: eslint.detect-object-injection
+    const region_id = "region";
+    if (by_region && document.getElementById(region_id)) {
+        direction = region_direction;
+    }
+    // If we are in a page that has a column with id of "region", sort on
+    // it if the last sort was by function or class.
+    let th;
+    if (document.getElementById(region_id)) {
+        th = document.getElementById(by_region ? region_id : th_id);
+    }
+    else {
+        th = document.getElementById(th_id);
+    }
     th.setAttribute("aria-sort", direction === "ascending" ? "descending" : "ascending");
     th.click()
 };
 
 coverage.INDEX_SORT_STORAGE = "COVERAGE_INDEX_SORT_2";
+coverage.SORTED_BY_REGION = "COVERAGE_SORT_REGION";
 
 // Loaded on index.html
 coverage.index_ready = function () {

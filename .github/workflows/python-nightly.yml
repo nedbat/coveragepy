@@ -31,7 +31,7 @@ concurrency:
 
 jobs:
   tests:
-    name: "${{ matrix.python-version }} on ${{ matrix.os-short }}"
+    name: "${{ matrix.python-version }}${{ matrix.nogil && ' nogil' || '' }} on ${{ matrix.os-short }}"
     runs-on: "${{ matrix.os }}"
     # If it doesn't finish in an hour, it's not going to. Don't spin for six
     # hours needlessly.
@@ -58,28 +58,43 @@ jobs:
           # https://launchpad.net/~deadsnakes/+archive/ubuntu/nightly/+packages
           - "3.12-dev"
           - "3.13-dev"
+          - "3.14-dev"
           # https://github.com/actions/setup-python#available-versions-of-pypy
           - "pypy-3.8-nightly"
           - "pypy-3.9-nightly"
           - "pypy-3.10-nightly"
+        nogil:
+          - false
+          - true
         include:
-            - python-version: "pypy-3.10-nightly"
-              os: "windows-latest"
-              os-short: "windows"
+          - python-version: "pypy-3.10-nightly"
+            os: "windows-latest"
+            os-short: "windows"
+        exclude:
+          - python-version: "3.12-dev"
+            nogil: true
+          - python-version: "pypy-3.8-nightly"
+            nogil: true
+          - python-version: "pypy-3.9-nightly"
+            nogil: true
+          - python-version: "pypy-3.10-nightly"
+            nogil: true
+
       fail-fast: false
 
     steps:
       - name: "Check out the repo"
-        uses: "actions/checkout@v4"
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
 
       - name: "Install ${{ matrix.python-version }} with deadsnakes"
-        uses: deadsnakes/action@6c8b9b82fe0b4344f4b98f2775fcc395df45e494
+        uses: deadsnakes/action@6c8b9b82fe0b4344f4b98f2775fcc395df45e494 # v3.1.0
         if: "!startsWith(matrix.python-version, 'pypy-')"
         with:
           python-version: "${{ matrix.python-version }}"
+          nogil: "${{ matrix.nogil || false }}"
 
       - name: "Install ${{ matrix.python-version }} with setup-python"
-        uses: "actions/setup-python@v5"
+        uses: actions/setup-python@82c7e631bb3cdc910f68e0081d67478d79c6982d # v5.1.0
         if: "startsWith(matrix.python-version, 'pypy-')"
         with:
           python-version: "${{ matrix.python-version }}"
@@ -89,9 +104,10 @@ jobs:
           set -xe
           python -VV
           python -m site
+          python -c "import sys; print('GIL:', getattr(sys, '_is_gil_enabled', lambda: True)())"
           python -m coverage debug sys
           python -m coverage debug pybehave
-          env
+          env | sort
 
       - name: "Install dependencies"
         run: |

@@ -80,7 +80,7 @@ class ParserMain:
 
         if options.dis:
             print("Main code:")
-            disassemble(pyparser)
+            disassemble(pyparser.text)
 
         arcs = pyparser.arcs()
 
@@ -95,8 +95,8 @@ class ParserMain:
 
                 exit_counts = pyparser.exit_counts()
 
-                for lineno, ltext in enumerate(pyparser.lines, start=1):
-                    marks = [' ', ' ', ' ', ' ', ' ']
+                for lineno, ltext in enumerate(pyparser.text.splitlines(), start=1):
+                    marks = [' '] * 6
                     a = ' '
                     if lineno in pyparser.raw_statements:
                         marks[0] = '-'
@@ -110,7 +110,13 @@ class ParserMain:
                     if lineno in pyparser.raw_classdefs:
                         marks[3] = 'C'
                     if lineno in pyparser.raw_excluded:
-                        marks[4] = 'x'
+                        marks[4] = 'X'
+                    elif lineno in pyparser.excluded:
+                        marks[4] = '×'
+                    if lineno in pyparser._multiline.values():
+                        marks[5] = 'o'
+                    elif lineno in pyparser._multiline.keys():
+                        marks[5] = '.'
 
                     if arc_chars:
                         a = arc_chars[lineno].ljust(arc_width)
@@ -173,13 +179,13 @@ def all_code_objects(code):
         yield code
 
 
-def disassemble(pyparser):
+def disassemble(text):
     """Disassemble code, for ad-hoc experimenting."""
 
-    code = compile(pyparser.text, "", "exec", dont_inherit=True)
+    code = compile(text, "", "exec", dont_inherit=True)
     for code_obj in all_code_objects(code):
-        if pyparser.text:
-            srclines = pyparser.text.splitlines()
+        if text:
+            srclines = text.splitlines()
         else:
             srclines = None
         print("\n%s: " % code_obj)

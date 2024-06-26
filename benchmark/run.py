@@ -1,4 +1,23 @@
+import optparse
+from pathlib import Path
+
 from benchmark import *
+
+parser = optparse.OptionParser()
+parser.add_option(
+    "--clean",
+    action="store_true",
+    dest="clean",
+    default=False,
+    help="Delete the results.json file before running benchmarks"
+)
+options, args = parser.parse_args()
+
+if options.clean:
+    results_file = Path("results.json")
+    if results_file.exists():
+        results_file.unlink()
+        print("Deleted results.json")
 
 if 0:
     run_experiment(
@@ -55,16 +74,16 @@ if 0:
 
 
 if 0:
-    # Compare 3.10 vs 3.12
+    # Compare two Python versions
     v1 = 10
-    v2 = 12
+    v2 = 11
     run_experiment(
         py_versions=[
             Python(3, v1),
             Python(3, v2),
         ],
         cov_versions=[
-            Coverage("732", "coverage==7.3.2"),
+            Coverage("753", "coverage==7.5.3"),
         ],
         projects=[
             ProjectMashumaro(),
@@ -73,6 +92,60 @@ if 0:
         column="pyver",
         ratios=[
             (f"3.{v2} vs 3.{v1}", f"python3.{v2}", f"python3.{v1}"),
+        ],
+    )
+
+if 1:
+    # Compare sysmon on many projects
+
+    run_experiment(
+        py_versions=[
+            Python(3, 12),
+        ],
+        cov_versions=[
+            NoCoverage("nocov"),
+            CoverageSource(slug="ctrace", env_vars={"COVERAGE_CORE": "ctrace"}),
+            CoverageSource(slug="sysmon", env_vars={"COVERAGE_CORE": "sysmon"}),
+        ],
+        projects=[
+            # ProjectSphinx(),  # Works, slow
+            ProjectPygments(),  # Works
+            # ProjectRich(),  # Doesn't work
+            # ProjectTornado(),  # Works, tests fail
+            # ProjectDulwich(),  # Works
+            # ProjectBlack(),  # Works, slow
+            # ProjectMpmath(),  # Works, slow
+            ProjectMypy(),  # Works, slow
+            # ProjectHtml5lib(),  # Works
+            # ProjectUrllib3(),  # Works
+        ],
+        rows=["pyver", "proj"],
+        column="cov",
+        ratios=[
+            (f"ctrace%", "ctrace", "nocov"),
+            (f"sysmon%", "sysmon", "nocov"),
+        ],
+        load=True,
+    )
+
+if 0:
+    # Compare current Coverage source against shipped version
+    run_experiment(
+        py_versions=[
+            Python(3, 11),
+        ],
+        cov_versions=[
+            Coverage("pip", "coverage"),
+            CoverageSource(slug="latest"),
+        ],
+        projects=[
+            ProjectMashumaro(),
+            ProjectOperator(),
+        ],
+        rows=["pyver", "proj"],
+        column="cov",
+        ratios=[
+            (f"Latest vs shipped", "latest", "pip"),
         ],
     )
 
@@ -87,7 +160,6 @@ if 0:
             Coverage("732", "coverage==7.3.2"),
             CoverageSource(
                 slug="sysmon",
-                directory="/Users/nbatchelder/coverage/trunk",
                 env_vars={"COVERAGE_CORE": "sysmon"},
             ),
         ],
@@ -103,7 +175,7 @@ if 0:
         ],
     )
 
-if 1:
+if 0:
     # Compare 3.12 coverage vs no coverage
     run_experiment(
         py_versions=[
@@ -114,13 +186,12 @@ if 1:
             Coverage("732", "coverage==7.3.2"),
             CoverageSource(
                 slug="sysmon",
-                directory="/Users/nbatchelder/coverage/trunk",
                 env_vars={"COVERAGE_CORE": "sysmon"},
             ),
         ],
         projects=[
-            ProjectMashumaro(),     # small: "-k ck"
-            ProjectMashumaroBranch(),     # small: "-k ck"
+            ProjectMashumaro(),         # small: "-k ck"
+            ProjectMashumaroBranch(),   # small: "-k ck"
         ],
         rows=["pyver", "proj"],
         column="cov",

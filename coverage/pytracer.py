@@ -28,6 +28,8 @@ if RESUME is None:
     YIELD_VALUE = dis.opmap["YIELD_VALUE"]
     YIELD_FROM = dis.opmap["YIELD_FROM"]
     YIELD_FROM_OFFSET = 0 if env.PYPY else 2
+else:
+    YIELD_VALUE = YIELD_FROM = YIELD_FROM_OFFSET = -1
 
 # When running meta-coverage, this file can try to trace itself, which confuses
 # everything.  Don't trace ourselves.
@@ -66,6 +68,8 @@ class PyTracer(TracerCore):
         self.should_trace_cache: dict[str, TFileDisposition | None]
         self.should_start_context: Callable[[FrameType], str | None] | None = None
         self.switch_context: Callable[[str | None], None] | None = None
+        self.lock_data: Callable[[], None]
+        self.unlock_data: Callable[[], None]
         self.warn: TWarnFn
 
         # The threading module to use, if any.
@@ -166,12 +170,12 @@ class PyTracer(TracerCore):
         if event == "call":
             # Should we start a new context?
             if self.should_start_context and self.context is None:
-                context_maybe = self.should_start_context(frame)
+                context_maybe = self.should_start_context(frame)    # pylint: disable=not-callable
                 if context_maybe is not None:
                     self.context = context_maybe
                     started_context = True
                     assert self.switch_context is not None
-                    self.switch_context(self.context)
+                    self.switch_context(self.context)   # pylint: disable=not-callable
                 else:
                     started_context = False
             else:
@@ -207,8 +211,12 @@ class PyTracer(TracerCore):
                 if disp.trace:
                     tracename = disp.source_filename
                     assert tracename is not None
-                    if tracename not in self.data:
-                        self.data[tracename] = set()
+                    self.lock_data()
+                    try:
+                        if tracename not in self.data:
+                            self.data[tracename] = set()
+                    finally:
+                        self.unlock_data()
                     self.cur_file_data = self.data[tracename]
                 else:
                     frame.f_trace_lines = False
@@ -280,7 +288,7 @@ class PyTracer(TracerCore):
             if self.started_context:
                 assert self.switch_context is not None
                 self.context = None
-                self.switch_context(None)
+                self.switch_context(None)   # pylint: disable=not-callable
         return self._cached_bound_method_trace
 
     def start(self) -> TTraceFn:

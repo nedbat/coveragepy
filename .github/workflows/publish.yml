@@ -1,0 +1,119 @@
+# Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
+# For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
+
+name: "Publish"
+
+on:
+  repository_dispatch:
+    # Triggered with `make` targets:
+    types:
+      - publish-testpypi    # `make test_upload`
+      - publish-pypi        # `make pypi_upload`
+
+defaults:
+  run:
+    shell: bash
+
+permissions:
+  contents: read
+
+concurrency:
+  group: "${{ github.workflow }}-${{ github.ref }}"
+  cancel-in-progress: true
+
+jobs:
+  find-run:
+    name: "Find latest kit.yml run"
+    runs-on: "ubuntu-latest"
+    outputs:
+      run-id: ${{ steps.run-id.outputs.run-id }}
+
+    steps:
+    - name: "Find latest kit.yml run"
+      id: runs
+      uses: octokit/request-action@872c5c97b3c85c23516a572f02b31401ef82415d # v2.3.1
+      with:
+        route: GET /repos/nedbat/coveragepy/actions/workflows/kit.yml/runs
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: "Record run id"
+      id: run-id
+      run: |
+        echo "run-id=${{ fromJson(steps.runs.outputs.data).workflow_runs[0].id }}" >> "$GITHUB_OUTPUT"
+
+  publish-to-test-pypi:
+    name: "Publish to Test PyPI"
+    if: ${{ github.event.action == 'publish-testpypi' }}
+    permissions:
+      id-token: write
+      attestations: write
+    runs-on: "ubuntu-latest"
+    environment:
+      name: "testpypi"
+    needs:
+      - find-run
+
+    steps:
+    - name: "Download dists"
+      uses: actions/download-artifact@65a9edc5881444af0b9093a5e628f2fe47ea3b2e # v4.1.7
+      with:
+        repository: "nedbat/coveragepy"
+        run-id: ${{needs.find-run.outputs.run-id}}
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        pattern: "dist-*"
+        merge-multiple: true
+        path: "dist/"
+
+    - name: "What did we get?"
+      run: |
+        ls -alR
+        echo "Number of dists:"
+        ls -1 dist | wc -l
+
+    - name: "Generate attestations"
+      uses: actions/attest-build-provenance@bdd51370e0416ac948727f861e03c2f05d32d78e # v1.3.2
+      with:
+        subject-path: "dist/*"
+
+    - name: "Publish dists to Test PyPI"
+      uses: pypa/gh-action-pypi-publish@ec4db0b4ddc65acdf4bff5fa45ac92d78b56bdf0 # v1.9.0
+      with:
+        repository-url: https://test.pypi.org/legacy/
+
+  publish-to-pypi:
+    name: "Publish to PyPI"
+    if: ${{ github.event.action == 'publish-pypi' }}
+    permissions:
+      id-token: write
+      attestations: write
+    runs-on: "ubuntu-latest"
+    environment:
+      name: "pypi"
+    needs:
+      - find-run
+
+    steps:
+    - name: "Download dists"
+      uses: actions/download-artifact@65a9edc5881444af0b9093a5e628f2fe47ea3b2e # v4.1.7
+      with:
+        repository: "nedbat/coveragepy"
+        run-id: ${{needs.find-run.outputs.run-id}}
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        pattern: "dist-*"
+        merge-multiple: true
+        path: "dist/"
+
+    - name: "What did we get?"
+      run: |
+        ls -alR
+        echo "Number of dists:"
+        ls -1 dist | wc -l
+
+    - name: "Generate attestations"
+      uses: actions/attest-build-provenance@bdd51370e0416ac948727f861e03c2f05d32d78e # v1.3.2
+      with:
+        subject-path: "dist/*"
+
+    - name: "Publish dists to PyPI"
+      uses: pypa/gh-action-pypi-publish@ec4db0b4ddc65acdf4bff5fa45ac92d78b56bdf0 # v1.9.0

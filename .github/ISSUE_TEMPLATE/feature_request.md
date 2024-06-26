@@ -2,7 +2,7 @@
 name: Feature request
 about: Suggest an idea for coverage.py
 title: ''
-labels: enhancement, needs triage
+labels: enhancement
 assignees: ''
 
 ---

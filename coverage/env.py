@@ -35,6 +35,8 @@ PYVERSION = sys.version_info + (int(platform.python_version()[-1] == "+"),)
 
 if PYPY:
     PYPYVERSION = sys.pypy_version_info         # type: ignore[attr-defined]
+else:
+    PYPYVERSION = (0,)
 
 # Python behavior.
 class PYBEHAVIOR:

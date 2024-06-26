@@ -668,6 +668,34 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         assert "not_covered.py       3      3   0.000000%" in report
         assert "TOTAL                3      3   0.000000%" in report
 
+    def test_report_module_docstrings(self) -> None:
+        self.make_file("main.py", """\
+            # Line 1
+            '''Line 2 docstring.'''
+            import other
+            a = 4
+            """)
+        self.make_file("other.py", """\
+            '''Line 1'''
+            a = 2
+            """)
+        cov = coverage.Coverage()
+        self.start_import_stop(cov, "main")
+        report = self.get_report(cov)
+
+        # Name       Stmts   Miss  Cover
+        # ------------------------------
+        # main.py        2      0   100%
+        # other.py       1      0   100%
+        # ------------------------------
+        # TOTAL          3      0   100%
+
+        assert self.line_count(report) == 6, report
+        squeezed = self.squeezed_lines(report)
+        assert squeezed[2] == "main.py 2 0 100%"
+        assert squeezed[3] == "other.py 1 0 100%"
+        assert squeezed[5] == "TOTAL 3 0 100%"
+
     def test_dotpy_not_python(self) -> None:
         # We run a .py file, and when reporting, we can't parse it as Python.
         # We should get an error message in the report.

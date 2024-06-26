@@ -37,10 +37,10 @@ jobs:
 
     steps:
       - name: "Check out the repo"
-        uses: "actions/checkout@v4"
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
 
       - name: "Install Python"
-        uses: "actions/setup-python@v5"
+        uses: actions/setup-python@82c7e631bb3cdc910f68e0081d67478d79c6982d # v5.1.0
         with:
           python-version: "3.8" # Minimum of PYVERSIONS
           cache: pip
@@ -60,10 +60,10 @@ jobs:
 
     steps:
       - name: "Check out the repo"
-        uses: "actions/checkout@v4"
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
 
       - name: "Install Python"
-        uses: "actions/setup-python@v5"
+        uses: actions/setup-python@82c7e631bb3cdc910f68e0081d67478d79c6982d # v5.1.0
         with:
           python-version: "3.8" # Minimum of PYVERSIONS, but at least 3.8
           cache: pip
@@ -83,10 +83,10 @@ jobs:
 
     steps:
       - name: "Check out the repo"
-        uses: "actions/checkout@v4"
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
 
       - name: "Install Python"
-        uses: "actions/setup-python@v5"
+        uses: actions/setup-python@82c7e631bb3cdc910f68e0081d67478d79c6982d # v5.1.0
         with:
           python-version: "3.11" # Doc version from PYVERSIONS
           cache: pip
@@ -97,7 +97,7 @@ jobs:
           set -xe
           python -VV
           python -m site
-          env
+          env | sort
 
       - name: "Install dependencies"
         run: |

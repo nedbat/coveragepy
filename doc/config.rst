@@ -591,7 +591,7 @@ Settings common to many kinds of reporting.
 (multi-string) A list of regular expressions.  This setting is similar to
 :ref:`config_report_exclude_lines`: it specifies patterns for lines to exclude
 from reporting.  This setting is preferred, because it will preserve the
-default exclude patterns instead of overwriting them.
+default exclude pattern ``pragma: no cover`` instead of overwriting it.
 
 .. versionadded:: 7.2.0
 

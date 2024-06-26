@@ -128,6 +128,9 @@ class HtmlDataGeneration:
         if self.has_arcs:
             missing_branch_arcs = analysis.missing_branch_arcs()
             arcs_executed = analysis.arcs_executed
+        else:
+            missing_branch_arcs = {}
+            arcs_executed = []
 
         if self.config.show_contexts:
             contexts_by_lineno = self.data.contexts_by_lineno(analysis.filename)
@@ -597,7 +600,7 @@ class HtmlReporter:
             "regions": index_page.summaries,
             "totals": index_page.totals,
             "noun": index_page.noun,
-            "column2": index_page.noun if index_page.noun != "file" else "",
+            "region_noun": index_page.noun if index_page.noun != "file" else "",
             "skip_covered": self.skip_covered,
             "skipped_covered_msg": skipped_covered_msg,
             "skipped_empty_msg": skipped_empty_msg,

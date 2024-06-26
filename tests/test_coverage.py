@@ -41,15 +41,6 @@ class TestCoverageTest(CoverageTest):
             [1,2,3],
             missing="3",
         )
-        # You can specify a list of possible missing lines.
-        self.check_coverage("""\
-            a = 1
-            if a == 2:
-                a = 3
-            """,
-            [1,2,3],
-            missing=("47-49", "3", "100,102"),
-        )
 
     def test_failed_coverage(self) -> None:
         # If the lines are wrong, the message shows right and wrong.
@@ -78,17 +69,6 @@ class TestCoverageTest(CoverageTest):
                 """,
                 [1,2,3],
                 missing="37",
-            )
-        # If the missing lines possibilities are wrong, the msg shows right.
-        msg = r"None of the missing choices matched '3'"
-        with pytest.raises(AssertionError, match=msg):
-            self.check_coverage("""\
-                a = 1
-                if a == 2:
-                    a = 3
-                """,
-                [1,2,3],
-                missing=("37", "4-10"),
             )
 
     def test_exceptions_really_fail(self) -> None:
@@ -502,6 +482,7 @@ class SimpleStatementTest(CoverageTest):
         )
 
     def test_strange_unexecuted_continue(self) -> None:
+        # This used to be true, but no longer is:
         # Peephole optimization of jumps to jumps can mean that some statements
         # never hit the line tracer.  The behavior is different in different
         # versions of Python, so be careful when running this test.
@@ -529,7 +510,7 @@ class SimpleStatementTest(CoverageTest):
             assert a == 33 and b == 50 and c == 50
             """,
             lines=[1,2,3,4,5,6,8,9,10, 12,13,14,15,16,17,19,20,21],
-            missing=["", "6"],
+            missing="",
         )
 
     def test_import(self) -> None:
@@ -682,14 +663,13 @@ class SimpleStatementTest(CoverageTest):
             """,
             [2, 3],
         )
-        lines = [2, 3, 4]
         self.check_coverage("""\
-            # Start with a comment, because it changes the behavior(!?)
+            # Start with a comment, even though it doesn't change the behavior.
             '''I am a module docstring.'''
             a = 3
             b = 4
             """,
-            lines,
+            [3, 4],
         )
 
 

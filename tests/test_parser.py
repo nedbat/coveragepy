@@ -124,30 +124,23 @@ class PythonParserTest(PythonParserTestBase):
             """)
         assert parser.exit_counts() == { 1:1, 2:1, 3:1, 6:1 }
 
-    def test_indentation_error(self) -> None:
-        msg = (
-            "Couldn't parse '<code>' as Python source: " +
-            "'unindent does not match any outer indentation level.*' at line 3"
+    @pytest.mark.parametrize("text", [
+        pytest.param("0 spaces\n  2\n 1", id="bad_indent"),
+        pytest.param("'''", id="string_eof"),
+        pytest.param("$hello", id="dollar"),
+        # on 3.10 this passes ast.parse but fails on tokenize.generate_tokens
+        pytest.param(
+            "\r'\\\n'''",
+            id="leading_newline_eof",
+            marks=[
+                pytest.mark.skipif(env.PYVERSION >= (3, 12), reason="parses fine in 3.12"),
+            ]
         )
+    ])
+    def test_not_python(self, text: str) -> None:
+        msg = r"Couldn't parse '<code>' as Python source: '.*' at line \d+"
         with pytest.raises(NotPython, match=msg):
-            _ = self.parse_text("""\
-                0 spaces
-                  2
-                 1
-                """)
-
-    def test_token_error(self) -> None:
-        submsgs = [
-            r"EOF in multi-line string",                                        # before 3.12.0b1
-            r"unterminated triple-quoted string literal .detected at line 1.",  # after 3.12.0b1
-        ]
-        msg = (
-            r"Couldn't parse '<code>' as Python source: '"
-            + r"(" + "|".join(submsgs) + ")"
-            + r"' at line 1"
-        )
-        with pytest.raises(NotPython, match=msg):
-            _ = self.parse_text("'''")
+            _ = self.parse_text(text)
 
     def test_empty_decorated_function(self) -> None:
         parser = self.parse_text("""\
@@ -179,6 +172,20 @@ class PythonParserTest(PythonParserTestBase):
         assert expected_statements == parser.statements
         assert expected_arcs == parser.arcs()
         assert expected_exits == parser.exit_counts()
+
+    def test_module_docstrings(self) -> None:
+        parser = self.parse_text("""\
+            '''The docstring on line 1'''
+            a = 2
+            """)
+        assert {2} == parser.statements
+
+        parser = self.parse_text("""\
+            # Docstring is not line 1
+            '''The docstring on line 2'''
+            a = 3
+            """)
+        assert {3} == parser.statements
 
     def test_fuzzed_double_parse(self) -> None:
         # https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=50381
@@ -740,6 +747,10 @@ class ExclusionParserTest(PythonParserTestBase):
         assert parser.raw_statements == raw_statements
         assert parser.statements == set()
 
+    @pytest.mark.xfail(
+        env.PYPY and env.PYVERSION[:2] == (3, 8),
+        reason="AST doesn't mark end of classes correctly",
+    )
     def test_class_decorator_pragmas(self) -> None:
         parser = self.parse_text("""\
             class Foo(object):
@@ -753,6 +764,22 @@ class ExclusionParserTest(PythonParserTestBase):
             """)
         assert parser.raw_statements == {1, 2, 3, 5, 6, 7, 8}
         assert parser.statements == {1, 2, 3}
+
+    def test_over_exclusion_bug1779(self) -> None:
+        # https://github.com/nedbat/coveragepy/issues/1779
+        parser = self.parse_text("""\
+            import abc
+
+            class MyProtocol:               # nocover 3
+                @abc.abstractmethod         # nocover 4
+                def my_method(self) -> int:
+                    ...     # 6
+
+            def function() -> int:
+                return 9
+            """)
+        assert parser.raw_statements == {1, 3, 4, 5, 6, 8, 9}
+        assert parser.statements == {1, 8, 9}
 
 
 class ParserMissingArcDescriptionTest(PythonParserTestBase):
@@ -775,21 +802,21 @@ class ParserMissingArcDescriptionTest(PythonParserTestBase):
                     thing(12)
                 more_stuff(13)
             """)
-        expected = "line 1 didn't jump to line 2, because the condition on line 1 was never true"
+        expected = "line 1 didn't jump to line 2 because the condition on line 1 was never true"
         assert expected == parser.missing_arc_description(1, 2)
-        expected = "line 1 didn't jump to line 3, because the condition on line 1 was always true"
+        expected = "line 1 didn't jump to line 3 because the condition on line 1 was always true"
         assert expected == parser.missing_arc_description(1, 3)
         expected = (
-            "line 6 didn't return from function 'func5', " +
+            "line 6 didn't return from function 'func5' " +
             "because the loop on line 6 didn't complete"
         )
         assert expected == parser.missing_arc_description(6, -5)
-        expected = "line 6 didn't jump to line 7, because the loop on line 6 never started"
+        expected = "line 6 didn't jump to line 7 because the loop on line 6 never started"
         assert expected == parser.missing_arc_description(6, 7)
-        expected = "line 11 didn't jump to line 12, because the condition on line 11 was never true"
+        expected = "line 11 didn't jump to line 12 because the condition on line 11 was never true"
         assert expected == parser.missing_arc_description(11, 12)
         expected = (
-            "line 11 didn't jump to line 13, " +
+            "line 11 didn't jump to line 13 " +
             "because the condition on line 11 was always true"
         )
         assert expected == parser.missing_arc_description(11, 13)
@@ -824,12 +851,12 @@ class ParserMissingArcDescriptionTest(PythonParserTestBase):
                 print("yikes")
             """)
         expected = (
-            "line 3 didn't jump to line 4, " +
+            "line 3 didn't jump to line 4 " +
             "because the exception caught by line 3 didn't happen"
         )
         assert expected == parser.missing_arc_description(3, 4)
         expected = (
-            "line 5 didn't jump to line 6, " +
+            "line 5 didn't jump to line 6 " +
             "because the exception caught by line 5 didn't happen"
         )
         assert expected == parser.missing_arc_description(5, 6)
@@ -857,53 +884,53 @@ class ParserMissingArcDescriptionTest(PythonParserTestBase):
                 that_thing(19)
             """)
         if env.PYBEHAVIOR.finally_jumps_back:
-            expected = "line 18 didn't jump to line 5, because the break on line 5 wasn't executed"
+            expected = "line 18 didn't jump to line 5 because the break on line 5 wasn't executed"
             assert expected == parser.missing_arc_description(18, 5)
-            expected = "line 5 didn't jump to line 19, because the break on line 5 wasn't executed"
+            expected = "line 5 didn't jump to line 19 because the break on line 5 wasn't executed"
             assert expected == parser.missing_arc_description(5, 19)
             expected = (
-                "line 18 didn't jump to line 10, " +
+                "line 18 didn't jump to line 10 " +
                 "because the continue on line 10 wasn't executed"
             )
             assert expected == parser.missing_arc_description(18, 10)
             expected = (
-                "line 10 didn't jump to line 2, " +
+                "line 10 didn't jump to line 2 " +
                 "because the continue on line 10 wasn't executed"
             )
             assert expected == parser.missing_arc_description(10, 2)
             expected = (
-                "line 18 didn't jump to line 14, " +
+                "line 18 didn't jump to line 14 " +
                 "because the return on line 14 wasn't executed"
             )
             assert expected == parser.missing_arc_description(18, 14)
             expected = (
-                "line 14 didn't return from function 'function', " +
+                "line 14 didn't return from function 'function' " +
                 "because the return on line 14 wasn't executed"
             )
             assert expected == parser.missing_arc_description(14, -1)
             expected = (
-                "line 18 didn't except from function 'function', " +
+                "line 18 didn't except from function 'function' " +
                 "because the raise on line 16 wasn't executed"
             )
             assert expected == parser.missing_arc_description(18, -1)
         else:
             expected = (
-                "line 18 didn't jump to line 19, " +
+                "line 18 didn't jump to line 19 " +
                 "because the break on line 5 wasn't executed"
             )
             assert expected == parser.missing_arc_description(18, 19)
             expected = (
-                "line 18 didn't jump to line 2, " +
+                "line 18 didn't jump to line 2 " +
                     "because the continue on line 10 wasn't executed" +
                 " or " +
                     "the continue on line 12 wasn't executed"
             )
             assert expected == parser.missing_arc_description(18, 2)
             expected = (
-                "line 18 didn't except from function 'function', " +
+                "line 18 didn't except from function 'function' " +
                     "because the raise on line 16 wasn't executed" +
                 " or " +
-                "line 18 didn't return from function 'function', " +
+                "line 18 didn't return from function 'function' " +
                     "because the return on line 14 wasn't executed"
             )
             assert expected == parser.missing_arc_description(18, -1)
@@ -919,7 +946,11 @@ class ParserMissingArcDescriptionTest(PythonParserTestBase):
             """)
         assert parser.missing_arc_description(2, -3) == "line 3 didn't finish the lambda on line 3"
 
-    @pytest.mark.skipif(not env.PYBEHAVIOR.match_case, reason="Match-case is new in 3.10")
+
+@pytest.mark.skipif(not env.PYBEHAVIOR.match_case, reason="Match-case is new in 3.10")
+class MatchCaseMissingArcDescriptionTest(PythonParserTestBase):
+    """Missing arc descriptions for match/case."""
+
     def test_match_case(self) -> None:
         parser = self.parse_text("""\
             match command.split():
@@ -930,14 +961,32 @@ class ParserMissingArcDescriptionTest(PythonParserTestBase):
             print(match)                                            # 6
             """)
         assert parser.missing_arc_description(2, 3) == (
-            "line 2 didn't jump to line 3, because the pattern on line 2 never matched"
+            "line 2 didn't jump to line 3 because the pattern on line 2 never matched"
         )
         assert parser.missing_arc_description(2, 4) == (
-            "line 2 didn't jump to line 4, because the pattern on line 2 always matched"
+            "line 2 didn't jump to line 4 because the pattern on line 2 always matched"
         )
         assert parser.missing_arc_description(4, 6) == (
-            "line 4 didn't jump to line 6, because the pattern on line 4 always matched"
+            "line 4 didn't jump to line 6 because the pattern on line 4 always matched"
         )
+
+    def test_final_wildcard(self) -> None:
+        parser = self.parse_text("""\
+            match command.split():
+                case ["go", direction] if direction in "nesw":      # 2
+                    match = f"go: {direction}"
+                case _:                                             # 4
+                    match = "no go"
+            print(match)                                            # 6
+            """)
+        assert parser.missing_arc_description(2, 3) == (
+            "line 2 didn't jump to line 3 because the pattern on line 2 never matched"
+        )
+        assert parser.missing_arc_description(2, 4) == (
+            "line 2 didn't jump to line 4 because the pattern on line 2 always matched"
+        )
+        # 4-6 isn't a possible arc, so the description is generic.
+        assert parser.missing_arc_description(4, 6) == "line 4 didn't jump to line 6"
 
 
 class ParserFileTest(CoverageTest):

@@ -87,6 +87,8 @@ class TracerCore(Protocol):
     should_trace_cache: Mapping[str, TFileDisposition | None]
     should_start_context: Callable[[FrameType], str | None] | None
     switch_context: Callable[[str | None], None] | None
+    lock_data: Callable[[], None]
+    unlock_data: Callable[[], None]
     warn: TWarnFn
 
     def __init__(self) -> None:

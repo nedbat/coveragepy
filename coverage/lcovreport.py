@@ -22,6 +22,9 @@ if TYPE_CHECKING:
 
 def line_hash(line: str) -> str:
     """Produce a hash of a source line for use in the LCOV file."""
+    # The LCOV file format requires MD5 as a fingerprint of the file. This is
+    # not a security use.  Some security scanners raise alarms about the use of
+    # MD5 here, but it is a false positive. This is not a security concern.
     hashed = hashlib.md5(line.encode("utf-8")).digest()
     return base64.b64encode(hashed).decode("ascii").rstrip("=")
 

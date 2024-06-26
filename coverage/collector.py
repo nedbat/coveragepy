@@ -5,6 +5,7 @@
 
 from __future__ import annotations
 
+import contextlib
 import functools
 import os
 import sys
@@ -255,14 +256,17 @@ class Collector:
         # We used to use self.data.clear(), but that would remove filename
         # keys and data values that were still in use higher up the stack
         # when we are called as part of switch_context.
-        for d in self.data.values():
-            d.clear()
+        with self.data_lock or contextlib.nullcontext():
+            for d in self.data.values():
+                d.clear()
 
         for tracer in self.tracers:
             tracer.reset_activity()
 
     def reset(self) -> None:
         """Clear collected data, and prepare to collect more."""
+        self.data_lock = self.threading.Lock() if self.threading else None
+
         # The trace data we are collecting.
         self.data: TTraceData = {}
 
@@ -305,10 +309,22 @@ class Collector:
 
         self._clear_data()
 
+    def lock_data(self) -> None:
+        """Lock self.data_lock, for use by the C tracer."""
+        if self.data_lock is not None:
+            self.data_lock.acquire()
+
+    def unlock_data(self) -> None:
+        """Unlock self.data_lock, for use by the C tracer."""
+        if self.data_lock is not None:
+            self.data_lock.release()
+
     def _start_tracer(self) -> TTraceFn | None:
         """Start a new Tracer object, and store it in self.tracers."""
         tracer = self._trace_class(**self._core_kwargs)
         tracer.data = self.data
+        tracer.lock_data = self.lock_data
+        tracer.unlock_data = self.unlock_data
         tracer.trace_arcs = self.branch
         tracer.should_trace = self.should_trace
         tracer.should_trace_cache = self.should_trace_cache

@@ -4,6 +4,7 @@
 """Help make a requests Session with proper authentication."""
 
 import os
+import sys
 
 import requests
 
@@ -16,12 +17,14 @@ def get_session():
 
     if _SESSION is None:
         # If GITHUB_TOKEN is in the environment, use it.
-        _SESSION = requests.session()
         token = os.environ.get("GITHUB_TOKEN")
-        if token is not None:
-            _SESSION.headers["Authorization"] = f"token {token}"
-            # requests.get() will always prefer the .netrc file even if a header
-            # is already set.  This tells it to ignore the .netrc file.
-            _SESSION.trust_env = False
+        if token is None:
+            sys.exit("!! Must have a GITHUB_TOKEN")
+
+        _SESSION = requests.session()
+        _SESSION.headers["Authorization"] = f"token {token}"
+        # requests.get() will always prefer the .netrc file even if a header
+        # is already set.  This tells it to ignore the .netrc file.
+        _SESSION.trust_env = False
 
     return _SESSION

@@ -14,5 +14,6 @@ sphinx
 sphinx-autobuild
 sphinx_rtd_theme
 sphinx-code-tabs
+sphinx-lint
 sphinxcontrib-restbuilder
 sphinxcontrib-spelling

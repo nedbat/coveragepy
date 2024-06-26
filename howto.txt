@@ -34,10 +34,11 @@
         - check in the new sample html
             $ make relcommit2
 - Done with changes to source files
-    - check them in on the release prep branch
-    - wait for ci to finish
-    - merge to master
-    - git push
+    - g puo; gshipit
+        - check them in on the release prep branch
+        - wait for ci to finish
+        - merge to master
+        - git push
 - Start the kits:
     - opvars github
     - Trigger the kit GitHub Action
@@ -51,15 +52,13 @@
 - Kits:
     - Wait for kits to finish:
         - https://github.com/nedbat/coveragepy/actions/workflows/kit.yml
-    - Download and check built kits from GitHub Actions:
-        $ make clean download_kits check_kits
         - there should be 52
-    - examine the dist directory, and remove anything that looks malformed.
-    - opvars
     - test the pypi upload:
         $ make test_upload
+        - you'll need to approve the action
     - upload kits:
-        $ make kit_upload
+        $ make pypi_upload
+        - you'll need to approve the action
 - Tag the tree
     $ make tag
 - Update GitHub releases:
@@ -77,10 +76,8 @@
     - IF NOT PRE-RELEASE:
         - @ https://readthedocs.org/dashboard/coverage/advanced/
             - change the "default version" to the new version
-        - @ https://readthedocs.org/projects/coverage/builds/
-            - manually build "latest"
-            - wait for the new tag build to finish successfully.
 - Once CI passes, merge the bump-version branch to master and push it
+    - gshipit
 
 - things to automate:
     - readthedocs api to do the readthedocs changes
