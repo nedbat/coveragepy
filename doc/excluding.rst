@@ -123,13 +123,13 @@ all of them by adding a regex to the exclusion list:
             ]
 
     .. code-tab:: ini
-        :caption: setup.cfg, tox.ini
+        :caption: setup.cfg or tox.ini
 
         [coverage:report]
         exclude_also =
             def __repr__
 
-.. [[[end]]] (checksum: adc6406467518c89a5a6fe2c4b999416)
+.. [[[end]]] (checksum: e3194120285bcbac38a92b109edaa20c)
 
 For example, here's a list of exclusions I've used:
 
@@ -203,7 +203,7 @@ For example, here's a list of exclusions I've used:
             ]
 
     .. code-tab:: ini
-        :caption: setup.cfg, tox.ini
+        :caption: setup.cfg or tox.ini
 
         [coverage:report]
         exclude_also =
@@ -218,7 +218,7 @@ For example, here's a list of exclusions I've used:
             class .*\bProtocol\):
             @(abc\.)?abstractmethod
 
-.. [[[end]]] (checksum: ef1947821b8224c4f02d27f9514e5c5e)
+.. [[[end]]] (checksum: 91f09828a1e6d0e92543e14a8ea3ba39)
 
 The :ref:`config_report_exclude_also` option adds regexes to the built-in
 default list so that you can add your own exclusions.  The older

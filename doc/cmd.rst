@@ -310,12 +310,12 @@ collected," add this to your configuration file:
         disable_warnings = ["no-data-collected"]
 
     .. code-tab:: ini
-        :caption: setup.cfg, tox.ini
+        :caption: setup.cfg or tox.ini
 
         [coverage:run]
         disable_warnings = no-data-collected
 
-.. [[[end]]] (checksum: 66c0c28e863c2a44218190a8a6a3f707)
+.. [[[end]]] (checksum: 489285bcfa173b69a286f03fe13e4554)
 
 
 .. _cmd_datafile:

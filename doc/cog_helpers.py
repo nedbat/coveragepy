@@ -73,7 +73,7 @@ def show_configs(ini, toml):
 
     `ini` is the ini-file syntax, `toml` is the equivalent TOML syntax.
     The equivalence is checked for accuracy, and the process fails if there's
-    a mismtach.
+    a mismatch.
 
     A three-tabbed box will be produced.
     """
@@ -89,7 +89,7 @@ def show_configs(ini, toml):
     for name, syntax, text in [
         (".coveragerc", "ini", ini),
         ("pyproject.toml", "toml", toml),
-        ("setup.cfg, tox.ini", "ini", ini2),
+        ("setup.cfg or tox.ini", "ini", ini2),
     ]:
         print(f"    .. code-tab:: {syntax}")
         print(f"        :caption: {name}")
