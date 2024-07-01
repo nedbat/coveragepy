@@ -49,7 +49,7 @@ class TomlConfigParser:
         filename = os.fspath(filenames)
 
         try:
-            with open(filename, encoding='utf-8') as fp:
+            with open(filename, encoding='utf-8', newline='') as fp:
                 toml_text = fp.read()
         except OSError:
             return []
