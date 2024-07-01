@@ -246,9 +246,6 @@ class PythonFileReporter(FileReporter):
         # Anything named *.py* should be Python.
         if ext.startswith(".py"):
             return True
-        # A file with no extension should be Python.
-        if not ext:
-            return True
         # Everything else is probably not Python.
         return False
 
