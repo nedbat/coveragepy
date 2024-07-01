@@ -426,7 +426,13 @@ class HtmlWithUnparsableFilesTest(HtmlTestHelpers, CoverageTest):
         self.make_file("innocuous.html", "<h1>This isn't python at all!</h1>")
         cov = coverage.Coverage()
         cov.load()
-        with pytest.raises(NoDataError, match="No data to report."):
+        with pytest.raises(
+            NoDataError,
+            match=(
+                r"^The data file or directory '(.+?)' could not be found\. Perhaps 'coverage "
+                + r"combine' must be run first\.$"
+            )
+        ):
             cov.html_report()
 
     def test_execed_liar_ignored(self) -> None:

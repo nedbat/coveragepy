@@ -13,6 +13,7 @@ import shlex
 import sys
 import textwrap
 import traceback
+from contextlib import suppress
 
 from typing import cast, Any, NoReturn
 
@@ -24,7 +25,9 @@ from coverage.config import CoverageConfig
 from coverage.control import DEFAULT_DATAFILE
 from coverage.data import combinable_files, debug_data_file
 from coverage.debug import info_header, short_stack, write_formatted_info
-from coverage.exceptions import _BaseCoverageException, _ExceptionDuringRun, NoSource
+from coverage.exceptions import (
+    _BaseCoverageException, _ExceptionDuringRun, NoSource, NoDataFilesFoundError,
+)
 from coverage.execfile import PyRunner
 from coverage.results import display_covered, should_fail_under
 from coverage.version import __url__
@@ -882,9 +885,10 @@ class CoverageScript:
             print(info_header("data"))
             data_file = self.coverage.config.data_file
             debug_data_file(data_file)
-            for filename in combinable_files(data_file):
-                print("-----")
-                debug_data_file(filename)
+            with suppress(NoDataFilesFoundError):
+                for filename in combinable_files(data_file):
+                    print("-----")
+                    debug_data_file(filename)
         elif args[0] == "config":
             write_formatted_info(print, "config", self.coverage.config.debug_info())
         elif args[0] == "premain":

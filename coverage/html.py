@@ -19,7 +19,7 @@ from typing import Any, Iterable, TYPE_CHECKING
 
 import coverage
 from coverage.data import CoverageData, add_data_to_hash
-from coverage.exceptions import NoDataError
+from coverage.exceptions import DataFileOrDirectoryNotFoundError
 from coverage.files import flat_rootname
 from coverage.misc import (
     ensure_dir, file_be_gone, Hasher, isolate_module, format_local_datetime,
@@ -320,7 +320,9 @@ class HtmlReporter:
                 file_be_gone(os.path.join(self.directory, ftr.html_filename))
 
         if not have_data:
-            raise NoDataError("No data to report.")
+            raise DataFileOrDirectoryNotFoundError.new(
+                os.path.dirname(self.coverage.get_data().base_filename())
+            )
 
         self.make_directory()
         self.make_local_static_report_files()

@@ -1635,19 +1635,37 @@ class ReportingTest(CoverageTest):
     def test_no_data_to_report_on_annotate(self) -> None:
         # Reporting with no data produces a nice message and no output
         # directory.
-        with pytest.raises(NoDataError, match="No data to report."):
+        with pytest.raises(
+            NoDataError,
+            match=(
+                r"^The data file or directory '(.+?)' could not be found\. Perhaps 'coverage "
+                + r"combine' must be run first\.$"
+            )
+        ):
             self.command_line("annotate -d ann")
         self.assert_doesnt_exist("ann")
 
     def test_no_data_to_report_on_html(self) -> None:
         # Reporting with no data produces a nice message and no output
         # directory.
-        with pytest.raises(NoDataError, match="No data to report."):
+        with pytest.raises(
+            NoDataError,
+            match=(
+                r"^The data file or directory '(.+?)' could not be found\. Perhaps 'coverage "
+                + r"combine' must be run first\.$"
+            )
+        ):
             self.command_line("html -d htmlcov")
         self.assert_doesnt_exist("htmlcov")
 
     def test_no_data_to_report_on_xml(self) -> None:
         # Reporting with no data produces a nice message.
-        with pytest.raises(NoDataError, match="No data to report."):
+        with pytest.raises(
+            NoDataError,
+            match=(
+                r"^The data file or directory '(.+?)' could not be found\. Perhaps 'coverage "
+                + r"combine' must be run first\.$"
+            )
+        ):
             self.command_line("xml")
         self.assert_doesnt_exist("coverage.xml")
