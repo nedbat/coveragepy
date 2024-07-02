@@ -781,7 +781,7 @@ class ExclusionParserTest(PythonParserTestBase):
         assert parser.raw_statements == {1, 3, 4, 5, 6, 8, 9}
         assert parser.statements == {1, 8, 9}
 
-    def test_multiline_exclusion(self) -> None:
+    def test_multiline_exclusion_single_line(self) -> None:
         regex = r"print\('.*'\)"
         parser = self.parse_text("""\
         def foo():
@@ -791,10 +791,11 @@ class ExclusionParserTest(PythonParserTestBase):
         assert parser.raw_statements == {1, 2}
         assert parser.statements == {1}
 
-        regex = r"if True:\n\s+print\('Hello, world!'\)"
+    def test_multiline_exclusion_suite(self) -> None:
+        regex = r"if T:\n\s+print\('Hello, world!'\)"
         parser = self.parse_text("""\
         def foo():
-            if True:
+            if T:
                 print('Hello, world!')
                 print('This is a multiline regex test.')
         """, regex)
@@ -802,6 +803,7 @@ class ExclusionParserTest(PythonParserTestBase):
         assert parser.raw_statements == {1, 2, 3, 4}
         assert parser.statements == {1}
 
+    def test_multiline_exclusion_no_match(self) -> None:
         regex = r"nonexistent"
         parser = self.parse_text("""\
         def foo():
@@ -811,12 +813,14 @@ class ExclusionParserTest(PythonParserTestBase):
         assert parser.raw_statements == {1, 2}
         assert parser.statements == {1, 2}
 
+    def test_multiline_exclusion_no_source(self) -> None:
         regex = r"anything"
         parser = PythonParser(text="", filename="dummy.py", exclude=regex)
         assert parser.lines_matching(regex) == set()
         assert parser.raw_statements == set()
         assert parser.statements == set()
 
+    def test_multiline_exclusion_multiple_matches(self) -> None:
         regex = r"print\('.*'\)"
         parser = self.parse_text("""\
         def foo():
@@ -828,22 +832,25 @@ class ExclusionParserTest(PythonParserTestBase):
         assert parser.raw_statements == {1, 2, 3, 4}
         assert parser.statements == {1, 3}
 
-        regex = r"print\('Hello, world!'\)\n\s+if True:"
+    def test_multiline_exclusion_suite2(self) -> None:
+        regex = r"print\('Hello, world!'\)\n\s+if T:"
         parser = self.parse_text("""\
         def foo():
             print('Hello, world!')
-            if True:
+            if T:
                 print('This is a test.')
         """, regex)
         assert parser.lines_matching(regex) == {2, 3}
         assert parser.raw_statements == {1, 2, 3, 4}
         assert parser.statements == {1}
 
-        regex = r"""def foo\(\):\n\s+print\('Hello, world!'\)\n\s+if True:\n\s+print\('This is a test\.'\)"""
+    def test_multiline_exclusion_match_all(self) -> None:
+        regex = (r"""def foo\(\):\n\s+print\('Hello, world!'\)\n"
+                 "\s+if T:\n\s+print\('This is a test\.'\)""")
         parser = self.parse_text("""\
         def foo():
             print('Hello, world!')
-            if True:
+            if T:
                 print('This is a test.')
         """, regex)
         assert parser.lines_matching(regex) == {1, 2, 3, 4}
