@@ -781,6 +781,75 @@ class ExclusionParserTest(PythonParserTestBase):
         assert parser.raw_statements == {1, 3, 4, 5, 6, 8, 9}
         assert parser.statements == {1, 8, 9}
 
+    def test_multiline_exclusion(self) -> None:
+        regex = r"print\('.*'\)"
+        parser = self.parse_text("""\
+        def foo():
+            print('Hello, world!')
+        """, regex)
+        assert parser.lines_matching(regex) == {2}
+        assert parser.raw_statements == {1, 2}
+        assert parser.statements == {1}
+
+        regex = r"if True:\n\s+print\('Hello, world!'\)"
+        parser = self.parse_text("""\
+        def foo():
+            if True:
+                print('Hello, world!')
+                print('This is a multiline regex test.')
+        """, regex)
+        assert parser.lines_matching(regex) == {2, 3}
+        assert parser.raw_statements == {1, 2, 3, 4}
+        assert parser.statements == {1}
+
+        regex = r"nonexistent"
+        parser = self.parse_text("""\
+        def foo():
+            print('Hello, world!')
+        """, regex)
+        assert parser.lines_matching(regex) == set()
+        assert parser.raw_statements == {1, 2}
+        assert parser.statements == {1, 2}
+
+        regex = r"anything"
+        parser = PythonParser(text="", filename="dummy.py", exclude=regex)
+        assert parser.lines_matching(regex) == set()
+        assert parser.raw_statements == set()
+        assert parser.statements == set()
+
+        regex = r"print\('.*'\)"
+        parser = self.parse_text("""\
+        def foo():
+            print('Hello, world!')
+        def bar():
+            print('Hello again!')
+        """, regex)
+        assert parser.lines_matching(regex) == {2, 4}
+        assert parser.raw_statements == {1, 2, 3, 4}
+        assert parser.statements == {1, 3}
+
+        regex = r"print\('Hello, world!'\)\n\s+if True:"
+        parser = self.parse_text("""\
+        def foo():
+            print('Hello, world!')
+            if True:
+                print('This is a test.')
+        """, regex)
+        assert parser.lines_matching(regex) == {2, 3}
+        assert parser.raw_statements == {1, 2, 3, 4}
+        assert parser.statements == {1}
+
+        regex = r"""def foo\(\):\n\s+print\('Hello, world!'\)\n\s+if True:\n\s+print\('This is a test\.'\)"""
+        parser = self.parse_text("""\
+        def foo():
+            print('Hello, world!')
+            if True:
+                print('This is a test.')
+        """, regex)
+        assert parser.lines_matching(regex) == {1, 2, 3, 4}
+        assert parser.raw_statements == {1, 2, 3, 4}
+        assert parser.statements == set()
+
 
 class ParserMissingArcDescriptionTest(PythonParserTestBase):
     """Tests for PythonParser.missing_arc_description."""
