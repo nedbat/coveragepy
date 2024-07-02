@@ -845,8 +845,8 @@ class ExclusionParserTest(PythonParserTestBase):
         assert parser.statements == {1}
 
     def test_multiline_exclusion_match_all(self) -> None:
-        regex = (r"""def foo\(\):\n\s+print\('Hello, world!'\)\n"
-                 "\s+if T:\n\s+print\('This is a test\.'\)""")
+        regex = (r"def foo\(\):\n\s+print\('Hello, world!'\)\n"
+                 r"\s+if T:\n\s+print\('This is a test\.'\)")
         parser = self.parse_text("""\
         def foo():
             print('Hello, world!')

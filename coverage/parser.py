@@ -110,7 +110,7 @@ class PythonParser:
 
         """
         regex_c = re.compile(regex, re.MULTILINE)
-        matches = set()
+        matches: set[TLineNo] = set()
 
         last_start = 0
         last_start_line = 0
