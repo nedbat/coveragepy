@@ -25,7 +25,7 @@ def pytest_addoption(parser):
     )
 
 
-def pytest_collection_modifyitems(config, items):
+def pytest_collection_modifyitems(config, items):   # pragma: debugging
     """Run an external command to get a list of tests to run."""
     select_cmd = config.getoption("--select-cmd")
     if select_cmd:
