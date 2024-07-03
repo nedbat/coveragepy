@@ -675,7 +675,7 @@ class Coverage(TConfigurable):
         try:
             yield
         finally:
-            self.stop()
+            self.stop()     # pragma: nested
 
     def _atexit(self, event: str = "atexit") -> None:
         """Clean up on process shutdown."""
