@@ -883,7 +883,7 @@ class ExclusionParserTest(PythonParserTestBase):
 
     def test_multiline_exclusion_block(self) -> None:
         # https://github.com/nedbat/coveragepy/issues/1803
-        regex = "# no cover: start(?s:.)*# no cover: stop"
+        regex = "# no cover: start(?s:.)*?# no cover: stop"
         parser = self.parse_text("""\
             a = my_function1()
             if debug:
@@ -924,7 +924,7 @@ class ExclusionParserTest(PythonParserTestBase):
     def test_multiline_exclusion_block3(self) -> None:
         # https://github.com/nedbat/coveragepy/issues/1741
         # This will only work if there's exactly one return statement in the rest of the function
-        regex = r"# no cover: to return(?s:.)*return"
+        regex = r"# no cover: to return(?s:.)*?return"
         parser = self.parse_text("""\
             def my_function(args, j):
                 if args.command == Commands.CMD.value:

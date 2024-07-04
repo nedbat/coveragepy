@@ -258,17 +258,21 @@ Here are some examples:
         ini=r"""
             [report]
             exclude_also =
-                ; Exclude an except clause of a specific form:
+                ; 1. Exclude an except clause of a specific form:
                 except ValueError:\n\s*assume\(False\)
-                ; A pragma comment that excludes an entire file:
+                ; 2. Comments to turn coverage on and off:
+                no cover: start(?s:.)*?no cover: stop
+                ; 3. A pragma comment that excludes an entire file:
                 (?s)\A.*# pragma: exclude file.*\Z
             """,
         toml=r"""
             [tool.coverage.report]
             exclude_also = [
-                # Exclude an except clause of a specific form:
+                # 1. Exclude an except clause of a specific form:
                 "except ValueError:\\n\\s*assume\\(False\\)",
-                # A pragma comment that excludes an entire file:
+                # 2. Comments to turn coverage on and off:
+                "no cover: start(?s:.)*?no cover: stop",
+                # 3. A pragma comment that excludes an entire file:
                 "(?s)\\A.*# pragma: exclude file.*\\Z",
                 ]
             """,
@@ -282,9 +286,11 @@ Here are some examples:
 
         [report]
         exclude_also =
-            ; Exclude an except clause of a specific form:
+            ; 1. Exclude an except clause of a specific form:
             except ValueError:\n\s*assume\(False\)
-            ; A pragma comment that excludes an entire file:
+            ; 2. Comments to turn coverage on and off:
+            no cover: start(?s:.)*?no cover: stop
+            ; 3. A pragma comment that excludes an entire file:
             (?s)\A.*# pragma: exclude file.*\Z
 
     .. code-tab:: toml
@@ -292,9 +298,11 @@ Here are some examples:
 
         [tool.coverage.report]
         exclude_also = [
-            # Exclude an except clause of a specific form:
+            # 1. Exclude an except clause of a specific form:
             "except ValueError:\\n\\s*assume\\(False\\)",
-            # A pragma comment that excludes an entire file:
+            # 2. Comments to turn coverage on and off:
+            "no cover: start(?s:.)*?no cover: stop",
+            # 3. A pragma comment that excludes an entire file:
             "(?s)\\A.*# pragma: exclude file.*\\Z",
             ]
 
@@ -303,19 +311,29 @@ Here are some examples:
 
         [coverage:report]
         exclude_also =
-            ; Exclude an except clause of a specific form:
+            ; 1. Exclude an except clause of a specific form:
             except ValueError:\n\s*assume\(False\)
-            ; A pragma comment that excludes an entire file:
+            ; 2. Comments to turn coverage on and off:
+            no cover: start(?s:.)*?no cover: stop
+            ; 3. A pragma comment that excludes an entire file:
             (?s)\A.*# pragma: exclude file.*\Z
 
-.. [[[end]]] (checksum: 8892a4efef9da67fb0080d15811e1c19)
+.. [[[end]]] (checksum: 22ff0a1433f00d3b4d13544623aaf884)
 
 The first regex matches a specific except line followed by a specific function
 call.  Both lines must be present for the exclusion to take effect. Note that
 the regex uses ``"\n\s*"`` to match the newline and the indentation of the
 second line.  Without these, the regex won't match.
 
-The second regex matches the entire text of a file containing the comment ``#
+The second regex creates a pair of comments that can be used to exclude
+statements between them.   All lines between ``# no cover: start`` and ``# no
+cover: stop`` will be excluded.  The regex doesn't start with ``#`` because
+that's a comment in a .coveragerc file.  Be careful with wildcards: we've used
+the non-greedy ``*?`` to match the fewest possible characters between the
+comments.  If you used the greedy ``*`` instead, the star would match as many
+as possible, and you could accidentally exclude large swaths of code.
+
+The third regex matches the entire text of a file containing the comment ``#
 pragma: exclude file``.  This lets you exclude files from coverage measurement
 with an internal comment instead of naming them in a settings file.  This regex
 uses the ``"(?s)"`` regex flag to let a dot match any character including a
