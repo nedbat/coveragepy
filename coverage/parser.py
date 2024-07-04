@@ -105,14 +105,22 @@ class PythonParser:
         """Find the lines matching a regex.
 
         Returns a set of line numbers, the lines that contain a match for
-        `regex`.  The entire line needn't match, just a part of it.
+        `regex`. The entire line needn't match, just a part of it.
+        Handles multiline regex patterns.
 
         """
-        regex_c = re.compile(regex)
-        matches = set()
-        for i, ltext in enumerate(self.text.split("\n"), start=1):
-            if regex_c.search(ltext):
-                matches.add(self._multiline.get(i, i))
+        regex_c = re.compile(regex, re.MULTILINE)
+        matches: set[TLineNo] = set()
+
+        last_start = 0
+        last_start_line = 0
+        for match in regex_c.finditer(self.text):
+            start, end = match.span()
+            start_line = last_start_line + self.text.count('\n', last_start, start)
+            end_line = last_start_line + self.text.count('\n', last_start, end)
+            matches.update(self._multiline.get(i, i) for i in range(start_line + 1, end_line + 2))
+            last_start = start
+            last_start_line = start_line
         return matches
 
     def _raw_parse(self) -> None:

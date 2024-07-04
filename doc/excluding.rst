@@ -73,13 +73,17 @@ line, so it isn't considered a branch at all.
 Advanced exclusion
 ------------------
 
-Coverage.py identifies exclusions by matching lines against a list of regular
-expressions. Using :ref:`configuration files <config>` or the coverage
+Coverage.py identifies exclusions by matching source code against a list of
+regular expressions. Using :ref:`configuration files <config>` or the coverage
 :ref:`API <api>`, you can add to that list. This is useful if you have
 often-used constructs to exclude that can be matched with a regex. You can
 exclude them all at once without littering your code with exclusion pragmas.
 
-If the matched line introduces a block, the entire block is excluded from
+Before coverage.py 7.6.0, the regexes were matched against single lines of your
+source code.  Now they can be multi-line regexes that find matches across
+lines. See :ref:`multi_line_exclude`.
+
+If a matched line introduces a block, the entire block is excluded from
 reporting.  Matching a ``def`` line or decorator line will exclude an entire
 function.
 
@@ -230,6 +234,92 @@ value of ``...`` will match any line with more than three characters in it.
 
 A similar pragma, "no branch", can be used to tailor branch coverage
 measurement.  See :ref:`branch` for details.
+
+
+.. _multi_line_exclude:
+
+Multi-line exclusion regexes
+----------------------------
+
+.. versionadded:: 7.6.0
+
+Exclusion regexes can match multi-line regions.  All of the lines in a matched
+region will be excluded.  If part of the region introduces a block, the entire
+block is excluded even if part of it is outside the matched region.
+
+When writing regexes to match multiple lines, remember that ``"."`` won't match
+a newline character, but ``"\n"`` or ``"(?s:.)"`` will.  Using the ``"(?s)"``
+flag in your regex will also make dot match a newline.
+
+Here are some examples:
+
+.. [[[cog
+    show_configs(
+        ini=r"""
+            [report]
+            exclude_also =
+                ; Exclude an except clause of a specific form:
+                except ValueError:\n\s*assume\(False\)
+                ; A pragma comment that excludes an entire file:
+                (?s)\A.*# pragma: exclude file.*\Z
+            """,
+        toml=r"""
+            [tool.coverage.report]
+            exclude_also = [
+                # Exclude an except clause of a specific form:
+                "except ValueError:\\n\\s*assume\\(False\\)",
+                # A pragma comment that excludes an entire file:
+                "(?s)\\A.*# pragma: exclude file.*\\Z",
+                ]
+            """,
+        )
+.. ]]]
+
+.. tabs::
+
+    .. code-tab:: ini
+        :caption: .coveragerc
+
+        [report]
+        exclude_also =
+            ; Exclude an except clause of a specific form:
+            except ValueError:\n\s*assume\(False\)
+            ; A pragma comment that excludes an entire file:
+            (?s)\A.*# pragma: exclude file.*\Z
+
+    .. code-tab:: toml
+        :caption: pyproject.toml
+
+        [tool.coverage.report]
+        exclude_also = [
+            # Exclude an except clause of a specific form:
+            "except ValueError:\\n\\s*assume\\(False\\)",
+            # A pragma comment that excludes an entire file:
+            "(?s)\\A.*# pragma: exclude file.*\\Z",
+            ]
+
+    .. code-tab:: ini
+        :caption: setup.cfg or tox.ini
+
+        [coverage:report]
+        exclude_also =
+            ; Exclude an except clause of a specific form:
+            except ValueError:\n\s*assume\(False\)
+            ; A pragma comment that excludes an entire file:
+            (?s)\A.*# pragma: exclude file.*\Z
+
+.. [[[end]]] (checksum: 8892a4efef9da67fb0080d15811e1c19)
+
+The first regex matches a specific except line followed by a specific function
+call.  Both lines must be present for the exclusion to take effect. Note that
+the regex uses ``"\n\s*"`` to match the newline and the indentation of the
+second line.  Without these, the regex won't match.
+
+The second regex matches the entire text of a file containing the comment ``#
+pragma: exclude file``.  This lets you exclude files from coverage measurement
+with an internal comment instead of naming them in a settings file.  This regex
+uses the ``"(?s)"`` regex flag to let a dot match any character including a
+newline.
 
 
 Excluding source files
