@@ -906,12 +906,12 @@ class ExclusionParserTest(PythonParserTestBase):
     def test_multiline_exclusion_block3(self) -> None:
         # https://github.com/nedbat/coveragepy/issues/1741
         # This will only work if there's exactly one return statement in the rest of the function
-        regex = r"# no cover: start(?s:.)*return"
+        regex = r"# no cover: to return(?s:.)*return"
         parser = self.parse_text("""\
             def my_function(args, j):
                 if args.command == Commands.CMD.value:
                     return cmd_handler(j, args)
-                # no cover: start
+                # no cover: to return
                 print(f"Command '{args.command}' was not handled.", file=sys.stderr)
                 parser.print_help(file=sys.stderr)
 
@@ -924,7 +924,7 @@ class ExclusionParserTest(PythonParserTestBase):
 
     def test_multiline_exclusion_whole_source(self) -> None:
         # https://github.com/nedbat/coveragepy/issues/118
-        regex = r"(?s:.)*# pragma: exclude file(?s:.)*\Z"
+        regex = r"(?s)\A.*# pragma: exclude file.*\Z"
         parser = self.parse_text("""\
             import coverage
             # pragma: exclude file
