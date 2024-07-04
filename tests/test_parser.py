@@ -824,7 +824,7 @@ class ExclusionParserTest(PythonParserTestBase):
 
     def test_multiline_exclusion_all_lines_must_match(self) -> None:
         # https://github.com/nedbat/coveragepy/issues/996
-        regex = r"except ValueError:\n *print\('false'\)"
+        regex = r"except ValueError:\n\s*print\('false'\)"
         parser = self.parse_text("""\
             try:
                 a = 2

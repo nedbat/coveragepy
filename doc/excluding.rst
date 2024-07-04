@@ -259,7 +259,7 @@ Here are some examples:
             [report]
             exclude_also =
                 ; Exclude an except clause of a specific form:
-                except ValueError:\n *assume\(False\)
+                except ValueError:\n\s*assume\(False\)
                 ; A pragma comment that excludes an entire file:
                 (?s)\A.*# pragma: exclude file.*\Z
             """,
@@ -267,7 +267,7 @@ Here are some examples:
             [tool.coverage.report]
             exclude_also = [
                 # Exclude an except clause of a specific form:
-                "except ValueError:\\n *assume\\(False\\)",
+                "except ValueError:\\n\\s*assume\\(False\\)",
                 # A pragma comment that excludes an entire file:
                 "(?s)\\A.*# pragma: exclude file.*\\Z",
                 ]
@@ -283,7 +283,7 @@ Here are some examples:
         [report]
         exclude_also =
             ; Exclude an except clause of a specific form:
-            except ValueError:\n *assume\(False\)
+            except ValueError:\n\s*assume\(False\)
             ; A pragma comment that excludes an entire file:
             (?s)\A.*# pragma: exclude file.*\Z
 
@@ -293,7 +293,7 @@ Here are some examples:
         [tool.coverage.report]
         exclude_also = [
             # Exclude an except clause of a specific form:
-            "except ValueError:\\n *assume\\(False\\)",
+            "except ValueError:\\n\\s*assume\\(False\\)",
             # A pragma comment that excludes an entire file:
             "(?s)\\A.*# pragma: exclude file.*\\Z",
             ]
@@ -304,15 +304,15 @@ Here are some examples:
         [coverage:report]
         exclude_also =
             ; Exclude an except clause of a specific form:
-            except ValueError:\n *assume\(False\)
+            except ValueError:\n\s*assume\(False\)
             ; A pragma comment that excludes an entire file:
             (?s)\A.*# pragma: exclude file.*\Z
 
-.. [[[end]]] (checksum: 640f75f07f4a08af77bf524438ced229)
+.. [[[end]]] (checksum: 8892a4efef9da67fb0080d15811e1c19)
 
 The first regex matches a specific except line followed by a specific function
 call.  Both lines must be present for the exclusion to take effect. Note that
-the regex uses ``"\n *"`` to match the newline and the indentation of the
+the regex uses ``"\n\s*"`` to match the newline and the indentation of the
 second line.  Without these, the regex won't match.
 
 The second regex matches the entire text of a file containing the comment ``#
