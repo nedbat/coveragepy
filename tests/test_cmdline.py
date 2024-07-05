@@ -58,7 +58,8 @@ class BaseCmdLineTest(CoverageTest):
     )
     _defaults.Coverage().json_report(
         ignore_errors=None, include=None, omit=None, morfs=[], outfile=None,
-        contexts=None, pretty_print=None, show_contexts=None,
+        contexts=None, pretty_print=None, show_contexts=None, json_classes=None,
+        json_functions=None,
     )
     _defaults.Coverage().lcov_report(
         ignore_errors=None, include=None, omit=None, morfs=[], outfile=None,
@@ -500,6 +501,16 @@ class CmdLineTest(BaseCmdLineTest):
             cov = Coverage(messages=False)
             cov.load()
             cov.json_report()
+            """)
+        self.cmd_executes("json --functions", """\
+            cov = Coverage()
+            cov.load()
+            cov.json_report(json_functions=True)
+            """)
+        self.cmd_executes("json --classes", """\
+            cov = Coverage()
+            cov.load()
+            cov.json_report(json_classes=True)
             """)
 
     def test_lcov(self) -> None:

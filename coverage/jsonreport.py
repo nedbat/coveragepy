@@ -19,6 +19,7 @@ from coverage.types import TMorf, TLineNo
 if TYPE_CHECKING:
     from coverage import Coverage
     from coverage.data import CoverageData
+    from coverage.plugin import FileReporter
 
 
 # "Version 1" had no format number at all.
@@ -60,6 +61,7 @@ class JsonReporter:
             measured_files[file_reporter.relative_filename()] = self.report_one_file(
                 coverage_data,
                 analysis,
+                file_reporter,
             )
 
         self.report_data["files"] = measured_files
@@ -89,7 +91,9 @@ class JsonReporter:
 
         return self.total.n_statements and self.total.pc_covered
 
-    def report_one_file(self, coverage_data: CoverageData, analysis: Analysis) -> dict[str, Any]:
+    def report_one_file(
+        self, coverage_data: CoverageData, analysis: Analysis, file_reporter: FileReporter
+    ) -> dict[str, Any]:
         """Extract the relevant report data for a single file."""
         nums = analysis.numbers
         self.total += nums
@@ -101,7 +105,7 @@ class JsonReporter:
             "missing_lines": nums.n_missing,
             "excluded_lines": nums.n_excluded,
         }
-        reported_file = {
+        reported_file: dict[str, Any] = {
             "executed_lines": sorted(analysis.executed),
             "summary": summary,
             "missing_lines": sorted(analysis.missing),
@@ -122,6 +126,50 @@ class JsonReporter:
             reported_file["missing_branches"] = list(
                 _convert_branch_arcs(analysis.missing_branch_arcs()),
             )
+        report_on = {"class": self.config.json_classes, "function": self.config.json_functions}
+        if not any(report_on.values()):
+            return reported_file
+
+        for region in file_reporter.code_regions():
+            if not report_on[region.kind]:
+                continue
+            elif region.kind not in reported_file:
+                reported_file[region.kind] = {}
+            num_lines = len(file_reporter.source().splitlines())
+            outside_lines = set(range(1, num_lines + 1))
+            outside_lines -= region.lines
+            narrowed_analysis = analysis.narrow(region.lines)
+            narrowed_nums = narrowed_analysis.numbers
+            narrowed_summary = {
+                "covered_lines": narrowed_nums.n_executed,
+                "num_statements": narrowed_nums.n_statements,
+                "percent_covered": narrowed_nums.pc_covered,
+                "percent_covered_display": narrowed_nums.pc_covered_str,
+                "missing_lines": narrowed_nums.n_missing,
+                "excluded_lines": narrowed_nums.n_excluded,
+            }
+            reported_file[region.kind][region.name] = {
+                "executed_lines": sorted(narrowed_analysis.executed),
+                "summary": narrowed_summary,
+                "missing_lines": sorted(narrowed_analysis.missing),
+                "excluded_lines": sorted(narrowed_analysis.excluded),
+            }
+            if self.config.json_show_contexts:
+                contexts = coverage_data.contexts_by_lineno(narrowed_analysis.filename)
+                reported_file[region.kind][region.name]["contexts"] = contexts
+            if coverage_data.has_arcs():
+                narrowed_summary.update({
+                    "num_branches": narrowed_nums.n_branches,
+                    "num_partial_branches": narrowed_nums.n_partial_branches,
+                    "covered_branches": narrowed_nums.n_executed_branches,
+                    "missing_branches": narrowed_nums.n_missing_branches,
+                })
+                reported_file[region.kind][region.name]["executed_branches"] = list(
+                    _convert_branch_arcs(narrowed_analysis.executed_branch_arcs()),
+                )
+                reported_file[region.kind][region.name]["missing_branches"] = list(
+                    _convert_branch_arcs(narrowed_analysis.missing_branch_arcs()),
+                )
         return reported_file
 
 
