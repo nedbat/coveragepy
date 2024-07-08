@@ -244,8 +244,6 @@ class CoverageConfig(TConfigurable, TPluginConfig):
         self.xml_package_depth = 99
 
         # Defaults for [json]
-        self.json_classes = False
-        self.json_functions = False
         self.json_output = "coverage.json"
         self.json_pretty_print = False
         self.json_show_contexts = False
@@ -424,8 +422,6 @@ class CoverageConfig(TConfigurable, TPluginConfig):
         ("xml_package_depth", "xml:package_depth", "int"),
 
         # [json]
-        ("json_classes", "json:classes", "boolean"),
-        ("json_functions", "json:functions", "boolean"),
         ("json_output", "json:output"),
         ("json_pretty_print", "json:pretty_print", "boolean"),
         ("json_show_contexts", "json:show_contexts", "boolean"),

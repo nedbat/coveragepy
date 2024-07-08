@@ -25,7 +25,6 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
         self,
         cov: Coverage,
         expected_result: dict[str, Any],
-        **kwargs: Any,
     ) -> None:
         """
         Helper that creates an example file for most tests.
@@ -41,13 +40,12 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
             if not a:
                 b = 4
             """)
-        self._compare_json_reports(cov, expected_result, "a", **kwargs)
+        self._compare_json_reports(cov, expected_result, "a")
 
     def _assert_expected_json_report_with_regions(
         self,
         cov: Coverage,
         expected_result: dict[str, Any],
-        **kwargs: Any,
     ) -> None:
         """
         Helper that creates an example file for regions tests.
@@ -67,14 +65,13 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
                 def f(self):
                     return 3
             """)
-        self._compare_json_reports(cov, expected_result, "b", **kwargs)
+        self._compare_json_reports(cov, expected_result, "b")
 
     def _compare_json_reports(
         self,
         cov: Coverage,
         expected_result: dict[str, Any],
         mod_name: str,
-        **kwargs: Any,
     ) -> None:
         """
         Helper that handles common ceremonies, comparing JSON reports that
@@ -83,7 +80,7 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
         """
         mod = self.start_import_stop(cov, mod_name)
         output_path = os.path.join(self.temp_dir, f"{mod_name}.json")
-        cov.json_report(mod, outfile=output_path, **kwargs)
+        cov.json_report(mod, outfile=output_path)
         with open(output_path) as result_file:
             parsed_result = json.load(result_file)
         self.assert_recent_datetime(
@@ -280,9 +277,7 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
                 "excluded_lines": 0
             }
         }
-        self._assert_expected_json_report_with_regions(
-            cov, expected_result, json_classes=True, json_functions=True
-        )
+        self._assert_expected_json_report_with_regions(cov, expected_result)
 
     def run_context_test(self, relative_files: bool) -> None:
         """A helper for two tests below."""

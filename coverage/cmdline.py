@@ -46,10 +46,6 @@ class Opts:
         "", "--branch", action="store_true",
         help="Measure branch coverage in addition to statement coverage.",
     )
-    classes = optparse.make_option(
-        "", "--classes", action="store_true", metavar="CLASSES",
-        help="Report coverage for individual classes.",
-    )
     concurrency = optparse.make_option(
         "", "--concurrency", action="store", metavar="LIBS",
         help=(
@@ -104,10 +100,6 @@ class Opts:
     format = optparse.make_option(
         "", "--format", action="store", metavar="FORMAT",
         help="Output format, either text (default), markdown, or total.",
-    )
-    functions = optparse.make_option(
-        "", "--functions", action="store_true", metavar="FUNCTIONS",
-        help="Report coverage for individual functions and methods.",
     )
     help = optparse.make_option(
         "-h", "--help", action="store_true",
@@ -467,11 +459,9 @@ COMMANDS = {
     "json": CmdOptionParser(
         "json",
         [
-            Opts.classes,
             Opts.contexts,
             Opts.datafle_input,
             Opts.fail_under,
-            Opts.functions,
             Opts.ignore_errors,
             Opts.include,
             Opts.omit,
@@ -747,8 +737,6 @@ class CoverageScript:
                 outfile=options.outfile,
                 pretty_print=options.pretty_print,
                 show_contexts=options.show_contexts,
-                json_classes=options.classes,
-                json_functions=options.functions,
                 **report_args,
             )
         elif options.action == "lcov":

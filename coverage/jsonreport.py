@@ -126,14 +126,9 @@ class JsonReporter:
             reported_file["missing_branches"] = list(
                 _convert_branch_arcs(analysis.missing_branch_arcs()),
             )
-        report_on = {"class": self.config.json_classes, "function": self.config.json_functions}
-        if not any(report_on.values()):
-            return reported_file
 
         for region in file_reporter.code_regions():
-            if not report_on[region.kind]:
-                continue
-            elif region.kind not in reported_file:
+            if region.kind not in reported_file:
                 reported_file[region.kind] = {}
             num_lines = len(file_reporter.source().splitlines())
             outside_lines = set(range(1, num_lines + 1))
