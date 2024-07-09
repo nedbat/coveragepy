@@ -182,7 +182,7 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
         expected_result = {
             "meta": {
                 "branch_coverage": False,
-                "show_contexts": False
+                "show_contexts": False,
             },
             "files": {
                 "b.py": {
@@ -193,7 +193,7 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
                         "percent_covered": 70.0,
                         "percent_covered_display": "70",
                         "missing_lines": 3,
-                        "excluded_lines": 0
+                        "excluded_lines": 0,
                     },
                     "missing_lines": [4, 11, 13],
                     "excluded_lines": [],
@@ -206,10 +206,10 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
                                 "percent_covered": 0.0,
                                 "percent_covered_display": "0",
                                 "missing_lines": 1,
-                                "excluded_lines": 0
+                                "excluded_lines": 0,
                             },
                             "missing_lines": [4],
-                            "excluded_lines": []
+                            "excluded_lines": [],
                         },
                         "D.e": {
                             "executed_lines": [],
@@ -219,10 +219,10 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
                                 "percent_covered": 0.0,
                                 "percent_covered_display": "0",
                                 "missing_lines": 1,
-                                "excluded_lines": 0
+                                "excluded_lines": 0,
                             },
                             "missing_lines": [11],
-                            "excluded_lines": []
+                            "excluded_lines": [],
                         },
                         "D.f": {
                             "executed_lines": [],
@@ -232,11 +232,11 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
                                 "percent_covered": 0.0,
                                 "percent_covered_display": "0",
                                 "missing_lines": 1,
-                                "excluded_lines": 0
+                                "excluded_lines": 0,
                             },
                             "missing_lines": [13],
-                            "excluded_lines": []
-                        }
+                            "excluded_lines": [],
+                        },
                     },
                     "class": {
                         "C": {
@@ -247,10 +247,10 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
                                 "percent_covered": 100.0,
                                 "percent_covered_display": "100",
                                 "missing_lines": 0,
-                                "excluded_lines": 0
+                                "excluded_lines": 0,
                             },
                             "missing_lines": [],
-                            "excluded_lines": []
+                            "excluded_lines": [],
                         },
                         "D": {
                             "executed_lines": [],
@@ -260,13 +260,13 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
                                 "percent_covered": 0.0,
                                 "percent_covered_display": "0",
                                 "missing_lines": 2,
-                                "excluded_lines": 0
+                                "excluded_lines": 0,
                             },
                             "missing_lines": [11, 13],
-                            "excluded_lines": []
-                        }
-                    }
-                }
+                            "excluded_lines": [],
+                        },
+                    },
+                },
             },
             "totals": {
                 "covered_lines": 7,
@@ -274,8 +274,8 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
                 "percent_covered": 70.0,
                 "percent_covered_display": "70",
                 "missing_lines": 3,
-                "excluded_lines": 0
-            }
+                "excluded_lines": 0,
+            },
         }
         self._assert_expected_json_report_with_regions(cov, expected_result)
 
