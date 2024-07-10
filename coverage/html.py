@@ -542,11 +542,11 @@ class HtmlReporter:
         for ftr in files_to_report:
             region_nouns = [pair[0] for pair in ftr.fr.code_region_kinds()]
             num_lines = len(ftr.fr.source().splitlines())
-            outside_lines = set(range(1, num_lines + 1))
             regions = ftr.fr.code_regions()
 
             for noun in region_nouns:
                 page_data = self.index_pages[noun]
+                outside_lines = set(range(1, num_lines + 1))
 
                 for region in regions:
                     if region.kind != noun:

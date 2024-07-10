@@ -57,6 +57,8 @@ Version 7.5.4 — 2024-06-22
 - Fixed a minor branch coverage problem with wildcard match/case cases using
   names or guard clauses.
 
+- Fixed an incorrect calculation of "(no class)" lines in the classes report.
+
 - Started testing on 3.13 free-threading (nogil) builds of Python.  I'm not
   claiming full support yet.  Closes `issue 1799`_.
 
