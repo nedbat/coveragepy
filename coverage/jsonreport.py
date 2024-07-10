@@ -24,7 +24,8 @@ if TYPE_CHECKING:
 
 # "Version 1" had no format number at all.
 # 2: add the meta.format field.
-FORMAT_VERSION = 2
+# 3: add region information (functions, classes)
+FORMAT_VERSION = 3
 
 class JsonReporter:
     """A reporter for writing JSON coverage results."""

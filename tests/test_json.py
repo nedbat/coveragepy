@@ -98,7 +98,7 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
         expected_result = {
             'meta': {
                 "branch_coverage": True,
-                "format": 2,
+                "format": 3,
                 "show_contexts": False,
             },
             'files': {
@@ -150,7 +150,7 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
         expected_result = {
             'meta': {
                 "branch_coverage": False,
-                "format": 2,
+                "format": 3,
                 "show_contexts": False,
             },
             'files': {
@@ -184,7 +184,7 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
         expected_result = {
             "meta": {
                 "branch_coverage": False,
-                "format": 2,
+                "format": 3,
                 "show_contexts": False,
             },
             "files": {
@@ -407,7 +407,7 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
             },
             "meta": {
                 "branch_coverage": True,
-                "format": 2,
+                "format": 3,
                 "show_contexts": False,
             },
             "totals": {
@@ -441,7 +441,7 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
         expected_result = {
             'meta': {
                 "branch_coverage": False,
-                "format": 2,
+                "format": 3,
                 "show_contexts": True,
             },
             'files': {
