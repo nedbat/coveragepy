@@ -19,7 +19,7 @@ directories, and then add the supporting files so they can be viewed as
 complete output. For example::
 
     cp tests/actual/html/contexts/* tests/gold/html/contexts
-    cd tests/actual/html
+    cd tests/gold/html
     make complete
 
 If the new actual output is correct, you can use "make update-gold" to copy the

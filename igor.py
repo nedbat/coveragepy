@@ -475,6 +475,14 @@ def do_cheats():
     )
 
 
+def do_copy_with_hash(*args):
+    """Copy files with a cache-busting hash.  Used in tests/gold/html/Makefile."""
+    from coverage.html import copy_with_cache_bust
+    *srcs, dest_dir = args
+    for src in srcs:
+        copy_with_cache_bust(src, dest_dir)
+
+
 def do_help():
     """List the available commands"""
     items = list(globals().items())
