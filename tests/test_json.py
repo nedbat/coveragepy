@@ -13,7 +13,6 @@ from typing import Any
 
 import coverage
 from coverage import Coverage
-from coverage.jsonreport import FORMAT_VERSION
 
 from tests.coveragetest import UsingModulesMixin, CoverageTest
 
@@ -88,7 +87,6 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
         )
         del (parsed_result['meta']['timestamp'])
         expected_result["meta"].update({
-            "format": FORMAT_VERSION,
             "version": coverage.__version__,
         })
         assert parsed_result == expected_result
@@ -98,6 +96,7 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
         expected_result = {
             'meta': {
                 "branch_coverage": True,
+                "format": 2,
                 "show_contexts": False,
             },
             'files': {
@@ -149,6 +148,7 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
         expected_result = {
             'meta': {
                 "branch_coverage": False,
+                "format": 2,
                 "show_contexts": False,
             },
             'files': {
@@ -182,6 +182,7 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
         expected_result = {
             "meta": {
                 "branch_coverage": False,
+                "format": 2,
                 "show_contexts": False,
             },
             "files": {
@@ -295,6 +296,7 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
         expected_result = {
             'meta': {
                 "branch_coverage": False,
+                "format": 2,
                 "show_contexts": True,
             },
             'files': {
