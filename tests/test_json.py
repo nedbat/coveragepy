@@ -5,6 +5,7 @@
 
 from __future__ import annotations
 
+import copy
 import json
 import os
 
@@ -95,6 +96,33 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
 
     def test_branch_coverage(self) -> None:
         cov = coverage.Coverage(branch=True)
+        a_py_result = {
+            'executed_lines': [1, 2, 4, 5, 8],
+            'missing_lines': [3, 7, 9],
+            'excluded_lines': [],
+            'executed_branches': [
+                [2, 4],
+                [4, 5],
+                [8, -1],
+            ],
+            'missing_branches': [
+                [2, 3],
+                [4, 7],
+                [8, 9],
+            ],
+            'summary': {
+                'missing_lines': 3,
+                'covered_lines': 5,
+                'num_statements': 8,
+                'num_branches': 6,
+                'excluded_lines': 0,
+                'num_partial_branches': 3,
+                'covered_branches': 3,
+                'missing_branches': 3,
+                'percent_covered': 57.142857142857146,
+                'percent_covered_display': '57',
+            },
+        }
         expected_result = {
             'meta': {
                 "branch_coverage": True,
@@ -102,33 +130,7 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
                 "show_contexts": False,
             },
             'files': {
-                'a.py': {
-                    'executed_lines': [1, 2, 4, 5, 8],
-                    'missing_lines': [3, 7, 9],
-                    'excluded_lines': [],
-                    'executed_branches': [
-                        [2, 4],
-                        [4, 5],
-                        [8, -1],
-                    ],
-                    'missing_branches': [
-                        [2, 3],
-                        [4, 7],
-                        [8, 9],
-                    ],
-                    'summary': {
-                        'missing_lines': 3,
-                        'covered_lines': 5,
-                        'num_statements': 8,
-                        'num_branches': 6,
-                        'excluded_lines': 0,
-                        'num_partial_branches': 3,
-                        'covered_branches': 3,
-                        'missing_branches': 3,
-                        'percent_covered': 57.142857142857146,
-                        'percent_covered_display': '57',
-                    },
-                },
+                'a.py': copy.deepcopy(a_py_result),
             },
             'totals': {
                 'missing_lines': 3,
@@ -143,10 +145,26 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
                 'missing_branches': 3,
             },
         }
+        # With regions, a lot of data is duplicated.
+        expected_result["files"]["a.py"]["classes"] = {"": a_py_result}     # type: ignore[index]
+        expected_result["files"]["a.py"]["functions"] = {"": a_py_result}   # type: ignore[index]
         self._assert_expected_json_report(cov, expected_result)
 
     def test_simple_line_coverage(self) -> None:
         cov = coverage.Coverage()
+        a_py_result = {
+            'executed_lines': [1, 2, 4, 5, 8],
+            'missing_lines': [3, 7, 9],
+            'excluded_lines': [],
+            'summary': {
+                'excluded_lines': 0,
+                'missing_lines': 3,
+                'covered_lines': 5,
+                'num_statements': 8,
+                'percent_covered': 62.5,
+                'percent_covered_display': '62',
+            },
+        }
         expected_result = {
             'meta': {
                 "branch_coverage": False,
@@ -154,19 +172,7 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
                 "show_contexts": False,
             },
             'files': {
-                'a.py': {
-                    'executed_lines': [1, 2, 4, 5, 8],
-                    'missing_lines': [3, 7, 9],
-                    'excluded_lines': [],
-                    'summary': {
-                        'excluded_lines': 0,
-                        'missing_lines': 3,
-                        'covered_lines': 5,
-                        'num_statements': 8,
-                        'percent_covered': 62.5,
-                        'percent_covered_display': '62',
-                    },
-                },
+                'a.py': copy.deepcopy(a_py_result),
             },
             'totals': {
                 'excluded_lines': 0,
@@ -177,107 +183,136 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
                 'percent_covered_display': '62',
             },
         }
+        # With regions, a lot of data is duplicated.
+        expected_result["files"]["a.py"]["classes"] = {"": a_py_result}     # type: ignore[index]
+        expected_result["files"]["a.py"]["functions"] = {"": a_py_result}   # type: ignore[index]
         self._assert_expected_json_report(cov, expected_result)
 
     def test_regions_coverage(self) -> None:
         cov = coverage.Coverage()
         expected_result = {
+            "files": {
+                "b.py": {
+                    "classes": {
+                        "": {
+                            "excluded_lines": [],
+                            "executed_lines": [1, 3, 6, 7, 9, 10, 14],
+                            "missing_lines": [4],
+                            "summary": {
+                                "covered_lines": 7,
+                                "excluded_lines": 0,
+                                "missing_lines": 1,
+                                "num_statements": 8,
+                                "percent_covered": 87.5,
+                                "percent_covered_display": "88",
+                            },
+                        },
+                        "C": {
+                            "excluded_lines": [],
+                            "executed_lines": [],
+                            "missing_lines": [],
+                            "summary": {
+                                "covered_lines": 0,
+                                "excluded_lines": 0,
+                                "missing_lines": 0,
+                                "num_statements": 0,
+                                "percent_covered": 100.0,
+                                "percent_covered_display": "100",
+                            },
+                        },
+                        "D": {
+                            "executed_lines": [],
+                            "excluded_lines": [],
+                            "missing_lines": [11, 12, 13, 15],
+                            "summary": {
+                                "covered_lines": 0,
+                                "excluded_lines": 0,
+                                "missing_lines": 4,
+                                "num_statements": 4,
+                                "percent_covered": 0.0,
+                                "percent_covered_display": "0",
+                            },
+                        },
+                    },
+                    "executed_lines": [1, 3, 6, 7, 9, 10, 14],
+                    "excluded_lines": [],
+                    "functions": {
+                        "": {
+                            "excluded_lines": [],
+                            "executed_lines": [1, 3, 6, 7, 9, 10, 14],
+                            "missing_lines": [],
+                            "summary": {
+                                "covered_lines": 7,
+                                "excluded_lines": 0,
+                                "missing_lines": 0,
+                                "num_statements": 7,
+                                "percent_covered": 100.0,
+                                "percent_covered_display": "100",
+                            },
+                        },
+                        "c": {
+                            "executed_lines": [],
+                            "excluded_lines": [],
+                            "missing_lines": [4],
+                            "summary": {
+                                "covered_lines": 0,
+                                "excluded_lines": 0,
+                                "missing_lines": 1,
+                                "num_statements": 1,
+                                "percent_covered": 0.0,
+                                "percent_covered_display": "0",
+                            },
+                        },
+                        "D.e": {
+                            "executed_lines": [],
+                            "excluded_lines": [],
+                            "missing_lines": [11, 12, 13],
+                            "summary": {
+                                "covered_lines": 0,
+                                "excluded_lines": 0,
+                                "missing_lines": 3,
+                                "num_statements": 3,
+                                "percent_covered": 0.0,
+                                "percent_covered_display": "0",
+                            },
+                        },
+                        "D.f": {
+                            "executed_lines": [],
+                            "excluded_lines": [],
+                            "missing_lines": [15],
+                            "summary": {
+                                "covered_lines": 0,
+                                "excluded_lines": 0,
+                                "missing_lines": 1,
+                                "num_statements": 1,
+                                "percent_covered": 0.0,
+                                "percent_covered_display": "0",
+                            },
+                        },
+                    },
+                    "missing_lines": [4, 11, 12, 13, 15],
+                    "summary": {
+                        "covered_lines": 7,
+                        "excluded_lines": 0,
+                        "missing_lines": 5,
+                        "num_statements": 12,
+                        "percent_covered": 58.333333333333336,
+                        "percent_covered_display": "58",
+                    },
+                },
+            },
             "meta": {
                 "branch_coverage": False,
                 "format": 3,
                 "show_contexts": False,
             },
-            "files": {
-                "b.py": {
-                    "executed_lines": [1, 3, 6, 7, 9, 10, 14],
-                    "summary": {
-                        "covered_lines": 7,
-                        "num_statements": 12,
-                        "percent_covered": 58.333333333333336,
-                        "percent_covered_display": "58",
-                        "missing_lines": 5,
-                        "excluded_lines": 0,
-                    },
-                    "missing_lines": [4, 11, 12, 13, 15],
-                    "excluded_lines": [],
-                    "function": {
-                        "c": {
-                            "executed_lines": [],
-                            "summary": {
-                                "covered_lines": 0,
-                                "num_statements": 1,
-                                "percent_covered": 0.0,
-                                "percent_covered_display": "0",
-                                "missing_lines": 1,
-                                "excluded_lines": 0,
-                            },
-                            "missing_lines": [4],
-                            "excluded_lines": [],
-                        },
-                        "D.e": {
-                            "executed_lines": [],
-                            "summary": {
-                                "covered_lines": 0,
-                                "num_statements": 3,
-                                "percent_covered": 0.0,
-                                "percent_covered_display": "0",
-                                "missing_lines": 3,
-                                "excluded_lines": 0,
-                            },
-                            "missing_lines": [11, 12, 13],
-                            "excluded_lines": [],
-                        },
-                        "D.f": {
-                            "executed_lines": [],
-                            "summary": {
-                                "covered_lines": 0,
-                                "num_statements": 1,
-                                "percent_covered": 0.0,
-                                "percent_covered_display": "0",
-                                "missing_lines": 1,
-                                "excluded_lines": 0,
-                            },
-                            "missing_lines": [15],
-                            "excluded_lines": [],
-                        },
-                    },
-                    "class": {
-                        "C": {
-                            "executed_lines": [],
-                            "summary": {
-                                "covered_lines": 0,
-                                "num_statements": 0,
-                                "percent_covered": 100.0,
-                                "percent_covered_display": "100",
-                                "missing_lines": 0,
-                                "excluded_lines": 0,
-                            },
-                            "missing_lines": [],
-                            "excluded_lines": [],
-                        },
-                        "D": {
-                            "executed_lines": [],
-                            "summary": {
-                                "covered_lines": 0,
-                                "num_statements": 4,
-                                "percent_covered": 0.0,
-                                "percent_covered_display": "0",
-                                "missing_lines": 4,
-                                "excluded_lines": 0,
-                            },
-                            "missing_lines": [11, 12, 13, 15],
-                            "excluded_lines": [],
-                        },
-                    },
-                },
-            },
             "totals": {
                 "covered_lines": 7,
+                "excluded_lines": 0,
+                "missing_lines": 5,
                 "num_statements": 12,
                 "percent_covered": 58.333333333333336,
                 "percent_covered_display": "58",
-                "missing_lines": 5,
-                "excluded_lines": 0,
             },
         }
         self._assert_expected_json_report_with_regions(cov, expected_result)
@@ -287,7 +322,26 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
         expected_result = {
             "files": {
                 "b.py": {
-                    "class": {
+                    "classes": {
+                        "": {
+                            "excluded_lines": [],
+                            "executed_branches": [],
+                            "executed_lines": [1, 3, 6, 7, 9, 10, 14],
+                            "missing_branches": [],
+                            "missing_lines": [4],
+                            "summary": {
+                                "covered_branches": 0,
+                                "covered_lines": 7,
+                                "excluded_lines": 0,
+                                "missing_branches": 0,
+                                "missing_lines": 1,
+                                "num_branches": 0,
+                                "num_partial_branches": 0,
+                                "num_statements": 8,
+                                "percent_covered": 87.5,
+                                "percent_covered_display": "88",
+                            },
+                        },
                         "C": {
                             "excluded_lines": [],
                             "executed_branches": [],
@@ -330,7 +384,26 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
                     "excluded_lines": [],
                     "executed_branches": [],
                     "executed_lines": [1, 3, 6, 7, 9, 10, 14],
-                    "function": {
+                    "functions": {
+                        "": {
+                            "excluded_lines": [],
+                            "executed_branches": [],
+                            "executed_lines": [1, 3, 6, 7, 9, 10, 14],
+                            "missing_branches": [],
+                            "missing_lines": [],
+                            "summary": {
+                                "covered_branches": 0,
+                                "covered_lines": 7,
+                                "excluded_lines": 0,
+                                "missing_branches": 0,
+                                "missing_lines": 0,
+                                "num_branches": 0,
+                                "num_partial_branches": 0,
+                                "num_statements": 7,
+                                "percent_covered": 100.0,
+                                "percent_covered_display": "100",
+                            },
+                        },
                         "D.e": {
                             "excluded_lines": [],
                             "executed_branches": [],
@@ -438,53 +511,47 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
             show_contexts = True
             """)
         cov = coverage.Coverage(context="cool_test", config_file="config")
+        a_py_result = {
+            "executed_lines": [1, 2, 4, 5, 8],
+            "missing_lines": [3, 7, 9],
+            "excluded_lines": [],
+            "contexts": {
+                "1": ["cool_test"],
+                "2": ["cool_test"],
+                "4": ["cool_test"],
+                "5": ["cool_test"],
+                "8": ["cool_test"],
+            },
+            "summary": {
+                "excluded_lines": 0,
+                "missing_lines": 3,
+                "covered_lines": 5,
+                "num_statements": 8,
+                "percent_covered": 62.5,
+                "percent_covered_display": "62.50",
+            },
+        }
         expected_result = {
-            'meta': {
+            "meta": {
                 "branch_coverage": False,
                 "format": 3,
                 "show_contexts": True,
             },
-            'files': {
-                'a.py': {
-                    'executed_lines': [1, 2, 4, 5, 8],
-                    'missing_lines': [3, 7, 9],
-                    'excluded_lines': [],
-                    "contexts": {
-                        "1": [
-                            "cool_test",
-                        ],
-                        "2": [
-                            "cool_test",
-                        ],
-                        "4": [
-                            "cool_test",
-                        ],
-                        "5": [
-                            "cool_test",
-                        ],
-                        "8": [
-                            "cool_test",
-                        ],
-                    },
-                    'summary': {
-                        'excluded_lines': 0,
-                        'missing_lines': 3,
-                        'covered_lines': 5,
-                        'num_statements': 8,
-                        'percent_covered': 62.5,
-                        'percent_covered_display': '62.50',
-                    },
-                },
+            "files": {
+                "a.py": copy.deepcopy(a_py_result),
             },
-            'totals': {
-                'excluded_lines': 0,
-                'missing_lines': 3,
-                'covered_lines': 5,
-                'num_statements': 8,
-                'percent_covered': 62.5,
-                'percent_covered_display': '62.50',
+            "totals": {
+                "excluded_lines": 0,
+                "missing_lines": 3,
+                "covered_lines": 5,
+                "num_statements": 8,
+                "percent_covered": 62.5,
+                "percent_covered_display": "62.50",
             },
         }
+        # With regions, a lot of data is duplicated.
+        expected_result["files"]["a.py"]["classes"] = {"": a_py_result}     # type: ignore[index]
+        expected_result["files"]["a.py"]["functions"] = {"": a_py_result}   # type: ignore[index]
         self._assert_expected_json_report(cov, expected_result)
 
     def test_context_non_relative(self) -> None:

@@ -126,34 +126,47 @@ class JsonReporter:
                 _convert_branch_arcs(analysis.missing_branch_arcs()),
             )
 
-        for region in file_reporter.code_regions():
-            if region.kind not in reported_file:
-                reported_file[region.kind] = {}
-            num_lines = len(file_reporter.source().splitlines())
+        num_lines = len(file_reporter.source().splitlines())
+        for noun, plural in file_reporter.code_region_kinds():
+            reported_file[plural] = region_data = {}
             outside_lines = set(range(1, num_lines + 1))
-            outside_lines -= region.lines
-            narrowed_analysis = analysis.narrow(region.lines)
-            narrowed_nums = narrowed_analysis.numbers
-            narrowed_summary = self.make_summary(narrowed_nums)
-            reported_file[region.kind][region.name] = {
-                "executed_lines": sorted(narrowed_analysis.executed),
-                "summary": narrowed_summary,
-                "missing_lines": sorted(narrowed_analysis.missing),
-                "excluded_lines": sorted(narrowed_analysis.excluded),
-            }
-            if self.config.json_show_contexts:
-                contexts = coverage_data.contexts_by_lineno(narrowed_analysis.filename)
-                reported_file[region.kind][region.name]["contexts"] = contexts
-            if coverage_data.has_arcs():
-                narrowed_summary.update(self.make_branch_summary(narrowed_nums))
-                reported_file[region.kind][region.name]["executed_branches"] = list(
-                    _convert_branch_arcs(narrowed_analysis.executed_branch_arcs()),
-                )
-                reported_file[region.kind][region.name]["missing_branches"] = list(
-                    _convert_branch_arcs(narrowed_analysis.missing_branch_arcs()),
+            for region in file_reporter.code_regions():
+                if region.kind != noun:
+                    continue
+                outside_lines -= region.lines
+                region_data[region.name] = self.make_region_data(
+                    coverage_data,
+                    analysis.narrow(region.lines),
                 )
 
+            region_data[""] = self.make_region_data(
+                coverage_data,
+                analysis.narrow(outside_lines),
+            )
         return reported_file
+
+    def make_region_data(self, coverage_data: CoverageData, narrowed_analysis: Analysis) -> JsonObj:
+        """Create the data object for one region of a file."""
+        narrowed_nums = narrowed_analysis.numbers
+        narrowed_summary = self.make_summary(narrowed_nums)
+        this_region = {
+            "executed_lines": sorted(narrowed_analysis.executed),
+            "summary": narrowed_summary,
+            "missing_lines": sorted(narrowed_analysis.missing),
+            "excluded_lines": sorted(narrowed_analysis.excluded),
+        }
+        if self.config.json_show_contexts:
+            contexts = coverage_data.contexts_by_lineno(narrowed_analysis.filename)
+            this_region["contexts"] = contexts
+        if coverage_data.has_arcs():
+            narrowed_summary.update(self.make_branch_summary(narrowed_nums))
+            this_region["executed_branches"] = list(
+                _convert_branch_arcs(narrowed_analysis.executed_branch_arcs()),
+            )
+            this_region["missing_branches"] = list(
+                _convert_branch_arcs(narrowed_analysis.missing_branch_arcs()),
+            )
+        return this_region
 
 
 def _convert_branch_arcs(
