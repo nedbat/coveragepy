@@ -32,7 +32,8 @@ Unreleased
   section of the docs for more details and examples.
 
 - The JSON report now includes per-function and per-class coverage information.
-  Thanks to `Daniel Diniz <pull 1809_>`_ for getting the work started.
+  Thanks to `Daniel Diniz <pull 1809_>`_ for getting the work started. This
+  closes `issue 1793`_ and `issue 1532`_.
 
 - Fixed an incorrect calculation of "(no class)" lines in the HTML classes
   report.
@@ -41,7 +42,9 @@ Unreleased
 
 .. _issue 118: https://github.com/nedbat/coveragepy/issues/118
 .. _issue 996: https://github.com/nedbat/coveragepy/issues/996
+.. _issue 1532: https://github.com/nedbat/coveragepy/issues/1532
 .. _issue 1741: https://github.com/nedbat/coveragepy/issues/1741
+.. _issue 1793: https://github.com/nedbat/coveragepy/issues/1793
 .. _issue 1803: https://github.com/nedbat/coveragepy/issues/1803
 .. _pull 1807: https://github.com/nedbat/coveragepy/pull/1807
 .. _pull 1809: https://github.com/nedbat/coveragepy/pull/1809
