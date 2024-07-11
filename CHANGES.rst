@@ -20,8 +20,12 @@ upgrading your version of coverage.py.
     ..  Version 9.8.1 — 2027-07-27
     ..  --------------------------
 
-Unreleased
-----------
+.. scriv-start-here
+
+.. _changes_7-6-0:
+
+Version 7.6.0 — 2024-07-11
+--------------------------
 
 - Exclusion patterns can now be multi-line, thanks to `Daniel Diniz <pull
   1807_>`_.  This enables many interesting exclusion use-cases, including those
@@ -48,8 +52,6 @@ Unreleased
 .. _issue 1803: https://github.com/nedbat/coveragepy/issues/1803
 .. _pull 1807: https://github.com/nedbat/coveragepy/pull/1807
 .. _pull 1809: https://github.com/nedbat/coveragepy/pull/1809
-
-.. scriv-start-here
 
 .. _changes_7-5-4:
 
