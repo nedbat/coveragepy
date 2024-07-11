@@ -24,4 +24,8 @@ update-gold:	## Copy actual output files from latest tests to gold files.
 	true
 
 update-support:	## Copy latest support files here for posterity.
-	cp ../../../coverage/htmlfiles/*.{css,js,png} support
+	python -m pip install -e ../../..
+	git rm --ignore-unmatch support/*.{css,js,png}
+	mkdir -p support
+	python ../../../igor.py copy_with_hash ../../../coverage/htmlfiles/*.{css,js,png} support
+	git add support

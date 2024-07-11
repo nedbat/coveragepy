@@ -214,6 +214,23 @@ def encode_int(n: int) -> str:
     return "".join(r)
 
 
+def copy_with_cache_bust(src: str, dest_dir: str) -> str:
+    """Copy `src` to `dest_dir`, adding a hash to the name.
+
+    Returns the updated destination file name with hash.
+    """
+    with open(src, "rb") as f:
+        text = f.read()
+    h = Hasher()
+    h.update(text)
+    cache_bust = h.hexdigest()[:8]
+    src_base = os.path.basename(src)
+    dest = src_base.replace(".", f"_cb_{cache_bust}.")
+    with open(os.path.join(dest_dir, dest), "wb") as f:
+        f.write(text)
+    return dest
+
+
 class HtmlReporter:
     """HTML reporting."""
 
@@ -362,18 +379,10 @@ class HtmlReporter:
 
     def copy_static_file(self, src: str, slug: str = "") -> None:
         """Copy a static file into the output directory with cache busting."""
-        with open(src, "rb") as f:
-            text = f.read()
-        h = Hasher()
-        h.update(text)
-        cache_bust = h.hexdigest()[:8]
-        src_base = os.path.basename(src)
-        dest = src_base.replace(".", f"_cb_{cache_bust}.")
+        dest = copy_with_cache_bust(src, self.directory)
         if not slug:
-            slug = src_base.replace(".", "_")
+            slug = os.path.basename(src).replace(".", "_")
         self.template_globals["statics"][slug] = dest # type: ignore
-        with open(os.path.join(self.directory, dest), "wb") as f:
-            f.write(text)
 
     def make_local_static_report_files(self) -> None:
         """Make local instances of static files for HTML report."""
@@ -533,11 +542,11 @@ class HtmlReporter:
         for ftr in files_to_report:
             region_nouns = [pair[0] for pair in ftr.fr.code_region_kinds()]
             num_lines = len(ftr.fr.source().splitlines())
-            outside_lines = set(range(1, num_lines + 1))
             regions = ftr.fr.code_regions()
 
             for noun in region_nouns:
                 page_data = self.index_pages[noun]
+                outside_lines = set(range(1, num_lines + 1))
 
                 for region in regions:
                     if region.kind != noun:
