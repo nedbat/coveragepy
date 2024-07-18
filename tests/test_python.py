@@ -63,3 +63,22 @@ def test_source_for_file_windows(tmp_path: pathlib.Path) -> None:
     # If both pyw and py exist, py is preferred
     a_py.write_text("")
     assert source_for_file(src + 'c') == src
+
+
+class RunpyPathTest(CoverageTest):
+    run_in_temp_dir = True
+
+    def test_runpy_path(self):
+        """Ensure runpy.run_path(path) works when path is pathlib.Path.
+
+        runpy.run_path(pathlib.Path(...)) causes __file__ to be a Path,
+        which may make source_for_file() stumble (#1819).
+        """
+
+        self.check_coverage("""\
+            import runpy
+            from pathlib import Path
+            pyfile = Path('script.py')
+            pyfile.write_text('')
+            runpy.run_path(pyfile)
+        """)
