@@ -286,7 +286,7 @@ jobs:
           merge-multiple: true
 
       - name: "Sign artifacts"
-        uses: sigstore/gh-action-sigstore-python@61f6a500bbfdd9a2a339cf033e5421951fbc1cd2 # v2.1.1
+        uses: sigstore/gh-action-sigstore-python@f514d46b907ebcd5bedc05145c03b69c1edd8b46 # v3.0.0
         with:
           inputs: coverage-*.*
 
