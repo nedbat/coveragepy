@@ -321,7 +321,8 @@ class InOrOut:
             # co_filename value.
             dunder_file = frame.f_globals and frame.f_globals.get("__file__")
             if dunder_file:
-                filename = source_for_file(dunder_file)
+                # Danger: __file__ can (rarely?) be of type Path.
+                filename = source_for_file(str(dunder_file))
                 if original_filename and not original_filename.startswith("<"):
                     orig = os.path.basename(original_filename)
                     if orig != os.path.basename(filename):
