@@ -104,6 +104,9 @@ def source_for_file(filename: str) -> str:
     file to attribute it to.
 
     """
+    from pathlib import Path
+    filename = str(Path(filename))
+
     if filename.endswith(".py"):
         # .py files are themselves source files.
         return filename
