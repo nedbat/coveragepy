@@ -23,7 +23,11 @@ upgrading your version of coverage.py.
 Unreleased
 ----------
 
-Nothing yet.
+- Fix: coverage used to fail when measuring code using :func:`runpy.run_path
+  <python:runpy.run_path>` with a :class:`Path <python:pathlib.Path>` argument.
+  This is now fixed, thanks to `Ask Hjorth Larsen <pull 1819_>`_.
+
+.. _pull 1819: https://github.com/nedbat/coveragepy/pull/1819/files
 
 
 .. scriv-start-here
