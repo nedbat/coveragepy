@@ -65,10 +65,10 @@ def test_source_for_file_windows(tmp_path: pathlib.Path) -> None:
     assert source_for_file(src + 'c') == src
 
 
-class RunpyPathTest(CoverageTest):
-    run_in_temp_dir = True
+class RunpyTest(CoverageTest):
+    """Tests using runpy."""
 
-    def test_runpy_path(self):
+    def test_runpy_path(self) -> None:
         """Ensure runpy.run_path(path) works when path is pathlib.Path.
 
         runpy.run_path(pathlib.Path(...)) causes __file__ to be a Path,
