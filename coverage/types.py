@@ -78,14 +78,19 @@ TTraceFileData = Union[Set[TLineNo], Set[TArc], Set[int]]
 
 TTraceData = Dict[str, TTraceFileData]
 
+# Functions passed into collectors.
+TShouldTraceFn = Callable[[str, FrameType], TFileDisposition]
+TCheckIncludeFn = Callable[[str, FrameType], bool]
+TShouldStartContextFn = Callable[[FrameType], Union[str, None]]
+
 class Tracer(Protocol):
     """Anything that can report on Python execution."""
 
     data: TTraceData
     trace_arcs: bool
-    should_trace: Callable[[str, FrameType], TFileDisposition]
+    should_trace: TShouldTraceFn
     should_trace_cache: Mapping[str, TFileDisposition | None]
-    should_start_context: Callable[[FrameType], str | None] | None
+    should_start_context: TShouldStartContextFn | None
     switch_context: Callable[[str | None], None] | None
     lock_data: Callable[[], None]
     unlock_data: Callable[[], None]

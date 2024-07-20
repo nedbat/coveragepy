@@ -6,12 +6,14 @@
 from __future__ import annotations
 
 from types import FrameType
-from typing import cast, Callable, Sequence
+from typing import cast, Sequence
+
+from coverage.types import TShouldStartContextFn
 
 
 def combine_context_switchers(
-    context_switchers: Sequence[Callable[[FrameType], str | None]],
-) -> Callable[[FrameType], str | None] | None:
+    context_switchers: Sequence[TShouldStartContextFn],
+) -> TShouldStartContextFn | None:
     """Create a single context switcher from multiple switchers.
 
     `context_switchers` is a list of functions that take a frame as an

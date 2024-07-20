@@ -29,6 +29,8 @@ from coverage.types import (
     TArc,
     TFileDisposition,
     TLineNo,
+    TShouldStartContextFn,
+    TShouldTraceFn,
     TTraceData,
     TTraceFileData,
     Tracer,
@@ -180,11 +182,11 @@ class SysMonitor(Tracer):
         # Attributes set from the collector:
         self.data: TTraceData
         self.trace_arcs = False
-        self.should_trace: Callable[[str, FrameType], TFileDisposition]
+        self.should_trace: TShouldTraceFn
         self.should_trace_cache: dict[str, TFileDisposition | None]
         # TODO: should_start_context and switch_context are unused!
         # Change tests/testenv.py:DYN_CONTEXTS when this is updated.
-        self.should_start_context: Callable[[FrameType], str | None] | None = None
+        self.should_start_context: TShouldStartContextFn | None = None
         self.switch_context: Callable[[str | None], None] | None = None
         self.lock_data: Callable[[], None]
         self.unlock_data: Callable[[], None]

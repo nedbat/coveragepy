@@ -16,8 +16,16 @@ from typing import Any, Callable, Set, cast
 
 from coverage import env
 from coverage.types import (
-    TArc, TFileDisposition, TLineNo, TTraceData, TTraceFileData, TTraceFn,
-    Tracer, TWarnFn,
+    TArc,
+    TFileDisposition,
+    TLineNo,
+    TShouldStartContextFn,
+    TShouldTraceFn,
+    TTraceData,
+    TTraceFileData,
+    TTraceFn,
+    TWarnFn,
+    Tracer,
 )
 
 # We need the YIELD_VALUE opcode below, in a comparison-friendly form.
@@ -64,9 +72,9 @@ class PyTracer(Tracer):
         # Attributes set from the collector:
         self.data: TTraceData
         self.trace_arcs = False
-        self.should_trace: Callable[[str, FrameType], TFileDisposition]
+        self.should_trace: TShouldTraceFn
         self.should_trace_cache: dict[str, TFileDisposition | None]
-        self.should_start_context: Callable[[FrameType], str | None] | None = None
+        self.should_start_context: TShouldStartContextFn | None = None
         self.switch_context: Callable[[str | None], None] | None = None
         self.lock_data: Callable[[], None]
         self.unlock_data: Callable[[], None]

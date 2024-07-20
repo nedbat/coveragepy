@@ -24,7 +24,15 @@ from coverage.exceptions import ConfigError
 from coverage.misc import human_sorted_items, isolate_module
 from coverage.plugin import CoveragePlugin
 from coverage.types import (
-    TArc, TFileDisposition, TTraceData, TTraceFn, Tracer, TWarnFn,
+    TArc,
+    TCheckIncludeFn,
+    TFileDisposition,
+    TShouldStartContextFn,
+    TShouldTraceFn,
+    TTraceData,
+    TTraceFn,
+    Tracer,
+    TWarnFn,
 )
 
 os = isolate_module(os)
@@ -60,9 +68,9 @@ class Collector:
     def __init__(
         self,
         core: Core,
-        should_trace: Callable[[str, FrameType], TFileDisposition],
-        check_include: Callable[[str, FrameType], bool],
-        should_start_context: Callable[[FrameType], str | None] | None,
+        should_trace: TShouldTraceFn,
+        check_include: TCheckIncludeFn,
+        should_start_context: TShouldStartContextFn | None,
         file_mapper: Callable[[str], str],
         branch: bool,
         warn: TWarnFn,
