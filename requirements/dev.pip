@@ -4,7 +4,7 @@
 #
 #    make upgrade
 #
-astroid==3.2.2
+astroid==3.2.3
     # via pylint
 attrs==23.2.0
     # via hypothesis
@@ -12,9 +12,9 @@ backports-tarfile==1.2.0
     # via jaraco-context
 build==1.2.1
     # via check-manifest
-cachetools==5.3.3
+cachetools==5.4.0
     # via tox
-certifi==2024.6.2
+certifi==2024.7.4
     # via requests
 chardet==5.2.0
     # via tox
@@ -35,13 +35,13 @@ distlib==0.3.8
     # via virtualenv
 docutils==0.20.1
     # via readme-renderer
-exceptiongroup==1.2.1
+exceptiongroup==1.2.2
     # via
     #   hypothesis
     #   pytest
 execnet==2.1.1
     # via pytest-xdist
-filelock==3.15.3
+filelock==3.15.4
     # via
     #   tox
     #   virtualenv
@@ -49,11 +49,11 @@ flaky==3.8.1
     # via -r requirements/pytest.in
 greenlet==3.0.3
     # via -r requirements/dev.in
-hypothesis==6.103.2
+hypothesis==6.108.2
     # via -r requirements/pytest.in
 idna==3.7
     # via requests
-importlib-metadata==7.2.0
+importlib-metadata==8.0.0
     # via
     #   build
     #   keyring
@@ -86,7 +86,7 @@ more-itertools==10.3.0
     # via
     #   jaraco-classes
     #   jaraco-functools
-nh3==0.2.17
+nh3==0.2.18
     # via readme-renderer
 packaging==24.1
     # via
@@ -97,7 +97,7 @@ packaging==24.1
     #   tox
 parso==0.8.4
     # via jedi
-pkginfo==1.11.1
+pkginfo==1.10.0
     # via twine
 platformdirs==4.2.2
     # via
@@ -108,7 +108,7 @@ pluggy==1.5.0
     # via
     #   pytest
     #   tox
-pudb==2024.1
+pudb==2024.1.1
     # via -r requirements/dev.in
 pygments==2.18.0
     # via
@@ -116,7 +116,7 @@ pygments==2.18.0
     #   pudb
     #   readme-renderer
     #   rich
-pylint==3.2.3
+pylint==3.2.5
     # via -r requirements/dev.in
 pyproject-api==1.7.1
     # via tox
@@ -155,15 +155,15 @@ tomli==2.0.1
     #   pyproject-api
     #   pytest
     #   tox
-tomlkit==0.12.5
+tomlkit==0.13.0
     # via pylint
-tox==4.15.1
+tox==4.16.0
     # via
     #   -r requirements/tox.in
     #   tox-gh
-tox-gh==1.3.1
+tox-gh==1.3.2
     # via -r requirements/tox.in
-twine==5.1.0
+twine==5.1.1
     # via -r requirements/dev.in
 typing-extensions==4.12.2
     # via
@@ -175,7 +175,7 @@ urllib3==2.2.2
     # via
     #   requests
     #   twine
-urwid==2.6.14
+urwid==2.6.15
     # via
     #   pudb
     #   urwid-readline
@@ -193,9 +193,9 @@ zipp==3.19.2
     #   importlib-resources
 
 # The following packages are considered to be unsafe in a requirements file:
-pip==24.1
+pip==24.1.2
     # via -r requirements/pip.in
-setuptools==70.1.0
+setuptools==71.0.4
     # via
     #   -r requirements/pip.in
     #   check-manifest
