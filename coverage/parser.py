@@ -678,7 +678,7 @@ class NodeList(ast.AST):
     """
     def __init__(self, body: Sequence[ast.AST]) -> None:
         self.body = body
-        self.lineno = body[0].lineno
+        self.lineno = body[0].lineno    # type: ignore[attr-defined]
 
 # TODO: Shouldn't the cause messages join with "and" instead of "or"?
 
@@ -824,7 +824,7 @@ class AstArcAnalyzer:
         if handler is not None:
             return handler(node)
         else:
-            return node.lineno
+            return node.lineno      # type: ignore[attr-defined, no-any-return]
 
     # First lines: _line__*
     #
@@ -1020,10 +1020,10 @@ class AstArcAnalyzer:
         if not body_nodes:
             return None
         # Make a synthetic While-true node.
-        new_while = ast.While()
-        new_while.lineno = body_nodes.lineno
-        new_while.test = ast.Name()
-        new_while.test.lineno = body_nodes.lineno
+        new_while = ast.While()                     # type: ignore[call-arg]
+        new_while.lineno = body_nodes.lineno        # type: ignore[attr-defined]
+        new_while.test = ast.Name()                 # type: ignore[call-arg]
+        new_while.test.lineno = body_nodes.lineno   # type: ignore[attr-defined]
         new_while.test.id = "True"
         assert hasattr(body_nodes, "body")
         new_while.body = body_nodes.body
