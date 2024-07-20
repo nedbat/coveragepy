@@ -78,7 +78,7 @@ TTraceFileData = Union[Set[TLineNo], Set[TArc], Set[int]]
 
 TTraceData = Dict[str, TTraceFileData]
 
-class TracerCore(Protocol):
+class Tracer(Protocol):
     """Anything that can report on Python execution."""
 
     data: TTraceData

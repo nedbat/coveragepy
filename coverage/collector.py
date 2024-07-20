@@ -17,37 +17,18 @@ from typing import (
 
 from coverage import env
 from coverage.config import CoverageConfig
+from coverage.core import Core
 from coverage.data import CoverageData
 from coverage.debug import short_stack
-from coverage.disposition import FileDisposition
 from coverage.exceptions import ConfigError
 from coverage.misc import human_sorted_items, isolate_module
 from coverage.plugin import CoveragePlugin
-from coverage.pytracer import PyTracer
-from coverage.sysmon import SysMonitor
 from coverage.types import (
-    TArc, TFileDisposition, TTraceData, TTraceFn, TracerCore, TWarnFn,
+    TArc, TFileDisposition, TTraceData, TTraceFn, Tracer, TWarnFn,
 )
 
 os = isolate_module(os)
 
-
-try:
-    # Use the C extension code when we can, for speed.
-    from coverage.tracer import CTracer, CFileDisposition
-    HAS_CTRACER = True
-except ImportError:
-    # Couldn't import the C extension, maybe it isn't built.
-    if os.getenv("COVERAGE_CORE") == "ctrace":      # pragma: part covered
-        # During testing, we use the COVERAGE_CORE environment variable
-        # to indicate that we've fiddled with the environment to test this
-        # fallback code.  If we thought we had a C tracer, but couldn't import
-        # it, then exit quickly and clearly instead of dribbling confusing
-        # errors. I'm using sys.exit here instead of an exception because an
-        # exception here causes all sorts of other noise in unittest.
-        sys.stderr.write("*** COVERAGE_CORE is 'ctrace' but can't import CTracer!\n")
-        sys.exit(1)
-    HAS_CTRACER = False
 
 T = TypeVar("T")
 
@@ -78,15 +59,14 @@ class Collector:
 
     def __init__(
         self,
+        core: Core,
         should_trace: Callable[[str, FrameType], TFileDisposition],
         check_include: Callable[[str, FrameType], bool],
         should_start_context: Callable[[FrameType], str | None] | None,
         file_mapper: Callable[[str], str],
-        timid: bool,
         branch: bool,
         warn: TWarnFn,
         concurrency: list[str],
-        metacov: bool,
     ) -> None:
         """Create a collector.
 
@@ -105,11 +85,6 @@ class Collector:
         filename.  The result is the name that will be recorded in the data
         file.
 
-        If `timid` is true, then a slower simpler trace function will be
-        used.  This is important for some environments where manipulation of
-        tracing functions make the faster more sophisticated trace function not
-        operate properly.
-
         If `branch` is true, then branches will be measured.  This involves
         collecting data on which statements followed each other (arcs).  Use
         `get_arc_data` to get the arc data.
@@ -124,6 +99,7 @@ class Collector:
         Other values are ignored.
 
         """
+        self.core = core
         self.should_trace = should_trace
         self.check_include = check_include
         self.should_start_context = should_start_context
@@ -142,52 +118,6 @@ class Collector:
         self.origin = short_stack()
 
         self.concur_id_func = None
-
-        self._trace_class: type[TracerCore]
-        self.file_disposition_class: type[TFileDisposition]
-
-        core: str | None
-        if timid:
-            core = "pytrace"
-        else:
-            core = os.getenv("COVERAGE_CORE")
-
-            if core == "sysmon" and not env.PYBEHAVIOR.pep669:
-                self.warn("sys.monitoring isn't available, using default core", slug="no-sysmon")
-                core = None
-
-            if not core:
-                # Once we're comfortable with sysmon as a default:
-                # if env.PYBEHAVIOR.pep669 and self.should_start_context is None:
-                #     core = "sysmon"
-                if HAS_CTRACER:
-                    core = "ctrace"
-                else:
-                    core = "pytrace"
-
-        if core == "sysmon":
-            self._trace_class = SysMonitor
-            self._core_kwargs = {"tool_id": 3 if metacov else 1}
-            self.file_disposition_class = FileDisposition
-            self.supports_plugins = False
-            self.packed_arcs = False
-            self.systrace = False
-        elif core == "ctrace":
-            self._trace_class = CTracer
-            self._core_kwargs = {}
-            self.file_disposition_class = CFileDisposition
-            self.supports_plugins = True
-            self.packed_arcs = True
-            self.systrace = True
-        elif core == "pytrace":
-            self._trace_class = PyTracer
-            self._core_kwargs = {}
-            self.file_disposition_class = FileDisposition
-            self.supports_plugins = False
-            self.packed_arcs = False
-            self.systrace = True
-        else:
-            raise ConfigError(f"Unknown core value: {core!r}")
 
         # We can handle a few concurrency options here, but only one at a time.
         concurrencies = set(self.concurrency)
@@ -222,7 +152,7 @@ class Collector:
             msg = f"Couldn't trace with concurrency={tried}, the module isn't installed."
             raise ConfigError(msg) from ex
 
-        if self.concur_id_func and not hasattr(self._trace_class, "concur_id_func"):
+        if self.concur_id_func and not hasattr(core.tracer_class, "concur_id_func"):
             raise ConfigError(
                 "Can't support concurrency={} with {}, only threads are supported.".format(
                     tried, self.tracer_name(),
@@ -249,7 +179,7 @@ class Collector:
 
     def tracer_name(self) -> str:
         """Return the class name of the tracer we're using."""
-        return self._trace_class.__name__
+        return self.core.tracer_class.__name__
 
     def _clear_data(self) -> None:
         """Clear out existing data, but stay ready for more collection."""
@@ -305,7 +235,7 @@ class Collector:
             self.should_trace_cache = {}
 
         # Our active Tracers.
-        self.tracers: list[TracerCore] = []
+        self.tracers: list[Tracer] = []
 
         self._clear_data()
 
@@ -321,7 +251,7 @@ class Collector:
 
     def _start_tracer(self) -> TTraceFn | None:
         """Start a new Tracer object, and store it in self.tracers."""
-        tracer = self._trace_class(**self._core_kwargs)
+        tracer = self.core.tracer_class(**self.core.tracer_kwargs)
         tracer.data = self.data
         tracer.lock_data = self.lock_data
         tracer.unlock_data = self.unlock_data
@@ -403,7 +333,7 @@ class Collector:
 
         # Install our installation tracer in threading, to jump-start other
         # threads.
-        if self.systrace and self.threading:
+        if self.core.systrace and self.threading:
             self.threading.settrace(self._installation_trace)
 
     def stop(self) -> None:
@@ -440,7 +370,7 @@ class Collector:
         """Resume tracing after a `pause`."""
         for tracer in self.tracers:
             tracer.start()
-        if self.systrace:
+        if self.core.systrace:
             if self.threading:
                 self.threading.settrace(self._installation_trace)
             else:
@@ -523,7 +453,7 @@ class Collector:
             return False
 
         if self.branch:
-            if self.packed_arcs:
+            if self.core.packed_arcs:
                 # Unpack the line number pairs packed into integers.  See
                 # tracer.c:CTracer_record_pair for the C code that creates
                 # these packed ints.

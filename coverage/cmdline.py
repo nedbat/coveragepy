@@ -19,9 +19,9 @@ from typing import cast, Any, NoReturn
 import coverage
 from coverage import Coverage
 from coverage import env
-from coverage.collector import HAS_CTRACER
 from coverage.config import CoverageConfig
 from coverage.control import DEFAULT_DATAFILE
+from coverage.core import HAS_CTRACER
 from coverage.data import combinable_files, debug_data_file
 from coverage.debug import info_header, short_stack, write_formatted_info
 from coverage.exceptions import _BaseCoverageException, _ExceptionDuringRun, NoSource

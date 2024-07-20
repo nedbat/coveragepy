@@ -31,7 +31,7 @@ from coverage.types import (
     TLineNo,
     TTraceData,
     TTraceFileData,
-    TracerCore,
+    Tracer,
     TWarnFn,
 )
 
@@ -171,7 +171,7 @@ def bytes_to_lines(code: CodeType) -> dict[int, int]:
     return b2l
 
 
-class SysMonitor(TracerCore):
+class SysMonitor(Tracer):
     """Python implementation of the raw data tracer for PEP669 implementations."""
 
     # One of these will be used across threads. Be careful.

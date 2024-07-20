@@ -26,9 +26,10 @@ from typing import (
 
 from coverage import env
 from coverage.annotate import AnnotateReporter
-from coverage.collector import Collector, HAS_CTRACER
+from coverage.collector import Collector
 from coverage.config import CoverageConfig, read_coverage_config
 from coverage.context import should_start_context_test_function, combine_context_switchers
+from coverage.core import Core, HAS_CTRACER
 from coverage.data import CoverageData, combine_parallel_data
 from coverage.debug import (
     DebugControl, NoDebugging, short_stack, write_formatted_info, relevant_environment_display,
@@ -262,6 +263,7 @@ class Coverage(TConfigurable):
         self._inorout: InOrOut | None = None
         self._plugins: Plugins = Plugins()
         self._data: CoverageData | None = None
+        self._core: Core | None = None
         self._collector: Collector | None = None
         self._metacov = False
 
@@ -532,16 +534,20 @@ class Coverage(TConfigurable):
 
         should_start_context = combine_context_switchers(context_switchers)
 
+        self._core = Core(
+            warn=self._warn,
+            timid=self.config.timid,
+            metacov=self._metacov,
+        )
         self._collector = Collector(
+            core=self._core,
             should_trace=self._should_trace,
             check_include=self._check_include_omit_etc,
             should_start_context=should_start_context,
             file_mapper=self._file_mapper,
-            timid=self.config.timid,
             branch=self.config.branch,
             warn=self._warn,
             concurrency=concurrency,
-            metacov=self._metacov,
         )
 
         suffix = self._data_suffix_specified
@@ -563,7 +569,7 @@ class Coverage(TConfigurable):
         self._collector.use_data(self._data, self.config.context)
 
         # Early warning if we aren't going to be able to support plugins.
-        if self._plugins.file_tracers and not self._collector.supports_plugins:
+        if self._plugins.file_tracers and not self._core.supports_plugins:
             self._warn(
                 "Plugin file tracers ({}) aren't supported with {}".format(
                     ", ".join(
@@ -584,7 +590,7 @@ class Coverage(TConfigurable):
             include_namespace_packages=self.config.include_namespace_packages,
         )
         self._inorout.plugins = self._plugins
-        self._inorout.disp_class = self._collector.file_disposition_class
+        self._inorout.disp_class = self._core.file_disposition_class
 
         # It's useful to write debug info after initing for start.
         self._should_write_debug = True
