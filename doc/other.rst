@@ -53,9 +53,9 @@ Language plugins
 
 Coverage.py plugins to enable coverage measurement of other languages.
 
-* `django-coverage`__ measures the coverage of Django templates.
+* `django-coverage-plugin`__ measures the coverage of Django templates.
 
-  __ https://pypi.org/project/django-coverage/
+  __ https://pypi.org/project/django-coverage-plugin/
 
 * `Cython`__ provides a plugin for measuring Cythonized code.
 
