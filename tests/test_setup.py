@@ -90,7 +90,7 @@ class SetupPyTest(CoverageTest):
             ext_builder.run()  # type: ignore
 
         # Sanity check: we don't handle unexpected errors
-        for error in setup.ext_errors:
+        for error in (ImportError, ZeroDivisionError, Exception):
             with pytest.raises(error):
                 setup.build_ext.build_extension = self.raise_error(error)
                 ext_builder = setup.ve_build_ext(setuptools.Distribution())
