@@ -3,17 +3,14 @@
 
 """Code coverage measurement for Python"""
 
-# Distutils setup for coverage.py
+# Setuptools setup for coverage.py
 # This file is used unchanged under all versions of Python.
 
 import os
 import sys
 
-# Setuptools has to be imported before distutils, or things break.
-from setuptools import setup
-from distutils.core import Extension  # pylint: disable=wrong-import-order
+from setuptools import Extension, errors, setup
 from setuptools.command.build_ext import build_ext  # pylint: disable=wrong-import-order
-from distutils import errors  # pylint: disable=wrong-import-order
 
 # Get or massage our metadata.  We exec coverage/version.py so we can avoid
 # importing the product code into setup.py.
@@ -131,12 +128,11 @@ setup_args = dict(
 
 ext_errors = (
     errors.CCompilerError,
-    errors.DistutilsExecError,
-    errors.DistutilsPlatformError,
+    errors.ExecError,
+    errors.PlatformError,
 )
 if sys.platform == "win32":
-    # distutils.msvc9compiler can raise an IOError when failing to
-    # find the compiler
+    # IOError can be raised when failing to find the compiler
     ext_errors += (IOError,)
 
 
@@ -155,7 +151,7 @@ class ve_build_ext(build_ext):
         """Wrap `run` with `BuildFailed`."""
         try:
             build_ext.run(self)
-        except errors.DistutilsPlatformError as exc:
+        except errors.PlatformError as exc:
             raise BuildFailed() from exc
 
     def build_extension(self, ext):
