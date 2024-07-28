@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import sys
 
-from typing import List, cast
+from typing import Any, Callable, List, cast
 
 import pytest
 import setuptools
@@ -29,8 +29,9 @@ class SetupPyTest(CoverageTest):
         # Force the most restrictive interpretation.
         self.set_environ('LC_ALL', 'C')
 
-    def raise_error(self, error):
-        def f(*args, **kwargs):
+    def raise_error(self, error: type[Exception]) -> Callable[[Any], Any]:
+        """Return a function that raises the provided exception."""
+        def f(*args: Any, **kwargs: Any) -> None:
             raise error
         return f
 
@@ -72,37 +73,40 @@ class SetupPyTest(CoverageTest):
             with pytest.raises(setup.BuildFailed):
                 setup.build_ext.build_extension = self.raise_error(ext_error)
                 ext_builder = setup.ve_build_ext(setuptools.Distribution())
-                ext_builder.build_extension(1)
+                ext_builder.build_extension(1)  # type: ignore
 
         # Sanity check: we don't handle unexpected errors
         for other_error in (ImportError, ZeroDivisionError, Exception):
             with pytest.raises(other_error):
                 setup.build_ext.build_extension = self.raise_error(other_error)
                 ext_builder = setup.ve_build_ext(setuptools.Distribution())
-                ext_builder.build_extension(1)
+                ext_builder.build_extension(1)  # type: ignore
 
     def test_run(self) -> None:
         # `ve_build_ext.run()` only catches `PlatformError` and raises `BuildFailed`
         with pytest.raises(setup.BuildFailed):
             setup.build_ext.run = self.raise_error(setup.errors.PlatformError)
             ext_builder = setup.ve_build_ext(setuptools.Distribution())
-            ext_builder.run()
+            ext_builder.run()  # type: ignore
 
         # Sanity check: we don't handle unexpected errors
         for error in setup.ext_errors:
             with pytest.raises(error):
-                setup.setup = self.raise_error(error)
-                setup.main()
+                setup.build_ext.build_extension = self.raise_error(error)
+                ext_builder = setup.ve_build_ext(setuptools.Distribution())
+                ext_builder.build_extension(1)  # type: ignore
 
     def test_main(self) -> None:
         # `main()` will catch `BuildFailed` once, then it'll be raised again
         # when `setup` is called a second time.
         with pytest.raises(setup.BuildFailed):
             setup.setup = self.raise_error(setup.BuildFailed)
-            setup.main()
+            setup.setup_args["ext_modules"] = "dummy"
+            setup.main()  # type: ignore
 
         # Sanity check: we don't handle unexpected errors
         for error in setup.ext_errors:
             with pytest.raises(error):
+                setup.setup_args["ext_modules"] = "dummy"
                 setup.setup = self.raise_error(error)
-                setup.main()
+                setup.main()  # type: ignore
