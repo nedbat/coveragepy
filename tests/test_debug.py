@@ -376,7 +376,7 @@ class ShortStackTest(CoverageTest):
         else:
             py = "pypy" if env.PYPY else "python"
             majv, minv = sys.version_info[:2]
-            pylib = f"lib{s}{py}{majv}.{minv}"
+            pylib = f"lib{s}{py}{majv}.{minv}{sys.abiflags}"
         assert len(re_lines(fr"{s}{pylib}{s}site-packages{s}_pytest", stack_text)) > 3
         assert len(re_lines(fr"{s}{pylib}{s}site-packages{s}pluggy", stack_text)) > 3
         assert not re_lines(r" 0x[0-9a-fA-F]+", stack_text) # No frame ids
