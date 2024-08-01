@@ -98,6 +98,24 @@ class PhysTokensTest(CoverageTest):
         real_file = os.path.join(TESTS_DIR, "test_coverage.py")
         self.check_file_tokenization(real_file)
 
+    def test_1828(self) -> None:
+        # https://github.com/nedbat/coveragepy/pull/1828
+        tokens = list(source_token_lines(textwrap.dedent("""
+            x = \
+                1
+            a = ["aaa",\\
+                 "bbb \\
+                 ccc"]
+            """)))
+        assert tokens == [
+            [],
+            [('nam', 'x'), ('ws', ' '), ('op', '='), ('ws', '                 '), ('num', '1')],
+            [('nam', 'a'), ('ws', ' '), ('op', '='), ('ws', ' '),
+                ('op', '['), ('str', '"aaa"'), ('op', ','), ('xx', '\\')],
+            [('ws', '     '), ('str', '"bbb \\')],
+            [('str', '     ccc"'), ('op', ']')],
+        ]
+
     @pytest.mark.parametrize("fname", [
         "stress_phystoken.tok",
         "stress_phystoken_dos.tok",
@@ -112,6 +130,7 @@ class PhysTokensTest(CoverageTest):
             self.check_file_tokenization(stress)
             with open(stress) as fstress:
                 assert re.search(r"(?m) $", fstress.read()), f"{stress} needs a trailing space."
+
 
 @pytest.mark.skipif(not env.PYBEHAVIOR.soft_keywords, reason="Soft keywords are new in Python 3.10")
 class SoftKeywordTest(CoverageTest):

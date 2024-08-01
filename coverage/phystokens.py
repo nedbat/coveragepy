@@ -57,14 +57,14 @@ def _phys_tokens(toks: TokenInfos) -> TokenInfos:
                 if last_ttext.endswith("\\"):
                     inject_backslash = False
                 elif ttype == token.STRING:
-                    if last_line.endswith(last_ttext+"\\\n"):
+                    if last_line.endswith(last_ttext + "\\\n"):
                         # Deal with special cases like such code::
                         #
                         #   a = ["aaa",\
                         #        "bbb \
                         #        ccc"]
                         #
-                        pass
+                        inject_backslash = True
                     elif "\n" in ttext and ttext.split("\n", 1)[0][-1] == "\\":
                         # It's a multi-line string and the first line ends with
                         # a backslash, so we don't need to inject another.

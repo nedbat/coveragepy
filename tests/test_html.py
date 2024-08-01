@@ -1131,6 +1131,28 @@ assert len(math) == 18
 
         doesnt_contain("out/tabbed_py.html", "\t")
 
+    def test_bug_1828(self) -> None:
+        # https://github.com/nedbat/coveragepy/pull/1828
+        self.make_file("backslashes.py", """\
+            a = ["aaa",\\
+                 "bbb \\
+                 ccc"]
+            """)
+
+        cov = coverage.Coverage()
+        backslashes = self.start_import_stop(cov, "backslashes")
+        cov.html_report(backslashes, directory="out")
+
+        contains(
+            "out/backslashes_py.html",
+            # line 2 is `"bbb \`
+            r'<a id="t2" href="#t2">2</a></span>'
+                + r'<span class="t">     <span class="str">"bbb \</span>',
+            # line 3 is `ccc"]`
+            r'<a id="t3" href="#t3">3</a></span>'
+                + r'<span class="t"><span class="str">     ccc"</span><span class="op">]</span>',
+        )
+
     def test_unicode(self) -> None:
         surrogate = "\U000e0100"
 
