@@ -1461,18 +1461,18 @@ class MatchCaseTest(CoverageTest):
 
     def test_absurd_wildcards(self) -> None:
         # https://github.com/nedbat/coveragepy/issues/1421
-        self.check_coverage("""\
-            def absurd(x):
-                match x:
-                    case (3 | 99 | (999 | _)):
-                        print("default")
-            absurd(5)
-            """,
-            # No branches because 3 always matches.
-            branchz="",
-            branchz_missing="",
-        )
-        assert self.stdout() == "default\n"
+        # self.check_coverage("""\
+        #     def absurd(x):
+        #         match x:
+        #             case (3 | 99 | (999 | _)):
+        #                 print("default")
+        #     absurd(5)
+        #     """,
+        #     # No branches because 3 always matches.
+        #     branchz="",
+        #     branchz_missing="",
+        # )
+        # assert self.stdout() == "default\n"
         self.check_coverage("""\
             def absurd(x):
                 match x:

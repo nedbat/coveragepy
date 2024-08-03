@@ -10,6 +10,7 @@ import sys
 from typing import Any
 
 from coverage import env
+from coverage.config import CoverageConfig
 from coverage.disposition import FileDisposition
 from coverage.exceptions import ConfigError
 from coverage.misc import isolate_module
@@ -52,16 +53,9 @@ class Core:
     packed_arcs: bool
     systrace: bool
 
-    def __init__(self,
-        warn: TWarnFn,
-        timid: bool,
-        metacov: bool,
-    ) -> None:
-        # Defaults
-        self.tracer_kwargs = {}
-
+    def __init__(self, warn: TWarnFn, config: CoverageConfig, metacov: bool) -> None:
         core_name: str | None
-        if timid:
+        if config.timid:
             core_name = "pytrace"
         else:
             core_name = os.getenv("COVERAGE_CORE")
@@ -69,6 +63,13 @@ class Core:
             if core_name == "sysmon" and not env.PYBEHAVIOR.pep669:
                 warn("sys.monitoring isn't available, using default core", slug="no-sysmon")
                 core_name = None
+
+            # if core_name == "sysmon" and config.branch and not env.PYBEHAVIOR.branch_right_left:
+            #     warn(
+            #         "sys.monitoring can't yet measure branches well, using default core",
+            #         slug="no-sysmon",
+            #     )
+            #     core_name = None
 
             if not core_name:
                 # Once we're comfortable with sysmon as a default:
@@ -79,9 +80,11 @@ class Core:
                 else:
                     core_name = "pytrace"
 
+        self.tracer_kwargs = {}
+
         if core_name == "sysmon":
             self.tracer_class = SysMonitor
-            self.tracer_kwargs = {"tool_id": 3 if metacov else 1}
+            self.tracer_kwargs["tool_id"] = 3 if metacov else 1
             self.file_disposition_class = FileDisposition
             self.supports_plugins = False
             self.packed_arcs = False
