@@ -27,7 +27,11 @@ Unreleased
   <python:runpy.run_path>` with a :class:`Path <python:pathlib.Path>` argument.
   This is now fixed, thanks to `Ask Hjorth Larsen <pull 1819_>`_.
 
-.. _pull 1819: https://github.com/nedbat/coveragepy/pull/1819/files
+- Fix: backslashes preceding a multi-line backslashed string could confuse the
+  HTML report.  This is now fixed, thanks to `LiuYinCarl <pull 1828_>`_.
+
+.. _pull 1819: https://github.com/nedbat/coveragepy/pull/1819
+.. _pull 1828: https://github.com/nedbat/coveragepy/pull/1828
 
 
 .. scriv-start-here
