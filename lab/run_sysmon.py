@@ -27,6 +27,15 @@ def bytes_to_lines(code):
     return b2l
 
 
+MY_EVENTS = (
+    events.PY_RETURN
+    | events.PY_RESUME
+    | events.LINE
+    | events.BRANCH_TAKEN
+    | events.BRANCH_NOT_TAKEN
+    | events.JUMP
+)
+
 def show_off(label, code, instruction_offset):
     if code.co_filename == the_program:
         b2l = bytes_to_lines(code)
@@ -49,12 +58,7 @@ def sysmon_py_start(code, instruction_offset):
     sys.monitoring.set_local_events(
         my_id,
         code,
-        events.PY_RETURN
-        | events.PY_RESUME
-        | events.LINE
-        | events.BRANCH_TAKEN
-        | events.BRANCH_NOT_TAKEN
-        | events.JUMP,
+        MY_EVENTS,
     )
 
 
@@ -93,18 +97,19 @@ def sysmon_jump(code, instruction_offset, destination_offset):
     return sys.monitoring.DISABLE
 
 
-sys.monitoring.set_events(
-    my_id,
-    events.PY_START | events.PY_UNWIND,
-)
-register(events.PY_START, sysmon_py_start)
-register(events.PY_RESUME, sysmon_py_resume)
-register(events.PY_RETURN, sysmon_py_return)
-# register(events.PY_UNWIND, sysmon_py_unwind_arcs)
-register(events.LINE, sysmon_line)
-#register(events.BRANCH, sysmon_branch)
-register(events.BRANCH_TAKEN, sysmon_branch_taken)
-register(events.BRANCH_NOT_TAKEN, sysmon_branch_not_taken)
-register(events.JUMP, sysmon_jump)
+if 1:
+    sys.monitoring.set_events(
+        my_id,
+        events.PY_START | events.PY_UNWIND,
+    )
+    register(events.PY_START, sysmon_py_start)
+    register(events.PY_RESUME, sysmon_py_resume)
+    register(events.PY_RETURN, sysmon_py_return)
+    # register(events.PY_UNWIND, sysmon_py_unwind_arcs)
+    register(events.LINE, sysmon_line)
+    register(events.BRANCH, sysmon_branch)
+    register(events.BRANCH_TAKEN, sysmon_branch_taken)
+    register(events.BRANCH_NOT_TAKEN, sysmon_branch_not_taken)
+    register(events.JUMP, sysmon_jump)
 
 exec(code)
