@@ -321,6 +321,9 @@ def print_banner(label):
     if rev:
         version += f" (rev {rev})"
 
+    gil = "gil" if getattr(sys, '_is_gil_enabled', lambda: True)() else "nogil"
+    version += f" ({gil})"
+
     try:
         which_python = os.path.relpath(sys.executable)
     except ValueError:
