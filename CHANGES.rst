@@ -20,8 +20,12 @@ upgrading your version of coverage.py.
     ..  Version 9.8.1 — 2027-07-27
     ..  --------------------------
 
-Unreleased
-----------
+.. scriv-start-here
+
+.. _changes_7-6-1:
+
+Version 7.6.1 — 2024-08-04
+--------------------------
 
 - Fix: coverage used to fail when measuring code using :func:`runpy.run_path
   <python:runpy.run_path>` with a :class:`Path <python:pathlib.Path>` argument.
@@ -35,8 +39,6 @@ Unreleased
 .. _pull 1819: https://github.com/nedbat/coveragepy/pull/1819
 .. _pull 1828: https://github.com/nedbat/coveragepy/pull/1828
 
-
-.. scriv-start-here
 
 .. _changes_7-6-0:
 
