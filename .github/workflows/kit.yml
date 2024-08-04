@@ -77,10 +77,9 @@ jobs:
           #       "macos": ["arm64", "x86_64"],
           #       "windows": ["x86", "AMD64"],
           #   }
-          #   # PYVERSIONS. Available versions:
-          #   # https://github.com/actions/python-versions/blob/main/versions-manifest.json
+          #   # PYVERSIONS. Available versions: https://pypi.org/project/cibuildwheel/
           #   # PyPy versions are handled further below in the "pypy" step.
-          #   pys = ["cp38", "cp39", "cp310", "cp311", "cp312"]
+          #   pys = ["cp38", "cp39", "cp310", "cp311", "cp312", "cp313"]
           #
           #   # Some OS/arch combinations need overrides for the Python versions:
           #   os_arch_pys = {
@@ -107,37 +106,44 @@ jobs:
           - {"os": "ubuntu", "py": "cp310", "arch": "x86_64"}
           - {"os": "ubuntu", "py": "cp311", "arch": "x86_64"}
           - {"os": "ubuntu", "py": "cp312", "arch": "x86_64"}
+          - {"os": "ubuntu", "py": "cp313", "arch": "x86_64"}
           - {"os": "ubuntu", "py": "cp38", "arch": "i686"}
           - {"os": "ubuntu", "py": "cp39", "arch": "i686"}
           - {"os": "ubuntu", "py": "cp310", "arch": "i686"}
           - {"os": "ubuntu", "py": "cp311", "arch": "i686"}
           - {"os": "ubuntu", "py": "cp312", "arch": "i686"}
+          - {"os": "ubuntu", "py": "cp313", "arch": "i686"}
           - {"os": "ubuntu", "py": "cp38", "arch": "aarch64"}
           - {"os": "ubuntu", "py": "cp39", "arch": "aarch64"}
           - {"os": "ubuntu", "py": "cp310", "arch": "aarch64"}
           - {"os": "ubuntu", "py": "cp311", "arch": "aarch64"}
           - {"os": "ubuntu", "py": "cp312", "arch": "aarch64"}
+          - {"os": "ubuntu", "py": "cp313", "arch": "aarch64"}
           - {"os": "macos", "py": "cp38", "arch": "arm64", "os-version": "13"}
           - {"os": "macos", "py": "cp39", "arch": "arm64", "os-version": "13"}
           - {"os": "macos", "py": "cp310", "arch": "arm64", "os-version": "13"}
           - {"os": "macos", "py": "cp311", "arch": "arm64", "os-version": "13"}
           - {"os": "macos", "py": "cp312", "arch": "arm64", "os-version": "13"}
+          - {"os": "macos", "py": "cp313", "arch": "arm64", "os-version": "13"}
           - {"os": "macos", "py": "cp38", "arch": "x86_64", "os-version": "13"}
           - {"os": "macos", "py": "cp39", "arch": "x86_64", "os-version": "13"}
           - {"os": "macos", "py": "cp310", "arch": "x86_64", "os-version": "13"}
           - {"os": "macos", "py": "cp311", "arch": "x86_64", "os-version": "13"}
           - {"os": "macos", "py": "cp312", "arch": "x86_64", "os-version": "13"}
+          - {"os": "macos", "py": "cp313", "arch": "x86_64", "os-version": "13"}
           - {"os": "windows", "py": "cp38", "arch": "x86"}
           - {"os": "windows", "py": "cp39", "arch": "x86"}
           - {"os": "windows", "py": "cp310", "arch": "x86"}
           - {"os": "windows", "py": "cp311", "arch": "x86"}
           - {"os": "windows", "py": "cp312", "arch": "x86"}
+          - {"os": "windows", "py": "cp313", "arch": "x86"}
           - {"os": "windows", "py": "cp38", "arch": "AMD64"}
           - {"os": "windows", "py": "cp39", "arch": "AMD64"}
           - {"os": "windows", "py": "cp310", "arch": "AMD64"}
           - {"os": "windows", "py": "cp311", "arch": "AMD64"}
           - {"os": "windows", "py": "cp312", "arch": "AMD64"}
-        # [[[end]]] (checksum: 16ed28c185d540b2d9972a0217864472)
+          - {"os": "windows", "py": "cp313", "arch": "AMD64"}
+        # [[[end]]] (checksum: e0cd49f4a0028c4fdf1036e9bc843075)
       fail-fast: false
 
     steps:
@@ -164,10 +170,11 @@ jobs:
 
       - name: "Build wheels"
         env:
-          CIBW_BUILD: ${{ matrix.py }}-*
+          CIBW_BUILD: ${{ matrix.py }}*-*
           CIBW_ARCHS: ${{ matrix.arch }}
           CIBW_ENVIRONMENT: PIP_DISABLE_PIP_VERSION_CHECK=1
           CIBW_PRERELEASE_PYTHONS: True
+          CIBW_FREE_THREADED_SUPPORT: True
           CIBW_TEST_COMMAND: python -c "from coverage.tracer import CTracer; print('CTracer OK!')"
         run: |
           python -m cibuildwheel --output-dir wheelhouse
@@ -285,6 +292,12 @@ jobs:
           pattern: dist-*
           merge-multiple: true
 
+      - name: "List distributions"
+        run: |
+          ls -alR
+          echo "Number of dists, there should be 72:"
+          ls -1 coverage-* | wc -l
+
       - name: "Sign artifacts"
         uses: sigstore/gh-action-sigstore-python@f514d46b907ebcd5bedc05145c03b69c1edd8b46 # v3.0.0
         with:
@@ -299,7 +312,5 @@ jobs:
         with:
           name: signatures
           path: |
-            *.crt
-            *.sig
-            *.sigstore
+            *.sigstore.json
           retention-days: 7

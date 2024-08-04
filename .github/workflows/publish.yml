@@ -68,7 +68,7 @@ jobs:
     - name: "What did we get?"
       run: |
         ls -alR
-        echo "Number of dists:"
+        echo "Number of dists, should be 72:"
         ls -1 dist | wc -l
 
     - name: "Generate attestations"
@@ -107,7 +107,7 @@ jobs:
     - name: "What did we get?"
       run: |
         ls -alR
-        echo "Number of dists:"
+        echo "Number of dists, should be 72:"
         ls -1 dist | wc -l
 
     - name: "Generate attestations"

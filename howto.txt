@@ -52,7 +52,6 @@
 - Kits:
     - Wait for kits to finish:
         - https://github.com/nedbat/coveragepy/actions/workflows/kit.yml
-        - there should be 52
     - test the pypi upload:
         $ make test_upload
         - you'll need to approve the action
