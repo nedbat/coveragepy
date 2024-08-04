@@ -6,7 +6,7 @@
 #
 astroid==3.2.4
     # via pylint
-attrs==23.2.0
+attrs==24.1.0
     # via hypothesis
 backports-tarfile==1.2.0
     # via jaraco-context
@@ -49,7 +49,7 @@ flaky==3.8.1
     # via -r requirements/pytest.in
 greenlet==3.0.3
     # via -r requirements/dev.in
-hypothesis==6.108.5
+hypothesis==6.108.7
     # via -r requirements/pytest.in
 idna==3.7
     # via requests
@@ -72,7 +72,7 @@ jaraco-functools==4.0.2
     # via keyring
 jedi==0.19.1
     # via pudb
-keyring==25.2.1
+keyring==25.3.0
     # via twine
 libsass==0.23.0
     # via -r requirements/dev.in
