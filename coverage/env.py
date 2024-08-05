@@ -159,6 +159,12 @@ class PYBEHAVIOR:
     # PEP649 and PEP749: Deferred annotations
     deferred_annotations = (PYVERSION >= (3, 14))
 
+    # Does sys.monitoring support BRANCH_TAKEN?
+    branch_taken = (
+        pep669 and
+        hasattr(sys.monitoring.events, "BRANCH_TAKEN") # type:ignore[attr-defined]
+    )
+
 
 # Coverage.py specifics, about testing scenarios. See tests/testenv.py also.
 

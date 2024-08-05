@@ -24,6 +24,7 @@ from typing import (
     cast,
 )
 
+from coverage import env
 from coverage.debug import short_filename, short_stack
 from coverage.misc import isolate_module
 from coverage.types import (
@@ -356,8 +357,9 @@ class SysMonitor(Tracer):
                             #
                             | events.PY_RESUME
                             # | events.PY_YIELD
-                            | events.LINE,
-                            # | events.BRANCH
+                            | events.LINE
+                            | events.BRANCH_TAKEN
+                            | events.BRANCH_NOT_TAKEN
                             # | events.JUMP
                         )
                         self.local_event_codes[id(code)] = code
