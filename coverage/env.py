@@ -100,6 +100,12 @@ class PYBEHAVIOR:
     # https://github.com/python/cpython/issues/113728
     lasti_is_yield = (PYVERSION[:2] != (3, 13))
 
+    # Does sys.monitoring support BRANCH_TAKEN?
+    branch_taken = (
+        pep669 and
+        hasattr(sys.monitoring.events, "BRANCH_TAKEN") # type:ignore[attr-defined]
+    )
+
 
 # Coverage.py specifics, about testing scenarios. See tests/testenv.py also.
 
