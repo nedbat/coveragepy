@@ -6,7 +6,7 @@
 #
 astroid==3.2.4
     # via pylint
-attrs==24.1.0
+attrs==24.2.0
     # via hypothesis
 backports-tarfile==1.2.0
     # via jaraco-context
@@ -49,7 +49,7 @@ flaky==3.8.1
     # via -r requirements/pytest.in
 greenlet==3.0.3
     # via -r requirements/dev.in
-hypothesis==6.108.7
+hypothesis==6.110.0
     # via -r requirements/pytest.in
 idna==3.7
     # via requests
@@ -82,7 +82,7 @@ mccabe==0.7.0
     # via pylint
 mdurl==0.1.2
     # via markdown-it-py
-more-itertools==10.3.0
+more-itertools==10.4.0
     # via
     #   jaraco-classes
     #   jaraco-functools
@@ -157,7 +157,7 @@ tomli==2.0.1
     #   tox
 tomlkit==0.13.0
     # via pylint
-tox==4.16.0
+tox==4.17.1
     # via
     #   -r requirements/tox.in
     #   tox-gh

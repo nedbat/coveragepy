@@ -49,7 +49,7 @@ markdown-it-py==3.0.0
     # via rich
 mdurl==0.1.2
     # via markdown-it-py
-more-itertools==10.3.0
+more-itertools==10.4.0
     # via
     #   jaraco-classes
     #   jaraco-functools
@@ -98,7 +98,7 @@ urllib3==2.2.2
     # via
     #   requests
     #   twine
-wheel==0.43.0
+wheel==0.44.0
     # via -r requirements/kit.in
 zipp==3.19.2
     # via
