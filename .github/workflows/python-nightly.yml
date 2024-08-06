@@ -110,6 +110,22 @@ jobs:
           python -m coverage debug pybehave
           env | sort
 
+      - name: "Check build recency"
+        #if: "!startsWith(matrix.python-version, 'pypy-')"
+        shell: python
+        run: |
+          import platform
+          from datetime import datetime
+          for fmt in ["%b %d %Y %H:%M:%S", "%b %d %Y"]:
+              try:
+                  built = datetime.strptime(platform.python_build()[1], fmt)
+              except ValueError:
+                  continue
+          now = datetime.now()
+          days = (now - built).days
+          print(f"Days since Python was built: {days}")
+          assert days <= 7
+
       - name: "Install dependencies"
         run: |
           python -m pip install -r requirements/tox.pip
