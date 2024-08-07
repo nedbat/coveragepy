@@ -75,7 +75,7 @@ TOML Syntax
 ...........
 
 `TOML syntax`_ uses explicit lists with brackets, and strings with quotes.
-Booleans are in ``true`` or ``false``.
+Booleans are ``true`` or ``false``.
 
 Configuration must be within the ``[tool.coverage]`` section, for example,
 ``[tool.coverage.run]``.  Environment variable expansion in values is
