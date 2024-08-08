@@ -1143,7 +1143,13 @@ class FailUnderNoFilesTest(CoverageTest):
     def test_report(self) -> None:
         self.make_file(".coveragerc", "[report]\nfail_under = 99\n")
         st, out = self.run_command_status("coverage report")
-        assert 'No data to report.' in out
+        assert re.match(
+            (
+                r"The data file or directory '([^']+?)' could not be found\. Perhaps 'coverage "
+                + r"combine' must be run first\."
+            ),
+            out
+        )
         assert st == 1
 
 

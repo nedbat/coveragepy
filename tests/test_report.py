@@ -551,7 +551,13 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
     def test_report_skip_covered_no_data(self) -> None:
         cov = coverage.Coverage()
         cov.load()
-        with pytest.raises(NoDataError, match="No data to report."):
+        with pytest.raises(
+            NoDataError,
+            match=(
+                r"^The data file or directory '(.+?)' could not be found\. Perhaps 'coverage "
+                + r"combine' must be run first\.$"
+            )
+        ):
             self.get_report(cov, skip_covered=True)
         self.assert_doesnt_exist(".coverage")
 
@@ -744,7 +750,13 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         self.make_data_file(lines={"mycode.py": [1]})
         cov = coverage.Coverage()
         cov.load()
-        with pytest.raises(NoDataError, match="No data to report."):
+        with pytest.raises(
+            NoDataError,
+            match=(
+                r"^The data file or directory '(.+?)' could not be found\. Perhaps 'coverage "
+                + r"combine' must be run first\.$"
+            )
+        ):
             with pytest.warns(Warning) as warns:
                 self.get_report(cov, morfs=["mycode.py"], ignore_errors=True)
         assert_coverage_warnings(
@@ -761,7 +773,13 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         self.make_data_file(lines={"mycode.html": [1]})
         cov = coverage.Coverage()
         cov.load()
-        with pytest.raises(NoDataError, match="No data to report."):
+        with pytest.raises(
+            NoDataError,
+            match=(
+                r"^The data file or directory '(.+?)' could not be found\. Perhaps 'coverage "
+                + r"combine' must be run first\.$"
+            )
+        ):
             self.get_report(cov, morfs=["mycode.html"])
 
     def test_report_no_extension(self) -> None:

@@ -5,11 +5,12 @@
 
 from __future__ import annotations
 
+import os
 import sys
 
 from typing import Any, IO, Iterable, TYPE_CHECKING
 
-from coverage.exceptions import ConfigError, NoDataError
+from coverage.exceptions import ConfigError, DataFileOrDirectoryNotFoundError
 from coverage.misc import human_sorted_items
 from coverage.plugin import FileReporter
 from coverage.report_core import get_analysis_to_report
@@ -182,7 +183,9 @@ class SummaryReporter:
             self.report_one_file(fr, analysis)
 
         if not self.total.n_files and not self.skipped_count:
-            raise NoDataError("No data to report.")
+            raise DataFileOrDirectoryNotFoundError.new(
+                os.path.dirname(self.coverage.get_data().base_filename())
+            )
 
         if self.output_format == "total":
             self.write(self.total.pc_covered_str)

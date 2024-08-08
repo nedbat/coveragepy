@@ -5,13 +5,14 @@
 
 from __future__ import annotations
 
+import os
 import sys
 
 from typing import (
     Callable, Iterable, Iterator, IO, Protocol, TYPE_CHECKING,
 )
 
-from coverage.exceptions import NoDataError, NotPython
+from coverage.exceptions import NotPython, DataFileOrDirectoryNotFoundError
 from coverage.files import prep_patterns, GlobMatcher
 from coverage.misc import ensure_dir_for_file, file_be_gone
 from coverage.plugin import FileReporter
@@ -93,7 +94,9 @@ def get_analysis_to_report(
         fr_morfs = [(fr, morf) for (fr, morf) in fr_morfs if not matcher.match(fr.filename)]
 
     if not fr_morfs:
-        raise NoDataError("No data to report.")
+        raise DataFileOrDirectoryNotFoundError.new(
+            os.path.dirname(coverage.get_data().base_filename())
+        )
 
     for fr, morf in sorted(fr_morfs):
         try:

@@ -16,10 +16,10 @@ import functools
 import glob
 import hashlib
 import os.path
-
 from typing import Callable, Iterable
 
-from coverage.exceptions import CoverageException, NoDataError
+from coverage.exceptions import CoverageException, DataFileOrDirectoryNotFoundError, \
+    NoDataFilesFoundError, UnusableDataFilesError
 from coverage.files import PathAliases
 from coverage.misc import Hasher, file_be_gone, human_sorted, plural
 from coverage.sqldata import CoverageData
@@ -83,11 +83,16 @@ def combinable_files(data_file: str, data_paths: Iterable[str] | None = None) ->
             pattern = glob.escape(os.path.join(os.path.abspath(p), local)) +".*"
             files_to_combine.extend(glob.glob(pattern))
         else:
-            raise NoDataError(f"Couldn't combine from non-existent path '{p}'")
+            raise DataFileOrDirectoryNotFoundError.new(
+                p, is_combining=True
+            )
 
     # SQLite might have made journal files alongside our database files.
     # We never want to combine those.
     files_to_combine = [fnm for fnm in files_to_combine if not fnm.endswith("-journal")]
+
+    if not files_to_combine:
+        raise NoDataFilesFoundError.new(data_dir)
 
     # Sorting isn't usually needed, since it shouldn't matter what order files
     # are combined, but sorting makes tests more predictable, and makes
@@ -130,10 +135,12 @@ def combine_parallel_data(
     `message` is a function to use for printing messages to the user.
 
     """
-    files_to_combine = combinable_files(data.base_filename(), data_paths)
-
-    if strict and not files_to_combine:
-        raise NoDataError("No data to combine")
+    try:
+        files_to_combine = combinable_files(data.base_filename(), data_paths)
+    except NoDataFilesFoundError:
+        if strict:
+            raise
+        return
 
     if aliases is None:
         map_path = None
@@ -196,7 +203,7 @@ def combine_parallel_data(
             file_be_gone(f)
 
     if strict and not combined_any:
-        raise NoDataError("No usable data files")
+        raise UnusableDataFilesError.new(*files_to_combine)
 
 
 def debug_data_file(filename: str) -> None:
