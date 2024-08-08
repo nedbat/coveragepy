@@ -120,9 +120,10 @@ class PYBEHAVIOR:
     pep669 = bool(getattr(sys, "monitoring", None))
 
     # Where does frame.f_lasti point when yielding from a generator?
-    # It used to point at the YIELD, now it points at the RESUME.
+    # It used to point at the YIELD, in 3.13 it points at the RESUME,
+    # then it went back to the YIELD.
     # https://github.com/python/cpython/issues/113728
-    lasti_is_yield = (PYVERSION < (3, 13))
+    lasti_is_yield = (PYVERSION[:2] != (3, 13))
 
 
 # Coverage.py specifics, about testing scenarios. See tests/testenv.py also.
