@@ -60,7 +60,6 @@ jobs:
           - "3.13-dev"
           - "3.14-dev"
           # https://github.com/actions/setup-python#available-versions-of-pypy
-          - "pypy-3.8-nightly"
           - "pypy-3.9-nightly"
           - "pypy-3.10-nightly"
         nogil:
@@ -72,8 +71,6 @@ jobs:
             os-short: "windows"
         exclude:
           - python-version: "3.12-dev"
-            nogil: true
-          - python-version: "pypy-3.8-nightly"
             nogil: true
           - python-version: "pypy-3.9-nightly"
             nogil: true
