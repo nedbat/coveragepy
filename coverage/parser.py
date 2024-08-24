@@ -109,12 +109,11 @@ class PythonParser:
         Handles multiline regex patterns.
 
         """
-        regex_c = re.compile(regex, re.MULTILINE)
         matches: set[TLineNo] = set()
 
         last_start = 0
         last_start_line = 0
-        for match in regex_c.finditer(self.text):
+        for match in re.finditer(regex, self.text, flags=re.MULTILINE):
             start, end = match.span()
             start_line = last_start_line + self.text.count('\n', last_start, start)
             end_line = last_start_line + self.text.count('\n', last_start, end)
