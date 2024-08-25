@@ -13,7 +13,7 @@ import pathlib
 import py_compile
 import re
 import sys
-
+from pathlib import Path
 from typing import Any, Iterator
 
 import pytest
@@ -23,6 +23,7 @@ from coverage.execfile import run_python_file, run_python_module
 from coverage.files import python_reported_file
 
 from tests.coveragetest import CoverageTest, TESTS_DIR, UsingModulesMixin
+from tests.helpers import change_dir
 
 TRY_EXECFILE = os.path.join(TESTS_DIR, "modules/process_test/try_execfile.py")
 
@@ -304,6 +305,15 @@ class RunModuleTest(UsingModulesMixin, CoverageTest):
         run_python_module(["pkg1.__init__", "wut?"])
         out, err = self.stdouterr()
         assert out == "pkg1.__init__: pkg1\npkg1.__init__: __main__\n"
+        assert err == ""
+
+    def test_pythonpath(self, tmp_path: Path) -> None:
+        self.set_environ("PYTHONSAFEPATH", "1")
+        with change_dir(tmp_path):
+            run_python_module(["process_test.try_execfile"])
+        out, err = self.stdouterr()
+        mod_globs = json.loads(out)
+        assert tmp_path not in mod_globs["path"]
         assert err == ""
 
     def test_no_such_module(self) -> None:
