@@ -50,22 +50,6 @@ class PythonParserTest(PythonParserTestBase):
             2:1, 3:1, 4:2, 5:1, 7:1, 9:1, 10:1,
         }
 
-    def test_generator_exit_counts(self) -> None:
-        # https://github.com/nedbat/coveragepy/issues/324
-        parser = self.parse_text("""\
-            def gen(input):
-                for n in inp:
-                    yield (i * 2 for i in range(n))
-
-            list(gen([1,2,3]))
-            """)
-        assert parser.exit_counts() == {
-            1:1,    # def -> list
-            2:2,    # for -> yield; for -> exit
-            3:2,    # yield -> for;  genexp exit
-            5:1,    # list -> exit
-        }
-
     def test_try_except(self) -> None:
         parser = self.parse_text("""\
             try:
@@ -79,7 +63,7 @@ class PythonParserTest(PythonParserTestBase):
             b = 9
             """)
         assert parser.exit_counts() == {
-            1: 1, 2:1, 3:2, 4:1, 5:2, 6:1, 7:1, 8:1, 9:1,
+            1: 1, 2:1, 3:1, 4:1, 5:1, 6:1, 7:1, 8:1, 9:1,
         }
 
     def test_excluded_classes(self) -> None:
@@ -92,9 +76,7 @@ class PythonParserTest(PythonParserTestBase):
                 class Bar:
                     pass
             """)
-        assert parser.exit_counts() == {
-            1:0, 2:1, 3:1,
-        }
+        assert parser.exit_counts() == { 2:1, 3:1 }
 
     def test_missing_branch_to_excluded_code(self) -> None:
         parser = self.parse_text("""\
@@ -157,17 +139,13 @@ class PythonParserTest(PythonParserTestBase):
             """)
 
         expected_statements = {1, 2, 4, 5, 8, 9, 10}
-        expected_arcs = set(arcz_to_arcs(".1 14 45 58 89 9.  .2 2.  -8A A-8"))
+        expected_arcs = set(arcz_to_arcs("14 45 58 89 9.  2.  A-8"))
         expected_exits = {1: 1, 2: 1, 4: 1, 5: 1, 8: 1, 9: 1, 10: 1}
 
         if env.PYBEHAVIOR.docstring_only_function:
             # 3.7 changed how functions with only docstrings are numbered.
-            expected_arcs.update(set(arcz_to_arcs("-46 6-4")))
+            expected_arcs.update(set(arcz_to_arcs("6-4")))
             expected_exits.update({6: 1})
-
-        if env.PYBEHAVIOR.trace_decorator_line_again:
-            expected_arcs.update(set(arcz_to_arcs("54 98")))
-            expected_exits.update({9: 2, 5: 2})
 
         assert expected_statements == parser.statements
         assert expected_arcs == parser.arcs()
@@ -1016,26 +994,6 @@ class ParserMissingArcDescriptionTest(PythonParserTestBase):
         )
         assert expected == parser.missing_arc_description(11, 13)
 
-    def test_missing_arc_descriptions_for_small_callables(self) -> None:
-        parser = self.parse_text("""\
-            callables = [
-                lambda: 2,
-                (x for x in range(3)),
-                {x:1 for x in range(4)},
-                {x for x in range(5)},
-            ]
-            x = 7
-            """)
-        expected = "line 2 didn't finish the lambda on line 2"
-        assert expected == parser.missing_arc_description(2, -2)
-        expected = "line 3 didn't finish the generator expression on line 3"
-        assert expected == parser.missing_arc_description(3, -3)
-        if env.PYBEHAVIOR.comprehensions_are_functions:
-            expected = "line 4 didn't finish the dictionary comprehension on line 4"
-            assert expected == parser.missing_arc_description(4, -4)
-            expected = "line 5 didn't finish the set comprehension on line 5"
-            assert expected == parser.missing_arc_description(5, -5)
-
     def test_missing_arc_descriptions_for_exceptions(self) -> None:
         parser = self.parse_text("""\
             try:
@@ -1055,91 +1013,6 @@ class ParserMissingArcDescriptionTest(PythonParserTestBase):
             "because the exception caught by line 5 didn't happen"
         )
         assert expected == parser.missing_arc_description(5, 6)
-
-    def test_missing_arc_descriptions_for_finally(self) -> None:
-        parser = self.parse_text("""\
-            def function():
-                for i in range(2):
-                    try:
-                        if something(4):
-                            break
-                        elif something(6):
-                            x = 7
-                        else:
-                            if something(9):
-                                continue
-                            else:
-                                continue
-                        if also_this(13):
-                            return 14
-                        else:
-                            raise Exception(16)
-                    finally:
-                        this_thing(18)
-                that_thing(19)
-            """)
-        if env.PYBEHAVIOR.finally_jumps_back:
-            expected = "line 18 didn't jump to line 5 because the break on line 5 wasn't executed"
-            assert expected == parser.missing_arc_description(18, 5)
-            expected = "line 5 didn't jump to line 19 because the break on line 5 wasn't executed"
-            assert expected == parser.missing_arc_description(5, 19)
-            expected = (
-                "line 18 didn't jump to line 10 " +
-                "because the continue on line 10 wasn't executed"
-            )
-            assert expected == parser.missing_arc_description(18, 10)
-            expected = (
-                "line 10 didn't jump to line 2 " +
-                "because the continue on line 10 wasn't executed"
-            )
-            assert expected == parser.missing_arc_description(10, 2)
-            expected = (
-                "line 18 didn't jump to line 14 " +
-                "because the return on line 14 wasn't executed"
-            )
-            assert expected == parser.missing_arc_description(18, 14)
-            expected = (
-                "line 14 didn't return from function 'function' " +
-                "because the return on line 14 wasn't executed"
-            )
-            assert expected == parser.missing_arc_description(14, -1)
-            expected = (
-                "line 18 didn't except from function 'function' " +
-                "because the raise on line 16 wasn't executed"
-            )
-            assert expected == parser.missing_arc_description(18, -1)
-        else:
-            expected = (
-                "line 18 didn't jump to line 19 " +
-                "because the break on line 5 wasn't executed"
-            )
-            assert expected == parser.missing_arc_description(18, 19)
-            expected = (
-                "line 18 didn't jump to line 2 " +
-                    "because the continue on line 10 wasn't executed" +
-                " or " +
-                    "the continue on line 12 wasn't executed"
-            )
-            assert expected == parser.missing_arc_description(18, 2)
-            expected = (
-                "line 18 didn't except from function 'function' " +
-                    "because the raise on line 16 wasn't executed" +
-                " or " +
-                "line 18 didn't return from function 'function' " +
-                    "because the return on line 14 wasn't executed"
-            )
-            assert expected == parser.missing_arc_description(18, -1)
-
-    def test_missing_arc_descriptions_bug460(self) -> None:
-        parser = self.parse_text("""\
-            x = 1
-            d = {
-                3: lambda: [],
-                4: lambda: [],
-            }
-            x = 6
-            """)
-        assert parser.missing_arc_description(2, -3) == "line 3 didn't finish the lambda on line 3"
 
 
 @pytest.mark.skipif(not env.PYBEHAVIOR.match_case, reason="Match-case is new in 3.10")

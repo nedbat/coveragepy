@@ -32,13 +32,13 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
         self.make_file("a.py", """\
             a = {'b': 1}
             if a.get('a'):
-                b = 1
-            elif a.get('b'):
-                b = 2
-            else:
                 b = 3
+            elif a.get('b'):
+                b = 5
+            else:
+                b = 7
             if not a:
-                b = 4
+                b = 9
             """)
         self._compare_json_reports(cov, expected_result, "a")
 

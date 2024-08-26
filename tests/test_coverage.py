@@ -1170,8 +1170,7 @@ class CompoundStatementTest(CoverageTest):
             assert a == 123
             """,
             [1,2,3,4,5,7,8], "4-5",
-            arcz=".1 12 23 45 58 37 78 8.",
-            arcz_missing="45 58",
+            branchz="", branchz_missing="",
         )
 
     def test_try_except_stranded_else(self) -> None:
@@ -1179,13 +1178,9 @@ class CompoundStatementTest(CoverageTest):
             # The else can't be reached because the try ends with a raise.
             lines = [1,2,3,4,5,6,9]
             missing = ""
-            arcz = ".1 12 23 34 45 56 69 9."
-            arcz_missing = ""
         else:
             lines = [1,2,3,4,5,6,8,9]
             missing = "8"
-            arcz = ".1 12 23 34 45 56 69 89 9."
-            arcz_missing = "89"
         self.check_coverage("""\
             a = 0
             try:
@@ -1199,8 +1194,7 @@ class CompoundStatementTest(CoverageTest):
             """,
             lines=lines,
             missing=missing,
-            arcz=arcz,
-            arcz_missing=arcz_missing,
+            branchz="", branchz_missing="",
         )
 
     def test_try_finally(self) -> None:
@@ -1275,7 +1269,6 @@ class CompoundStatementTest(CoverageTest):
         )
 
     def test_class_def(self) -> None:
-        arcz="-22 2D DE E-2  23 36 6A A-2  -68 8-6   -AB B-A"
         self.check_coverage("""\
             # A comment.
             class theClass:
@@ -1293,7 +1286,7 @@ class CompoundStatementTest(CoverageTest):
             assert x == 1
             """,
             [2, 6, 8, 10, 11, 13, 14], "",
-            arcz=arcz,
+            branchz="", branchz_missing="",
         )
 
 
@@ -1358,18 +1351,10 @@ class ExcludeTest(CoverageTest):
             assert a == 123
             """,
             [1,2,3,7,8], "", excludes=['#pragma: NO COVER'],
-            arcz=".1 12 23 37 45 58 78 8.",
-            arcz_missing="58",
+            branchz="", branchz_missing="",
         )
 
     def test_excluding_try_except_stranded_else(self) -> None:
-        if env.PYBEHAVIOR.optimize_unreachable_try_else:
-            # The else can't be reached because the try ends with a raise.
-            arcz = ".1 12 23 34 45 56 69 9."
-            arcz_missing = ""
-        else:
-            arcz = ".1 12 23 34 45 56 69 89 9."
-            arcz_missing = "89"
         self.check_coverage("""\
             a = 0
             try:
@@ -1382,8 +1367,7 @@ class ExcludeTest(CoverageTest):
             assert a == 99
             """,
             [1,2,3,4,5,6,9], "", excludes=['#pragma: NO COVER'],
-            arcz=arcz,
-            arcz_missing=arcz_missing,
+            branchz="", branchz_missing="",
         )
 
     def test_excluded_comprehension_branches(self) -> None:
@@ -1396,8 +1380,8 @@ class ExcludeTest(CoverageTest):
                 raise NotImplementedError   # pragma: NO COVER
             """,
             [1,2,4], "", excludes=['#pragma: NO COVER'],
-            arcz=".1 12 23 24 45 4.  -44 4-4",
-            arcz_missing="4-4",
+            branchz="23 24 45 4.",
+            branchz_missing="",
         )
 
 
@@ -1515,7 +1499,7 @@ class Py25Test(CoverageTest):
             assert a == 1 and b == 2
             """,
             [1,2,3,4,5,7,8], "4-5",
-            arcz=".1 12 23 37 45 57 78 8.", arcz_missing="45 57",
+            branchz="", branchz_missing="",
         )
         self.check_coverage("""\
             a = 0; b = 0
@@ -1529,7 +1513,7 @@ class Py25Test(CoverageTest):
             assert a == 99 and b == 2
             """,
             [1,2,3,4,5,6,8,9], "",
-            arcz=".1 12 23 34 45 56 68 89 9.",
+            branchz="", branchz_missing="",
         )
         self.check_coverage("""\
             a = 0; b = 0
@@ -1545,7 +1529,7 @@ class Py25Test(CoverageTest):
             assert a == 123 and b == 2
             """,
             [1,2,3,4,5,6,7,8,10,11], "6",
-            arcz=".1 12 23 34 45 56 57 78 6A 8A AB B.", arcz_missing="56 6A",
+            branchz="", branchz_missing="",
         )
         self.check_coverage("""\
             a = 0; b = 0
@@ -1563,8 +1547,7 @@ class Py25Test(CoverageTest):
             assert a == 17 and b == 2
             """,
             [1,2,3,4,5,6,7,8,9,10,12,13], "6, 9-10",
-            arcz=".1 12 23 34 45 56 6C 57 78 8C 79 9A AC CD D.",
-            arcz_missing="56 6C 79 9A AC",
+            branchz="", branchz_missing="",
         )
         self.check_coverage("""\
             a = 0; b = 0
@@ -1579,8 +1562,7 @@ class Py25Test(CoverageTest):
             assert a == 123 and b == 2
             """,
             [1,2,3,4,5,7,9,10], "4-5",
-            arcz=".1 12 23 37 45 59 79 9A A.",
-            arcz_missing="45 59",
+            branchz="", branchz_missing="",
         )
 
     def test_try_except_finally_stranded_else(self) -> None:
@@ -1588,13 +1570,9 @@ class Py25Test(CoverageTest):
             # The else can't be reached because the try ends with a raise.
             lines = [1,2,3,4,5,6,10,11]
             missing = ""
-            arcz = ".1 12 23 34 45 56 6A AB B."
-            arcz_missing = ""
         else:
             lines = [1,2,3,4,5,6,8,10,11]
             missing = "8"
-            arcz = ".1 12 23 34 45 56 6A 8A AB B."
-            arcz_missing = "8A"
         self.check_coverage("""\
             a = 0; b = 0
             try:
@@ -1610,8 +1588,7 @@ class Py25Test(CoverageTest):
             """,
             lines=lines,
             missing=missing,
-            arcz=arcz,
-            arcz_missing=arcz_missing,
+            branchz="", branchz_missing="",
         )
 
 

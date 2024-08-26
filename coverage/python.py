@@ -225,7 +225,7 @@ class PythonFileReporter(FileReporter):
         end: TLineNo,
         executed_arcs: Iterable[TArc] | None = None,
     ) -> str:
-        return self.parser.missing_arc_description(start, end, executed_arcs)
+        return self.parser.missing_arc_description(start, end)
 
     def source(self) -> str:
         if self._source is None:

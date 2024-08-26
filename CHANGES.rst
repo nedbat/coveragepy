@@ -23,7 +23,10 @@ upgrading your version of coverage.py.
 Unreleased
 ----------
 
-Nothing yet.
+- Fewer things are considered branches now:
+
+  - Lambdas, comprehensions, and generator expressions are no longer marked as
+    missing branches if they don't complete execution.
 
 
 .. scriv-start-here

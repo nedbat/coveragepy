@@ -115,7 +115,8 @@ class ApiTest(CoverageTest):
         filename, _, _, _ = cov.analysis(sys.modules["mymod"])
         assert os.path.basename(filename) == "mymod.py"
 
-    def test_ignore_stdlib(self) -> None:
+    @pytest.mark.parametrize("cover_pylib", [False, True])
+    def test_stdlib(self, cover_pylib: bool) -> None:
         self.make_file("mymain.py", """\
             import colorsys
             a = 1
@@ -123,27 +124,18 @@ class ApiTest(CoverageTest):
             """)
 
         # Measure without the stdlib.
-        cov1 = coverage.Coverage()
-        assert cov1.config.cover_pylib is False
+        cov1 = coverage.Coverage(cover_pylib=cover_pylib)
         self.start_import_stop(cov1, "mymain")
 
-        # some statements were marked executed in mymain.py
         _, statements, missing, _ = cov1.analysis("mymain.py")
-        assert statements != missing
+        assert statements == [1, 2, 3]
+        assert missing == []
         # but none were in colorsys.py
         _, statements, missing, _ = cov1.analysis("colorsys.py")
-        assert statements == missing
-
-        # Measure with the stdlib.
-        cov2 = coverage.Coverage(cover_pylib=True)
-        self.start_import_stop(cov2, "mymain")
-
-        # some statements were marked executed in mymain.py
-        _, statements, missing, _ = cov2.analysis("mymain.py")
-        assert statements != missing
-        # and some were marked executed in colorsys.py
-        _, statements, missing, _ = cov2.analysis("colorsys.py")
-        assert statements != missing
+        if cover_pylib:
+            assert statements != missing
+        else:
+            assert statements == missing
 
     def test_include_can_measure_stdlib(self) -> None:
         self.make_file("mymain.py", """\
