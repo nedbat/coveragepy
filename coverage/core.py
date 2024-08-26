@@ -14,7 +14,11 @@ from coverage.disposition import FileDisposition
 from coverage.exceptions import ConfigError
 from coverage.pytracer import PyTracer
 from coverage.sysmon import SysMonitor
-from coverage.types import TFileDisposition, Tracer,  TWarnFn
+from coverage.types import (
+    TFileDisposition,
+    Tracer,
+    TWarnFn,
+)
 
 
 try:
@@ -45,7 +49,14 @@ class Core:
     packed_arcs: bool
     systrace: bool
 
-    def __init__(self, warn: TWarnFn, timid: bool, metacov: bool) -> None:
+    def __init__(self,
+        warn: TWarnFn,
+        timid: bool,
+        metacov: bool,
+    ) -> None:
+        # Defaults
+        self.tracer_kwargs = {}
+
         core_name: str | None
         if timid:
             core_name = "pytrace"
@@ -74,14 +85,12 @@ class Core:
             self.systrace = False
         elif core_name == "ctrace":
             self.tracer_class = CTracer
-            self.tracer_kwargs = {}
             self.file_disposition_class = CFileDisposition
             self.supports_plugins = True
             self.packed_arcs = True
             self.systrace = True
         elif core_name == "pytrace":
             self.tracer_class = PyTracer
-            self.tracer_kwargs = {}
             self.file_disposition_class = FileDisposition
             self.supports_plugins = False
             self.packed_arcs = False

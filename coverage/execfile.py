@@ -288,13 +288,13 @@ def run_python_file(args: list[str]) -> None:
 
 def make_code_from_py(filename: str) -> CodeType:
     """Get source from `filename` and make a code object of it."""
-    # Open the source file.
     try:
         source = get_python_source(filename)
     except (OSError, NoSource) as exc:
         raise NoSource(f"No file to run: '{filename}'") from exc
 
-    return compile(source, filename, "exec", dont_inherit=True)
+    code = compile(source, filename, mode="exec", dont_inherit=True)
+    return code
 
 
 def make_code_from_pyc(filename: str) -> CodeType:

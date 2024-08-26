@@ -5,9 +5,9 @@
 
 from __future__ import annotations
 
+import collections
 import contextlib
 import datetime
-import difflib
 import glob
 import io
 import os
@@ -29,7 +29,7 @@ from coverage.data import CoverageData
 from coverage.misc import import_local_file
 from coverage.types import TArc, TLineNo
 
-from tests.helpers import arcs_to_arcz_repr, arcz_to_arcs, assert_count_equal
+from tests.helpers import arcz_to_arcs, assert_count_equal
 from tests.helpers import nice_file, run_command
 from tests.mixins import PytestBase, StdStreamCapturingMixin, RestoreModulesMixin, TempDirMixin
 
@@ -44,6 +44,23 @@ TESTS_DIR = os.path.dirname(__file__)
 # Defaults to the top of the source tree, but can be overridden if we need
 # some help on certain platforms.
 COVERAGE_INSTALL_ARGS = os.getenv("COVERAGE_INSTALL_ARGS", nice_file(TESTS_DIR, ".."))
+
+
+def arcs_to_branches(arcs: Iterable[TArc]) -> dict[TLineNo, list[TLineNo]]:
+    """Convert a list of arcs into a dict showing branches."""
+    arcs_combined = collections.defaultdict(set)
+    for fromno, tono in arcs:
+        arcs_combined[fromno].add(tono)
+    branches = collections.defaultdict(list)
+    for fromno, tono in arcs:
+        if len(arcs_combined[fromno]) > 1:
+            branches[fromno].append(tono)
+    return branches
+
+
+def branches_to_arcs(branches: dict[TLineNo, list[TLineNo]]) -> list[TArc]:
+    """Convert a dict od branches into a list of arcs."""
+    return [(fromno, tono) for fromno, tonos in branches.items() for tono in tonos]
 
 
 class CoverageTest(
@@ -125,28 +142,6 @@ class CoverageTest(
         self.last_module_name = 'coverage_test_' + str(random.random())[2:]
         return self.last_module_name
 
-    def _check_arcs(
-        self,
-        a1: Iterable[TArc] | None,
-        a2: Iterable[TArc] | None,
-        arc_type: str,
-    ) -> str:
-        """Check that the arc lists `a1` and `a2` are equal.
-
-        If they are equal, return empty string. If they are unequal, return
-        a string explaining what is different.
-        """
-        # Make them into multi-line strings so we can see what's going wrong.
-        s1 = arcs_to_arcz_repr(a1)
-        s2 = arcs_to_arcz_repr(a2)
-        if s1 != s2:
-            lines1 = s1.splitlines(True)
-            lines2 = s2.splitlines(True)
-            diff = "".join(difflib.ndiff(lines1, lines2))
-            return "\n" + arc_type + " arcs differ: minus is expected, plus is actual\n" + diff
-        else:
-            return ""
-
     def check_coverage(
         self,
         text: str,
@@ -155,12 +150,8 @@ class CoverageTest(
         report: str = "",
         excludes: Iterable[str] | None = None,
         partials: Iterable[str] = (),
-        arcz: str | None = None,
-        arcz_missing: str | None = None,
-        arcz_unpredicted: str | None = None,
-        arcs: Iterable[TArc] | None = None,
-        arcs_missing: Iterable[TArc] | None = None,
-        arcs_unpredicted: Iterable[TArc] | None = None,
+        branchz: str | None = None,
+        branchz_missing: str | None = None,
     ) -> Coverage:
         """Check the coverage measurement of `text`.
 
@@ -170,12 +161,9 @@ class CoverageTest(
         regexes to match against for excluding lines, and `report` is the text
         of the measurement report.
 
-        For arc measurement, `arcz` is a string that can be decoded into arcs
-        in the code (see `arcz_to_arcs` for the encoding scheme).
-        `arcz_missing` are the arcs that are not executed, and
-        `arcz_unpredicted` are the arcs executed in the code, but not deducible
-        from the code.  These last two default to "", meaning we explicitly
-        check that there are no missing or unpredicted arcs.
+        For branch measurement, `branchz` is a string that can be decoded into
+        arcs in the code (see `arcz_to_arcs` for the encoding scheme).
+        `branchz_missing` are the arcs that are not executed.
 
         Returns the Coverage object, in case you want to poke at it some more.
 
@@ -188,12 +176,11 @@ class CoverageTest(
 
         self.make_file(modname + ".py", text)
 
-        if arcs is None and arcz is not None:
-            arcs = arcz_to_arcs(arcz)
-        if arcs_missing is None and arcz_missing is not None:
-            arcs_missing = arcz_to_arcs(arcz_missing)
-        if arcs_unpredicted is None and arcz_unpredicted is not None:
-            arcs_unpredicted = arcz_to_arcs(arcz_unpredicted)
+        branches = branches_missing = None
+        if branchz is not None:
+            branches = arcz_to_arcs(branchz)
+        if branchz_missing is not None:
+            branches_missing = arcz_to_arcs(branchz_missing)
 
         # Start up coverage.py.
         cov = coverage.Coverage(branch=True)
@@ -229,20 +216,19 @@ class CoverageTest(
             msg = f"missing: {missing_formatted!r} != {missing!r}"
             assert missing_formatted == missing, msg
 
-        if arcs is not None:
-            # print("Possible arcs:")
-            # print(" expected:", arcs)
-            # print(" actual:", analysis.arc_possibilities)
-            # print("Executed:")
-            # print(" actual:", sorted(set(analysis.arcs_executed)))
-            # TODO: this would be nicer with pytest-check, once we can run that.
-            msg = (
-                self._check_arcs(arcs, analysis.arc_possibilities, "Possible") +
-                self._check_arcs(arcs_missing, analysis.arcs_missing(), "Missing") +
-                self._check_arcs(arcs_unpredicted, analysis.arcs_unpredicted(), "Unpredicted")
+        if branches is not None:
+            trimmed_arcs = branches_to_arcs(arcs_to_branches(analysis.arc_possibilities))
+            assert branches == trimmed_arcs, (
+                f"Wrong possible branches: {branches} != {trimmed_arcs}"
             )
-            if msg:
-                assert False, msg
+            if branches_missing is not None:
+                assert set(branches_missing) <= set(branches), (
+                    f"{branches_missing = }, has non-branches in it."
+                )
+                analysis_missing = branches_to_arcs(analysis.missing_branch_arcs())
+                assert branches_missing == analysis_missing, (
+                    f"Wrong missing branches: {branches_missing} != {analysis_missing}"
+                )
 
         if report:
             frep = io.StringIO()

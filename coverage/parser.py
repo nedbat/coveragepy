@@ -84,9 +84,6 @@ class PythonParser:
         # The raw line numbers of excluded lines of code, as marked by pragmas.
         self.raw_excluded: set[TLineNo] = set()
 
-        # The line numbers of class definitions.
-        self.raw_classdefs: set[TLineNo] = set()
-
         # The line numbers of docstring lines.
         self.raw_docstrings: set[TLineNo] = set()
 
@@ -100,6 +97,7 @@ class PythonParser:
         # Lazily-created arc data, and missing arc descriptions.
         self._all_arcs: set[TArc] | None = None
         self._missing_arc_fragments: TArcFragments | None = None
+        self._with_jump_fixers: dict[TArc, tuple[TArc, TArc]] = {}
 
     def lines_matching(self, regex: str) -> set[TLineNo]:
         """Find the lines matching a regex.
@@ -212,9 +210,6 @@ class PythonParser:
         # functions and classes.
         assert self._ast_root is not None
         for node in ast.walk(self._ast_root):
-            # Find class definitions.
-            if isinstance(node, ast.ClassDef):
-                self.raw_classdefs.add(node.lineno)
             # Find docstrings.
             if isinstance(node, (ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef, ast.Module)):
                 if node.body:
@@ -258,7 +253,7 @@ class PythonParser:
 
     def translate_arcs(self, arcs: Iterable[TArc]) -> set[TArc]:
         """Implement `FileReporter.translate_arcs`."""
-        return {(self.first_line(a), self.first_line(b)) for (a, b) in arcs}
+        return {(self.first_line(a), self.first_line(b)) for (a, b) in self.fix_with_jumps(arcs)}
 
     def parse_source(self) -> None:
         """Parse source text to find executable lines, excluded lines, etc.
@@ -305,15 +300,29 @@ class PythonParser:
         assert self._ast_root is not None
         aaa = AstArcAnalyzer(self._ast_root, self.raw_statements, self._multiline)
         aaa.analyze()
+        self._with_jump_fixers = aaa.with_jump_fixers()
 
         self._all_arcs = set()
-        for l1, l2 in aaa.arcs:
+        for l1, l2 in self.fix_with_jumps(aaa.arcs):
             fl1 = self.first_line(l1)
             fl2 = self.first_line(l2)
             if fl1 != fl2:
                 self._all_arcs.add((fl1, fl2))
 
         self._missing_arc_fragments = aaa.missing_arc_fragments
+
+    def fix_with_jumps(self, arcs: Iterable[TArc]) -> set[TArc]:
+        """Adjust arcs to fix jumps leaving `with` statements."""
+        to_remove = set()
+        to_add = set()
+        for arc in arcs:
+            if arc in self._with_jump_fixers:
+                start_next, prev_next = self._with_jump_fixers[arc]
+                if start_next in arcs:
+                    to_add.add(prev_next)
+                    to_remove.add(arc)
+                    to_remove.add(start_next)
+        return (set(arcs) | to_add) - to_remove
 
     @functools.lru_cache()
     def exit_counts(self) -> dict[TLineNo, int]:
@@ -335,46 +344,21 @@ class PythonParser:
                 continue
             exit_counts[l1] += 1
 
-        # Class definitions have one extra exit, so remove one for each:
-        for l in self.raw_classdefs:
-            # Ensure key is there: class definitions can include excluded lines.
-            if l in exit_counts:
-                exit_counts[l] -= 1
-
         return exit_counts
 
-    def missing_arc_description(
-        self,
-        start: TLineNo,
-        end: TLineNo,
-        executed_arcs: Iterable[TArc] | None = None,
-    ) -> str:
+    def missing_arc_description(self, start: TLineNo, end: TLineNo) -> str:
         """Provide an English sentence describing a missing arc."""
         if self._missing_arc_fragments is None:
             self._analyze_ast()
             assert self._missing_arc_fragments is not None
 
         actual_start = start
-
-        if (
-            executed_arcs and
-            end < 0 and end == -start and
-            (end, start) not in executed_arcs and
-            (end, start) in self._missing_arc_fragments
-        ):
-            # It's a one-line callable, and we never even started it,
-            # and we have a message about not starting it.
-            start, end = end, start
-
         fragment_pairs = self._missing_arc_fragments.get((start, end), [(None, None)])
 
         msgs = []
         for smsg, emsg in fragment_pairs:
             if emsg is None:
                 if end < 0:
-                    # Hmm, maybe we have a one-line callable, let's check.
-                    if (-end, end) in self._missing_arc_fragments:
-                        return self.missing_arc_description(-end, end)
                     emsg = "didn't jump to the function exit"
                 else:
                     emsg = "didn't jump to line {lineno}"
@@ -521,15 +505,11 @@ class Block:
     # pylint: disable=unused-argument
     def process_break_exits(self, exits: set[ArcStart], add_arc: TAddArcFn) -> bool:
         """Process break exits."""
-        # Because break can only appear in loops, and most subclasses
-        # implement process_break_exits, this function is never reached.
-        raise AssertionError
+        return False
 
     def process_continue_exits(self, exits: set[ArcStart], add_arc: TAddArcFn) -> bool:
         """Process continue exits."""
-        # Because continue can only appear in loops, and most subclasses
-        # implement process_continue_exits, this function is never reached.
-        raise AssertionError
+        return False
 
     def process_raise_exits(self, exits: set[ArcStart], add_arc: TAddArcFn) -> bool:
         """Process raise exits."""
@@ -591,81 +571,11 @@ class TryBlock(Block):
         # The line number of the "finally:" clause, if any.
         self.final_start = final_start
 
-        # The ArcStarts for breaks/continues/returns/raises inside the "try:"
-        # that need to route through the "finally:" clause.
-        self.break_from: set[ArcStart] = set()
-        self.continue_from: set[ArcStart] = set()
-        self.raise_from: set[ArcStart] = set()
-        self.return_from: set[ArcStart] = set()
-
-    def process_break_exits(self, exits: set[ArcStart], add_arc: TAddArcFn) -> bool:
-        if self.final_start is not None:
-            self.break_from.update(exits)
-            return True
-        return False
-
-    def process_continue_exits(self, exits: set[ArcStart], add_arc: TAddArcFn) -> bool:
-        if self.final_start is not None:
-            self.continue_from.update(exits)
-            return True
-        return False
-
     def process_raise_exits(self, exits: set[ArcStart], add_arc: TAddArcFn) -> bool:
         if self.handler_start is not None:
             for xit in exits:
                 add_arc(xit.lineno, self.handler_start, xit.cause)
-        else:
-            assert self.final_start is not None
-            self.raise_from.update(exits)
         return True
-
-    def process_return_exits(self, exits: set[ArcStart], add_arc: TAddArcFn) -> bool:
-        if self.final_start is not None:
-            self.return_from.update(exits)
-            return True
-        return False
-
-
-class WithBlock(Block):
-    """A block on the block stack representing a `with` block."""
-    def __init__(self, start: TLineNo) -> None:
-        # We only ever use this block if it is needed, so that we don't have to
-        # check this setting in all the methods.
-        assert env.PYBEHAVIOR.exit_through_with
-
-        # The line number of the with statement.
-        self.start = start
-
-        # The ArcStarts for breaks/continues/returns/raises inside the "with:"
-        # that need to go through the with-statement while exiting.
-        self.break_from: set[ArcStart] = set()
-        self.continue_from: set[ArcStart] = set()
-        self.return_from: set[ArcStart] = set()
-
-    def _process_exits(
-        self,
-        exits: set[ArcStart],
-        add_arc: TAddArcFn,
-        from_set: set[ArcStart] | None = None,
-    ) -> bool:
-        """Helper to process the four kinds of exits."""
-        for xit in exits:
-            add_arc(xit.lineno, self.start, xit.cause)
-        if from_set is not None:
-            from_set.update(exits)
-        return True
-
-    def process_break_exits(self, exits: set[ArcStart], add_arc: TAddArcFn) -> bool:
-        return self._process_exits(exits, add_arc, self.break_from)
-
-    def process_continue_exits(self, exits: set[ArcStart], add_arc: TAddArcFn) -> bool:
-        return self._process_exits(exits, add_arc, self.continue_from)
-
-    def process_raise_exits(self, exits: set[ArcStart], add_arc: TAddArcFn) -> bool:
-        return self._process_exits(exits, add_arc)
-
-    def process_return_exits(self, exits: set[ArcStart], add_arc: TAddArcFn) -> bool:
-        return self._process_exits(exits, add_arc, self.return_from)
 
 
 class NodeList(ast.AST):
@@ -680,14 +590,6 @@ class NodeList(ast.AST):
         self.lineno = body[0].lineno    # type: ignore[attr-defined]
 
 # TODO: Shouldn't the cause messages join with "and" instead of "or"?
-
-def _make_expression_code_method(noun: str) -> Callable[[AstArcAnalyzer, ast.AST], None]:
-    """A function to make methods for expression-based callable _code_object__ methods."""
-    def _code_object__expression_callable(self: AstArcAnalyzer, node: ast.AST) -> None:
-        start = self.line_for_node(node)
-        self.add_arc(-start, start, None, f"didn't run the {noun} on line {start}")
-        self.add_arc(start, -start, None, f"didn't finish the {noun} on line {start}")
-    return _code_object__expression_callable
 
 
 class AstArcAnalyzer:
@@ -704,6 +606,10 @@ class AstArcAnalyzer:
 
     For an arc starting from line 17, they should be usable to form complete
     sentences like: "Line 17 {endmsg} because {startmsg}".
+
+    NOTE: Starting in July 2024, I've been whittling this down to only report
+    arc that are part of true branches.  It's not clear how far this work will
+    go.
 
     """
 
@@ -735,6 +641,15 @@ class AstArcAnalyzer:
         self.missing_arc_fragments: TArcFragments = collections.defaultdict(list)
         self.block_stack: list[Block] = []
 
+        # If `with` clauses jump to their start on the way out, we need
+        # information to be able to skip over that jump.  We record the arcs
+        # from `with` into the clause (with_entries), and the arcs from the
+        # clause to the `with` (with_exits).
+        self.current_with_starts: set[TLineNo] = set()
+        self.all_with_starts: set[TLineNo] = set()
+        self.with_entries: set[TArc] = set()
+        self.with_exits: set[TArc] = set()
+
         # $set_env.py: COVERAGE_TRACK_ARCS - Trace possible arcs added while parsing code.
         self.debug = bool(int(os.getenv("COVERAGE_TRACK_ARCS", "0")))
 
@@ -746,6 +661,35 @@ class AstArcAnalyzer:
             if code_object_handler is not None:
                 code_object_handler(node)
 
+    def with_jump_fixers(self) -> dict[TArc, tuple[TArc, TArc]]:
+        """Get a dict with data for fixing jumps out of with statements.
+
+        Returns a dict.  The keys are arcs leaving a with statement by jumping
+        back to its start.  The values are pairs: first, the arc from the start
+        to the next statement, then the arc that exits the with without going
+        to the start.
+
+        """
+        if not env.PYBEHAVIOR.exit_through_with:
+            return {}
+
+        fixers = {}
+        with_nexts = {
+            arc
+            for arc in self.arcs
+            if arc[0] in self.all_with_starts and arc not in self.with_entries
+        }
+        for start in self.all_with_starts:
+            nexts = {arc[1] for arc in with_nexts if arc[0] == start}
+            if not nexts:
+                continue
+            assert len(nexts) == 1, f"Expected one arc, got {nexts} with {start = }"
+            nxt = nexts.pop()
+            prvs = {arc[0] for arc in self.with_exits if arc[1] == start}
+            for prv in prvs:
+                fixers[(prv, start)] = ((start, nxt), (prv, nxt))
+        return fixers
+
     # Code object dispatchers: _code_object__*
     #
     # These methods are used by analyze() as the start of the analysis.
@@ -754,18 +698,17 @@ class AstArcAnalyzer:
     def _code_object__Module(self, node: ast.Module) -> None:
         start = self.line_for_node(node)
         if node.body:
-            exits = self.body_exits(node.body, from_start=ArcStart(-start))
+            exits = self.process_body(node.body)
             for xit in exits:
                 self.add_arc(xit.lineno, -start, xit.cause, "didn't exit the module")
         else:
             # Empty module.
-            self.add_arc(-start, start)
             self.add_arc(start, -start)
 
     def _code_object__FunctionDef(self, node: ast.FunctionDef) -> None:
         start = self.line_for_node(node)
         self.block_stack.append(FunctionBlock(start=start, name=node.name))
-        exits = self.body_exits(node.body, from_start=ArcStart(-start))
+        exits = self.process_body(node.body)
         self.process_return_exits(exits)
         self.block_stack.pop()
 
@@ -773,21 +716,12 @@ class AstArcAnalyzer:
 
     def _code_object__ClassDef(self, node: ast.ClassDef) -> None:
         start = self.line_for_node(node)
-        self.add_arc(-start, start)
-        exits = self.body_exits(node.body, from_start=ArcStart(start))
+        exits = self.process_body(node.body)#, from_start=ArcStart(start))
         for xit in exits:
             self.add_arc(
                 xit.lineno, -start, xit.cause,
                 f"didn't exit the body of class {node.name!r}",
             )
-
-    _code_object__Lambda = _make_expression_code_method("lambda")
-    _code_object__GeneratorExp = _make_expression_code_method("generator expression")
-    if env.PYBEHAVIOR.comprehensions_are_functions:
-        _code_object__DictComp = _make_expression_code_method("dictionary comprehension")
-        _code_object__SetComp = _make_expression_code_method("set comprehension")
-        _code_object__ListComp = _make_expression_code_method("list comprehension")
-
 
     def add_arc(
         self,
@@ -798,9 +732,11 @@ class AstArcAnalyzer:
     ) -> None:
         """Add an arc, including message fragments to use if it is missing."""
         if self.debug:                      # pragma: debugging
-            print(f"\nAdding possible arc: ({start}, {end}): {smsg!r}, {emsg!r}")
-            print(short_stack())
+            print(f"Adding possible arc: ({start}, {end}): {smsg!r}, {emsg!r}")
+            print(short_stack(), end="\n\n")
         self.arcs.add((start, end))
+        if start in self.current_with_starts:
+            self.with_entries.add((start, end))
 
         if smsg is not None or emsg is not None:
             self.missing_arc_fragments[(start, end)].append((smsg, emsg))
@@ -913,27 +849,31 @@ class AstArcAnalyzer:
             arc_starts = {ArcStart(self.line_for_node(node))}
         return arc_starts
 
-    def body_exits(
+    def process_body(
         self,
         body: Sequence[ast.AST],
         from_start: ArcStart | None = None,
         prev_starts: set[ArcStart] | None = None,
     ) -> set[ArcStart]:
-        """Find arc starts that exit the body of a compound statement.
+        """Process the body of a compound statement.
 
-        `body` is the body node.  `from_start` is a single `ArcStart` that can
-        be the previous line in flow before this body.  `prev_starts` is a set
-        of ArcStarts that can be the previous line.  Only one of them should be
+        `body` is the body node to process.
+
+        `from_start` is a single `ArcStart` that starts an arc into this body.
+        `prev_starts` is a set of ArcStarts that can all be the start of arcs
+        into this body.  Only one of `from_start` and `prev_starts` should be
         given.
 
-        Also records arcs (using `add_arc`) within the body.
+        Records arcs within the body by calling `self.add_arc`.
 
         Returns a set of ArcStarts, the exits from this body.
 
         """
         if prev_starts is None:
-            assert from_start is not None
-            prev_starts = {from_start}
+            if from_start is None:
+                prev_starts = set()
+            else:
+                prev_starts = {from_start}
         else:
             assert from_start is None
 
@@ -962,7 +902,7 @@ class AstArcAnalyzer:
         Returns a node, or None if none of the node remains.
 
         """
-        # This repeats work just done in body_exits, but this duplication
+        # This repeats work just done in process_body, but this duplication
         # means we can avoid a function call in the 99.9999% case of not
         # optimizing away statements.
         lineno = self.line_for_node(node)
@@ -1110,11 +1050,6 @@ class AstArcAnalyzer:
             assert last is not None
             self.add_arc(last, main_line)
             last = main_line
-            if env.PYBEHAVIOR.trace_decorator_line_again:
-                for top, bot in zip(decs, decs[1:]):
-                    self.add_arc(self.line_for_node(bot), self.line_for_node(top))
-                self.add_arc(self.line_for_node(decs[0]), main_line)
-                self.add_arc(main_line, self.line_for_node(decs[-1]))
             # The definition line may have been missed, but we should have it
             # in `self.statements`.  For some constructs, `line_for_node` is
             # not what we'd think of as the first line in the statement, so map
@@ -1138,7 +1073,7 @@ class AstArcAnalyzer:
         start = self.line_for_node(node.iter)
         self.block_stack.append(LoopBlock(start=start))
         from_start = ArcStart(start, cause="the loop on line {lineno} never started")
-        exits = self.body_exits(node.body, from_start=from_start)
+        exits = self.process_body(node.body, from_start=from_start)
         # Any exit from the body will go back to the top of the loop.
         for xit in exits:
             self.add_arc(xit.lineno, start, xit.cause)
@@ -1147,7 +1082,7 @@ class AstArcAnalyzer:
         exits = my_block.break_exits
         from_start = ArcStart(start, cause="the loop on line {lineno} didn't complete")
         if node.orelse:
-            else_exits = self.body_exits(node.orelse, from_start=from_start)
+            else_exits = self.process_body(node.orelse, from_start=from_start)
             exits |= else_exits
         else:
             # No else clause: exit from the for line.
@@ -1162,9 +1097,9 @@ class AstArcAnalyzer:
     def _handle__If(self, node: ast.If) -> set[ArcStart]:
         start = self.line_for_node(node.test)
         from_start = ArcStart(start, cause="the condition on line {lineno} was never true")
-        exits = self.body_exits(node.body, from_start=from_start)
+        exits = self.process_body(node.body, from_start=from_start)
         from_start = ArcStart(start, cause="the condition on line {lineno} was always true")
-        exits |= self.body_exits(node.orelse, from_start=from_start)
+        exits |= self.process_body(node.orelse, from_start=from_start)
         return exits
 
     if sys.version_info >= (3, 10):
@@ -1179,7 +1114,7 @@ class AstArcAnalyzer:
                     case_start,
                     cause="the pattern on line {lineno} never matched",
                 )
-                exits |= self.body_exits(case.body, from_start=from_start)
+                exits |= self.process_body(case.body, from_start=from_start)
                 last_start = case_start
 
             # case is now the last case, check for wildcard match.
@@ -1200,7 +1135,7 @@ class AstArcAnalyzer:
 
     def _handle__NodeList(self, node: NodeList) -> set[ArcStart]:
         start = self.line_for_node(node)
-        exits = self.body_exits(node.body, from_start=ArcStart(start))
+        exits = self.process_body(node.body, from_start=ArcStart(start))
         return exits
 
     def _handle__Raise(self, node: ast.Raise) -> set[ArcStart]:
@@ -1235,112 +1170,41 @@ class AstArcAnalyzer:
         self.block_stack.append(try_block)
 
         start = self.line_for_node(node)
-        exits = self.body_exits(node.body, from_start=ArcStart(start))
+        exits = self.process_body(node.body, from_start=ArcStart(start))
 
         # We're done with the `try` body, so this block no longer handles
         # exceptions. We keep the block so the `finally` clause can pick up
         # flows from the handlers and `else` clause.
         if node.finalbody:
             try_block.handler_start = None
-            if node.handlers:
-                # If there are `except` clauses, then raises in the try body
-                # will already jump to them.  Start this set over for raises in
-                # `except` and `else`.
-                try_block.raise_from = set()
         else:
             self.block_stack.pop()
 
         handler_exits: set[ArcStart] = set()
 
         if node.handlers:
-            last_handler_start: TLineNo | None = None
             for handler_node in node.handlers:
                 handler_start = self.line_for_node(handler_node)
-                if last_handler_start is not None:
-                    self.add_arc(last_handler_start, handler_start)
-                last_handler_start = handler_start
                 from_cause = "the exception caught by line {lineno} didn't happen"
                 from_start = ArcStart(handler_start, cause=from_cause)
-                handler_exits |= self.body_exits(handler_node.body, from_start=from_start)
+                handler_exits |= self.process_body(handler_node.body, from_start=from_start)
 
         if node.orelse:
-            exits = self.body_exits(node.orelse, prev_starts=exits)
+            exits = self.process_body(node.orelse, prev_starts=exits)
 
         exits |= handler_exits
 
         if node.finalbody:
             self.block_stack.pop()
-            final_from = (                  # You can get to the `finally` clause from:
-                exits |                         # the exits of the body or `else` clause,
-                try_block.break_from |          # or a `break`,
-                try_block.continue_from |       # or a `continue`,
-                try_block.raise_from |          # or a `raise`,
-                try_block.return_from           # or a `return`.
-            )
+            final_from = exits
 
-            final_exits = self.body_exits(node.finalbody, prev_starts=final_from)
-
-            if try_block.break_from:
-                if env.PYBEHAVIOR.finally_jumps_back:
-                    for break_line in try_block.break_from:
-                        lineno = break_line.lineno
-                        cause = break_line.cause.format(lineno=lineno)
-                        for final_exit in final_exits:
-                            self.add_arc(final_exit.lineno, lineno, cause)
-                    breaks = try_block.break_from
-                else:
-                    breaks = self._combine_finally_starts(try_block.break_from, final_exits)
-                self.process_break_exits(breaks)
-
-            if try_block.continue_from:
-                if env.PYBEHAVIOR.finally_jumps_back:
-                    for continue_line in try_block.continue_from:
-                        lineno = continue_line.lineno
-                        cause = continue_line.cause.format(lineno=lineno)
-                        for final_exit in final_exits:
-                            self.add_arc(final_exit.lineno, lineno, cause)
-                    continues = try_block.continue_from
-                else:
-                    continues = self._combine_finally_starts(try_block.continue_from, final_exits)
-                self.process_continue_exits(continues)
-
-            if try_block.raise_from:
-                self.process_raise_exits(
-                    self._combine_finally_starts(try_block.raise_from, final_exits),
-                )
-
-            if try_block.return_from:
-                if env.PYBEHAVIOR.finally_jumps_back:
-                    for return_line in try_block.return_from:
-                        lineno = return_line.lineno
-                        cause = return_line.cause.format(lineno=lineno)
-                        for final_exit in final_exits:
-                            self.add_arc(final_exit.lineno, lineno, cause)
-                    returns = try_block.return_from
-                else:
-                    returns = self._combine_finally_starts(try_block.return_from, final_exits)
-                self.process_return_exits(returns)
+            final_exits = self.process_body(node.finalbody, prev_starts=final_from)
 
             if exits:
                 # The finally clause's exits are only exits for the try block
                 # as a whole if the try block had some exits to begin with.
                 exits = final_exits
 
-        return exits
-
-    def _combine_finally_starts(self, starts: set[ArcStart], exits: set[ArcStart]) -> set[ArcStart]:
-        """Helper for building the cause of `finally` branches.
-
-        "finally" clauses might not execute their exits, and the causes could
-        be due to a failure to execute any of the exits in the try block. So
-        we use the causes from `starts` as the causes for `exits`.
-        """
-        causes = []
-        for start in sorted(starts):
-            if start.cause:
-                causes.append(start.cause.format(lineno=start.lineno))
-        cause = " or ".join(causes)
-        exits = {ArcStart(xit.lineno, cause) for xit in exits}
         return exits
 
     def _handle__While(self, node: ast.While) -> set[ArcStart]:
@@ -1355,7 +1219,7 @@ class AstArcAnalyzer:
             to_top = self.line_for_node(node.body[0])
         self.block_stack.append(LoopBlock(start=to_top))
         from_start = ArcStart(start, cause="the condition on line {lineno} was never true")
-        exits = self.body_exits(node.body, from_start=from_start)
+        exits = self.process_body(node.body, from_start=from_start)
         for xit in exits:
             self.add_arc(xit.lineno, to_top, xit.cause)
         exits = set()
@@ -1364,7 +1228,7 @@ class AstArcAnalyzer:
         exits.update(my_block.break_exits)
         from_start = ArcStart(start, cause="the condition on line {lineno} was always true")
         if node.orelse:
-            else_exits = self.body_exits(node.orelse, from_start=from_start)
+            else_exits = self.process_body(node.orelse, from_start=from_start)
             exits |= else_exits
         else:
             # No `else` clause: you can exit from the start.
@@ -1375,28 +1239,18 @@ class AstArcAnalyzer:
     def _handle__With(self, node: ast.With) -> set[ArcStart]:
         start = self.line_for_node(node)
         if env.PYBEHAVIOR.exit_through_with:
-            self.block_stack.append(WithBlock(start=start))
-        exits = self.body_exits(node.body, from_start=ArcStart(start))
+            self.current_with_starts.add(start)
+            self.all_with_starts.add(start)
+        exits = self.process_body(node.body, from_start=ArcStart(start))
         if env.PYBEHAVIOR.exit_through_with:
-            with_block = self.block_stack.pop()
-            assert isinstance(with_block, WithBlock)
+            self.current_with_starts.remove(start)
             with_exit = {ArcStart(start)}
             if exits:
                 for xit in exits:
                     self.add_arc(xit.lineno, start)
+                    self.with_exits.add((xit.lineno, start))
                 exits = with_exit
-            if with_block.break_from:
-                self.process_break_exits(
-                    self._combine_finally_starts(with_block.break_from, with_exit),
-                )
-            if with_block.continue_from:
-                self.process_continue_exits(
-                    self._combine_finally_starts(with_block.continue_from, with_exit),
-                )
-            if with_block.return_from:
-                self.process_return_exits(
-                    self._combine_finally_starts(with_block.return_from, with_exit),
-                )
+
         return exits
 
     _handle__AsyncWith = _handle__With

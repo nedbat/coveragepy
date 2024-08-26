@@ -34,7 +34,26 @@ def analysis_from_file_reporter(
 
     if has_arcs:
         _arc_possibilities_set = file_reporter.arcs()
-        _arcs_executed_set = file_reporter.translate_arcs(data.arcs(filename) or [])
+        arcs = data.arcs(filename) or []
+
+        # Reduce the set of arcs to the ones that could be branches.
+        dests = collections.defaultdict(set)
+        for fromno, tono in _arc_possibilities_set:
+            dests[fromno].add(tono)
+        single_dests = {
+            fromno: list(tonos)[0]
+            for fromno, tonos in dests.items()
+            if len(tonos) == 1
+        }
+        new_arcs = set()
+        for fromno, tono in arcs:
+            if fromno != tono:
+                new_arcs.add((fromno, tono))
+            else:
+                if fromno in single_dests:
+                    new_arcs.add((fromno, single_dests[fromno]))
+
+        _arcs_executed_set = file_reporter.translate_arcs(new_arcs)
         exit_counts = file_reporter.exit_counts()
         no_branch = file_reporter.no_branch_lines()
     else:
@@ -165,21 +184,6 @@ class Analysis:
         )
         return sorted(missing)
 
-    def arcs_unpredicted(self) -> list[TArc]:
-        """Returns a sorted list of the executed arcs missing from the code."""
-        # Exclude arcs here which connect a line to itself.  They can occur
-        # in executed data in some cases.  This is where they can cause
-        # trouble, and here is where it's the least burden to remove them.
-        # Also, generators can somehow cause arcs from "enter" to "exit", so
-        # make sure we have at least one positive value.
-        unpredicted = (
-            e for e in self.arcs_executed
-                if e not in self.arc_possibilities
-                    and e[0] != e[1]
-                    and (e[0] > 0 or e[1] > 0)
-        )
-        return sorted(unpredicted)
-
     def _branch_lines(self) -> list[TLineNo]:
         """Returns a list of line numbers that have more than one exit."""
         return [l1 for l1,count in self.exit_counts.items() if count > 1]
@@ -198,6 +202,8 @@ class Analysis:
         branch_lines = set(self._branch_lines())
         mba = collections.defaultdict(list)
         for l1, l2 in missing:
+            if l1 == l2:
+                continue
             if l1 in branch_lines:
                 mba[l1].append(l2)
         return mba
@@ -211,6 +217,8 @@ class Analysis:
         branch_lines = set(self._branch_lines())
         eba = collections.defaultdict(list)
         for l1, l2 in self.arcs_executed:
+            if l1 == l2:
+                continue
             if l1 in branch_lines:
                 eba[l1].append(l2)
         return eba
