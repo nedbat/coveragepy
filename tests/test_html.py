@@ -14,8 +14,9 @@ import os.path
 import re
 import sys
 
-from unittest import mock
+from html.parser import HTMLParser
 from typing import Any, IO
+from unittest import mock
 
 import pytest
 
@@ -94,6 +95,12 @@ class HtmlTestHelpers(CoverageTest):
         )
         return index
 
+    def get_html_report_text_lines(self, module: str) -> list[str]:
+        """Parse the HTML report, and return a list of strings, the text rendered."""
+        parser = HtmlReportParser()
+        parser.feed(self.get_html_report_content(module))
+        return parser.text()
+
     def assert_correct_timestamp(self, html: str) -> None:
         """Extract the time stamp from `html`, and assert it is recent."""
         timestamp_pat = r"created at (\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2})"
@@ -131,6 +138,43 @@ class HtmlTestHelpers(CoverageTest):
             assert os.path.exists(f"{directory}/{href}"), (
                 f"These files link to {href!r}, which doesn't exist: {', '.join(sources)}"
             )
+
+
+class HtmlReportParser(HTMLParser):     # pylint: disable=abstract-method
+    """An HTML parser for our HTML reports.
+
+    Assertions are made about the structure we expect.
+    """
+    def __init__(self) -> None:
+        super().__init__()
+        self.lines: list[list[str]] = []
+        self.in_source = False
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        if tag == "main":
+            assert attrs == [("id", "source")]
+            self.in_source = True
+        elif self.in_source and tag == "a":
+            dattrs = dict(attrs)
+            assert "id" in dattrs
+            ida = dattrs["id"]
+            assert ida is not None
+            assert ida[0] == "t"
+            line_no = int(ida[1:])
+            self.lines.append([])
+            assert line_no == len(self.lines)
+
+    def handle_endtag(self, tag: str) -> None:
+        if tag == "main":
+            self.in_source = False
+
+    def handle_data(self, data: str) -> None:
+        if self.in_source and self.lines:
+            self.lines[-1].append(data)
+
+    def text(self) -> list[str]:
+        """Get the rendered text as a list of strings, one per line."""
+        return ["".join(l).rstrip() for l in self.lines]
 
 
 class FileWriteTracker:
@@ -1141,10 +1185,10 @@ assert len(math) == 18
 
         cov = coverage.Coverage()
         backslashes = self.start_import_stop(cov, "backslashes")
-        cov.html_report(backslashes, directory="out")
+        cov.html_report(backslashes)
 
         contains(
-            "out/backslashes_py.html",
+            "htmlcov/backslashes_py.html",
             # line 2 is `"bbb \`
             r'<a id="t2" href="#t2">2</a></span>'
                 + r'<span class="t">     <span class="str">"bbb \</span>',
@@ -1152,6 +1196,12 @@ assert len(math) == 18
             r'<a id="t3" href="#t3">3</a></span>'
                 + r'<span class="t"><span class="str">     ccc"</span><span class="op">]</span>',
         )
+
+        assert self.get_html_report_text_lines("backslashes.py") == [
+            '1a = ["aaa",\\',
+            '2     "bbb \\',
+            '3     ccc"]',
+            ]
 
     def test_unicode(self) -> None:
         surrogate = "\U000e0100"
