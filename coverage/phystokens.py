@@ -57,10 +57,10 @@ def _phys_tokens(toks: TokenInfos) -> TokenInfos:
                 if last_ttext.endswith("\\"):
                     inject_backslash = False
                 elif ttype == token.STRING:
-                    if last_line.endswith(last_ttext + "\\\n"):
+                    if last_line.endswith("\\\n") and last_line.rstrip(" \\\n").endswith(last_text):
                         # Deal with special cases like such code::
                         #
-                        #   a = ["aaa",\
+                        #   a = ["aaa",\ # there may be zero or more blanks between "," and "\".
                         #        "bbb \
                         #        ccc"]
                         #
