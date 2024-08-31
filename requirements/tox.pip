@@ -4,7 +4,7 @@
 #
 #    make upgrade
 #
-cachetools==5.4.0
+cachetools==5.5.0
     # via tox
 chardet==5.2.0
     # via tox
@@ -34,7 +34,7 @@ tomli==2.0.1
     # via
     #   pyproject-api
     #   tox
-tox==4.17.1
+tox==4.18.0
     # via
     #   -r requirements/tox.in
     #   tox-gh
