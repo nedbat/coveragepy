@@ -16,11 +16,12 @@ import threading
 import traceback
 
 from dataclasses import dataclass
-from types import CodeType, FrameType
+from types import CodeType
 from typing import (
     Any,
     Callable,
-    TYPE_CHECKING,
+    NewType,
+    Optional,
     cast,
 )
 
@@ -44,17 +45,16 @@ os = isolate_module(os)
 
 # pylint: disable=unused-argument
 
-LOG = False
+# $set_env.py: COVERAGE_LOG_SYSMON - Log sys.monitoring activity
+LOG = bool(int(os.getenv("COVERAGE_LOG_SYSMON", 0)))
 
 # This module will be imported in all versions of Python, but only used in 3.12+
 # It will be type-checked for 3.12, but not for earlier versions.
 sys_monitoring = getattr(sys, "monitoring", None)
 
-if TYPE_CHECKING:
-    assert sys_monitoring is not None
-    # I want to say this but it's not allowed:
-    #   MonitorReturn = Literal[sys.monitoring.DISABLE] | None
-    MonitorReturn = Any
+DISABLE_TYPE = NewType("DISABLE_TYPE", object)
+MonitorReturn = Optional[DISABLE_TYPE]
+DISABLE = cast(MonitorReturn, getattr(sys_monitoring, "DISABLE", None))
 
 
 if LOG:  # pragma: debugging
@@ -77,7 +77,10 @@ if LOG:  # pragma: debugging
     assert sys_monitoring is not None
 
     short_stack = functools.partial(
-        short_stack, full=True, short_filenames=True, frame_ids=True,
+        short_stack,
+        full=True,
+        short_filenames=True,
+        frame_ids=True,
     )
     seen_threads: set[int] = set()
 
@@ -131,7 +134,9 @@ if LOG:  # pragma: debugging
                     return ret
                 except Exception as exc:
                     log(f"!!{exc.__class__.__name__}: {exc}")
-                    log("".join(traceback.format_exception(exc))) # pylint: disable=[no-value-for-parameter]
+                    if 1:
+                        # pylint: disable=no-value-for-parameter
+                        log("".join(traceback.format_exception(exc)))
                     try:
                         assert sys_monitoring is not None
                         sys_monitoring.set_events(sys.monitoring.COVERAGE_ID, 0)
@@ -205,7 +210,6 @@ class SysMonitor(Tracer):
         # A list of code_objects, just to keep them alive so that id's are
         # useful as identity.
         self.code_objects: list[CodeType] = []
-        self.last_lines: dict[FrameType, int] = {}
         # Map id(code_object) -> code_object
         self.local_event_codes: dict[int, CodeType] = {}
         self.sysmon_on = False
@@ -231,20 +235,20 @@ class SysMonitor(Tracer):
         assert sys_monitoring is not None
         sys_monitoring.use_tool_id(self.myid, "coverage.py")
         register = functools.partial(sys_monitoring.register_callback, self.myid)
-        events = sys_monitoring.events
+        events = sys.monitoring.events
+        import contextlib
+
+        with open("/tmp/foo.out", "a") as f:
+            with contextlib.redirect_stdout(f):
+                print(f"{events = }")
+        sys_monitoring.set_events(self.myid, events.PY_START)
+        register(events.PY_START, self.sysmon_py_start)
         if self.trace_arcs:
-            sys_monitoring.set_events(
-                self.myid,
-                events.PY_START | events.PY_UNWIND,
-            )
-            register(events.PY_START, self.sysmon_py_start)
-            register(events.PY_RESUME, self.sysmon_py_resume_arcs)
-            register(events.PY_RETURN, self.sysmon_py_return_arcs)
-            register(events.PY_UNWIND, self.sysmon_py_unwind_arcs)
+            register(events.PY_RETURN, self.sysmon_py_return)
             register(events.LINE, self.sysmon_line_arcs)
+            register(events.BRANCH_TAKEN, self.sysmon_branch_taken)
+            register(events.BRANCH_NOT_TAKEN, self.sysmon_branch_not_taken)
         else:
-            sys_monitoring.set_events(self.myid, events.PY_START)
-            register(events.PY_START, self.sysmon_py_start)
             register(events.LINE, self.sysmon_line_lines)
         sys_monitoring.restart_events()
         self.sysmon_on = True
@@ -282,23 +286,10 @@ class SysMonitor(Tracer):
         """Return a dictionary of statistics, or None."""
         return None
 
-    # The number of frames in callers_frame takes @panopticon into account.
-    if LOG:
-
-        def callers_frame(self) -> FrameType:
-            """Get the frame of the Python code we're monitoring."""
-            return (
-                inspect.currentframe().f_back.f_back.f_back  # type: ignore[union-attr,return-value]
-            )
-
-    else:
-
-        def callers_frame(self) -> FrameType:
-            """Get the frame of the Python code we're monitoring."""
-            return inspect.currentframe().f_back.f_back  # type: ignore[union-attr,return-value]
-
     @panopticon("code", "@")
-    def sysmon_py_start(self, code: CodeType, instruction_offset: int) -> MonitorReturn:
+    def sysmon_py_start(  # pylint: disable=useless-return
+        self, code: CodeType, instruction_offset: int
+    ) -> MonitorReturn:
         """Handle sys.monitoring.events.PY_START events."""
         # Entering a new frame.  Decide if we should trace in this file.
         self._activity = True
@@ -350,70 +341,34 @@ class SysMonitor(Tracer):
                 with self.lock:
                     if self.sysmon_on:
                         assert sys_monitoring is not None
-                        sys_monitoring.set_local_events(
-                            self.myid,
-                            code,
-                            events.PY_RETURN
-                            #
-                            | events.PY_RESUME
-                            # | events.PY_YIELD
-                            | events.LINE
-                            | events.BRANCH_TAKEN
-                            | events.BRANCH_NOT_TAKEN
-                            # | events.JUMP
-                        )
+                        local_events = events.PY_RETURN | events.PY_RESUME | events.LINE
+                        if self.trace_arcs:
+                            assert env.PYBEHAVIOR.branch_taken
+                            local_events |= (
+                                events.BRANCH_TAKEN | events.BRANCH_NOT_TAKEN
+                            )
+                        sys_monitoring.set_local_events(self.myid, code, local_events)
                         self.local_event_codes[id(code)] = code
 
-        if tracing_code and self.trace_arcs:
-            frame = self.callers_frame()
-            self.last_lines[frame] = -code.co_firstlineno
-            return None
-        else:
-            return sys.monitoring.DISABLE
-
-    @panopticon("code", "@")
-    def sysmon_py_resume_arcs(
-        self, code: CodeType, instruction_offset: int,
-    ) -> MonitorReturn:
-        """Handle sys.monitoring.events.PY_RESUME events for branch coverage."""
-        frame = self.callers_frame()
-        self.last_lines[frame] = frame.f_lineno
+        return None
 
     @panopticon("code", "@", None)
-    def sysmon_py_return_arcs(
-        self, code: CodeType, instruction_offset: int, retval: object,
+    def sysmon_py_return(  # pylint: disable=useless-return
+        self,
+        code: CodeType,
+        instruction_offset: int,
+        retval: object,
     ) -> MonitorReturn:
         """Handle sys.monitoring.events.PY_RETURN events for branch coverage."""
-        frame = self.callers_frame()
         code_info = self.code_infos.get(id(code))
         if code_info is not None and code_info.file_data is not None:
-            last_line = self.last_lines.get(frame)
+            assert code_info.byte_to_line is not None
+            last_line = code_info.byte_to_line[instruction_offset]
             if last_line is not None:
                 arc = (last_line, -code.co_firstlineno)
-                # log(f"adding {arc=}")
                 cast(set[TArc], code_info.file_data).add(arc)
-
-        # Leaving this function, no need for the frame any more.
-        self.last_lines.pop(frame, None)
-
-    @panopticon("code", "@", "exc")
-    def sysmon_py_unwind_arcs(
-        self, code: CodeType, instruction_offset: int, exception: BaseException,
-    ) -> MonitorReturn:
-        """Handle sys.monitoring.events.PY_UNWIND events for branch coverage."""
-        frame = self.callers_frame()
-        # Leaving this function.
-        last_line = self.last_lines.pop(frame, None)
-        if isinstance(exception, GeneratorExit):
-            # We don't want to count generator exits as arcs.
-            return
-        code_info = self.code_infos.get(id(code))
-        if code_info is not None and code_info.file_data is not None:
-            if last_line is not None:
-                arc = (last_line, -code.co_firstlineno)
-                # log(f"adding {arc=}")
-                cast(set[TArc], code_info.file_data).add(arc)
-
+                log(f"adding {arc=}")
+        return None
 
     @panopticon("code", "line")
     def sysmon_line_lines(self, code: CodeType, line_number: int) -> MonitorReturn:
@@ -421,20 +376,43 @@ class SysMonitor(Tracer):
         code_info = self.code_infos[id(code)]
         if code_info.file_data is not None:
             cast(set[TLineNo], code_info.file_data).add(line_number)
-            # log(f"adding {line_number=}")
-        return sys.monitoring.DISABLE
+            log(f"adding {line_number=}")
+        return DISABLE
 
     @panopticon("code", "line")
     def sysmon_line_arcs(self, code: CodeType, line_number: int) -> MonitorReturn:
         """Handle sys.monitoring.events.LINE events for branch coverage."""
         code_info = self.code_infos[id(code)]
-        ret = None
         if code_info.file_data is not None:
-            frame = self.callers_frame()
-            last_line = self.last_lines.get(frame)
-            if last_line is not None:
-                arc = (last_line, line_number)
-                cast(set[TArc], code_info.file_data).add(arc)
-            # log(f"adding {arc=}")
-            self.last_lines[frame] = line_number
-        return ret
+            arc = (line_number, line_number)
+            cast(set[TArc], code_info.file_data).add(arc)
+            log(f"adding {arc=}")
+        return DISABLE
+
+    @panopticon("code", "@", "@")
+    def sysmon_branch_taken(
+        self, code: CodeType, instruction_offset: int, destination_offset: int
+    ) -> MonitorReturn:
+        """Handed BRANCH_TAKEN and BRANCH_NOT_TAKEN events."""
+        code_info = self.code_infos[id(code)]
+        if code_info.file_data is not None:
+            b2l = code_info.byte_to_line
+            assert b2l is not None
+            arc = (b2l[instruction_offset], b2l[destination_offset])
+            cast(set[TArc], code_info.file_data).add(arc)
+            log(f"adding {arc=}")
+        return DISABLE
+
+    @panopticon("code", "@", "@")
+    def sysmon_branch_not_taken(
+        self, code: CodeType, instruction_offset: int, destination_offset: int
+    ) -> MonitorReturn:
+        """Handed BRANCH_TAKEN and BRANCH_NOT_TAKEN events."""
+        code_info = self.code_infos[id(code)]
+        if code_info.file_data is not None:
+            b2l = code_info.byte_to_line
+            assert b2l is not None
+            arc = (b2l[instruction_offset], b2l[destination_offset])
+            cast(set[TArc], code_info.file_data).add(arc)
+            log(f"adding {arc=}")
+        return DISABLE
