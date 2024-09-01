@@ -21,11 +21,11 @@ pycparser==2.22
     # via cffi
 zope-event==5.0
     # via gevent
-zope-interface==7.0.1
+zope-interface==7.0.3
     # via gevent
 
 # The following packages are considered to be unsafe in a requirements file:
-setuptools==72.1.0
+setuptools==74.0.0
     # via
     #   zope-event
     #   zope-interface
