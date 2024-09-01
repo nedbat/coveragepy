@@ -554,13 +554,19 @@ class MultiprocessingTest(CoverageTest):
         code = (SQUARE_OR_CUBE_WORK + MULTI_CODE).format(NPROCS=nprocs, UPTO=upto)
         total = sum(x*x if x%2 else x*x*x for x in range(upto))
         expected_out = f"{nprocs} pids, total = {total}"
+        expect_warn = (
+            env.PYBEHAVIOR.pep669
+            and (not env.PYBEHAVIOR.branch_taken)
+            and testenv.SYS_MON
+        )
         self.make_file("multi.py", code)
         self.make_file("multi.rc", """\
             [run]
             concurrency = multiprocessing
             branch = True
             omit = */site-packages/*
-            """)
+            """ + ("disable_warnings = no-sysmon" if expect_warn else "")
+            )
 
         out = self.run_command(f"coverage run --rcfile=multi.rc multi.py {start_method}")
         assert out.rstrip() == expected_out

@@ -103,7 +103,7 @@ class PYBEHAVIOR:
     # Does sys.monitoring support BRANCH_TAKEN?
     branch_taken = (
         pep669 and
-        hasattr(sys.monitoring.events, "BRANCH_TAKEN") # type:ignore[attr-defined]
+        hasattr(sys.monitoring.events, "BRANCH_TAKEN") # type:ignore[attr-defined,unused-ignore]
     )
 
 
