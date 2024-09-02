@@ -16,6 +16,8 @@ import struct
 import sys
 import time
 import types
+import warnings
+
 
 
 def show_pyc_file(fname):
@@ -85,6 +87,10 @@ else:
         ('CO_FUTURE_ANNOTATIONS',       0x1000000),
     ]
 
+if sys.version_info >= (3, 14):
+    CO_FLAGS += [
+        ('CO_NO_MONITORING_EVENTS',     0x2000000),
+    ]
 
 def show_code(code, indent='', number=None):
     label = ""
@@ -98,7 +104,12 @@ def show_code(code, indent='', number=None):
     print("%sstacksize %d" % (indent, code.co_stacksize))
     print(f"{indent}flags {code.co_flags:04x}: {flag_words(code.co_flags, CO_FLAGS)}")
     show_hex("code", code.co_code, indent=indent)
-    dis.disassemble(code)
+    kwargs = {}
+    if sys.version_info >= (3, 13):
+        kwargs["show_offsets"] = True
+    if sys.version_info >= (3, 14):
+        kwargs["show_positions"] = True
+    dis.disassemble(code, **kwargs)
     print("%sconsts" % indent)
     for i, const in enumerate(code.co_consts):
         if type(const) == types.CodeType:
@@ -119,6 +130,11 @@ def show_code(code, indent='', number=None):
         print("    {}co_lines {}".format(
             indent,
             ", ".join(f"{line!r}:{start!r}-{end!r}" for start, end, line in code.co_lines())
+        ))
+    if hasattr(code, "co_branches"):
+        print("    {}co_branches {}".format(
+            indent,
+            ", ".join(f"{start!r}:{taken!r}/{nottaken!r}" for start, taken, nottaken in code.co_branches())
         ))
 
 def show_hex(label, h, indent):
@@ -167,6 +183,7 @@ def show_file(fname):
         print("Odd file:", fname)
 
 def main(args):
+    warnings.filterwarnings("ignore", category=DeprecationWarning)
     if args[0] == '-c':
         show_py_text(" ".join(args[1:]).replace(";", "\n"))
     else:
