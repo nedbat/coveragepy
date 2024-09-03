@@ -722,9 +722,9 @@ CTracer_handle_return(CTracer *self, PyFrameObject *frame)
     if (CTracer_set_pdata_stack(self) < 0) {
         goto error;
     }
-    self->pcur_entry = &self->pdata_stack->stack[self->pdata_stack->depth];
 
     if (self->pdata_stack->depth >= 0) {
+        self->pcur_entry = &self->pdata_stack->stack[self->pdata_stack->depth];
         if (self->tracing_arcs && self->pcur_entry->file_data) {
             BOOL real_return = FALSE;
             pCode = MyCode_GetCode(MyFrame_GetCode(frame));
