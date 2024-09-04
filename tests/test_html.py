@@ -1207,7 +1207,7 @@ assert len(math) == 18
         "leader", ["", "f", "r", "fr", "rf"],
         ids=["string", "f-string", "raw_string", "f-raw_string", "raw_f-string"]
     )
-    def test_bug_1836(self, leader) -> None:
+    def test_bug_1836(self, leader: str) -> None:
         # https://github.com/nedbat/coveragepy/issues/1836
         self.make_file("py312_fstrings.py", f"""\
             prog_name = 'bug.py'
