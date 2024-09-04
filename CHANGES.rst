@@ -28,6 +28,12 @@ Unreleased
   - Lambdas, comprehensions, and generator expressions are no longer marked as
     missing branches if they don't complete execution.
 
+- Fixed a potential crash in the C tracer, closing `issue 1835`_, thanks to
+  `Jan Kühle <pull 1843_>`_.
+
+.. _issue 1835: https://github.com/nedbat/coveragepy/issues/1835
+.. _pull 1843: https://github.com/nedbat/coveragepy/pull/1843
+
 
 .. scriv-start-here
 
