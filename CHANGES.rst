@@ -28,10 +28,16 @@ Unreleased
   - Lambdas, comprehensions, and generator expressions are no longer marked as
     missing branches if they don't complete execution.
 
+- Fix: the HTML report didn't properly show multi-line f-strings that end with
+  a backslash continuation.  This is now fixed, closing `issue 1836`_, thanks
+  to `LiuYinCarl and Marco Ricci <pull 1838_>`_.
+
 - Fixed a potential crash in the C tracer, closing `issue 1835`_, thanks to
   `Jan Kühle <pull 1843_>`_.
 
 .. _issue 1835: https://github.com/nedbat/coveragepy/issues/1835
+.. _issue 1836: https://github.com/nedbat/coveragepy/issues/1836
+.. _pull 1838: https://github.com/nedbat/coveragepy/pull/1838
 .. _pull 1843: https://github.com/nedbat/coveragepy/pull/1843
 
 
