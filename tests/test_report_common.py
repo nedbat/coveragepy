@@ -270,8 +270,8 @@ class ReportWithJinjaTest(CoverageTest):
         expected = textwrap.dedent("""\
             SF:good.j2
             DA:1,1
-            DA:3,1
             DA:2,0
+            DA:3,1
             LF:3
             LH:2
             end_of_record

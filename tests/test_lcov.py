@@ -60,8 +60,8 @@ class LcovTest(CoverageTest):
         expected_result = textwrap.dedent("""\
             SF:main_file.py
             DA:1,1
-            DA:4,1
             DA:2,0
+            DA:4,1
             DA:5,0
             LF:4
             LH:2
@@ -92,8 +92,8 @@ class LcovTest(CoverageTest):
         expected_result = textwrap.dedent("""\
             SF:main_file.py
             DA:1,1,7URou3io0zReBkk69lEb/Q
-            DA:4,1,ilhb4KUfytxtEuClijZPlQ
             DA:2,0,Xqj6H1iz/nsARMCAbE90ng
+            DA:4,1,ilhb4KUfytxtEuClijZPlQ
             DA:5,0,LWILTcvARcydjFFyo9qM0A
             LF:4
             LH:2
@@ -120,8 +120,8 @@ class LcovTest(CoverageTest):
             SF:main_file.py
             VER:FjGZ0lkufNMCxmG+BA8yvoaqg9xdUOVKi5kpRpUs3c0
             DA:1,1
-            DA:4,1
             DA:2,0
+            DA:4,1
             DA:5,0
             LF:4
             LH:2
@@ -144,8 +144,8 @@ class LcovTest(CoverageTest):
         expected_result = textwrap.dedent("""\
             SF:main_file.py
             DA:1,1
-            DA:4,1
             DA:2,0
+            DA:4,1
             DA:5,0
             LF:4
             LH:2
@@ -189,8 +189,8 @@ class LcovTest(CoverageTest):
             DA:5,0
             LF:4
             LH:1
-            BRDA:3,0,0,-
-            BRDA:5,0,1,-
+            BRDA:2,3,0,0
+            BRDA:2,5,0,0
             BRF:2
             BRH:0
             end_of_record
@@ -232,8 +232,8 @@ class LcovTest(CoverageTest):
             DA:5,0
             LF:4
             LH:1
-            BRDA:3,0,0,-
-            BRDA:5,0,1,-
+            BRDA:2,3,0,0
+            BRDA:2,5,0,0
             BRF:2
             BRH:0
             end_of_record
@@ -276,8 +276,8 @@ class LcovTest(CoverageTest):
             DA:6,0
             LF:4
             LH:3
-            BRDA:6,0,0,-
-            BRDA:4,0,1,1
+            BRDA:3,4,0,1
+            BRDA:3,6,0,0
             BRF:2
             BRH:1
             end_of_record
@@ -288,8 +288,7 @@ class LcovTest(CoverageTest):
     def test_empty_init_files(self) -> None:
         # Test that in the case of an empty __init__.py file, the lcov
         # reporter will note that the file is there, and will note the empty
-        # line. It will also note the lack of branches, and the checksum for
-        # the line.
+        # line. It will also note the lack of branches.
         #
         # Although there are no lines found, it will note one line as hit in
         # old Pythons, and no lines hit in newer Pythons.
@@ -319,6 +318,7 @@ class LcovTest(CoverageTest):
     def test_empty_init_file_skipped(self) -> None:
         # Test that the lcov reporter honors skip_empty, when this
         # is possible (see test_empty_init_files for when it isn't).
+
         self.make_file("__init__.py", "")
         self.make_file(".coveragerc", "[report]\nskip_empty = True\n")
         self.assert_doesnt_exist(".coverage")
@@ -361,12 +361,12 @@ class LcovTest(CoverageTest):
             SF:runme.py
             DA:1,1
             DA:3,1
-            DA:6,1
             DA:4,0
+            DA:6,1
             LF:4
             LH:3
-            BRDA:4,0,0,-
-            BRDA:6,0,1,1
+            BRDA:3,4,0,0
+            BRDA:3,6,0,1
             BRF:2
             BRH:1
             end_of_record
