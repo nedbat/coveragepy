@@ -250,6 +250,7 @@ class CoverageConfig(TConfigurable, TPluginConfig):
 
         # Defaults for [lcov]
         self.lcov_output = "coverage.lcov"
+        self.lcov_checksums = "off"
 
         # Defaults for [paths]
         self.paths: dict[str, list[str]] = {}
@@ -428,6 +429,7 @@ class CoverageConfig(TConfigurable, TPluginConfig):
 
         # [lcov]
         ("lcov_output", "lcov:output"),
+        ("lcov_checksums", "lcov:checksums")
     ]
 
     def _set_attr_from_config_option(

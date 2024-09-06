@@ -890,3 +890,57 @@ Settings particular to LCOV reporting (see :ref:`cmd_lcov`).
 .............
 
 (string, default "coverage.lcov") Where to write the LCOV file.
+
+[lcov] checksums
+................
+
+(one of "off", "file", or "line"; default "off") What kind of checksums to
+write as part of the LCOV file.  The default is to not write any checksums.
+
+"line" gives the historical behavior, in which an MD5 checksum is computed of
+each line *containing code subject to analysis*, separately.  Because the
+checksums do not cover the entire file and do not verify the ordering of
+lines, this mode provides only a weak assurance that the source code
+available to an analysis tool (e.g. ``genhtml``) matches the code that was
+used to generate the coverage data.  It also produces larger reports
+than either of the other two modes.
+
+"file" computes an SHA-256 hash of each file, as a whole; this gives a
+stronger assurance that the source code has not changed.  To validate
+the hashes emitted by "file" mode, use the following script as the
+``--version-script`` when running ``genhtml`` etc.::
+
+   #! /usr/bin/env python3
+   import argparse
+   import base64
+   import hashlib
+   import sys
+
+   def main():
+       ap = argparse.ArgumentParser()
+       ap.add_argument("--compare", action="store_true")
+       ap.add_argument("source_file_name")
+       ap.add_argument("source_file_id", nargs="?", default=None)
+       ap.add_argument("info_file_id", nargs="?", default=None)
+       args = ap.parse_args()
+
+       if args.compare:
+           if args.source_file_id is None or info_file_id is None:
+               ap.error("--compare mode requires source_file_id and info_file_id")
+           sys.exit(0 if args.source_file_id == args.info_file_id else 1)
+       else:
+           if args.source_file_id is not None or info_file_id is not None:
+               ap.error("determine mode does not use source_file_id and info_file_id")
+           with sys.stdout as ofp, \
+                open(args.source_file_name, "rb") as ifp:
+               digest = hashlib.sha256(ifp.read()).digest()
+               file_id = base64.b64encode(digest).decode("ascii").rstrip("=")
+               ofp.write(file_id + "\n")
+           sys.exit(0)
+
+    main()
+
+Note that for either "file" or "line" mode to work correctly, all of your
+source files must be encoded using UTF-8.
+
+.. versionadded:: 7.6.2

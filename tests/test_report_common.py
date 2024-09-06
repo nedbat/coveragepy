@@ -269,9 +269,9 @@ class ReportWithJinjaTest(CoverageTest):
             actual = lcov.read()
         expected = textwrap.dedent("""\
             SF:good.j2
-            DA:1,1,FHs1rDakj9p/NAzMCu3Kgw
-            DA:3,1,DGOyp8LEgI+3CcdFYw9uKQ
-            DA:2,0,5iUbzxp9w7peeTPjJbvmBQ
+            DA:1,1
+            DA:3,1
+            DA:2,0
             LF:3
             LH:2
             end_of_record
