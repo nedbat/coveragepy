@@ -58,7 +58,6 @@ class LcovTest(CoverageTest):
                 return True
             """)
         expected_result = textwrap.dedent("""\
-            TN:
             SF:main_file.py
             DA:1,1,7URou3io0zReBkk69lEb/Q
             DA:4,1,ilhb4KUfytxtEuClijZPlQ
@@ -88,7 +87,6 @@ class LcovTest(CoverageTest):
         assert pct == 50.0
         self.assert_exists("data.lcov")
         expected_result = textwrap.dedent("""\
-            TN:
             SF:main_file.py
             DA:1,1,7URou3io0zReBkk69lEb/Q
             DA:4,1,ilhb4KUfytxtEuClijZPlQ
@@ -97,7 +95,6 @@ class LcovTest(CoverageTest):
             LF:4
             LH:2
             end_of_record
-            TN:
             SF:test_file.py
             DA:1,1,R5Rb4IzmjKRgY/vFFc1TRg
             DA:2,1,E/tvV9JPVDhEcTCkgrwOFw
@@ -130,7 +127,6 @@ class LcovTest(CoverageTest):
         assert math.isclose(pct, 16.666666666666668)
         self.assert_exists("coverage.lcov")
         expected_result = textwrap.dedent("""\
-            TN:
             SF:main_file.py
             DA:1,1,4MDXMbvwQ3L7va1tsphVzw
             DA:2,0,MuERA6EYyZNpKPqoJfzwkA
@@ -174,7 +170,6 @@ class LcovTest(CoverageTest):
         assert math.isclose(pct, 41.666666666666664)
         self.assert_exists("coverage.lcov")
         expected_result = textwrap.dedent("""\
-            TN:
             SF:main_file.py
             DA:1,1,4MDXMbvwQ3L7va1tsphVzw
             DA:2,0,MuERA6EYyZNpKPqoJfzwkA
@@ -187,7 +182,6 @@ class LcovTest(CoverageTest):
             BRF:2
             BRH:0
             end_of_record
-            TN:
             SF:test_file.py
             DA:1,1,9TxKIyoBtmhopmlbDNa8FQ
             DA:2,1,E/tvV9JPVDhEcTCkgrwOFw
@@ -197,8 +191,6 @@ class LcovTest(CoverageTest):
             DA:7,0,FPTWzd68bDx76HN7VHu1wA
             LF:6
             LH:4
-            BRF:0
-            BRH:0
             end_of_record
             """)
         actual_result = self.get_lcov_report_content()
@@ -222,7 +214,6 @@ class LcovTest(CoverageTest):
         assert math.isclose(pct, 66.66666666666667)
         self.assert_exists("coverage.lcov")
         expected_result = textwrap.dedent("""\
-            TN:
             SF:main_file.py
             DA:1,1,N4kbVOlkNI1rqOfCArBClw
             DA:3,1,CmlqqPf0/H+R/p7/PLEXZw
@@ -258,23 +249,36 @@ class LcovTest(CoverageTest):
         # Newer Pythons have truly empty empty files.
         if env.PYBEHAVIOR.empty_is_empty:
             expected_result = textwrap.dedent("""\
-                TN:
                 SF:__init__.py
-                LF:0
-                LH:0
-                BRF:0
-                BRH:0
                 end_of_record
                 """)
         else:
             expected_result = textwrap.dedent("""\
-                TN:
                 SF:__init__.py
                 DA:1,1,1B2M2Y8AsgTpgAmY7PhCfg
-                LF:0
-                LH:0
-                BRF:0
-                BRH:0
+                end_of_record
+                """)
+        actual_result = self.get_lcov_report_content()
+        assert expected_result == actual_result
+
+    def test_empty_init_file_skipped(self) -> None:
+        # Test that the lcov reporter honors skip_empty, when this
+        # is possible (see test_empty_init_files for when it isn't).
+        self.make_file("__init__.py", "")
+        self.make_file(".coveragerc", "[report]\nskip_empty = True\n")
+        self.assert_doesnt_exist(".coverage")
+        cov = coverage.Coverage(branch=True, source=".")
+        self.start_import_stop(cov, "__init__")
+        pct = cov.lcov_report()
+        assert pct == 0.0
+        self.assert_exists("coverage.lcov")
+        # Newer Pythons have truly empty empty files.
+        if env.PYBEHAVIOR.empty_is_empty:
+            expected_result = ""
+        else:
+            expected_result = textwrap.dedent("""\
+                SF:__init__.py
+                DA:1,1,1B2M2Y8AsgTpgAmY7PhCfg
                 end_of_record
                 """)
         actual_result = self.get_lcov_report_content()
@@ -299,7 +303,6 @@ class LcovTest(CoverageTest):
         self.start_import_stop(cov, "runme")
         cov.lcov_report()
         expected_result = textwrap.dedent("""\
-            TN:
             SF:runme.py
             DA:1,1,nWfwsz0pRTEJrInVF+xNvQ
             DA:3,1,uV4NoIauDo5LCti6agX9sg
