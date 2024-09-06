@@ -11,7 +11,6 @@ import textwrap
 from tests.coveragetest import CoverageTest
 
 import coverage
-from coverage import env
 
 
 class LcovTest(CoverageTest):
@@ -60,8 +59,8 @@ class LcovTest(CoverageTest):
         expected_result = textwrap.dedent("""\
             SF:main_file.py
             DA:1,1
-            DA:4,1
             DA:2,0
+            DA:4,1
             DA:5,0
             LF:4
             LH:2
@@ -92,8 +91,8 @@ class LcovTest(CoverageTest):
         expected_result = textwrap.dedent("""\
             SF:main_file.py
             DA:1,1,7URou3io0zReBkk69lEb/Q
-            DA:4,1,ilhb4KUfytxtEuClijZPlQ
             DA:2,0,Xqj6H1iz/nsARMCAbE90ng
+            DA:4,1,ilhb4KUfytxtEuClijZPlQ
             DA:5,0,LWILTcvARcydjFFyo9qM0A
             LF:4
             LH:2
@@ -116,8 +115,8 @@ class LcovTest(CoverageTest):
         expected_result = textwrap.dedent("""\
             SF:main_file.py
             DA:1,1
-            DA:4,1
             DA:2,0
+            DA:4,1
             DA:5,0
             LF:4
             LH:2
@@ -161,8 +160,8 @@ class LcovTest(CoverageTest):
             DA:5,0
             LF:4
             LH:1
-            BRDA:3,0,0,-
-            BRDA:5,0,1,-
+            BRDA:2,0,0,-
+            BRDA:2,0,1,-
             BRF:2
             BRH:0
             end_of_record
@@ -204,8 +203,8 @@ class LcovTest(CoverageTest):
             DA:5,0
             LF:4
             LH:1
-            BRDA:3,0,0,-
-            BRDA:5,0,1,-
+            BRDA:2,0,0,-
+            BRDA:2,0,1,-
             BRF:2
             BRH:0
             end_of_record
@@ -248,8 +247,8 @@ class LcovTest(CoverageTest):
             DA:6,0
             LF:4
             LH:3
-            BRDA:6,0,0,-
-            BRDA:4,0,1,1
+            BRDA:3,0,0,1
+            BRDA:3,0,1,0
             BRF:2
             BRH:1
             end_of_record
@@ -258,11 +257,8 @@ class LcovTest(CoverageTest):
         assert expected_result == actual_result
 
     def test_empty_init_files(self) -> None:
-        # Test that an empty __init__.py still generates a (mostly vacuous)
-        # coverage record.  The overall coverage will be zero lines of code
-        # and zero branches to execute, and therefore no LF/LH nor BRF/BRH
-        # lines will be emitted.  However, in old Pythons there will be one
-        # DA line emitted for the empty source line 1.
+        # Test that an empty __init__.py still generates a (vacuous)
+        # coverage record.
         self.make_file("__init__.py", "")
         self.assert_doesnt_exist(".coverage")
         cov = coverage.Coverage(branch=True, source=".")
@@ -270,18 +266,10 @@ class LcovTest(CoverageTest):
         pct = cov.lcov_report()
         assert pct == 0.0
         self.assert_exists("coverage.lcov")
-        # Newer Pythons have truly empty empty files.
-        if env.PYBEHAVIOR.empty_is_empty:
-            expected_result = textwrap.dedent("""\
-                SF:__init__.py
-                end_of_record
-                """)
-        else:
-            expected_result = textwrap.dedent("""\
-                SF:__init__.py
-                DA:1,1
-                end_of_record
-                """)
+        expected_result = textwrap.dedent("""\
+            SF:__init__.py
+            end_of_record
+            """)
         actual_result = self.get_lcov_report_content()
         assert expected_result == actual_result
 
@@ -323,12 +311,12 @@ class LcovTest(CoverageTest):
             SF:runme.py
             DA:1,1
             DA:3,1
-            DA:6,1
             DA:4,0
+            DA:6,1
             LF:4
             LH:3
-            BRDA:4,0,0,-
-            BRDA:6,0,1,1
+            BRDA:3,0,0,0
+            BRDA:3,0,1,1
             BRF:2
             BRH:1
             end_of_record
