@@ -22,9 +22,12 @@ if TYPE_CHECKING:
 
 def line_hash(line: str) -> str:
     """Produce a hash of a source line for use in the LCOV file."""
-    # The LCOV file format requires MD5 as a fingerprint of the file. This is
-    # not a security use.  Some security scanners raise alarms about the use of
-    # MD5 here, but it is a false positive. This is not a security concern.
+    # The LCOV file format optionally allows each line to be MD5ed as a
+    # fingerprint of the file.  This is not a security use.  Some security
+    # scanners raise alarms about the use of MD5 here, but it is a false
+    # positive.  This is not a security concern.
+    # The unusual encoding of the MD5 hash, as a base64 sequence with the
+    # trailing = signs stripped, is specified by the LCOV file format.
     hashed = hashlib.md5(line.encode("utf-8")).digest()
     return base64.b64encode(hashed).decode("ascii").rstrip("=")
 
@@ -68,34 +71,39 @@ class LcovReporter:
                 return
 
         outfile.write(f"SF:{fr.relative_filename()}\n")
+
         source_lines = fr.source().splitlines()
         for covered in sorted(analysis.executed):
             if covered in analysis.excluded:
                 # Do not report excluded as executed
                 continue
-            # Note: Coverage.py currently only supports checking *if* a line
-            # has been executed, not how many times, so we set this to 1 for
-            # nice output even if it's technically incorrect.
 
-            # The lines below calculate a 64-bit encoded md5 hash of the line
-            # corresponding to the DA lines in the lcov file, for either case
-            # of the line being covered or missed in coverage.py. The final two
-            # characters of the encoding ("==") are removed from the hash to
-            # allow genhtml to run on the resulting lcov file.
             if source_lines:
                 if covered-1 >= len(source_lines):
                     break
                 line = source_lines[covered-1]
             else:
                 line = ""
-            outfile.write(f"DA:{covered},1,{line_hash(line)}\n")
+            if self.config.lcov_line_checksums:
+                hash_suffix = "," + line_hash(line)
+            else:
+                hash_suffix = ""
+
+            # Note: Coverage.py currently only supports checking *if* a line
+            # has been executed, not how many times, so we set this to 1 for
+            # nice output even if it's technically incorrect.
+            outfile.write(f"DA:{covered},1{hash_suffix}\n")
 
         for missed in sorted(analysis.missing):
             # We don't have to skip excluded lines here, because `missing`
             # already doesn't have them.
             assert source_lines
             line = source_lines[missed-1]
-            outfile.write(f"DA:{missed},0,{line_hash(line)}\n")
+            if self.config.lcov_line_checksums:
+                hash_suffix = "," + line_hash(line)
+            else:
+                hash_suffix = ""
+            outfile.write(f"DA:{missed},0{hash_suffix}\n")
 
         if analysis.numbers.n_statements > 0:
             outfile.write(f"LF:{analysis.numbers.n_statements}\n")
