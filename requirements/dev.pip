@@ -10,7 +10,7 @@ attrs==24.2.0
     # via hypothesis
 backports-tarfile==1.2.0
     # via jaraco-context
-build==1.2.1
+build==1.2.2
     # via check-manifest
 cachetools==5.5.0
     # via tox
@@ -41,7 +41,7 @@ exceptiongroup==1.2.2
     #   pytest
 execnet==2.1.1
     # via pytest-xdist
-filelock==3.15.4
+filelock==3.16.0
     # via
     #   tox
     #   virtualenv
@@ -49,7 +49,7 @@ flaky==3.8.1
     # via -r requirements/pytest.in
 greenlet==3.0.3
     # via -r requirements/dev.in
-hypothesis==6.111.2
+hypothesis==6.112.0
     # via -r requirements/pytest.in
 idna==3.8
     # via requests
@@ -82,7 +82,7 @@ mccabe==0.7.0
     # via pylint
 mdurl==0.1.2
     # via markdown-it-py
-more-itertools==10.4.0
+more-itertools==10.5.0
     # via
     #   jaraco-classes
     #   jaraco-functools
@@ -99,7 +99,7 @@ parso==0.8.4
     # via jedi
 pkginfo==1.10.0
     # via twine
-platformdirs==4.2.2
+platformdirs==4.3.1
     # via
     #   pylint
     #   tox
@@ -116,7 +116,7 @@ pygments==2.18.0
     #   pudb
     #   readme-renderer
     #   rich
-pylint==3.2.6
+pylint==3.2.7
     # via -r requirements/dev.in
 pyproject-api==1.7.1
     # via tox
@@ -157,7 +157,7 @@ tomli==2.0.1
     #   tox
 tomlkit==0.13.2
     # via pylint
-tox==4.18.0
+tox==4.18.1
     # via
     #   -r requirements/tox.in
     #   tox-gh
@@ -181,7 +181,7 @@ urwid==2.6.15
     #   urwid-readline
 urwid-readline==0.14
     # via pudb
-virtualenv==20.26.3
+virtualenv==20.26.4
     # via
     #   -r requirements/pip.in
     #   tox
@@ -195,7 +195,7 @@ zipp==3.20.1
 # The following packages are considered to be unsafe in a requirements file:
 pip==24.2
     # via -r requirements/pip.in
-setuptools==74.0.0
+setuptools==74.1.2
     # via
     #   -r requirements/pip.in
     #   check-manifest
