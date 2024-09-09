@@ -57,7 +57,7 @@ def _phys_tokens(toks: TokenInfos) -> TokenInfos:
                 if last_ttext.endswith("\\"):
                     inject_backslash = False
                 elif ttype == token.STRING:
-                    if (last_line.endswith("\\\n") and
+                    if (last_line.endswith("\\\n") and  # pylint: disable=simplifiable-if-statement
                         last_line.rstrip(" \\\n").endswith(last_ttext)):
                         # Deal with special cases like such code::
                         #
@@ -66,13 +66,12 @@ def _phys_tokens(toks: TokenInfos) -> TokenInfos:
                         #        ccc"]
                         #
                         inject_backslash = True
-                    elif "\n" in ttext and ttext.split("\n", 1)[0][-1] == "\\":
+                    else:
                         # It's a multi-line string and the first line ends with
                         # a backslash, so we don't need to inject another.
                         inject_backslash = False
                 elif sys.version_info >= (3, 12) and ttype == token.FSTRING_MIDDLE:
-                    if ttext.split("\n", 1)[0][-1] == "\\":
-                        inject_backslash = False
+                    inject_backslash = False
                 if inject_backslash:
                     # Figure out what column the backslash is in.
                     ccol = len(last_line.split("\n")[-2]) - 1
