@@ -50,17 +50,17 @@ class LcovReporter:
         outfile = outfile or sys.stdout
 
         for fr, analysis in get_analysis_to_report(self.coverage, morfs):
-            self.get_lcov(fr, analysis, outfile)
+            self.total += analysis.numbers
+            self.lcov_file(fr, analysis, outfile)
 
         return self.total.n_statements and self.total.pc_covered
 
-    def get_lcov(self, fr: FileReporter, analysis: Analysis, outfile: IO[str]) -> None:
+    def lcov_file(self, fr: FileReporter, analysis: Analysis, outfile: IO[str]) -> None:
         """Produces the lcov data for a single file.
 
         This currently supports both line and branch coverage,
         however function coverage is not supported.
         """
-        self.total += analysis.numbers
 
         outfile.write("TN:\n")
         outfile.write(f"SF:{fr.relative_filename()}\n")
