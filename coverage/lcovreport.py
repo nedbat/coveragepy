@@ -36,6 +36,7 @@ class LcovReporter:
 
     def __init__(self, coverage: Coverage) -> None:
         self.coverage = coverage
+        self.config = coverage.config
         self.total = Numbers(self.coverage.config.precision)
 
     def report(self, morfs: Iterable[TMorf] | None, outfile: IO[str]) -> float:
@@ -62,7 +63,10 @@ class LcovReporter:
         however function coverage is not supported.
         """
 
-        outfile.write("TN:\n")
+        if analysis.numbers.n_statements == 0:
+            if self.config.skip_empty:
+                return
+
         outfile.write(f"SF:{fr.relative_filename()}\n")
         source_lines = fr.source().splitlines()
         for covered in sorted(analysis.executed):
@@ -93,8 +97,9 @@ class LcovReporter:
             line = source_lines[missed-1]
             outfile.write(f"DA:{missed},0,{line_hash(line)}\n")
 
-        outfile.write(f"LF:{analysis.numbers.n_statements}\n")
-        outfile.write(f"LH:{analysis.numbers.n_executed}\n")
+        if analysis.numbers.n_statements > 0:
+            outfile.write(f"LF:{analysis.numbers.n_statements}\n")
+            outfile.write(f"LH:{analysis.numbers.n_executed}\n")
 
         # More information dense branch coverage data.
         missing_arcs = analysis.missing_branch_arcs()
@@ -127,7 +132,8 @@ class LcovReporter:
             branch_stats = analysis.branch_stats()
             brf = sum(t for t, k in branch_stats.values())
             brh = brf - sum(t - k for t, k in branch_stats.values())
-            outfile.write(f"BRF:{brf}\n")
-            outfile.write(f"BRH:{brh}\n")
+            if brf > 0:
+                outfile.write(f"BRF:{brf}\n")
+                outfile.write(f"BRH:{brh}\n")
 
         outfile.write("end_of_record\n")
