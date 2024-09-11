@@ -64,6 +64,12 @@ class LcovTest(CoverageTest):
             DA:5,0
             LF:4
             LH:2
+            FN:1,2,cuboid_volume
+            FNDA:0,cuboid_volume
+            FN:4,5,IsItTrue
+            FNDA:0,IsItTrue
+            FNF:2
+            FNH:0
             end_of_record
             """)
         self.assert_doesnt_exist(".coverage")
@@ -96,6 +102,12 @@ class LcovTest(CoverageTest):
             DA:5,0,LWILTcvARcydjFFyo9qM0A
             LF:4
             LH:2
+            FN:1,2,cuboid_volume
+            FNDA:0,cuboid_volume
+            FN:4,5,IsItTrue
+            FNDA:0,IsItTrue
+            FNF:2
+            FNH:0
             end_of_record
             """)
         actual_result = self.get_lcov_report_content()
@@ -120,6 +132,12 @@ class LcovTest(CoverageTest):
             DA:5,0
             LF:4
             LH:2
+            FN:1,2,cuboid_volume
+            FNDA:0,cuboid_volume
+            FN:4,5,IsItTrue
+            FNDA:0,IsItTrue
+            FNF:2
+            FNH:0
             end_of_record
             SF:test_file.py
             DA:1,1
@@ -132,6 +150,10 @@ class LcovTest(CoverageTest):
             DA:9,0
             LF:8
             LH:4
+            FN:5,9,TestCuboid.test_volume
+            FNDA:0,TestCuboid.test_volume
+            FNF:1
+            FNH:0
             end_of_record
             """)
         actual_result = self.get_lcov_report_content(filename="data.lcov")
@@ -160,6 +182,10 @@ class LcovTest(CoverageTest):
             DA:5,0
             LF:4
             LH:1
+            FN:1,5,is_it_x
+            FNDA:0,is_it_x
+            FNF:1
+            FNH:0
             BRDA:2,0,to line 3,-
             BRDA:2,0,to line 5,-
             BRF:2
@@ -203,6 +229,10 @@ class LcovTest(CoverageTest):
             DA:5,0
             LF:4
             LH:1
+            FN:1,5,is_it_x
+            FNDA:0,is_it_x
+            FNF:1
+            FNH:0
             BRDA:2,0,to line 3,-
             BRDA:2,0,to line 5,-
             BRF:2
@@ -217,6 +247,10 @@ class LcovTest(CoverageTest):
             DA:7,0
             LF:6
             LH:4
+            FN:5,7,TestIsItX.test_is_it_x
+            FNDA:0,TestIsItX.test_is_it_x
+            FNF:1
+            FNH:0
             end_of_record
             """)
         actual_result = self.get_lcov_report_content()
@@ -348,6 +382,10 @@ class LcovTest(CoverageTest):
             DA:7,1
             LF:7
             LH:7
+            FN:1,3,foo
+            FNDA:1,foo
+            FNF:1
+            FNH:1
             BRDA:2,0,to line 3,1
             BRDA:2,0,to exit,1
             BRF:2
@@ -381,6 +419,10 @@ class LcovTest(CoverageTest):
             DA:7,1
             LF:7
             LH:7
+            FN:1,3,foo
+            FNDA:1,foo
+            FNF:1
+            FNH:1
             BRDA:2,0,to line 3,1
             BRDA:2,0,to exit 1,1
             BRDA:2,0,to exit 2,1

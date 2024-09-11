@@ -53,6 +53,43 @@ def lcov_lines(
         outfile.write(f"LH:{analysis.numbers.n_executed}\n")
 
 
+def lcov_functions(
+    fr: FileReporter,
+    file_analysis: Analysis,
+    outfile: IO[str],
+) -> None:
+    """Emit function coverage records for an analyzed file."""
+    # lcov 2.2 introduces a new format for function coverage records.
+    # We continue to generate the old format because we don't know what
+    # version of the lcov tools will be used to read this report.
+
+    # suppressions because of https://github.com/pylint-dev/pylint/issues/9923
+    functions = [
+        (min(region.start, min(region.lines)), #pylint: disable=nested-min-max
+         max(region.start, max(region.lines)), #pylint: disable=nested-min-max
+         region)
+        for region in fr.code_regions()
+        if region.kind == "function"
+    ]
+    if not functions:
+        return
+
+    functions.sort()
+    functions_hit = 0
+    for first_line, last_line, region in functions:
+        # A function counts as having been executed if any of it has been
+        # executed.
+        analysis = file_analysis.narrow(region.lines)
+        hit = int(analysis.numbers.n_executed > 0)
+        functions_hit += hit
+
+        outfile.write(f"FN:{first_line},{last_line},{region.name}\n")
+        outfile.write(f"FNDA:{hit},{region.name}\n")
+
+    outfile.write(f"FNF:{len(functions)}\n")
+    outfile.write(f"FNH:{functions_hit}\n")
+
+
 def lcov_arcs(
     analysis: Analysis,
     lines: list[int],
@@ -177,7 +214,7 @@ class LcovReporter:
             source_lines = []
 
         lcov_lines(analysis, lines, source_lines, outfile)
-
+        lcov_functions(fr, analysis, outfile)
         if analysis.has_arcs:
             lcov_arcs(analysis, lines, outfile)
 
