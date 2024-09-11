@@ -32,6 +32,82 @@ def line_hash(line: str) -> str:
     return base64.b64encode(hashed).decode("ascii").rstrip("=")
 
 
+def lcov_lines(
+    analysis: Analysis,
+    lines: list[int],
+    source_lines: list[str],
+    outfile: IO[str],
+) -> None:
+    """Emit line coverage records for an analyzed file."""
+    hash_suffix = ""
+    for line in lines:
+        if source_lines:
+            hash_suffix = "," + line_hash(source_lines[line-1])
+        # Q: can we get info about the number of times a statement is
+        # executed?  If so, that should be recorded here.
+        hit = int(line not in analysis.missing)
+        outfile.write(f"DA:{line},{hit}{hash_suffix}\n")
+
+    if analysis.numbers.n_statements > 0:
+        outfile.write(f"LF:{analysis.numbers.n_statements}\n")
+        outfile.write(f"LH:{analysis.numbers.n_executed}\n")
+
+
+def lcov_arcs(
+    analysis: Analysis,
+    lines: list[int],
+    outfile: IO[str],
+) -> None:
+    """Emit branch coverage records for an analyzed file."""
+    branch_stats = analysis.branch_stats()
+    executed_arcs = analysis.executed_branch_arcs()
+    missing_arcs = analysis.missing_branch_arcs()
+
+    for line in lines:
+        if line in branch_stats:
+            # The meaning of a BRDA: line is not well explained in the lcov
+            # documentation.  Based on what genhtml does with them, however,
+            # the interpretation is supposed to be something like this:
+            # BRDA: <line>, <block>, <branch>, <hit>
+            # where <line> is the source line number of the *origin* of the
+            # branch; <block> is an arbitrary number which distinguishes multiple
+            # control flow operations on a single line; <branch> is an arbitrary
+            # number which distinguishes the possible destinations of the specific
+            # control flow operation identified by <line> + <block>; and <hit> is
+            # either the hit count for <line> + <block> + <branch> or "-" meaning
+            # that <line> + <block> was never *reached*.  <line> must be >= 1,
+            # and <block>, <branch>, <hit> must be >= 0.
+
+            # This is only one possible way to map our sets of executed and
+            # not-executed arcs to BRDA codes. It seems to produce reasonable
+            # results when fed through genhtml.
+
+            # Q: can we get counts of the number of times each arc was executed?
+            # branch_stats has "total" and "taken" counts for each branch, but it
+            # doesn't have "taken" broken down by destination.
+            destinations = {}
+            for dst in executed_arcs[line]:
+                destinations[(int(dst < 0), abs(dst))] = 1
+            for dst in missing_arcs[line]:
+                destinations[(int(dst < 0), abs(dst))] = 0
+
+            if all(v == 0 for v in destinations.values()):
+                # When _none_ of the out arcs from 'line' were executed, presume
+                # 'line' was never reached.
+                for branch, _ in enumerate(sorted(destinations.keys())):
+                    outfile.write(f"BRDA:{line},0,{branch},-\n")
+            else:
+                for branch, (_, hit) in enumerate(sorted(destinations.items())):
+                    outfile.write(f"BRDA:{line},0,{branch},{hit}\n")
+
+    # Summary of the branch coverage.
+    brf = sum(t for t, k in branch_stats.values())
+    brh = brf - sum(t - k for t, k in branch_stats.values())
+    if brf > 0:
+        outfile.write(f"BRF:{brf}\n")
+        outfile.write(f"BRH:{brh}\n")
+
+
 class LcovReporter:
     """A reporter for writing LCOV coverage reports."""
 
@@ -85,72 +161,15 @@ class LcovReporter:
 
         outfile.write(f"SF:{rel_fname}\n")
 
+        lines = sorted(analysis.statements)
         if self.config.lcov_line_checksums:
             source_lines = fr.source().splitlines()
+        else:
+            source_lines = []
 
-        # Emit a DA: record for each line of the file.
-        lines = sorted(analysis.statements)
-        hash_suffix = ""
-        for line in lines:
-            if self.config.lcov_line_checksums:
-                hash_suffix = "," + line_hash(source_lines[line-1])
-            # Q: can we get info about the number of times a statement is
-            # executed?  If so, that should be recorded here.
-            hit = int(line not in analysis.missing)
-            outfile.write(f"DA:{line},{hit}{hash_suffix}\n")
+        lcov_lines(analysis, lines, source_lines, outfile)
 
-        if analysis.numbers.n_statements > 0:
-            outfile.write(f"LF:{analysis.numbers.n_statements}\n")
-            outfile.write(f"LH:{analysis.numbers.n_executed}\n")
-
-        # More information dense branch coverage data, if available.
         if analysis.has_arcs:
-            branch_stats = analysis.branch_stats()
-            executed_arcs = analysis.executed_branch_arcs()
-            missing_arcs = analysis.missing_branch_arcs()
-
-            for line in lines:
-                if line in branch_stats:
-                    # The meaning of a BRDA: line is not well explained in the lcov
-                    # documentation.  Based on what genhtml does with them, however,
-                    # the interpretation is supposed to be something like this:
-                    # BRDA: <line>, <block>, <branch>, <hit>
-                    # where <line> is the source line number of the *origin* of the
-                    # branch; <block> is an arbitrary number which distinguishes multiple
-                    # control flow operations on a single line; <branch> is an arbitrary
-                    # number which distinguishes the possible destinations of the specific
-                    # control flow operation identified by <line> + <block>; and <hit> is
-                    # either the hit count for <line> + <block> + <branch> or "-" meaning
-                    # that <line> + <block> was never *reached*.  <line> must be >= 1,
-                    # and <block>, <branch>, <hit> must be >= 0.
-
-                    # This is only one possible way to map our sets of executed and
-                    # not-executed arcs to BRDA codes. It seems to produce reasonable
-                    # results when fed through genhtml.
-
-                    # Q: can we get counts of the number of times each arc was executed?
-                    # branch_stats has "total" and "taken" counts for each branch, but it
-                    # doesn't have "taken" broken down by destination.
-                    destinations = {}
-                    for dst in executed_arcs[line]:
-                        destinations[(int(dst < 0), abs(dst))] = 1
-                    for dst in missing_arcs[line]:
-                        destinations[(int(dst < 0), abs(dst))] = 0
-
-                    if all(v == 0 for v in destinations.values()):
-                        # When _none_ of the out arcs from 'line' were executed, presume
-                        # 'line' was never reached.
-                        for branch, _ in enumerate(sorted(destinations.keys())):
-                            outfile.write(f"BRDA:{line},0,{branch},-\n")
-                    else:
-                        for branch, (_, hit) in enumerate(sorted(destinations.items())):
-                            outfile.write(f"BRDA:{line},0,{branch},{hit}\n")
-
-            # Summary of the branch coverage.
-            brf = sum(t for t, k in branch_stats.values())
-            brh = brf - sum(t - k for t, k in branch_stats.values())
-            if brf > 0:
-                outfile.write(f"BRF:{brf}\n")
-                outfile.write(f"BRH:{brh}\n")
+            lcov_arcs(analysis, lines, outfile)
 
         outfile.write("end_of_record\n")
