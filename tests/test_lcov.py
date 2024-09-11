@@ -160,8 +160,8 @@ class LcovTest(CoverageTest):
             DA:5,0
             LF:4
             LH:1
-            BRDA:2,0,0,-
-            BRDA:2,0,1,-
+            BRDA:2,0,to line 3,-
+            BRDA:2,0,to line 5,-
             BRF:2
             BRH:0
             end_of_record
@@ -203,8 +203,8 @@ class LcovTest(CoverageTest):
             DA:5,0
             LF:4
             LH:1
-            BRDA:2,0,0,-
-            BRDA:2,0,1,-
+            BRDA:2,0,to line 3,-
+            BRDA:2,0,to line 5,-
             BRF:2
             BRH:0
             end_of_record
@@ -247,8 +247,8 @@ class LcovTest(CoverageTest):
             DA:6,0
             LF:4
             LH:3
-            BRDA:3,0,0,1
-            BRDA:3,0,1,0
+            BRDA:3,0,to line 4,1
+            BRDA:3,0,to line 6,0
             BRF:2
             BRH:1
             end_of_record
@@ -315,11 +315,78 @@ class LcovTest(CoverageTest):
             DA:6,1
             LF:4
             LH:3
-            BRDA:3,0,0,0
-            BRDA:3,0,1,1
+            BRDA:3,0,to line 4,0
+            BRDA:3,0,to line 6,1
             BRF:2
             BRH:1
             end_of_record
             """)
+        actual_result = self.get_lcov_report_content()
+        assert expected_result == actual_result
+
+    def test_exit_branches(self) -> None:
+        self.make_file("runme.py", """\
+            def foo(a):
+                if a:
+                    print(f"{a!r} is truthy")
+            foo(True)
+            foo(False)
+            foo([])
+            foo([0])
+        """)
+        cov = coverage.Coverage(source=".", branch=True)
+        self.start_import_stop(cov, "runme")
+        cov.lcov_report()
+        expected_result = textwrap.dedent("""\
+            SF:runme.py
+            DA:1,1
+            DA:2,1
+            DA:3,1
+            DA:4,1
+            DA:5,1
+            DA:6,1
+            DA:7,1
+            LF:7
+            LH:7
+            BRDA:2,0,to line 3,1
+            BRDA:2,0,to exit,1
+            BRF:2
+            BRH:2
+            end_of_record
+        """)
+        actual_result = self.get_lcov_report_content()
+        assert expected_result == actual_result
+
+    def test_multiple_exit_branches(self) -> None:
+        self.make_file("runme.py", """\
+            def foo(a):
+                if any(x > 0 for x in a):
+                    print(f"{a!r} has positives")
+            foo([])
+            foo([0])
+            foo([0,1])
+            foo([0,-1])
+        """)
+        cov = coverage.Coverage(source=".", branch=True)
+        self.start_import_stop(cov, "runme")
+        cov.lcov_report()
+        expected_result = textwrap.dedent("""\
+            SF:runme.py
+            DA:1,1
+            DA:2,1
+            DA:3,1
+            DA:4,1
+            DA:5,1
+            DA:6,1
+            DA:7,1
+            LF:7
+            LH:7
+            BRDA:2,0,to line 3,1
+            BRDA:2,0,to exit 1,1
+            BRDA:2,0,to exit 2,1
+            BRF:2
+            BRH:2
+            end_of_record
+        """)
         actual_result = self.get_lcov_report_content()
         assert expected_result == actual_result
