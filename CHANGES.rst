@@ -23,10 +23,9 @@ upgrading your version of coverage.py.
 Unreleased
 ----------
 
-- Fewer things are considered branches now:
-
-  - Lambdas, comprehensions, and generator expressions are no longer marked as
-    missing branches if they don't complete execution.
+- Fewer things are considered branches now. Lambdas, comprehensions, and
+  generator expressions are no longer marked as missing branches if they don't
+  complete execution.
 
 - Fix: the HTML report didn't properly show multi-line f-strings that end with
   a backslash continuation.  This is now fixed, closing `issue 1836`_, thanks
