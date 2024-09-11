@@ -234,4 +234,5 @@ Xie Yanbo
 Yilei "Dolee" Yang
 Yury Selivanov
 Zac Hatfield-Dodds
+Zack Weinberg
 Zooko Wilcox-O'Hearn

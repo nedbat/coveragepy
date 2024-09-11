@@ -886,10 +886,14 @@ Settings particular to LCOV reporting (see :ref:`cmd_lcov`).
 
 .. versionadded:: 6.3
 
+.. _config_lcov_output:
+
 [lcov] output
 .............
 
 (string, default "coverage.lcov") Where to write the LCOV file.
+
+.. _config_lcov_line_checksums:
 
 [lcov] line_checksums
 .....................

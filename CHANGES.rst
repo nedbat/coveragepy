@@ -32,6 +32,13 @@ Unreleased
   a backslash continuation.  This is now fixed, closing `issue 1836`_, thanks
   to `LiuYinCarl and Marco Ricci <pull 1838_>`_.
 
+- Fix: the LCOV report now has correct line numbers for BRDA records, fixing
+  `issue 1846`_.  There are other changes to lcov also, including a new
+  configuration option :ref:`line_checksums <config_lcov_line_checksums>` to
+  control whether line checksums are included in the lcov report.  The default
+  is false. To keep checksums set it to true.  All this work is thanks to `Zack
+  Weinberg <pull 1849_>`_.
+
 - Fixed a potential crash in the C tracer, closing `issue 1835`_, thanks to
   `Jan Kühle <pull 1843_>`_.
 
@@ -39,6 +46,8 @@ Unreleased
 .. _issue 1836: https://github.com/nedbat/coveragepy/issues/1836
 .. _pull 1838: https://github.com/nedbat/coveragepy/pull/1838
 .. _pull 1843: https://github.com/nedbat/coveragepy/pull/1843
+.. _issue 1846: https://github.com/nedbat/coveragepy/issues/1846
+.. _pull 1849: https://github.com/nedbat/coveragepy/pull/1849
 
 
 .. scriv-start-here
