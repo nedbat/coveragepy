@@ -69,7 +69,7 @@ def lcov_functions(
          max(region.start, max(region.lines)), #pylint: disable=nested-min-max
          region)
         for region in fr.code_regions()
-        if region.kind == "function"
+        if region.kind == "function" and region.lines
     ]
     if not functions:
         return
