@@ -435,7 +435,7 @@ class LcovTest(CoverageTest):
         actual_result = self.get_lcov_report_content()
         assert expected_result == actual_result
 
-    def test_multiple_exit_branches(self) -> None:
+    def test_genexpr_exit_arcs_pruned_when_executed(self) -> None:
         self.make_file("runme.py", """\
             def foo(a):
                 if any(x > 0 for x in a):
@@ -469,10 +469,81 @@ class LcovTest(CoverageTest):
                 """),
             textwrap.dedent("""\
                 BRDA:2,0,to line 3,1
-                BRDA:2,0,to exit 1,1
-                BRDA:2,0,to exit 2,1
+                BRDA:2,0,to exit,1
                 BRF:2
                 BRH:2
+                end_of_record
+                """),
+        )
+        actual_result = self.get_lcov_report_content()
+        assert expected_result == actual_result
+
+    def test_genexpr_exit_arcs_pruned_when_missing(self) -> None:
+        self.make_file("runme.py", """\
+            def foo(a):
+                if any(x > 0 for x in a):
+                    print(f"{a!r} has positives")
+            foo([])
+        """)
+        cov = coverage.Coverage(source=".", branch=True)
+        self.start_import_stop(cov, "runme")
+        cov.lcov_report()
+        expected_result = fn_coverage_missing_in_pypy_38(
+            textwrap.dedent("""\
+                SF:runme.py
+                DA:1,1
+                DA:2,1
+                DA:3,0
+                DA:4,1
+                LF:4
+                LH:3
+                """),
+            textwrap.dedent("""\
+                FN:1,3,foo
+                FNDA:1,foo
+                FNF:1
+                FNH:1
+                """),
+            textwrap.dedent("""\
+                BRDA:2,0,to line 3,0
+                BRDA:2,0,to exit,1
+                BRF:2
+                BRH:1
+                end_of_record
+                """),
+        )
+        actual_result = self.get_lcov_report_content()
+        assert expected_result == actual_result
+
+    def test_genexpr_exit_arcs_pruned_when_not_reached(self) -> None:
+        self.make_file("runme.py", """\
+            def foo(a):
+                if any(x > 0 for x in a):
+                    print(f"{a!r} has positives")
+        """)
+        cov = coverage.Coverage(source=".", branch=True)
+        self.start_import_stop(cov, "runme")
+        cov.lcov_report()
+        expected_result = fn_coverage_missing_in_pypy_38(
+            textwrap.dedent("""\
+                SF:runme.py
+                DA:1,1
+                DA:2,0
+                DA:3,0
+                LF:3
+                LH:1
+                """),
+            textwrap.dedent("""\
+                FN:1,3,foo
+                FNDA:0,foo
+                FNF:1
+                FNH:0
+                """),
+            textwrap.dedent("""\
+                BRDA:2,0,to line 3,-
+                BRDA:2,0,to exit,-
+                BRF:2
+                BRH:0
                 end_of_record
                 """),
         )
