@@ -435,7 +435,7 @@ class LcovTest(CoverageTest):
         actual_result = self.get_lcov_report_content()
         assert expected_result == actual_result
 
-    def test_genexpr_exit_arcs_pruned_when_executed(self) -> None:
+    def test_genexpr_exit_arcs_pruned_full_coverage(self) -> None:
         self.make_file("runme.py", """\
             def foo(a):
                 if any(x > 0 for x in a):
@@ -478,12 +478,13 @@ class LcovTest(CoverageTest):
         actual_result = self.get_lcov_report_content()
         assert expected_result == actual_result
 
-    def test_genexpr_exit_arcs_pruned_when_missing(self) -> None:
+    def test_genexpr_exit_arcs_pruned_never_true(self) -> None:
         self.make_file("runme.py", """\
             def foo(a):
                 if any(x > 0 for x in a):
                     print(f"{a!r} has positives")
             foo([])
+            foo([0])
         """)
         cov = coverage.Coverage(source=".", branch=True)
         self.start_import_stop(cov, "runme")
@@ -495,8 +496,9 @@ class LcovTest(CoverageTest):
                 DA:2,1
                 DA:3,0
                 DA:4,1
-                LF:4
-                LH:3
+                DA:5,1
+                LF:5
+                LH:4
                 """),
             textwrap.dedent("""\
                 FN:1,3,foo
@@ -515,7 +517,46 @@ class LcovTest(CoverageTest):
         actual_result = self.get_lcov_report_content()
         assert expected_result == actual_result
 
-    def test_genexpr_exit_arcs_pruned_when_not_reached(self) -> None:
+    def test_genexpr_exit_arcs_pruned_always_true(self) -> None:
+        self.make_file("runme.py", """\
+            def foo(a):
+                if any(x > 0 for x in a):
+                    print(f"{a!r} has positives")
+            foo([1])
+            foo([1,2])
+        """)
+        cov = coverage.Coverage(source=".", branch=True)
+        self.start_import_stop(cov, "runme")
+        cov.lcov_report()
+        expected_result = fn_coverage_missing_in_pypy_38(
+            textwrap.dedent("""\
+                SF:runme.py
+                DA:1,1
+                DA:2,1
+                DA:3,1
+                DA:4,1
+                DA:5,1
+                LF:5
+                LH:5
+                """),
+            textwrap.dedent("""\
+                FN:1,3,foo
+                FNDA:1,foo
+                FNF:1
+                FNH:1
+                """),
+            textwrap.dedent("""\
+                BRDA:2,0,to line 3,1
+                BRDA:2,0,to exit,0
+                BRF:2
+                BRH:1
+                end_of_record
+                """),
+        )
+        actual_result = self.get_lcov_report_content()
+        assert expected_result == actual_result
+
+    def test_genexpr_exit_arcs_pruned_not_reached(self) -> None:
         self.make_file("runme.py", """\
             def foo(a):
                 if any(x > 0 for x in a):
