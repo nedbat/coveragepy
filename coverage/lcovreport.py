@@ -63,6 +63,11 @@ def lcov_functions(
     # We continue to generate the old format because we don't know what
     # version of the lcov tools will be used to read this report.
 
+    # "and region.lines" below avoids a crash due to a bug in PyPy 3.8
+    # where, for whatever reason, when collecting data in --branch mode,
+    # top-level functions have an empty lines array.  Instead we just don't
+    # emit function records for those.
+
     # suppressions because of https://github.com/pylint-dev/pylint/issues/9923
     functions = [
         (min(region.start, min(region.lines)), #pylint: disable=nested-min-max
