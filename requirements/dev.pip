@@ -47,18 +47,18 @@ filelock==3.16.0
     #   virtualenv
 flaky==3.8.1
     # via -r requirements/pytest.in
-greenlet==3.0.3
+greenlet==3.1.0
     # via -r requirements/dev.in
-hypothesis==6.112.0
+hypothesis==6.112.1
     # via -r requirements/pytest.in
-idna==3.8
+idna==3.10
     # via requests
-importlib-metadata==8.4.0
+importlib-metadata==8.5.0
     # via
     #   build
     #   keyring
     #   twine
-importlib-resources==6.4.4
+importlib-resources==6.4.5
     # via keyring
 iniconfig==2.0.0
     # via pytest
@@ -99,7 +99,7 @@ parso==0.8.4
     # via jedi
 pkginfo==1.10.0
     # via twine
-platformdirs==4.3.1
+platformdirs==4.3.3
     # via
     #   pylint
     #   tox
@@ -122,7 +122,7 @@ pyproject-api==1.7.1
     # via tox
 pyproject-hooks==1.1.0
     # via build
-pytest==8.3.2
+pytest==8.3.3
     # via
     #   -r requirements/pytest.in
     #   pytest-xdist
@@ -141,7 +141,7 @@ requests-toolbelt==1.0.0
     # via twine
 rfc3986==2.0.0
     # via twine
-rich==13.8.0
+rich==13.8.1
     # via twine
 sortedcontainers==2.4.0
     # via hypothesis
@@ -161,7 +161,7 @@ tox==4.18.1
     # via
     #   -r requirements/tox.in
     #   tox-gh
-tox-gh==1.3.2
+tox-gh==1.3.3
     # via -r requirements/tox.in
 twine==5.1.1
     # via -r requirements/dev.in
@@ -171,7 +171,7 @@ typing-extensions==4.12.2
     #   pylint
     #   rich
     #   urwid
-urllib3==2.2.2
+urllib3==2.2.3
     # via
     #   requests
     #   twine
@@ -187,7 +187,7 @@ virtualenv==20.26.4
     #   tox
 wcwidth==0.2.13
     # via urwid
-zipp==3.20.1
+zipp==3.20.2
     # via
     #   importlib-metadata
     #   importlib-resources
@@ -195,7 +195,7 @@ zipp==3.20.1
 # The following packages are considered to be unsafe in a requirements file:
 pip==24.2
     # via -r requirements/pip.in
-setuptools==74.1.2
+setuptools==75.1.0
     # via
     #   -r requirements/pip.in
     #   check-manifest
