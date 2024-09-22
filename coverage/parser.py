@@ -352,7 +352,6 @@ class PythonParser:
             self._analyze_ast()
             assert self._missing_arc_fragments is not None
 
-        actual_start = start
         fragment_pairs = self._missing_arc_fragments.get((start, end), [(None, None)])
 
         msgs = []
@@ -364,9 +363,9 @@ class PythonParser:
                     emsg = "didn't jump to line {lineno}"
             emsg = emsg.format(lineno=end)
 
-            msg = f"line {actual_start} {emsg}"
+            msg = f"line {start} {emsg}"
             if smsg is not None:
-                msg += f" because {smsg.format(lineno=actual_start)}"
+                msg += f" because {smsg.format(lineno=start)}"
 
             msgs.append(msg)
 
