@@ -346,6 +346,16 @@ class PythonParser:
 
         return exit_counts
 
+    def _finish_action_msg(self, action_msg: str | None, end: TLineNo) -> str:
+        """Apply some defaulting and formatting to an arc's description."""
+        if action_msg is None:
+            if end < 0:
+                action_msg = "jump to the function exit"
+            else:
+                action_msg = "jump to line {lineno}"
+        action_msg = action_msg.format(lineno=end)
+        return action_msg
+
     def missing_arc_description(self, start: TLineNo, end: TLineNo) -> str:
         """Provide an English sentence describing a missing arc."""
         if self._missing_arc_fragments is None:
@@ -355,21 +365,25 @@ class PythonParser:
         fragment_pairs = self._missing_arc_fragments.get((start, end), [(None, None)])
 
         msgs = []
-        for smsg, emsg in fragment_pairs:
-            if emsg is None:
-                if end < 0:
-                    emsg = "didn't jump to the function exit"
-                else:
-                    emsg = "didn't jump to line {lineno}"
-            emsg = emsg.format(lineno=end)
-
-            msg = f"line {start} {emsg}"
-            if smsg is not None:
-                msg += f" because {smsg.format(lineno=start)}"
+        for missing_cause_msg, action_msg in fragment_pairs:
+            action_msg = self._finish_action_msg(action_msg, end)
+            msg = f"line {start} didn't {action_msg}"
+            if missing_cause_msg is not None:
+                msg += f" because {missing_cause_msg.format(lineno=start)}"
 
             msgs.append(msg)
 
         return " or ".join(msgs)
+
+    def arc_description(self, start: TLineNo, end: TLineNo) -> str:
+        """Provide an English description of an arc's effect."""
+        if self._missing_arc_fragments is None:
+            self._analyze_ast()
+            assert self._missing_arc_fragments is not None
+
+        fragment_pairs = self._missing_arc_fragments.get((start, end), [(None, None)])
+        action_msg = self._finish_action_msg(fragment_pairs[0][1], end)
+        return action_msg
 
 
 class ByteParser:
@@ -451,7 +465,7 @@ class ArcStart:
 
     `lineno` is the line number the arc starts from.
 
-    `cause` is an English text fragment used as the `startmsg` for
+    `cause` is an English text fragment used as the `missing_cause_msg` for
     AstArcAnalyzer.missing_arc_fragments.  It will be used to describe why an
     arc wasn't executed, so should fit well into a sentence of the form,
     "Line 17 didn't run because {cause}."  The fragment can include "{lineno}"
@@ -485,10 +499,21 @@ class TAddArcFn(Protocol):
         self,
         start: TLineNo,
         end: TLineNo,
-        smsg: str | None = None,
-        emsg: str | None = None,
+        missing_cause_msg: str | None = None,
+        action_msg: str | None = None,
     ) -> None:
-        ...
+        """
+        Record an arc from `start` to `end`.
+
+        `missing_cause_msg` is a description of the reason the arc wasn't
+        taken if it wasn't taken.  For example, "the condition on line 10 was
+        never true."
+
+        `action_msg` is a description of what the arc does, like "jump to line
+        10" or "exit from function 'fooey'."
+
+        """
+
 
 TArcFragments = Dict[TArc, List[Tuple[Optional[str], Optional[str]]]]
 
@@ -549,7 +574,7 @@ class FunctionBlock(Block):
         for xit in exits:
             add_arc(
                 xit.lineno, -self.start, xit.cause,
-                f"didn't except from function {self.name!r}",
+                f"except from function {self.name!r}",
             )
         return True
 
@@ -557,7 +582,7 @@ class FunctionBlock(Block):
         for xit in exits:
             add_arc(
                 xit.lineno, -self.start, xit.cause,
-                f"didn't return from function {self.name!r}",
+                f"return from function {self.name!r}",
             )
         return True
 
@@ -601,10 +626,10 @@ class AstArcAnalyzer:
     `missing_arc_fragments`: a dict mapping (from, to) arcs to lists of
     message fragments explaining why the arc is missing from execution::
 
-        { (start, end): [(startmsg, endmsg), ...], }
+        { (start, end): [(missing_cause_msg, action_msg), ...], }
 
     For an arc starting from line 17, they should be usable to form complete
-    sentences like: "Line 17 {endmsg} because {startmsg}".
+    sentences like: "Line 17 didn't {action_msg} because {missing_cause_msg}".
 
     NOTE: Starting in July 2024, I've been whittling this down to only report
     arc that are part of true branches.  It's not clear how far this work will
@@ -715,30 +740,27 @@ class AstArcAnalyzer:
 
     def _code_object__ClassDef(self, node: ast.ClassDef) -> None:
         start = self.line_for_node(node)
-        exits = self.process_body(node.body)#, from_start=ArcStart(start))
+        exits = self.process_body(node.body)
         for xit in exits:
-            self.add_arc(
-                xit.lineno, -start, xit.cause,
-                f"didn't exit the body of class {node.name!r}",
-            )
+            self.add_arc(xit.lineno, -start, xit.cause, f"exit class {node.name!r}")
 
     def add_arc(
         self,
         start: TLineNo,
         end: TLineNo,
-        smsg: str | None = None,
-        emsg: str | None = None,
+        missing_cause_msg: str | None = None,
+        action_msg: str | None = None,
     ) -> None:
         """Add an arc, including message fragments to use if it is missing."""
         if self.debug:                      # pragma: debugging
-            print(f"Adding possible arc: ({start}, {end}): {smsg!r}, {emsg!r}")
+            print(f"Adding possible arc: ({start}, {end}): {missing_cause_msg!r}, {action_msg!r}")
             print(short_stack(), end="\n\n")
         self.arcs.add((start, end))
         if start in self.current_with_starts:
             self.with_entries.add((start, end))
 
-        if smsg is not None or emsg is not None:
-            self.missing_arc_fragments[(start, end)].append((smsg, emsg))
+        if missing_cause_msg is not None or action_msg is not None:
+            self.missing_arc_fragments[(start, end)].append((missing_cause_msg, action_msg))
 
     def nearest_blocks(self) -> Iterable[Block]:
         """Yield the blocks in nearest-to-farthest order."""
