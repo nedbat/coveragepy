@@ -41,13 +41,13 @@ exceptiongroup==1.2.2
     #   pytest
 execnet==2.1.1
     # via pytest-xdist
-filelock==3.16.0
+filelock==3.16.1
     # via
     #   tox
     #   virtualenv
 flaky==3.8.1
     # via -r requirements/pytest.in
-greenlet==3.1.0
+greenlet==3.1.1
     # via -r requirements/dev.in
 hypothesis==6.112.1
     # via -r requirements/pytest.in
@@ -72,7 +72,7 @@ jaraco-functools==4.0.2
     # via keyring
 jedi==0.19.1
     # via pudb
-keyring==25.3.0
+keyring==25.4.1
     # via twine
 libsass==0.23.0
     # via -r requirements/dev.in
@@ -99,7 +99,7 @@ parso==0.8.4
     # via jedi
 pkginfo==1.10.0
     # via twine
-platformdirs==4.3.3
+platformdirs==4.3.6
     # via
     #   pylint
     #   tox
@@ -118,7 +118,7 @@ pygments==2.18.0
     #   rich
 pylint==3.2.7
     # via -r requirements/dev.in
-pyproject-api==1.7.1
+pyproject-api==1.8.0
     # via tox
 pyproject-hooks==1.1.0
     # via build
@@ -157,11 +157,11 @@ tomli==2.0.1
     #   tox
 tomlkit==0.13.2
     # via pylint
-tox==4.18.1
+tox==4.20.0
     # via
     #   -r requirements/tox.in
     #   tox-gh
-tox-gh==1.3.3
+tox-gh==1.4.1
     # via -r requirements/tox.in
 twine==5.1.1
     # via -r requirements/dev.in
@@ -179,9 +179,9 @@ urwid==2.6.15
     # via
     #   pudb
     #   urwid-readline
-urwid-readline==0.14
+urwid-readline==0.15.1
     # via pudb
-virtualenv==20.26.4
+virtualenv==20.26.5
     # via
     #   -r requirements/pip.in
     #   tox
