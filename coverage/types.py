@@ -10,12 +10,12 @@ from __future__ import annotations
 import os
 import pathlib
 
+from collections.abc import Iterable, Mapping
 from types import FrameType, ModuleType
 from typing import (
-    Any, Callable, Dict, List, Optional, Protocol,
-    Set, Tuple, Type, Union, TYPE_CHECKING,
+    Any, Callable, Optional, Protocol,
+    Union, TYPE_CHECKING,
 )
-from collections.abc import Iterable, Mapping
 
 if TYPE_CHECKING:
     from coverage.plugin import FileTracer

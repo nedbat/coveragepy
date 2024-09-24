@@ -25,7 +25,6 @@ from typing import (
 from collections.abc import Iterable, Iterator
 
 import flaky
-import pytest
 
 from coverage import env
 from coverage.debug import DebugControl

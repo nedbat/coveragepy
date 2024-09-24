@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import sys
 
-from typing import List, cast
+from typing import cast
 
 import pytest
 

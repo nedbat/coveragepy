@@ -14,8 +14,8 @@ import os
 import os.path
 import sys
 
-from typing import Any, Callable, Tuple, cast
 from collections.abc import Iterable, Iterator
+from typing import Any, Callable, cast
 
 import pytest
 

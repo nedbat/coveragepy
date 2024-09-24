@@ -9,7 +9,7 @@ import contextlib
 import re
 import sqlite3
 
-from typing import cast, Any, Tuple
+from typing import cast, Any
 from collections.abc import Iterable, Iterator
 
 from coverage.debug import auto_repr, clipped_repr, exc_one_line

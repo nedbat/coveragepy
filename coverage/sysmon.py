@@ -18,7 +18,6 @@ from types import CodeType, FrameType
 from typing import (
     Any,
     Callable,
-    Set,
     TYPE_CHECKING,
     cast,
 )

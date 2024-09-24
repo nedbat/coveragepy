@@ -12,7 +12,7 @@ import sys
 import threading
 
 from types import FrameType, ModuleType
-from typing import Any, Callable, Set, cast
+from typing import Any, Callable, cast
 
 from coverage import env
 from coverage.types import (

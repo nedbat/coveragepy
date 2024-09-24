@@ -89,6 +89,7 @@ disable = [
     "missing-timeout",
     "too-many-lines",
     "use-implicit-booleaness-not-comparison",
+    "too-many-positional-arguments",
     # Formatting stuff
     "superfluous-parens",
     # Messages that are noisy for now, eventually maybe we'll turn them on:

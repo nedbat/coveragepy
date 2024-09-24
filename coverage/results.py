@@ -8,9 +8,8 @@ from __future__ import annotations
 import collections
 import dataclasses
 
-from collections.abc import Container
+from collections.abc import Container, Iterable
 from typing import TYPE_CHECKING
-from collections.abc import Iterable
 
 from coverage.exceptions import ConfigError
 from coverage.misc import nice_pair

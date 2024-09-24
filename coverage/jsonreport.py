@@ -9,8 +9,8 @@ import datetime
 import json
 import sys
 
-from typing import Any, Dict, IO, TYPE_CHECKING
 from collections.abc import Iterable
+from typing import Any, IO, TYPE_CHECKING
 
 from coverage import __version__
 from coverage.report_core import get_analysis_to_report

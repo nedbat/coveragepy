@@ -19,10 +19,7 @@ import time
 import warnings
 
 from types import FrameType
-from typing import (
-    cast,
-    Any, Callable, IO, List,
-)
+from typing import cast, Any, Callable, IO
 from collections.abc import Iterable, Iterator
 
 from coverage import env

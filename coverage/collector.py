@@ -10,11 +10,9 @@ import functools
 import os
 import sys
 
-from types import FrameType
-from typing import (
-    cast, Any, Callable, Dict, List, Set, TypeVar,
-)
 from collections.abc import Mapping
+from types import FrameType
+from typing import cast, Any, Callable, TypeVar
 
 from coverage import env
 from coverage.config import CoverageConfig

@@ -5,7 +5,7 @@
 
 from __future__ import annotations
 
-from typing import Any, List, cast
+from typing import Any, cast
 
 import coverage
 from coverage.plugin_support import Plugins

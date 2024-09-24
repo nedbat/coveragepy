@@ -12,7 +12,6 @@ from pathlib import Path
 import pytest
 
 import coverage
-from coverage import env
 from coverage.plugin import CodeRegion
 from coverage.regions import code_regions
 

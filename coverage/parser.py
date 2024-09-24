@@ -14,13 +14,10 @@ import sys
 import token
 import tokenize
 
+from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
 from types import CodeType
-from typing import (
-    cast, Any, Callable, Dict, List, Optional, Protocol,
-    Set, Tuple,
-)
-from collections.abc import Iterable, Sequence
+from typing import cast, Callable, Optional, Protocol
 
 from coverage import env
 from coverage.bytecode import code_objects

@@ -100,7 +100,11 @@ def flat_rootname(filename: str) -> str:
     """
     dirname, basename = ntpath.split(filename)
     if dirname:
-        fp = hashlib.new("sha3_256", dirname.encode("UTF-8"), usedforsecurity=False).hexdigest()[:16]
+        fp = hashlib.new(
+            "sha3_256",
+            dirname.encode("UTF-8"),
+            usedforsecurity=False,
+        ).hexdigest()[:16]
         prefix = f"z_{fp}_"
     else:
         prefix = ""
