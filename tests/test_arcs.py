@@ -1547,11 +1547,9 @@ class OptimizedIfTest(CoverageTest):
     def test_if_not_debug(self) -> None:
         if env.PYBEHAVIOR.optimize_if_not_debug == 1:
             branchz = "23 28 34 37"
-        elif env.PYBEHAVIOR.optimize_if_not_debug == 2:
-            branchz = "23 28 35 37"
         else:
-            assert env.PYBEHAVIOR.optimize_if_not_debug == 3
-            branchz = "23 28 32 37"
+            assert env.PYBEHAVIOR.optimize_if_not_debug == 2
+            branchz = "23 28 35 37"
 
         self.check_coverage("""\
             lines = set()
