@@ -209,8 +209,8 @@ class LcovTest(CoverageTest):
                 FNH:0
                 """),
             textwrap.dedent("""\
-                BRDA:2,0,to line 3,-
-                BRDA:2,0,to line 5,-
+                BRDA:2,0,jump to line 3,-
+                BRDA:2,0,jump to line 5,-
                 BRF:2
                 BRH:0
                 end_of_record
@@ -264,8 +264,8 @@ class LcovTest(CoverageTest):
                 FNH:0
                 """),
             textwrap.dedent("""\
-                BRDA:2,0,to line 3,-
-                BRDA:2,0,to line 5,-
+                BRDA:2,0,jump to line 3,-
+                BRDA:2,0,jump to line 5,-
                 BRF:2
                 BRH:0
                 end_of_record
@@ -315,8 +315,8 @@ class LcovTest(CoverageTest):
             DA:6,0
             LF:4
             LH:3
-            BRDA:3,0,to line 4,1
-            BRDA:3,0,to line 6,0
+            BRDA:3,0,jump to line 4,1
+            BRDA:3,0,jump to line 6,0
             BRF:2
             BRH:1
             end_of_record
@@ -383,8 +383,8 @@ class LcovTest(CoverageTest):
             DA:6,1
             LF:4
             LH:3
-            BRDA:3,0,to line 4,0
-            BRDA:3,0,to line 6,1
+            BRDA:3,0,jump to line 4,0
+            BRDA:3,0,jump to line 6,1
             BRF:2
             BRH:1
             end_of_record
@@ -425,8 +425,8 @@ class LcovTest(CoverageTest):
                 FNH:1
                 """),
             textwrap.dedent("""\
-                BRDA:2,0,to line 3,1
-                BRDA:2,0,to exit,1
+                BRDA:2,0,jump to line 3,1
+                BRDA:2,0,return from function 'foo',1
                 BRF:2
                 BRH:2
                 end_of_record
@@ -468,8 +468,8 @@ class LcovTest(CoverageTest):
                 FNH:1
                 """),
             textwrap.dedent("""\
-                BRDA:2,0,to line 3,1
-                BRDA:2,0,to exit,1
+                BRDA:2,0,jump to line 3,1
+                BRDA:2,0,return from function 'foo',1
                 BRF:2
                 BRH:2
                 end_of_record
@@ -507,8 +507,8 @@ class LcovTest(CoverageTest):
                 FNH:1
                 """),
             textwrap.dedent("""\
-                BRDA:2,0,to line 3,0
-                BRDA:2,0,to exit,1
+                BRDA:2,0,jump to line 3,0
+                BRDA:2,0,return from function 'foo',1
                 BRF:2
                 BRH:1
                 end_of_record
@@ -546,8 +546,8 @@ class LcovTest(CoverageTest):
                 FNH:1
                 """),
             textwrap.dedent("""\
-                BRDA:2,0,to line 3,1
-                BRDA:2,0,to exit,0
+                BRDA:2,0,jump to line 3,1
+                BRDA:2,0,return from function 'foo',0
                 BRF:2
                 BRH:1
                 end_of_record
@@ -581,8 +581,8 @@ class LcovTest(CoverageTest):
                 FNH:0
                 """),
             textwrap.dedent("""\
-                BRDA:2,0,to line 3,-
-                BRDA:2,0,to exit,-
+                BRDA:2,0,jump to line 3,-
+                BRDA:2,0,return from function 'foo',-
                 BRF:2
                 BRH:0
                 end_of_record

@@ -96,6 +96,7 @@ def lcov_functions(
 
 
 def lcov_arcs(
+    fr: FileReporter,
     analysis: Analysis,
     lines: list[int],
     outfile: IO[str],
@@ -116,39 +117,34 @@ def lcov_arcs(
 
         if taken == 0:
             # When _none_ of the out arcs from 'line' were executed,
-            # this probably means means 'line' was never executed at all.
+            # this probably means 'line' was never executed at all.
             # Cross-check with the line stats.
             assert len(executed_arcs[line]) == 0
-            if line in analysis.missing:
-                hit = "-" # indeed, never reached
-            else:
-                hit = "0" # I am not prepared to swear this is impossible
+            assert line in analysis.missing
             destinations = [
-                (int(dst < 0), abs(dst), hit) for dst in missing_arcs[line]
+                (dst, "-") for dst in missing_arcs[line]
             ]
         else:
             # Q: can we get counts of the number of times each arc was executed?
             # branch_stats has "total" and "taken" counts for each branch,
             # but it doesn't have "taken" broken down by destination.
             destinations = [
-                (int(dst < 0), abs(dst), "1") for dst in executed_arcs[line]
+                (dst, "1") for dst in executed_arcs[line]
             ]
             destinations.extend(
-                (int(dst < 0), abs(dst), "0") for dst in missing_arcs[line]
+                (dst, "0") for dst in missing_arcs[line]
             )
 
-        destinations.sort()
-        n_exits = sum(
-            1 for is_exit, _, _ in destinations if is_exit
-        )
-        for is_exit, dst, hit in destinations:
-            if is_exit:
-                if n_exits == 1:
-                    branch = "to exit"
-                else:
-                    branch = f"to exit {dst}"
-            else:
-                branch = f"to line {dst}"
+        # Sort exit arcs after normal arcs.  Exit arcs typically come from
+        # an if statement, at the end of a function, with no else clause.
+        # This structure reads like you're jumping to the end of the function
+        # when the conditional expression is false, so it should be presented
+        # as the second alternative for the branch, after the alternative that
+        # enters the if clause.
+        destinations.sort(key=lambda d: (d[0] < 0, d))
+
+        for dst, hit in destinations:
+            branch = fr.arc_description(line, dst)
             outfile.write(f"BRDA:{line},0,{branch},{hit}\n")
 
     # Summary of the branch coverage.
@@ -221,6 +217,6 @@ class LcovReporter:
         lcov_lines(analysis, lines, source_lines, outfile)
         lcov_functions(fr, analysis, outfile)
         if analysis.has_arcs:
-            lcov_arcs(analysis, lines, outfile)
+            lcov_arcs(fr, analysis, lines, outfile)
 
         outfile.write("end_of_record\n")
