@@ -656,10 +656,7 @@ class AstArcAnalyzer:
             # Dump the AST so that failing tests have helpful output.
             print(f"Statements: {self.statements}")
             print(f"Multiline map: {self.multiline}")
-            dumpkw: dict[str, Any] = {}
-            if sys.version_info >= (3, 9):
-                dumpkw["indent"] = 4
-            print(ast.dump(self.root_node, include_attributes=True, **dumpkw))
+            print(ast.dump(self.root_node, include_attributes=True, indent=4))
 
         self.arcs: set[TArc] = set()
         self.missing_arc_fragments: TArcFragments = collections.defaultdict(list)
