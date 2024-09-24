@@ -1544,10 +1544,6 @@ class OptimizedIfTest(CoverageTest):
             branchz_missing=branchz_missing,
         )
 
-    @pytest.mark.xfail(
-        env.PYPY and env.PYVERSION[:2] == (3, 8) and env.PYPYVERSION >= (7, 3, 11),
-        reason="https://foss.heptapod.net/pypy/pypy/-/issues/3882",
-    )
     def test_if_not_debug(self) -> None:
         if env.PYBEHAVIOR.optimize_if_not_debug == 1:
             branchz = "23 28 34 37"

@@ -53,11 +53,6 @@ class PYBEHAVIOR:
     # across versions.
     if pep626:
         optimize_if_not_debug = 1
-    elif PYPY:
-        if PYVERSION >= (3, 9):
-            optimize_if_not_debug = 2
-        else:
-            optimize_if_not_debug = 3
     else:
         optimize_if_not_debug = 2
 
@@ -67,14 +62,13 @@ class PYBEHAVIOR:
     # CPython 3.9a1 made sys.argv[0] and other reported files absolute paths.
     report_absolute_files = (
         (CPYTHON or (PYPY and PYPYVERSION >= (7, 3, 10)))
-        and PYVERSION >= (3, 9)
     )
 
     # Lines after break/continue/return/raise are no longer compiled into the
     # bytecode.  They used to be marked as missing, now they aren't executable.
     omit_after_jump = (
         pep626
-        or (PYPY and PYVERSION >= (3, 9) and PYPYVERSION >= (7, 3, 12))
+        or (PYPY and PYPYVERSION >= (7, 3, 12))
     )
 
     # PyPy has always omitted statements after return.

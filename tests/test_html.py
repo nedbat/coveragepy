@@ -806,10 +806,6 @@ class HtmlGoldTest(HtmlTestHelpers, CoverageTest):
             '<td class="right" data-ratio="2 3">67%</td>',
         )
 
-    @pytest.mark.skipif(
-        env.PYPY and env.PYVERSION[:2] == (3, 8),
-        reason="PyPy 3.8 produces different results!?",
-    )
     def test_b_branch(self) -> None:
         self.make_file("b.py", """\
             def one(x):

@@ -49,7 +49,7 @@ these steps:
 
 #.  (Optional) Create a virtualenv to work in, and activate it.  There
     are a number of ways to do this.  Use the method you are comfortable with.
-    Ideally, use Python3.8 (the lowest version coverage.py supports).
+    Ideally, use Python 3.9 (the lowest version coverage.py supports).
 
 #.  Clone the repository::
 
@@ -257,7 +257,7 @@ files.  These are created by running ``make upgrade``.
 
 .. minimum of PYVERSIONS:
 
-It's important to use Python 3.8 to run ``make upgrade`` so that the pinned
+It's important to use Python 3.9 to run ``make upgrade`` so that the pinned
 versions will work on all of the Python versions currently supported by
 coverage.py.
 

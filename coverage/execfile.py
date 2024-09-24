@@ -145,10 +145,8 @@ class PyRunner:
             for ext in [".py", ".pyc", ".pyo"]:
                 try_filename = os.path.join(self.arg0, "__main__" + ext)
                 # 3.8.10 changed how files are reported when running a
-                # directory.  But I'm not sure how far this change is going to
-                # spread, so I'll just hard-code it here for now.
-                if env.PYVERSION >= (3, 8, 10):
-                    try_filename = os.path.abspath(try_filename)
+                # directory.
+                try_filename = os.path.abspath(try_filename)
                 if os.path.exists(try_filename):
                     self.arg0 = try_filename
                     break

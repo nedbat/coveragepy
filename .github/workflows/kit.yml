@@ -79,7 +79,7 @@ jobs:
           #   }
           #   # PYVERSIONS. Available versions: https://pypi.org/project/cibuildwheel/
           #   # PyPy versions are handled further below in the "pypy" step.
-          #   pys = ["cp38", "cp39", "cp310", "cp311", "cp312", "cp313"]
+          #   pys = ["cp39", "cp310", "cp311", "cp312", "cp313"]
           #
           #   # Some OS/arch combinations need overrides for the Python versions:
           #   os_arch_pys = {
@@ -156,11 +156,11 @@ jobs:
       - name: "Check out the repo"
         uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938 # v4.2.0
 
-      - name: "Install Python 3.8"
+      - name: "Install Python"
         uses: actions/setup-python@f677139bbe7f9c59b41e40162b753c062f5d49a3 # v5.2.0
         with:
           # PYVERSIONS
-          python-version: "3.8"
+          python-version: "3.9"
           cache: pip
           cache-dependency-path: 'requirements/*.pip'
 
@@ -201,11 +201,11 @@ jobs:
       - name: "Check out the repo"
         uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938 # v4.2.0
 
-      - name: "Install Python 3.8"
+      - name: "Install Python"
         uses: actions/setup-python@f677139bbe7f9c59b41e40162b753c062f5d49a3 # v5.2.0
         with:
           # PYVERSIONS
-          python-version: "3.8"
+          python-version: "3.9"
           cache: pip
           cache-dependency-path: 'requirements/*.pip'
 
@@ -242,7 +242,7 @@ jobs:
       - name: "Install PyPy"
         uses: actions/setup-python@f677139bbe7f9c59b41e40162b753c062f5d49a3 # v5.2.0
         with:
-          python-version: "pypy-3.8" # Minimum of PyPy PYVERSIONS
+          python-version: "pypy-3.9" # Minimum of PyPy PYVERSIONS
           cache: pip
           cache-dependency-path: 'requirements/*.pip'
 
@@ -256,7 +256,7 @@ jobs:
         run: |
           # One wheel works for all PyPy versions. PYVERSIONS
           # yes, this is weird syntax: https://github.com/pypa/build/issues/202
-          echo -e "[bdist_wheel]\npython_tag=pp38.pp39.pp310" > $DIST_EXTRA_CONFIG
+          echo -e "[bdist_wheel]\npython_tag=pp39.pp310" > $DIST_EXTRA_CONFIG
           pypy3 -m build -w
 
       - name: "List wheels"

@@ -725,10 +725,6 @@ class ExclusionParserTest(PythonParserTestBase):
         assert parser.raw_statements == raw_statements
         assert parser.statements == set()
 
-    @pytest.mark.xfail(
-        env.PYPY and env.PYVERSION[:2] == (3, 8),
-        reason="AST doesn't mark end of classes correctly",
-    )
     def test_class_decorator_pragmas(self) -> None:
         parser = self.parse_text("""\
             class Foo(object):
