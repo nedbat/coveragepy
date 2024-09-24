@@ -185,9 +185,7 @@ def source_exists(path: str) -> bool:
 
 def python_reported_file(filename: str) -> str:
     """Return the string as Python would describe this file name."""
-    if env.PYBEHAVIOR.report_absolute_files:
-        filename = os.path.abspath(filename)
-    return filename
+    return os.path.abspath(filename)
 
 
 def isabs_anywhere(filename: str) -> bool:

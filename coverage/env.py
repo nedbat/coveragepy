@@ -34,6 +34,7 @@ PYPY = (platform.python_implementation() == "PyPy")
 PYVERSION = sys.version_info + (int(platform.python_version()[-1] == "+"),)
 
 if PYPY:
+    # Minimum now is 7.3.16
     PYPYVERSION = sys.pypy_version_info         # type: ignore[attr-defined]
 else:
     PYPYVERSION = (0,)
@@ -59,17 +60,9 @@ class PYBEHAVIOR:
     # 3.7 changed how functions with only docstrings are numbered.
     docstring_only_function = (not PYPY) and (PYVERSION <= (3, 10))
 
-    # CPython 3.9a1 made sys.argv[0] and other reported files absolute paths.
-    report_absolute_files = (
-        (CPYTHON or (PYPY and PYPYVERSION >= (7, 3, 10)))
-    )
-
     # Lines after break/continue/return/raise are no longer compiled into the
     # bytecode.  They used to be marked as missing, now they aren't executable.
-    omit_after_jump = (
-        pep626
-        or (PYPY and PYPYVERSION >= (7, 3, 12))
-    )
+    omit_after_jump = pep626 or PYPY
 
     # PyPy has always omitted statements after return.
     omit_after_return = omit_after_jump or PYPY

@@ -543,8 +543,8 @@ class GettraceTest(CoverageTest):
             """)
         status, out = self.run_command_status("python atexit_gettrace.py")
         assert status == 0
-        if env.PYPY and env.PYPYVERSION >= (5, 4):
-            # Newer PyPy clears the trace function before atexit runs.
+        if env.PYPY:
+            # PyPy clears the trace function before atexit runs.
             assert out == "None\n"
         else:
             # Other Pythons leave the trace function in place.
