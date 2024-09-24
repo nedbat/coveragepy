@@ -101,49 +101,42 @@ jobs:
           #                   them["os-version"] = "13"
           #               print(f"- {json.dumps(them)}")
           # ]]]
-          - {"os": "ubuntu", "py": "cp38", "arch": "x86_64"}
           - {"os": "ubuntu", "py": "cp39", "arch": "x86_64"}
           - {"os": "ubuntu", "py": "cp310", "arch": "x86_64"}
           - {"os": "ubuntu", "py": "cp311", "arch": "x86_64"}
           - {"os": "ubuntu", "py": "cp312", "arch": "x86_64"}
           - {"os": "ubuntu", "py": "cp313", "arch": "x86_64"}
-          - {"os": "ubuntu", "py": "cp38", "arch": "i686"}
           - {"os": "ubuntu", "py": "cp39", "arch": "i686"}
           - {"os": "ubuntu", "py": "cp310", "arch": "i686"}
           - {"os": "ubuntu", "py": "cp311", "arch": "i686"}
           - {"os": "ubuntu", "py": "cp312", "arch": "i686"}
           - {"os": "ubuntu", "py": "cp313", "arch": "i686"}
-          - {"os": "ubuntu", "py": "cp38", "arch": "aarch64"}
           - {"os": "ubuntu", "py": "cp39", "arch": "aarch64"}
           - {"os": "ubuntu", "py": "cp310", "arch": "aarch64"}
           - {"os": "ubuntu", "py": "cp311", "arch": "aarch64"}
           - {"os": "ubuntu", "py": "cp312", "arch": "aarch64"}
           - {"os": "ubuntu", "py": "cp313", "arch": "aarch64"}
-          - {"os": "macos", "py": "cp38", "arch": "arm64", "os-version": "13"}
           - {"os": "macos", "py": "cp39", "arch": "arm64", "os-version": "13"}
           - {"os": "macos", "py": "cp310", "arch": "arm64", "os-version": "13"}
           - {"os": "macos", "py": "cp311", "arch": "arm64", "os-version": "13"}
           - {"os": "macos", "py": "cp312", "arch": "arm64", "os-version": "13"}
           - {"os": "macos", "py": "cp313", "arch": "arm64", "os-version": "13"}
-          - {"os": "macos", "py": "cp38", "arch": "x86_64", "os-version": "13"}
           - {"os": "macos", "py": "cp39", "arch": "x86_64", "os-version": "13"}
           - {"os": "macos", "py": "cp310", "arch": "x86_64", "os-version": "13"}
           - {"os": "macos", "py": "cp311", "arch": "x86_64", "os-version": "13"}
           - {"os": "macos", "py": "cp312", "arch": "x86_64", "os-version": "13"}
           - {"os": "macos", "py": "cp313", "arch": "x86_64", "os-version": "13"}
-          - {"os": "windows", "py": "cp38", "arch": "x86"}
           - {"os": "windows", "py": "cp39", "arch": "x86"}
           - {"os": "windows", "py": "cp310", "arch": "x86"}
           - {"os": "windows", "py": "cp311", "arch": "x86"}
           - {"os": "windows", "py": "cp312", "arch": "x86"}
           - {"os": "windows", "py": "cp313", "arch": "x86"}
-          - {"os": "windows", "py": "cp38", "arch": "AMD64"}
           - {"os": "windows", "py": "cp39", "arch": "AMD64"}
           - {"os": "windows", "py": "cp310", "arch": "AMD64"}
           - {"os": "windows", "py": "cp311", "arch": "AMD64"}
           - {"os": "windows", "py": "cp312", "arch": "AMD64"}
           - {"os": "windows", "py": "cp313", "arch": "AMD64"}
-        # [[[end]]] (checksum: e0cd49f4a0028c4fdf1036e9bc843075)
+        # [[[end]]] (checksum: 38b83d67f00c838e5e7f69f803b7536c)
       fail-fast: false
 
     steps:
