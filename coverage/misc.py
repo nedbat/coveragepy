@@ -158,7 +158,7 @@ def ensure_dir_for_file(path: str) -> None:
 class Hasher:
     """Hashes Python data for fingerprinting."""
     def __init__(self) -> None:
-        self.hash = hashlib.new("sha3_256")
+        self.hash = hashlib.new("sha3_256", usedforsecurity=False)
 
     def update(self, v: Any) -> None:
         """Add `v` to the hash, recursively if needed."""

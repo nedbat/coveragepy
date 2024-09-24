@@ -160,7 +160,7 @@ def combine_parallel_data(
             rel_file_name = f
 
         with open(f, "rb") as fobj:
-            hasher = hashlib.new("sha3_256")
+            hasher = hashlib.new("sha3_256", usedforsecurity=False)
             hasher.update(fobj.read())
             sha = hasher.digest()
             combine_this_one = sha not in file_hashes

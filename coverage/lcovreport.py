@@ -28,7 +28,7 @@ def line_hash(line: str) -> str:
     # positive.  This is not a security concern.
     # The unusual encoding of the MD5 hash, as a base64 sequence with the
     # trailing = signs stripped, is specified by the LCOV file format.
-    hashed = hashlib.md5(line.encode("utf-8")).digest()
+    hashed = hashlib.md5(line.encode("utf-8"), usedforsecurity=False).digest()
     return base64.b64encode(hashed).decode("ascii").rstrip("=")
 
 
