@@ -9,7 +9,8 @@ import os
 import platform
 import sys
 
-from typing import Any, Iterable
+from typing import Any
+from collections.abc import Iterable
 
 # debug_info() at the bottom wants to show all the globals, but not imports.
 # Grab the global names here to know which names to not show. Nothing defined

@@ -6,7 +6,8 @@
 from __future__ import annotations
 
 from types import FrameType
-from typing import cast, Sequence
+from typing import cast
+from collections.abc import Sequence
 
 from coverage.types import TShouldStartContextFn
 

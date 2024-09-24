@@ -14,7 +14,8 @@ import os
 import os.path
 import sys
 
-from typing import Any, Callable, Iterable, Iterator, Tuple, cast
+from typing import Any, Callable, Tuple, cast
+from collections.abc import Iterable, Iterator
 
 import pytest
 
@@ -138,7 +139,7 @@ class StdStreamCapturingMixin:
 
     def stdouterr(self) -> tuple[str, str]:
         """Returns (out, err), two strings for stdout and stderr."""
-        return cast(Tuple[str, str], self.capsys.readouterr())
+        return cast(tuple[str, str], self.capsys.readouterr())
 
     def stdout(self) -> str:
         """Returns a string, the captured stdout."""

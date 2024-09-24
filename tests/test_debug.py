@@ -11,7 +11,8 @@ import os
 import re
 import sys
 
-from typing import Any, Callable, Iterable
+from typing import Any, Callable
+from collections.abc import Iterable
 
 import pytest
 

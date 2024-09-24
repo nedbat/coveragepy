@@ -13,7 +13,8 @@ import posixpath
 import re
 import sys
 
-from typing import Callable, Iterable
+from typing import Callable
+from collections.abc import Iterable
 
 from coverage import env
 from coverage.exceptions import ConfigError

@@ -9,7 +9,8 @@ import os.path
 import types
 import zipimport
 
-from typing import Iterable, TYPE_CHECKING
+from typing import TYPE_CHECKING
+from collections.abc import Iterable
 
 from coverage import env
 from coverage.exceptions import CoverageException, NoSource

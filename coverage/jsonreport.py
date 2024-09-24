@@ -9,7 +9,8 @@ import datetime
 import json
 import sys
 
-from typing import Any, Dict, IO, Iterable, TYPE_CHECKING
+from typing import Any, Dict, IO, TYPE_CHECKING
+from collections.abc import Iterable
 
 from coverage import __version__
 from coverage.report_core import get_analysis_to_report
@@ -23,7 +24,7 @@ if TYPE_CHECKING:
 
 
 # A type for data that can be JSON-serialized.
-JsonObj = Dict[str, Any]
+JsonObj = dict[str, Any]
 
 # "Version 1" had no format number at all.
 # 2: add the meta.format field.

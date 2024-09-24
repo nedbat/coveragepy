@@ -13,7 +13,7 @@ import os.path
 import re
 import xml.etree.ElementTree
 
-from typing import Iterable
+from collections.abc import Iterable
 
 from tests.coveragetest import TESTS_DIR
 from tests.helpers import os_sep

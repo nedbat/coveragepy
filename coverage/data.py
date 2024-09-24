@@ -17,7 +17,8 @@ import glob
 import hashlib
 import os.path
 
-from typing import Callable, Iterable
+from typing import Callable
+from collections.abc import Iterable
 
 from coverage.exceptions import CoverageException, NoDataError
 from coverage.files import PathAliases
@@ -138,7 +139,7 @@ def combine_parallel_data(
     if aliases is None:
         map_path = None
     else:
-        map_path = functools.lru_cache(maxsize=None)(aliases.map)
+        map_path = functools.cache(aliases.map)
 
     file_hashes = set()
     combined_any = False

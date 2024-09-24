@@ -9,7 +9,8 @@ import contextlib
 import re
 import sqlite3
 
-from typing import cast, Any, Iterable, Iterator, Tuple
+from typing import cast, Any, Tuple
+from collections.abc import Iterable, Iterator
 
 from coverage.debug import auto_repr, clipped_repr, exc_one_line
 from coverage.exceptions import DataError
@@ -188,7 +189,7 @@ class SqliteDb:
         if len(rows) == 0:
             return None
         elif len(rows) == 1:
-            return cast(Tuple[Any, ...], rows[0])
+            return cast(tuple[Any, ...], rows[0])
         else:
             raise AssertionError(f"SQL {sql!r} shouldn't return {len(rows)} rows")
 

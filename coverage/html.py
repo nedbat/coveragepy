@@ -15,7 +15,8 @@ import re
 import string
 
 from dataclasses import dataclass, field
-from typing import Any, Iterable, TYPE_CHECKING
+from typing import Any, TYPE_CHECKING
+from collections.abc import Iterable
 
 import coverage
 from coverage.data import CoverageData, add_data_to_hash
@@ -201,7 +202,7 @@ class FileToReport:
 
 HTML_SAFE = string.ascii_letters + string.digits + "!#$%'()*+,-./:;=?@[]^_`{|}~"
 
-@functools.lru_cache(maxsize=None)
+@functools.cache
 def encode_int(n: int) -> str:
     """Create a short HTML-safe string from an integer, using HTML_SAFE."""
     if n == 0:

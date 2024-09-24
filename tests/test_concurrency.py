@@ -16,7 +16,7 @@ import threading
 import time
 
 from types import ModuleType
-from typing import Iterable
+from collections.abc import Iterable
 
 from flaky import flaky
 import pytest

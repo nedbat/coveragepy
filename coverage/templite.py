@@ -237,7 +237,7 @@ class Templite:
         code.dedent()
         self._render_function = cast(
             Callable[
-                [Dict[str, Any], Callable[..., Any]],
+                [dict[str, Any], Callable[..., Any]],
                 str,
             ],
             code.get_globals()["render_function"],

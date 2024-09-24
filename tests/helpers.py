@@ -20,8 +20,9 @@ import warnings
 
 from pathlib import Path
 from typing import (
-    Any, Callable, Iterable, Iterator, NoReturn, TypeVar, cast,
+    Any, Callable, NoReturn, TypeVar, cast,
 )
+from collections.abc import Iterable, Iterator
 
 import flaky
 import pytest

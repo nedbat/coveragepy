@@ -10,7 +10,8 @@ import os
 import os.path
 import re
 
-from typing import Any, Iterable, Iterator, Protocol
+from typing import Any, Protocol
+from collections.abc import Iterable, Iterator
 from unittest import mock
 
 import pytest

@@ -9,7 +9,8 @@ import base64
 import hashlib
 import sys
 
-from typing import IO, Iterable, TYPE_CHECKING
+from typing import IO, TYPE_CHECKING
+from collections.abc import Iterable
 
 from coverage.plugin import FileReporter
 from coverage.report_core import get_analysis_to_report

@@ -17,8 +17,9 @@ import traceback
 
 from types import FrameType, ModuleType
 from typing import (
-    cast, Any, Iterable, TYPE_CHECKING,
+    cast, Any, TYPE_CHECKING,
 )
+from collections.abc import Iterable
 
 from coverage import env
 from coverage.disposition import FileDisposition, disposition_init

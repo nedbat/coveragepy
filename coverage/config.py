@@ -13,8 +13,9 @@ import os.path
 import re
 
 from typing import (
-    Any, Callable, Iterable, Union,
+    Any, Callable, Union,
 )
+from collections.abc import Iterable
 
 from coverage.exceptions import ConfigError
 from coverage.misc import isolate_module, human_sorted_items, substitute_variables

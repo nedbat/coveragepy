@@ -10,7 +10,8 @@ import os.path
 import sys
 
 from types import FrameType
-from typing import Any, Iterable, Iterator
+from typing import Any
+from collections.abc import Iterable, Iterator
 
 from coverage.exceptions import PluginError
 from coverage.misc import isolate_module

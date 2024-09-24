@@ -12,9 +12,10 @@ import pathlib
 
 from types import FrameType, ModuleType
 from typing import (
-    Any, Callable, Dict, Iterable, List, Mapping, Optional, Protocol,
+    Any, Callable, Dict, List, Optional, Protocol,
     Set, Tuple, Type, Union, TYPE_CHECKING,
 )
+from collections.abc import Iterable, Mapping
 
 if TYPE_CHECKING:
     from coverage.plugin import FileTracer
@@ -32,7 +33,7 @@ else:
     FilePath = Union[str, os.PathLike]
 # For testing FilePath arguments
 FilePathClasses = [str, pathlib.Path]
-FilePathType = Union[Type[str], Type[pathlib.Path]]
+FilePathType = Union[type[str], type[pathlib.Path]]
 
 ## Python tracing
 
@@ -52,7 +53,7 @@ class TTraceFn(Protocol):
 # Line numbers are pervasive enough that they deserve their own type.
 TLineNo = int
 
-TArc = Tuple[TLineNo, TLineNo]
+TArc = tuple[TLineNo, TLineNo]
 
 class TFileDisposition(Protocol):
     """A simple value type for recording what to do with a file."""
@@ -74,9 +75,9 @@ class TFileDisposition(Protocol):
 # - If measuring arcs in the C tracer, the values are sets of packed arcs (two
 #   line numbers combined into one integer).
 
-TTraceFileData = Union[Set[TLineNo], Set[TArc], Set[int]]
+TTraceFileData = Union[set[TLineNo], set[TArc], set[int]]
 
-TTraceData = Dict[str, TTraceFileData]
+TTraceData = dict[str, TTraceFileData]
 
 # Functions passed into collectors.
 TShouldTraceFn = Callable[[str, FrameType], TFileDisposition]
@@ -125,7 +126,7 @@ TCovKwargs = Any
 
 # One value read from a config file.
 TConfigValueIn = Optional[Union[bool, int, float, str, Iterable[str]]]
-TConfigValueOut = Optional[Union[bool, int, float, str, List[str]]]
+TConfigValueOut = Optional[Union[bool, int, float, str, list[str]]]
 # An entire config section, mapping option names to values.
 TConfigSectionIn = Mapping[str, TConfigValueIn]
 TConfigSectionOut = Mapping[str, TConfigValueOut]
@@ -166,7 +167,7 @@ class TPluginConfig(Protocol):
 
 TMorf = Union[ModuleType, str]
 
-TSourceTokenLines = Iterable[List[Tuple[str, str]]]
+TSourceTokenLines = Iterable[list[tuple[str, str]]]
 
 
 ## Plugins

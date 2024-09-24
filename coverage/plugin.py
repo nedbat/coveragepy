@@ -118,7 +118,8 @@ import dataclasses
 import functools
 
 from types import FrameType
-from typing import Any, Iterable
+from typing import Any
+from collections.abc import Iterable
 
 from coverage import files
 from coverage.misc import _needs_to_implement

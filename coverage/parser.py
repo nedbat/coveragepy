@@ -17,9 +17,10 @@ import tokenize
 from dataclasses import dataclass
 from types import CodeType
 from typing import (
-    cast, Any, Callable, Dict, Iterable, List, Optional, Protocol, Sequence,
+    cast, Any, Callable, Dict, List, Optional, Protocol,
     Set, Tuple,
 )
+from collections.abc import Iterable, Sequence
 
 from coverage import env
 from coverage.bytecode import code_objects
@@ -324,7 +325,7 @@ class PythonParser:
                     to_remove.add(start_next)
         return (set(arcs) | to_add) - to_remove
 
-    @functools.lru_cache()
+    @functools.lru_cache
     def exit_counts(self) -> dict[TLineNo, int]:
         """Get a count of exits from that each line.
 
@@ -515,7 +516,7 @@ class TAddArcFn(Protocol):
         """
 
 
-TArcFragments = Dict[TArc, List[Tuple[Optional[str], Optional[str]]]]
+TArcFragments = dict[TArc, list[tuple[Optional[str], Optional[str]]]]
 
 class Block:
     """
@@ -851,7 +852,7 @@ class AstArcAnalyzer:
         """
         node_name = node.__class__.__name__
         handler = cast(
-            Optional[Callable[[ast.AST], Set[ArcStart]]],
+            Optional[Callable[[ast.AST], set[ArcStart]]],
             getattr(self, "_handle__" + node_name, None),
         )
         if handler is not None:

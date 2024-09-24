@@ -8,7 +8,8 @@ from __future__ import annotations
 import os
 import re
 
-from typing import Any, Callable, Iterable, TypeVar
+from typing import Any, Callable, TypeVar
+from collections.abc import Iterable
 
 from coverage import env
 from coverage.exceptions import ConfigError

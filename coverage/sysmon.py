@@ -385,7 +385,7 @@ class SysMonitor(Tracer):
             if last_line is not None:
                 arc = (last_line, -code.co_firstlineno)
                 # log(f"adding {arc=}")
-                cast(Set[TArc], code_info.file_data).add(arc)
+                cast(set[TArc], code_info.file_data).add(arc)
 
         # Leaving this function, no need for the frame any more.
         self.last_lines.pop(frame, None)
@@ -406,7 +406,7 @@ class SysMonitor(Tracer):
             if last_line is not None:
                 arc = (last_line, -code.co_firstlineno)
                 # log(f"adding {arc=}")
-                cast(Set[TArc], code_info.file_data).add(arc)
+                cast(set[TArc], code_info.file_data).add(arc)
 
 
     @panopticon("code", "line")
@@ -414,7 +414,7 @@ class SysMonitor(Tracer):
         """Handle sys.monitoring.events.LINE events for line coverage."""
         code_info = self.code_infos[id(code)]
         if code_info.file_data is not None:
-            cast(Set[TLineNo], code_info.file_data).add(line_number)
+            cast(set[TLineNo], code_info.file_data).add(line_number)
             # log(f"adding {line_number=}")
         return sys.monitoring.DISABLE
 
@@ -428,7 +428,7 @@ class SysMonitor(Tracer):
             last_line = self.last_lines.get(frame)
             if last_line is not None:
                 arc = (last_line, line_number)
-                cast(Set[TArc], code_info.file_data).add(arc)
+                cast(set[TArc], code_info.file_data).add(arc)
             # log(f"adding {arc=}")
             self.last_lines[frame] = line_number
         return ret

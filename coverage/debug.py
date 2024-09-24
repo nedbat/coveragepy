@@ -21,8 +21,9 @@ import _thread
 
 from typing import (
     overload,
-    Any, Callable, IO, Iterable, Iterator, Mapping,
+    Any, Callable, IO,
 )
+from collections.abc import Iterable, Iterator, Mapping
 
 from coverage.misc import human_sorted_items, isolate_module
 from coverage.types import AnyCallable, TWritable

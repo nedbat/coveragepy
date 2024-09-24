@@ -14,7 +14,8 @@ import py_compile
 import re
 import sys
 
-from typing import Any, Iterator
+from typing import Any
+from collections.abc import Iterator
 
 import pytest
 

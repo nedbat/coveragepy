@@ -19,8 +19,9 @@ import sys
 
 from types import ModuleType
 from typing import (
-    Any, Collection, Iterable, Iterator, Mapping, Sequence,
+    Any,
 )
+from collections.abc import Collection, Iterable, Iterator, Mapping, Sequence
 
 import coverage
 from coverage import Coverage

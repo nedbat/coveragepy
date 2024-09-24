@@ -12,8 +12,9 @@ import sys
 
 from types import FrameType
 from typing import (
-    cast, Any, Callable, Dict, List, Mapping, Set, TypeVar,
+    cast, Any, Callable, Dict, List, Set, TypeVar,
 )
+from collections.abc import Mapping
 
 from coverage import env
 from coverage.config import CoverageConfig
@@ -420,7 +421,7 @@ class Collector:
         plugin._coverage_enabled = False
         disposition.trace = False
 
-    @functools.lru_cache(maxsize=None)          # pylint: disable=method-cache-max-size-none
+    @functools.cache          # pylint: disable=method-cache-max-size-none
     def cached_mapped_file(self, filename: str) -> str:
         """A locally cached version of file names mapped through file_mapper."""
         return self.file_mapper(filename)
@@ -466,7 +467,7 @@ class Collector:
                 # tracer.c:CTracer_record_pair for the C code that creates
                 # these packed ints.
                 arc_data: dict[str, list[TArc]] = {}
-                packed_data = cast(Dict[str, Set[int]], self.data)
+                packed_data = cast(dict[str, set[int]], self.data)
 
                 # The list() here and in the inner loop are to get a clean copy
                 # even as tracers are continuing to add data.
@@ -482,10 +483,10 @@ class Collector:
                         tuples.append((l1, l2))
                     arc_data[fname] = tuples
             else:
-                arc_data = cast(Dict[str, List[TArc]], self.data)
+                arc_data = cast(dict[str, list[TArc]], self.data)
             self.covdata.add_arcs(self.mapped_file_dict(arc_data))
         else:
-            line_data = cast(Dict[str, Set[int]], self.data)
+            line_data = cast(dict[str, set[int]], self.data)
             self.covdata.add_lines(self.mapped_file_dict(line_data))
 
         file_tracers = {
