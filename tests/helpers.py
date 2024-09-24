@@ -326,18 +326,6 @@ def swallow_warnings(
         yield
 
 
-xfail_all_pypy38 = pytest.mark.xfail(
-    env.PYPY and env.PYVERSION[:2] == (3, 8),
-    reason="These tests fail on all versions of PyPy 3.8",
-)
-
-
-xfail_older_pypy38 = pytest.mark.xfail(
-    env.PYPY and env.PYVERSION[:2] == (3, 8) and env.PYPYVERSION < (7, 3, 11),
-    reason="These tests fail on older PyPy 3.8",
-)
-
-
 class FailingProxy:
     """A proxy for another object, but one method will fail a few times before working."""
     def __init__(self, obj: Any, methname: str, fails: list[Exception]) -> None:

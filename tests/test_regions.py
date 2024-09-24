@@ -17,13 +17,6 @@ from coverage.plugin import CodeRegion
 from coverage.regions import code_regions
 
 
-skip_pypy38 = pytest.mark.skipif(
-    env.PYPY and env.PYVERSION < (3, 9),
-    reason="PyPy 3.8 somehow gets different results from ast?",
-    # But PyPy 3.8 is almost out of support so meh.
-)
-
-@skip_pypy38
 def test_code_regions() -> None:
     regions = code_regions(textwrap.dedent("""\
         # Numbers in this code are the line number.
@@ -94,7 +87,6 @@ def test_code_regions() -> None:
     ])
 
 
-@skip_pypy38
 def test_real_code_regions() -> None:
     # Run code_regions on most of the coverage source code, checking that it
     # succeeds and there are no overlaps.
