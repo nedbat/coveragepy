@@ -33,12 +33,12 @@ def analysis_from_file_reporter(
     executed = file_reporter.translate_lines(data.lines(filename) or [])
 
     if has_arcs:
-        _arc_possibilities_set = file_reporter.arcs()
+        arc_possibilities_set = file_reporter.arcs()
         arcs = data.arcs(filename) or []
 
         # Reduce the set of arcs to the ones that could be branches.
         dests = collections.defaultdict(set)
-        for fromno, tono in _arc_possibilities_set:
+        for fromno, tono in arc_possibilities_set:
             dests[fromno].add(tono)
         single_dests = {
             fromno: list(tonos)[0]
@@ -53,12 +53,12 @@ def analysis_from_file_reporter(
                 if fromno in single_dests:
                     new_arcs.add((fromno, single_dests[fromno]))
 
-        _arcs_executed_set = file_reporter.translate_arcs(new_arcs)
+        arcs_executed_set = file_reporter.translate_arcs(new_arcs)
         exit_counts = file_reporter.exit_counts()
         no_branch = file_reporter.no_branch_lines()
     else:
-        _arc_possibilities_set = set()
-        _arcs_executed_set = set()
+        arc_possibilities_set = set()
+        arcs_executed_set = set()
         exit_counts = {}
         no_branch = set()
 
@@ -69,8 +69,8 @@ def analysis_from_file_reporter(
         statements=statements,
         excluded=excluded,
         executed=executed,
-        _arc_possibilities_set=_arc_possibilities_set,
-        _arcs_executed_set=_arcs_executed_set,
+        arc_possibilities_set=arc_possibilities_set,
+        arcs_executed_set=arcs_executed_set,
         exit_counts=exit_counts,
         no_branch=no_branch,
     )
@@ -86,14 +86,14 @@ class Analysis:
     statements: set[TLineNo]
     excluded: set[TLineNo]
     executed: set[TLineNo]
-    _arc_possibilities_set: set[TArc]
-    _arcs_executed_set: set[TArc]
+    arc_possibilities_set: set[TArc]
+    arcs_executed_set: set[TArc]
     exit_counts: dict[TLineNo, int]
     no_branch: set[TLineNo]
 
     def __post_init__(self) -> None:
-        self.arc_possibilities = sorted(self._arc_possibilities_set)
-        self.arcs_executed = sorted(self._arcs_executed_set)
+        self.arc_possibilities = sorted(self.arc_possibilities_set)
+        self.arcs_executed = sorted(self.arcs_executed_set)
         self.missing = self.statements - self.executed
 
         if self.has_arcs:
@@ -127,12 +127,12 @@ class Analysis:
         executed = {lno for lno in self.executed if lno in lines}
 
         if self.has_arcs:
-            _arc_possibilities_set = {
-                (a, b) for a, b in self._arc_possibilities_set
+            arc_possibilities_set = {
+                (a, b) for a, b in self.arc_possibilities_set
                 if a in lines or b in lines
             }
-            _arcs_executed_set = {
-                (a, b) for a, b in self._arcs_executed_set
+            arcs_executed_set = {
+                (a, b) for a, b in self.arcs_executed_set
                 if a in lines or b in lines
             }
             exit_counts = {
@@ -141,8 +141,8 @@ class Analysis:
             }
             no_branch = {lno for lno in self.no_branch if lno in lines}
         else:
-            _arc_possibilities_set = set()
-            _arcs_executed_set = set()
+            arc_possibilities_set = set()
+            arcs_executed_set = set()
             exit_counts = {}
             no_branch = set()
 
@@ -153,8 +153,8 @@ class Analysis:
             statements=statements,
             excluded=excluded,
             executed=executed,
-            _arc_possibilities_set=_arc_possibilities_set,
-            _arcs_executed_set=_arcs_executed_set,
+            arc_possibilities_set=arc_possibilities_set,
+            arcs_executed_set=arcs_executed_set,
             exit_counts=exit_counts,
             no_branch=no_branch,
         )
