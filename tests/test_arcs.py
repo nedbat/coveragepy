@@ -1286,6 +1286,23 @@ class MatchCaseTest(CoverageTest):
         )
         assert self.stdout() == "default\nno go\ngo: n\n"
 
+    def test_match_case_with_named_default(self) -> None:
+        self.check_coverage("""\
+            for command in ["huh", "go home", "go n"]:
+                match command.split():
+                    case ["go", direction] if direction in "nesw":
+                        match = f"go: {direction}"
+                    case ["go", _]:
+                        match = "no go"
+                    case _ as value:
+                        match = "default"
+                print(match)
+            """,
+            branchz="12 1-1 34 35 56 57",
+            branchz_missing="",
+        )
+        assert self.stdout() == "default\nno go\ngo: n\n"
+
     def test_match_case_with_wildcard(self) -> None:
         self.check_coverage("""\
             for command in ["huh", "go home", "go n"]:

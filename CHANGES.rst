@@ -23,6 +23,10 @@ upgrading your version of coverage.py.
 Unreleased
 ----------
 
+- Fix: a final wildcard match/case clause assigning to a name (``case _ as
+  value``) was incorrectly marked as a missing branch.  This is now fixed,
+  closing `issue 1860`_.
+
 - Fewer things are considered branches now. Lambdas, comprehensions, and
   generator expressions are no longer marked as missing branches if they don't
   complete execution.
@@ -47,6 +51,7 @@ Unreleased
 .. _pull 1843: https://github.com/nedbat/coveragepy/pull/1843
 .. _issue 1846: https://github.com/nedbat/coveragepy/issues/1846
 .. _pull 1849: https://github.com/nedbat/coveragepy/pull/1849
+.. _issue 1860: https://github.com/nedbat/coveragepy/issues/1860
 
 
 .. scriv-start-here
