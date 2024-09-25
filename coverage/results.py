@@ -211,6 +211,8 @@ class Analysis:
     def executed_branch_arcs(self) -> dict[TLineNo, list[TLineNo]]:
         """Return arcs that were executed from branch lines.
 
+        Only include ones that we considered possible.
+
         Returns {l1:[l2a,l2b,...], ...}
 
         """
@@ -218,6 +220,8 @@ class Analysis:
         eba = collections.defaultdict(list)
         for l1, l2 in self.arcs_executed:
             if l1 == l2:
+                continue
+            if (l1, l2) not in self.arc_possibilities_set:
                 continue
             if l1 in branch_lines:
                 eba[l1].append(l2)
