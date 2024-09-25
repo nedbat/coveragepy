@@ -227,6 +227,13 @@ class PythonFileReporter(FileReporter):
     ) -> str:
         return self.parser.missing_arc_description(start, end)
 
+    def arc_description(
+        self,
+        start: TLineNo,
+        end: TLineNo
+    ) -> str:
+        return self.parser.arc_description(start, end)
+
     def source(self) -> str:
         if self._source is None:
             self._source = get_python_source(self.filename)
