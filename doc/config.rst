@@ -593,6 +593,8 @@ Settings common to many kinds of reporting.
 from reporting.  This setting is preferred, because it will preserve the
 default exclude pattern ``pragma: no cover`` instead of overwriting it.
 
+See :ref:`config_report_exclude_lines` for further details.
+
 .. versionadded:: 7.2.0
 
 
@@ -616,6 +618,10 @@ Be careful when writing this setting: the values are regular expressions that
 only have to match a portion of the line. For example, if you write ``...``,
 you'll exclude any line with three or more of any character. If you write
 ``pass``, you'll also exclude the line ``my_pass="foo"``, and so on.
+
+All of the regexes here and in :ref:`config_report_exclude_also` are combined
+into one regex for processing, so you cannot use global flags like ``(?s)`` in
+your regexes.  Use the scoped flag form instead: ``(?s:...)``
 
 
 .. _config_report_fail_under:

@@ -248,8 +248,9 @@ region will be excluded.  If part of the region introduces a block, the entire
 block is excluded even if part of it is outside the matched region.
 
 When writing regexes to match multiple lines, remember that ``"."`` won't match
-a newline character, but ``"\n"`` or ``"(?s:.)"`` will.  Using the ``"(?s)"``
-flag in your regex will also make dot match a newline.
+a newline character, but ``"\n"`` or ``"(?s:.)"`` will.  The regexes in these
+settings are combined, so you cannot use global flags like ``(?s)`` in
+your regexes.  Use the scoped flag form instead: ``(?s:...)``
 
 Here are some examples:
 
@@ -263,7 +264,7 @@ Here are some examples:
                 ; 2. Comments to turn coverage on and off:
                 no cover: start(?s:.)*?no cover: stop
                 ; 3. A pragma comment that excludes an entire file:
-                (?s)\A.*# pragma: exclude file.*\Z
+                \A(?s:.*# pragma: exclude file.*)\Z
             """,
         toml=r"""
             [tool.coverage.report]
@@ -273,7 +274,7 @@ Here are some examples:
                 # 2. Comments to turn coverage on and off:
                 "no cover: start(?s:.)*?no cover: stop",
                 # 3. A pragma comment that excludes an entire file:
-                "(?s)\\A.*# pragma: exclude file.*\\Z",
+                "\\A(?s:.*# pragma: exclude file.*)\\Z",
                 ]
             """,
         )
@@ -291,7 +292,7 @@ Here are some examples:
             ; 2. Comments to turn coverage on and off:
             no cover: start(?s:.)*?no cover: stop
             ; 3. A pragma comment that excludes an entire file:
-            (?s)\A.*# pragma: exclude file.*\Z
+            \A(?s:.*# pragma: exclude file.*)\Z
 
     .. code-tab:: toml
         :caption: pyproject.toml
@@ -303,7 +304,7 @@ Here are some examples:
             # 2. Comments to turn coverage on and off:
             "no cover: start(?s:.)*?no cover: stop",
             # 3. A pragma comment that excludes an entire file:
-            "(?s)\\A.*# pragma: exclude file.*\\Z",
+            "\\A(?s:.*# pragma: exclude file.*)\\Z",
             ]
 
     .. code-tab:: ini
@@ -316,9 +317,9 @@ Here are some examples:
             ; 2. Comments to turn coverage on and off:
             no cover: start(?s:.)*?no cover: stop
             ; 3. A pragma comment that excludes an entire file:
-            (?s)\A.*# pragma: exclude file.*\Z
+            \A(?s:.*# pragma: exclude file.*)\Z
 
-.. [[[end]]] (checksum: 22ff0a1433f00d3b4d13544623aaf884)
+.. [[[end]]] (checksum: ee3ef14b5a5d73f987b924df623a4927)
 
 The first regex matches a specific except line followed by a specific function
 call.  Both lines must be present for the exclusion to take effect. Note that
@@ -336,7 +337,7 @@ as possible, and you could accidentally exclude large swaths of code.
 The third regex matches the entire text of a file containing the comment ``#
 pragma: exclude file``.  This lets you exclude files from coverage measurement
 with an internal comment instead of naming them in a settings file.  This regex
-uses the ``"(?s)"`` regex flag to let a dot match any character including a
+uses the ``"(?s:...)"`` regex flag to let a dot match any character including a
 newline.
 
 

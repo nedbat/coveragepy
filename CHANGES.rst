@@ -42,6 +42,8 @@ Unreleased
   is false. To keep checksums set it to true.  All this work is thanks to `Zack
   Weinberg <pull 1849_>`_.
 
+- Fixed the docs for multi-line regex exclusions, closing `issue 1863`_.
+
 - Fixed a potential crash in the C tracer, closing `issue 1835`_, thanks to
   `Jan Kühle <pull 1843_>`_.
 
@@ -52,6 +54,7 @@ Unreleased
 .. _issue 1846: https://github.com/nedbat/coveragepy/issues/1846
 .. _pull 1849: https://github.com/nedbat/coveragepy/pull/1849
 .. _issue 1860: https://github.com/nedbat/coveragepy/issues/1860
+.. _issue 1863: https://github.com/nedbat/coveragepy/issues/1863
 
 
 .. scriv-start-here
