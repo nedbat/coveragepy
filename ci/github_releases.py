@@ -4,6 +4,7 @@
 """Upload release notes into GitHub releases."""
 
 import json
+import os
 import shlex
 import subprocess
 import sys
@@ -50,6 +51,16 @@ def check_ok(resp):
         print(f"text: {resp.text!r}")
         resp.raise_for_status()
 
+def get_session():
+    """
+    Get an authenticated GitHub requests session.
+    """
+    gh_session = requests.Session()
+    token = os.environ.get("GITHUB_TOKEN", "")
+    if token:
+        gh_session.headers["Authorization"] = f"Bearer {token}"
+    return gh_session
+
 def github_paginated(session, url):
     """
     Get all the results from a paginated GitHub url.
@@ -75,6 +86,8 @@ def get_releases(session, repo):
     return releases
 
 RELEASE_BODY_FMT = """\
+Released {when}
+
 {relnote_text}
 
 :arrow_right:\xa0 PyPI page: [coverage {version}](https://pypi.org/project/coverage/{version}).
@@ -87,7 +100,11 @@ def release_for_relnote(relnote):
     """
     relnote_text = relnote["text"]
     tag = version = relnote["version"]
-    body = RELEASE_BODY_FMT.format(relnote_text=relnote_text, version=version)
+    body = RELEASE_BODY_FMT.format(
+        relnote_text=relnote_text,
+        version=version,
+        when=relnote["when"],
+    )
     return {
         "tag_name": tag,
         "name": version,
@@ -116,7 +133,7 @@ def update_github_releases(json_filename, repo):
     """
     Read the json file, and create or update releases in GitHub.
     """
-    gh_session = requests.Session()
+    gh_session = get_session()
     releases = get_releases(gh_session, repo)
     if 0:   # if you need to delete all the releases!
         for release in releases.values():
