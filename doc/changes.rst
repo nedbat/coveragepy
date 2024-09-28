@@ -6,7 +6,7 @@
 .. The recent changes from the top-level file:
 
 .. include:: ../CHANGES.rst
-    :end-before: scriv-end-here
+    :end-before: endchangesinclude
 
 .. Older changes here:
 

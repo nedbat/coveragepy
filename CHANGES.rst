@@ -57,7 +57,6 @@ Unreleased
 .. _issue 1863: https://github.com/nedbat/coveragepy/issues/1863
 
 
-.. scriv-start-here
 
 .. _changes_7-6-1:
 
@@ -1598,7 +1597,7 @@ Version 5.3 — 2020-09-13
 .. _issue 1011: https://github.com/nedbat/coveragepy/issues/1011
 
 
-.. scriv-end-here
+.. endchangesinclude
 
 Older changes
 -------------
