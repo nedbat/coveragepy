@@ -57,6 +57,7 @@ Unreleased
 .. _issue 1863: https://github.com/nedbat/coveragepy/issues/1863
 
 
+.. start-releases
 
 .. _changes_7-6-1:
 

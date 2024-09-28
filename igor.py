@@ -379,7 +379,7 @@ def update_file(fname, pattern, replacement):
 
 
 UNRELEASED = "Unreleased\n----------"
-SCRIV_START = ".. scriv-start-here\n\n"
+RELEASES_START = ".. start-releases\n\n"
 
 
 def do_edit_for_release():
@@ -400,8 +400,8 @@ def do_edit_for_release():
     rule = "-" * len(title)
     new_head = f".. _changes_{facts.anchor}:\n\n{title}\n{rule}"
 
-    update_file("CHANGES.rst", re.escape(SCRIV_START), "")
-    update_file("CHANGES.rst", re.escape(UNRELEASED), SCRIV_START + new_head)
+    update_file("CHANGES.rst", re.escape(RELEASES_START), "")
+    update_file("CHANGES.rst", re.escape(UNRELEASED), RELEASES_START + new_head)
 
     # doc/conf.py
     new_conf = textwrap.dedent(
@@ -427,8 +427,8 @@ def do_bump_version():
     # CHANGES.rst
     update_file(
         "CHANGES.rst",
-        re.escape(SCRIV_START),
-        f"{UNRELEASED}\n\nNothing yet.\n\n\n" + SCRIV_START,
+        re.escape(RELEASES_START),
+        f"{UNRELEASED}\n\nNothing yet.\n\n\n" + RELEASES_START,
     )
 
     # coverage/version.py
