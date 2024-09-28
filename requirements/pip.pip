@@ -10,7 +10,7 @@ filelock==3.16.1
     # via virtualenv
 platformdirs==4.3.6
     # via virtualenv
-virtualenv==20.26.5
+virtualenv==20.26.6
     # via -r requirements/pip.in
 
 # The following packages are considered to be unsafe in a requirements file:

@@ -40,5 +40,5 @@ tox==4.20.0
     #   tox-gh
 tox-gh==1.4.1
     # via -r requirements/tox.in
-virtualenv==20.26.5
+virtualenv==20.26.6
     # via tox

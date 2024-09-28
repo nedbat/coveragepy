@@ -10,8 +10,6 @@ anyio==4.3.0
     # via
     #   starlette
     #   watchfiles
-attrs==23.2.0
-    # via scriv
 babel==2.15.0
     # via sphinx
 certifi==2024.2.2
@@ -21,10 +19,7 @@ charset-normalizer==3.3.2
 click==8.1.7
     # via
     #   click-log
-    #   scriv
     #   uvicorn
-click-log==0.4.0
-    # via scriv
 cogapp==3.4.1
     # via -r doc/requirements.in
 colorama==0.4.6
@@ -47,10 +42,7 @@ imagesize==1.4.1
     # via sphinx
 jinja2==3.1.4
     # via
-    #   scriv
     #   sphinx
-markdown-it-py==3.0.0
-    # via scriv
 markupsafe==2.1.5
     # via jinja2
 mdurl==0.1.2
@@ -73,12 +65,9 @@ regex==2024.4.28
     # via sphinx-lint
 requests==2.31.0
     # via
-    #   scriv
     #   sphinx
 restructuredtext-lint==1.4.0
     # via doc8
-scriv==1.5.1
-    # via -r doc/requirements.in
 sniffio==1.3.1
     # via anyio
 snowballstemmer==2.2.0
