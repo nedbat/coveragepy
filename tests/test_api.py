@@ -292,7 +292,13 @@ class ApiTest(CoverageTest):
         # empty summary reports raise exception, just like the xml report
         cov = coverage.Coverage()
         cov.erase()
-        with pytest.raises(NoDataError, match="No data to report."):
+        with pytest.raises(
+            NoDataError,
+            match=(
+                r"^The data file or directory '(.+?)' could not be found\. Perhaps 'coverage "
+                + r"combine' must be run first\.$"
+            )
+        ):
             cov.report()
 
     def test_completely_zero_reporting(self) -> None:
@@ -438,7 +444,13 @@ class ApiTest(CoverageTest):
         self.assert_exists(".coverage")
 
         cov2 = coverage.Coverage()
-        with pytest.raises(NoDataError, match=r"No data to combine"):
+        with pytest.raises(
+            NoDataError,
+            match=(
+                r"^The data directory '(.+?)' does not contain any data files. Perhaps 'coverage "
+                + r"combine' must be run first.$"
+            )
+        ):
             cov2.combine(strict=True, keep=False)
 
         cov3 = coverage.Coverage()
@@ -1318,7 +1330,7 @@ class CombiningTest(CoverageTest):
         # Running combine again should fail, because there are no parallel data
         # files to combine.
         cov = coverage.Coverage()
-        with pytest.raises(NoDataError, match=r"No data to combine"):
+        with pytest.raises(NoDataError):
             cov.combine(strict=True)
 
         # And the originally combined data is still there.
@@ -1368,7 +1380,13 @@ class CombiningTest(CoverageTest):
         # Combine the parallel coverage data files into .coverage, but nothing is readable.
         cov = coverage.Coverage()
         with pytest.warns(Warning) as warns:
-            with pytest.raises(NoDataError, match=r"No usable data files"):
+            with pytest.raises(
+                NoDataError,
+                match=(
+                    r"^The following data files are unusable, perhaps because they do not contain "
+                    + r"valid coverage information:\n- '(.+?)'\n- '(.+?)'$"
+                )
+            ):
                 cov.combine(strict=True)
 
         warn_rx = re.compile(

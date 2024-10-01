@@ -5,6 +5,16 @@
 
 from __future__ import annotations
 
+import os.path
+
+
+def _message_append_combine_hint(message: str, is_combining: bool) -> str:
+    """Append information about the combine command to error messages."""
+    if not is_combining:
+        message += " Perhaps 'coverage combine' must be run first."
+    return message
+
+
 class _BaseCoverageException(Exception):
     """The base-base of all Coverage exceptions."""
     pass
@@ -24,9 +34,59 @@ class DataError(CoverageException):
     """An error in using a data file."""
     pass
 
+
 class NoDataError(CoverageException):
     """We didn't have data to work with."""
     pass
+
+
+class DataFileOrDirectoryNotFoundError(NoDataError):
+    """A data file or data directory could be found."""
+    @classmethod
+    def new(
+        cls, data_file_or_directory_path: str, *, is_combining: bool = False
+    ) -> DataFileOrDirectoryNotFoundError:
+        """
+        Create a new instance.
+        """
+        message = (
+            f"The data file or directory '{os.path.abspath(data_file_or_directory_path)}' could not"
+            + " be found."
+        )
+        return cls(_message_append_combine_hint(message, is_combining))
+
+
+class NoDataFilesFoundError(NoDataError):
+    """No data files could be found in a data directory."""
+    @classmethod
+    def new(
+        cls, data_directory_path: str, *, is_combining: bool = False
+    ) -> 'NoDataFilesFoundError':
+        """
+        Create a new instance.
+        """
+        message = (
+            f"The data directory '{os.path.abspath(data_directory_path)}' does not contain any data"
+            + " files."
+        )
+        return cls(_message_append_combine_hint(message, is_combining))
+
+
+class UnusableDataFilesError(NoDataError):
+    """The given data files are unusable."""
+    @classmethod
+    def new(cls, *data_file_paths: str) -> 'UnusableDataFilesError':
+        """
+        Create a new instance.
+        """
+        message = (
+            "The following data files are unusable, perhaps because they do not contain valid"
+            + " coverage information:"
+        )
+        for data_file_path in data_file_paths:
+            message += f"\n- '{os.path.abspath(data_file_path)}'"
+
+        return cls(message)
 
 
 class NoSource(CoverageException):

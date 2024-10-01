@@ -145,7 +145,13 @@ class XmlReportTest(XmlTestHelpers, CoverageTest):
 
     def test_no_data(self) -> None:
         # https://github.com/nedbat/coveragepy/issues/210
-        with pytest.raises(NoDataError, match="No data to report."):
+        with pytest.raises(
+            NoDataError,
+            match=(
+                r"^The data file or directory '(.+?)' could not be found\. Perhaps 'coverage "
+                + r"combine' must be run first\.$"
+            )
+        ):
             self.run_xml_report()
         self.assert_doesnt_exist("coverage.xml")
         self.assert_doesnt_exist(".coverage")
