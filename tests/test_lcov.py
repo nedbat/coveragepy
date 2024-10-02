@@ -8,27 +8,10 @@ from __future__ import annotations
 import math
 import textwrap
 
-from tests.coveragetest import CoverageTest
-
 import coverage
-from coverage import env
 
-
-def fn_coverage_missing_in_pypy_38(
-    line_records: str,
-    fn_records: str,
-    arc_records: str,
-) -> str:
-    """
-    Helper for tests that trip a bug in PyPy 3.8 that prevent us from
-    generating function coverage records for top-level functions when
-    coverage data was collected in --branch mode.  See lcov_functions
-    in lcovreport.py for more detail.
-    """
-    if env.PYPY and env.PYVERSION[:2] == (3, 8):
-        return line_records + arc_records
-    else:
-        return line_records + fn_records + arc_records
+from tests.coveragetest import CoverageTest
+from tests.helpers import xfail_pypy38
 
 
 class LcovTest(CoverageTest):
@@ -177,6 +160,7 @@ class LcovTest(CoverageTest):
         actual_result = self.get_lcov_report_content(filename="data.lcov")
         assert expected_result == actual_result
 
+    @xfail_pypy38
     def test_branch_coverage_one_file(self) -> None:
         # Test that the reporter produces valid branch coverage.
         self.make_file("main_file.py", """\
@@ -192,33 +176,28 @@ class LcovTest(CoverageTest):
         pct = cov.lcov_report()
         assert math.isclose(pct, 16.666666666666668)
         self.assert_exists("coverage.lcov")
-        expected_result = fn_coverage_missing_in_pypy_38(
-            textwrap.dedent("""\
-                SF:main_file.py
-                DA:1,1
-                DA:2,0
-                DA:3,0
-                DA:5,0
-                LF:4
-                LH:1
-                """),
-            textwrap.dedent("""\
-                FN:1,5,is_it_x
-                FNDA:0,is_it_x
-                FNF:1
-                FNH:0
-                """),
-            textwrap.dedent("""\
-                BRDA:2,0,jump to line 3,-
-                BRDA:2,0,jump to line 5,-
-                BRF:2
-                BRH:0
-                end_of_record
-                """)
-            )
+        expected_result = textwrap.dedent("""\
+            SF:main_file.py
+            DA:1,1
+            DA:2,0
+            DA:3,0
+            DA:5,0
+            LF:4
+            LH:1
+            FN:1,5,is_it_x
+            FNDA:0,is_it_x
+            FNF:1
+            FNH:0
+            BRDA:2,0,jump to line 3,-
+            BRDA:2,0,jump to line 5,-
+            BRF:2
+            BRH:0
+            end_of_record
+            """)
         actual_result = self.get_lcov_report_content()
         assert expected_result == actual_result
 
+    @xfail_pypy38
     def test_branch_coverage_two_files(self) -> None:
         # Test that valid branch coverage is generated
         # in the case of two files.
@@ -245,33 +224,23 @@ class LcovTest(CoverageTest):
         pct = cov.lcov_report()
         assert math.isclose(pct, 41.666666666666664)
         self.assert_exists("coverage.lcov")
-        # The pypy 3.8 bug that prevents us from generating function coverage
-        # records only applies to top-level functions, not to member functions.
-        expected_result = fn_coverage_missing_in_pypy_38(
-            textwrap.dedent("""\
-                SF:main_file.py
-                DA:1,1
-                DA:2,0
-                DA:3,0
-                DA:5,0
-                LF:4
-                LH:1
-                """),
-            textwrap.dedent("""\
-                FN:1,5,is_it_x
-                FNDA:0,is_it_x
-                FNF:1
-                FNH:0
-                """),
-            textwrap.dedent("""\
-                BRDA:2,0,jump to line 3,-
-                BRDA:2,0,jump to line 5,-
-                BRF:2
-                BRH:0
-                end_of_record
-                """)
-            )
-        expected_result += textwrap.dedent("""\
+        expected_result = textwrap.dedent("""\
+            SF:main_file.py
+            DA:1,1
+            DA:2,0
+            DA:3,0
+            DA:5,0
+            LF:4
+            LH:1
+            FN:1,5,is_it_x
+            FNDA:0,is_it_x
+            FNF:1
+            FNH:0
+            BRDA:2,0,jump to line 3,-
+            BRDA:2,0,jump to line 5,-
+            BRF:2
+            BRH:0
+            end_of_record
             SF:test_file.py
             DA:1,1
             DA:2,1
@@ -392,6 +361,7 @@ class LcovTest(CoverageTest):
         actual_result = self.get_lcov_report_content()
         assert expected_result == actual_result
 
+    @xfail_pypy38
     def test_exit_branches(self) -> None:
         self.make_file("runme.py", """\
             def foo(a):
@@ -405,36 +375,31 @@ class LcovTest(CoverageTest):
         cov = coverage.Coverage(source=".", branch=True)
         self.start_import_stop(cov, "runme")
         cov.lcov_report()
-        expected_result = fn_coverage_missing_in_pypy_38(
-            textwrap.dedent("""\
-                SF:runme.py
-                DA:1,1
-                DA:2,1
-                DA:3,1
-                DA:4,1
-                DA:5,1
-                DA:6,1
-                DA:7,1
-                LF:7
-                LH:7
-                """),
-            textwrap.dedent("""\
-                FN:1,3,foo
-                FNDA:1,foo
-                FNF:1
-                FNH:1
-                """),
-            textwrap.dedent("""\
-                BRDA:2,0,jump to line 3,1
-                BRDA:2,0,return from function 'foo',1
-                BRF:2
-                BRH:2
-                end_of_record
-                """),
-        )
+        expected_result = textwrap.dedent("""\
+            SF:runme.py
+            DA:1,1
+            DA:2,1
+            DA:3,1
+            DA:4,1
+            DA:5,1
+            DA:6,1
+            DA:7,1
+            LF:7
+            LH:7
+            FN:1,3,foo
+            FNDA:1,foo
+            FNF:1
+            FNH:1
+            BRDA:2,0,jump to line 3,1
+            BRDA:2,0,return from function 'foo',1
+            BRF:2
+            BRH:2
+            end_of_record
+            """)
         actual_result = self.get_lcov_report_content()
         assert expected_result == actual_result
 
+    @xfail_pypy38
     def test_genexpr_exit_arcs_pruned_full_coverage(self) -> None:
         self.make_file("runme.py", """\
             def foo(a):
@@ -448,36 +413,31 @@ class LcovTest(CoverageTest):
         cov = coverage.Coverage(source=".", branch=True)
         self.start_import_stop(cov, "runme")
         cov.lcov_report()
-        expected_result = fn_coverage_missing_in_pypy_38(
-            textwrap.dedent("""\
-                SF:runme.py
-                DA:1,1
-                DA:2,1
-                DA:3,1
-                DA:4,1
-                DA:5,1
-                DA:6,1
-                DA:7,1
-                LF:7
-                LH:7
-                """),
-            textwrap.dedent("""\
-                FN:1,3,foo
-                FNDA:1,foo
-                FNF:1
-                FNH:1
-                """),
-            textwrap.dedent("""\
-                BRDA:2,0,jump to line 3,1
-                BRDA:2,0,return from function 'foo',1
-                BRF:2
-                BRH:2
-                end_of_record
-                """),
-        )
+        expected_result = textwrap.dedent("""\
+            SF:runme.py
+            DA:1,1
+            DA:2,1
+            DA:3,1
+            DA:4,1
+            DA:5,1
+            DA:6,1
+            DA:7,1
+            LF:7
+            LH:7
+            FN:1,3,foo
+            FNDA:1,foo
+            FNF:1
+            FNH:1
+            BRDA:2,0,jump to line 3,1
+            BRDA:2,0,return from function 'foo',1
+            BRF:2
+            BRH:2
+            end_of_record
+            """)
         actual_result = self.get_lcov_report_content()
         assert expected_result == actual_result
 
+    @xfail_pypy38
     def test_genexpr_exit_arcs_pruned_never_true(self) -> None:
         self.make_file("runme.py", """\
             def foo(a):
@@ -489,34 +449,29 @@ class LcovTest(CoverageTest):
         cov = coverage.Coverage(source=".", branch=True)
         self.start_import_stop(cov, "runme")
         cov.lcov_report()
-        expected_result = fn_coverage_missing_in_pypy_38(
-            textwrap.dedent("""\
-                SF:runme.py
-                DA:1,1
-                DA:2,1
-                DA:3,0
-                DA:4,1
-                DA:5,1
-                LF:5
-                LH:4
-                """),
-            textwrap.dedent("""\
-                FN:1,3,foo
-                FNDA:1,foo
-                FNF:1
-                FNH:1
-                """),
-            textwrap.dedent("""\
-                BRDA:2,0,jump to line 3,0
-                BRDA:2,0,return from function 'foo',1
-                BRF:2
-                BRH:1
-                end_of_record
-                """),
-        )
+        expected_result = textwrap.dedent("""\
+            SF:runme.py
+            DA:1,1
+            DA:2,1
+            DA:3,0
+            DA:4,1
+            DA:5,1
+            LF:5
+            LH:4
+            FN:1,3,foo
+            FNDA:1,foo
+            FNF:1
+            FNH:1
+            BRDA:2,0,jump to line 3,0
+            BRDA:2,0,return from function 'foo',1
+            BRF:2
+            BRH:1
+            end_of_record
+            """)
         actual_result = self.get_lcov_report_content()
         assert expected_result == actual_result
 
+    @xfail_pypy38
     def test_genexpr_exit_arcs_pruned_always_true(self) -> None:
         self.make_file("runme.py", """\
             def foo(a):
@@ -528,34 +483,29 @@ class LcovTest(CoverageTest):
         cov = coverage.Coverage(source=".", branch=True)
         self.start_import_stop(cov, "runme")
         cov.lcov_report()
-        expected_result = fn_coverage_missing_in_pypy_38(
-            textwrap.dedent("""\
-                SF:runme.py
-                DA:1,1
-                DA:2,1
-                DA:3,1
-                DA:4,1
-                DA:5,1
-                LF:5
-                LH:5
-                """),
-            textwrap.dedent("""\
-                FN:1,3,foo
-                FNDA:1,foo
-                FNF:1
-                FNH:1
-                """),
-            textwrap.dedent("""\
-                BRDA:2,0,jump to line 3,1
-                BRDA:2,0,return from function 'foo',0
-                BRF:2
-                BRH:1
-                end_of_record
-                """),
-        )
+        expected_result = textwrap.dedent("""\
+            SF:runme.py
+            DA:1,1
+            DA:2,1
+            DA:3,1
+            DA:4,1
+            DA:5,1
+            LF:5
+            LH:5
+            FN:1,3,foo
+            FNDA:1,foo
+            FNF:1
+            FNH:1
+            BRDA:2,0,jump to line 3,1
+            BRDA:2,0,return from function 'foo',0
+            BRF:2
+            BRH:1
+            end_of_record
+            """)
         actual_result = self.get_lcov_report_content()
         assert expected_result == actual_result
 
+    @xfail_pypy38
     def test_genexpr_exit_arcs_pruned_not_reached(self) -> None:
         self.make_file("runme.py", """\
             def foo(a):
@@ -565,28 +515,22 @@ class LcovTest(CoverageTest):
         cov = coverage.Coverage(source=".", branch=True)
         self.start_import_stop(cov, "runme")
         cov.lcov_report()
-        expected_result = fn_coverage_missing_in_pypy_38(
-            textwrap.dedent("""\
-                SF:runme.py
-                DA:1,1
-                DA:2,0
-                DA:3,0
-                LF:3
-                LH:1
-                """),
-            textwrap.dedent("""\
-                FN:1,3,foo
-                FNDA:0,foo
-                FNF:1
-                FNH:0
-                """),
-            textwrap.dedent("""\
-                BRDA:2,0,jump to line 3,-
-                BRDA:2,0,return from function 'foo',-
-                BRF:2
-                BRH:0
-                end_of_record
-                """),
-        )
+        expected_result = textwrap.dedent("""\
+            SF:runme.py
+            DA:1,1
+            DA:2,0
+            DA:3,0
+            LF:3
+            LH:1
+            FN:1,3,foo
+            FNDA:0,foo
+            FNF:1
+            FNH:0
+            BRDA:2,0,jump to line 3,-
+            BRDA:2,0,return from function 'foo',-
+            BRF:2
+            BRH:0
+            end_of_record
+            """)
         actual_result = self.get_lcov_report_content()
         assert expected_result == actual_result
