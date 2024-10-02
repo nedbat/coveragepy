@@ -26,7 +26,7 @@ colorama==0.4.6
     # via -r requirements/kit.in
 docutils==0.20.1
     # via readme-renderer
-filelock==3.16.0
+filelock==3.16.1
     # via cibuildwheel
 idna==3.10
     # via requests
@@ -41,9 +41,9 @@ jaraco-classes==3.4.0
     # via keyring
 jaraco-context==6.0.1
     # via keyring
-jaraco-functools==4.0.2
+jaraco-functools==4.1.0
     # via keyring
-keyring==25.3.0
+keyring==25.4.1
     # via twine
 markdown-it-py==3.0.0
     # via rich
@@ -62,7 +62,7 @@ packaging==24.1
     #   cibuildwheel
 pkginfo==1.10.0
     # via twine
-platformdirs==4.3.3
+platformdirs==4.3.6
     # via cibuildwheel
 pyelftools==0.31
     # via auditwheel

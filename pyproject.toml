@@ -153,13 +153,3 @@ ignore = [
     "ANN101",       # Missing type annotation for `self` in method
     "ERA001",       # Found commented-out code
 ]
-
-## SCRIV
-
-[tool.scriv]
-# Changelog management: https://pypi.org/project/scriv/
-format = "rst"
-output_file = "CHANGES.rst"
-insert_marker = "scriv-start-here"
-end_marker = "scriv-end-here"
-ghrel_template = "file: ci/ghrel_template.md.j2"

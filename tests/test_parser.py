@@ -920,7 +920,7 @@ class ExclusionParserTest(PythonParserTestBase):
 
     def test_multiline_exclusion_whole_source(self) -> None:
         # https://github.com/nedbat/coveragepy/issues/118
-        regex = r"(?s)\A.*# pragma: exclude file.*\Z"
+        regex = r"\A(?s:.*# pragma: exclude file.*)\Z"
         parser = self.parse_text("""\
             import coverage
             # pragma: exclude file

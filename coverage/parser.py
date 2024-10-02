@@ -1142,6 +1142,8 @@ class AstArcAnalyzer:
             pattern = case.pattern      # pylint: disable=undefined-loop-variable
             while isinstance(pattern, ast.MatchOr):
                 pattern = pattern.patterns[-1]
+            while isinstance(pattern, ast.MatchAs) and pattern.pattern is not None:
+                pattern = pattern.pattern
             had_wildcard = (
                 isinstance(pattern, ast.MatchAs)
                 and pattern.pattern is None

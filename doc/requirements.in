@@ -9,7 +9,6 @@
 cogapp
 doc8
 pyenchant
-scriv       # for writing GitHub releases
 sphinx
 sphinx-autobuild
 sphinx_rtd_theme
