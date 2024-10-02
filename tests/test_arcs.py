@@ -8,7 +8,7 @@ from __future__ import annotations
 import pytest
 
 from tests.coveragetest import CoverageTest
-from tests.helpers import assert_count_equal, xfail_pypy38
+from tests.helpers import assert_count_equal, xfail_older_pypy38
 
 import coverage
 from coverage import env
@@ -1695,7 +1695,7 @@ class DecoratorArcTest(CoverageTest):
             branchz="", branchz_missing="",
         )
 
-    @xfail_pypy38
+    @xfail_older_pypy38
     def test_class_decorator(self) -> None:
         self.check_coverage("""\
             def decorator(arg):

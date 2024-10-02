@@ -11,7 +11,7 @@ import textwrap
 import coverage
 
 from tests.coveragetest import CoverageTest
-from tests.helpers import xfail_pypy38
+from tests.helpers import xfail_all_pypy38
 
 
 class LcovTest(CoverageTest):
@@ -160,7 +160,7 @@ class LcovTest(CoverageTest):
         actual_result = self.get_lcov_report_content(filename="data.lcov")
         assert expected_result == actual_result
 
-    @xfail_pypy38
+    @xfail_all_pypy38
     def test_branch_coverage_one_file(self) -> None:
         # Test that the reporter produces valid branch coverage.
         self.make_file("main_file.py", """\
@@ -197,7 +197,7 @@ class LcovTest(CoverageTest):
         actual_result = self.get_lcov_report_content()
         assert expected_result == actual_result
 
-    @xfail_pypy38
+    @xfail_all_pypy38
     def test_branch_coverage_two_files(self) -> None:
         # Test that valid branch coverage is generated
         # in the case of two files.
@@ -361,7 +361,7 @@ class LcovTest(CoverageTest):
         actual_result = self.get_lcov_report_content()
         assert expected_result == actual_result
 
-    @xfail_pypy38
+    @xfail_all_pypy38
     def test_exit_branches(self) -> None:
         self.make_file("runme.py", """\
             def foo(a):
@@ -399,7 +399,7 @@ class LcovTest(CoverageTest):
         actual_result = self.get_lcov_report_content()
         assert expected_result == actual_result
 
-    @xfail_pypy38
+    @xfail_all_pypy38
     def test_genexpr_exit_arcs_pruned_full_coverage(self) -> None:
         self.make_file("runme.py", """\
             def foo(a):
@@ -437,7 +437,7 @@ class LcovTest(CoverageTest):
         actual_result = self.get_lcov_report_content()
         assert expected_result == actual_result
 
-    @xfail_pypy38
+    @xfail_all_pypy38
     def test_genexpr_exit_arcs_pruned_never_true(self) -> None:
         self.make_file("runme.py", """\
             def foo(a):
@@ -471,7 +471,7 @@ class LcovTest(CoverageTest):
         actual_result = self.get_lcov_report_content()
         assert expected_result == actual_result
 
-    @xfail_pypy38
+    @xfail_all_pypy38
     def test_genexpr_exit_arcs_pruned_always_true(self) -> None:
         self.make_file("runme.py", """\
             def foo(a):
@@ -505,7 +505,7 @@ class LcovTest(CoverageTest):
         actual_result = self.get_lcov_report_content()
         assert expected_result == actual_result
 
-    @xfail_pypy38
+    @xfail_all_pypy38
     def test_genexpr_exit_arcs_pruned_not_reached(self) -> None:
         self.make_file("runme.py", """\
             def foo(a):
