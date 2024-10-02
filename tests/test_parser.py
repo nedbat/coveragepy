@@ -14,7 +14,7 @@ from coverage.exceptions import NotPython
 from coverage.parser import PythonParser
 
 from tests.coveragetest import CoverageTest
-from tests.helpers import arcz_to_arcs, xfail_pypy38
+from tests.helpers import arcz_to_arcs, xfail_older_pypy38
 
 
 class PythonParserTestBase(CoverageTest):
@@ -672,7 +672,7 @@ class ExclusionParserTest(PythonParserTestBase):
         )
         assert parser.statements == {1, 6}
 
-    @xfail_pypy38
+    @xfail_older_pypy38
     def test_decorator_pragmas(self) -> None:
         parser = self.parse_text("""\
             # 1
@@ -706,7 +706,7 @@ class ExclusionParserTest(PythonParserTestBase):
         assert parser.raw_statements == raw_statements
         assert parser.statements == {8}
 
-    @xfail_pypy38
+    @xfail_older_pypy38
     def test_decorator_pragmas_with_colons(self) -> None:
         # A colon in a decorator expression would confuse the parser,
         # ending the exclusion of the decorated function.
