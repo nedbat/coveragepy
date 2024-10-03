@@ -23,6 +23,8 @@ upgrading your version of coverage.py.
 Unreleased
 ----------
 
+- Dropped support for Python 3.8 and PyPy 3.8.
+
 - Fix: a final wildcard match/case clause assigning to a name (``case _ as
   value``) was incorrectly marked as a missing branch.  This is now fixed,
   closing `issue 1860`_.
