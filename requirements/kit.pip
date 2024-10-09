@@ -10,17 +10,17 @@ backports-tarfile==1.2.0
     # via jaraco-context
 bashlex==0.18
     # via cibuildwheel
-bracex==2.5
+bracex==2.5.post1
     # via cibuildwheel
-build==1.2.2
+build==1.2.2.post1
     # via -r requirements/kit.in
 certifi==2024.8.30
     # via
     #   cibuildwheel
     #   requests
-charset-normalizer==3.3.2
+charset-normalizer==3.4.0
     # via requests
-cibuildwheel==2.21.1
+cibuildwheel==2.21.3
     # via -r requirements/kit.in
 colorama==0.4.6
     # via -r requirements/kit.in
@@ -68,7 +68,7 @@ pygments==2.18.0
     # via
     #   readme-renderer
     #   rich
-pyproject-hooks==1.1.0
+pyproject-hooks==1.2.0
     # via build
 readme-renderer==44.0
     # via twine
@@ -80,16 +80,18 @@ requests-toolbelt==1.0.0
     # via twine
 rfc3986==2.0.0
     # via twine
-rich==13.8.1
+rich==13.9.2
     # via twine
-tomli==2.0.1
+tomli==2.0.2
     # via
     #   build
     #   cibuildwheel
 twine==5.1.1
     # via -r requirements/kit.in
 typing-extensions==4.12.2
-    # via cibuildwheel
+    # via
+    #   cibuildwheel
+    #   rich
 urllib3==2.2.3
     # via
     #   requests

@@ -6,7 +6,7 @@
 #
 cffi==1.17.1
     # via -r requirements/light-threads.in
-dnspython==2.6.1
+dnspython==2.7.0
     # via eventlet
 eventlet==0.37.0
     # via -r requirements/light-threads.in
