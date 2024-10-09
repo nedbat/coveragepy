@@ -38,7 +38,7 @@ Documentation is on `Read the Docs`_.  Code repository and issue tracker are on
 multi-line exclusion patterns;
 function/class reporting;
 experimental support for sys.monitoring;
-dropped support for Python 3.7;
+dropped support for Python 3.7 and 3.8;
 added ``Coverage.collect()`` context manager;
 improved data combining;
 ``[run] exclude_also`` setting;
@@ -151,10 +151,10 @@ Licensed under the `Apache 2.0 License`_.  For details, see `NOTICE.txt`_.
 .. |stars| image:: https://img.shields.io/github/stars/nedbat/coveragepy.svg?logo=github
     :target: https://github.com/nedbat/coveragepy/stargazers
     :alt: GitHub stars
-.. |mastodon-nedbat| image:: https://img.shields.io/badge/dynamic/json?style=flat&labelColor=450657&logo=mastodon&logoColor=ffffff&link=https%3A%2F%2Fhachyderm.io%2F%40nedbat&url=https%3A%2F%2Fhachyderm.io%2Fusers%2Fnedbat%2Ffollowers.json&query=totalItems&label=@nedbat
+.. |mastodon-nedbat| image:: https://img.shields.io/badge/dynamic/json?style=flat&labelColor=450657&logo=mastodon&logoColor=ffffff&label=@nedbat&query=followers_count&url=https%3A%2F%2Fhachyderm.io%2Fapi%2Fv1%2Faccounts%2Flookup%3Facct=nedbat
     :target: https://hachyderm.io/@nedbat
     :alt: nedbat on Mastodon
-.. |mastodon-coveragepy| image:: https://img.shields.io/badge/dynamic/json?style=flat&labelColor=450657&logo=mastodon&logoColor=ffffff&link=https%3A%2F%2Fhachyderm.io%2F%40coveragepy&url=https%3A%2F%2Fhachyderm.io%2Fusers%2Fcoveragepy%2Ffollowers.json&query=totalItems&label=@coveragepy
+.. |mastodon-coveragepy| image:: https://img.shields.io/badge/dynamic/json?style=flat&labelColor=450657&logo=mastodon&logoColor=ffffff&label=@coveragepy&query=followers_count&url=https%3A%2F%2Fhachyderm.io%2Fapi%2Fv1%2Faccounts%2Flookup%3Facct=coveragepy
     :target: https://hachyderm.io/@coveragepy
     :alt: coveragepy on Mastodon
 .. |sponsor| image:: https://img.shields.io/badge/%E2%9D%A4-Sponsor%20me-brightgreen?style=flat&logo=GitHub
