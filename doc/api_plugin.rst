@@ -10,7 +10,7 @@ Plug-in classes
 .. automodule:: coverage.plugin
 
 .. module:: coverage
-    :noindex:
+    :no-index:
 
 The CoveragePlugin class
 ------------------------

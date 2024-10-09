@@ -11,6 +11,6 @@ Coverage exceptions
 .. autoclass:: CoverageException
 
 .. automodule:: coverage.exceptions
-    :noindex:
+    :no-index:
     :members:
     :exclude-members: CoverageException

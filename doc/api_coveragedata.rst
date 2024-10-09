@@ -9,7 +9,7 @@ The CoverageData class
 .. versionadded:: 4.0
 
 .. module:: coverage
-    :noindex:
+    :no-index:
 
 .. autoclass:: CoverageData
     :members:
