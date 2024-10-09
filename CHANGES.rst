@@ -20,8 +20,12 @@ upgrading your version of coverage.py.
     ..  Version 9.8.1 — 2027-07-27
     ..  --------------------------
 
-Unreleased
-----------
+.. start-releases
+
+.. _changes_7-6-2:
+
+Version 7.6.2 — 2024-10-09
+--------------------------
 
 - Dropped support for Python 3.8 and PyPy 3.8.
 
@@ -61,8 +65,6 @@ Unreleased
 .. _issue 1860: https://github.com/nedbat/coveragepy/issues/1860
 .. _issue 1863: https://github.com/nedbat/coveragepy/issues/1863
 
-
-.. start-releases
 
 .. _changes_7-6-1:
 
