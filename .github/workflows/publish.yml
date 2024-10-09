@@ -31,7 +31,7 @@ jobs:
     steps:
     - name: "Find latest kit.yml run"
       id: runs
-      uses: octokit/request-action@872c5c97b3c85c23516a572f02b31401ef82415d # v2.3.1
+      uses: octokit/request-action@dad4362715b7fb2ddedf9772c8670824af564f0d # v2.4.0
       with:
         route: GET /repos/nedbat/coveragepy/actions/workflows/kit.yml/runs
       env:
@@ -77,7 +77,7 @@ jobs:
         subject-path: "dist/*"
 
     - name: "Publish dists to Test PyPI"
-      uses: pypa/gh-action-pypi-publish@897895f1e160c830e369f9779632ebc134688e1b # v1.10.2
+      uses: pypa/gh-action-pypi-publish@f7600683efdcb7656dec5b29656edb7bc586e597 # v1.10.3
       with:
         repository-url: https://test.pypi.org/legacy/
 
@@ -116,4 +116,4 @@ jobs:
         subject-path: "dist/*"
 
     - name: "Publish dists to PyPI"
-      uses: pypa/gh-action-pypi-publish@897895f1e160c830e369f9779632ebc134688e1b # v1.10.2
+      uses: pypa/gh-action-pypi-publish@f7600683efdcb7656dec5b29656edb7bc586e597 # v1.10.3
