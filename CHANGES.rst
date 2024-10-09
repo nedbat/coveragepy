@@ -41,7 +41,7 @@ Version 7.6.2 — 2024-10-09
 
 - Fewer things are considered branches now. Lambdas, comprehensions, and
   generator expressions are no longer marked as missing branches if they don't
-  complete execution.
+  complete execution.  Closes `issue 1852`_.
 
 - Fix: the HTML report didn't properly show multi-line f-strings that end with
   a backslash continuation.  This is now fixed, closing `issue 1836`_, thanks
@@ -68,6 +68,7 @@ Version 7.6.2 — 2024-10-09
 .. _pull 1849: https://github.com/nedbat/coveragepy/pull/1849
 .. _issue 1850: https://github.com/nedbat/coveragepy/issues/1850
 .. _pull 1851: https://github.com/nedbat/coveragepy/pull/1851
+.. _issue 1852: https://github.com/nedbat/coveragepy/issues/1852
 .. _issue 1860: https://github.com/nedbat/coveragepy/issues/1860
 .. _issue 1863: https://github.com/nedbat/coveragepy/issues/1863
 
