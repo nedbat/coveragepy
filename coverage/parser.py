@@ -719,7 +719,7 @@ class AstArcAnalyzer:
         if node.body:
             exits = self.process_body(node.body)
             for xit in exits:
-                self.add_arc(xit.lineno, -start, xit.cause, "didn't exit the module")
+                self.add_arc(xit.lineno, -start, xit.cause, "exit the module")
         else:
             # Empty module.
             self.add_arc(start, -start)

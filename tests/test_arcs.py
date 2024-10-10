@@ -323,6 +323,19 @@ class WithTest(CoverageTest):
         expected = "line 3 didn't jump to the function exit"
         assert self.get_missing_arc_description(cov, 3, -2) == expected
 
+    def test_leaving_module(self) -> None:
+        cov = self.check_coverage("""\
+            print(a := 1)
+            if a == 1:
+                print(3)
+            """,
+            branchz="2. 23",
+            branchz_missing="2.",
+        )
+        assert self.stdout() == "1\n3\n"
+        expected = "line 2 didn't exit the module because the condition on line 2 was always true"
+        assert self.get_missing_arc_description(cov, 2, -1) == expected
+
     def test_with_with_lambda(self) -> None:
         self.check_coverage("""\
             from contextlib import nullcontext

@@ -23,7 +23,10 @@ upgrading your version of coverage.py.
 Unreleased
 ----------
 
-Nothing yet.
+- Fix: the missing branch message about not exiting a module had an extra
+  "didn't," as described in `issue 1873`_.  This is now fixed.
+
+.. _issue 1873: https://github.com/nedbat/coveragepy/issues/1873
 
 
 .. start-releases
