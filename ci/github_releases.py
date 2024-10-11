@@ -86,7 +86,7 @@ def get_releases(session, repo):
     return releases
 
 RELEASE_BODY_FMT = """\
-Released {when}
+## Version {version} \N{EM DASH} {when}
 
 {relnote_text}
 
