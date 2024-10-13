@@ -20,8 +20,12 @@ upgrading your version of coverage.py.
     ..  Version 9.8.1 — 2027-07-27
     ..  --------------------------
 
-Unreleased
-----------
+.. start-releases
+
+.. _changes_7-6-3:
+
+Version 7.6.3 — 2024-10-13
+--------------------------
 
 - Fix: nested context managers could incorrectly be analyzed to flag a missing
   branch on the last context manager, as described in `issue 1876`_.  This is
@@ -33,8 +37,6 @@ Unreleased
 .. _issue 1873: https://github.com/nedbat/coveragepy/issues/1873
 .. _issue 1876: https://github.com/nedbat/coveragepy/issues/1876
 
-
-.. start-releases
 
 .. _changes_7-6-2:
 
