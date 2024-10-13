@@ -2590,8 +2590,8 @@ Version 3.0b3 — 2009-05-16
   interface still uses automatic saving.
 
 
-Version 3.0b — 2009-04-30
--------------------------
+Version 3.0b2 — 2009-04-30
+--------------------------
 
 HTML reporting, and continued refactoring.
 
