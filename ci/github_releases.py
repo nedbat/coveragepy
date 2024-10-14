@@ -8,6 +8,7 @@ import os
 import shlex
 import subprocess
 import sys
+import time
 
 import pkg_resources
 import requests
@@ -94,12 +95,12 @@ RELEASE_BODY_FMT = """\
 :arrow_right:\xa0 To install: `python3 -m pip install coverage=={version}`
 """
 
-def release_for_relnote(relnote):
+def release_for_relnote(relnote, tag):
     """
     Turn a release note dict into the data needed by GitHub for a release.
     """
     relnote_text = relnote["text"]
-    tag = version = relnote["version"]
+    version = relnote["version"]
     body = RELEASE_BODY_FMT.format(
         relnote_text=relnote_text,
         version=version,
@@ -148,16 +149,20 @@ def update_github_releases(json_filename, repo):
     for relnote in relnotes:
         tag = relnote["version"]
         if not does_tag_exist(tag):
-            continue
-        release_data = release_for_relnote(relnote)
+            tag = f"coverage-{tag}"
+            if not does_tag_exist(tag):
+                continue
+        release_data = release_for_relnote(relnote, tag)
         exists = tag in releases
         if not exists:
             create_release(gh_session, repo, release_data)
+            time.sleep(3)
         else:
             release = releases[tag]
             if release["body"] != release_data["body"]:
                 url = release["url"]
                 update_release(gh_session, url, release_data)
+                time.sleep(3)
 
 if __name__ == "__main__":
     update_github_releases(*sys.argv[1:3])
