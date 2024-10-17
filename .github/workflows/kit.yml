@@ -152,8 +152,7 @@ jobs:
       - name: "Install Python"
         uses: actions/setup-python@f677139bbe7f9c59b41e40162b753c062f5d49a3 # v5.2.0
         with:
-          # PYVERSIONS
-          python-version: "3.9"
+          python-version: "3.9" # Minimum of PYVERSIONS
           cache: pip
           cache-dependency-path: 'requirements/*.pip'
 
@@ -197,8 +196,7 @@ jobs:
       - name: "Install Python"
         uses: actions/setup-python@f677139bbe7f9c59b41e40162b753c062f5d49a3 # v5.2.0
         with:
-          # PYVERSIONS
-          python-version: "3.9"
+          python-version: "3.9" # Minimum of PYVERSIONS
           cache: pip
           cache-dependency-path: 'requirements/*.pip'
 
