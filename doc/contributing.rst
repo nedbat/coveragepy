@@ -32,6 +32,11 @@ previous work in the area.  Things are not always as straightforward as they
 seem, and having the benefit of lessons learned by those before you can save
 you frustration.
 
+We have a `#coverage channel in the Python Discord <discord_>`_ that can be a
+good place to explore ideas, get help, or help people with coverage.py.
+`Join us <discord_>`_!
+
+.. _discord: https://discord.com/channels/267624335836053506/1253355750684753950
 
 Getting the code
 ----------------
