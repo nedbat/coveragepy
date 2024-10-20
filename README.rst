@@ -25,7 +25,7 @@ Coverage.py runs on these versions of Python:
 
 .. PYVERSIONS
 
-* Python 3.9 through 3.13, including free-threading.
+* Python 3.9 through 3.14 alpha 1, including free-threading.
 * PyPy3 versions 3.9 and 3.10.
 
 Documentation is on `Read the Docs`_.  Code repository and issue tracker are on

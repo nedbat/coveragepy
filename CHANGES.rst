@@ -20,16 +20,18 @@ upgrading your version of coverage.py.
     ..  Version 9.8.1 — 2027-07-27
     ..  --------------------------
 
-Unreleased
-----------
+.. start-releases
+
+.. _changes_7-6-4:
+
+Version 7.6.4 — 2024-10-20
+--------------------------
 
 - fix: multi-line ``with`` statements could cause contained branches to be
   incorrectly marked as missing (`issue 1880`_).  This is now fixed.
 
 .. _issue 1880: https://github.com/nedbat/coveragepy/issues/1880
 
-
-.. start-releases
 
 .. _changes_7-6-3:
 
