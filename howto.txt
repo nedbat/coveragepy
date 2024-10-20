@@ -55,15 +55,15 @@
     - test the pypi upload:
         $ make test_upload
         - you'll need to approve the action
+            - https://github.com/nedbat/coveragepy/actions/workflows/publish.yml
     - upload kits:
         $ make pypi_upload
         - you'll need to approve the action
+            - https://github.com/nedbat/coveragepy/actions/workflows/publish.yml
 - Tag the tree
     $ make tag
-- Update GitHub releases:
-    $ make clean github_releases
-- Visit the fixed issues on GitHub and mention the version it was fixed in.
-    $ make comment_on_fixes
+- Update GitHub releases and comment on issues:
+    $ make clean github_releases comment_on_fixes
 - deopvars
 - Bump version:
     $ make bump_version
