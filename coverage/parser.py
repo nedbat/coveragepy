@@ -1261,12 +1261,19 @@ class AstArcAnalyzer:
         return exits
 
     def _handle__With(self, node: ast.With) -> set[ArcStart]:
-        start = self.line_for_node(node)
+        if env.PYBEHAVIOR.exit_with_through_ctxmgr:
+            starts = [self.line_for_node(item.context_expr) for item in node.items]
+        else:
+            starts = [self.line_for_node(node)]
         if env.PYBEHAVIOR.exit_through_with:
-            self.current_with_starts.add(start)
-            self.all_with_starts.add(start)
-        exits = self.process_body(node.body, from_start=ArcStart(start))
+            for start in starts:
+                self.current_with_starts.add(start)
+                self.all_with_starts.add(start)
+
+        exits = self.process_body(node.body, from_start=ArcStart(starts[-1]))
+
         if env.PYBEHAVIOR.exit_through_with:
+            start = starts[-1]
             self.current_with_starts.remove(start)
             with_exit = {ArcStart(start)}
             if exits:

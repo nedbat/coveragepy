@@ -81,6 +81,10 @@ class PYBEHAVIOR:
     # When leaving a with-block, do we visit the with-line again for the exit?
     exit_through_with = (PYVERSION >= (3, 10, 0, "beta"))
 
+    # When leaving a with-block, do we visit the with-line exactly,
+    # or the inner-most context manager?
+    exit_with_through_ctxmgr = (PYVERSION >= (3, 12))
+
     # Match-case construct.
     match_case = (PYVERSION >= (3, 10))
 

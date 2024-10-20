@@ -347,6 +347,41 @@ class WithTest(CoverageTest):
             branchz_missing="",
         )
 
+    def test_multiline_with(self) -> None:
+        # https://github.com/nedbat/coveragepy/issues/1880
+        self.check_coverage("""\
+            import contextlib, itertools
+            nums = itertools.count()
+            with (
+                contextlib.nullcontext() as x,
+            ):
+                while next(nums) < 6:
+                    y = 7
+            z = 8
+            """,
+            branchz="67 68",
+            branchz_missing="",
+        )
+
+
+    def test_multi_multiline_with(self) -> None:
+        # https://github.com/nedbat/coveragepy/issues/1880
+        self.check_coverage("""\
+            import contextlib, itertools
+            nums = itertools.count()
+            with (
+                contextlib.nullcontext() as x,
+                contextlib.nullcontext() as y,
+                contextlib.nullcontext() as z,
+            ):
+                while next(nums) < 8:
+                    y = 9
+            z = 10
+            """,
+            branchz="89 8A",
+            branchz_missing="",
+        )
+
 
 class LoopArcTest(CoverageTest):
     """Arc-measuring tests involving loops."""
