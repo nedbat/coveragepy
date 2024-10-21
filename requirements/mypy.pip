@@ -16,11 +16,11 @@ execnet==2.1.1
     # via pytest-xdist
 flaky==3.8.1
     # via -r requirements/pytest.in
-hypothesis==6.113.0
+hypothesis==6.115.3
     # via -r requirements/pytest.in
 iniconfig==2.0.0
     # via pytest
-mypy==1.11.2
+mypy==1.12.1
     # via -r requirements/mypy.in
 mypy-extensions==1.0.0
     # via mypy
@@ -42,7 +42,7 @@ tomli==2.0.2
     # via
     #   mypy
     #   pytest
-types-requests==2.32.0.20240914
+types-requests==2.32.0.20241016
     # via -r requirements/mypy.in
 types-tabulate==0.9.0.20240106
     # via -r requirements/mypy.in
