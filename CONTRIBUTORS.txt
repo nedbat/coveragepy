@@ -5,6 +5,7 @@ Other contributions, including writing code, updating docs, and submitting
 useful bug reports, have been made by:
 
 Abdeali Kothari
+Adam Turner
 Adi Roiban
 Agbonze O. Jeremiah
 Albertas Agejevas
