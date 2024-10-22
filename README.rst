@@ -15,7 +15,7 @@ Code coverage measurement for Python.
 
 |  |kit| |license| |versions|
 |  |test-status| |quality-status| |docs| |metacov|
-|  |tidelift| |sponsor| |stars| |mastodon-coveragepy| |mastodon-nedbat|
+|  |tidelift| |sponsor| |stars| |mastodon-coveragepy| |mastodon-nedbat| |gurubase|
 
 Coverage.py measures code coverage, typically during test execution. It uses
 the code analysis tools and tracing hooks provided in the Python standard
@@ -160,3 +160,7 @@ Licensed under the `Apache 2.0 License`_.  For details, see `NOTICE.txt`_.
 .. |sponsor| image:: https://img.shields.io/badge/%E2%9D%A4-Sponsor%20me-brightgreen?style=flat&logo=GitHub
     :target: https://github.com/sponsors/nedbat
     :alt: Sponsor me on GitHub
+
+.. |gurubase| image:: https://img.shields.io/badge/Gurubase-Ask%20Coverage.py%20Guru-006BFF
+    :target: https://gurubase.io/g/coverage-py
+    :alt: Coverage.py Guru on Gurubase.io
