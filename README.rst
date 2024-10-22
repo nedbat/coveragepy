@@ -2,7 +2,7 @@
 .. For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
 
 ===========
-Coverage.py
+Coverage.py [an important change]
 ===========
 
 Code coverage measurement for Python.
