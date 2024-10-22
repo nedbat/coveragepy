@@ -9,33 +9,30 @@ Plug-in classes
 
 .. automodule:: coverage.plugin
 
-.. module:: coverage
-    :no-index:
-
 The CoveragePlugin class
 ------------------------
 
-.. autoclass:: CoveragePlugin
+.. autoclass:: coverage.CoveragePlugin
     :members:
     :member-order: bysource
 
 The FileTracer class
 --------------------
 
-.. autoclass:: FileTracer
+.. autoclass:: coverage.FileTracer
     :members:
     :member-order: bysource
 
 The FileReporter class
 ----------------------
 
-.. autoclass:: FileReporter
+.. autoclass:: coverage.FileReporter
     :members:
     :member-order: bysource
 
 The CodeRegion class
 --------------------
 
-.. autoclass:: CodeRegion
+.. autoclass:: coverage.CodeRegion
     :members:
     :member-order: bysource

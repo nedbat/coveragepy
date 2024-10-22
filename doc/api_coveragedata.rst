@@ -8,9 +8,6 @@ The CoverageData class
 
 .. versionadded:: 4.0
 
-.. module:: coverage
-    :no-index:
-
-.. autoclass:: CoverageData
+.. autoclass:: coverage.CoverageData
     :members:
     :special-members: __init__
