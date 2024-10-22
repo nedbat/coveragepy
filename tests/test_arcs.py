@@ -535,6 +535,18 @@ class LoopArcTest(CoverageTest):
             branchz_missing="",
         )
 
+    def test_missing_while_body(self) -> None:
+        self.check_coverage("""\
+            a = 3; b = 0
+            if 0:
+                while a > 0:
+                    a -= 1
+            assert a == 3 and b == 0
+            """,
+            branchz="",
+            branchz_missing="",
+        )
+
     def test_for_if_else_for(self) -> None:
         self.check_coverage("""\
             def branches_2(l):
