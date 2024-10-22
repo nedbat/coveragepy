@@ -7,7 +7,6 @@ coverage module
 ---------------
 
 .. module:: coverage
-    :no-index:
 
 The most important thing in the coverage module is the
 :class:`coverage.Coverage` class, described in :ref:`api_coverage`, but there
