@@ -27,6 +27,9 @@ Unreleased
   statements changed how they traced.  This affected whether people saw the
   fix for `issue 1880`_.
 
+- refactor: some code unreachable code paths in parser.py were changed to
+  asserts.  If you encounter any of these, please let me know!
+
 
 .. start-releases
 

@@ -296,7 +296,7 @@ class PythonParser:
 
         """
         assert self._ast_root is not None
-        aaa = AstArcAnalyzer(self._ast_root, self.raw_statements, self._multiline)
+        aaa = AstArcAnalyzer(self.filename, self._ast_root, self.raw_statements, self._multiline)
         aaa.analyze()
         self._with_jump_fixers = aaa.with_jump_fixers()
 
@@ -337,9 +337,7 @@ class PythonParser:
         """
         exit_counts: dict[TLineNo, int] = collections.defaultdict(int)
         for l1, l2 in self.arcs():
-            if l1 < 0:
-                # Don't ever report -1 as a line number
-                continue
+            assert l1 > 0, f"{l1=} should be greater than zero in {self.filename}"
             if l1 in self.excluded:
                 # Don't report excluded lines as line numbers.
                 continue
@@ -437,15 +435,15 @@ class ByteParser:
             byte_num = 0
             for byte_incr, line_incr in zip(byte_increments, line_increments):
                 if byte_incr:
-                    if line_num != last_line_num:
-                        yield line_num
-                        last_line_num = line_num
+                    assert line_num != last_line_num, f"Oops, {byte_incr = }, {line_incr = }"
+                    yield line_num
+                    last_line_num = line_num
                     byte_num += byte_incr
                 if line_incr >= 0x80:
                     line_incr -= 0x100
                 line_num += line_incr
-            if line_num != last_line_num:
-                yield line_num
+            assert line_num != last_line_num
+            yield line_num
 
     def _find_statements(self) -> Iterable[TLineNo]:
         """Find the statements in `self.code`.
@@ -643,10 +641,12 @@ class AstArcAnalyzer:
 
     def __init__(
         self,
+        filename: str,
         root_node: ast.AST,
         statements: set[TLineNo],
         multiline: dict[TLineNo, TLineNo],
     ) -> None:
+        self.filename = filename
         self.root_node = root_node
         # TODO: I think this is happening in too many places.
         self.statements = {multiline.get(l, l) for l in statements}
@@ -1076,9 +1076,9 @@ class AstArcAnalyzer:
             # in `self.statements`.  For some constructs, `line_for_node` is
             # not what we'd think of as the first line in the statement, so map
             # it to the first one.
-            if node.body:
-                body_start = self.line_for_node(node.body[0])
-                body_start = self.multiline.get(body_start, body_start)
+            assert node.body, f"Oops: {node.body = } in {self.filename}@{node.lineno}"
+            body_start = self.line_for_node(node.body[0])
+            body_start = self.multiline.get(body_start, body_start)
         # The body is handled in collect_arcs.
         assert last is not None
         return {ArcStart(last)}
