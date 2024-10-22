@@ -34,6 +34,10 @@ class ParserMain:
             help="Recurse to find source files"
         )
         parser.add_option(
+            "-q", action="store_true", dest="quiet",
+            help="Suppress output"
+        )
+        parser.add_option(
             "-s", action="store_true", dest="source",
             help="Show analyzed source"
         )
@@ -50,6 +54,8 @@ class ParserMain:
                 root = "."
             for root, _, _ in os.walk(root):
                 for f in glob.glob(root + "/*.py"):
+                    if not options.quiet:
+                        print(f"Parsing {f}")
                     self.one_file(options, f)
         elif not args:
             parser.print_help()
@@ -121,7 +127,8 @@ class ParserMain:
                     else:
                         a = ""
 
-                    print("%4d %s%s %s" % (lineno, "".join(marks), a, ltext))
+                    if not options.quiet:
+                        print("%4d %s%s %s" % (lineno, "".join(marks), a, ltext))
 
     def arc_ascii_art(self, arcs):
         """Draw arcs as ascii art.
