@@ -673,6 +673,19 @@ class ExclusionParserTest(PythonParserTestBase):
         )
         assert parser.statements == {2, 4}
 
+    def test_no_exclude_at_all(self) -> None:
+        parser = self.parse_text("""\
+            def foo():
+                if fooey:
+                    a = 3
+                else:
+                    a = 5
+            b = 6
+            """,
+            exclude="",
+        )
+        assert parser.exit_counts() == { 1:1, 2:2, 3:1, 5:1, 6:1 }
+
     def test_formfeed(self) -> None:
         # https://github.com/nedbat/coveragepy/issues/461
         parser = self.parse_text("""\
