@@ -23,7 +23,9 @@ upgrading your version of coverage.py.
 Unreleased
 ----------
 
-Nothing yet.
+- fix: fine-tuned the exact Python version (3.12.6) when exiting from ``with``
+  statements changed how they traced.  This affected whether people saw the
+  fix for `issue 1880`_.
 
 
 .. start-releases
