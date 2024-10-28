@@ -210,10 +210,9 @@ jobs:
         run: |
           export SHA10=$(echo ${{ github.sha }} | cut -c 1-10)
           export SLUG=$(date +'%Y%m%d')_$SHA10
-          export REPORT_DIR=reports/$SLUG/htmlcov
           echo "sha10=$SHA10" >> $GITHUB_ENV
           echo "slug=$SLUG" >> $GITHUB_ENV
-          echo "report_dir=$REPORT_DIR" >> $GITHUB_ENV
+          echo "report_dir=reports/$SLUG/htmlcov" >> $GITHUB_ENV
           echo "url=https://htmlpreview.github.io/?https://github.com/nedbat/coverage-reports/blob/main/reports/$SLUG/htmlcov/index.html" >> $GITHUB_ENV
           echo "branch=${REF#refs/heads/}" >> $GITHUB_ENV
 
@@ -262,12 +261,12 @@ jobs:
           echo "${sha10}: ${branch}" >> commit.txt
           # Commit.
           cd ./reports_repo
-          git sparse-checkout set --skip-checks '/*' '${report_dir}'
+          git sparse-checkout set --skip-checks '/*' ${report_dir}
           rm ${report_dir}/.gitignore
           git add ${report_dir} latest.html
           git commit --file=../commit.txt
           git push
-          echo '[${url}](${url})' >> $GITHUB_STEP_SUMMARY
+          echo "[${url}](${url})" >> $GITHUB_STEP_SUMMARY
 
       - name: "Create badge"
         if: |
