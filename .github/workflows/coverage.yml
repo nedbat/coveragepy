@@ -205,12 +205,12 @@ jobs:
 
       - name: "Compute info for later steps"
         id: info
+        env:
+          REF: ${{ github.ref }}
         run: |
           export SHA10=$(echo ${{ github.sha }} | cut -c 1-10)
           export SLUG=$(date +'%Y%m%d')_$SHA10
           export REPORT_DIR=reports/$SLUG/htmlcov
-          export REF="${{ github.ref }}"
-          echo "total=${{ needs.combine.outputs.total }}" >> $GITHUB_ENV
           echo "sha10=$SHA10" >> $GITHUB_ENV
           echo "slug=$SLUG" >> $GITHUB_ENV
           echo "report_dir=$REPORT_DIR" >> $GITHUB_ENV
@@ -218,8 +218,10 @@ jobs:
           echo "branch=${REF#refs/heads/}" >> $GITHUB_ENV
 
       - name: "Summarize"
+        env:
+          TOTAL: ${{ needs.combine.outputs.total }}
         run: |
-          echo '### Total coverage: ${{ env.total }}%' >> $GITHUB_STEP_SUMMARY
+          echo "### TOTAL coverage: ${TOTAL}%" >> $GITHUB_STEP_SUMMARY
 
       - name: "Checkout reports repo"
         if: ${{ github.ref == 'refs/heads/master' }}
@@ -246,25 +248,26 @@ jobs:
           && github.ref == 'refs/heads/master'
         env:
           COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+          TOTAL: ${{ needs.combine.outputs.total }}
         run: |
           set -xe
           # Make the redirect to the latest report.
           echo "<html><head>" > reports_repo/latest.html
-          echo "<meta http-equiv='refresh' content='0;url=${{ env.url }}' />" >> reports_repo/latest.html
+          echo "<meta http-equiv='refresh' content='0;url=${url}' />" >> reports_repo/latest.html
           echo "<body>Coverage report redirect..." >> reports_repo/latest.html
           # Make the commit message.
-          echo "${{ env.total }}% - $COMMIT_MESSAGE" > commit.txt
+          echo "${TOTAL}% - ${COMMIT_MESSAGE}" > commit.txt
           echo "" >> commit.txt
-          echo "${{ env.url }}" >> commit.txt
-          echo "${{ env.sha10 }}: ${{ env.branch }}" >> commit.txt
+          echo "${url}" >> commit.txt
+          echo "${sha10}: ${branch}" >> commit.txt
           # Commit.
           cd ./reports_repo
-          git sparse-checkout set --skip-checks '/*' '${{ env.report_dir }}'
-          rm ${{ env.report_dir }}/.gitignore
-          git add ${{ env.report_dir }} latest.html
+          git sparse-checkout set --skip-checks '/*' '${report_dir}'
+          rm ${report_dir}/.gitignore
+          git add ${report_dir} latest.html
           git commit --file=../commit.txt
           git push
-          echo '[${{ env.url }}](${{ env.url }})' >> $GITHUB_STEP_SUMMARY
+          echo '[${url}](${url})' >> $GITHUB_STEP_SUMMARY
 
       - name: "Create badge"
         if: |
@@ -277,7 +280,7 @@ jobs:
           gistID: 8c6980f77988a327348f9b02bbaf67f5
           filename: metacov.json
           label: Coverage
-          message: ${{ env.total }}%
+          message: ${{ needs.combine.outputs.total }}%
           minColorRange: 60
           maxColorRange: 95
-          valColorRange: ${{ env.total }}
+          valColorRange: ${{ needs.combine.outputs.total }}
