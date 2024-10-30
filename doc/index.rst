@@ -64,7 +64,7 @@ Getting started is easy:
     normally run your test suite, you can use your test runner under coverage.
 
     .. tip::
-        If your test runner command starts with "python", just replace the initial
+        If your test runner command starts with "python", replace the initial
         "python" with "coverage run".
 
         ``python something.py`` becomes ``coverage run something.py``
