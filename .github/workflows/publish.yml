@@ -59,7 +59,7 @@ jobs:
       uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
       with:
         repository: "nedbat/coveragepy"
-        run-id: ${{needs.find-run.outputs.run-id}}
+        run-id: ${{ needs.find-run.outputs.run-id }}
         github-token: ${{ secrets.GITHUB_TOKEN }}
         pattern: "dist-*"
         merge-multiple: true
@@ -98,7 +98,7 @@ jobs:
       uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
       with:
         repository: "nedbat/coveragepy"
-        run-id: ${{needs.find-run.outputs.run-id}}
+        run-id: ${{ needs.find-run.outputs.run-id }}
         github-token: ${{ secrets.GITHUB_TOKEN }}
         pattern: "dist-*"
         merge-multiple: true
