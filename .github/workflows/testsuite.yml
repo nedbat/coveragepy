@@ -31,6 +31,7 @@ jobs:
   tests:
     name: "${{ matrix.python-version }} on ${{ matrix.os }}"
     runs-on: "${{ matrix.os }}-${{ matrix.os-version || 'latest' }}"
+    timeout-minutes: 30
     # Don't run tests if the branch name includes "-notests"
     if: "!contains(github.ref, '-notests')"
     strategy:
