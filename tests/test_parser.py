@@ -5,12 +5,14 @@
 
 from __future__ import annotations
 
+import re
 import textwrap
+from unittest import mock
 
 import pytest
 
 from coverage import env
-from coverage.exceptions import NotPython
+from coverage.exceptions import NoSource, NotPython
 from coverage.parser import PythonParser
 
 from tests.coveragetest import CoverageTest
@@ -1147,3 +1149,10 @@ class ParserFileTest(CoverageTest):
 
         parser = self.parse_file("abrupt.py")
         assert parser.statements == {1}
+
+    def test_os_error(self) -> None:
+        self.make_file("cant-read.py", "BOOM!")
+        msg = "No source for code: 'cant-read.py': Fake!"
+        with pytest.raises(NoSource, match=re.escape(msg)):
+            with mock.patch("coverage.python.read_python_source", side_effect=OSError("Fake!")):
+                PythonParser(filename="cant-read.py")
