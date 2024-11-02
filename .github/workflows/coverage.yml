@@ -129,6 +129,7 @@ jobs:
         with:
           name: metacov-${{ env.MATRIX_ID }}
           path: .metacov.*
+          include-hidden-files: true
 
   combine:
     name: "Combine coverage data"
@@ -187,6 +188,7 @@ jobs:
         with:
           name: html_report
           path: htmlcov
+          include-hidden-files: true
 
       - name: "Get total"
         id: total
