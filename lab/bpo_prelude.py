@@ -10,4 +10,3 @@ def trace(frame, event, arg):
 
 print(sys.version)
 sys.settrace(trace)
-
