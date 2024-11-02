@@ -132,20 +132,23 @@ jobs:
           # python -c "import urllib.request as r; exec(r.urlopen('https://bit.ly/pydoctor').read())"
           env | sort
 
-      - name: "Install dependencies"
-        run: |
-          set -xe
-          python -m pip install -r requirements/tox.pip
+      #- name: "Install dependencies"
+      #  run: |
+      #    set -xe
+      #    python -m pip install -r requirements/tox.pip
+
+      - name: Install uv
+        uses: hynek/setup-cached-uv@v2
 
       - name: "Run tox for ${{ matrix.python-version }}"
         run: |
-          python -m tox -- -rfsEX
+          uvx --with tox-uv tox -- -rfsEX
 
       - name: "Retry tox for ${{ matrix.python-version }}"
         if: failure()
         run: |
           # `exit 1` makes sure that the job remains red with flaky runs
-          python -m tox -- -rfsEX --lf -vvvvv && exit 1
+          uvx --with tox-uv tox -- -rfsEX --lf -vvvvv && exit 1
 
   # This job aggregates test results. It's the required check for branch protection.
   # https://github.com/marketplace/actions/alls-green#why
