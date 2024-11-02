@@ -10,6 +10,7 @@
 
 include .editorconfig
 include .git-blame-ignore-revs
+include .pre-commit-config.yaml
 include .readthedocs.yaml
 include CHANGES.rst
 include CITATION.cff

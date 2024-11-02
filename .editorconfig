@@ -27,7 +27,7 @@ max_line_length = 100
 [*.h]
 max_line_length = 100
 
-[*.yml]
+[*.{yml,yaml}]
 indent_size = 2
 
 [*.rst]
