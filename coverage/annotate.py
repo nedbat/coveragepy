@@ -78,11 +78,11 @@ class AnnotateReporter:
         if self.directory:
             ensure_dir(self.directory)
             dest_file = os.path.join(self.directory, flat_rootname(fr.relative_filename()))
-            if dest_file.endswith("_py"):
-                dest_file = dest_file[:-3] + ".py"
-            dest_file += ",cover"
+            assert dest_file.endswith("_py")
+            dest_file = dest_file[:-3] + ".py"
         else:
-            dest_file = fr.filename + ",cover"
+            dest_file = fr.filename
+        dest_file += ",cover"
 
         with open(dest_file, "w", encoding="utf-8") as dest:
             i = j = 0
