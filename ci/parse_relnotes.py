@@ -1,4 +1,6 @@
-#!/usr/bin/env python3
+# Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
+# For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
+
 """
 Parse CHANGES.md into a JSON structure.
 
@@ -42,9 +44,7 @@ def parse_md(lines):
     buffer = TextChunkBuffer()
 
     for line in lines:
-        header_match = re.search(r"^(#+) (.+)$", line)
-        is_header = bool(header_match)
-        if is_header:
+        if header_match := re.search(r"^(#+) (.+)$", line):
             yield from buffer.flush()
             hashes, text = header_match.groups()
             yield (f"h{len(hashes)}", text)
@@ -72,17 +72,24 @@ def sections(parsed_data):
         elif ttype == "text":
             text.append(ttext)
         else:
-            raise Exception(f"Don't know ttype {ttype!r}")
+            raise RuntimeError(f"Don't know ttype {ttype!r}")
     yield (*header, "\n".join(text))
 
 
 def refind(regex, text):
     """Find a regex in some text, and return the matched text, or None."""
-    m = re.search(regex, text)
-    if m:
+    if m := re.search(regex, text):
         return m.group()
     else:
         return None
+
+
+def fix_ref_links(text, version):
+    """Find links to .rst files, and make them full RTFD links."""
+    def new_link(m):
+        return f"](https://coverage.readthedocs.io/en/{version}/{m[1]}.html{m[2]})"
+    return re.sub(r"\]\((\w+)\.rst(#.*?)\)", new_link, text)
+
 
 def relnotes(mdlines):
     r"""Yield (version, text) pairs from markdown lines.
@@ -97,6 +104,7 @@ def relnotes(mdlines):
         if version:
             prerelease = any(c in version for c in "abc")
             when = refind(r"\d+-\d+-\d+", htext)
+            text = fix_ref_links(text, version)
             yield {
                 "version": version,
                 "text": text,
@@ -112,4 +120,4 @@ def parse(md_filename, json_filename):
         json.dump(list(relnotes(markdown.splitlines(True))), jf, indent=4)
 
 if __name__ == "__main__":
-    parse(*sys.argv[1:])       # pylint: disable=no-value-for-parameter
+    parse(*sys.argv[1:3])

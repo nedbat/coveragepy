@@ -1,0 +1,133 @@
+# Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
+# For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
+
+name: "Python Nightly Tests"
+
+on:
+  push:
+    branches:
+      - "**/*nightly*"
+  schedule:
+    # Run at 2:22am early every morning Eastern time (6/7:22 UTC)
+    # so that we get tips of CPython development tested.
+    # https://crontab.guru/#22_7_%2a_%2a_%2a
+    - cron: "22 7 * * *"
+  workflow_dispatch:
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  PIP_DISABLE_PIP_VERSION_CHECK: 1
+  COVERAGE_IGOR_VERBOSE: 1
+
+permissions:
+  contents: read
+
+concurrency:
+  group: "${{ github.workflow }}-${{ github.ref }}"
+  cancel-in-progress: true
+
+jobs:
+  tests:
+    name: "${{ matrix.python-version }}${{ matrix.nogil && ' nogil' || '' }} on ${{ matrix.os-short }}"
+    runs-on: "${{ matrix.os }}"
+    # If it doesn't finish in an hour, it's not going to. Don't spin for six
+    # hours needlessly.
+    timeout-minutes: 60
+
+    strategy:
+      matrix:
+        os:
+          # Choose a recent Ubuntu that deadsnakes still builds all the versions for.
+          # For example, deadsnakes doesn't provide 3.10 nightly for 22.04 (jammy)
+          # because jammy ships 3.10, and deadsnakes doesn't want to clobber it.
+          # https://launchpad.net/~deadsnakes/+archive/ubuntu/nightly/+packages
+          # https://github.com/deadsnakes/issues/issues/234
+          # See https://github.com/deadsnakes/nightly for the source of the nightly
+          # builds.
+          # bionic: 18, focal: 20, jammy: 22, noble: 24
+          - "ubuntu-22.04"
+        os-short:
+          - "ubuntu"
+        python-version:
+          # When changing this list, be sure to check the [gh] list in
+          # tox.ini so that tox will run properly. PYVERSIONS
+          # Available versions:
+          # https://launchpad.net/~deadsnakes/+archive/ubuntu/nightly/+packages
+          - "3.12-dev"
+          - "3.13-dev"
+          - "3.14-dev"
+          # https://github.com/actions/setup-python#available-versions-of-pypy
+          - "pypy-3.10-nightly"
+        nogil:
+          - false
+          - true
+        include:
+          - python-version: "pypy-3.10-nightly"
+            os: "windows-latest"
+            os-short: "windows"
+        exclude:
+          - python-version: "3.12-dev"
+            nogil: true
+          - python-version: "pypy-3.9-nightly"
+            nogil: true
+          - python-version: "pypy-3.10-nightly"
+            nogil: true
+
+      fail-fast: false
+
+    steps:
+      - name: "Check out the repo"
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+
+      - name: "Install ${{ matrix.python-version }} with deadsnakes"
+        uses: deadsnakes/action@e640ac8743173a67cca4d7d77cd837e514bf98e8 # v3.2.0
+        if: "!startsWith(matrix.python-version, 'pypy-')"
+        with:
+          python-version: "${{ matrix.python-version }}"
+          nogil: "${{ matrix.nogil || false }}"
+
+      - name: "Install ${{ matrix.python-version }} with setup-python"
+        uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b # v5.3.0
+        if: "startsWith(matrix.python-version, 'pypy-')"
+        with:
+          python-version: "${{ matrix.python-version }}"
+
+      - name: "Show diagnostic info"
+        run: |
+          set -xe
+          python -VV
+          python -m site
+          python -m sysconfig
+          python -c "import sys; print('GIL:', getattr(sys, '_is_gil_enabled', lambda: True)())"
+          python -m coverage debug sys
+          python -m coverage debug pybehave
+          env | sort
+
+      - name: "Check build recency"
+        #if: "!startsWith(matrix.python-version, 'pypy-')"
+        shell: python
+        run: |
+          import platform
+          from datetime import datetime
+          for fmt in ["%b %d %Y %H:%M:%S", "%b %d %Y"]:
+              try:
+                  built = datetime.strptime(platform.python_build()[1], fmt)
+              except ValueError:
+                  continue
+          now = datetime.now()
+          days = (now - built).days
+          print(f"Days since Python was built: {days}")
+          assert days <= 7
+
+      - name: "Install dependencies"
+        run: |
+          python -m pip install -r requirements/tox.pip
+
+      - name: "Run tox"
+        run: |
+          python -m tox -- -rfsEX

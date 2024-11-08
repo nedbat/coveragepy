@@ -1,6 +1,10 @@
 .. Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
 .. For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
 
+.. This file is meant to be processed with cog to insert the latest database
+   schema into the docs. If it's out of date, the quality checks will fail.
+   Running "make prebuild" will bring it up to date.
+
 .. _dbschema:
 
 ===========================
@@ -15,16 +19,22 @@ be preferred to accessing the database directly.  Only advanced uses will need
 to use the database.
 
 The schema can change without changing the major version of coverage.py, so be
-careful when accessing the database directly.  The `coverage_schema` table has
-the schema number of the database.  The schema described here corresponds to:
+careful when accessing the database directly.  The ``coverage_schema`` table
+has the schema number of the database.  The schema described here corresponds
+to:
 
-.. copied_from: coverage/sqldata.py
-
+.. [[[cog
+    from coverage.sqldata import SCHEMA_VERSION
+    print(".. code::")
+    print()
+    print(f"    SCHEMA_VERSION = {SCHEMA_VERSION}")
+    print()
+.. ]]]
 .. code::
 
     SCHEMA_VERSION = 7
 
-.. end_copied_from
+.. [[[end]]] (checksum: 95a75340df33237e7e9c93b02dd1814c)
 
 You can use SQLite tools such as the :mod:`sqlite3 <python:sqlite3>` module in
 the Python standard library to access the data.  Some data is stored in a
@@ -35,13 +45,16 @@ packed format that will need custom functions to access.  See
 Database schema
 ---------------
 
-This is the database schema.
+This is the database schema:
 
-TODO: explain more. Readers: what needs explaining?
-
-.. copied_from: coverage/sqldata.py
-
-.. code::
+.. [[[cog
+    import textwrap
+    from coverage.sqldata import SCHEMA
+    print(".. code-block:: sql")
+    print()
+    print(textwrap.indent(SCHEMA, "    "))
+.. ]]]
+.. code-block:: sql
 
     CREATE TABLE coverage_schema (
         -- One row, to record the version of the schema in this db.
@@ -53,7 +66,7 @@ TODO: explain more. Readers: what needs explaining?
         key text,
         value text,
         unique (key)
-        -- Keys:
+        -- Possible keys:
         --  'has_arcs' boolean      -- Is this data recording branches?
         --  'sys_argv' text         -- The coverage command line that recorded the data.
         --  'version' text          -- The version of coverage.py that made the file.
@@ -103,7 +116,7 @@ TODO: explain more. Readers: what needs explaining?
         foreign key (file_id) references file (id)
     );
 
-.. end_copied_from
+.. [[[end]]] (checksum: 6a04d14b07f08f86cccf43056328dcb7)
 
 
 .. _numbits:

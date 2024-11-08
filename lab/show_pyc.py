@@ -16,6 +16,8 @@ import struct
 import sys
 import time
 import types
+import warnings
+
 
 
 def show_pyc_file(fname):
@@ -23,17 +25,15 @@ def show_pyc_file(fname):
     magic = f.read(4)
     print("magic %s" % (binascii.hexlify(magic)))
     read_date_and_size = True
-    if sys.version_info >= (3, 7):
-        # 3.7 added a flags word
-        flags = struct.unpack('<L', f.read(4))[0]
-        hash_based = bool(flags & 0x01)
-        check_source = bool(flags & 0x02)
-        print(f"flags 0x{flags:08x}")
-        if hash_based:
-            source_hash = f.read(8)
-            read_date_and_size = False
-            print(f"hash {binascii.hexlify(source_hash)}")
-            print(f"check_source {check_source}")
+    flags = struct.unpack('<L', f.read(4))[0]
+    hash_based = bool(flags & 0x01)
+    check_source = bool(flags & 0x02)
+    print(f"flags {flags:#08x}")
+    if hash_based:
+        source_hash = f.read(8)
+        read_date_and_size = False
+        print(f"hash {binascii.hexlify(source_hash)}")
+        print(f"check_source {check_source}")
     if read_date_and_size:
         moddate = f.read(4)
         modtime = time.asctime(time.localtime(struct.unpack('<L', moddate)[0]))
@@ -48,7 +48,7 @@ def show_py_file(fname):
     show_py_text(text, fname=fname)
 
 def show_py_text(text, fname="<string>"):
-    code = compile(text, fname, "exec")
+    code = compile(text, fname, "exec", dont_inherit=True)
     show_code(code)
 
 CO_FLAGS = [
@@ -87,6 +87,10 @@ else:
         ('CO_FUTURE_ANNOTATIONS',       0x1000000),
     ]
 
+if sys.version_info >= (3, 14):
+    CO_FLAGS += [
+        ('CO_NO_MONITORING_EVENTS',     0x2000000),
+    ]
 
 def show_code(code, indent='', number=None):
     label = ""
@@ -100,7 +104,12 @@ def show_code(code, indent='', number=None):
     print("%sstacksize %d" % (indent, code.co_stacksize))
     print(f"{indent}flags {code.co_flags:04x}: {flag_words(code.co_flags, CO_FLAGS)}")
     show_hex("code", code.co_code, indent=indent)
-    dis.disassemble(code)
+    kwargs = {}
+    if sys.version_info >= (3, 13):
+        kwargs["show_offsets"] = True
+    if sys.version_info >= (3, 14):
+        kwargs["show_positions"] = True
+    dis.disassemble(code, **kwargs)
     print("%sconsts" % indent)
     for i, const in enumerate(code.co_consts):
         if type(const) == types.CodeType:
@@ -121,6 +130,11 @@ def show_code(code, indent='', number=None):
         print("    {}co_lines {}".format(
             indent,
             ", ".join(f"{line!r}:{start!r}-{end!r}" for start, end, line in code.co_lines())
+        ))
+    if hasattr(code, "co_branches"):
+        print("    {}co_branches {}".format(
+            indent,
+            ", ".join(f"{start!r}:{taken!r}/{nottaken!r}" for start, taken, nottaken in code.co_branches())
         ))
 
 def show_hex(label, h, indent):
@@ -147,7 +161,7 @@ def lnotab_interpreted(code):
                 yield (byte_num, line_num)
                 last_line_num = line_num
             byte_num += byte_incr
-        if sys.version_info >= (3, 6) and line_incr >= 0x80:
+        if line_incr >= 0x80:
             line_incr -= 0x100
         line_num += line_incr
     if line_num != last_line_num:
@@ -169,6 +183,7 @@ def show_file(fname):
         print("Odd file:", fname)
 
 def main(args):
+    warnings.filterwarnings("ignore", category=DeprecationWarning)
     if args[0] == '-c':
         show_py_text(" ".join(args[1:]).replace(";", "\n"))
     else:

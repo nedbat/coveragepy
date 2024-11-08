@@ -3,34 +3,41 @@
 
 """Raw data collector for coverage.py."""
 
+from __future__ import annotations
+
+import contextlib
+import functools
 import os
 import sys
 
+from collections.abc import Mapping
+from types import FrameType
+from typing import cast, Any, Callable, TypeVar
+
 from coverage import env
+from coverage.config import CoverageConfig
+from coverage.core import Core
+from coverage.data import CoverageData
 from coverage.debug import short_stack
-from coverage.disposition import FileDisposition
-from coverage.exceptions import CoverageException
-from coverage.misc import isolate_module
-from coverage.pytracer import PyTracer
+from coverage.exceptions import ConfigError
+from coverage.misc import human_sorted_items, isolate_module
+from coverage.plugin import CoveragePlugin
+from coverage.types import (
+    TArc,
+    TCheckIncludeFn,
+    TFileDisposition,
+    TShouldStartContextFn,
+    TShouldTraceFn,
+    TTraceData,
+    TTraceFn,
+    Tracer,
+    TWarnFn,
+)
 
 os = isolate_module(os)
 
 
-try:
-    # Use the C extension code when we can, for speed.
-    from coverage.tracer import CTracer, CFileDisposition
-except ImportError:
-    # Couldn't import the C extension, maybe it isn't built.
-    if os.getenv('COVERAGE_TEST_TRACER') == 'c':
-        # During testing, we use the COVERAGE_TEST_TRACER environment variable
-        # to indicate that we've fiddled with the environment to test this
-        # fallback code.  If we thought we had a C tracer, but couldn't import
-        # it, then exit quickly and clearly instead of dribbling confusing
-        # errors. I'm using sys.exit here instead of an exception because an
-        # exception here causes all sorts of other noise in unittest.
-        sys.stderr.write("*** COVERAGE_TEST_TRACER is 'c' but can't import CTracer!\n")
-        sys.exit(1)
-    CTracer = None
+T = TypeVar("T")
 
 
 class Collector:
@@ -52,15 +59,22 @@ class Collector:
     # The stack of active Collectors.  Collectors are added here when started,
     # and popped when stopped.  Collectors on the stack are paused when not
     # the top, and resumed when they become the top again.
-    _collectors = []
+    _collectors: list[Collector] = []
 
     # The concurrency settings we support here.
-    SUPPORTED_CONCURRENCIES = {"greenlet", "eventlet", "gevent", "thread"}
+    LIGHT_THREADS = {"greenlet", "eventlet", "gevent"}
 
     def __init__(
-        self, should_trace, check_include, should_start_context, file_mapper,
-        timid, branch, warn, concurrency,
-    ):
+        self,
+        core: Core,
+        should_trace: TShouldTraceFn,
+        check_include: TCheckIncludeFn,
+        should_start_context: TShouldStartContextFn | None,
+        file_mapper: Callable[[str], str],
+        branch: bool,
+        warn: TWarnFn,
+        concurrency: list[str],
+    ) -> None:
         """Create a collector.
 
         `should_trace` is a function, taking a file name and a frame, and
@@ -78,11 +92,6 @@ class Collector:
         filename.  The result is the name that will be recorded in the data
         file.
 
-        If `timid` is true, then a slower simpler trace function will be
-        used.  This is important for some environments where manipulation of
-        tracing functions make the faster more sophisticated trace function not
-        operate properly.
-
         If `branch` is true, then branches will be measured.  This involves
         collecting data on which statements followed each other (arcs).  Use
         `get_arc_data` to get the arc data.
@@ -93,110 +102,116 @@ class Collector:
 
         `concurrency` is a list of strings indicating the concurrency libraries
         in use.  Valid values are "greenlet", "eventlet", "gevent", or "thread"
-        (the default).  Of these four values, only one can be supplied.  Other
-        values are ignored.
+        (the default).  "thread" can be combined with one of the other three.
+        Other values are ignored.
 
         """
+        self.core = core
         self.should_trace = should_trace
         self.check_include = check_include
         self.should_start_context = should_start_context
         self.file_mapper = file_mapper
-        self.warn = warn
         self.branch = branch
-        self.threading = None
-        self.covdata = None
+        self.warn = warn
+        self.concurrency = concurrency
+        assert isinstance(self.concurrency, list), f"Expected a list: {self.concurrency!r}"
 
-        self.static_context = None
+        self.pid = os.getpid()
+
+        self.covdata: CoverageData
+        self.threading = None
+        self.static_context: str | None = None
 
         self.origin = short_stack()
 
         self.concur_id_func = None
-        self.mapped_file_cache = {}
 
         # We can handle a few concurrency options here, but only one at a time.
-        these_concurrencies = self.SUPPORTED_CONCURRENCIES.intersection(concurrency)
-        if len(these_concurrencies) > 1:
-            raise CoverageException(f"Conflicting concurrency settings: {concurrency}")
-        self.concurrency = these_concurrencies.pop() if these_concurrencies else ''
+        concurrencies = set(self.concurrency)
+        unknown = concurrencies - CoverageConfig.CONCURRENCY_CHOICES
+        if unknown:
+            show = ", ".join(sorted(unknown))
+            raise ConfigError(f"Unknown concurrency choices: {show}")
+        light_threads = concurrencies & self.LIGHT_THREADS
+        if len(light_threads) > 1:
+            show = ", ".join(sorted(light_threads))
+            raise ConfigError(f"Conflicting concurrency settings: {show}")
+        do_threading = False
 
+        tried = "nothing"  # to satisfy pylint
         try:
-            if self.concurrency == "greenlet":
+            if "greenlet" in concurrencies:
+                tried = "greenlet"
                 import greenlet
                 self.concur_id_func = greenlet.getcurrent
-            elif self.concurrency == "eventlet":
+            elif "eventlet" in concurrencies:
+                tried = "eventlet"
                 import eventlet.greenthread     # pylint: disable=import-error,useless-suppression
                 self.concur_id_func = eventlet.greenthread.getcurrent
-            elif self.concurrency == "gevent":
+            elif "gevent" in concurrencies:
+                tried = "gevent"
                 import gevent                   # pylint: disable=import-error,useless-suppression
                 self.concur_id_func = gevent.getcurrent
-            elif self.concurrency == "thread" or not self.concurrency:
-                # It's important to import threading only if we need it.  If
-                # it's imported early, and the program being measured uses
-                # gevent, then gevent's monkey-patching won't work properly.
-                import threading
-                self.threading = threading
-            else:
-                raise CoverageException(f"Don't understand concurrency={concurrency}")
+
+            if "thread" in concurrencies:
+                do_threading = True
         except ImportError as ex:
-            raise CoverageException(
-                "Couldn't trace with concurrency={}, the module isn't installed.".format(
-                    self.concurrency,
-                )
-            ) from ex
+            msg = f"Couldn't trace with concurrency={tried}, the module isn't installed."
+            raise ConfigError(msg) from ex
+
+        if self.concur_id_func and not hasattr(core.tracer_class, "concur_id_func"):
+            raise ConfigError(
+                "Can't support concurrency={} with {}, only threads are supported.".format(
+                    tried, self.tracer_name(),
+                ),
+            )
+
+        if do_threading or not concurrencies:
+            # It's important to import threading only if we need it.  If
+            # it's imported early, and the program being measured uses
+            # gevent, then gevent's monkey-patching won't work properly.
+            import threading
+            self.threading = threading
 
         self.reset()
 
-        if timid:
-            # Being timid: use the simple Python trace function.
-            self._trace_class = PyTracer
-        else:
-            # Being fast: use the C Tracer if it is available, else the Python
-            # trace function.
-            self._trace_class = CTracer or PyTracer
+    def __repr__(self) -> str:
+        return f"<Collector at {id(self):#x}: {self.tracer_name()}>"
 
-        if self._trace_class is CTracer:
-            self.file_disposition_class = CFileDisposition
-            self.supports_plugins = True
-        else:
-            self.file_disposition_class = FileDisposition
-            self.supports_plugins = False
-
-    def __repr__(self):
-        return f"<Collector at 0x{id(self):x}: {self.tracer_name()}>"
-
-    def use_data(self, covdata, context):
+    def use_data(self, covdata: CoverageData, context: str | None) -> None:
         """Use `covdata` for recording data."""
         self.covdata = covdata
         self.static_context = context
         self.covdata.set_context(self.static_context)
 
-    def tracer_name(self):
+    def tracer_name(self) -> str:
         """Return the class name of the tracer we're using."""
-        return self._trace_class.__name__
+        return self.core.tracer_class.__name__
 
-    def _clear_data(self):
+    def _clear_data(self) -> None:
         """Clear out existing data, but stay ready for more collection."""
-        # We used to used self.data.clear(), but that would remove filename
+        # We used to use self.data.clear(), but that would remove filename
         # keys and data values that were still in use higher up the stack
         # when we are called as part of switch_context.
-        for d in self.data.values():
-            d.clear()
+        with self.data_lock or contextlib.nullcontext():
+            for d in self.data.values():
+                d.clear()
 
         for tracer in self.tracers:
             tracer.reset_activity()
 
-    def reset(self):
+    def reset(self) -> None:
         """Clear collected data, and prepare to collect more."""
-        # A dictionary mapping file names to dicts with line number keys (if not
-        # branch coverage), or mapping file names to dicts with line number
-        # pairs as keys (if branch coverage).
-        self.data = {}
+        self.data_lock = self.threading.Lock() if self.threading else None
+
+        # The trace data we are collecting.
+        self.data: TTraceData = {}
 
         # A dictionary mapping file names to file tracer plugin names that will
         # handle them.
-        self.file_tracers = {}
+        self.file_tracers: dict[str, str] = {}
 
-        self.disabled_plugins = set()
+        self.disabled_plugins: set[str] = set()
 
         # The .should_trace_cache attribute is a cache from file names to
         # coverage.FileDisposition objects, or None.  When a file is first
@@ -227,14 +242,26 @@ class Collector:
             self.should_trace_cache = {}
 
         # Our active Tracers.
-        self.tracers = []
+        self.tracers: list[Tracer] = []
 
         self._clear_data()
 
-    def _start_tracer(self):
+    def lock_data(self) -> None:
+        """Lock self.data_lock, for use by the C tracer."""
+        if self.data_lock is not None:
+            self.data_lock.acquire()
+
+    def unlock_data(self) -> None:
+        """Unlock self.data_lock, for use by the C tracer."""
+        if self.data_lock is not None:
+            self.data_lock.release()
+
+    def _start_tracer(self) -> TTraceFn | None:
         """Start a new Tracer object, and store it in self.tracers."""
-        tracer = self._trace_class()
+        tracer = self.core.tracer_class(**self.core.tracer_kwargs)
         tracer.data = self.data
+        tracer.lock_data = self.lock_data
+        tracer.unlock_data = self.unlock_data
         tracer.trace_arcs = self.branch
         tracer.should_trace = self.should_trace
         tracer.should_trace_cache = self.should_trace_cache
@@ -242,13 +269,6 @@ class Collector:
 
         if hasattr(tracer, 'concur_id_func'):
             tracer.concur_id_func = self.concur_id_func
-        elif self.concur_id_func:
-            raise CoverageException(
-                "Can't support concurrency={} with {}, only threads are supported".format(
-                    self.concurrency, self.tracer_name(),
-                )
-            )
-
         if hasattr(tracer, 'file_tracers'):
             tracer.file_tracers = self.file_tracers
         if hasattr(tracer, 'threading'):
@@ -257,6 +277,7 @@ class Collector:
             tracer.check_include = self.check_include
         if hasattr(tracer, 'should_start_context'):
             tracer.should_start_context = self.should_start_context
+        if hasattr(tracer, 'switch_context'):
             tracer.switch_context = self.switch_context
         if hasattr(tracer, 'disable_plugin'):
             tracer.disable_plugin = self.disable_plugin
@@ -271,13 +292,15 @@ class Collector:
     # for running code before the thread main is the tracing function.  So we
     # install this as a trace function, and the first time it's called, it does
     # the real trace installation.
+    #
+    # New in 3.12: threading.settrace_all_threads: https://github.com/python/cpython/pull/96681
 
-    def _installation_trace(self, frame, event, arg):
+    def _installation_trace(self, frame: FrameType, event: str, arg: Any) -> TTraceFn | None:
         """Called on new threads, installs the real tracer."""
         # Remove ourselves as the trace function.
         sys.settrace(None)
         # Install the real tracer.
-        fn = self._start_tracer()
+        fn: TTraceFn | None = self._start_tracer()
         # Invoke the real trace function with the current event, to be sure
         # not to lose an event.
         if fn:
@@ -285,25 +308,27 @@ class Collector:
         # Return the new trace function to continue tracing in this scope.
         return fn
 
-    def start(self):
+    def start(self) -> None:
         """Start collecting trace information."""
+        # We may be a new collector in a forked process.  The old process'
+        # collectors will be in self._collectors, but they won't be usable.
+        # Find them and discard them.
+        keep_collectors = []
+        for c in self._collectors:
+            if c.pid == self.pid:
+                keep_collectors.append(c)
+            else:
+                c.post_fork()
+        self._collectors[:] = keep_collectors
+
         if self._collectors:
             self._collectors[-1].pause()
 
         self.tracers = []
 
-        # Check to see whether we had a fullcoverage tracer installed. If so,
-        # get the stack frames it stashed away for us.
-        traces0 = []
-        fn0 = sys.gettrace()
-        if fn0:
-            tracer0 = getattr(fn0, '__self__', None)
-            if tracer0:
-                traces0 = getattr(tracer0, 'traces', [])
-
         try:
             # Install the tracer on this thread.
-            fn = self._start_tracer()
+            self._start_tracer()
         except:
             if self._collectors:
                 self._collectors[-1].resume()
@@ -313,20 +338,12 @@ class Collector:
         # stack of collectors.
         self._collectors.append(self)
 
-        # Replay all the events from fullcoverage into the new trace function.
-        for args in traces0:
-            (frame, event, arg), lineno = args
-            try:
-                fn(frame, event, arg, lineno=lineno)
-            except TypeError as ex:
-                raise Exception("fullcoverage must be run with the C trace function.") from ex
-
         # Install our installation tracer in threading, to jump-start other
         # threads.
-        if self.threading:
+        if self.core.systrace and self.threading:
             self.threading.settrace(self._installation_trace)
 
-    def stop(self):
+    def stop(self) -> None:
         """Stop collecting trace information."""
         assert self._collectors
         if self._collectors[-1] is not self:
@@ -339,34 +356,40 @@ class Collector:
 
         self.pause()
 
-        # Remove this Collector from the stack, and resume the one underneath
-        # (if any).
+        # Remove this Collector from the stack, and resume the one underneath (if any).
         self._collectors.pop()
         if self._collectors:
             self._collectors[-1].resume()
 
-    def pause(self):
+    def pause(self) -> None:
         """Pause tracing, but be prepared to `resume`."""
         for tracer in self.tracers:
             tracer.stop()
             stats = tracer.get_stats()
             if stats:
                 print("\nCoverage.py tracer stats:")
-                for k in sorted(stats.keys()):
-                    print(f"{k:>20}: {stats[k]}")
+                for k, v in human_sorted_items(stats.items()):
+                    print(f"{k:>20}: {v}")
         if self.threading:
             self.threading.settrace(None)
 
-    def resume(self):
+    def resume(self) -> None:
         """Resume tracing after a `pause`."""
         for tracer in self.tracers:
             tracer.start()
-        if self.threading:
-            self.threading.settrace(self._installation_trace)
-        else:
-            self._start_tracer()
+        if self.core.systrace:
+            if self.threading:
+                self.threading.settrace(self._installation_trace)
+            else:
+                self._start_tracer()
 
-    def _activity(self):
+    def post_fork(self) -> None:
+        """After a fork, tracers might need to adjust."""
+        for tracer in self.tracers:
+            if hasattr(tracer, "post_fork"):
+                tracer.post_fork()
+
+    def _activity(self) -> bool:
         """Has any activity been traced?
 
         Returns a boolean, True if any trace function was invoked.
@@ -374,8 +397,9 @@ class Collector:
         """
         return any(tracer.activity() for tracer in self.tracers)
 
-    def switch_context(self, new_context):
+    def switch_context(self, new_context: str | None) -> None:
         """Switch to a new dynamic context."""
+        context: str | None
         self.flush_data()
         if self.static_context:
             context = self.static_context
@@ -385,47 +409,46 @@ class Collector:
             context = new_context
         self.covdata.set_context(context)
 
-    def disable_plugin(self, disposition):
+    def disable_plugin(self, disposition: TFileDisposition) -> None:
         """Disable the plugin mentioned in `disposition`."""
         file_tracer = disposition.file_tracer
+        assert file_tracer is not None
         plugin = file_tracer._coverage_plugin
         plugin_name = plugin._coverage_plugin_name
         self.warn(f"Disabling plug-in {plugin_name!r} due to previous exception")
         plugin._coverage_enabled = False
         disposition.trace = False
 
-    def cached_mapped_file(self, filename):
+    @functools.cache          # pylint: disable=method-cache-max-size-none
+    def cached_mapped_file(self, filename: str) -> str:
         """A locally cached version of file names mapped through file_mapper."""
-        key = (type(filename), filename)
-        try:
-            return self.mapped_file_cache[key]
-        except KeyError:
-            return self.mapped_file_cache.setdefault(key, self.file_mapper(filename))
+        return self.file_mapper(filename)
 
-    def mapped_file_dict(self, d):
+    def mapped_file_dict(self, d: Mapping[str, T]) -> dict[str, T]:
         """Return a dict like d, but with keys modified by file_mapper."""
         # The call to list(items()) ensures that the GIL protects the dictionary
         # iterator against concurrent modifications by tracers running
         # in other threads. We try three times in case of concurrent
         # access, hoping to get a clean copy.
         runtime_err = None
-        for _ in range(3):
+        for _ in range(3):                      # pragma: part covered
             try:
                 items = list(d.items())
-            except RuntimeError as ex:
+            except RuntimeError as ex:          # pragma: cant happen
                 runtime_err = ex
             else:
                 break
-        else:
+        else:                                   # pragma: cant happen
+            assert isinstance(runtime_err, Exception)
             raise runtime_err
 
         return {self.cached_mapped_file(k): v for k, v in items if v}
 
-    def plugin_was_disabled(self, plugin):
+    def plugin_was_disabled(self, plugin: CoveragePlugin) -> None:
         """Record that `plugin` was disabled during the run."""
         self.disabled_plugins.add(plugin._coverage_plugin_name)
 
-    def flush_data(self):
+    def flush_data(self) -> bool:
         """Save the collected data to our associated `CoverageData`.
 
         Data may have also been saved along the way. This forces the
@@ -437,9 +460,32 @@ class Collector:
             return False
 
         if self.branch:
-            self.covdata.add_arcs(self.mapped_file_dict(self.data))
+            if self.core.packed_arcs:
+                # Unpack the line number pairs packed into integers.  See
+                # tracer.c:CTracer_record_pair for the C code that creates
+                # these packed ints.
+                arc_data: dict[str, list[TArc]] = {}
+                packed_data = cast(dict[str, set[int]], self.data)
+
+                # The list() here and in the inner loop are to get a clean copy
+                # even as tracers are continuing to add data.
+                for fname, packeds in list(packed_data.items()):
+                    tuples = []
+                    for packed in list(packeds):
+                        l1 = packed & 0xFFFFF
+                        l2 = (packed & (0xFFFFF << 20)) >> 20
+                        if packed & (1 << 40):
+                            l1 *= -1
+                        if packed & (1 << 41):
+                            l2 *= -1
+                        tuples.append((l1, l2))
+                    arc_data[fname] = tuples
+            else:
+                arc_data = cast(dict[str, list[TArc]], self.data)
+            self.covdata.add_arcs(self.mapped_file_dict(arc_data))
         else:
-            self.covdata.add_lines(self.mapped_file_dict(self.data))
+            line_data = cast(dict[str, set[int]], self.data)
+            self.covdata.add_lines(self.mapped_file_dict(line_data))
 
         file_tracers = {
             k: v for k, v in self.file_tracers.items()

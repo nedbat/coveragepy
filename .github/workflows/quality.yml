@@ -5,6 +5,9 @@ name: "Quality"
 
 on:
   push:
+    branches:
+      - master
+      - nedbat/*
   pull_request:
   workflow_dispatch:
 
@@ -12,33 +15,71 @@ defaults:
   run:
     shell: bash
 
+env:
+  PIP_DISABLE_PIP_VERSION_CHECK: 1
+
+permissions:
+  contents: read
+
+concurrency:
+  group: "${{ github.workflow }}-${{ github.ref }}"
+  cancel-in-progress: true
+
 jobs:
   lint:
     name: "Pylint etc"
     # Because pylint can report different things on different OS's (!)
     # (https://github.com/PyCQA/pylint/issues/3489), run this on Mac where local
     # pylint gets run.
-    runs-on: macos-latest
+    # GitHub is rolling out macos 14, but it doesn't have Python 3.8 or 3.9.
+    # https://mastodon.social/@hugovk/112320493602782374
+    runs-on: macos-13
 
     steps:
       - name: "Check out the repo"
-        uses: "actions/checkout@v2"
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
 
       - name: "Install Python"
-        uses: "actions/setup-python@v2"
+        uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b # v5.3.0
         with:
-          python-version: "3.8"
+          python-version: "3.9" # Minimum of PYVERSIONS
+          cache: pip
+          cache-dependency-path: 'requirements/*.pip'
 
       - name: "Install dependencies"
         run: |
-          set -xe
-          python -VV
-          python -m site
-          python -m pip install -c requirements/pins.pip tox
+          python -m pip install -r requirements/tox.pip
 
       - name: "Tox lint"
         run: |
           python -m tox -e lint
+
+  mypy:
+    name: "Check types"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: "Check out the repo"
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+
+      - name: "Install Python"
+        uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b # v5.3.0
+        with:
+          python-version: "3.9" # Minimum of PYVERSIONS
+          cache: pip
+          cache-dependency-path: 'requirements/*.pip'
+
+      - name: "Install dependencies"
+        run: |
+          python -m pip install -r requirements/tox.pip
+
+      - name: "Tox mypy"
+        run: |
+          python -m tox -e mypy
 
   doc:
     name: "Build docs"
@@ -46,19 +87,28 @@ jobs:
 
     steps:
       - name: "Check out the repo"
-        uses: "actions/checkout@v2"
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
 
       - name: "Install Python"
-        uses: "actions/setup-python@v2"
+        uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b # v5.3.0
         with:
-          python-version: "3.8"
+          python-version: "3.11" # Doc version from PYVERSIONS
+          cache: pip
+          cache-dependency-path: 'requirements/*.pip'
 
-      - name: "Install dependencies"
+      - name: "Show environment"
         run: |
           set -xe
           python -VV
           python -m site
-          python -m pip install -c requirements/pins.pip tox
+          env | sort
+
+      - name: "Install dependencies"
+        run: |
+          set -xe
+          python -m pip install -r requirements/tox.pip
 
       - name: "Tox doc"
         run: |

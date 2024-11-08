@@ -2,80 +2,116 @@
 {# For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt #}
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    {# IE8 rounds line-height incorrectly, and adding this emulateIE7 line makes it right! #}
-    {# http://social.msdn.microsoft.com/Forums/en-US/iewebdevelopment/thread/7684445e-f080-4d8f-8529-132763348e21 #}
-    <meta http-equiv="X-UA-Compatible" content="IE=emulateIE7" />
     <title>Coverage for {{relative_filename|escape}}: {{nums.pc_covered_str}}%</title>
-    <link rel="icon" sizes="32x32" href="favicon_32.png">
-    <link rel="stylesheet" href="style.css" type="text/css">
+    <link rel="icon" sizes="32x32" href="{{ statics.favicon_32_png }}">
+    <link rel="stylesheet" href="{{ statics.style_css }}" type="text/css">
     {% if extra_css %}
-        <link rel="stylesheet" href="{{ extra_css }}" type="text/css">
+        <link rel="stylesheet" href="{{ statics.extra_css }}" type="text/css">
     {% endif %}
-    <script type="text/javascript" src="jquery.min.js"></script>
-    <script type="text/javascript" src="jquery.hotkeys.js"></script>
-    <script type="text/javascript" src="jquery.isonscreen.js"></script>
-    <script type="text/javascript" src="coverage_html.js"></script>
+
+    {% if contexts_json %}
     <script type="text/javascript">
-        jQuery(document).ready(coverage.pyfile_ready);
+        contexts = {{ contexts_json }}
     </script>
+    {% endif %}
+
+    <script src="{{ statics.coverage_html_js }}" defer></script>
 </head>
 <body class="pyfile">
 
-<div id="header">
+<header>
     <div class="content">
-        <h1>Coverage for <b>{{relative_filename|escape}}</b> :
+        <h1>
+            <span class="text">Coverage for </span><b>{{relative_filename|escape}}</b>:
             <span class="pc_cov">{{nums.pc_covered_str}}%</span>
         </h1>
 
-        <img id="keyboard_icon" src="keybd_closed.png" alt="Show keyboard shortcuts" />
+        <aside id="help_panel_wrapper">
+            <input id="help_panel_state" type="checkbox">
+            <label for="help_panel_state">
+                <img id="keyboard_icon" src="{{ statics.keybd_closed_png }}" alt="Show/hide keyboard shortcuts">
+            </label>
+            <div id="help_panel">
+                <p class="legend">Shortcuts on this page</p>
+                <div class="keyhelp">
+                    <p>
+                        <kbd>r</kbd>
+                        <kbd>m</kbd>
+                        <kbd>x</kbd>
+                        {% if has_arcs %}
+                        <kbd>p</kbd>
+                        {% endif %}
+                        &nbsp; toggle line displays
+                    </p>
+                    <p>
+                        <kbd>j</kbd>
+                        <kbd>k</kbd>
+                        &nbsp; next/prev highlighted chunk
+                    </p>
+                    <p>
+                        <kbd>0</kbd> &nbsp; (zero) top of page
+                    </p>
+                    <p>
+                        <kbd>1</kbd> &nbsp; (one) first highlighted chunk
+                    </p>
+                    <p>
+                        <kbd>[</kbd>
+                        <kbd>]</kbd>
+                        &nbsp; prev/next file
+                    </p>
+                    <p>
+                        <kbd>u</kbd> &nbsp; up to the index
+                    </p>
+                    <p>
+                        <kbd>?</kbd> &nbsp; show/hide this help
+                    </p>
+                </div>
+            </div>
+        </aside>
 
-        <h2 class="stats">
-            {{nums.n_statements}} statements &nbsp;
-            <button type="button" class="{{category.run}} shortkey_r button_toggle_run" title="Toggle lines run">{{nums.n_executed}} run</button>
-            <button type="button" class="{{category.mis}} shortkey_m button_toggle_mis" title="Toggle lines missing">{{nums.n_missing}} missing</button>
-            <button type="button" class="{{category.exc}} shortkey_x button_toggle_exc" title="Toggle lines excluded">{{nums.n_excluded}} excluded</button>
-
+        <h2>
+            <span class="text">{{nums.n_statements}} statements &nbsp;</span>
+            <button type="button" class="{{category.run}} button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">{{nums.n_executed}}<span class="text"> run</span></button>
+            <button type="button" class="{{category.mis}} button_toggle_mis" value="mis" data-shortcut="m" title="Toggle lines missing">{{nums.n_missing}}<span class="text"> missing</span></button>
+            <button type="button" class="{{category.exc}} button_toggle_exc" value="exc" data-shortcut="x" title="Toggle lines excluded">{{nums.n_excluded}}<span class="text"> excluded</span></button>
             {% if has_arcs %}
-            <button type="button" class="{{category.par}} shortkey_p button_toggle_par" title="Toggle lines partially run">{{nums.n_partial_branches}} partial</button>
+            <button type="button" class="{{category.par}} button_toggle_par" value="par" data-shortcut="p" title="Toggle lines partially run">{{nums.n_partial_branches}}<span class="text"> partial</span></button>
             {% endif %}
         </h2>
-    </div>
-</div>
 
-<div class="help_panel">
-    <img id="panel_icon" src="keybd_open.png" alt="Hide keyboard shortcuts" />
-    <p class="legend">Hot-keys on this page</p>
-    <div>
-    <p class="keyhelp">
-        <span class="key">r</span>
-        <span class="key">m</span>
-        <span class="key">x</span>
-        <span class="key">p</span> &nbsp; toggle line displays
-    </p>
-    <p class="keyhelp">
-        <span class="key">j</span>
-        <span class="key">k</span> &nbsp; next/prev highlighted chunk
-    </p>
-    <p class="keyhelp">
-        <span class="key">0</span> &nbsp; (zero) top of page
-    </p>
-    <p class="keyhelp">
-        <span class="key">1</span> &nbsp; (one) first highlighted chunk
-    </p>
-    </div>
-</div>
+        <p class="text">
+            <a id="prevFileLink" class="nav" href="{{ prev_html }}">&#xab; prev</a> &nbsp; &nbsp;
+            <a id="indexLink" class="nav" href="index.html">&Hat; index</a> &nbsp; &nbsp;
+            <a id="nextFileLink" class="nav" href="{{ next_html }}">&#xbb; next</a>
+            &nbsp; &nbsp; &nbsp;
+            <a class="nav" href="{{__url__}}">coverage.py v{{__version__}}</a>,
+            created at {{ time_stamp }}
+        </p>
 
-<div id="source">
+        <aside class="hidden">
+            <button type="button" class="button_next_chunk" data-shortcut="j"></button>
+            <button type="button" class="button_prev_chunk" data-shortcut="k"></button>
+            <button type="button" class="button_top_of_page" data-shortcut="0"></button>
+            <button type="button" class="button_first_chunk" data-shortcut="1"></button>
+            <button type="button" class="button_prev_file" data-shortcut="["></button>
+            <button type="button" class="button_next_file" data-shortcut="]"></button>
+            <button type="button" class="button_to_index" data-shortcut="u"></button>
+            <button type="button" class="button_show_hide_help" data-shortcut="?"></button>
+        </aside>
+    </div>
+</header>
+
+<main id="source">
     {% for line in lines -%}
         {% joined %}
-        <p id="t{{line.number}}" class="{{line.css_class}}">
-            <span class="n"><a href="#t{{line.number}}">{{line.number}}</a></span>
+        <p class="{{line.css_class}}">
+            <span class="n"><a id="t{{line.number}}" href="#t{{line.number}}">{{line.number}}</a></span>
             <span class="t">{{line.html}}&nbsp;</span>
             {% if line.context_list %}
-                <input type="checkbox" id="ctxs{{line.number}}" />
+                <input type="checkbox" id="ctxs{{line.number}}">
             {% endif %}
             {# Things that should float right in the line. #}
             <span class="r">
@@ -88,26 +124,26 @@
                 {% endif %}
             </span>
             {# Things that should appear below the line. #}
-            {% if line.context_list %}
-                <span class="ctxs">
-                    {% for context in line.context_list %}
-                        <span>{{context}}</span>
-                    {% endfor %}
-                </span>
+            {% if line.context_str %}
+                <span class="ctxs">{{ line.context_str }}</span>
             {% endif %}
         </p>
         {% endjoined %}
     {% endfor %}
-</div>
+</main>
 
-<div id="footer">
+<footer>
     <div class="content">
         <p>
-            <a class="nav" href="index.html">&#xab; index</a> &nbsp; &nbsp; <a class="nav" href="{{__url__}}">coverage.py v{{__version__}}</a>,
+            <a class="nav" href="{{ prev_html }}">&#xab; prev</a> &nbsp; &nbsp;
+            <a class="nav" href="index.html">&Hat; index</a> &nbsp; &nbsp;
+            <a class="nav" href="{{ next_html }}">&#xbb; next</a>
+            &nbsp; &nbsp; &nbsp;
+            <a class="nav" href="{{__url__}}">coverage.py v{{__version__}}</a>,
             created at {{ time_stamp }}
         </p>
     </div>
-</div>
+</footer>
 
 </body>
 </html>

@@ -18,7 +18,6 @@
 // Dimensions
 $left-gutter: 3.5rem;
 
-
 //
 // Declare colors and variables
 //
@@ -34,7 +33,7 @@ $focus-color:             #007acc;
 $mis-color:               #ff0000;
 $run-color:               #00dd00;
 $exc-color:               #808080;
-$par-color:               #dddd00;
+$par-color:               #bbbb00;
 
 $light-bg:                #fff;
 $light-fg:                #000;
@@ -50,8 +49,8 @@ $light-run-bg:            #dfd;
 $light-exc-bg:            $light-gray2;
 $light-par-bg:            #ffa;
 $light-token-com:         #008000;
-$light-token-str:         #0451A5;
-$light-context-bg-color:  #aef;
+$light-token-str:         #0451a5;
+$light-context-bg-color:  #d0e8ff;
 
 $dark-bg:                 #1e1e1e;
 $dark-fg:                 #eee;
@@ -66,13 +65,14 @@ $dark-mis-bg:             #4b1818;
 $dark-run-bg:             #373d29;
 $dark-exc-bg:             $dark-gray2;
 $dark-par-bg:             #650;
-$dark-token-com:          #6A9955;
-$dark-token-str:          #9CDCFE;
+$dark-token-com:          #6a9955;
+$dark-token-str:          #9cdcfe;
 $dark-context-bg-color:   #056;
 
 //
 // Mixins and utilities
 //
+
 @mixin background-dark($color) {
     @media (prefers-color-scheme: dark) {
         background: $color;
@@ -94,6 +94,22 @@ $dark-context-bg-color:   #056;
     &:active, &:focus {
         outline: 2px dashed $focus-color;
     }
+}
+
+@mixin button-shape {
+    font-family: inherit;
+    font-size: inherit;
+    border: 1px solid;
+    border-radius: .2em;
+    background: $light-gray2;
+    @include background-dark($dark-gray2);
+    color: inherit;
+    text-decoration: none;
+    padding: .1em .5em;
+    margin: 1px calc(.1em + 1px);
+    cursor: pointer;
+    border-color: $light-gray3;
+    @include border-color-dark($dark-gray3);
 }
 
 // Page-wide styles
@@ -143,7 +159,8 @@ table tr.hidden {
 
 p#no_rows {
     display: none;
-    font-size: 1.2em;
+    font-size: 1.15em;
+    font-family: $font-normal;
 }
 
 a.nav {
@@ -156,28 +173,90 @@ a.nav {
     }
 }
 
+.hidden {
+    display: none;
+}
+
 // Page structure
-#header {
+header {
     background: $light-gray1;
     @include background-dark(black);
     width: 100%;
-    border-bottom: 1px solid $light-gray2;
+    z-index: 2;
+    border-bottom: 1px solid $light-gray3;
     @include border-color-dark($dark-gray2);
+
+    .content {
+        padding: 1rem $left-gutter;
+    }
+
+    h2 {
+        margin-top: .5em;
+        font-size: 1em;
+
+        a.button {
+            @include button-shape;
+            &.current {
+                border: 2px solid;
+                background: $light-bg;
+                @include background-dark($dark-bg);
+                border-color: $light-gray4;
+                @include border-color-dark($dark-gray4);
+                cursor: default;
+            }
+        }
+    }
+
+    p.text {
+        margin: .5em 0 -.5em;
+        color: $light-gray5;
+        @include color-dark($dark-gray5);
+        font-style: italic;
+    }
+
+    &.sticky {
+        position: fixed;
+        left: 0;
+        right: 0;
+        height: 2.5em;
+
+        .text {
+            display: none;
+        }
+
+        h1, h2 {
+            font-size: 1em;
+            margin-top: 0;
+            display: inline-block;
+        }
+
+        .content {
+            padding: .5rem $left-gutter;
+            p {
+                font-size: 1em;
+            }
+        }
+
+        & ~ #source {
+            padding-top: 6.5em;
+        }
+    }
 }
 
-.indexfile #footer {
+main {
+    position: relative;
+    z-index: 1;
+}
+
+footer {
     margin: 1rem $left-gutter;
-}
 
-.pyfile #footer {
-    margin: 1rem 1rem;
-}
-
-#footer .content {
-    padding: 0;
-    color: $light-gray5;
-    @include color-dark($dark-gray5);
-    font-style: italic;
+    .content {
+        padding: 0;
+        color: $light-gray5;
+        @include color-dark($dark-gray5);
+        font-style: italic;
+    }
 }
 
 #index {
@@ -185,9 +264,6 @@ a.nav {
 }
 
 // Header styles
-#header .content {
-    padding: 1rem $left-gutter;
-}
 
 h1 {
     font-size: 1.25em;
@@ -197,8 +273,9 @@ h1 {
 #filter_container {
     float: right;
     margin: 0 2em 0 0;
+    line-height: 1.66em;
 
-    input {
+    #filter {
         width: 10em;
         padding: 0.2em 0.5em;
         border: 2px solid $light-gray3;
@@ -211,25 +288,21 @@ h1 {
             border-color: $focus-color;
         }
     }
+
+    :disabled ~ label{
+        color: $light-gray3;
+        @include color-dark($dark-gray3);
+    }
+
+    label {
+        font-size: .875em;
+        color: $light-gray5;
+        @include color-dark($dark-gray5);
+    }
 }
 
-h2.stats {
-    margin-top: .5em;
-    font-size: 1em;
-}
-.stats button {
-    font-family: inherit;
-    font-size: inherit;
-    border: 1px solid;
-    border-radius: .2em;
-    color: inherit;
-    padding: .1em .5em;
-    margin: 1px calc(.1em + 1px);
-    cursor: pointer;
-    border-color: $light-gray3;
-    @include border-color-dark($dark-gray3);
-    @include focus-border;
-
+header button {
+    @include button-shape;
     @include focus-border;
 
     &.run {
@@ -297,16 +370,31 @@ h2.stats {
 }
 
 // Help panel
-#keyboard_icon {
+#help_panel_wrapper {
     float: right;
-    margin: 5px;
-    cursor: pointer;
+    position: relative;
 }
 
-.help_panel {
+#keyboard_icon {
+    margin: 5px;
+}
+
+#help_panel_state {
+    display: none;
+}
+
+#help_panel {
     @extend %popup;
+    top: 25px;
+    right: 0;
     padding: .75em;
     border: 1px solid #883;
+
+    color: #333;
+
+    .keyhelp p {
+        margin-top: .75em;
+    }
 
     .legend {
         font-style: italic;
@@ -315,31 +403,25 @@ h2.stats {
 
     .indexfile & {
         width: 25em;
-        //min-height: 4em;
     }
 
     .pyfile & {
         width: 18em;
-        //min-height: 8em;
+    }
+
+    #help_panel_state:checked ~ & {
+        display: block;
     }
 }
 
-#panel_icon {
-    float: right;
-    cursor: pointer;
-}
-
-.keyhelp {
-    margin-top: .75em;
-
-    .key {
-        border: 1px solid black;
-        border-color: #888 #333 #333 #888;
-        padding: .1em .35em;
-        font-family: $font-code;
-        font-weight: bold;
-        background: #eee;
-    }
+kbd {
+    border: 1px solid black;
+    border-color: #888 #333 #333 #888;
+    padding: .1em .35em;
+    font-family: $font-code;
+    font-weight: bold;
+    background: #eee;
+    border-radius: 3px;
 }
 
 // Source file styles
@@ -368,9 +450,17 @@ $border-indicator-width: .2em;
             margin-left: -$left-gutter;
             padding-right: 1em;
             color: $light-gray4;
+            user-select: none;
             @include color-dark($dark-gray4);
 
+            &.highlight {
+                background: #ffdd00;
+            }
+
             a {
+                // Make anchors to the line scroll the line to be
+                // visible beneath the fixed-position header.
+                scroll-margin-top: 6em;
                 text-decoration: none;
                 color: $light-gray4;
                 @include color-dark($dark-gray4);
@@ -380,10 +470,6 @@ $border-indicator-width: .2em;
                     @include color-dark($dark-gray4);
                 }
             }
-        }
-
-        &.highlight .n {
-            background: #ffdd00;
         }
 
         .t {
@@ -567,10 +653,7 @@ $border-indicator-width: .2em;
             @include background-dark($dark-context-bg-color);
             border-radius: .25em;
             margin-right: 1.75em;
-            span {
-                display: block;
-                text-align: right;
-            }
+            text-align: right;
         }
     }
 }
@@ -586,16 +669,18 @@ $border-indicator-width: .2em;
     }
     td, th {
         text-align: right;
-        width: 5em;
         padding: .25em .5em;
         border-bottom: 1px solid $light-gray2;
         @include border-color-dark($dark-gray2);
         &.name {
             text-align: left;
             width: auto;
+            font-family: $font-normal;
+            min-width: 15em;
         }
     }
     th {
+        font-family: $font-normal;
         font-style: italic;
         color: $light-gray6;
         @include color-dark($dark-gray6);
@@ -604,21 +689,35 @@ $border-indicator-width: .2em;
             background: $light-gray2;
             @include background-dark($dark-gray2);
         }
-        &.headerSortDown, &.headerSortUp {
+        .arrows {
+            color: #666;
+            font-size: 85%;
+            font-family: sans-serif;
+            font-style: normal;
+            pointer-events: none;
+        }
+        &[aria-sort="ascending"], &[aria-sort="descending"] {
             white-space: nowrap;
             background: $light-gray2;
             @include background-dark($dark-gray2);
+            padding-left: .5em;
         }
-        &.headerSortDown:after {
-            content: " ↑";
+        &[aria-sort="ascending"] .arrows::after {
+            content: " ▲";
         }
-        &.headerSortUp:after {
-            content: " ↓";
+        &[aria-sort="descending"] .arrows::after {
+            content: " ▼";
         }
     }
-    td.name a {
-        text-decoration: none;
-        color: inherit;
+    td.name {
+        font-size: 1.15em;
+        a {
+          text-decoration: none;
+          color: inherit;
+        }
+        & .no-noun {
+          font-style: italic;
+        }
     }
 
     tr.total td,
@@ -627,7 +726,7 @@ $border-indicator-width: .2em;
         border-top: 1px solid #ccc;
         border-bottom: none;
     }
-    tr.file:hover {
+    tr.region:hover {
         background: $light-gray2;
         @include background-dark($dark-gray2);
         td.name {
@@ -640,6 +739,7 @@ $border-indicator-width: .2em;
 // scroll marker styles
 #scroll_marker {
     position: fixed;
+    z-index: 3;
     right: 0;
     top: 0;
     width: 16px;

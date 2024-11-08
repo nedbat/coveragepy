@@ -11,6 +11,22 @@ FAQ and other help
 Frequently asked questions
 --------------------------
 
+Q: Why are some of my files not measured?
+.........................................
+
+Coverage.py has a number of mechanisms for deciding which files to measure and
+which to skip.  If your files aren't being measured, use the ``--debug=trace``
+:ref:`option <cmd_run_debug>`, also settable as ``[run] debug=trace`` in the
+:ref:`settings file <config_run_debug>`, or as ``COVERAGE_DEBUG=trace`` in an
+environment variable.
+
+This will write a line for each file considered, indicating whether it is
+traced or not, and if not, why not.  Be careful though: the output might be
+swallowed by your test runner.  If so, a ``COVERAGE_DEBUG_FILE=/tmp/cov.out``
+environment variable can direct the output to a file instead to ensure you see
+everything.
+
+
 Q: Why do unexecutable lines show up as executed?
 .................................................
 
@@ -23,11 +39,24 @@ If old data is persisting, you can use an explicit ``coverage erase`` command
 to clean out the old data.
 
 
+Q: Why are my function definitions marked as run when I haven't tested them?
+............................................................................
+
+The ``def`` and ``class`` lines in your Python file are executed when the file
+is imported.  Those are the lines that define your functions and classes.  They
+run even if you never call the functions. It's the body of the functions that
+will be marked as not executed if you don't test them, not the ``def`` lines.
+
+This can mean that your code has a moderate coverage total even if no tests
+have been written or run.  This might seem surprising, but it is accurate: the
+``def`` lines have actually been run.
+
+
 Q: Why do the bodies of functions show as executed, but the def lines do not?
 .............................................................................
 
-This happens because coverage.py is started after the functions are defined.
-The definition lines are executed without coverage measurement, then
+If this happens, it's because coverage.py has started after the functions are
+defined.  The definition lines are executed without coverage measurement, then
 coverage.py is started, then the function is called.  This means the body is
 measured, but the definition of the function itself is not.
 
@@ -54,7 +83,9 @@ Q: Can I find out which tests ran which lines?
 ..............................................
 
 Yes! Coverage.py has a feature called :ref:`dynamic_contexts` which can collect
-this information.  Add this to your .coveragerc file::
+this information.  Add this to your .coveragerc file:
+
+.. code-block:: ini
 
     [run]
     dynamic_context = test_function
@@ -90,8 +121,8 @@ Make sure you are using the C trace function.  Coverage.py provides two
 implementations of the trace function.  The C implementation runs much faster.
 To see what you are running, use ``coverage debug sys``.  The output contains
 details of the environment, including a line that says either
-``tracer: CTracer`` or ``tracer: PyTracer``.  If it says ``PyTracer`` then you
-are using the slow Python implementation.
+``CTracer: available`` or ``CTracer: unavailable``.  If it says unavailable,
+then you are using the slow Python implementation.
 
 Try re-installing coverage.py to see what happened and if you get the CTracer
 as you should.
@@ -105,38 +136,21 @@ It's good, but `it isn't perfect`__.
 __ https://nedbatchelder.com/blog/200710/flaws_in_coverage_measurement.html
 
 
-..  Other resources
-    ---------------
-
-    There are a number of projects that help integrate coverage.py into other
-    systems:
-
-    - `trialcoverage`_ is a plug-in for Twisted trial.
-
-    .. _trialcoverage: https://pypi.org/project/trialcoverage/
-
-    - `pytest-coverage`_
-
-    .. _pytest-coverage: https://pypi.org/project/pytest-coverage/
-
-    - `django-coverage`_ for use with Django.
-
-    .. _django-coverage: https://pypi.org/project/django-coverage/
-
-
 Q: Where can I get more help with coverage.py?
 ..............................................
 
-You can discuss coverage.py or get help using it on the `Testing In Python`_
-mailing list.
+You can discuss coverage.py or get help using it on the `Python discussion
+forums`_ or in the `Python Discord`_.  If you ping me (``@nedbat``), there's a
+higher chance I'll see the post.
 
-.. _Testing In Python: http://lists.idyll.org/listinfo/testing-in-python
+.. _Python discussion forums: https://discuss.python.org/
+.. _Python Discord: https://discord.com/channels/267624335836053506/1253355750684753950
 
 Bug reports are gladly accepted at the `GitHub issue tracker`_.
 
 .. _GitHub issue tracker: https://github.com/nedbat/coveragepy/issues
 
-`I can be reached`__ in a number of ways, I'm happy to answer questions about
+`I can be reached`__ in a number of ways. I'm happy to answer questions about
 using coverage.py.
 
 __  https://nedbatchelder.com/site/aboutned.html
@@ -149,6 +163,6 @@ Coverage.py was originally written by `Gareth Rees`_.
 Since 2004, `Ned Batchelder`_ has extended and maintained it with the help of
 `many others`_.  The :ref:`change history <changes>` has all the details.
 
-.. _Gareth Rees:    http://garethrees.org/
+.. _Gareth Rees: http://garethrees.org/
 .. _Ned Batchelder: https://nedbatchelder.com
-.. _many others:    https://github.com/nedbat/coveragepy/blob/master/CONTRIBUTORS.txt
+.. _many others: https://github.com/nedbat/coveragepy/blob/master/CONTRIBUTORS.txt

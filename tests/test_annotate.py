@@ -3,6 +3,8 @@
 
 """Tests for annotation from coverage.py."""
 
+from __future__ import annotations
+
 import coverage
 
 from tests.coveragetest import CoverageTest
@@ -12,7 +14,7 @@ from tests.goldtest import compare, gold_path
 class AnnotationGoldTest(CoverageTest):
     """Test the annotate feature with gold files."""
 
-    def make_multi(self):
+    def make_multi(self) -> None:
         """Make a few source files we need for the tests."""
         self.make_file("multi.py", """\
             import a.a
@@ -32,27 +34,25 @@ class AnnotationGoldTest(CoverageTest):
         self.make_file("b/__init__.py")
         self.make_file("b/b.py", """\
             def b(x):
-                msg = "x is %s" % x
+                msg = f"x is {x}"
                 print(msg)
             """)
 
-    def test_multi(self):
+    def test_multi(self) -> None:
         self.make_multi()
         cov = coverage.Coverage()
         self.start_import_stop(cov, "multi")
         cov.annotate()
-
         compare(gold_path("annotate/multi"), ".", "*,cover")
 
-    def test_annotate_dir(self):
+    def test_annotate_dir(self) -> None:
         self.make_multi()
         cov = coverage.Coverage(source=["."])
         self.start_import_stop(cov, "multi")
         cov.annotate(directory="out_anno_dir")
-
         compare(gold_path("annotate/anno_dir"), "out_anno_dir", "*,cover")
 
-    def test_encoding(self):
+    def test_encoding(self) -> None:
         self.make_file("utf8.py", """\
             # -*- coding: utf-8 -*-
             # This comment has an accent: é
@@ -64,7 +64,7 @@ class AnnotationGoldTest(CoverageTest):
         cov.annotate()
         compare(gold_path("annotate/encodings"), ".", "*,cover")
 
-    def test_white(self):
+    def test_white(self) -> None:
         self.make_file("white.py", """\
             # A test case sent to me by Steve White
 
@@ -104,4 +104,24 @@ class AnnotationGoldTest(CoverageTest):
         cov = coverage.Coverage()
         self.start_import_stop(cov, "white")
         cov.annotate()
-        compare(gold_path("annotate/annotate"), ".", "*,cover")
+        compare(gold_path("annotate/white"), ".", "*,cover")
+
+    def test_missing_after_else(self) -> None:
+        self.make_file("mae.py", """\
+            def f(x):
+                if x == 1:
+                    print("1")
+                else:
+                    print("2")
+
+            if f(1):
+                print("nope")
+            if f(2):
+                print("nope")
+            """)
+
+        cov = coverage.Coverage()
+        self.start_import_stop(cov, "mae")
+        cov.annotate()
+        assert self.stdout() == "1\n2\n"
+        compare(gold_path("annotate/mae"), ".", "*,cover")

@@ -1,12 +1,14 @@
-#!/usr/bin/env python3
-"""
-Upload release notes into GitHub releases.
-"""
+# Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
+# For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
+
+"""Upload release notes into GitHub releases."""
 
 import json
+import os
 import shlex
 import subprocess
 import sys
+import time
 
 import pkg_resources
 import requests
@@ -50,6 +52,16 @@ def check_ok(resp):
         print(f"text: {resp.text!r}")
         resp.raise_for_status()
 
+def get_session():
+    """
+    Get an authenticated GitHub requests session.
+    """
+    gh_session = requests.Session()
+    token = os.environ.get("GITHUB_TOKEN", "")
+    if token:
+        gh_session.headers["Authorization"] = f"Bearer {token}"
+    return gh_session
+
 def github_paginated(session, url):
     """
     Get all the results from a paginated GitHub url.
@@ -74,42 +86,55 @@ def get_releases(session, repo):
     releases = { r['tag_name']: r for r in github_paginated(session, url) }
     return releases
 
-def release_for_relnote(relnote):
+RELEASE_BODY_FMT = """\
+## Version {version} \N{EM DASH} {when}
+
+{relnote_text}
+
+:arrow_right:\xa0 PyPI page: [coverage {version}](https://pypi.org/project/coverage/{version}).
+:arrow_right:\xa0 To install: `python3 -m pip install coverage=={version}`
+"""
+
+def release_for_relnote(relnote, tag):
     """
     Turn a release note dict into the data needed by GitHub for a release.
     """
-    tag = relnote['version']
+    relnote_text = relnote["text"]
+    version = relnote["version"]
+    body = RELEASE_BODY_FMT.format(
+        relnote_text=relnote_text,
+        version=version,
+        when=relnote["when"],
+    )
     return {
         "tag_name": tag,
-        "name": tag,
-        "body": relnote["text"],
+        "name": version,
+        "body": body,
         "draft": False,
         "prerelease": relnote["prerelease"],
     }
 
-def create_release(session, repo, relnote):
+def create_release(session, repo, release_data):
     """
     Create a new GitHub release.
     """
-    print(f"Creating {relnote['version']}")
-    data = release_for_relnote(relnote)
-    resp = session.post(RELEASES_URL.format(repo=repo), json=data)
+    print(f"Creating {release_data['name']}")
+    resp = session.post(RELEASES_URL.format(repo=repo), json=release_data)
     check_ok(resp)
 
-def update_release(session, url, relnote):
+def update_release(session, url, release_data):
     """
     Update an existing GitHub release.
     """
-    print(f"Updating {relnote['version']}")
-    data = release_for_relnote(relnote)
-    resp = session.patch(url, json=data)
+    print(f"Updating {release_data['name']}")
+    resp = session.patch(url, json=release_data)
     check_ok(resp)
 
 def update_github_releases(json_filename, repo):
     """
     Read the json file, and create or update releases in GitHub.
     """
-    gh_session = requests.Session()
+    gh_session = get_session()
     releases = get_releases(gh_session, repo)
     if 0:   # if you need to delete all the releases!
         for release in releases.values():
@@ -124,15 +149,20 @@ def update_github_releases(json_filename, repo):
     for relnote in relnotes:
         tag = relnote["version"]
         if not does_tag_exist(tag):
-            continue
+            tag = f"coverage-{tag}"
+            if not does_tag_exist(tag):
+                continue
+        release_data = release_for_relnote(relnote, tag)
         exists = tag in releases
         if not exists:
-            create_release(gh_session, repo, relnote)
+            create_release(gh_session, repo, release_data)
+            time.sleep(3)
         else:
             release = releases[tag]
-            if release["body"] != relnote["text"]:
+            if release["body"] != release_data["body"]:
                 url = release["url"]
-                update_release(gh_session, url, relnote)
+                update_release(gh_session, url, release_data)
+                time.sleep(3)
 
 if __name__ == "__main__":
-    update_github_releases(*sys.argv[1:])   # pylint: disable=no-value-for-parameter
+    update_github_releases(*sys.argv[1:3])

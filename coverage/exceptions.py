@@ -3,14 +3,29 @@
 
 """Exceptions coverage.py can raise."""
 
+from __future__ import annotations
 
-class BaseCoverageException(Exception):
-    """The base of all Coverage exceptions."""
+class _BaseCoverageException(Exception):
+    """The base-base of all Coverage exceptions."""
     pass
 
 
-class CoverageException(BaseCoverageException):
-    """An exception raised by a coverage.py function."""
+class CoverageException(_BaseCoverageException):
+    """The base class of all exceptions raised by Coverage.py."""
+    pass
+
+
+class ConfigError(_BaseCoverageException):
+    """A problem with a config file, or a value in one."""
+    pass
+
+
+class DataError(CoverageException):
+    """An error in using a data file."""
+    pass
+
+class NoDataError(CoverageException):
+    """We didn't have data to work with."""
     pass
 
 
@@ -29,20 +44,15 @@ class NotPython(CoverageException):
     pass
 
 
-class ExceptionDuringRun(CoverageException):
-    """An exception happened while running customer code.
-
-    Construct it with three arguments, the values from `sys.exc_info`.
-
-    """
+class PluginError(CoverageException):
+    """A plugin misbehaved."""
     pass
 
 
-class StopEverything(BaseCoverageException):
-    """An exception that means everything should stop.
+class _ExceptionDuringRun(CoverageException):
+    """An exception happened while running customer code.
 
-    The CoverageTest class converts these to SkipTest, so that when running
-    tests, raising this exception will automatically skip the test.
+    Construct it with three arguments, the values from `sys.exc_info`.
 
     """
     pass

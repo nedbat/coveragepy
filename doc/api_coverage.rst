@@ -6,10 +6,7 @@
 The Coverage class
 ------------------
 
-.. module:: coverage
-    :noindex:
-
-.. autoclass:: Coverage
+.. autoclass:: coverage.Coverage
     :members:
     :exclude-members: sys_info
     :special-members: __init__

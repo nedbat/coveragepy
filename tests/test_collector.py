@@ -3,6 +3,8 @@
 
 """Tests of coverage/collector.py and other collectors."""
 
+from __future__ import annotations
+
 import os.path
 
 import coverage
@@ -14,7 +16,7 @@ from tests.helpers import CheckUniqueFilenames
 class CollectorTest(CoverageTest):
     """Test specific aspects of the collection process."""
 
-    def test_should_trace_cache(self):
+    def test_should_trace_cache(self) -> None:
         # The tracers should only invoke should_trace once for each file name.
 
         # Make some files that invoke each other.

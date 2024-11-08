@@ -112,14 +112,27 @@ register your dynamic context switcher.
 
 """
 
+from __future__ import annotations
+
+import dataclasses
+import functools
+
+from types import FrameType
+from typing import Any
+from collections.abc import Iterable
+
 from coverage import files
-from coverage.misc import contract, _needs_to_implement
+from coverage.misc import _needs_to_implement
+from coverage.types import TArc, TConfigurable, TLineNo, TSourceTokenLines
 
 
 class CoveragePlugin:
     """Base class for coverage.py plug-ins."""
 
-    def file_tracer(self, filename):        # pylint: disable=unused-argument
+    _coverage_plugin_name: str
+    _coverage_enabled: bool
+
+    def file_tracer(self, filename: str) -> FileTracer | None: # pylint: disable=unused-argument
         """Get a :class:`FileTracer` object for a file.
 
         Plug-in type: file tracer.
@@ -159,7 +172,10 @@ class CoveragePlugin:
         """
         return None
 
-    def file_reporter(self, filename):      # pylint: disable=unused-argument
+    def file_reporter(
+        self,
+        filename: str,                  # pylint: disable=unused-argument
+    ) -> FileReporter | str:      # str should be Literal["python"]
         """Get the :class:`FileReporter` class to use for a file.
 
         Plug-in type: file tracer.
@@ -173,7 +189,10 @@ class CoveragePlugin:
         """
         _needs_to_implement(self, "file_reporter")
 
-    def dynamic_context(self, frame):       # pylint: disable=unused-argument
+    def dynamic_context(
+        self,
+        frame: FrameType,               # pylint: disable=unused-argument
+    ) -> str | None:
         """Get the dynamically computed context label for `frame`.
 
         Plug-in type: dynamic context.
@@ -189,7 +208,10 @@ class CoveragePlugin:
         """
         return None
 
-    def find_executable_files(self, src_dir):       # pylint: disable=unused-argument
+    def find_executable_files(
+        self,
+        src_dir: str,                   # pylint: disable=unused-argument
+    ) -> Iterable[str]:
         """Yield all of the executable files in `src_dir`, recursively.
 
         Plug-in type: file tracer.
@@ -204,7 +226,7 @@ class CoveragePlugin:
         """
         return []
 
-    def configure(self, config):
+    def configure(self, config: TConfigurable) -> None:
         """Modify the configuration of coverage.py.
 
         Plug-in type: configurer.
@@ -218,7 +240,7 @@ class CoveragePlugin:
         """
         pass
 
-    def sys_info(self):
+    def sys_info(self) -> Iterable[tuple[str, Any]]:
         """Get a list of information useful for debugging.
 
         Plug-in type: any.
@@ -232,7 +254,12 @@ class CoveragePlugin:
         return []
 
 
-class FileTracer:
+class CoveragePluginBase:
+    """Plugins produce specialized objects, which point back to the original plugin."""
+    _coverage_plugin: CoveragePlugin
+
+
+class FileTracer(CoveragePluginBase):
     """Support needed for files during the execution phase.
 
     File tracer plug-ins implement subclasses of FileTracer to return from
@@ -249,7 +276,7 @@ class FileTracer:
 
     """
 
-    def source_filename(self):
+    def source_filename(self) -> str:
         """The source file name for this file.
 
         This may be any file name you like.  A key responsibility of a plug-in
@@ -264,7 +291,7 @@ class FileTracer:
         """
         _needs_to_implement(self, "source_filename")
 
-    def has_dynamic_source_filename(self):
+    def has_dynamic_source_filename(self) -> bool:
         """Does this FileTracer have dynamic source file names?
 
         FileTracers can provide dynamically determined file names by
@@ -282,7 +309,11 @@ class FileTracer:
         """
         return False
 
-    def dynamic_source_filename(self, filename, frame):     # pylint: disable=unused-argument
+    def dynamic_source_filename(
+        self,
+        filename: str,                  # pylint: disable=unused-argument
+        frame: FrameType,               # pylint: disable=unused-argument
+    ) -> str | None:
         """Get a dynamically computed source file name.
 
         Some plug-ins need to compute the source file name dynamically for each
@@ -297,7 +328,7 @@ class FileTracer:
         """
         return None
 
-    def line_number_range(self, frame):
+    def line_number_range(self, frame: FrameType) -> tuple[TLineNo, TLineNo]:
         """Get the range of source line numbers for a given a call frame.
 
         The call frame is examined, and the source line number in the original
@@ -315,7 +346,37 @@ class FileTracer:
         return lineno, lineno
 
 
-class FileReporter:
+@dataclasses.dataclass
+class CodeRegion:
+    """Data for a region of code found by :meth:`FileReporter.code_regions`."""
+
+    #: The kind of region, like `"function"` or `"class"`. Must be one of the
+    #: singular values returned by :meth:`FileReporter.code_region_kinds`.
+    kind: str
+
+    #: The name of the region. For example, a function or class name.
+    name: str
+
+    #: The line in the source file to link to when navigating to the region.
+    #: Can be a line not mentioned in `lines`.
+    start: int
+
+    #: The lines in the region. Should be lines that could be executed in the
+    #: region.  For example, a class region includes all of the lines in the
+    #: methods of the class, but not the lines defining class attributes, since
+    #: they are executed on import, not as part of exercising the class.  The
+    #: set can include non-executable lines like blanks and comments.
+    lines: set[int]
+
+    def __lt__(self, other: CodeRegion) -> bool:
+        """To support sorting to make test-writing easier."""
+        if self.name == other.name:
+            return min(self.lines) < min(other.lines)
+        return self.name < other.name
+
+
+@functools.total_ordering
+class FileReporter(CoveragePluginBase):
     """Support needed for files during the analysis and reporting phases.
 
     File tracer plug-ins implement a subclass of `FileReporter`, and return
@@ -328,7 +389,7 @@ class FileReporter:
 
     """
 
-    def __init__(self, filename):
+    def __init__(self, filename: str) -> None:
         """Simple initialization of a `FileReporter`.
 
         The `filename` argument is the path to the file being reported.  This
@@ -338,10 +399,10 @@ class FileReporter:
         """
         self.filename = filename
 
-    def __repr__(self):
-        return "<{0.__class__.__name__} filename={0.filename!r}>".format(self)
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__name__} filename={self.filename!r}>"
 
-    def relative_filename(self):
+    def relative_filename(self) -> str:
         """Get the relative file name for this file.
 
         This file path will be displayed in reports.  The default
@@ -352,21 +413,20 @@ class FileReporter:
         """
         return files.relative_filename(self.filename)
 
-    @contract(returns='unicode')
-    def source(self):
+    def source(self) -> str:
         """Get the source for the file.
 
         Returns a Unicode string.
 
         The base implementation simply reads the `self.filename` file and
-        decodes it as UTF8.  Override this method if your file isn't readable
+        decodes it as UTF-8.  Override this method if your file isn't readable
         as a text file, or if you need other encoding support.
 
         """
-        with open(self.filename, "rb") as f:
-            return f.read().decode("utf8")
+        with open(self.filename, encoding="utf-8") as f:
+            return f.read()
 
-    def lines(self):
+    def lines(self) -> set[TLineNo]:
         """Get the executable lines in this file.
 
         Your plug-in must determine which lines in the file were possibly
@@ -377,7 +437,7 @@ class FileReporter:
         """
         _needs_to_implement(self, "lines")
 
-    def excluded_lines(self):
+    def excluded_lines(self) -> set[TLineNo]:
         """Get the excluded executable lines in this file.
 
         Your plug-in can use any method it likes to allow the user to exclude
@@ -390,7 +450,7 @@ class FileReporter:
         """
         return set()
 
-    def translate_lines(self, lines):
+    def translate_lines(self, lines: Iterable[TLineNo]) -> set[TLineNo]:
         """Translate recorded lines into reported lines.
 
         Some file formats will want to report lines slightly differently than
@@ -410,7 +470,7 @@ class FileReporter:
         """
         return set(lines)
 
-    def arcs(self):
+    def arcs(self) -> set[TArc]:
         """Get the executable arcs in this file.
 
         To support branch coverage, your plug-in needs to be able to indicate
@@ -424,7 +484,7 @@ class FileReporter:
         """
         return set()
 
-    def no_branch_lines(self):
+    def no_branch_lines(self) -> set[TLineNo]:
         """Get the lines excused from branch coverage in this file.
 
         Your plug-in can use any method it likes to allow the user to exclude
@@ -437,7 +497,7 @@ class FileReporter:
         """
         return set()
 
-    def translate_arcs(self, arcs):
+    def translate_arcs(self, arcs: Iterable[TArc]) -> set[TArc]:
         """Translate recorded arcs into reported arcs.
 
         Similar to :meth:`translate_lines`, but for arcs.  `arcs` is a set of
@@ -448,9 +508,9 @@ class FileReporter:
         The default implementation returns `arcs` unchanged.
 
         """
-        return arcs
+        return set(arcs)
 
-    def exit_counts(self):
+    def exit_counts(self) -> dict[TLineNo, int]:
         """Get a count of exits from that each line.
 
         To determine which lines are branches, coverage.py looks for lines that
@@ -463,7 +523,12 @@ class FileReporter:
         """
         return {}
 
-    def missing_arc_description(self, start, end, executed_arcs=None):     # pylint: disable=unused-argument
+    def missing_arc_description(
+        self,
+        start: TLineNo,
+        end: TLineNo,
+        executed_arcs: Iterable[TArc] | None = None,     # pylint: disable=unused-argument
+    ) -> str:
         """Provide an English sentence describing a missing arc.
 
         The `start` and `end` arguments are the line numbers of the missing
@@ -478,56 +543,75 @@ class FileReporter:
         """
         return f"Line {start} didn't jump to line {end}"
 
-    def source_token_lines(self):
+    def arc_description(
+        self,
+        start: TLineNo,     # pylint: disable=unused-argument
+        end: TLineNo
+    ) -> str:
+        """Provide an English description of an arc's effect."""
+        return f"jump to line {end}"
+
+    def source_token_lines(self) -> TSourceTokenLines:
         """Generate a series of tokenized lines, one for each line in `source`.
 
         These tokens are used for syntax-colored reports.
 
         Each line is a list of pairs, each pair is a token::
 
-            [('key', 'def'), ('ws', ' '), ('nam', 'hello'), ('op', '('), ... ]
+            [("key", "def"), ("ws", " "), ("nam", "hello"), ("op", "("), ... ]
 
         Each pair has a token class, and the token text.  The token classes
         are:
 
-        * ``'com'``: a comment
-        * ``'key'``: a keyword
-        * ``'nam'``: a name, or identifier
-        * ``'num'``: a number
-        * ``'op'``: an operator
-        * ``'str'``: a string literal
-        * ``'ws'``: some white space
-        * ``'txt'``: some other kind of text
+        * ``"com"``: a comment
+        * ``"key"``: a keyword
+        * ``"nam"``: a name, or identifier
+        * ``"num"``: a number
+        * ``"op"``: an operator
+        * ``"str"``: a string literal
+        * ``"ws"``: some white space
+        * ``"txt"``: some other kind of text
 
         If you concatenate all the token texts, and then join them with
         newlines, you should have your original source back.
 
         The default implementation simply returns each line tagged as
-        ``'txt'``.
+        ``"txt"``.
 
         """
         for line in self.source().splitlines():
-            yield [('txt', line)]
+            yield [("txt", line)]
 
-    # Annoying comparison operators. Py3k wants __lt__ etc, and Py2k needs all
-    # of them defined.
+    def code_regions(self) -> Iterable[CodeRegion]:
+        """Identify regions in the source file for finer reporting than by file.
 
-    def __eq__(self, other):
+        Returns an iterable of :class:`CodeRegion` objects.  The kinds reported
+        should be in the possibilities returned by :meth:`code_region_kinds`.
+
+        """
+        return []
+
+    def code_region_kinds(self) -> Iterable[tuple[str, str]]:
+        """Return the kinds of code regions this plugin can find.
+
+        The returned pairs are the singular and plural forms of the kinds::
+
+            [
+                ("function", "functions"),
+                ("class", "classes"),
+            ]
+
+        This will usually be hard-coded, but could also differ by the specific
+        source file involved.
+
+        """
+        return []
+
+    def __eq__(self, other: Any) -> bool:
         return isinstance(other, FileReporter) and self.filename == other.filename
 
-    def __ne__(self, other):
-        return not (self == other)
+    def __lt__(self, other: Any) -> bool:
+        return isinstance(other, FileReporter) and self.filename < other.filename
 
-    def __lt__(self, other):
-        return self.filename < other.filename
-
-    def __le__(self, other):
-        return self.filename <= other.filename
-
-    def __gt__(self, other):
-        return self.filename > other.filename
-
-    def __ge__(self, other):
-        return self.filename >= other.filename
-
-    __hash__ = None     # This object doesn't need to be hashed.
+    # This object doesn't need to be hashed.
+    __hash__ = None         # type: ignore[assignment]

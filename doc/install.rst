@@ -15,19 +15,19 @@ Installation
 
 You can install coverage.py in the usual ways. The simplest way is with pip::
 
-    $ pip install coverage
+    $ python3 -m pip install coverage
 
 .. ifconfig:: prerelease
 
     To install a pre-release version, you will need to specify ``--pre``::
 
-        $ pip install --pre coverage
+        $ python3 -m pip install --pre coverage
 
     or the exact version you want to install:
 
     .. parsed-literal::
 
-        $ pip install |coverage-equals-release|
+        $ python3 -m pip install |coverage-equals-release|
 
 .. _install_extension:
 
@@ -84,6 +84,6 @@ You can also invoke coverage.py as a module:
 
 .. parsed-literal::
 
-    $ python -m coverage --version
+    $ python3 -m coverage --version
     Coverage.py, version |release| with C extension
     Documentation at |doc-url|

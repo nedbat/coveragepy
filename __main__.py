@@ -6,7 +6,7 @@
 import runpy
 import os
 
-PKG = 'coverage'
+PKG = "coverage"
 
-run_globals = runpy.run_module(PKG, run_name='__main__', alter_sys=True)
-executed = os.path.splitext(os.path.basename(run_globals['__file__']))[0]
+run_globals = runpy.run_module(PKG, run_name="__main__", alter_sys=True)
+executed = os.path.splitext(os.path.basename(run_globals["__file__"]))[0]

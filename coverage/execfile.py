@@ -3,6 +3,8 @@
 
 """Execute files of Python code."""
 
+from __future__ import annotations
+
 import importlib.machinery
 import importlib.util
 import inspect
@@ -10,13 +12,14 @@ import marshal
 import os
 import struct
 import sys
-import types
 
-from coverage import env
-from coverage.exceptions import CoverageException, ExceptionDuringRun, NoCode, NoSource
+from importlib.machinery import ModuleSpec
+from types import CodeType, ModuleType
+from typing import Any
+
+from coverage.exceptions import CoverageException, _ExceptionDuringRun, NoCode, NoSource
 from coverage.files import canonical_filename, python_reported_file
 from coverage.misc import isolate_module
-from coverage.phystokens import compile_unicode
 from coverage.python import get_python_source
 
 os = isolate_module(os)
@@ -29,11 +32,13 @@ class DummyLoader:
 
     Currently only implements the .fullname attribute
     """
-    def __init__(self, fullname, *_args):
+    def __init__(self, fullname: str, *_args: Any) -> None:
         self.fullname = fullname
 
 
-def find_module(modulename):
+def find_module(
+    modulename: str,
+) -> tuple[str | None, str, ModuleSpec]:
     """Find the module named `modulename`.
 
     Returns the file path of the module, the name of the enclosing
@@ -52,9 +57,8 @@ def find_module(modulename):
         spec = importlib.util.find_spec(mod_main)
         if not spec:
             raise NoSource(
-                "No module named %s; "
-                "%r is a package and cannot be directly executed"
-                % (mod_main, modulename)
+                f"No module named {mod_main}; " +
+                f"{modulename!r} is a package and cannot be directly executed",
             )
         pathname = spec.origin
         packagename = spec.name
@@ -68,23 +72,25 @@ class PyRunner:
     This is meant to emulate real Python execution as closely as possible.
 
     """
-    def __init__(self, args, as_module=False):
+    def __init__(self, args: list[str], as_module: bool = False) -> None:
         self.args = args
         self.as_module = as_module
 
         self.arg0 = args[0]
-        self.package = self.modulename = self.pathname = self.loader = self.spec = None
+        self.package: str | None = None
+        self.modulename: str | None = None
+        self.pathname: str | None = None
+        self.loader: DummyLoader | None = None
+        self.spec: ModuleSpec | None = None
 
-    def prepare(self):
+    def prepare(self) -> None:
         """Set sys.path properly.
 
         This needs to happen before any importing, and without importing anything.
         """
+        path0: str | None
         if self.as_module:
-            if env.PYBEHAVIOR.actual_syspath0_dash_m:
-                path0 = os.getcwd()
-            else:
-                path0 = ""
+            path0 = os.getcwd()
         elif os.path.isdir(self.arg0):
             # Running a directory means running the __main__.py file in that
             # directory.
@@ -116,7 +122,7 @@ class PyRunner:
         if path0 is not None:
             sys.path[0] = python_reported_file(path0)
 
-    def _prepare2(self):
+    def _prepare2(self) -> None:
         """Do more preparation to run Python code.
 
         Includes finding the module to run and adjusting sys.argv[0].
@@ -129,6 +135,7 @@ class PyRunner:
             if self.spec is not None:
                 self.modulename = self.spec.name
             self.loader = DummyLoader(self.modulename)
+            assert pathname is not None
             self.pathname = os.path.abspath(pathname)
             self.args[0] = self.arg0 = self.pathname
         elif os.path.isdir(self.arg0):
@@ -137,15 +144,13 @@ class PyRunner:
             for ext in [".py", ".pyc", ".pyo"]:
                 try_filename = os.path.join(self.arg0, "__main__" + ext)
                 # 3.8.10 changed how files are reported when running a
-                # directory.  But I'm not sure how far this change is going to
-                # spread, so I'll just hard-code it here for now.
-                if env.PYVERSION >= (3, 8, 10):
-                    try_filename = os.path.abspath(try_filename)
+                # directory.
+                try_filename = os.path.abspath(try_filename)
                 if os.path.exists(try_filename):
                     self.arg0 = try_filename
                     break
             else:
-                raise NoSource("Can't find '__main__' module in '%s'" % self.arg0)
+                raise NoSource(f"Can't find '__main__' module in '{self.arg0}'")
 
             # Make a spec. I don't know if this is the right way to do it.
             try_filename = python_reported_file(try_filename)
@@ -158,13 +163,13 @@ class PyRunner:
 
         self.arg0 = python_reported_file(self.arg0)
 
-    def run(self):
+    def run(self) -> None:
         """Run the Python code!"""
 
         self._prepare2()
 
         # Create a module to serve as __main__
-        main_mod = types.ModuleType('__main__')
+        main_mod = ModuleType("__main__")
 
         from_pyc = self.arg0.endswith((".pyc", ".pyo"))
         main_mod.__file__ = self.arg0
@@ -172,13 +177,13 @@ class PyRunner:
             main_mod.__file__ = main_mod.__file__[:-1]
         if self.package is not None:
             main_mod.__package__ = self.package
-        main_mod.__loader__ = self.loader
+        main_mod.__loader__ = self.loader   # type: ignore[assignment]
         if self.spec is not None:
             main_mod.__spec__ = self.spec
 
-        main_mod.__builtins__ = sys.modules['builtins']
+        main_mod.__builtins__ = sys.modules["builtins"]     # type: ignore[attr-defined]
 
-        sys.modules['__main__'] = main_mod
+        sys.modules["__main__"] = main_mod
 
         # Set sys.argv properly.
         sys.argv = self.args
@@ -212,17 +217,20 @@ class PyRunner:
             # so that the coverage.py code doesn't appear in the final printed
             # traceback.
             typ, err, tb = sys.exc_info()
+            assert typ is not None
+            assert err is not None
+            assert tb is not None
 
             # PyPy3 weirdness.  If I don't access __context__, then somehow it
             # is non-None when the exception is reported at the upper layer,
             # and a nested exception is shown to the user.  This getattr fixes
             # it somehow? https://bitbucket.org/pypy/pypy/issue/1903
-            getattr(err, '__context__', None)
+            getattr(err, "__context__", None)
 
             # Call the excepthook.
             try:
-                if hasattr(err, "__traceback__"):
-                    err.__traceback__ = err.__traceback__.tb_next
+                assert err.__traceback__ is not None
+                err.__traceback__ = err.__traceback__.tb_next
                 sys.excepthook(typ, err, tb.tb_next)
             except SystemExit:                      # pylint: disable=try-except-raise
                 raise
@@ -231,19 +239,22 @@ class PyRunner:
                 # shenanigans is kind of involved.
                 sys.stderr.write("Error in sys.excepthook:\n")
                 typ2, err2, tb2 = sys.exc_info()
+                assert typ2 is not None
+                assert err2 is not None
+                assert tb2 is not None
                 err2.__suppress_context__ = True
-                if hasattr(err2, "__traceback__"):
-                    err2.__traceback__ = err2.__traceback__.tb_next
+                assert err2.__traceback__ is not None
+                err2.__traceback__ = err2.__traceback__.tb_next
                 sys.__excepthook__(typ2, err2, tb2.tb_next)
                 sys.stderr.write("\nOriginal exception was:\n")
-                raise ExceptionDuringRun(typ, err, tb.tb_next) from exc
+                raise _ExceptionDuringRun(typ, err, tb.tb_next) from exc
             else:
                 sys.exit(1)
         finally:
             os.chdir(cwd)
 
 
-def run_python_module(args):
+def run_python_module(args: list[str]) -> None:
     """Run a Python module, as though with ``python -m name args...``.
 
     `args` is the argument array to present as sys.argv, including the first
@@ -257,7 +268,7 @@ def run_python_module(args):
     runner.run()
 
 
-def run_python_file(args):
+def run_python_file(args: list[str]) -> None:
     """Run a Python file as if it were the main program on the command line.
 
     `args` is the argument array to present as sys.argv, including the first
@@ -272,19 +283,18 @@ def run_python_file(args):
     runner.run()
 
 
-def make_code_from_py(filename):
+def make_code_from_py(filename: str) -> CodeType:
     """Get source from `filename` and make a code object of it."""
-    # Open the source file.
     try:
         source = get_python_source(filename)
     except (OSError, NoSource) as exc:
         raise NoSource(f"No file to run: '{filename}'") from exc
 
-    code = compile_unicode(source, filename, "exec")
+    code = compile(source, filename, mode="exec", dont_inherit=True)
     return code
 
 
-def make_code_from_pyc(filename):
+def make_code_from_pyc(filename: str) -> CodeType:
     """Get a code object from a .pyc file."""
     try:
         fpyc = open(filename, "rb")
@@ -296,22 +306,19 @@ def make_code_from_pyc(filename):
         # match or we won't run the file.
         magic = fpyc.read(4)
         if magic != PYC_MAGIC_NUMBER:
-            raise NoCode(f"Bad magic number in .pyc file: {magic} != {PYC_MAGIC_NUMBER}")
+            raise NoCode(f"Bad magic number in .pyc file: {magic!r} != {PYC_MAGIC_NUMBER!r}")
 
-        date_based = True
-        if env.PYBEHAVIOR.hashed_pyc_pep552:
-            flags = struct.unpack('<L', fpyc.read(4))[0]
-            hash_based = flags & 0x01
-            if hash_based:
-                fpyc.read(8)    # Skip the hash.
-                date_based = False
-        if date_based:
+        flags = struct.unpack("<L", fpyc.read(4))[0]
+        hash_based = flags & 0x01
+        if hash_based:
+            fpyc.read(8)    # Skip the hash.
+        else:
             # Skip the junk in the header that we don't need.
-            fpyc.read(4)            # Skip the moddate.
-            # 3.3 added another long to the header (size), skip it.
-            fpyc.read(4)
+            fpyc.read(4)    # Skip the moddate.
+            fpyc.read(4)    # Skip the size.
 
         # The rest of the file is the code object we want.
         code = marshal.load(fpyc)
+        assert isinstance(code, CodeType)
 
     return code

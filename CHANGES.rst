@@ -9,29 +9,1449 @@ These changes are listed in decreasing version number order. Note this can be
 different from a strict chronological order when there are two branches in
 development at the same time, such as 4.5.x and 5.0.
 
-This list is detailed and covers changes in each pre-release version.  If you
-want to know what's different in 5.0 since 4.5.x, see :ref:`whatsnew5x`.
-
+See :ref:`migrating` for significant changes that might be required when
+upgrading your version of coverage.py.
 
     .. When updating the "Unreleased" header to a specific version, use this
     .. format.  Don't forget the jump target:
     ..
-    ..  .. _changes_981:
+    ..  .. _changes_9-8-1:
     ..
-    ..  Version 9.8.1 --- 2027-07-27
-    ..  ----------------------------
+    ..  Version 9.8.1 — 2027-07-27
+    ..  --------------------------
 
 Unreleased
 ----------
 
+- fix: fine-tuned the exact Python version (3.12.6) when exiting from ``with``
+  statements changed how they traced.  This affected whether people saw the
+  fix for `issue 1880`_.
+
+- refactor: some code unreachable code paths in parser.py were changed to
+  asserts.  If you encounter any of these, please let me know!
+
+
+.. start-releases
+
+.. _changes_7-6-4:
+
+Version 7.6.4 — 2024-10-20
+--------------------------
+
+- fix: multi-line ``with`` statements could cause contained branches to be
+  incorrectly marked as missing (`issue 1880`_).  This is now fixed.
+
+.. _issue 1880: https://github.com/nedbat/coveragepy/issues/1880
+
+
+.. _changes_7-6-3:
+
+Version 7.6.3 — 2024-10-13
+--------------------------
+
+- Fix: nested context managers could incorrectly be analyzed to flag a missing
+  branch on the last context manager, as described in `issue 1876`_.  This is
+  now fixed.
+
+- Fix: the missing branch message about not exiting a module had an extra
+  "didn't," as described in `issue 1873`_.  This is now fixed.
+
+.. _issue 1873: https://github.com/nedbat/coveragepy/issues/1873
+.. _issue 1876: https://github.com/nedbat/coveragepy/issues/1876
+
+
+.. _changes_7-6-2:
+
+Version 7.6.2 — 2024-10-09
+--------------------------
+
+- Dropped support for Python 3.8 and PyPy 3.8.
+
+- Fix: a final wildcard match/case clause assigning to a name (``case _ as
+  value``) was incorrectly marked as a missing branch.  This is now fixed,
+  closing `issue 1860`_.
+
+- Fewer things are considered branches now. Lambdas, comprehensions, and
+  generator expressions are no longer marked as missing branches if they don't
+  complete execution.  Closes `issue 1852`_.
+
+- Fix: the HTML report didn't properly show multi-line f-strings that end with
+  a backslash continuation.  This is now fixed, closing `issue 1836`_, thanks
+  to `LiuYinCarl and Marco Ricci <pull 1838_>`_.
+
+- Fix: the LCOV report now has correct line numbers (fixing `issue 1846`_) and
+  better branch descriptions for BRDA records (fixing `issue 1850`_).  There
+  are other changes to lcov also, including a new configuration option
+  :ref:`line_checksums <config_lcov_line_checksums>` to control whether line
+  checksums are included in the lcov report.  The default is false. To keep
+  checksums set it to true.  All this work is thanks to Zack Weinberg
+  (`pull 1849`_ and `pull 1851`_).
+
+- Fixed the docs for multi-line regex exclusions, closing `issue 1863`_.
+
+- Fixed a potential crash in the C tracer, closing `issue 1835`_, thanks to
+  `Jan Kühle <pull 1843_>`_.
+
+.. _issue 1835: https://github.com/nedbat/coveragepy/issues/1835
+.. _issue 1836: https://github.com/nedbat/coveragepy/issues/1836
+.. _pull 1838: https://github.com/nedbat/coveragepy/pull/1838
+.. _pull 1843: https://github.com/nedbat/coveragepy/pull/1843
+.. _issue 1846: https://github.com/nedbat/coveragepy/issues/1846
+.. _pull 1849: https://github.com/nedbat/coveragepy/pull/1849
+.. _issue 1850: https://github.com/nedbat/coveragepy/issues/1850
+.. _pull 1851: https://github.com/nedbat/coveragepy/pull/1851
+.. _issue 1852: https://github.com/nedbat/coveragepy/issues/1852
+.. _issue 1860: https://github.com/nedbat/coveragepy/issues/1860
+.. _issue 1863: https://github.com/nedbat/coveragepy/issues/1863
+
+
+.. _changes_7-6-1:
+
+Version 7.6.1 — 2024-08-04
+--------------------------
+
+- Fix: coverage used to fail when measuring code using :func:`runpy.run_path
+  <python:runpy.run_path>` with a :class:`Path <python:pathlib.Path>` argument.
+  This is now fixed, thanks to `Ask Hjorth Larsen <pull 1819_>`_.
+
+- Fix: backslashes preceding a multi-line backslashed string could confuse the
+  HTML report.  This is now fixed, thanks to `LiuYinCarl <pull 1828_>`_.
+
+- Now we publish wheels for Python 3.13, both regular and free-threaded.
+
+.. _pull 1819: https://github.com/nedbat/coveragepy/pull/1819
+.. _pull 1828: https://github.com/nedbat/coveragepy/pull/1828
+
+
+.. _changes_7-6-0:
+
+Version 7.6.0 — 2024-07-11
+--------------------------
+
+- Exclusion patterns can now be multi-line, thanks to `Daniel Diniz <pull
+  1807_>`_.  This enables many interesting exclusion use-cases, including those
+  requested in issues `118 <issue 118_>`_ (entire files), `996
+  <issue 996_>`_ (multiple lines only when appearing together), `1741
+  <issue 1741_>`_ (remainder of a function), and `1803 <issue 1803_>`_
+  (arbitrary sequence of marked lines).  See the :ref:`multi_line_exclude`
+  section of the docs for more details and examples.
+
+- The JSON report now includes per-function and per-class coverage information.
+  Thanks to `Daniel Diniz <pull 1809_>`_ for getting the work started. This
+  closes `issue 1793`_ and `issue 1532`_.
+
+- Fixed an incorrect calculation of "(no class)" lines in the HTML classes
+  report.
+
+- Python 3.13.0b3 is supported.
+
+.. _issue 118: https://github.com/nedbat/coveragepy/issues/118
+.. _issue 996: https://github.com/nedbat/coveragepy/issues/996
+.. _issue 1532: https://github.com/nedbat/coveragepy/issues/1532
+.. _issue 1741: https://github.com/nedbat/coveragepy/issues/1741
+.. _issue 1793: https://github.com/nedbat/coveragepy/issues/1793
+.. _issue 1803: https://github.com/nedbat/coveragepy/issues/1803
+.. _pull 1807: https://github.com/nedbat/coveragepy/pull/1807
+.. _pull 1809: https://github.com/nedbat/coveragepy/pull/1809
+
+.. _changes_7-5-4:
+
+Version 7.5.4 — 2024-06-22
+--------------------------
+
+- If you attempt to combine statement coverage data with branch coverage data,
+  coverage.py used to fail with the message "Can't combine arc data with line
+  data" or its reverse, "Can't combine line data with arc data."  These
+  messages used internal terminology, making it hard for people to understand
+  the problem.  They are now changed to mention "branch coverage data" and
+  "statement coverage data."
+
+- Fixed a minor branch coverage problem with wildcard match/case cases using
+  names or guard clauses.
+
+- Started testing on 3.13 free-threading (nogil) builds of Python.  I'm not
+  claiming full support yet.  Closes `issue 1799`_.
+
+.. _issue 1799: https://github.com/nedbat/coveragepy/issues/1799
+
+
+.. _changes_7-5-3:
+
+Version 7.5.3 — 2024-05-28
+--------------------------
+
+- Performance improvements for combining data files, especially when measuring
+  line coverage. A few different quadratic behaviors were eliminated. In one
+  extreme case of combining 700+ data files, the time dropped from more than
+  three hours to seven minutes.  Thanks for Kraken Tech for funding the fix.
+
+- Performance improvements for generating HTML reports, with a side benefit of
+  reducing memory use, closing `issue 1791`_.  Thanks to Daniel Diniz for
+  helping to diagnose the problem.
+
+.. _issue 1791: https://github.com/nedbat/coveragepy/issues/1791
+
+
+.. _changes_7-5-2:
+
+Version 7.5.2 — 2024-05-24
+--------------------------
+
+- Fix: nested matches of exclude patterns could exclude too much code, as
+  reported in `issue 1779`_.  This is now fixed.
+
+- Changed: previously, coverage.py would consider a module docstring to be an
+  executable statement if it appeared after line 1 in the file, but not
+  executable if it was the first line.  Now module docstrings are never counted
+  as executable statements.  This can change coverage.py's count of the number
+  of statements in a file, which can slightly change the coverage percentage
+  reported.
+
+- In the HTML report, the filter term and "hide covered" checkbox settings are
+  remembered between viewings, thanks to `Daniel Diniz <pull 1776_>`_.
+
+- Python 3.13.0b1 is supported.
+
+- Fix: parsing error handling is improved to ensure bizarre source files are
+  handled gracefully, and to unblock oss-fuzz fuzzing, thanks to `Liam DeVoe
+  <pull 1788_>`_. Closes `issue 1787`_.
+
+.. _pull 1776: https://github.com/nedbat/coveragepy/pull/1776
+.. _issue 1779: https://github.com/nedbat/coveragepy/issues/1779
+.. _issue 1787: https://github.com/nedbat/coveragepy/issues/1787
+.. _pull 1788: https://github.com/nedbat/coveragepy/pull/1788
+
+
+.. _changes_7-5-1:
+
+Version 7.5.1 — 2024-05-04
+--------------------------
+
+- Fix: a pragma comment on the continuation lines of a multi-line statement
+  now excludes the statement and its body, the same as if the pragma is
+  on the first line. This closes `issue 754`_. The fix was contributed by
+  `Daniel Diniz <pull 1773_>`_.
+
+- Fix: very complex source files like `this one <resolvent_lookup_>`_ could
+  cause a maximum recursion error when creating an HTML report.  This is now
+  fixed, closing `issue 1774`_.
+
+- HTML report improvements:
+
+  - Support files (JavaScript and CSS) referenced by the HTML report now have
+    hashes added to their names to ensure updated files are used instead of
+    stale cached copies.
+
+  - Missing branch coverage explanations that said "the condition was never
+    false" now read "the condition was always true" because it's easier to
+    understand.
+
+  - Column sort order is remembered better as you move between the index pages,
+    fixing `issue 1766`_.  Thanks, `Daniel Diniz <pull 1768_>`_.
+
+
+.. _resolvent_lookup: https://github.com/sympy/sympy/blob/130950f3e6b3f97fcc17f4599ac08f70fdd2e9d4/sympy/polys/numberfields/resolvent_lookup.py
+.. _issue 754: https://github.com/nedbat/coveragepy/issues/754
+.. _issue 1766: https://github.com/nedbat/coveragepy/issues/1766
+.. _pull 1768: https://github.com/nedbat/coveragepy/pull/1768
+.. _pull 1773: https://github.com/nedbat/coveragepy/pull/1773
+.. _issue 1774: https://github.com/nedbat/coveragepy/issues/1774
+
+
+.. _changes_7-5-0:
+
+Version 7.5.0 — 2024-04-23
+--------------------------
+
+- Added initial support for function and class reporting in the HTML report.
+  There are now three index pages which link to each other: files, functions,
+  and classes.  Other reports don't yet have this information, but it will be
+  added in the future where it makes sense.  Feedback gladly accepted!
+  Finishes `issue 780`_.
+
+- Other HTML report improvements:
+
+  - There is now a "hide covered" checkbox to filter out 100% files, finishing
+    `issue 1384`_.
+
+  - The index page is always sorted by one of its columns, with clearer
+    indications of the sorting.
+
+  - The "previous file" shortcut key didn't work on the index page, but now it
+    does, fixing `issue 1765`_.
+
+- The debug output showing which configuration files were tried now shows
+  absolute paths to help diagnose problems where settings aren't taking effect,
+  and is renamed from "attempted_config_files" to the more logical
+  "config_files_attempted."
+
+- Python 3.13.0a6 is supported.
+
+.. _issue 780: https://github.com/nedbat/coveragepy/issues/780
+.. _issue 1384: https://github.com/nedbat/coveragepy/issues/1384
+.. _issue 1765: https://github.com/nedbat/coveragepy/issues/1765
+
+
+.. _changes_7-4-4:
+
+Version 7.4.4 — 2024-03-14
+--------------------------
+
+- Fix: in some cases, even with ``[run] relative_files=True``, a data file
+  could be created with absolute path names.  When combined with other relative
+  data files, it was random whether the absolute file names would be made
+  relative or not. If they weren't, then a file would be listed twice in
+  reports, as detailed in `issue 1752`_.  This is now fixed: absolute file
+  names are always made relative when combining.  Thanks to Bruno Rodrigues dos
+  Santos for support.
+
+- Fix: the last case of a match/case statement had an incorrect message if the
+  branch was missed.  It said the pattern never matched, when actually the
+  branch is missed if the last case always matched.
+
+- Fix: clicking a line number in the HTML report now positions more accurately.
+
+- Fix: the ``report:format`` setting was defined as a boolean, but should be a
+  string.  Thanks, `Tanaydin Sirin <pull 1754_>`_.  It is also now documented
+  on the :ref:`configuration page <config_report_format>`.
+
+.. _issue 1752: https://github.com/nedbat/coveragepy/issues/1752
+.. _pull 1754: https://github.com/nedbat/coveragepy/pull/1754
+
+
+.. _changes_7-4-3:
+
+Version 7.4.3 — 2024-02-23
+--------------------------
+
+- Fix: in some cases, coverage could fail with a RuntimeError: "Set changed
+  size during iteration." This is now fixed, closing `issue 1733`_.
+
+.. _issue 1733: https://github.com/nedbat/coveragepy/issues/1733
+
+
+.. _changes_7-4-2:
+
+Version 7.4.2 — 2024-02-20
+--------------------------
+
+- Fix: setting ``COVERAGE_CORE=sysmon`` no longer errors on 3.11 and lower,
+  thanks `Hugo van Kemenade <pull 1747_>`_.  It now issues a warning that
+  sys.monitoring is not available and falls back to the default core instead.
+
+.. _pull 1747: https://github.com/nedbat/coveragepy/pull/1747
+
+
+.. _changes_7-4-1:
+
+Version 7.4.1 — 2024-01-26
+--------------------------
+
+- Python 3.13.0a3 is supported.
+
+- Fix: the JSON report now includes an explicit format version number, closing
+  `issue 1732`_.
+
+.. _issue 1732: https://github.com/nedbat/coveragepy/issues/1732
+
+
+.. _changes_7-4-0:
+
+Version 7.4.0 — 2023-12-27
+--------------------------
+
+- In Python 3.12 and above, you can try an experimental core based on the new
+  :mod:`sys.monitoring <python:sys.monitoring>` module by defining a
+  ``COVERAGE_CORE=sysmon`` environment variable.  This should be faster for
+  line coverage, but not for branch coverage, and plugins and dynamic contexts
+  are not yet supported with it.  I am very interested to hear how it works (or
+  doesn't!) for you.
+
+
+.. _changes_7-3-4:
+
+Version 7.3.4 — 2023-12-20
+--------------------------
+
+- Fix: the change for multi-line signature exclusions in 7.3.3 broke other
+  forms of nested clauses being excluded properly.  This is now fixed, closing
+  `issue 1713`_.
+
+- Fix: in the HTML report, selecting code for copying won't select the line
+  numbers also. Thanks, `Robert Harris <pull 1717_>`_.
+
+.. _issue 1713: https://github.com/nedbat/coveragepy/issues/1713
+.. _pull 1717: https://github.com/nedbat/coveragepy/pull/1717
+
+
+.. _changes_7-3-3:
+
+Version 7.3.3 — 2023-12-14
+--------------------------
+
+- Fix: function definitions with multi-line signatures can now be excluded by
+  matching any of the lines, closing `issue 684`_.  Thanks, `Jan Rusak,
+  Maciej Kowalczyk and Joanna Ejzel <pull 1705_>`_.
+
+- Fix: XML reports could fail with a TypeError if files had numeric components
+  that were duplicates except for leading zeroes, like ``file1.py`` and
+  ``file001.py``.  Fixes `issue 1709`_.
+
+- The ``coverage annotate`` command used to announce that it would be removed
+  in a future version. Enough people got in touch to say that they use it, so
+  it will stay.  Don't expect it to keep up with other new features though.
+
+- Added new :ref:`debug options <cmd_run_debug>`:
+
+  - ``pytest`` writes the pytest test name into the debug output.
+
+  - ``dataop2`` writes the full data being added to CoverageData objects.
+
+.. _issue 684: https://github.com/nedbat/coveragepy/issues/684
+.. _pull 1705: https://github.com/nedbat/coveragepy/pull/1705
+.. _issue 1709: https://github.com/nedbat/coveragepy/issues/1709
+
+
+.. _changes_7-3-2:
+
+Version 7.3.2 — 2023-10-02
+--------------------------
+
+- The ``coverage lcov`` command ignored the ``[report] exclude_lines`` and
+  ``[report] exclude_also`` settings (`issue 1684`_).  This is now fixed,
+  thanks `Jacqueline Lee <pull 1685_>`_.
+
+- Sometimes SQLite will create journal files alongside the coverage.py database
+  files.  These are ephemeral, but could be mistakenly included when combining
+  data files.  Now they are always ignored, fixing `issue 1605`_. Thanks to
+  Brad Smith for suggesting fixes and providing detailed debugging.
+
+- On Python 3.12+, we now disable SQLite writing journal files, which should be
+  a little faster.
+
+- The new 3.12 soft keyword ``type`` is properly bolded in HTML reports.
+
+- Removed the "fullcoverage" feature used by CPython to measure the coverage of
+  early-imported standard library modules.  CPython `stopped using it
+  <88054_>`_ in 2021, and it stopped working completely in Python 3.13.
+
+.. _issue 1605: https://github.com/nedbat/coveragepy/issues/1605
+.. _issue 1684: https://github.com/nedbat/coveragepy/issues/1684
+.. _pull 1685: https://github.com/nedbat/coveragepy/pull/1685
+.. _88054: https://github.com/python/cpython/issues/88054
+
+
+.. _changes_7-3-1:
+
+Version 7.3.1 — 2023-09-06
+--------------------------
+
+- The semantics of stars in file patterns has been clarified in the docs.  A
+  leading or trailing star matches any number of path components, like a double
+  star would.  This is different than the behavior of a star in the middle of a
+  pattern.  This discrepancy was `identified by Sviatoslav Sydorenko
+  <starbad_>`_, who `provided patient detailed diagnosis <pull 1650_>`_ and
+  graciously agreed to a pragmatic resolution.
+
+- The API docs were missing from the last version. They are now `restored
+  <apidocs_>`_.
+
+.. _apidocs: https://coverage.readthedocs.io/en/latest/api_coverage.html
+.. _starbad: https://github.com/nedbat/coveragepy/issues/1407#issuecomment-1631085209
+.. _pull 1650: https://github.com/nedbat/coveragepy/pull/1650
+
+.. _changes_7-3-0:
+
+Version 7.3.0 — 2023-08-12
+--------------------------
+
+- Added a :meth:`.Coverage.collect` context manager to start and stop coverage
+  data collection.
+
+- Dropped support for Python 3.7.
+
+- Fix: in unusual circumstances, SQLite cannot be set to asynchronous mode.
+  Coverage.py would fail with the error ``Safety level may not be changed
+  inside a transaction.`` This is now avoided, closing `issue 1646`_.  Thanks
+  to Michael Bell for the detailed bug report.
+
+- Docs: examples of configuration files now include separate examples for the
+  different syntaxes: .coveragerc, pyproject.toml, setup.cfg, and tox.ini.
+
+- Fix: added ``nosemgrep`` comments to our JavaScript code so that
+  semgrep-based SAST security checks won't raise false alarms about security
+  problems that aren't problems.
+
+- Added a CITATION.cff file, thanks to `Ken Schackart <pull 1641_>`_.
+
+.. _pull 1641: https://github.com/nedbat/coveragepy/pull/1641
+.. _issue 1646: https://github.com/nedbat/coveragepy/issues/1646
+
+
+.. _changes_7-2-7:
+
+Version 7.2.7 — 2023-05-29
+--------------------------
+
+- Fix: reverted a `change from 6.4.3 <pull 1347b_>`_ that helped Cython, but
+  also increased the size of data files when using dynamic contexts, as
+  described in the now-fixed `issue 1586`_. The problem is now avoided due to a
+  recent change (`issue 1538 <issue 1538b_>`_).  Thanks to `Anders Kaseorg
+  <pull 1629_>`_ and David Szotten for persisting with problem reports and
+  detailed diagnoses.
+
+- Wheels are now provided for CPython 3.12.
+
+.. _pull 1347b: https://github.com/nedbat/coveragepy/pull/1347
+.. _issue 1538b: https://github.com/nedbat/coveragepy/issues/1538
+.. _issue 1586: https://github.com/nedbat/coveragepy/issues/1586
+.. _pull 1629: https://github.com/nedbat/coveragepy/pull/1629
+
+
+.. _changes_7-2-6:
+
+Version 7.2.6 — 2023-05-23
+--------------------------
+
+- Fix: the ``lcov`` command could raise an IndexError exception if a file is
+  translated to Python but then executed under its own name.  Jinja2 does this
+  when rendering templates.  Fixes `issue 1553`_.
+
+- Python 3.12 beta 1 now inlines comprehensions.  Previously they were compiled
+  as invisible functions and coverage.py would warn you if they weren't
+  completely executed.  This no longer happens under Python 3.12.
+
+- Fix: the ``coverage debug sys`` command includes some environment variables
+  in its output.  This could have included sensitive data.  Those values are
+  now hidden with asterisks, closing `issue 1628`_.
+
+.. _issue 1553: https://github.com/nedbat/coveragepy/issues/1553
+.. _issue 1628: https://github.com/nedbat/coveragepy/issues/1628
+
+
+.. _changes_7-2-5:
+
+Version 7.2.5 — 2023-04-30
+--------------------------
+
+- Fix: ``html_report()`` could fail with an AttributeError on ``isatty`` if run
+  in an unusual environment where sys.stdout had been replaced.  This is now
+  fixed.
+
+
+.. _changes_7-2-4:
+
+Version 7.2.4 — 2023-04-28
+--------------------------
+
+PyCon 2023 sprint fixes!
+
+- Fix: with ``relative_files = true``, specifying a specific file to include or
+  omit wouldn't work correctly (`issue 1604`_).  This is now fixed, with
+  testing help by `Marc Gibbons <pull 1608_>`_.
+
+- Fix: the XML report would have an incorrect ``<source>`` element when using
+  relative files and the source option ended with a slash (`issue 1541`_).
+  This is now fixed, thanks to `Kevin Brown-Silva <pull 1608_>`_.
+
+- When the HTML report location is printed to the terminal, it's now a
+  terminal-compatible URL, so that you can click the location to open the HTML
+  file in your browser.  Finishes `issue 1523`_ thanks to `Ricardo Newbery
+  <pull 1613_>`_.
+
+- Docs: a new :ref:`Migrating page <migrating>` with details about how to
+  migrate between major versions of coverage.py.  It currently covers the
+  wildcard changes in 7.x.  Thanks, `Brian Grohe <pull 1610_>`_.
+
+.. _issue 1523: https://github.com/nedbat/coveragepy/issues/1523
+.. _issue 1541: https://github.com/nedbat/coveragepy/issues/1541
+.. _issue 1604: https://github.com/nedbat/coveragepy/issues/1604
+.. _pull 1608: https://github.com/nedbat/coveragepy/pull/1608
+.. _pull 1609: https://github.com/nedbat/coveragepy/pull/1609
+.. _pull 1610: https://github.com/nedbat/coveragepy/pull/1610
+.. _pull 1613: https://github.com/nedbat/coveragepy/pull/1613
+
+
+.. _changes_7-2-3:
+
+Version 7.2.3 — 2023-04-06
+--------------------------
+
+- Fix: the :ref:`config_run_sigterm` setting was meant to capture data if a
+  process was terminated with a SIGTERM signal, but it didn't always.  This was
+  fixed thanks to `Lewis Gaul <pull 1600_>`_, closing `issue 1599`_.
+
+- Performance: HTML reports with context information are now much more compact.
+  File sizes are typically as small as one-third the previous size, but can be
+  dramatically smaller. This closes `issue 1584`_ thanks to `Oleh Krehel
+  <pull 1587_>`_.
+
+- Development dependencies no longer use hashed pins, closing `issue 1592`_.
+
+.. _issue 1584: https://github.com/nedbat/coveragepy/issues/1584
+.. _pull 1587: https://github.com/nedbat/coveragepy/pull/1587
+.. _issue 1592: https://github.com/nedbat/coveragepy/issues/1592
+.. _issue 1599: https://github.com/nedbat/coveragepy/issues/1599
+.. _pull 1600: https://github.com/nedbat/coveragepy/pull/1600
+
+
+.. _changes_7-2-2:
+
+Version 7.2.2 — 2023-03-16
+--------------------------
+
+- Fix: if a virtualenv was created inside a source directory, and a sourced
+  package was installed inside the virtualenv, then all of the third-party
+  packages inside the virtualenv would be measured.  This was incorrect, but
+  has now been fixed: only the specified packages will be measured, thanks to
+  `Manuel Jacob <pull 1560_>`_.
+
+- Fix: the ``coverage lcov`` command could create a .lcov file with incorrect
+  LF (lines found) and LH (lines hit) totals.  This is now fixed, thanks to
+  `Ian Moore <pull 1583_>`_.
+
+- Fix: the ``coverage xml`` command on Windows could create a .xml file with
+  duplicate ``<package>`` elements. This is now fixed, thanks to `Benjamin
+  Parzella <pull 1574_>`_, closing `issue 1573`_.
+
+.. _pull 1560: https://github.com/nedbat/coveragepy/pull/1560
+.. _issue 1573: https://github.com/nedbat/coveragepy/issues/1573
+.. _pull 1574: https://github.com/nedbat/coveragepy/pull/1574
+.. _pull 1583: https://github.com/nedbat/coveragepy/pull/1583
+
+
+.. _changes_7-2-1:
+
+Version 7.2.1 — 2023-02-26
+--------------------------
+
+- Fix: the PyPI page had broken links to documentation pages, but no longer
+  does, closing `issue 1566`_.
+
+- Fix: public members of the coverage module are now properly indicated so that
+  mypy will find them, fixing `issue 1564`_.
+
+.. _issue 1564: https://github.com/nedbat/coveragepy/issues/1564
+.. _issue 1566: https://github.com/nedbat/coveragepy/issues/1566
+
+
+.. _changes_7-2-0:
+
+Version 7.2.0 — 2023-02-22
+--------------------------
+
+- Added a new setting ``[report] exclude_also`` to let you add more exclusions
+  without overwriting the defaults.  Thanks, `Alpha Chen <pull 1557_>`_,
+  closing `issue 1391`_.
+
+- Added a :meth:`.CoverageData.purge_files` method to remove recorded data for
+  a particular file.  Contributed by `Stephan Deibel <pull 1547_>`_.
+
+- Fix: when reporting commands fail, they will no longer congratulate
+  themselves with messages like "Wrote XML report to file.xml" before spewing a
+  traceback about their failure.
+
+- Fix: arguments in the public API that name file paths now accept pathlib.Path
+  objects.  This includes the ``data_file`` and ``config_file`` arguments to
+  the Coverage constructor and the ``basename`` argument to CoverageData.
+  Closes `issue 1552`_.
+
+- Fix: In some embedded environments, an IndexError could occur on stop() when
+  the originating thread exits before completion.  This is now fixed, thanks to
+  `Russell Keith-Magee <pull 1543_>`_, closing `issue 1542`_.
+
+- Added a ``py.typed`` file to announce our type-hintedness.  Thanks,
+  `KotlinIsland <pull 1550_>`_.
+
+.. _issue 1391: https://github.com/nedbat/coveragepy/issues/1391
+.. _issue 1542: https://github.com/nedbat/coveragepy/issues/1542
+.. _pull 1543: https://github.com/nedbat/coveragepy/pull/1543
+.. _pull 1547: https://github.com/nedbat/coveragepy/pull/1547
+.. _pull 1550: https://github.com/nedbat/coveragepy/pull/1550
+.. _issue 1552: https://github.com/nedbat/coveragepy/issues/1552
+.. _pull 1557: https://github.com/nedbat/coveragepy/pull/1557
+
+
+.. _changes_7-1-0:
+
+Version 7.1.0 — 2023-01-24
+--------------------------
+
+- Added: the debug output file can now be specified with ``[run] debug_file``
+  in the configuration file.  Closes `issue 1319`_.
+
+- Performance: fixed a slowdown with dynamic contexts that's been around since
+  6.4.3.  The fix closes `issue 1538`_.  Thankfully this doesn't break the
+  `Cython change`_ that fixed `issue 972`_.  Thanks to Mathieu Kniewallner for
+  the deep investigative work and comprehensive issue report.
+
+- Typing: all product and test code has type annotations.
+
+.. _Cython change: https://github.com/nedbat/coveragepy/pull/1347
+.. _issue 972: https://github.com/nedbat/coveragepy/issues/972
+.. _issue 1319: https://github.com/nedbat/coveragepy/issues/1319
+.. _issue 1538: https://github.com/nedbat/coveragepy/issues/1538
+
+
+.. _changes_7-0-5:
+
+Version 7.0.5 — 2023-01-10
+--------------------------
+
+- Fix: On Python 3.7, a file with type annotations but no ``from __future__
+  import annotations`` would be missing statements in the coverage report. This
+  is now fixed, closing `issue 1524`_.
+
+.. _issue 1524: https://github.com/nedbat/coveragepy/issues/1524
+
+
+.. _changes_7-0-4:
+
+Version 7.0.4 — 2023-01-07
+--------------------------
+
+- Performance: an internal cache of file names was accidentally disabled,
+  resulting in sometimes drastic reductions in performance.  This is now fixed,
+  closing `issue 1527`_.   Thanks to Ivan Ciuvalschii for the reproducible test
+  case.
+
+.. _issue 1527: https://github.com/nedbat/coveragepy/issues/1527
+
+
+.. _changes_7-0-3:
+
+Version 7.0.3 — 2023-01-03
+--------------------------
+
+- Fix: when using pytest-cov or pytest-xdist, or perhaps both, the combining
+  step could fail with ``assert row is not None`` using 7.0.2.  This was due to
+  a race condition that has always been possible and is still possible. In
+  7.0.1 and before, the error was silently swallowed by the combining code.
+  Now it will produce a message "Couldn't combine data file" and ignore the
+  data file as it used to do before 7.0.2.  Closes `issue 1522`_.
+
+.. _issue 1522: https://github.com/nedbat/coveragepy/issues/1522
+
+
+.. _changes_7-0-2:
+
+Version 7.0.2 — 2023-01-02
+--------------------------
+
+- Fix: when using the ``[run] relative_files = True`` setting, a relative
+  ``[paths]`` pattern was still being made absolute.  This is now fixed,
+  closing `issue 1519`_.
+
+- Fix: if Python doesn't provide tomllib, then TOML configuration files can
+  only be read if coverage.py is installed with the ``[toml]`` extra.
+  Coverage.py will raise an error if TOML support is not installed when it sees
+  your settings are in a .toml file. But it didn't understand that
+  ``[tools.coverage]`` was a valid section header, so the error wasn't reported
+  if you used that header, and settings were silently ignored.  This is now
+  fixed, closing `issue 1516`_.
+
+- Fix: adjusted how decorators are traced on PyPy 7.3.10, fixing `issue 1515`_.
+
+- Fix: the ``coverage lcov`` report did not properly implement the
+  ``--fail-under=MIN`` option.  This has been fixed.
+
+- Refactor: added many type annotations, including a number of refactorings.
+  This should not affect outward behavior, but they were a bit invasive in some
+  places, so keep your eyes peeled for oddities.
+
+- Refactor: removed the vestigial and long untested support for Jython and
+  IronPython.
+
+.. _issue 1515: https://github.com/nedbat/coveragepy/issues/1515
+.. _issue 1516: https://github.com/nedbat/coveragepy/issues/1516
+.. _issue 1519: https://github.com/nedbat/coveragepy/issues/1519
+
+
+.. _changes_7-0-1:
+
+Version 7.0.1 — 2022-12-23
+--------------------------
+
+- When checking if a file mapping resolved to a file that exists, we weren't
+  considering files in .whl files.  This is now fixed, closing `issue 1511`_.
+
+- File pattern rules were too strict, forbidding plus signs and curly braces in
+  directory and file names.  This is now fixed, closing `issue 1513`_.
+
+- Unusual Unicode or control characters in source files could prevent
+  reporting.  This is now fixed, closing `issue 1512`_.
+
+- The PyPy wheel now installs on PyPy 3.7, 3.8, and 3.9, closing `issue 1510`_.
+
+.. _issue 1510: https://github.com/nedbat/coveragepy/issues/1510
+.. _issue 1511: https://github.com/nedbat/coveragepy/issues/1511
+.. _issue 1512: https://github.com/nedbat/coveragepy/issues/1512
+.. _issue 1513: https://github.com/nedbat/coveragepy/issues/1513
+
+
+.. _changes_7-0-0:
+
+Version 7.0.0 — 2022-12-18
+--------------------------
+
+Nothing new beyond 7.0.0b1.
+
+
+.. _changes_7-0-0b1:
+
+Version 7.0.0b1 — 2022-12-03
+----------------------------
+
+A number of changes have been made to file path handling, including pattern
+matching and path remapping with the ``[paths]`` setting (see
+:ref:`config_paths`).  These changes might affect you, and require you to
+update your settings.
+
+(This release includes the changes from `6.6.0b1`__, since 6.6.0 was never
+released.)
+
+__ https://coverage.readthedocs.io/en/latest/changes.html#changes-6-6-0b1
+
+- Changes to file pattern matching, which might require updating your
+  configuration:
+
+  - Previously, ``*`` would incorrectly match directory separators, making
+    precise matching difficult.  This is now fixed, closing `issue 1407`_.
+
+  - Now ``**`` matches any number of nested directories, including none.
+
+- Improvements to combining data files when using the
+  :ref:`config_run_relative_files` setting, which might require updating your
+  configuration:
+
+  - During ``coverage combine``, relative file paths are implicitly combined
+    without needing a ``[paths]`` configuration setting.  This also fixed
+    `issue 991`_.
+
+  - A ``[paths]`` setting like ``*/foo`` will now match ``foo/bar.py`` so that
+    relative file paths can be combined more easily.
+
+  - The :ref:`config_run_relative_files` setting is properly interpreted in
+    more places, fixing `issue 1280`_.
+
+- When remapping file paths with ``[paths]``, a path will be remapped only if
+  the resulting path exists.  The documentation has long said the prefix had to
+  exist, but it was never enforced.  This fixes `issue 608`_, improves `issue
+  649`_, and closes `issue 757`_.
+
+- Reporting operations now implicitly use the ``[paths]`` setting to remap file
+  paths within a single data file.  Combining multiple files still requires the
+  ``coverage combine`` step, but this simplifies some single-file situations.
+  Closes `issue 1212`_ and `issue 713`_.
+
+- The ``coverage report`` command now has a ``--format=`` option.  The original
+  style is now ``--format=text``, and is the default.
+
+  - Using ``--format=markdown`` will write the table in Markdown format, thanks
+    to `Steve Oswald <pull 1479_>`_, closing `issue 1418`_.
+
+  - Using ``--format=total`` will write a single total number to the
+    output.  This can be useful for making badges or writing status updates.
+
+- Combining data files with ``coverage combine`` now hashes the data files to
+  skip files that add no new information.  This can reduce the time needed.
+  Many details affect the speed-up, but for coverage.py's own test suite,
+  combining is about 40% faster. Closes `issue 1483`_.
+
+- When searching for completely un-executed files, coverage.py uses the
+  presence of ``__init__.py`` files to determine which directories have source
+  that could have been imported.  However, `implicit namespace packages`_ don't
+  require ``__init__.py``.  A new setting ``[report]
+  include_namespace_packages`` tells coverage.py to consider these directories
+  during reporting.  Thanks to `Felix Horvat <pull 1387_>`_ for the
+  contribution.  Closes `issue 1383`_ and `issue 1024`_.
+
+- Fixed environment variable expansion in pyproject.toml files.  It was overly
+  broad, causing errors outside of coverage.py settings, as described in `issue
+  1481`_ and `issue 1345`_.  This is now fixed, but in rare cases will require
+  changing your pyproject.toml to quote non-string values that use environment
+  substitution.
+
+- An empty file has a coverage total of 100%, but used to fail with
+  ``--fail-under``.  This has been fixed, closing `issue 1470`_.
+
+- The text report table no longer writes out two separator lines if there are
+  no files listed in the table.  One is plenty.
+
+- Fixed a mis-measurement of a strange use of wildcard alternatives in
+  match/case statements, closing `issue 1421`_.
+
+- Fixed internal logic that prevented coverage.py from running on
+  implementations other than CPython or PyPy (`issue 1474`_).
+
+- The deprecated ``[run] note`` setting has been completely removed.
+
+.. _implicit namespace packages: https://peps.python.org/pep-0420/
+.. _issue 608: https://github.com/nedbat/coveragepy/issues/608
+.. _issue 649: https://github.com/nedbat/coveragepy/issues/649
+.. _issue 713: https://github.com/nedbat/coveragepy/issues/713
+.. _issue 757: https://github.com/nedbat/coveragepy/issues/757
+.. _issue 991: https://github.com/nedbat/coveragepy/issues/991
+.. _issue 1024: https://github.com/nedbat/coveragepy/issues/1024
+.. _issue 1212: https://github.com/nedbat/coveragepy/issues/1212
+.. _issue 1280: https://github.com/nedbat/coveragepy/issues/1280
+.. _issue 1345: https://github.com/nedbat/coveragepy/issues/1345
+.. _issue 1383: https://github.com/nedbat/coveragepy/issues/1383
+.. _issue 1407: https://github.com/nedbat/coveragepy/issues/1407
+.. _issue 1418: https://github.com/nedbat/coveragepy/issues/1418
+.. _issue 1421: https://github.com/nedbat/coveragepy/issues/1421
+.. _issue 1470: https://github.com/nedbat/coveragepy/issues/1470
+.. _issue 1474: https://github.com/nedbat/coveragepy/issues/1474
+.. _issue 1481: https://github.com/nedbat/coveragepy/issues/1481
+.. _issue 1483: https://github.com/nedbat/coveragepy/issues/1483
+.. _pull 1387: https://github.com/nedbat/coveragepy/pull/1387
+.. _pull 1479: https://github.com/nedbat/coveragepy/pull/1479
+
+
+.. _changes_6-6-0b1:
+
+Version 6.6.0b1 — 2022-10-31
+----------------------------
+
+(Note: 6.6.0 final was never released. These changes are part of `7.0.0b1`__.)
+
+__ https://coverage.readthedocs.io/en/latest/changes.html#changes-7-0-0b1
+
+- Changes to file pattern matching, which might require updating your
+  configuration:
+
+  - Previously, ``*`` would incorrectly match directory separators, making
+    precise matching difficult.  This is now fixed, closing `issue 1407`_.
+
+  - Now ``**`` matches any number of nested directories, including none.
+
+- Improvements to combining data files when using the
+  :ref:`config_run_relative_files` setting:
+
+  - During ``coverage combine``, relative file paths are implicitly combined
+    without needing a ``[paths]`` configuration setting.  This also fixed
+    `issue 991`_.
+
+  - A ``[paths]`` setting like ``*/foo`` will now match ``foo/bar.py`` so that
+    relative file paths can be combined more easily.
+
+  - The setting is properly interpreted in more places, fixing `issue 1280`_.
+
+- Fixed environment variable expansion in pyproject.toml files.  It was overly
+  broad, causing errors outside of coverage.py settings, as described in `issue
+  1481`_ and `issue 1345`_.  This is now fixed, but in rare cases will require
+  changing your pyproject.toml to quote non-string values that use environment
+  substitution.
+
+- Fixed internal logic that prevented coverage.py from running on
+  implementations other than CPython or PyPy (`issue 1474`_).
+
+.. _issue 991: https://github.com/nedbat/coveragepy/issues/991
+.. _issue 1280: https://github.com/nedbat/coveragepy/issues/1280
+.. _issue 1345: https://github.com/nedbat/coveragepy/issues/1345
+.. _issue 1407: https://github.com/nedbat/coveragepy/issues/1407
+.. _issue 1474: https://github.com/nedbat/coveragepy/issues/1474
+.. _issue 1481: https://github.com/nedbat/coveragepy/issues/1481
+
+
+.. _changes_6-5-0:
+
+Version 6.5.0 — 2022-09-29
+--------------------------
+
+- The JSON report now includes details of which branches were taken, and which
+  are missing for each file. Thanks, `Christoph Blessing <pull 1438_>`_. Closes
+  `issue 1425`_.
+
+- Starting with coverage.py 6.2, ``class`` statements were marked as a branch.
+  This wasn't right, and has been reverted, fixing `issue 1449`_. Note this
+  will very slightly reduce your coverage total if you are measuring branch
+  coverage.
+
+- Packaging is now compliant with `PEP 517`_, closing `issue 1395`_.
+
+- A new debug option ``--debug=pathmap`` shows details of the remapping of
+  paths that happens during combine due to the ``[paths]`` setting.
+
+- Fix an internal problem with caching of invalid Python parsing. Found by
+  OSS-Fuzz, fixing their `bug 50381`_.
+
+.. _bug 50381: https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=50381
+.. _PEP 517: https://peps.python.org/pep-0517/
+.. _issue 1395: https://github.com/nedbat/coveragepy/issues/1395
+.. _issue 1425: https://github.com/nedbat/coveragepy/issues/1425
+.. _issue 1449: https://github.com/nedbat/coveragepy/issues/1449
+.. _pull 1438: https://github.com/nedbat/coveragepy/pull/1438
+
+
+.. _changes_6-4-4:
+
+Version 6.4.4 — 2022-08-16
+--------------------------
+
+- Wheels are now provided for Python 3.11.
+
+
+.. _changes_6-4-3:
+
+Version 6.4.3 — 2022-08-06
+--------------------------
+
+- Fix a failure when combining data files if the file names contained glob-like
+  patterns.  Thanks, `Michael Krebs and Benjamin Schubert <pull 1405_>`_.
+
+- Fix a messaging failure when combining Windows data files on a different
+  drive than the current directory, closing `issue 1428`_.  Thanks, `Lorenzo
+  Micò <pull 1430_>`_.
+
+- Fix path calculations when running in the root directory, as you might do in
+  a Docker container. Thanks `Arthur Rio <pull 1403_>`_.
+
+- Filtering in the HTML report wouldn't work when reloading the index page.
+  This is now fixed.  Thanks, `Marc Legendre <pull 1413_>`_.
+
+- Fix a problem with Cython code measurement, closing `issue 972`_.  Thanks,
+  `Matus Valo <pull 1347_>`_.
+
+.. _issue 972: https://github.com/nedbat/coveragepy/issues/972
+.. _issue 1428: https://github.com/nedbat/coveragepy/issues/1428
+.. _pull 1347: https://github.com/nedbat/coveragepy/pull/1347
+.. _pull 1403: https://github.com/nedbat/coveragepy/issues/1403
+.. _pull 1405: https://github.com/nedbat/coveragepy/issues/1405
+.. _pull 1413: https://github.com/nedbat/coveragepy/issues/1413
+.. _pull 1430: https://github.com/nedbat/coveragepy/pull/1430
+
+
+.. _changes_6-4-2:
+
+Version 6.4.2 — 2022-07-12
+--------------------------
+
+- Updated for a small change in Python 3.11.0 beta 4: modules now start with a
+  line with line number 0, which is ignored.  This line cannot be executed, so
+  coverage totals were thrown off.  This line is now ignored by coverage.py,
+  but this also means that truly empty modules (like ``__init__.py``) have no
+  lines in them, rather than one phantom line.  Fixes `issue 1419`_.
+
+- Internal debugging data added to sys.modules is now an actual module, to
+  avoid confusing code that examines everything in sys.modules.  Thanks,
+  `Yilei Yang <pull 1399_>`_.
+
+.. _issue 1419: https://github.com/nedbat/coveragepy/issues/1419
+.. _pull 1399: https://github.com/nedbat/coveragepy/pull/1399
+
+
+.. _changes_6-4-1:
+
+Version 6.4.1 — 2022-06-02
+--------------------------
+
+- Greatly improved performance on PyPy, and other environments that need the
+  pure Python trace function.  Thanks, Carl Friedrich Bolz-Tereick (`pull
+  1381`_ and `pull 1388`_).  Slightly improved performance when using the C
+  trace function, as most environments do.  Closes `issue 1339`_.
+
+- The conditions for using tomllib from the standard library have been made
+  more precise, so that 3.11 alphas will continue to work. Closes `issue
+  1390`_.
+
+.. _issue 1339: https://github.com/nedbat/coveragepy/issues/1339
+.. _pull 1381: https://github.com/nedbat/coveragepy/pull/1381
+.. _pull 1388: https://github.com/nedbat/coveragepy/pull/1388
+.. _issue 1390: https://github.com/nedbat/coveragepy/issues/1390
+
+
+.. _changes_64:
+
+Version 6.4 — 2022-05-22
+------------------------
+
+- A new setting, :ref:`config_run_sigterm`, controls whether a SIGTERM signal
+  handler is used.  In 6.3, the signal handler was always installed, to capture
+  data at unusual process ends.  Unfortunately, this introduced other problems
+  (see `issue 1310`_).  Now the signal handler is only used if you opt-in by
+  setting ``[run] sigterm = true``.
+
+- Small changes to the HTML report:
+
+  - Added links to next and previous file, and more keyboard shortcuts: ``[``
+    and ``]`` for next file and previous file; ``u`` for up to the index; and
+    ``?`` to open/close the help panel.  Thanks, `J. M. F. Tsang
+    <pull 1364_>`_.
+
+  - The time stamp and version are displayed at the top of the report.  Thanks,
+    `Ammar Askar <pull 1354_>`_. Closes `issue 1351`_.
+
+- A new debug option ``debug=sqldata`` adds more detail to ``debug=sql``,
+  logging all the data being written to the database.
+
+- Previously, running ``coverage report`` (or any of the reporting commands) in
+  an empty directory would create a .coverage data file.  Now they do not,
+  fixing `issue 1328`_.
+
+- On Python 3.11, the ``[toml]`` extra no longer installs tomli, instead using
+  tomllib from the standard library.  Thanks `Shantanu <pull 1359_>`_.
+
+- In-memory CoverageData objects now properly update(), closing `issue 1323`_.
+
+.. _issue 1310: https://github.com/nedbat/coveragepy/issues/1310
+.. _issue 1323: https://github.com/nedbat/coveragepy/issues/1323
+.. _issue 1328: https://github.com/nedbat/coveragepy/issues/1328
+.. _issue 1351: https://github.com/nedbat/coveragepy/issues/1351
+.. _pull 1354: https://github.com/nedbat/coveragepy/pull/1354
+.. _pull 1359: https://github.com/nedbat/coveragepy/pull/1359
+.. _pull 1364: https://github.com/nedbat/coveragepy/pull/1364
+
+
+.. _changes_633:
+
+Version 6.3.3 — 2022-05-12
+--------------------------
+
+- Fix: Coverage.py now builds successfully on CPython 3.11 (3.11.0b1) again.
+  Closes `issue 1367`_.  Some results for generators may have changed.
+
+.. _issue 1367: https://github.com/nedbat/coveragepy/issues/1367
+
+
+.. _changes_632:
+
+Version 6.3.2 — 2022-02-20
+--------------------------
+
+- Fix: adapt to pypy3.9's decorator tracing behavior.  It now traces function
+  decorators like CPython 3.8: both the @-line and the def-line are traced.
+  Fixes `issue 1326`_.
+
+- Debug: added ``pybehave`` to the list of :ref:`coverage debug <cmd_debug>`
+  and :ref:`cmd_run_debug` options.
+
+- Fix: show an intelligible error message if ``--concurrency=multiprocessing``
+  is used without a configuration file.  Closes `issue 1320`_.
+
+.. _issue 1320: https://github.com/nedbat/coveragepy/issues/1320
+.. _issue 1326: https://github.com/nedbat/coveragepy/issues/1326
+
+
+.. _changes_631:
+
+Version 6.3.1 — 2022-02-01
+--------------------------
+
+- Fix: deadlocks could occur when terminating processes.  Some of these
+  deadlocks (described in `issue 1310`_) are now fixed.
+
+- Fix: a signal handler was being set from multiple threads, causing an error:
+  "ValueError: signal only works in main thread".  This is now fixed, closing
+  `issue 1312`_.
+
+- Fix: ``--precision`` on the command-line was being ignored while considering
+  ``--fail-under``.  This is now fixed, thanks to
+  `Marcelo Trylesinski <pull 1317_>`_.
+
+- Fix: releases no longer provide 3.11.0-alpha wheels. Coverage.py uses CPython
+  internal fields which are moving during the alpha phase. Fixes `issue 1316`_.
+
+.. _issue 1310: https://github.com/nedbat/coveragepy/issues/1310
+.. _issue 1312: https://github.com/nedbat/coveragepy/issues/1312
+.. _issue 1316: https://github.com/nedbat/coveragepy/issues/1316
+.. _pull 1317: https://github.com/nedbat/coveragepy/pull/1317
+
+
+.. _changes_63:
+
+Version 6.3 — 2022-01-25
+------------------------
+
+- Feature: Added the ``lcov`` command to generate reports in LCOV format.
+  Thanks, `Bradley Burns <pull 1289_>`_. Closes issues `587 <issue 587_>`_
+  and `626 <issue 626_>`_.
+
+- Feature: the coverage data file can now be specified on the command line with
+  the ``--data-file`` option in any command that reads or writes data.  This is
+  in addition to the existing ``COVERAGE_FILE`` environment variable.  Closes
+  `issue 624`_. Thanks, `Nikita Bloshchanevich <pull 1304_>`_.
+
+- Feature: coverage measurement data will now be written when a SIGTERM signal
+  is received by the process.  This includes
+  :meth:`Process.terminate <python:multiprocessing.Process.terminate>`,
+  and other ways to terminate a process.  Currently this is only on Linux and
+  Mac; Windows is not supported.  Fixes `issue 1307`_.
+
+- Dropped support for Python 3.6, which reached end-of-life on 2021-12-23.
+
+- Updated Python 3.11 support to 3.11.0a4, fixing `issue 1294`_.
+
+- Fix: the coverage data file is now created in a more robust way, to avoid
+  problems when multiple processes are trying to write data at once. Fixes
+  issues `1303 <issue 1303_>`_ and `883 <issue 883_>`_.
+
+- Fix: a .gitignore file will only be written into the HTML report output
+  directory if the directory is empty.  This should prevent certain unfortunate
+  accidents of writing the file where it is not wanted.
+
+- Releases now have MacOS arm64 wheels for Apple Silicon, fixing `issue 1288`_.
+
+.. _issue 587: https://github.com/nedbat/coveragepy/issues/587
+.. _issue 624: https://github.com/nedbat/coveragepy/issues/624
+.. _issue 626: https://github.com/nedbat/coveragepy/issues/626
+.. _issue 883: https://github.com/nedbat/coveragepy/issues/883
+.. _issue 1288: https://github.com/nedbat/coveragepy/issues/1288
+.. _issue 1294: https://github.com/nedbat/coveragepy/issues/1294
+.. _issue 1303: https://github.com/nedbat/coveragepy/issues/1303
+.. _issue 1307: https://github.com/nedbat/coveragepy/issues/1307
+.. _pull 1289: https://github.com/nedbat/coveragepy/pull/1289
+.. _pull 1304: https://github.com/nedbat/coveragepy/pull/1304
+
+
+.. _changes_62:
+
+Version 6.2 — 2021-11-26
+------------------------
+
+- Feature: Now the ``--concurrency`` setting can have a list of values, so that
+  threads and another lightweight threading package can be measured together,
+  such as ``--concurrency=gevent,thread``.  Closes `issue 1012`_ and `issue
+  1082`_.  This also means that ``thread`` must be explicitly specified in some
+  cases that used to be implicit such as ``--concurrency=multiprocessing``,
+  which must be changed to ``--concurrency=multiprocessing,thread``.
+
+- Fix: A module specified as the ``source`` setting is imported during startup,
+  before the user program imports it.  This could cause problems if the rest of
+  the program isn't ready yet.  For example, `issue 1203`_ describes a Django
+  setting that is accessed before settings have been configured.  Now the early
+  import is wrapped in a try/except so errors then don't stop execution.
+
+- Fix: A colon in a decorator expression would cause an exclusion to end too
+  early, preventing the exclusion of the decorated function. This is now fixed.
+
+- Fix: The HTML report now will not overwrite a .gitignore file that already
+  exists in the HTML output directory (follow-on for `issue 1244
+  <issue 1244b_>`_).
+
+- API: The exceptions raised by Coverage.py have been specialized, to provide
+  finer-grained catching of exceptions by third-party code.
+
+- API: Using ``suffix=False`` when constructing a Coverage object with
+  multiprocessing wouldn't suppress the data file suffix (`issue 989`_).  This
+  is now fixed.
+
+- Debug: The ``coverage debug data`` command will now sniff out combinable data
+  files, and report on all of them.
+
+- Debug: The ``coverage debug`` command used to accept a number of topics at a
+  time, and show all of them, though this was never documented.  This no longer
+  works, to allow for command-line options in the future.
+
+.. _issue 989: https://github.com/nedbat/coveragepy/issues/989
+.. _issue 1012: https://github.com/nedbat/coveragepy/issues/1012
+.. _issue 1082: https://github.com/nedbat/coveragepy/issues/1082
+.. _issue 1203: https://github.com/nedbat/coveragepy/issues/1203
+.. _issue 1244b: https://github.com/nedbat/coveragepy/issues/1244
+
+
+.. _changes_612:
+
+Version 6.1.2 — 2021-11-10
+--------------------------
+
+- Python 3.11 is supported (tested with 3.11.0a2).  One still-open issue has to
+  do with `exits through with-statements <issue 1270_>`_.
+
+- Fix: When remapping file paths through the ``[paths]`` setting while
+  combining, the ``[run] relative_files`` setting was ignored, resulting in
+  absolute paths for remapped file names (`issue 1147`_).  This is now fixed.
+
+- Fix: Complex conditionals over excluded lines could have incorrectly reported
+  a missing branch (`issue 1271`_). This is now fixed.
+
+- Fix: More exceptions are now handled when trying to parse source files for
+  reporting.  Problems that used to terminate coverage.py can now be handled
+  with ``[report] ignore_errors``.  This helps with plugins failing to read
+  files (`django_coverage_plugin issue 78`_).
+
+- Fix: Removed another vestige of jQuery from the source tarball
+  (`issue 840 <issue 840b_>`_).
+
+- Fix: Added a default value for a new-to-6.x argument of an internal class.
+  This unsupported class is being used by coveralls (`issue 1273`_). Although
+  I'd rather not "fix" unsupported interfaces, it's actually nicer with a
+  default value.
+
+.. _django_coverage_plugin issue 78: https://github.com/nedbat/django_coverage_plugin/issues/78
+.. _issue 840b: https://github.com/nedbat/coveragepy/issues/840
+.. _issue 1147: https://github.com/nedbat/coveragepy/issues/1147
+.. _issue 1270: https://github.com/nedbat/coveragepy/issues/1270
+.. _issue 1271: https://github.com/nedbat/coveragepy/issues/1271
+.. _issue 1273: https://github.com/nedbat/coveragepy/issues/1273
+
+
+.. _changes_611:
+
+Version 6.1.1 — 2021-10-31
+--------------------------
+
+- Fix: The sticky header on the HTML report didn't work unless you had branch
+  coverage enabled. This is now fixed: the sticky header works for everyone.
+  (Do people still use coverage without branch measurement!? j/k)
+
+- Fix: When using explicitly declared namespace packages, the "already imported
+  a file that will be measured" warning would be issued (`issue 888`_).  This
+  is now fixed.
+
+.. _issue 888: https://github.com/nedbat/coveragepy/issues/888
+
+
+.. _changes_61:
+
+Version 6.1 — 2021-10-30
+------------------------
+
+- Deprecated: The ``annotate`` command and the ``Coverage.annotate`` function
+  will be removed in a future version, unless people let me know that they are
+  using it.  Instead, the ``html`` command gives better-looking (and more
+  accurate) output, and the ``report -m`` command will tell you line numbers of
+  missing lines.  Please get in touch if you have a reason to use ``annotate``
+  over those better options: ned@nedbatchelder.com.
+
+- Feature: Coverage now sets an environment variable, ``COVERAGE_RUN`` when
+  running your code with the ``coverage run`` command.  The value is not
+  important, and may change in the future.  Closes `issue 553`_.
+
+- Feature: The HTML report pages for Python source files now have a sticky
+  header so the file name and controls are always visible.
+
+- Feature: The ``xml`` and ``json`` commands now describe what they wrote
+  where.
+
+- Feature: The ``html``, ``combine``, ``xml``, and ``json`` commands all accept
+  a ``-q/--quiet`` option to suppress the messages they write to stdout about
+  what they are doing (`issue 1254`_).
+
+- Feature: The ``html`` command writes a ``.gitignore`` file into the HTML
+  output directory, to prevent the report from being committed to git.  If you
+  want to commit it, you will need to delete that file.  Closes `issue 1244`_.
+
+- Feature: Added support for PyPy 3.8.
+
+- Fix: More generated code is now excluded from measurement.  Code such as
+  `attrs`_ boilerplate, or doctest code, was being measured though the
+  synthetic line numbers meant they were never reported.  Once Cython was
+  involved though, the generated .so files were parsed as Python, raising
+  syntax errors, as reported in `issue 1160`_.  This is now fixed.
+
+- Fix: When sorting human-readable names, numeric components are sorted
+  correctly: file10.py will appear after file9.py.  This applies to file names,
+  module names, environment variables, and test contexts.
+
+- Performance: Branch coverage measurement is faster, though you might only
+  notice on code that is executed many times, such as long-running loops.
+
+- Build: jQuery is no longer used or vendored (`issue 840`_ and `issue 1118`_).
+  Huge thanks to Nils Kattenbeck (septatrix) for the conversion to vanilla
+  JavaScript in `pull request 1248`_.
+
+.. _issue 553: https://github.com/nedbat/coveragepy/issues/553
+.. _issue 840: https://github.com/nedbat/coveragepy/issues/840
+.. _issue 1118: https://github.com/nedbat/coveragepy/issues/1118
+.. _issue 1160: https://github.com/nedbat/coveragepy/issues/1160
+.. _issue 1244: https://github.com/nedbat/coveragepy/issues/1244
+.. _pull request 1248: https://github.com/nedbat/coveragepy/pull/1248
+.. _issue 1254: https://github.com/nedbat/coveragepy/issues/1254
+.. _attrs: https://www.attrs.org/
+
+
+.. _changes_602:
+
+Version 6.0.2 — 2021-10-11
+--------------------------
+
+- Namespace packages being measured weren't properly handled by the new code
+  that ignores third-party packages. If the namespace package was installed, it
+  was ignored as a third-party package.  That problem (`issue 1231`_) is now
+  fixed.
+
+- Packages named as "source packages" (with ``source``, or ``source_pkgs``, or
+  pytest-cov's ``--cov``) might have been only partially measured.  Their
+  top-level statements could be marked as un-executed, because they were
+  imported by coverage.py before measurement began (`issue 1232`_).  This is
+  now fixed, but the package will be imported twice, once by coverage.py, then
+  again by your test suite.  This could cause problems if importing the package
+  has side effects.
+
+- The :meth:`.CoverageData.contexts_by_lineno` method was documented to return
+  a dict, but was returning a defaultdict.  Now it returns a plain dict.  It
+  also no longer returns negative numbered keys.
+
+.. _issue 1231: https://github.com/nedbat/coveragepy/issues/1231
+.. _issue 1232: https://github.com/nedbat/coveragepy/issues/1232
+
+
+.. _changes_601:
+
+Version 6.0.1 — 2021-10-06
+--------------------------
+
+- In 6.0, the coverage.py exceptions moved from coverage.misc to
+  coverage.exceptions. These exceptions are not part of the public supported
+  API, CoverageException is. But a number of other third-party packages were
+  importing the exceptions from coverage.misc, so they are now available from
+  there again (`issue 1226`_).
+
+- Changed an internal detail of how tomli is imported, so that tomli can use
+  coverage.py for their own test suite (`issue 1228`_).
+
+- Defend against an obscure possibility under code obfuscation, where a
+  function can have an argument called "self", but no local named "self"
+  (`pull request 1210`_).  Thanks, Ben Carlsson.
+
+.. _pull request 1210: https://github.com/nedbat/coveragepy/pull/1210
+.. _issue 1226: https://github.com/nedbat/coveragepy/issues/1226
+.. _issue 1228: https://github.com/nedbat/coveragepy/issues/1228
+
+
+.. _changes_60:
+
+Version 6.0 — 2021-10-03
+------------------------
+
+- The ``coverage html`` command now prints a message indicating where the HTML
+  report was written.  Fixes `issue 1195`_.
+
+- The ``coverage combine`` command now prints messages indicating each data
+  file being combined.  Fixes `issue 1105`_.
+
+- The HTML report now includes a sentence about skipped files due to
+  ``skip_covered`` or ``skip_empty`` settings.  Fixes `issue 1163`_.
+
+- Unrecognized options in the configuration file are no longer errors. They are
+  now warnings, to ease the use of coverage across versions.  Fixes `issue
+  1035`_.
+
+- Fix handling of exceptions through context managers in Python 3.10. A missing
+  exception is no longer considered a missing branch from the with statement.
+  Fixes `issue 1205`_.
+
 - Fix another rarer instance of "Error binding parameter 0 - probably
-  unsupported type." (`issue 1010`_).
+  unsupported type." (`issue 1010 <issue 1010b_>`_).
+
+- Creating a directory for the coverage data file now is safer against
+  conflicts when two coverage runs happen simultaneously (`pull 1220`_).
+  Thanks, Clément Pit-Claudel.
+
+.. _issue 1010b: https://github.com/nedbat/coveragepy/issues/1010
+.. _issue 1035: https://github.com/nedbat/coveragepy/issues/1035
+.. _issue 1105: https://github.com/nedbat/coveragepy/issues/1105
+.. _issue 1163: https://github.com/nedbat/coveragepy/issues/1163
+.. _issue 1195: https://github.com/nedbat/coveragepy/issues/1195
+.. _issue 1205: https://github.com/nedbat/coveragepy/issues/1205
+.. _pull 1220: https://github.com/nedbat/coveragepy/pull/1220
 
 
 .. _changes_60b1:
 
-Version 6.0b1 --- 2021-07-18
-----------------------------
+Version 6.0b1 — 2021-07-18
+--------------------------
 
 - Dropped support for Python 2.7, PyPy 2, and Python 3.5.
 
@@ -58,7 +1478,11 @@ Version 6.0b1 --- 2021-07-18
 - Some minor changes to usually invisible details of the HTML report:
 
   - Use a modern hash algorithm when fingerprinting, for high-security
-    environments (`issue 1189`_).
+    environments (`issue 1189`_).  When generating the HTML report, we save the
+    hash of the data, to avoid regenerating an unchanged HTML page. We used to
+    use MD5 to generate the hash, and now use SHA-3-256.  This was never a
+    security concern, but security scanners would notice the MD5 algorithm and
+    raise a false alarm.
 
   - Change how report file names are generated, to avoid leading underscores
     (`issue 1167`_), to avoid rare file name collisions (`issue 584`_), and to
@@ -76,8 +1500,8 @@ Version 6.0b1 --- 2021-07-18
 
 .. _changes_56b1:
 
-Version 5.6b1 --- 2021-04-13
-----------------------------
+Version 5.6b1 — 2021-04-13
+--------------------------
 
 Note: 5.6 final was never released. These changes are part of 6.0.
 
@@ -105,8 +1529,8 @@ Note: 5.6 final was never released. These changes are part of 6.0.
 
 .. _changes_55:
 
-Version 5.5 --- 2021-02-28
---------------------------
+Version 5.5 — 2021-02-28
+------------------------
 
 - ``coverage combine`` has a new option, ``--keep`` to keep the original data
   files after combining them.  The default is still to delete the files after
@@ -141,8 +1565,8 @@ Version 5.5 --- 2021-02-28
 
 .. _changes_54:
 
-Version 5.4 --- 2021-01-24
---------------------------
+Version 5.4 — 2021-01-24
+------------------------
 
 - The text report produced by ``coverage report`` now always outputs a TOTAL
   line, even if only one Python file is reported.  This makes regex parsing
@@ -176,8 +1600,8 @@ Version 5.4 --- 2021-01-24
 
 .. _changes_531:
 
-Version 5.3.1 --- 2020-12-19
-----------------------------
+Version 5.3.1 — 2020-12-19
+--------------------------
 
 - When using ``--source`` on a large source tree, v5.x was slower than previous
   versions.  This performance regression is now fixed, closing `issue 1037`_.
@@ -200,10 +1624,11 @@ Version 5.3.1 --- 2020-12-19
 .. _issue 1010: https://github.com/nedbat/coveragepy/issues/1010
 .. _pull request 1066: https://github.com/nedbat/coveragepy/pull/1066
 
+
 .. _changes_53:
 
-Version 5.3 --- 2020-09-13
---------------------------
+Version 5.3 — 2020-09-13
+------------------------
 
 - The ``source`` setting has always been interpreted as either a file path or a
   module, depending on which existed.  If both interpretations were valid, it
@@ -219,2782 +1644,11 @@ Version 5.3 --- 2020-09-13
 .. _issue 1011: https://github.com/nedbat/coveragepy/issues/1011
 
 
-.. _changes_521:
+.. endchangesinclude
 
-Version 5.2.1 --- 2020-07-23
-----------------------------
+Older changes
+-------------
 
-- The dark mode HTML report still used light colors for the context listing,
-  making them unreadable (`issue 1009`_).  This is now fixed.
+The complete history is available in the `coverage.py docs`__.
 
-- The time stamp on the HTML report now includes the time zone. Thanks, Xie
-  Yanbo (`pull request 960`_).
-
-.. _pull request 960: https://github.com/nedbat/coveragepy/pull/960
-.. _issue 1009: https://github.com/nedbat/coveragepy/issues/1009
-
-
-.. _changes_52:
-
-Version 5.2 --- 2020-07-05
---------------------------
-
-- The HTML report has been redesigned by Vince Salvino.  There is now a dark
-  mode, the code text is larger, and system sans serif fonts are used, in
-  addition to other small changes (`issue 858`_ and `pull request 931`_).
-
-- The ``coverage report`` and ``coverage html`` commands now accept a
-  ``--precision`` option to control the number of decimal points displayed.
-  Thanks, Teake Nutma (`pull request 982`_).
-
-- The ``coverage report`` and ``coverage html`` commands now accept a
-  ``--no-skip-covered`` option to negate ``--skip-covered``.  Thanks, Anthony
-  Sottile (`issue 779`_ and `pull request 932`_).
-
-- The ``--skip-empty`` option is now available for the XML report, closing
-  `issue 976`_.
-
-- The ``coverage report`` command now accepts a ``--sort`` option to specify
-  how to sort the results.  Thanks, Jerin Peter George (`pull request 1005`_).
-
-- If coverage fails due to the coverage total not reaching the ``--fail-under``
-  value, it will now print a message making the condition clear.  Thanks,
-  Naveen Yadav (`pull request 977`_).
-
-- TOML configuration files with non-ASCII characters would cause errors on
-  Windows (`issue 990`_).  This is now fixed.
-
-- The output of ``--debug=trace`` now includes information about how the
-  ``--source`` option is being interpreted, and the module names being
-  considered.
-
-.. _pull request 931: https://github.com/nedbat/coveragepy/pull/931
-.. _pull request 932: https://github.com/nedbat/coveragepy/pull/932
-.. _pull request 977: https://github.com/nedbat/coveragepy/pull/977
-.. _pull request 982: https://github.com/nedbat/coveragepy/pull/982
-.. _pull request 1005: https://github.com/nedbat/coveragepy/pull/1005
-.. _issue 779: https://github.com/nedbat/coveragepy/issues/779
-.. _issue 858: https://github.com/nedbat/coveragepy/issues/858
-.. _issue 976: https://github.com/nedbat/coveragepy/issues/976
-.. _issue 990: https://github.com/nedbat/coveragepy/issues/990
-
-
-.. _changes_51:
-
-Version 5.1 --- 2020-04-12
---------------------------
-
-- The JSON report now includes counts of covered and missing branches. Thanks,
-  Salvatore Zagaria.
-
-- On Python 3.8, try-finally-return reported wrong branch coverage with
-  decorated async functions (`issue 964`_).  This is now fixed. Thanks, Kjell
-  Braden.
-
-- The :meth:`~coverage.Coverage.get_option` and
-  :meth:`~coverage.Coverage.set_option` methods can now manipulate the
-  ``[paths]`` configuration setting.  Thanks to Bernát Gábor for the fix for
-  `issue 967`_.
-
-.. _issue 964: https://github.com/nedbat/coveragepy/issues/964
-.. _issue 967: https://github.com/nedbat/coveragepy/issues/967
-
-
-.. _changes_504:
-
-Version 5.0.4 --- 2020-03-16
-----------------------------
-
-- If using the ``[run] relative_files`` setting, the XML report will use
-  relative files in the ``<source>`` elements indicating the location of source
-  code.  Closes `issue 948`_.
-
-- The textual summary report could report missing lines with negative line
-  numbers on PyPy3 7.1 (`issue 943`_).  This is now fixed.
-
-- Windows wheels for Python 3.8 were incorrectly built, but are now fixed.
-  (`issue 949`_)
-
-- Updated Python 3.9 support to 3.9a4.
-
-- HTML reports couldn't be sorted if localStorage wasn't available. This is now
-  fixed: sorting works even though the sorting setting isn't retained. (`issue
-  944`_ and `pull request 945`_). Thanks, Abdeali Kothari.
-
-.. _issue 943: https://github.com/nedbat/coveragepy/issues/943
-.. _issue 944: https://github.com/nedbat/coveragepy/issues/944
-.. _pull request 945: https://github.com/nedbat/coveragepy/pull/945
-.. _issue 948: https://github.com/nedbat/coveragepy/issues/948
-.. _issue 949: https://github.com/nedbat/coveragepy/issues/949
-
-
-.. _changes_503:
-
-Version 5.0.3 --- 2020-01-12
-----------------------------
-
-- A performance improvement in 5.0.2 didn't work for test suites that changed
-  directory before combining data, causing "Couldn't use data file: no such
-  table: meta" errors (`issue 916`_).  This is now fixed.
-
-- Coverage could fail to run your program with some form of "ModuleNotFound" or
-  "ImportError" trying to import from the current directory. This would happen
-  if coverage had been packaged into a zip file (for example, on Windows), or
-  was found indirectly (for example, by pyenv-virtualenv).  A number of
-  different scenarios were described in `issue 862`_ which is now fixed.  Huge
-  thanks to Agbonze O. Jeremiah for reporting it, and Alexander Waters and
-  George-Cristian Bîrzan for protracted debugging sessions.
-
-- Added the "premain" debug option.
-
-- Added SQLite compile-time options to the "debug sys" output.
-
-.. _issue 862: https://github.com/nedbat/coveragepy/issues/862
-.. _issue 916: https://github.com/nedbat/coveragepy/issues/916
-
-
-.. _changes_502:
-
-Version 5.0.2 --- 2020-01-05
-----------------------------
-
-- Programs that used multiprocessing and changed directories would fail under
-  coverage.  This is now fixed (`issue 890`_).  A side effect is that debug
-  information about the config files read now shows absolute paths to the
-  files.
-
-- When running programs as modules (``coverage run -m``) with ``--source``,
-  some measured modules were imported before coverage starts.  This resulted in
-  unwanted warnings ("Already imported a file that will be measured") and a
-  reduction in coverage totals (`issue 909`_).  This is now fixed.
-
-- If no data was collected, an exception about "No data to report" could happen
-  instead of a 0% report being created (`issue 884`_).  This is now fixed.
-
-- The handling of source files with non-encodable file names has changed.
-  Previously, if a file name could not be encoded as UTF-8, an error occurred,
-  as described in `issue 891`_.  Now, those files will not be measured, since
-  their data would not be recordable.
-
-- A new warning ("dynamic-conflict") is issued if two mechanisms are trying to
-  change the dynamic context.  Closes `issue 901`_.
-
-- ``coverage run --debug=sys`` would fail with an AttributeError. This is now
-  fixed (`issue 907`_).
-
-.. _issue 884: https://github.com/nedbat/coveragepy/issues/884
-.. _issue 890: https://github.com/nedbat/coveragepy/issues/890
-.. _issue 891: https://github.com/nedbat/coveragepy/issues/891
-.. _issue 901: https://github.com/nedbat/coveragepy/issues/901
-.. _issue 907: https://github.com/nedbat/coveragepy/issues/907
-.. _issue 909: https://github.com/nedbat/coveragepy/issues/909
-
-
-.. _changes_501:
-
-Version 5.0.1 --- 2019-12-22
-----------------------------
-
-- If a 4.x data file is the cause of a "file is not a database" error, then use
-  a more specific error message, "Looks like a coverage 4.x data file, are you
-  mixing versions of coverage?"  Helps diagnose the problems described in
-  `issue 886`_.
-
-- Measurement contexts and relative file names didn't work together, as
-  reported in `issue 899`_ and `issue 900`_.  This is now fixed, thanks to
-  David Szotten.
-
-- When using ``coverage run --concurrency=multiprocessing``, all data files
-  should be named with parallel-ready suffixes.  5.0 mistakenly named the main
-  process' file with no suffix when using ``--append``.  This is now fixed,
-  closing `issue 880`_.
-
-- Fixed a problem on Windows when the current directory is changed to a
-  different drive (`issue 895`_).  Thanks, Olivier Grisel.
-
-- Updated Python 3.9 support to 3.9a2.
-
-.. _issue 880: https://github.com/nedbat/coveragepy/issues/880
-.. _issue 886: https://github.com/nedbat/coveragepy/issues/886
-.. _issue 895: https://github.com/nedbat/coveragepy/issues/895
-.. _issue 899: https://github.com/nedbat/coveragepy/issues/899
-.. _issue 900: https://github.com/nedbat/coveragepy/issues/900
-
-
-.. _changes_50:
-
-Version 5.0 --- 2019-12-14
---------------------------
-
-Nothing new beyond 5.0b2.
-
-
-.. _changes_50b2:
-
-Version 5.0b2 --- 2019-12-08
-----------------------------
-
-- An experimental ``[run] relative_files`` setting tells coverage to store
-  relative file names in the data file. This makes it easier to run tests in
-  one (or many) environments, and then report in another.  It has not had much
-  real-world testing, so it may change in incompatible ways in the future.
-
-- When constructing a :class:`coverage.Coverage` object, `data_file` can be
-  specified as None to prevent writing any data file at all.  In previous
-  versions, an explicit `data_file=None` argument would use the default of
-  ".coverage". Fixes `issue 871`_.
-
-- Python files run with ``-m`` now have ``__spec__`` defined properly.  This
-  fixes `issue 745`_ (about not being able to run unittest tests that spawn
-  subprocesses), and `issue 838`_, which described the problem directly.
-
-- The ``[paths]`` configuration section is now ordered. If you specify more
-  than one list of patterns, the first one that matches will be used.  Fixes
-  `issue 649`_.
-
-- The :func:`.coverage.numbits.register_sqlite_functions` function now also
-  registers `numbits_to_nums` for use in SQLite queries.  Thanks, Simon
-  Willison.
-
-- Python 3.9a1 is supported.
-
-- Coverage.py has a mascot: :ref:`Sleepy Snake <sleepy>`.
-
-.. _issue 649: https://github.com/nedbat/coveragepy/issues/649
-.. _issue 745: https://github.com/nedbat/coveragepy/issues/745
-.. _issue 838: https://github.com/nedbat/coveragepy/issues/838
-.. _issue 871: https://github.com/nedbat/coveragepy/issues/871
-
-
-.. _changes_50b1:
-
-Version 5.0b1 --- 2019-11-11
-----------------------------
-
-- The HTML and textual reports now have a ``--skip-empty`` option that skips
-  files with no statements, notably ``__init__.py`` files.  Thanks, Reya B.
-
-- Configuration can now be read from `TOML`_ files.  This requires installing
-  coverage.py with the ``[toml]`` extra.  The standard "pyproject.toml" file
-  will be read automatically if no other configuration file is found, with
-  settings in the ``[tool.coverage.]`` namespace.  Thanks to Frazer McLean for
-  implementation and persistence.  Finishes `issue 664`_.
-
-- The ``[run] note`` setting has been deprecated. Using it will result in a
-  warning, and the note will not be written to the data file.  The
-  corresponding :class:`.CoverageData` methods have been removed.
-
-- The HTML report has been reimplemented (no more table around the source
-  code). This allowed for a better presentation of the context information,
-  hopefully resolving `issue 855`_.
-
-- Added sqlite3 module version information to ``coverage debug sys`` output.
-
-- Asking the HTML report to show contexts (``[html] show_contexts=True`` or
-  ``coverage html --show-contexts``) will issue a warning if there were no
-  contexts measured (`issue 851`_).
-
-.. _TOML: https://toml.io/
-.. _issue 664: https://github.com/nedbat/coveragepy/issues/664
-.. _issue 851: https://github.com/nedbat/coveragepy/issues/851
-.. _issue 855: https://github.com/nedbat/coveragepy/issues/855
-
-
-.. _changes_50a8:
-
-Version 5.0a8 --- 2019-10-02
-----------------------------
-
-- The :class:`.CoverageData` API has changed how queries are limited to
-  specific contexts.  Now you use :meth:`.CoverageData.set_query_context` to
-  set a single exact-match string, or :meth:`.CoverageData.set_query_contexts`
-  to set a list of regular expressions to match contexts.  This changes the
-  command-line ``--contexts`` option to use regular expressions instead of
-  filename-style wildcards.
-
-
-.. _changes_50a7:
-
-Version 5.0a7 --- 2019-09-21
-----------------------------
-
-- Data can now be "reported" in JSON format, for programmatic use, as requested
-  in `issue 720`_.  The new ``coverage json`` command writes raw and summarized
-  data to a JSON file.  Thanks, Matt Bachmann.
-
-- Dynamic contexts are now supported in the Python tracer, which is important
-  for PyPy users.  Closes `issue 846`_.
-
-- The compact line number representation introduced in 5.0a6 is called a
-  "numbits."  The :mod:`coverage.numbits` module provides functions for working
-  with them.
-
-- The reporting methods used to permanently apply their arguments to the
-  configuration of the Coverage object.  Now they no longer do.  The arguments
-  affect the operation of the method, but do not persist.
-
-- A class named "test_something" no longer confuses the ``test_function``
-  dynamic context setting.  Fixes `issue 829`_.
-
-- Fixed an unusual tokenizing issue with backslashes in comments.  Fixes
-  `issue 822`_.
-
-- ``debug=plugin`` didn't properly support configuration or dynamic context
-  plugins, but now it does, closing `issue 834`_.
-
-.. _issue 720: https://github.com/nedbat/coveragepy/issues/720
-.. _issue 822: https://github.com/nedbat/coveragepy/issues/822
-.. _issue 834: https://github.com/nedbat/coveragepy/issues/834
-.. _issue 829: https://github.com/nedbat/coveragepy/issues/829
-.. _issue 846: https://github.com/nedbat/coveragepy/issues/846
-
-
-.. _changes_50a6:
-
-Version 5.0a6 --- 2019-07-16
-----------------------------
-
-- Reporting on contexts. Big thanks to Stephan Richter and Albertas Agejevas
-  for the contribution.
-
-  - The ``--contexts`` option is available on the ``report`` and ``html``
-    commands.  It's a comma-separated list of shell-style wildcards, selecting
-    the contexts to report on.  Only contexts matching one of the wildcards
-    will be included in the report.
-
-  - The ``--show-contexts`` option for the ``html`` command adds context
-    information to each covered line.  Hovering over the "ctx" marker at the
-    end of the line reveals a list of the contexts that covered the line.
-
-- Database changes:
-
-  - Line numbers are now stored in a much more compact way.  For each file and
-    context, a single binary string is stored with a bit per line number.  This
-    greatly improves memory use, but makes ad-hoc use difficult.
-
-  - Dynamic contexts with no data are no longer written to the database.
-
-  - SQLite data storage is now faster.  There's no longer a reason to keep the
-    JSON data file code, so it has been removed.
-
-- Changes to the :class:`.CoverageData` interface:
-
-  - The new :meth:`.CoverageData.dumps` method serializes the data to a string,
-    and a corresponding :meth:`.CoverageData.loads` method reconstitutes this
-    data.  The format of the data string is subject to change at any time, and
-    so should only be used between two installations of the same version of
-    coverage.py.
-
-  - The :meth:`CoverageData constructor<.CoverageData.__init__>` has a new
-    argument, `no_disk` (default: False).  Setting it to True prevents writing
-    any data to the disk.  This is useful for transient data objects.
-
-- Added the classmethod :meth:`.Coverage.current` to get the latest started
-  Coverage instance.
-
-- Multiprocessing support in Python 3.8 was broken, but is now fixed.  Closes
-  `issue 828`_.
-
-- Error handling during reporting has changed slightly.  All reporting methods
-  now behave the same.  The ``--ignore-errors`` option keeps errors from
-  stopping the reporting, but files that couldn't parse as Python will always
-  be reported as warnings.  As with other warnings, you can suppress them with
-  the ``[run] disable_warnings`` configuration setting.
-
-- Coverage.py no longer fails if the user program deletes its current
-  directory. Fixes `issue 806`_.  Thanks, Dan Hemberger.
-
-- The scrollbar markers in the HTML report now accurately show the highlighted
-  lines, regardless of what categories of line are highlighted.
-
-- The hack to accommodate ShiningPanda_ looking for an obsolete internal data
-  file has been removed, since ShiningPanda 0.22 fixed it four years ago.
-
-- The deprecated `Reporter.file_reporters` property has been removed.
-
-.. _ShiningPanda: https://wiki.jenkins.io/display/JENKINS/ShiningPanda+Plugin
-.. _issue 806: https://github.com/nedbat/coveragepy/pull/806
-.. _issue 828: https://github.com/nedbat/coveragepy/issues/828
-
-
-.. _changes_50a5:
-
-Version 5.0a5 --- 2019-05-07
-----------------------------
-
-- Drop support for Python 3.4
-
-- Dynamic contexts can now be set two new ways, both thanks to Justas
-  Sadzevičius.
-
-  - A plugin can implement a ``dynamic_context`` method to check frames for
-    whether a new context should be started.  See
-    :ref:`dynamic_context_plugins` for more details.
-
-  - Another tool (such as a test runner) can use the new
-    :meth:`.Coverage.switch_context` method to explicitly change the context.
-
-- The ``dynamic_context = test_function`` setting now works with Python 2
-  old-style classes, though it only reports the method name, not the class it
-  was defined on.  Closes `issue 797`_.
-
-- ``fail_under`` values more than 100 are reported as errors.  Thanks to Mike
-  Fiedler for closing `issue 746`_.
-
-- The "missing" values in the text output are now sorted by line number, so
-  that missing branches are reported near the other lines they affect. The
-  values used to show all missing lines, and then all missing branches.
-
-- Access to the SQLite database used for data storage is now thread-safe.
-  Thanks, Stephan Richter. This closes `issue 702`_.
-
-- Combining data stored in SQLite is now about twice as fast, fixing `issue
-  761`_.  Thanks, Stephan Richter.
-
-- The ``filename`` attribute on :class:`.CoverageData` objects has been made
-  private.  You can use the ``data_filename`` method to get the actual file
-  name being used to store data, and the ``base_filename`` method to get the
-  original filename before parallelizing suffixes were added.  This is part of
-  fixing `issue 708`_.
-
-- Line numbers in the HTML report now align properly with source lines, even
-  when Chrome's minimum font size is set, fixing `issue 748`_.  Thanks Wen Ye.
-
-.. _issue 702: https://github.com/nedbat/coveragepy/issues/702
-.. _issue 708: https://github.com/nedbat/coveragepy/issues/708
-.. _issue 746: https://github.com/nedbat/coveragepy/issues/746
-.. _issue 748: https://github.com/nedbat/coveragepy/issues/748
-.. _issue 761: https://github.com/nedbat/coveragepy/issues/761
-.. _issue 797: https://github.com/nedbat/coveragepy/issues/797
-
-
-.. _changes_50a4:
-
-Version 5.0a4 --- 2018-11-25
-----------------------------
-
-- You can specify the command line to run your program with the ``[run]
-  command_line`` configuration setting, as requested in `issue 695`_.
-
-- Coverage will create directories as needed for the data file if they don't
-  exist, closing `issue 721`_.
-
-- The ``coverage run`` command has always adjusted the first entry in sys.path,
-  to properly emulate how Python runs your program.  Now this adjustment is
-  skipped if sys.path[0] is already different than Python's default.  This
-  fixes `issue 715`_.
-
-- Improvements to context support:
-
-  - The "no such table: meta" error is fixed.: `issue 716`_.
-
-  - Combining data files is now much faster.
-
-- Python 3.8 (as of today!) passes all tests.
-
-.. _issue 695: https://github.com/nedbat/coveragepy/issues/695
-.. _issue 715: https://github.com/nedbat/coveragepy/issues/715
-.. _issue 716: https://github.com/nedbat/coveragepy/issues/716
-.. _issue 721: https://github.com/nedbat/coveragepy/issues/721
-
-
-.. _changes_50a3:
-
-Version 5.0a3 --- 2018-10-06
-----------------------------
-
-- Context support: static contexts let you specify a label for a coverage run,
-  which is recorded in the data, and retained when you combine files.  See
-  :ref:`contexts` for more information.
-
-- Dynamic contexts: specifying ``[run] dynamic_context = test_function`` in the
-  config file will record the test function name as a dynamic context during
-  execution.  This is the core of "Who Tests What" (`issue 170`_).  Things to
-  note:
-
-  - There is no reporting support yet.  Use SQLite to query the .coverage file
-    for information.  Ideas are welcome about how reporting could be extended
-    to use this data.
-
-  - There's a noticeable slow-down before any test is run.
-
-  - Data files will now be roughly N times larger, where N is the number of
-    tests you have.  Combining data files is therefore also N times slower.
-
-  - No other values for ``dynamic_context`` are recognized yet.  Let me know
-    what else would be useful.  I'd like to use a pytest plugin to get better
-    information directly from pytest, for example.
-
-.. _issue 170: https://github.com/nedbat/coveragepy/issues/170
-
-- Environment variable substitution in configuration files now supports two
-  syntaxes for controlling the behavior of undefined variables: if ``VARNAME``
-  is not defined, ``${VARNAME?}`` will raise an error, and ``${VARNAME-default
-  value}`` will use "default value".
-
-- Partial support for Python 3.8, which has not yet released an alpha. Fixes
-  `issue 707`_ and `issue 714`_.
-
-.. _issue 707: https://github.com/nedbat/coveragepy/issues/707
-.. _issue 714: https://github.com/nedbat/coveragepy/issues/714
-
-
-.. _changes_50a2:
-
-Version 5.0a2 --- 2018-09-03
-----------------------------
-
-- Coverage's data storage has changed.  In version 4.x, .coverage files were
-  basically JSON.  Now, they are SQLite databases.  This means the data file
-  can be created earlier than it used to.  A large amount of code was
-  refactored to support this change.
-
-  - Because the data file is created differently than previous releases, you
-    may need ``parallel=true`` where you didn't before.
-
-  - The old data format is still available (for now) by setting the environment
-    variable COVERAGE_STORAGE=json. Please tell me if you think you need to
-    keep the JSON format.
-
-  - The database schema is guaranteed to change in the future, to support new
-    features.  I'm looking for opinions about making the schema part of the
-    public API to coverage.py or not.
-
-- Development moved from `Bitbucket`_ to `GitHub`_.
-
-- HTML files no longer have trailing and extra whitespace.
-
-- The sort order in the HTML report is stored in local storage rather than
-  cookies, closing `issue 611`_.  Thanks, Federico Bond.
-
-- pickle2json, for converting v3 data files to v4 data files, has been removed.
-
-.. _Bitbucket: https://bitbucket.org
-.. _GitHub: https://github.com/nedbat/coveragepy
-
-.. _issue 611: https://github.com/nedbat/coveragepy/issues/611
-
-
-.. _changes_50a1:
-
-Version 5.0a1 --- 2018-06-05
-----------------------------
-
-- Coverage.py no longer supports Python 2.6 or 3.3.
-
-- The location of the configuration file can now be specified with a
-  ``COVERAGE_RCFILE`` environment variable, as requested in `issue 650`_.
-
-- Namespace packages are supported on Python 3.7, where they used to cause
-  TypeErrors about path being None. Fixes `issue 700`_.
-
-- A new warning (``already-imported``) is issued if measurable files have
-  already been imported before coverage.py started measurement.  See
-  :ref:`cmd_warnings` for more information.
-
-- Running coverage many times for small runs in a single process should be
-  faster, closing `issue 625`_.  Thanks, David MacIver.
-
-- Large HTML report pages load faster.  Thanks, Pankaj Pandey.
-
-.. _issue 625: https://github.com/nedbat/coveragepy/issues/625
-.. _issue 650: https://github.com/nedbat/coveragepy/issues/650
-.. _issue 700: https://github.com/nedbat/coveragepy/issues/700
-
-
-.. _changes_454:
-
-Version 4.5.4 --- 2019-07-29
-----------------------------
-
-- Multiprocessing support in Python 3.8 was broken, but is now fixed.  Closes
-  `issue 828`_.
-
-.. _issue 828: https://github.com/nedbat/coveragepy/issues/828
-
-
-.. _changes_453:
-
-Version 4.5.3 --- 2019-03-09
-----------------------------
-
-- Only packaging metadata changes.
-
-
-.. _changes_452:
-
-Version 4.5.2 --- 2018-11-12
-----------------------------
-
-- Namespace packages are supported on Python 3.7, where they used to cause
-  TypeErrors about path being None. Fixes `issue 700`_.
-
-- Python 3.8 (as of today!) passes all tests.  Fixes `issue 707`_ and
-  `issue 714`_.
-
-- Development moved from `Bitbucket`_ to `GitHub`_.
-
-.. _issue 700: https://github.com/nedbat/coveragepy/issues/700
-.. _issue 707: https://github.com/nedbat/coveragepy/issues/707
-.. _issue 714: https://github.com/nedbat/coveragepy/issues/714
-
-.. _Bitbucket: https://bitbucket.org
-.. _GitHub: https://github.com/nedbat/coveragepy
-
-
-.. _changes_451:
-
-Version 4.5.1 --- 2018-02-10
-----------------------------
-
-- Now that 4.5 properly separated the ``[run] omit`` and ``[report] omit``
-  settings, an old bug has become apparent.  If you specified a package name
-  for ``[run] source``, then omit patterns weren't matched inside that package.
-  This bug (`issue 638`_) is now fixed.
-
-- On Python 3.7, reporting about a decorated function with no body other than a
-  docstring would crash coverage.py with an IndexError (`issue 640`_).  This is
-  now fixed.
-
-- Configurer plugins are now reported in the output of ``--debug=sys``.
-
-.. _issue 638: https://github.com/nedbat/coveragepy/issues/638
-.. _issue 640: https://github.com/nedbat/coveragepy/issues/640
-
-
-.. _changes_45:
-
-Version 4.5 --- 2018-02-03
---------------------------
-
-- A new kind of plugin is supported: configurers are invoked at start-up to
-  allow more complex configuration than the .coveragerc file can easily do.
-  See :ref:`api_plugin` for details.  This solves the complex configuration
-  problem described in `issue 563`_.
-
-- The ``fail_under`` option can now be a float.  Note that you must specify the
-  ``[report] precision`` configuration option for the fractional part to be
-  used.  Thanks to Lars Hupfeldt Nielsen for help with the implementation.
-  Fixes `issue 631`_.
-
-- The ``include`` and ``omit`` options can be specified for both the ``[run]``
-  and ``[report]`` phases of execution.  4.4.2 introduced some incorrect
-  interactions between those phases, where the options for one were confused
-  for the other.  This is now corrected, fixing `issue 621`_ and `issue 622`_.
-  Thanks to Daniel Hahler for seeing more clearly than I could.
-
-- The ``coverage combine`` command used to always overwrite the data file, even
-  when no data had been read from apparently combinable files.  Now, an error
-  is raised if we thought there were files to combine, but in fact none of them
-  could be used.  Fixes `issue 629`_.
-
-- The ``coverage combine`` command could get confused about path separators
-  when combining data collected on Windows with data collected on Linux, as
-  described in `issue 618`_.  This is now fixed: the result path always uses
-  the path separator specified in the ``[paths]`` result.
-
-- On Windows, the HTML report could fail when source trees are deeply nested,
-  due to attempting to create HTML filenames longer than the 250-character
-  maximum.  Now filenames will never get much larger than 200 characters,
-  fixing `issue 627`_.  Thanks to Alex Sandro for helping with the fix.
-
-.. _issue 563: https://github.com/nedbat/coveragepy/issues/563
-.. _issue 618: https://github.com/nedbat/coveragepy/issues/618
-.. _issue 621: https://github.com/nedbat/coveragepy/issues/621
-.. _issue 622: https://github.com/nedbat/coveragepy/issues/622
-.. _issue 627: https://github.com/nedbat/coveragepy/issues/627
-.. _issue 629: https://github.com/nedbat/coveragepy/issues/629
-.. _issue 631: https://github.com/nedbat/coveragepy/issues/631
-
-
-.. _changes_442:
-
-Version 4.4.2 --- 2017-11-05
-----------------------------
-
-- Support for Python 3.7.  In some cases, class and module docstrings are no
-  longer counted in statement totals, which could slightly change your total
-  results.
-
-- Specifying both ``--source`` and ``--include`` no longer silently ignores the
-  include setting, instead it displays a warning. Thanks, Loïc Dachary.  Closes
-  `issue 265`_ and `issue 101`_.
-
-- Fixed a race condition when saving data and multiple threads are tracing
-  (`issue 581`_). It could produce a "dictionary changed size during iteration"
-  RuntimeError.  I believe this mostly but not entirely fixes the race
-  condition.  A true fix would likely be too expensive.  Thanks, Peter Baughman
-  for the debugging, and Olivier Grisel for the fix with tests.
-
-- Configuration values which are file paths will now apply tilde-expansion,
-  closing `issue 589`_.
-
-- Now secondary config files like tox.ini and setup.cfg can be specified
-  explicitly, and prefixed sections like `[coverage:run]` will be read. Fixes
-  `issue 588`_.
-
-- Be more flexible about the command name displayed by help, fixing
-  `issue 600`_. Thanks, Ben Finney.
-
-.. _issue 101: https://github.com/nedbat/coveragepy/issues/101
-.. _issue 581: https://github.com/nedbat/coveragepy/issues/581
-.. _issue 588: https://github.com/nedbat/coveragepy/issues/588
-.. _issue 589: https://github.com/nedbat/coveragepy/issues/589
-.. _issue 600: https://github.com/nedbat/coveragepy/issues/600
-
-
-.. _changes_441:
-
-Version 4.4.1 --- 2017-05-14
-----------------------------
-
-- No code changes: just corrected packaging for Python 2.7 Linux wheels.
-
-
-.. _changes_44:
-
-Version 4.4 --- 2017-05-07
---------------------------
-
-- Reports could produce the wrong file names for packages, reporting ``pkg.py``
-  instead of the correct ``pkg/__init__.py``.  This is now fixed.  Thanks, Dirk
-  Thomas.
-
-- XML reports could produce ``<source>`` and ``<class>`` lines that together
-  didn't specify a valid source file path.  This is now fixed. (`issue 526`_)
-
-- Namespace packages are no longer warned as having no code. (`issue 572`_)
-
-- Code that uses ``sys.settrace(sys.gettrace())`` in a file that wasn't being
-  coverage-measured would prevent correct coverage measurement in following
-  code. An example of this was running doctests programmatically. This is now
-  fixed. (`issue 575`_)
-
-- Errors printed by the ``coverage`` command now go to stderr instead of
-  stdout.
-
-- Running ``coverage xml`` in a directory named with non-ASCII characters would
-  fail under Python 2. This is now fixed. (`issue 573`_)
-
-.. _issue 526: https://github.com/nedbat/coveragepy/issues/526
-.. _issue 572: https://github.com/nedbat/coveragepy/issues/572
-.. _issue 573: https://github.com/nedbat/coveragepy/issues/573
-.. _issue 575: https://github.com/nedbat/coveragepy/issues/575
-
-
-Version 4.4b1 --- 2017-04-04
-----------------------------
-
-- Some warnings can now be individually disabled.  Warnings that can be
-  disabled have a short name appended.  The ``[run] disable_warnings`` setting
-  takes a list of these warning names to disable. Closes both `issue 96`_ and
-  `issue 355`_.
-
-- The XML report now includes attributes from version 4 of the Cobertura XML
-  format, fixing `issue 570`_.
-
-- In previous versions, calling a method that used collected data would prevent
-  further collection.  For example, `save()`, `report()`, `html_report()`, and
-  others would all stop collection.  An explicit `start()` was needed to get it
-  going again.  This is no longer true.  Now you can use the collected data and
-  also continue measurement. Both `issue 79`_ and `issue 448`_ described this
-  problem, and have been fixed.
-
-- Plugins can now find unexecuted files if they choose, by implementing the
-  `find_executable_files` method.  Thanks, Emil Madsen.
-
-- Minimal IronPython support. You should be able to run IronPython programs
-  under ``coverage run``, though you will still have to do the reporting phase
-  with CPython.
-
-- Coverage.py has long had a special hack to support CPython's need to measure
-  the coverage of the standard library tests. This code was not installed by
-  kitted versions of coverage.py.  Now it is.
-
-.. _issue 79: https://github.com/nedbat/coveragepy/issues/79
-.. _issue 96: https://github.com/nedbat/coveragepy/issues/96
-.. _issue 355: https://github.com/nedbat/coveragepy/issues/355
-.. _issue 448: https://github.com/nedbat/coveragepy/issues/448
-.. _issue 570: https://github.com/nedbat/coveragepy/issues/570
-
-
-.. _changes_434:
-
-Version 4.3.4 --- 2017-01-17
-----------------------------
-
-- Fixing 2.6 in version 4.3.3 broke other things, because the too-tricky
-  exception wasn't properly derived from Exception, described in `issue 556`_.
-  A newb mistake; it hasn't been a good few days.
-
-.. _issue 556: https://github.com/nedbat/coveragepy/issues/556
-
-
-.. _changes_433:
-
-Version 4.3.3 --- 2017-01-17
-----------------------------
-
-- Python 2.6 support was broken due to a testing exception imported for the
-  benefit of the coverage.py test suite.  Properly conditionalizing it fixed
-  `issue 554`_ so that Python 2.6 works again.
-
-.. _issue 554: https://github.com/nedbat/coveragepy/issues/554
-
-
-.. _changes_432:
-
-Version 4.3.2 --- 2017-01-16
-----------------------------
-
-- Using the ``--skip-covered`` option on an HTML report with 100% coverage
-  would cause a "No data to report" error, as reported in `issue 549`_. This is
-  now fixed; thanks, Loïc Dachary.
-
-- If-statements can be optimized away during compilation, for example, `if 0:`
-  or `if __debug__:`.  Coverage.py had problems properly understanding these
-  statements which existed in the source, but not in the compiled bytecode.
-  This problem, reported in `issue 522`_, is now fixed.
-
-- If you specified ``--source`` as a directory, then coverage.py would look for
-  importable Python files in that directory, and could identify ones that had
-  never been executed at all.  But if you specified it as a package name, that
-  detection wasn't performed.  Now it is, closing `issue 426`_. Thanks to Loïc
-  Dachary for the fix.
-
-- If you started and stopped coverage measurement thousands of times in your
-  process, you could crash Python with a "Fatal Python error: deallocating
-  None" error.  This is now fixed.  Thanks to Alex Groce for the bug report.
-
-- On PyPy, measuring coverage in subprocesses could produce a warning: "Trace
-  function changed, measurement is likely wrong: None".  This was spurious, and
-  has been suppressed.
-
-- Previously, coverage.py couldn't start on Jython, due to that implementation
-  missing the multiprocessing module (`issue 551`_). This problem has now been
-  fixed. Also, `issue 322`_ about not being able to invoke coverage
-  conveniently, seems much better: ``jython -m coverage run myprog.py`` works
-  properly.
-
-- Let's say you ran the HTML report over and over again in the same output
-  directory, with ``--skip-covered``. And imagine due to your heroic
-  test-writing efforts, a file just achieved the goal of 100% coverage. With
-  coverage.py 4.3, the old HTML file with the less-than-100% coverage would be
-  left behind.  This file is now properly deleted.
-
-.. _issue 322: https://github.com/nedbat/coveragepy/issues/322
-.. _issue 426: https://github.com/nedbat/coveragepy/issues/426
-.. _issue 522: https://github.com/nedbat/coveragepy/issues/522
-.. _issue 549: https://github.com/nedbat/coveragepy/issues/549
-.. _issue 551: https://github.com/nedbat/coveragepy/issues/551
-
-
-.. _changes_431:
-
-Version 4.3.1 --- 2016-12-28
-----------------------------
-
-- Some environments couldn't install 4.3, as described in `issue 540`_. This is
-  now fixed.
-
-- The check for conflicting ``--source`` and ``--include`` was too simple in a
-  few different ways, breaking a few perfectly reasonable use cases, described
-  in `issue 541`_.  The check has been reverted while we re-think the fix for
-  `issue 265`_.
-
-.. _issue 540: https://github.com/nedbat/coveragepy/issues/540
-.. _issue 541: https://github.com/nedbat/coveragepy/issues/541
-
-
-.. _changes_43:
-
-Version 4.3 --- 2016-12-27
---------------------------
-
-Special thanks to **Loïc Dachary**, who took an extraordinary interest in
-coverage.py and contributed a number of improvements in this release.
-
-- Subprocesses that are measured with `automatic subprocess measurement`_ used
-  to read in any pre-existing data file.  This meant data would be incorrectly
-  carried forward from run to run.  Now those files are not read, so each
-  subprocess only writes its own data. Fixes `issue 510`_.
-
-- The ``coverage combine`` command will now fail if there are no data files to
-  combine. The combine changes in 4.2 meant that multiple combines could lose
-  data, leaving you with an empty .coverage data file. Fixes
-  `issue 525`_, `issue 412`_, `issue 516`_, and probably `issue 511`_.
-
-- Coverage.py wouldn't execute `sys.excepthook`_ when an exception happened in
-  your program.  Now it does, thanks to Andrew Hoos.  Closes `issue 535`_.
-
-- Branch coverage fixes:
-
-  - Branch coverage could misunderstand a finally clause on a try block that
-    never continued on to the following statement, as described in `issue
-    493`_.  This is now fixed. Thanks to Joe Doherty for the report and Loïc
-    Dachary for the fix.
-
-  - A while loop with a constant condition (while True) and a continue
-    statement would be mis-analyzed, as described in `issue 496`_. This is now
-    fixed, thanks to a bug report by Eli Skeggs and a fix by Loïc Dachary.
-
-  - While loops with constant conditions that were never executed could result
-    in a non-zero coverage report.  Artem Dayneko reported this in `issue
-    502`_, and Loïc Dachary provided the fix.
-
-- The HTML report now supports a ``--skip-covered`` option like the other
-  reporting commands.  Thanks, Loïc Dachary for the implementation, closing
-  `issue 433`_.
-
-- Options can now be read from a tox.ini file, if any. Like setup.cfg, sections
-  are prefixed with "coverage:", so ``[run]`` options will be read from the
-  ``[coverage:run]`` section of tox.ini. Implements part of `issue 519`_.
-  Thanks, Stephen Finucane.
-
-- Specifying both ``--source`` and ``--include`` no longer silently ignores the
-  include setting, instead it fails with a message. Thanks, Nathan Land and
-  Loïc Dachary. Closes `issue 265`_.
-
-- The ``Coverage.combine`` method has a new parameter, ``strict=False``, to
-  support failing if there are no data files to combine.
-
-- When forking subprocesses, the coverage data files would have the same random
-  number appended to the file name. This didn't cause problems, because the
-  file names had the process id also, making collisions (nearly) impossible.
-  But it was disconcerting.  This is now fixed.
-
-- The text report now properly sizes headers when skipping some files, fixing
-  `issue 524`_. Thanks, Anthony Sottile and Loïc Dachary.
-
-- Coverage.py can now search .pex files for source, just as it can .zip and
-  .egg.  Thanks, Peter Ebden.
-
-- Data files are now about 15% smaller.
-
-- Improvements in the ``[run] debug`` setting:
-
-  - The "dataio" debug setting now also logs when data files are deleted during
-    combining or erasing.
-
-  - A new debug option, "multiproc", for logging the behavior of
-    ``concurrency=multiprocessing``.
-
-  - If you used the debug options "config" and "callers" together, you'd get a
-    call stack printed for every line in the multi-line config output. This is
-    now fixed.
-
-- Fixed an unusual bug involving multiple coding declarations affecting code
-  containing code in multi-line strings: `issue 529`_.
-
-- Coverage.py will no longer be misled into thinking that a plain file is a
-  package when interpreting ``--source`` options.  Thanks, Cosimo Lupo.
-
-- If you try to run a non-Python file with coverage.py, you will now get a more
-  useful error message. `Issue 514`_.
-
-- The default pragma regex changed slightly, but this will only matter to you
-  if you are deranged and use mixed-case pragmas.
-
-- Deal properly with non-ASCII file names in an ASCII-only world, `issue 533`_.
-
-- Programs that set Unicode configuration values could cause UnicodeErrors when
-  generating HTML reports.  Pytest-cov is one example.  This is now fixed.
-
-- Prevented deprecation warnings from configparser that happened in some
-  circumstances, closing `issue 530`_.
-
-- Corrected the name of the jquery.ba-throttle-debounce.js library. Thanks,
-  Ben Finney.  Closes `issue 505`_.
-
-- Testing against PyPy 5.6 and PyPy3 5.5.
-
-- Switched to pytest from nose for running the coverage.py tests.
-
-- Renamed AUTHORS.txt to CONTRIBUTORS.txt, since there are other ways to
-  contribute than by writing code. Also put the count of contributors into the
-  author string in setup.py, though this might be too cute.
-
-.. _sys.excepthook: https://docs.python.org/3/library/sys.html#sys.excepthook
-.. _issue 265: https://github.com/nedbat/coveragepy/issues/265
-.. _issue 412: https://github.com/nedbat/coveragepy/issues/412
-.. _issue 433: https://github.com/nedbat/coveragepy/issues/433
-.. _issue 493: https://github.com/nedbat/coveragepy/issues/493
-.. _issue 496: https://github.com/nedbat/coveragepy/issues/496
-.. _issue 502: https://github.com/nedbat/coveragepy/issues/502
-.. _issue 505: https://github.com/nedbat/coveragepy/issues/505
-.. _issue 514: https://github.com/nedbat/coveragepy/issues/514
-.. _issue 510: https://github.com/nedbat/coveragepy/issues/510
-.. _issue 511: https://github.com/nedbat/coveragepy/issues/511
-.. _issue 516: https://github.com/nedbat/coveragepy/issues/516
-.. _issue 519: https://github.com/nedbat/coveragepy/issues/519
-.. _issue 524: https://github.com/nedbat/coveragepy/issues/524
-.. _issue 525: https://github.com/nedbat/coveragepy/issues/525
-.. _issue 529: https://github.com/nedbat/coveragepy/issues/529
-.. _issue 530: https://github.com/nedbat/coveragepy/issues/530
-.. _issue 533: https://github.com/nedbat/coveragepy/issues/533
-.. _issue 535: https://github.com/nedbat/coveragepy/issues/535
-
-
-.. _changes_42:
-
-Version 4.2 --- 2016-07-26
---------------------------
-
-- Since ``concurrency=multiprocessing`` uses subprocesses, options specified on
-  the coverage.py command line will not be communicated down to them.  Only
-  options in the configuration file will apply to the subprocesses.
-  Previously, the options didn't apply to the subprocesses, but there was no
-  indication.  Now it is an error to use ``--concurrency=multiprocessing`` and
-  other run-affecting options on the command line.  This prevents
-  failures like those reported in `issue 495`_.
-
-- Filtering the HTML report is now faster, thanks to Ville Skyttä.
-
-.. _issue 495: https://github.com/nedbat/coveragepy/issues/495
-
-
-Version 4.2b1 --- 2016-07-04
-----------------------------
-
-Work from the PyCon 2016 Sprints!
-
-- BACKWARD INCOMPATIBILITY: the ``coverage combine`` command now ignores an
-  existing ``.coverage`` data file.  It used to include that file in its
-  combining.  This caused confusing results, and extra tox "clean" steps.  If
-  you want the old behavior, use the new ``coverage combine --append`` option.
-
-- The ``concurrency`` option can now take multiple values, to support programs
-  using multiprocessing and another library such as eventlet.  This is only
-  possible in the configuration file, not from the command line. The
-  configuration file is the only way for sub-processes to all run with the same
-  options.  Fixes `issue 484`_.  Thanks to Josh Williams for prototyping.
-
-- Using a ``concurrency`` setting of ``multiprocessing`` now implies
-  ``--parallel`` so that the main program is measured similarly to the
-  sub-processes.
-
-- When using `automatic subprocess measurement`_, running coverage commands
-  would create spurious data files.  This is now fixed, thanks to diagnosis and
-  testing by Dan Riti.  Closes `issue 492`_.
-
-- A new configuration option, ``report:sort``, controls what column of the
-  text report is used to sort the rows.  Thanks to Dan Wandschneider, this
-  closes `issue 199`_.
-
-- The HTML report has a more-visible indicator for which column is being
-  sorted.  Closes `issue 298`_, thanks to Josh Williams.
-
-- If the HTML report cannot find the source for a file, the message now
-  suggests using the ``-i`` flag to allow the report to continue. Closes
-  `issue 231`_, thanks, Nathan Land.
-
-- When reports are ignoring errors, there's now a warning if a file cannot be
-  parsed, rather than being silently ignored.  Closes `issue 396`_. Thanks,
-  Matthew Boehm.
-
-- A new option for ``coverage debug`` is available: ``coverage debug config``
-  shows the current configuration.  Closes `issue 454`_, thanks to Matthew
-  Boehm.
-
-- Running coverage as a module (``python -m coverage``) no longer shows the
-  program name as ``__main__.py``.  Fixes `issue 478`_.  Thanks, Scott Belden.
-
-- The `test_helpers` module has been moved into a separate pip-installable
-  package: `unittest-mixins`_.
-
-.. _automatic subprocess measurement: https://coverage.readthedocs.io/en/latest/subprocess.html
-.. _issue 199: https://github.com/nedbat/coveragepy/issues/199
-.. _issue 231: https://github.com/nedbat/coveragepy/issues/231
-.. _issue 298: https://github.com/nedbat/coveragepy/issues/298
-.. _issue 396: https://github.com/nedbat/coveragepy/issues/396
-.. _issue 454: https://github.com/nedbat/coveragepy/issues/454
-.. _issue 478: https://github.com/nedbat/coveragepy/issues/478
-.. _issue 484: https://github.com/nedbat/coveragepy/issues/484
-.. _issue 492: https://github.com/nedbat/coveragepy/issues/492
-.. _unittest-mixins: https://pypi.org/project/unittest-mixins/
-
-
-.. _changes_41:
-
-Version 4.1 --- 2016-05-21
---------------------------
-
-- The internal attribute `Reporter.file_reporters` was removed in 4.1b3.  It
-  should have come has no surprise that there were third-party tools out there
-  using that attribute.  It has been restored, but with a deprecation warning.
-
-
-Version 4.1b3 --- 2016-05-10
-----------------------------
-
-- When running your program, execution can jump from an ``except X:`` line to
-  some other line when an exception other than ``X`` happens.  This jump is no
-  longer considered a branch when measuring branch coverage.
-
-- When measuring branch coverage, ``yield`` statements that were never resumed
-  were incorrectly marked as missing, as reported in `issue 440`_.  This is now
-  fixed.
-
-- During branch coverage of single-line callables like lambdas and generator
-  expressions, coverage.py can now distinguish between them never being called,
-  or being called but not completed.  Fixes `issue 90`_, `issue 460`_ and
-  `issue 475`_.
-
-- The HTML report now has a map of the file along the rightmost edge of the
-  page, giving an overview of where the missed lines are.  Thanks, Dmitry
-  Shishov.
-
-- The HTML report now uses different monospaced fonts, favoring Consolas over
-  Courier.  Along the way, `issue 472`_ about not properly handling one-space
-  indents was fixed.  The index page also has slightly different styling, to
-  try to make the clickable detail pages more apparent.
-
-- Missing branches reported with ``coverage report -m`` will now say ``->exit``
-  for missed branches to the exit of a function, rather than a negative number.
-  Fixes `issue 469`_.
-
-- ``coverage --help`` and ``coverage --version`` now mention which tracer is
-  installed, to help diagnose problems. The docs mention which features need
-  the C extension. (`issue 479`_)
-
-- Officially support PyPy 5.1, which required no changes, just updates to the
-  docs.
-
-- The `Coverage.report` function had two parameters with non-None defaults,
-  which have been changed.  `show_missing` used to default to True, but now
-  defaults to None.  If you had been calling `Coverage.report` without
-  specifying `show_missing`, you'll need to explicitly set it to True to keep
-  the same behavior.  `skip_covered` used to default to False. It is now None,
-  which doesn't change the behavior.  This fixes `issue 485`_.
-
-- It's never been possible to pass a namespace module to one of the analysis
-  functions, but now at least we raise a more specific error message, rather
-  than getting confused. (`issue 456`_)
-
-- The `coverage.process_startup` function now returns the `Coverage` instance
-  it creates, as suggested in `issue 481`_.
-
-- Make a small tweak to how we compare threads, to avoid buggy custom
-  comparison code in thread classes. (`issue 245`_)
-
-.. _issue 90: https://github.com/nedbat/coveragepy/issues/90
-.. _issue 245: https://github.com/nedbat/coveragepy/issues/245
-.. _issue 440: https://github.com/nedbat/coveragepy/issues/440
-.. _issue 456: https://github.com/nedbat/coveragepy/issues/456
-.. _issue 460: https://github.com/nedbat/coveragepy/issues/460
-.. _issue 469: https://github.com/nedbat/coveragepy/issues/469
-.. _issue 472: https://github.com/nedbat/coveragepy/issues/472
-.. _issue 475: https://github.com/nedbat/coveragepy/issues/475
-.. _issue 479: https://github.com/nedbat/coveragepy/issues/479
-.. _issue 481: https://github.com/nedbat/coveragepy/issues/481
-.. _issue 485: https://github.com/nedbat/coveragepy/issues/485
-
-
-Version 4.1b2 --- 2016-01-23
-----------------------------
-
-- Problems with the new branch measurement in 4.1 beta 1 were fixed:
-
-  - Class docstrings were considered executable.  Now they no longer are.
-
-  - ``yield from`` and ``await`` were considered returns from functions, since
-    they could transfer control to the caller.  This produced unhelpful
-    "missing branch" reports in a number of circumstances.  Now they no longer
-    are considered returns.
-
-  - In unusual situations, a missing branch to a negative number was reported.
-    This has been fixed, closing `issue 466`_.
-
-- The XML report now produces correct package names for modules found in
-  directories specified with ``source=``.  Fixes `issue 465`_.
-
-- ``coverage report`` won't produce trailing whitespace.
-
-.. _issue 465: https://github.com/nedbat/coveragepy/issues/465
-.. _issue 466: https://github.com/nedbat/coveragepy/issues/466
-
-
-Version 4.1b1 --- 2016-01-10
-----------------------------
-
-- Branch analysis has been rewritten: it used to be based on bytecode, but now
-  uses AST analysis.  This has changed a number of things:
-
-  - More code paths are now considered runnable, especially in
-    ``try``/``except`` structures.  This may mean that coverage.py will
-    identify more code paths as uncovered.  This could either raise or lower
-    your overall coverage number.
-
-  - Python 3.5's ``async`` and ``await`` keywords are properly supported,
-    fixing `issue 434`_.
-
-  - Some long-standing branch coverage bugs were fixed:
-
-    - `issue 129`_: functions with only a docstring for a body would
-      incorrectly report a missing branch on the ``def`` line.
-
-    - `issue 212`_: code in an ``except`` block could be incorrectly marked as
-      a missing branch.
-
-    - `issue 146`_: context managers (``with`` statements) in a loop or ``try``
-      block could confuse the branch measurement, reporting incorrect partial
-      branches.
-
-    - `issue 422`_: in Python 3.5, an actual partial branch could be marked as
-      complete.
-
-- Pragmas to disable coverage measurement can now be used on decorator lines,
-  and they will apply to the entire function or class being decorated.  This
-  implements the feature requested in `issue 131`_.
-
-- Multiprocessing support is now available on Windows.  Thanks, Rodrigue
-  Cloutier.
-
-- Files with two encoding declarations are properly supported, fixing
-  `issue 453`_. Thanks, Max Linke.
-
-- Non-ascii characters in regexes in the configuration file worked in 3.7, but
-  stopped working in 4.0.  Now they work again, closing `issue 455`_.
-
-- Form-feed characters would prevent accurate determination of the beginning of
-  statements in the rest of the file.  This is now fixed, closing `issue 461`_.
-
-.. _issue 129: https://github.com/nedbat/coveragepy/issues/129
-.. _issue 131: https://github.com/nedbat/coveragepy/issues/131
-.. _issue 146: https://github.com/nedbat/coveragepy/issues/146
-.. _issue 212: https://github.com/nedbat/coveragepy/issues/212
-.. _issue 422: https://github.com/nedbat/coveragepy/issues/422
-.. _issue 434: https://github.com/nedbat/coveragepy/issues/434
-.. _issue 453: https://github.com/nedbat/coveragepy/issues/453
-.. _issue 455: https://github.com/nedbat/coveragepy/issues/455
-.. _issue 461: https://github.com/nedbat/coveragepy/issues/461
-
-
-.. _changes_403:
-
-Version 4.0.3 --- 2015-11-24
-----------------------------
-
-- Fixed a mysterious problem that manifested in different ways: sometimes
-  hanging the process (`issue 420`_), sometimes making database connections
-  fail (`issue 445`_).
-
-- The XML report now has correct ``<source>`` elements when using a
-  ``--source=`` option somewhere besides the current directory.  This fixes
-  `issue 439`_. Thanks, Arcadiy Ivanov.
-
-- Fixed an unusual edge case of detecting source encodings, described in
-  `issue 443`_.
-
-- Help messages that mention the command to use now properly use the actual
-  command name, which might be different than "coverage".  Thanks to Ben
-  Finney, this closes `issue 438`_.
-
-.. _issue 420: https://github.com/nedbat/coveragepy/issues/420
-.. _issue 438: https://github.com/nedbat/coveragepy/issues/438
-.. _issue 439: https://github.com/nedbat/coveragepy/issues/439
-.. _issue 443: https://github.com/nedbat/coveragepy/issues/443
-.. _issue 445: https://github.com/nedbat/coveragepy/issues/445
-
-
-.. _changes_402:
-
-Version 4.0.2 --- 2015-11-04
-----------------------------
-
-- More work on supporting unusually encoded source. Fixed `issue 431`_.
-
-- Files or directories with non-ASCII characters are now handled properly,
-  fixing `issue 432`_.
-
-- Setting a trace function with sys.settrace was broken by a change in 4.0.1,
-  as reported in `issue 436`_.  This is now fixed.
-
-- Officially support PyPy 4.0, which required no changes, just updates to the
-  docs.
-
-.. _issue 431: https://github.com/nedbat/coveragepy/issues/431
-.. _issue 432: https://github.com/nedbat/coveragepy/issues/432
-.. _issue 436: https://github.com/nedbat/coveragepy/issues/436
-
-
-.. _changes_401:
-
-Version 4.0.1 --- 2015-10-13
-----------------------------
-
-- When combining data files, unreadable files will now generate a warning
-  instead of failing the command.  This is more in line with the older
-  coverage.py v3.7.1 behavior, which silently ignored unreadable files.
-  Prompted by `issue 418`_.
-
-- The --skip-covered option would skip reporting on 100% covered files, but
-  also skipped them when calculating total coverage.  This was wrong, it should
-  only remove lines from the report, not change the final answer.  This is now
-  fixed, closing `issue 423`_.
-
-- In 4.0, the data file recorded a summary of the system on which it was run.
-  Combined data files would keep all of those summaries.  This could lead to
-  enormous data files consisting of mostly repetitive useless information. That
-  summary is now gone, fixing `issue 415`_.  If you want summary information,
-  get in touch, and we'll figure out a better way to do it.
-
-- Test suites that mocked os.path.exists would experience strange failures, due
-  to coverage.py using their mock inadvertently.  This is now fixed, closing
-  `issue 416`_.
-
-- Importing a ``__init__`` module explicitly would lead to an error:
-  ``AttributeError: 'module' object has no attribute '__path__'``, as reported
-  in `issue 410`_.  This is now fixed.
-
-- Code that uses ``sys.settrace(sys.gettrace())`` used to incur a more than 2x
-  speed penalty.  Now there's no penalty at all. Fixes `issue 397`_.
-
-- Pyexpat C code will no longer be recorded as a source file, fixing
-  `issue 419`_.
-
-- The source kit now contains all of the files needed to have a complete source
-  tree, re-fixing `issue 137`_ and closing `issue 281`_.
-
-.. _issue 281: https://github.com/nedbat/coveragepy/issues/281
-.. _issue 397: https://github.com/nedbat/coveragepy/issues/397
-.. _issue 410: https://github.com/nedbat/coveragepy/issues/410
-.. _issue 415: https://github.com/nedbat/coveragepy/issues/415
-.. _issue 416: https://github.com/nedbat/coveragepy/issues/416
-.. _issue 418: https://github.com/nedbat/coveragepy/issues/418
-.. _issue 419: https://github.com/nedbat/coveragepy/issues/419
-.. _issue 423: https://github.com/nedbat/coveragepy/issues/423
-
-
-.. _changes_40:
-
-Version 4.0 --- 2015-09-20
---------------------------
-
-No changes from 4.0b3
-
-
-Version 4.0b3 --- 2015-09-07
-----------------------------
-
-- Reporting on an unmeasured file would fail with a traceback.  This is now
-  fixed, closing `issue 403`_.
-
-- The Jenkins ShiningPanda_ plugin looks for an obsolete file name to find the
-  HTML reports to publish, so it was failing under coverage.py 4.0.  Now we
-  create that file if we are running under Jenkins, to keep things working
-  smoothly. `issue 404`_.
-
-- Kits used to include tests and docs, but didn't install them anywhere, or
-  provide all of the supporting tools to make them useful.  Kits no longer
-  include tests and docs.  If you were using them from the older packages, get
-  in touch and help me understand how.
-
-.. _issue 403: https://github.com/nedbat/coveragepy/issues/403
-.. _issue 404: https://github.com/nedbat/coveragepy/issues/404
-
-
-Version 4.0b2 --- 2015-08-22
-----------------------------
-
-- 4.0b1 broke ``--append`` creating new data files.  This is now fixed, closing
-  `issue 392`_.
-
-- ``py.test --cov`` can write empty data, then touch files due to ``--source``,
-  which made coverage.py mistakenly force the data file to record lines instead
-  of arcs.  This would lead to a "Can't combine line data with arc data" error
-  message.  This is now fixed, and changed some method names in the
-  CoverageData interface.  Fixes `issue 399`_.
-
-- `CoverageData.read_fileobj` and `CoverageData.write_fileobj` replace the
-  `.read` and `.write` methods, and are now properly inverses of each other.
-
-- When using ``report --skip-covered``, a message will now be included in the
-  report output indicating how many files were skipped, and if all files are
-  skipped, coverage.py won't accidentally scold you for having no data to
-  report.  Thanks, Krystian Kichewko.
-
-- A new conversion utility has been added:  ``python -m coverage.pickle2json``
-  will convert v3.x pickle data files to v4.x JSON data files.  Thanks,
-  Alexander Todorov.  Closes `issue 395`_.
-
-- A new version identifier is available, `coverage.version_info`, a plain tuple
-  of values similar to `sys.version_info`_.
-
-.. _issue 392: https://github.com/nedbat/coveragepy/issues/392
-.. _issue 395: https://github.com/nedbat/coveragepy/issues/395
-.. _issue 399: https://github.com/nedbat/coveragepy/issues/399
-.. _sys.version_info: https://docs.python.org/3/library/sys.html#sys.version_info
-
-
-Version 4.0b1 --- 2015-08-02
-----------------------------
-
-- Coverage.py is now licensed under the Apache 2.0 license.  See NOTICE.txt for
-  details.  Closes `issue 313`_.
-
-- The data storage has been completely revamped.  The data file is now
-  JSON-based instead of a pickle, closing `issue 236`_.  The `CoverageData`
-  class is now a public supported documented API to the data file.
-
-- A new configuration option, ``[run] note``, lets you set a note that will be
-  stored in the `runs` section of the data file.  You can use this to annotate
-  the data file with any information you like.
-
-- Unrecognized configuration options will now print an error message and stop
-  coverage.py.  This should help prevent configuration mistakes from passing
-  silently.  Finishes `issue 386`_.
-
-- In parallel mode, ``coverage erase`` will now delete all of the data files,
-  fixing `issue 262`_.
-
-- Coverage.py now accepts a directory name for ``coverage run`` and will run a
-  ``__main__.py`` found there, just like Python will.  Fixes `issue 252`_.
-  Thanks, Dmitry Trofimov.
-
-- The XML report now includes a ``missing-branches`` attribute.  Thanks, Steve
-  Peak.  This is not a part of the Cobertura DTD, so the XML report no longer
-  references the DTD.
-
-- Missing branches in the HTML report now have a bit more information in the
-  right-hand annotations.  Hopefully this will make their meaning clearer.
-
-- All the reporting functions now behave the same if no data had been
-  collected, exiting with a status code of 1.  Fixed ``fail_under`` to be
-  applied even when the report is empty.  Thanks, Ionel Cristian Mărieș.
-
-- Plugins are now initialized differently.  Instead of looking for a class
-  called ``Plugin``, coverage.py looks for a function called ``coverage_init``.
-
-- A file-tracing plugin can now ask to have built-in Python reporting by
-  returning `"python"` from its `file_reporter()` method.
-
-- Code that was executed with `exec` would be mis-attributed to the file that
-  called it.  This is now fixed, closing `issue 380`_.
-
-- The ability to use item access on `Coverage.config` (introduced in 4.0a2) has
-  been changed to a more explicit `Coverage.get_option` and
-  `Coverage.set_option` API.
-
-- The ``Coverage.use_cache`` method is no longer supported.
-
-- The private method ``Coverage._harvest_data`` is now called
-  ``Coverage.get_data``, and returns the ``CoverageData`` containing the
-  collected data.
-
-- The project is consistently referred to as "coverage.py" throughout the code
-  and the documentation, closing `issue 275`_.
-
-- Combining data files with an explicit configuration file was broken in 4.0a6,
-  but now works again, closing `issue 385`_.
-
-- ``coverage combine`` now accepts files as well as directories.
-
-- The speed is back to 3.7.1 levels, after having slowed down due to plugin
-  support, finishing up `issue 387`_.
-
-.. _issue 236: https://github.com/nedbat/coveragepy/issues/236
-.. _issue 252: https://github.com/nedbat/coveragepy/issues/252
-.. _issue 262: https://github.com/nedbat/coveragepy/issues/262
-.. _issue 275: https://github.com/nedbat/coveragepy/issues/275
-.. _issue 313: https://github.com/nedbat/coveragepy/issues/313
-.. _issue 380: https://github.com/nedbat/coveragepy/issues/380
-.. _issue 385: https://github.com/nedbat/coveragepy/issues/385
-.. _issue 386: https://github.com/nedbat/coveragepy/issues/386
-.. _issue 387: https://github.com/nedbat/coveragepy/issues/387
-
-.. 40 issues closed in 4.0 below here
-
-
-Version 4.0a6 --- 2015-06-21
-----------------------------
-
-- Python 3.5b2 and PyPy 2.6.0 are supported.
-
-- The original module-level function interface to coverage.py is no longer
-  supported.  You must now create a ``coverage.Coverage`` object, and use
-  methods on it.
-
-- The ``coverage combine`` command now accepts any number of directories as
-  arguments, and will combine all the data files from those directories.  This
-  means you don't have to copy the files to one directory before combining.
-  Thanks, Christine Lytwynec.  Finishes `issue 354`_.
-
-- Branch coverage couldn't properly handle certain extremely long files. This
-  is now fixed (`issue 359`_).
-
-- Branch coverage didn't understand yield statements properly.  Mickie Betz
-  persisted in pursuing this despite Ned's pessimism.  Fixes `issue 308`_ and
-  `issue 324`_.
-
-- The COVERAGE_DEBUG environment variable can be used to set the
-  ``[run] debug`` configuration option to control what internal operations are
-  logged.
-
-- HTML reports were truncated at formfeed characters.  This is now fixed
-  (`issue 360`_).  It's always fun when the problem is due to a `bug in the
-  Python standard library <http://bugs.python.org/issue19035>`_.
-
-- Files with incorrect encoding declaration comments are no longer ignored by
-  the reporting commands, fixing `issue 351`_.
-
-- HTML reports now include a timestamp in the footer, closing `issue 299`_.
-  Thanks, Conrad Ho.
-
-- HTML reports now begrudgingly use double-quotes rather than single quotes,
-  because there are "software engineers" out there writing tools that read HTML
-  and somehow have no idea that single quotes exist.  Capitulates to the absurd
-  `issue 361`_.  Thanks, Jon Chappell.
-
-- The ``coverage annotate`` command now handles non-ASCII characters properly,
-  closing `issue 363`_.  Thanks, Leonardo Pistone.
-
-- Drive letters on Windows were not normalized correctly, now they are. Thanks,
-  Ionel Cristian Mărieș.
-
-- Plugin support had some bugs fixed, closing `issue 374`_ and `issue 375`_.
-  Thanks, Stefan Behnel.
-
-.. _issue 299: https://github.com/nedbat/coveragepy/issues/299
-.. _issue 308: https://github.com/nedbat/coveragepy/issues/308
-.. _issue 324: https://github.com/nedbat/coveragepy/issues/324
-.. _issue 351: https://github.com/nedbat/coveragepy/issues/351
-.. _issue 354: https://github.com/nedbat/coveragepy/issues/354
-.. _issue 359: https://github.com/nedbat/coveragepy/issues/359
-.. _issue 360: https://github.com/nedbat/coveragepy/issues/360
-.. _issue 361: https://github.com/nedbat/coveragepy/issues/361
-.. _issue 363: https://github.com/nedbat/coveragepy/issues/363
-.. _issue 374: https://github.com/nedbat/coveragepy/issues/374
-.. _issue 375: https://github.com/nedbat/coveragepy/issues/375
-
-
-Version 4.0a5 --- 2015-02-16
-----------------------------
-
-- Plugin support is now implemented in the C tracer instead of the Python
-  tracer. This greatly improves the speed of tracing projects using plugins.
-
-- Coverage.py now always adds the current directory to sys.path, so that
-  plugins can import files in the current directory (`issue 358`_).
-
-- If the `config_file` argument to the Coverage constructor is specified as
-  ".coveragerc", it is treated as if it were True.  This means setup.cfg is
-  also examined, and a missing file is not considered an error (`issue 357`_).
-
-- Wildly experimental: support for measuring processes started by the
-  multiprocessing module.  To use, set ``--concurrency=multiprocessing``,
-  either on the command line or in the .coveragerc file (`issue 117`_). Thanks,
-  Eduardo Schettino.  Currently, this does not work on Windows.
-
-- A new warning is possible, if a desired file isn't measured because it was
-  imported before coverage.py was started (`issue 353`_).
-
-- The `coverage.process_startup` function now will start coverage measurement
-  only once, no matter how many times it is called.  This fixes problems due
-  to unusual virtualenv configurations (`issue 340`_).
-
-- Added 3.5.0a1 to the list of supported CPython versions.
-
-.. _issue 117: https://github.com/nedbat/coveragepy/issues/117
-.. _issue 340: https://github.com/nedbat/coveragepy/issues/340
-.. _issue 353: https://github.com/nedbat/coveragepy/issues/353
-.. _issue 357: https://github.com/nedbat/coveragepy/issues/357
-.. _issue 358: https://github.com/nedbat/coveragepy/issues/358
-
-
-Version 4.0a4 --- 2015-01-25
-----------------------------
-
-- Plugins can now provide sys_info for debugging output.
-
-- Started plugins documentation.
-
-- Prepared to move the docs to readthedocs.org.
-
-
-Version 4.0a3 --- 2015-01-20
-----------------------------
-
-- Reports now use file names with extensions.  Previously, a report would
-  describe a/b/c.py as "a/b/c".  Now it is shown as "a/b/c.py".  This allows
-  for better support of non-Python files, and also fixed `issue 69`_.
-
-- The XML report now reports each directory as a package again.  This was a bad
-  regression, I apologize.  This was reported in `issue 235`_, which is now
-  fixed.
-
-- A new configuration option for the XML report: ``[xml] package_depth``
-  controls which directories are identified as packages in the report.
-  Directories deeper than this depth are not reported as packages.
-  The default is that all directories are reported as packages.
-  Thanks, Lex Berezhny.
-
-- When looking for the source for a frame, check if the file exists. On
-  Windows, .pyw files are no longer recorded as .py files. Along the way, this
-  fixed `issue 290`_.
-
-- Empty files are now reported as 100% covered in the XML report, not 0%
-  covered (`issue 345`_).
-
-- Regexes in the configuration file are now compiled as soon as they are read,
-  to provide error messages earlier (`issue 349`_).
-
-.. _issue 69: https://github.com/nedbat/coveragepy/issues/69
-.. _issue 235: https://github.com/nedbat/coveragepy/issues/235
-.. _issue 290: https://github.com/nedbat/coveragepy/issues/290
-.. _issue 345: https://github.com/nedbat/coveragepy/issues/345
-.. _issue 349: https://github.com/nedbat/coveragepy/issues/349
-
-
-Version 4.0a2 --- 2015-01-14
-----------------------------
-
-- Officially support PyPy 2.4, and PyPy3 2.4.  Drop support for
-  CPython 3.2 and older versions of PyPy.  The code won't work on CPython 3.2.
-  It will probably still work on older versions of PyPy, but I'm not testing
-  against them.
-
-- Plugins!
-
-- The original command line switches (`-x` to run a program, etc) are no
-  longer supported.
-
-- A new option: `coverage report --skip-covered` will reduce the number of
-  files reported by skipping files with 100% coverage.  Thanks, Krystian
-  Kichewko.  This means that empty `__init__.py` files will be skipped, since
-  they are 100% covered, closing `issue 315`_.
-
-- You can now specify the ``--fail-under`` option in the ``.coveragerc`` file
-  as the ``[report] fail_under`` option.  This closes `issue 314`_.
-
-- The ``COVERAGE_OPTIONS`` environment variable is no longer supported.  It was
-  a hack for ``--timid`` before configuration files were available.
-
-- The HTML report now has filtering.  Type text into the Filter box on the
-  index page, and only modules with that text in the name will be shown.
-  Thanks, Danny Allen.
-
-- The textual report and the HTML report used to report partial branches
-  differently for no good reason.  Now the text report's "missing branches"
-  column is a "partial branches" column so that both reports show the same
-  numbers.  This closes `issue 342`_.
-
-- If you specify a ``--rcfile`` that cannot be read, you will get an error
-  message.  Fixes `issue 343`_.
-
-- The ``--debug`` switch can now be used on any command.
-
-- You can now programmatically adjust the configuration of coverage.py by
-  setting items on `Coverage.config` after construction.
-
-- A module run with ``-m`` can be used as the argument to ``--source``, fixing
-  `issue 328`_.  Thanks, Buck Evan.
-
-- The regex for matching exclusion pragmas has been fixed to allow more kinds
-  of whitespace, fixing `issue 334`_.
-
-- Made some PyPy-specific tweaks to improve speed under PyPy.  Thanks, Alex
-  Gaynor.
-
-- In some cases, with a source file missing a final newline, coverage.py would
-  count statements incorrectly.  This is now fixed, closing `issue 293`_.
-
-- The status.dat file that HTML reports use to avoid re-creating files that
-  haven't changed is now a JSON file instead of a pickle file.  This obviates
-  `issue 287`_ and `issue 237`_.
-
-.. _issue 237: https://github.com/nedbat/coveragepy/issues/237
-.. _issue 287: https://github.com/nedbat/coveragepy/issues/287
-.. _issue 293: https://github.com/nedbat/coveragepy/issues/293
-.. _issue 314: https://github.com/nedbat/coveragepy/issues/314
-.. _issue 315: https://github.com/nedbat/coveragepy/issues/315
-.. _issue 328: https://github.com/nedbat/coveragepy/issues/328
-.. _issue 334: https://github.com/nedbat/coveragepy/issues/334
-.. _issue 342: https://github.com/nedbat/coveragepy/issues/342
-.. _issue 343: https://github.com/nedbat/coveragepy/issues/343
-
-
-Version 4.0a1 --- 2014-09-27
-----------------------------
-
-- Python versions supported are now CPython 2.6, 2.7, 3.2, 3.3, and 3.4, and
-  PyPy 2.2.
-
-- Gevent, eventlet, and greenlet are now supported, closing `issue 149`_.
-  The ``concurrency`` setting specifies the concurrency library in use.  Huge
-  thanks to Peter Portante for initial implementation, and to Joe Jevnik for
-  the final insight that completed the work.
-
-- Options are now also read from a setup.cfg file, if any.  Sections are
-  prefixed with "coverage:", so the ``[run]`` options will be read from the
-  ``[coverage:run]`` section of setup.cfg.  Finishes `issue 304`_.
-
-- The ``report -m`` command can now show missing branches when reporting on
-  branch coverage.  Thanks, Steve Leonard. Closes `issue 230`_.
-
-- The XML report now contains a <source> element, fixing `issue 94`_.  Thanks
-  Stan Hu.
-
-- The class defined in the coverage module is now called ``Coverage`` instead
-  of ``coverage``, though the old name still works, for backward compatibility.
-
-- The ``fail-under`` value is now rounded the same as reported results,
-  preventing paradoxical results, fixing `issue 284`_.
-
-- The XML report will now create the output directory if need be, fixing
-  `issue 285`_.  Thanks, Chris Rose.
-
-- HTML reports no longer raise UnicodeDecodeError if a Python file has
-  undecodable characters, fixing `issue 303`_ and `issue 331`_.
-
-- The annotate command will now annotate all files, not just ones relative to
-  the current directory, fixing `issue 57`_.
-
-- The coverage module no longer causes deprecation warnings on Python 3.4 by
-  importing the imp module, fixing `issue 305`_.
-
-- Encoding declarations in source files are only considered if they are truly
-  comments.  Thanks, Anthony Sottile.
-
-.. _issue 57: https://github.com/nedbat/coveragepy/issues/57
-.. _issue 94: https://github.com/nedbat/coveragepy/issues/94
-.. _issue 149: https://github.com/nedbat/coveragepy/issues/149
-.. _issue 230: https://github.com/nedbat/coveragepy/issues/230
-.. _issue 284: https://github.com/nedbat/coveragepy/issues/284
-.. _issue 285: https://github.com/nedbat/coveragepy/issues/285
-.. _issue 303: https://github.com/nedbat/coveragepy/issues/303
-.. _issue 304: https://github.com/nedbat/coveragepy/issues/304
-.. _issue 305: https://github.com/nedbat/coveragepy/issues/305
-.. _issue 331: https://github.com/nedbat/coveragepy/issues/331
-
-
-.. _changes_371:
-
-Version 3.7.1 --- 2013-12-13
-----------------------------
-
-- Improved the speed of HTML report generation by about 20%.
-
-- Fixed the mechanism for finding OS-installed static files for the HTML report
-  so that it will actually find OS-installed static files.
-
-
-.. _changes_37:
-
-Version 3.7 --- 2013-10-06
---------------------------
-
-- Added the ``--debug`` switch to ``coverage run``.  It accepts a list of
-  options indicating the type of internal activity to log to stderr.
-
-- Improved the branch coverage facility, fixing `issue 92`_ and `issue 175`_.
-
-- Running code with ``coverage run -m`` now behaves more like Python does,
-  setting sys.path properly, which fixes `issue 207`_ and `issue 242`_.
-
-- Coverage.py can now run .pyc files directly, closing `issue 264`_.
-
-- Coverage.py properly supports .pyw files, fixing `issue 261`_.
-
-- Omitting files within a tree specified with the ``source`` option would
-  cause them to be incorrectly marked as unexecuted, as described in
-  `issue 218`_.  This is now fixed.
-
-- When specifying paths to alias together during data combining, you can now
-  specify relative paths, fixing `issue 267`_.
-
-- Most file paths can now be specified with username expansion (``~/src``, or
-  ``~build/src``, for example), and with environment variable expansion
-  (``build/$BUILDNUM/src``).
-
-- Trying to create an XML report with no files to report on, would cause a
-  ZeroDivideError, but no longer does, fixing `issue 250`_.
-
-- When running a threaded program under the Python tracer, coverage.py no
-  longer issues a spurious warning about the trace function changing: "Trace
-  function changed, measurement is likely wrong: None."  This fixes `issue
-  164`_.
-
-- Static files necessary for HTML reports are found in system-installed places,
-  to ease OS-level packaging of coverage.py.  Closes `issue 259`_.
-
-- Source files with encoding declarations, but a blank first line, were not
-  decoded properly.  Now they are.  Thanks, Roger Hu.
-
-- The source kit now includes the ``__main__.py`` file in the root coverage
-  directory, fixing `issue 255`_.
-
-.. _issue 92: https://github.com/nedbat/coveragepy/issues/92
-.. _issue 164: https://github.com/nedbat/coveragepy/issues/164
-.. _issue 175: https://github.com/nedbat/coveragepy/issues/175
-.. _issue 207: https://github.com/nedbat/coveragepy/issues/207
-.. _issue 242: https://github.com/nedbat/coveragepy/issues/242
-.. _issue 218: https://github.com/nedbat/coveragepy/issues/218
-.. _issue 250: https://github.com/nedbat/coveragepy/issues/250
-.. _issue 255: https://github.com/nedbat/coveragepy/issues/255
-.. _issue 259: https://github.com/nedbat/coveragepy/issues/259
-.. _issue 261: https://github.com/nedbat/coveragepy/issues/261
-.. _issue 264: https://github.com/nedbat/coveragepy/issues/264
-.. _issue 267: https://github.com/nedbat/coveragepy/issues/267
-
-
-.. _changes_36:
-
-Version 3.6 --- 2013-01-05
---------------------------
-
-- Added a page to the docs about troublesome situations, closing `issue 226`_,
-  and added some info to the TODO file, closing `issue 227`_.
-
-.. _issue 226: https://github.com/nedbat/coveragepy/issues/226
-.. _issue 227: https://github.com/nedbat/coveragepy/issues/227
-
-
-Version 3.6b3 --- 2012-12-29
-----------------------------
-
-- Beta 2 broke the nose plugin. It's fixed again, closing `issue 224`_.
-
-.. _issue 224: https://github.com/nedbat/coveragepy/issues/224
-
-
-Version 3.6b2 --- 2012-12-23
-----------------------------
-
-- Coverage.py runs on Python 2.3 and 2.4 again. It was broken in 3.6b1.
-
-- The C extension is optionally compiled using a different more widely-used
-  technique, taking another stab at fixing `issue 80`_ once and for all.
-
-- Combining data files would create entries for phantom files if used with
-  ``source`` and path aliases.  It no longer does.
-
-- ``debug sys`` now shows the configuration file path that was read.
-
-- If an oddly-behaved package claims that code came from an empty-string
-  file name, coverage.py no longer associates it with the directory name,
-  fixing `issue 221`_.
-
-.. _issue 221: https://github.com/nedbat/coveragepy/issues/221
-
-
-Version 3.6b1 --- 2012-11-28
-----------------------------
-
-- Wildcards in ``include=`` and ``omit=`` arguments were not handled properly
-  in reporting functions, though they were when running.  Now they are handled
-  uniformly, closing `issue 143`_ and `issue 163`_.  **NOTE**: it is possible
-  that your configurations may now be incorrect.  If you use ``include`` or
-  ``omit`` during reporting, whether on the command line, through the API, or
-  in a configuration file, please check carefully that you were not relying on
-  the old broken behavior.
-
-- The **report**, **html**, and **xml** commands now accept a ``--fail-under``
-  switch that indicates in the exit status whether the coverage percentage was
-  less than a particular value.  Closes `issue 139`_.
-
-- The reporting functions coverage.report(), coverage.html_report(), and
-  coverage.xml_report() now all return a float, the total percentage covered
-  measurement.
-
-- The HTML report's title can now be set in the configuration file, with the
-  ``--title`` switch on the command line, or via the API.
-
-- Configuration files now support substitution of environment variables, using
-  syntax like ``${WORD}``.  Closes `issue 97`_.
-
-- Embarrassingly, the ``[xml] output=`` setting in the .coveragerc file simply
-  didn't work.  Now it does.
-
-- The XML report now consistently uses file names for the file name attribute,
-  rather than sometimes using module names.  Fixes `issue 67`_.
-  Thanks, Marcus Cobden.
-
-- Coverage percentage metrics are now computed slightly differently under
-  branch coverage.  This means that completely unexecuted files will now
-  correctly have 0% coverage, fixing `issue 156`_.  This also means that your
-  total coverage numbers will generally now be lower if you are measuring
-  branch coverage.
-
-- When installing, now in addition to creating a "coverage" command, two new
-  aliases are also installed.  A "coverage2" or "coverage3" command will be
-  created, depending on whether you are installing in Python 2.x or 3.x.
-  A "coverage-X.Y" command will also be created corresponding to your specific
-  version of Python.  Closes `issue 111`_.
-
-- The coverage.py installer no longer tries to bootstrap setuptools or
-  Distribute.  You must have one of them installed first, as `issue 202`_
-  recommended.
-
-- The coverage.py kit now includes docs (closing `issue 137`_) and tests.
-
-- On Windows, files are now reported in their correct case, fixing `issue 89`_
-  and `issue 203`_.
-
-- If a file is missing during reporting, the path shown in the error message
-  is now correct, rather than an incorrect path in the current directory.
-  Fixes `issue 60`_.
-
-- Running an HTML report in Python 3 in the same directory as an old Python 2
-  HTML report would fail with a UnicodeDecodeError. This issue (`issue 193`_)
-  is now fixed.
-
-- Fixed yet another error trying to parse non-Python files as Python, this
-  time an IndentationError, closing `issue 82`_ for the fourth time...
-
-- If `coverage xml` fails because there is no data to report, it used to
-  create a zero-length XML file.  Now it doesn't, fixing `issue 210`_.
-
-- Jython files now work with the ``--source`` option, fixing `issue 100`_.
-
-- Running coverage.py under a debugger is unlikely to work, but it shouldn't
-  fail with "TypeError: 'NoneType' object is not iterable".  Fixes `issue
-  201`_.
-
-- On some Linux distributions, when installed with the OS package manager,
-  coverage.py would report its own code as part of the results.  Now it won't,
-  fixing `issue 214`_, though this will take some time to be repackaged by the
-  operating systems.
-
-- Docstrings for the legacy singleton methods are more helpful.  Thanks Marius
-  Gedminas.  Closes `issue 205`_.
-
-- The pydoc tool can now show documentation for the class `coverage.coverage`.
-  Closes `issue 206`_.
-
-- Added a page to the docs about contributing to coverage.py, closing
-  `issue 171`_.
-
-- When coverage.py ended unsuccessfully, it may have reported odd errors like
-  ``'NoneType' object has no attribute 'isabs'``.  It no longer does,
-  so kiss `issue 153`_ goodbye.
-
-.. _issue 60: https://github.com/nedbat/coveragepy/issues/60
-.. _issue 67: https://github.com/nedbat/coveragepy/issues/67
-.. _issue 89: https://github.com/nedbat/coveragepy/issues/89
-.. _issue 97: https://github.com/nedbat/coveragepy/issues/97
-.. _issue 100: https://github.com/nedbat/coveragepy/issues/100
-.. _issue 111: https://github.com/nedbat/coveragepy/issues/111
-.. _issue 137: https://github.com/nedbat/coveragepy/issues/137
-.. _issue 139: https://github.com/nedbat/coveragepy/issues/139
-.. _issue 143: https://github.com/nedbat/coveragepy/issues/143
-.. _issue 153: https://github.com/nedbat/coveragepy/issues/153
-.. _issue 156: https://github.com/nedbat/coveragepy/issues/156
-.. _issue 163: https://github.com/nedbat/coveragepy/issues/163
-.. _issue 171: https://github.com/nedbat/coveragepy/issues/171
-.. _issue 193: https://github.com/nedbat/coveragepy/issues/193
-.. _issue 201: https://github.com/nedbat/coveragepy/issues/201
-.. _issue 202: https://github.com/nedbat/coveragepy/issues/202
-.. _issue 203: https://github.com/nedbat/coveragepy/issues/203
-.. _issue 205: https://github.com/nedbat/coveragepy/issues/205
-.. _issue 206: https://github.com/nedbat/coveragepy/issues/206
-.. _issue 210: https://github.com/nedbat/coveragepy/issues/210
-.. _issue 214: https://github.com/nedbat/coveragepy/issues/214
-
-
-.. _changes_353:
-
-Version 3.5.3 --- 2012-09-29
-----------------------------
-
-- Line numbers in the HTML report line up better with the source lines, fixing
-  `issue 197`_, thanks Marius Gedminas.
-
-- When specifying a directory as the source= option, the directory itself no
-  longer needs to have a ``__init__.py`` file, though its sub-directories do,
-  to be considered as source files.
-
-- Files encoded as UTF-8 with a BOM are now properly handled, fixing
-  `issue 179`_.  Thanks, Pablo Carballo.
-
-- Fixed more cases of non-Python files being reported as Python source, and
-  then not being able to parse them as Python.  Closes `issue 82`_ (again).
-  Thanks, Julian Berman.
-
-- Fixed memory leaks under Python 3, thanks, Brett Cannon. Closes `issue 147`_.
-
-- Optimized .pyo files may not have been handled correctly, `issue 195`_.
-  Thanks, Marius Gedminas.
-
-- Certain unusually named file paths could have been mangled during reporting,
-  `issue 194`_.  Thanks, Marius Gedminas.
-
-- Try to do a better job of the impossible task of detecting when we can't
-  build the C extension, fixing `issue 183`_.
-
-- Testing is now done with `tox`_, thanks, Marc Abramowitz.
-
-.. _issue 147: https://github.com/nedbat/coveragepy/issues/147
-.. _issue 179: https://github.com/nedbat/coveragepy/issues/179
-.. _issue 183: https://github.com/nedbat/coveragepy/issues/183
-.. _issue 194: https://github.com/nedbat/coveragepy/issues/194
-.. _issue 195: https://github.com/nedbat/coveragepy/issues/195
-.. _issue 197: https://github.com/nedbat/coveragepy/issues/197
-.. _tox: https://tox.readthedocs.io/
-
-
-.. _changes_352:
-
-Version 3.5.2 --- 2012-05-04
-----------------------------
-
-No changes since 3.5.2.b1
-
-
-Version 3.5.2b1 --- 2012-04-29
-------------------------------
-
-- The HTML report has slightly tweaked controls: the buttons at the top of
-  the page are color-coded to the source lines they affect.
-
-- Custom CSS can be applied to the HTML report by specifying a CSS file as
-  the ``extra_css`` configuration value in the ``[html]`` section.
-
-- Source files with custom encodings declared in a comment at the top are now
-  properly handled during reporting on Python 2.  Python 3 always handled them
-  properly.  This fixes `issue 157`_.
-
-- Backup files left behind by editors are no longer collected by the source=
-  option, fixing `issue 168`_.
-
-- If a file doesn't parse properly as Python, we don't report it as an error
-  if the file name seems like maybe it wasn't meant to be Python.  This is a
-  pragmatic fix for `issue 82`_.
-
-- The ``-m`` switch on ``coverage report``, which includes missing line numbers
-  in the summary report, can now be specified as ``show_missing`` in the
-  config file.  Closes `issue 173`_.
-
-- When running a module with ``coverage run -m <modulename>``, certain details
-  of the execution environment weren't the same as for
-  ``python -m <modulename>``.  This had the unfortunate side-effect of making
-  ``coverage run -m unittest discover`` not work if you had tests in a
-  directory named "test".  This fixes `issue 155`_ and `issue 142`_.
-
-- Now the exit status of your product code is properly used as the process
-  status when running ``python -m coverage run ...``.  Thanks, JT Olds.
-
-- When installing into pypy, we no longer attempt (and fail) to compile
-  the C tracer function, closing `issue 166`_.
-
-.. _issue 142: https://github.com/nedbat/coveragepy/issues/142
-.. _issue 155: https://github.com/nedbat/coveragepy/issues/155
-.. _issue 157: https://github.com/nedbat/coveragepy/issues/157
-.. _issue 166: https://github.com/nedbat/coveragepy/issues/166
-.. _issue 168: https://github.com/nedbat/coveragepy/issues/168
-.. _issue 173: https://github.com/nedbat/coveragepy/issues/173
-
-
-.. _changes_351:
-
-Version 3.5.1 --- 2011-09-23
-----------------------------
-
-- The ``[paths]`` feature unfortunately didn't work in real world situations
-  where you wanted to, you know, report on the combined data.  Now all paths
-  stored in the combined file are canonicalized properly.
-
-
-Version 3.5.1b1 --- 2011-08-28
-------------------------------
-
-- When combining data files from parallel runs, you can now instruct
-  coverage.py about which directories are equivalent on different machines.  A
-  ``[paths]`` section in the configuration file lists paths that are to be
-  considered equivalent.  Finishes `issue 17`_.
-
-- for-else constructs are understood better, and don't cause erroneous partial
-  branch warnings.  Fixes `issue 122`_.
-
-- Branch coverage for ``with`` statements is improved, fixing `issue 128`_.
-
-- The number of partial branches reported on the HTML summary page was
-  different than the number reported on the individual file pages.  This is
-  now fixed.
-
-- An explicit include directive to measure files in the Python installation
-  wouldn't work because of the standard library exclusion.  Now the include
-  directive takes precedence, and the files will be measured.  Fixes
-  `issue 138`_.
-
-- The HTML report now handles Unicode characters in Python source files
-  properly.  This fixes `issue 124`_ and `issue 144`_. Thanks, Devin
-  Jeanpierre.
-
-- In order to help the core developers measure the test coverage of the
-  standard library, Brandon Rhodes devised an aggressive hack to trick Python
-  into running some coverage.py code before anything else in the process.
-  See the coverage/fullcoverage directory if you are interested.
-
-.. _issue 17: https://github.com/nedbat/coveragepy/issues/17
-.. _issue 122: https://github.com/nedbat/coveragepy/issues/122
-.. _issue 124: https://github.com/nedbat/coveragepy/issues/124
-.. _issue 128: https://github.com/nedbat/coveragepy/issues/128
-.. _issue 138: https://github.com/nedbat/coveragepy/issues/138
-.. _issue 144: https://github.com/nedbat/coveragepy/issues/144
-
-
-.. _changes_35:
-
-Version 3.5 --- 2011-06-29
---------------------------
-
-- The HTML report hotkeys now behave slightly differently when the current
-  chunk isn't visible at all:  a chunk on the screen will be selected,
-  instead of the old behavior of jumping to the literal next chunk.
-  The hotkeys now work in Google Chrome.  Thanks, Guido van Rossum.
-
-
-Version 3.5b1 --- 2011-06-05
-----------------------------
-
-- The HTML report now has hotkeys.  Try ``n``, ``s``, ``m``, ``x``, ``b``,
-  ``p``, and ``c`` on the overview page to change the column sorting.
-  On a file page, ``r``, ``m``, ``x``, and ``p`` toggle the run, missing,
-  excluded, and partial line markings.  You can navigate the highlighted
-  sections of code by using the ``j`` and ``k`` keys for next and previous.
-  The ``1`` (one) key jumps to the first highlighted section in the file,
-  and ``0`` (zero) scrolls to the top of the file.
-
-- The ``--omit`` and ``--include`` switches now interpret their values more
-  usefully.  If the value starts with a wildcard character, it is used as-is.
-  If it does not, it is interpreted relative to the current directory.
-  Closes `issue 121`_.
-
-- Partial branch warnings can now be pragma'd away.  The configuration option
-  ``partial_branches`` is a list of regular expressions.  Lines matching any of
-  those expressions will never be marked as a partial branch.  In addition,
-  there's a built-in list of regular expressions marking statements which
-  should never be marked as partial.  This list includes ``while True:``,
-  ``while 1:``, ``if 1:``, and ``if 0:``.
-
-- The ``coverage()`` constructor accepts single strings for the ``omit=`` and
-  ``include=`` arguments, adapting to a common error in programmatic use.
-
-- Modules can now be run directly using ``coverage run -m modulename``, to
-  mirror Python's ``-m`` flag.  Closes `issue 95`_, thanks, Brandon Rhodes.
-
-- ``coverage run`` didn't emulate Python accurately in one small detail: the
-  current directory inserted into ``sys.path`` was relative rather than
-  absolute. This is now fixed.
-
-- HTML reporting is now incremental: a record is kept of the data that
-  produced the HTML reports, and only files whose data has changed will
-  be generated.  This should make most HTML reporting faster.
-
-- Pathological code execution could disable the trace function behind our
-  backs, leading to incorrect code measurement.  Now if this happens,
-  coverage.py will issue a warning, at least alerting you to the problem.
-  Closes `issue 93`_.  Thanks to Marius Gedminas for the idea.
-
-- The C-based trace function now behaves properly when saved and restored
-  with ``sys.gettrace()`` and ``sys.settrace()``.  This fixes `issue 125`_
-  and `issue 123`_.  Thanks, Devin Jeanpierre.
-
-- Source files are now opened with Python 3.2's ``tokenize.open()`` where
-  possible, to get the best handling of Python source files with encodings.
-  Closes `issue 107`_, thanks, Brett Cannon.
-
-- Syntax errors in supposed Python files can now be ignored during reporting
-  with the ``-i`` switch just like other source errors.  Closes `issue 115`_.
-
-- Installation from source now succeeds on machines without a C compiler,
-  closing `issue 80`_.
-
-- Coverage.py can now be run directly from a working tree by specifying
-  the directory name to python:  ``python coverage_py_working_dir run ...``.
-  Thanks, Brett Cannon.
-
-- A little bit of Jython support: `coverage run` can now measure Jython
-  execution by adapting when $py.class files are traced. Thanks, Adi Roiban.
-  Jython still doesn't provide the Python libraries needed to make
-  coverage reporting work, unfortunately.
-
-- Internally, files are now closed explicitly, fixing `issue 104`_.  Thanks,
-  Brett Cannon.
-
-.. _issue 80: https://github.com/nedbat/coveragepy/issues/80
-.. _issue 93: https://github.com/nedbat/coveragepy/issues/93
-.. _issue 95: https://github.com/nedbat/coveragepy/issues/95
-.. _issue 104: https://github.com/nedbat/coveragepy/issues/104
-.. _issue 107: https://github.com/nedbat/coveragepy/issues/107
-.. _issue 115: https://github.com/nedbat/coveragepy/issues/115
-.. _issue 121: https://github.com/nedbat/coveragepy/issues/121
-.. _issue 123: https://github.com/nedbat/coveragepy/issues/123
-.. _issue 125: https://github.com/nedbat/coveragepy/issues/125
-
-
-.. _changes_34:
-
-Version 3.4 --- 2010-09-19
---------------------------
-
-- The XML report is now sorted by package name, fixing `issue 88`_.
-
-- Programs that exited with ``sys.exit()`` with no argument weren't handled
-  properly, producing a coverage.py stack trace.  That is now fixed.
-
-.. _issue 88: https://github.com/nedbat/coveragepy/issues/88
-
-
-Version 3.4b2 --- 2010-09-06
-----------------------------
-
-- Completely unexecuted files can now be included in coverage results, reported
-  as 0% covered.  This only happens if the --source option is specified, since
-  coverage.py needs guidance about where to look for source files.
-
-- The XML report output now properly includes a percentage for branch coverage,
-  fixing `issue 65`_ and `issue 81`_.
-
-- Coverage percentages are now displayed uniformly across reporting methods.
-  Previously, different reports could round percentages differently.  Also,
-  percentages are only reported as 0% or 100% if they are truly 0 or 100, and
-  are rounded otherwise.  Fixes `issue 41`_ and `issue 70`_.
-
-- The precision of reported coverage percentages can be set with the
-  ``[report] precision`` config file setting.  Completes `issue 16`_.
-
-- Threads derived from ``threading.Thread`` with an overridden `run` method
-  would report no coverage for the `run` method.  This is now fixed, closing
-  `issue 85`_.
-
-.. _issue 16: https://github.com/nedbat/coveragepy/issues/16
-.. _issue 41: https://github.com/nedbat/coveragepy/issues/41
-.. _issue 65: https://github.com/nedbat/coveragepy/issues/65
-.. _issue 70: https://github.com/nedbat/coveragepy/issues/70
-.. _issue 81: https://github.com/nedbat/coveragepy/issues/81
-.. _issue 85: https://github.com/nedbat/coveragepy/issues/85
-
-
-Version 3.4b1 --- 2010-08-21
-----------------------------
-
-- BACKWARD INCOMPATIBILITY: the ``--omit`` and ``--include`` switches now take
-  file patterns rather than file prefixes, closing `issue 34`_ and `issue 36`_.
-
-- BACKWARD INCOMPATIBILITY: the `omit_prefixes` argument is gone throughout
-  coverage.py, replaced with `omit`, a list of file name patterns suitable for
-  `fnmatch`.  A parallel argument `include` controls what files are included.
-
-- The run command now has a ``--source`` switch, a list of directories or
-  module names.  If provided, coverage.py will only measure execution in those
-  source files.
-
-- Various warnings are printed to stderr for problems encountered during data
-  measurement: if a ``--source`` module has no Python source to measure, or is
-  never encountered at all, or if no data is collected.
-
-- The reporting commands (report, annotate, html, and xml) now have an
-  ``--include`` switch to restrict reporting to modules matching those file
-  patterns, similar to the existing ``--omit`` switch. Thanks, Zooko.
-
-- The run command now supports ``--include`` and ``--omit`` to control what
-  modules it measures. This can speed execution and reduce the amount of data
-  during reporting. Thanks Zooko.
-
-- Since coverage.py 3.1, using the Python trace function has been slower than
-  it needs to be.  A cache of tracing decisions was broken, but has now been
-  fixed.
-
-- Python 2.7 and 3.2 have introduced new opcodes that are now supported.
-
-- Python files with no statements, for example, empty ``__init__.py`` files,
-  are now reported as having zero statements instead of one.  Fixes `issue 1`_.
-
-- Reports now have a column of missed line counts rather than executed line
-  counts, since developers should focus on reducing the missed lines to zero,
-  rather than increasing the executed lines to varying targets.  Once
-  suggested, this seemed blindingly obvious.
-
-- Line numbers in HTML source pages are clickable, linking directly to that
-  line, which is highlighted on arrival.  Added a link back to the index page
-  at the bottom of each HTML page.
-
-- Programs that call ``os.fork`` will properly collect data from both the child
-  and parent processes.  Use ``coverage run -p`` to get two data files that can
-  be combined with ``coverage combine``.  Fixes `issue 56`_.
-
-- Coverage.py is now runnable as a module: ``python -m coverage``.  Thanks,
-  Brett Cannon.
-
-- When measuring code running in a virtualenv, most of the system library was
-  being measured when it shouldn't have been.  This is now fixed.
-
-- Doctest text files are no longer recorded in the coverage data, since they
-  can't be reported anyway.  Fixes `issue 52`_ and `issue 61`_.
-
-- Jinja HTML templates compile into Python code using the HTML file name,
-  which confused coverage.py.  Now these files are no longer traced, fixing
-  `issue 82`_.
-
-- Source files can have more than one dot in them (foo.test.py), and will be
-  treated properly while reporting.  Fixes `issue 46`_.
-
-- Source files with DOS line endings are now properly tokenized for syntax
-  coloring on non-DOS machines.  Fixes `issue 53`_.
-
-- Unusual code structure that confused exits from methods with exits from
-  classes is now properly analyzed.  See `issue 62`_.
-
-- Asking for an HTML report with no files now shows a nice error message rather
-  than a cryptic failure ('int' object is unsubscriptable). Fixes `issue 59`_.
-
-.. _issue 1:  https://github.com/nedbat/coveragepy/issues/1
-.. _issue 34: https://github.com/nedbat/coveragepy/issues/34
-.. _issue 36: https://github.com/nedbat/coveragepy/issues/36
-.. _issue 46: https://github.com/nedbat/coveragepy/issues/46
-.. _issue 53: https://github.com/nedbat/coveragepy/issues/53
-.. _issue 52: https://github.com/nedbat/coveragepy/issues/52
-.. _issue 56: https://github.com/nedbat/coveragepy/issues/56
-.. _issue 61: https://github.com/nedbat/coveragepy/issues/61
-.. _issue 62: https://github.com/nedbat/coveragepy/issues/62
-.. _issue 59: https://github.com/nedbat/coveragepy/issues/59
-.. _issue 82: https://github.com/nedbat/coveragepy/issues/82
-
-
-.. _changes_331:
-
-Version 3.3.1 --- 2010-03-06
-----------------------------
-
-- Using `parallel=True` in .coveragerc file prevented reporting, but now does
-  not, fixing `issue 49`_.
-
-- When running your code with "coverage run", if you call `sys.exit()`,
-  coverage.py will exit with that status code, fixing `issue 50`_.
-
-.. _issue 49: https://github.com/nedbat/coveragepy/issues/49
-.. _issue 50: https://github.com/nedbat/coveragepy/issues/50
-
-
-.. _changes_33:
-
-Version 3.3 --- 2010-02-24
---------------------------
-
-- Settings are now read from a .coveragerc file.  A specific file can be
-  specified on the command line with --rcfile=FILE.  The name of the file can
-  be programmatically set with the `config_file` argument to the coverage()
-  constructor, or reading a config file can be disabled with
-  `config_file=False`.
-
-- Fixed a problem with nested loops having their branch possibilities
-  mischaracterized: `issue 39`_.
-
-- Added coverage.process_start to enable coverage measurement when Python
-  starts.
-
-- Parallel data file names now have a random number appended to them in
-  addition to the machine name and process id.
-
-- Parallel data files combined with "coverage combine" are deleted after
-  they're combined, to clean up unneeded files.  Fixes `issue 40`_.
-
-- Exceptions thrown from product code run with "coverage run" are now displayed
-  without internal coverage.py frames, so the output is the same as when the
-  code is run without coverage.py.
-
-- The `data_suffix` argument to the coverage constructor is now appended with
-  an added dot rather than simply appended, so that .coveragerc files will not
-  be confused for data files.
-
-- Python source files that don't end with a newline can now be executed, fixing
-  `issue 47`_.
-
-- Added an AUTHORS.txt file.
-
-.. _issue 39: https://github.com/nedbat/coveragepy/issues/39
-.. _issue 40: https://github.com/nedbat/coveragepy/issues/40
-.. _issue 47: https://github.com/nedbat/coveragepy/issues/47
-
-
-.. _changes_32:
-
-Version 3.2 --- 2009-12-05
---------------------------
-
-- Added a ``--version`` option on the command line.
-
-
-Version 3.2b4 --- 2009-12-01
-----------------------------
-
-- Branch coverage improvements:
-
-  - The XML report now includes branch information.
-
-- Click-to-sort HTML report columns are now persisted in a cookie.  Viewing
-  a report will sort it first the way you last had a coverage report sorted.
-  Thanks, `Chris Adams`_.
-
-- On Python 3.x, setuptools has been replaced by `Distribute`_.
-
-.. _Distribute: https://pypi.org/project/distribute/
-
-
-Version 3.2b3 --- 2009-11-23
-----------------------------
-
-- Fixed a memory leak in the C tracer that was introduced in 3.2b1.
-
-- Branch coverage improvements:
-
-  - Branches to excluded code are ignored.
-
-- The table of contents in the HTML report is now sortable: click the headers
-  on any column.  Thanks, `Chris Adams`_.
-
-.. _Chris Adams: http://chris.improbable.org
-
-
-Version 3.2b2 --- 2009-11-19
-----------------------------
-
-- Branch coverage improvements:
-
-  - Classes are no longer incorrectly marked as branches: `issue 32`_.
-
-  - "except" clauses with types are no longer incorrectly marked as branches:
-    `issue 35`_.
-
-- Fixed some problems syntax coloring sources with line continuations and
-  source with tabs: `issue 30`_ and `issue 31`_.
-
-- The --omit option now works much better than before, fixing `issue 14`_ and
-  `issue 33`_.  Thanks, Danek Duvall.
-
-.. _issue 14: https://github.com/nedbat/coveragepy/issues/14
-.. _issue 30: https://github.com/nedbat/coveragepy/issues/30
-.. _issue 31: https://github.com/nedbat/coveragepy/issues/31
-.. _issue 32: https://github.com/nedbat/coveragepy/issues/32
-.. _issue 33: https://github.com/nedbat/coveragepy/issues/33
-.. _issue 35: https://github.com/nedbat/coveragepy/issues/35
-
-
-Version 3.2b1 --- 2009-11-10
-----------------------------
-
-- Branch coverage!
-
-- XML reporting has file paths that let Cobertura find the source code.
-
-- The tracer code has changed, it's a few percent faster.
-
-- Some exceptions reported by the command line interface have been cleaned up
-  so that tracebacks inside coverage.py aren't shown.  Fixes `issue 23`_.
-
-.. _issue 23: https://github.com/nedbat/coveragepy/issues/23
-
-
-.. _changes_31:
-
-Version 3.1 --- 2009-10-04
---------------------------
-
-- Source code can now be read from eggs.  Thanks, Ross Lawley.  Fixes
-  `issue 25`_.
-
-.. _issue 25: https://github.com/nedbat/coveragepy/issues/25
-
-
-Version 3.1b1 --- 2009-09-27
-----------------------------
-
-- Python 3.1 is now supported.
-
-- Coverage.py has a new command line syntax with sub-commands.  This expands
-  the possibilities for adding features and options in the future.  The old
-  syntax is still supported.  Try "coverage help" to see the new commands.
-  Thanks to Ben Finney for early help.
-
-- Added an experimental "coverage xml" command for producing coverage reports
-  in a Cobertura-compatible XML format.  Thanks, Bill Hart.
-
-- Added the --timid option to enable a simpler slower trace function that works
-  for DecoratorTools projects, including TurboGears.  Fixed `issue 12`_ and
-  `issue 13`_.
-
-- HTML reports show modules from other directories.  Fixed `issue 11`_.
-
-- HTML reports now display syntax-colored Python source.
-
-- Programs that change directory will still write .coverage files in the
-  directory where execution started.  Fixed `issue 24`_.
-
-- Added a "coverage debug" command for getting diagnostic information about the
-  coverage.py installation.
-
-.. _issue 11: https://github.com/nedbat/coveragepy/issues/11
-.. _issue 12: https://github.com/nedbat/coveragepy/issues/12
-.. _issue 13: https://github.com/nedbat/coveragepy/issues/13
-.. _issue 24: https://github.com/nedbat/coveragepy/issues/24
-
-
-.. _changes_301:
-
-Version 3.0.1 --- 2009-07-07
-----------------------------
-
-- Removed the recursion limit in the tracer function.  Previously, code that
-  ran more than 500 frames deep would crash. Fixed `issue 9`_.
-
-- Fixed a bizarre problem involving pyexpat, whereby lines following XML parser
-  invocations could be overlooked.  Fixed `issue 10`_.
-
-- On Python 2.3, coverage.py could mis-measure code with exceptions being
-  raised.  This is now fixed.
-
-- The coverage.py code itself will now not be measured by coverage.py, and no
-  coverage.py modules will be mentioned in the nose --with-cover plug-in.
-  Fixed `issue 8`_.
-
-- When running source files, coverage.py now opens them in universal newline
-  mode just like Python does.  This lets it run Windows files on Mac, for
-  example.
-
-.. _issue 9: https://github.com/nedbat/coveragepy/issues/9
-.. _issue 10: https://github.com/nedbat/coveragepy/issues/10
-.. _issue 8: https://github.com/nedbat/coveragepy/issues/8
-
-
-.. _changes_30:
-
-Version 3.0 --- 2009-06-13
---------------------------
-
-- Fixed the way the Python library was ignored.  Too much code was being
-  excluded the old way.
-
-- Tabs are now properly converted in HTML reports.  Previously indentation was
-  lost.  Fixed `issue 6`_.
-
-- Nested modules now get a proper flat_rootname.  Thanks, Christian Heimes.
-
-.. _issue 6: https://github.com/nedbat/coveragepy/issues/6
-
-
-Version 3.0b3 --- 2009-05-16
-----------------------------
-
-- Added parameters to coverage.__init__ for options that had been set on the
-  coverage object itself.
-
-- Added clear_exclude() and get_exclude_list() methods for programmatic
-  manipulation of the exclude regexes.
-
-- Added coverage.load() to read previously-saved data from the data file.
-
-- Improved the finding of code files.  For example, .pyc files that have been
-  installed after compiling are now located correctly.  Thanks, Detlev
-  Offenbach.
-
-- When using the object API (that is, constructing a coverage() object), data
-  is no longer saved automatically on process exit.  You can re-enable it with
-  the auto_data=True parameter on the coverage() constructor. The module-level
-  interface still uses automatic saving.
-
-
-Version 3.0b --- 2009-04-30
----------------------------
-
-HTML reporting, and continued refactoring.
-
-- HTML reports and annotation of source files: use the new -b (browser) switch.
-  Thanks to George Song for code, inspiration and guidance.
-
-- Code in the Python standard library is not measured by default.  If you need
-  to measure standard library code, use the -L command-line switch during
-  execution, or the cover_pylib=True argument to the coverage() constructor.
-
-- Source annotation into a directory (-a -d) behaves differently.  The
-  annotated files are named with their hierarchy flattened so that same-named
-  files from different directories no longer collide.  Also, only files in the
-  current tree are included.
-
-- coverage.annotate_file is no longer available.
-
-- Programs executed with -x now behave more as they should, for example,
-  __file__ has the correct value.
-
-- .coverage data files have a new pickle-based format designed for better
-  extensibility.
-
-- Removed the undocumented cache_file argument to coverage.usecache().
-
-
-Version 3.0b1 --- 2009-03-07
-----------------------------
-
-Major overhaul.
-
-- Coverage.py is now a package rather than a module.  Functionality has been
-  split into classes.
-
-- The trace function is implemented in C for speed.  Coverage.py runs are now
-  much faster.  Thanks to David Christian for productive micro-sprints and
-  other encouragement.
-
-- Executable lines are identified by reading the line number tables in the
-  compiled code, removing a great deal of complicated analysis code.
-
-- Precisely which lines are considered executable has changed in some cases.
-  Therefore, your coverage stats may also change slightly.
-
-- The singleton coverage object is only created if the module-level functions
-  are used.  This maintains the old interface while allowing better
-  programmatic use of coverage.py.
-
-- The minimum supported Python version is 2.3.
-
-
-Version 2.85 --- 2008-09-14
----------------------------
-
-- Add support for finding source files in eggs. Don't check for
-  morf's being instances of ModuleType, instead use duck typing so that
-  pseudo-modules can participate. Thanks, Imri Goldberg.
-
-- Use os.realpath as part of the fixing of file names so that symlinks won't
-  confuse things. Thanks, Patrick Mezard.
-
-
-Version 2.80 --- 2008-05-25
----------------------------
-
-- Open files in rU mode to avoid line ending craziness. Thanks, Edward Loper.
-
-
-Version 2.78 --- 2007-09-30
----------------------------
-
-- Don't try to predict whether a file is Python source based on the extension.
-  Extension-less files are often Pythons scripts. Instead, simply parse the
-  file and catch the syntax errors. Hat tip to Ben Finney.
-
-
-Version 2.77 --- 2007-07-29
----------------------------
-
-- Better packaging.
-
-
-Version 2.76 --- 2007-07-23
----------------------------
-
-- Now Python 2.5 is *really* fully supported: the body of the new with
-  statement is counted as executable.
-
-
-Version 2.75 --- 2007-07-22
----------------------------
-
-- Python 2.5 now fully supported. The method of dealing with multi-line
-  statements is now less sensitive to the exact line that Python reports during
-  execution. Pass statements are handled specially so that their disappearance
-  during execution won't throw off the measurement.
-
-
-Version 2.7 --- 2007-07-21
---------------------------
-
-- "#pragma: nocover" is excluded by default.
-
-- Properly ignore docstrings and other constant expressions that appear in the
-  middle of a function, a problem reported by Tim Leslie.
-
-- coverage.erase() shouldn't clobber the exclude regex. Change how parallel
-  mode is invoked, and fix erase() so that it erases the cache when called
-  programmatically.
-
-- In reports, ignore code executed from strings, since we can't do anything
-  useful with it anyway.
-
-- Better file handling on Linux, thanks Guillaume Chazarain.
-
-- Better shell support on Windows, thanks Noel O'Boyle.
-
-- Python 2.2 support maintained, thanks Catherine Proulx.
-
-- Minor changes to avoid lint warnings.
-
-
-Version 2.6 --- 2006-08-23
---------------------------
-
-- Applied Joseph Tate's patch for function decorators.
-
-- Applied Sigve Tjora and Mark van der Wal's fixes for argument handling.
-
-- Applied Geoff Bache's parallel mode patch.
-
-- Refactorings to improve testability. Fixes to command-line logic for parallel
-  mode and collect.
-
-
-Version 2.5 --- 2005-12-04
---------------------------
-
-- Call threading.settrace so that all threads are measured. Thanks Martin
-  Fuzzey.
-
-- Add a file argument to report so that reports can be captured to a different
-  destination.
-
-- Coverage.py can now measure itself.
-
-- Adapted Greg Rogers' patch for using relative file names, and sorting and
-  omitting files to report on.
-
-
-Version 2.2 --- 2004-12-31
---------------------------
-
-- Allow for keyword arguments in the module global functions. Thanks, Allen.
-
-
-Version 2.1 --- 2004-12-14
---------------------------
-
-- Return 'analysis' to its original behavior and add 'analysis2'. Add a global
-  for 'annotate', and factor it, adding 'annotate_file'.
-
-
-Version 2.0 --- 2004-12-12
---------------------------
-
-Significant code changes.
-
-- Finding executable statements has been rewritten so that docstrings and
-  other quirks of Python execution aren't mistakenly identified as missing
-  lines.
-
-- Lines can be excluded from consideration, even entire suites of lines.
-
-- The file system cache of covered lines can be disabled programmatically.
-
-- Modernized the code.
-
-
-Earlier History
----------------
-
-2001-12-04 GDR Created.
-
-2001-12-06 GDR Added command-line interface and source code annotation.
-
-2001-12-09 GDR Moved design and interface to separate documents.
-
-2001-12-10 GDR Open cache file as binary on Windows. Allow simultaneous -e and
--x, or -a and -r.
-
-2001-12-12 GDR Added command-line help. Cache analysis so that it only needs to
-be done once when you specify -a and -r.
-
-2001-12-13 GDR Improved speed while recording. Portable between Python 1.5.2
-and 2.1.1.
-
-2002-01-03 GDR Module-level functions work correctly.
-
-2002-01-07 GDR Update sys.path when running a file with the -x option, so that
-it matches the value the program would get if it were run on its own.
+__ https://coverage.readthedocs.io/en/latest/changes.html

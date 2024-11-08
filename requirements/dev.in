@@ -1,0 +1,30 @@
+# Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
+# For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
+
+# Requirements input for doing local development work on coverage.py.
+# "make upgrade" turns this into requirements/dev.pip.
+
+-c pins.pip
+-r pip.in
+
+# PyPI requirements for running tests.
+-r tox.in
+-r pytest.in
+
+# for linting.
+check-manifest
+cogapp
+greenlet
+pylint
+readme_renderer
+
+# for kitting.
+requests
+twine
+libsass
+
+# Just so I have a debugger if I want it.
+pudb
+
+# For benchmark/
+tabulate

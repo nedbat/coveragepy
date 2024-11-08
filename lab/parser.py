@@ -5,19 +5,17 @@
 
 
 import collections
+import dis
 import glob
 import optparse
 import os
 import re
 import sys
 import textwrap
-
-import disgen
+import types
 
 from coverage.parser import PythonParser
 from coverage.python import get_python_source
-
-opcode_counts = collections.Counter()
 
 
 class ParserMain:
@@ -30,23 +28,23 @@ class ParserMain:
         parser.add_option(
             "-d", action="store_true", dest="dis",
             help="Disassemble"
-            )
-        parser.add_option(
-            "-H", action="store_true", dest="histogram",
-            help="Count occurrences of opcodes"
-            )
+        )
         parser.add_option(
             "-R", action="store_true", dest="recursive",
             help="Recurse to find source files"
-            )
+        )
+        parser.add_option(
+            "-q", action="store_true", dest="quiet",
+            help="Suppress output"
+        )
         parser.add_option(
             "-s", action="store_true", dest="source",
             help="Show analyzed source"
-            )
+        )
         parser.add_option(
             "-t", action="store_true", dest="tokens",
             help="Show tokens"
-            )
+        )
 
         options, args = parser.parse_args()
         if options.recursive:
@@ -56,25 +54,20 @@ class ParserMain:
                 root = "."
             for root, _, _ in os.walk(root):
                 for f in glob.glob(root + "/*.py"):
+                    if not options.quiet:
+                        print(f"Parsing {f}")
                     self.one_file(options, f)
         elif not args:
             parser.print_help()
         else:
             self.one_file(options, args[0])
 
-        if options.histogram:
-            total = sum(opcode_counts.values())
-            print(f"{total} total opcodes")
-            for opcode, number in opcode_counts.most_common():
-                print(f"{opcode:20s} {number:6d}  {number/total:.1%}")
-
     def one_file(self, options, filename):
         """Process just one file."""
         # `filename` can have a line number suffix. In that case, extract those
         # lines, dedent them, and use that.  This is for trying test cases
         # embedded in the test files.
-        match = re.search(r"^(.*):(\d+)-(\d+)$", filename)
-        if match:
+        if match := re.search(r"^(.*):(\d+)-(\d+)$", filename):
             filename, start, end = match.groups()
             start, end = int(start), int(end)
         else:
@@ -93,7 +86,7 @@ class ParserMain:
 
         if options.dis:
             print("Main code:")
-            self.disassemble(pyparser.byte_parser, histogram=options.histogram)
+            disassemble(pyparser.text)
 
         arcs = pyparser.arcs()
 
@@ -108,8 +101,8 @@ class ParserMain:
 
                 exit_counts = pyparser.exit_counts()
 
-                for lineno, ltext in enumerate(pyparser.lines, start=1):
-                    marks = [' ', ' ', ' ', ' ', ' ']
+                for lineno, ltext in enumerate(pyparser.text.splitlines(), start=1):
+                    marks = [' '] * 6
                     a = ' '
                     if lineno in pyparser.raw_statements:
                         marks[0] = '-'
@@ -120,44 +113,22 @@ class ParserMain:
                         marks[2] = str(exits)
                     if lineno in pyparser.raw_docstrings:
                         marks[3] = '"'
-                    if lineno in pyparser.raw_classdefs:
-                        marks[3] = 'C'
                     if lineno in pyparser.raw_excluded:
-                        marks[4] = 'x'
+                        marks[4] = 'X'
+                    elif lineno in pyparser.excluded:
+                        marks[4] = '×'
+                    if lineno in pyparser._multiline.values():
+                        marks[5] = 'o'
+                    elif lineno in pyparser._multiline.keys():
+                        marks[5] = '.'
 
                     if arc_chars:
                         a = arc_chars[lineno].ljust(arc_width)
                     else:
                         a = ""
 
-                    print("%4d %s%s %s" % (lineno, "".join(marks), a, ltext))
-
-    def disassemble(self, byte_parser, histogram=False):
-        """Disassemble code, for ad-hoc experimenting."""
-
-        for bp in byte_parser.child_parsers():
-            if bp.text:
-                srclines = bp.text.splitlines()
-            else:
-                srclines = None
-            print("\n%s: " % bp.code)
-            upto = None
-            for disline in disgen.disgen(bp.code):
-                if histogram:
-                    opcode_counts[disline.opcode] += 1
-                    continue
-                if disline.first:
-                    if srclines:
-                        upto = upto or disline.lineno-1
-                        while upto <= disline.lineno-1:
-                            print("{:>100}{}".format("", srclines[upto]))
-                            upto += 1
-                    elif disline.offset > 0:
-                        print("")
-                line = disgen.format_dis_line(disline)
-                print(f"{line:<70}")
-
-        print("")
+                    if not options.quiet:
+                        print("%4d %s%s %s" % (lineno, "".join(marks), a, ltext))
 
     def arc_ascii_art(self, arcs):
         """Draw arcs as ascii art.
@@ -200,6 +171,43 @@ class ParserMain:
             )
 
         return arc_chars
+
+
+def all_code_objects(code):
+    """Iterate over all the code objects in `code`."""
+    stack = [code]
+    while stack:
+        # We're going to return the code object on the stack, but first
+        # push its children for later returning.
+        code = stack.pop()
+        stack.extend(c for c in code.co_consts if isinstance(c, types.CodeType))
+        yield code
+
+
+def disassemble(text):
+    """Disassemble code, for ad-hoc experimenting."""
+
+    code = compile(text, "", "exec", dont_inherit=True)
+    for code_obj in all_code_objects(code):
+        if text:
+            srclines = text.splitlines()
+        else:
+            srclines = None
+        print("\n%s: " % code_obj)
+        upto = None
+        for inst in dis.get_instructions(code_obj):
+            if inst.starts_line is not None:
+                if srclines:
+                    upto = upto or inst.starts_line - 1
+                    while upto <= inst.starts_line - 1:
+                        print("{:>100}{}".format("", srclines[upto]))
+                        upto += 1
+                elif inst.offset > 0:
+                    print("")
+            line = inst._disassemble()
+            print(f"{line:<70}")
+
+    print("")
 
 
 def set_char(s, n, c):

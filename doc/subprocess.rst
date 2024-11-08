@@ -19,11 +19,13 @@ begins coverage measurement. The environment variable's value will be used as
 the name of the :ref:`configuration file <config>` to use.
 
 .. note::
+
     The subprocess only sees options in the configuration file.  Options set on
     the command line will not be used in the subprocesses.
 
 .. note::
-    If you have subprocesses because you are using :mod:`multiprocessing
+
+    If you have subprocesses created with :mod:`multiprocessing
     <python:multiprocessing>`, the ``--concurrency=multiprocessing``
     command-line option should take care of everything for you.  See
     :ref:`cmd_run` for details.
@@ -32,8 +34,8 @@ When using this technique, be sure to set the parallel option to true so that
 multiple coverage.py runs will each write their data to a distinct file.
 
 
-Configuring Python for sub-process coverage
--------------------------------------------
+Configuring Python for sub-process measurement
+----------------------------------------------
 
 Measuring coverage in sub-processes is a little tricky.  When you spawn a
 sub-process, you are invoking Python to run your program.  Usually, to get
@@ -82,18 +84,17 @@ start-up.  Be sure to remove the change when you uninstall coverage.py, or use
 a more defensive approach to importing it.
 
 
-Signal handlers and atexit
---------------------------
-
-.. hmm, this isn't specifically about subprocesses, is there a better place
-    where we could talk about this?
+Process termination
+-------------------
 
 To successfully write a coverage data file, the Python sub-process under
-analysis must shut down cleanly and have a chance for coverage.py to run the
-``atexit`` handler it registers.
+analysis must shut down cleanly and have a chance for coverage.py to run its
+termination code.  It will do that when the process ends naturally, or when a
+SIGTERM signal is received.
 
-For example if you send SIGTERM to end the sub-process, but your sub-process
-has never registered any SIGTERM handler, then a coverage file won't be
-written.  See the `atexit`_ docs for details of when the handler isn't run.
+Coverage.py uses :mod:`atexit <python:atexit>` to handle usual process ends,
+and a :mod:`signal <python:signal>` handler to catch SIGTERM signals.
 
-.. _atexit: https://docs.python.org/3/library/atexit.html
+Other ways of ending a process, like SIGKILL or :func:`os._exit
+<python:os._exit>`, will prevent coverage.py from writing its data file,
+leaving you with incomplete or non-existent coverage data.

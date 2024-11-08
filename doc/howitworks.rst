@@ -110,7 +110,7 @@ branches.
 Reporting
 ---------
 
-Once we have the set of executed lines and missing lines, reporting is just a
+Once we have the set of executed lines and missing lines, reporting is a
 matter of formatting that information in a useful way.  Each reporting method
 (text, HTML, JSON, annotated source, XML) has a different output format, but
 the process is the same: write out the information in the particular format,

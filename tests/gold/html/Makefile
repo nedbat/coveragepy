@@ -3,7 +3,7 @@
 
 help:
 	@echo "Available targets:"
-	@grep '^[a-zA-Z]' $(MAKEFILE_LIST) | sort | awk -F ':.*?## ' 'NF==2 {printf "\033[36m  %-25s\033[0m %s\n", $$1, $$2}'
+	@grep '^[a-zA-Z]' $(MAKEFILE_LIST) | sort | awk -F ':.*?## ' 'NF==2 {printf "  %-26s%s\n", $$1, $$2}'
 
 complete: 	## Copy support files into directories so the HTML can be viewed properly.
 	@for sub in *; do \
@@ -15,14 +15,17 @@ complete: 	## Copy support files into directories so the HTML can be viewed prop
 	true	# because the for loop exits with 1 for some reason.
 
 clean:		## Remove the effects of this Makefile.
-	git clean -fq .
+	@git clean -fq .
 
-update-gold:	## Copy output files from latest tests to gold files.
-	echo Note: this doesn't work now, it has to be updated for tests/actual
-	@for sub in $$TMPDIR/coverage_test/*HtmlGoldTests*/out; do \
-		rsync --verbose --existing --recursive $$sub/ . ; \
+update-gold:	## Copy actual output files from latest tests to gold files.
+	@for sub in ../../actual/html/*; do \
+		rsync --verbose --existing --recursive $$sub/ $$(basename $$sub) ; \
 	done ; \
 	true
 
 update-support:	## Copy latest support files here for posterity.
-	cp ../../../coverage/htmlfiles/*.{css,js,png} support
+	python -m pip install -e ../../..
+	git rm --ignore-unmatch support/*.{css,js,png}
+	mkdir -p support
+	python ../../../igor.py copy_with_hash ../../../coverage/htmlfiles/*.{css,js,png} support
+	git add support

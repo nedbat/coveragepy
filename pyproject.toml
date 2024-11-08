@@ -1,0 +1,156 @@
+# Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
+# For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
+
+[build-system]
+requires = ['setuptools']
+build-backend = 'setuptools.build_meta'
+
+## MYPY
+
+[tool.mypy]
+check_untyped_defs = true
+disallow_any_generics = true
+disallow_incomplete_defs = true
+disallow_subclassing_any = true
+disallow_untyped_calls = true
+disallow_untyped_decorators = true
+disallow_untyped_defs = true
+follow_imports = "silent"
+ignore_missing_imports = true
+no_implicit_optional = true
+show_error_codes = true
+warn_redundant_casts = true
+warn_return_any = true
+warn_unreachable = true
+warn_unused_configs = true
+warn_unused_ignores = true
+
+exclude = """(?x)(
+    ^tests/.*_plugin\\.py$           # not part of our test suite.
+    )"""
+
+## PYLINT
+
+[tool.pylint.basic]
+no-docstring-rgx = "__.*__|test[A-Z_].*|setUp|_decorator|_wrapper|_.*__.*"
+
+[tool.pylint.classes]
+defining-attr-methods = [
+    "__init__",
+    "__new__",
+    "__post_init__",
+    "setUp",
+    "reset",
+    "_reset",
+]
+
+[tool.pylint.design]
+max-args = 15
+max-attributes = 40
+max-bool-expr = 5
+max-branches = 50
+max-locals = 50
+max-parents = 12
+max-public-methods = 500
+max-returns = 20
+max-statements = 150
+min-public-methods = 0
+
+[tool.pylint.main]
+extension-pkg-whitelist = ["greenlet"]
+
+[tool.pylint."messages control"]
+enable = [
+    "useless-suppression",
+]
+
+disable = [
+    "spelling",
+    # Messages that are just silly:
+    "locally-disabled",
+    "exec-used",
+    "global-statement",
+    "broad-except",
+    "no-else-return",
+    "subprocess-run-check",
+    "use-dict-literal",
+    # Messages that may be silly:
+    "no-member",
+    "using-constant-test",
+    "too-many-nested-blocks",
+    "too-many-ancestors",
+    "unnecessary-pass",
+    "no-else-break",
+    "no-else-continue",
+    # Questionable things, but it's ok, I don't need to be told:
+    "import-outside-toplevel",
+    "self-assigning-variable",
+    "consider-using-with",
+    "missing-timeout",
+    "too-many-lines",
+    "use-implicit-booleaness-not-comparison",
+    "too-many-positional-arguments",
+    # Formatting stuff
+    "superfluous-parens",
+    # Messages that are noisy for now, eventually maybe we'll turn them on:
+    "invalid-name",
+    "protected-access",
+    "unspecified-encoding",
+    "consider-using-f-string",
+    "duplicate-code",
+    "cyclic-import",
+]
+
+[tool.pylint.reports]
+score = false
+
+[tool.pylint.variables]
+dummy-variables-rgx = "_|unused|.*_unused"
+ignored-argument-names = "_|unused|.*_unused"
+
+## PYTEST
+
+[tool.pytest.ini_options]
+addopts = "-q -n auto -p no:legacypath --strict-markers --no-flaky-report -rfEX --failed-first"
+python_classes = "*Test"
+markers = [
+    "expensive: too slow to run during \"make smoke\"",
+]
+
+# How come these warnings are suppressed successfully here, but not in conftest.py??
+filterwarnings = [
+    # Sample 'ignore':
+    #"ignore:the imp module is deprecated in favour of importlib:DeprecationWarning",
+
+    ## Pytest warns if it can't collect things that seem to be tests. This should be an error.
+    "error::pytest.PytestCollectionWarning",
+]
+
+# xfail tests that pass should fail the test suite
+xfail_strict = true
+
+# https://docs.pytest.org/en/stable/reference/reference.html#confval-verbosity_assertions
+verbosity_assertions = 5
+
+balanced_clumps = [
+    # Because of expensive session-scoped fixture:
+    "VirtualenvTest",
+    # Because of shared-file manipulations (~/tests/actual/testing):
+    "CompareTest",
+    # No idea why this one fails if run on separate workers:
+    "GetZipBytesTest",
+]
+
+## RUFF
+# We aren't using ruff for real yet...
+
+[tool.ruff]
+target-version = "py38"     # Can't use [project]
+line-length = 100
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+    "ANN101",       # Missing type annotation for `self` in method
+    "ERA001",       # Found commented-out code
+]

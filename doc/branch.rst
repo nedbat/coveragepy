@@ -116,3 +116,16 @@ Here the while loop will never complete because the break will always be taken
 at some point.  Coverage.py can't work that out on its own, but the "no branch"
 pragma indicates that the branch is known to be partial, and the line is not
 flagged.
+
+Generator expressions
+=====================
+
+Generator expressions may also report partial branch coverage. Consider the
+following example::
+
+    value = next(i in range(1))
+
+While we might expect this line of code to be reported as covered, the
+generator did not iterate until ``StopIteration`` is raised, the indication
+that the loop is complete. This is another case
+where adding ``# pragma: no branch`` may be desirable.

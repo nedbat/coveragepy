@@ -3,10 +3,4 @@
 
 # Version pins, for use as a constraints file.
 
-auditwheel==4.0.0
-cibuildwheel==2.0.0
-tox==3.24.0
-tox-gh-actions==2.6.0
-
-setuptools==57.2.0
-wheel==0.36.2
+# None for now!
