@@ -23,9 +23,11 @@ from coverage import env
 from coverage.bytecode import code_objects
 from coverage.debug import short_stack
 from coverage.exceptions import NoSource, NotPython
-from coverage.misc import nice_pair
+from coverage.misc import isolate_module, nice_pair
 from coverage.phystokens import generate_tokens
 from coverage.types import TArc, TLineNo
+
+os = isolate_module(os)
 
 
 class PythonParser:

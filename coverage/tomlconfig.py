@@ -13,9 +13,10 @@ from collections.abc import Iterable
 
 from coverage import env
 from coverage.exceptions import ConfigError
-from coverage.misc import import_third_party, substitute_variables
+from coverage.misc import import_third_party, isolate_module, substitute_variables
 from coverage.types import TConfigSectionOut, TConfigValueOut
 
+os = isolate_module(os)
 
 if env.PYVERSION >= (3, 11, 0, "alpha", 7):
     import tomllib      # pylint: disable=import-error

@@ -23,6 +23,7 @@ from typing import (
 )
 
 from coverage.debug import short_filename, short_stack
+from coverage.misc import isolate_module
 from coverage.types import (
     AnyCallable,
     TArc,
@@ -35,6 +36,8 @@ from coverage.types import (
     Tracer,
     TWarnFn,
 )
+
+os = isolate_module(os)
 
 # pylint: disable=unused-argument
 

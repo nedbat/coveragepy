@@ -9,6 +9,7 @@ import importlib.util
 import inspect
 import itertools
 import os
+import os.path
 import platform
 import re
 import sys
@@ -26,7 +27,7 @@ from coverage.disposition import FileDisposition, disposition_init
 from coverage.exceptions import CoverageException, PluginError
 from coverage.files import TreeMatcher, GlobMatcher, ModuleMatcher
 from coverage.files import prep_patterns, find_python_files, canonical_filename
-from coverage.misc import sys_modules_saved
+from coverage.misc import isolate_module, sys_modules_saved
 from coverage.python import source_for_file, source_for_morf
 from coverage.types import TFileDisposition, TMorf, TWarnFn, TDebugCtl
 
@@ -56,6 +57,8 @@ if env.PYPY:
     except ImportError:
         pass
 
+
+os = isolate_module(os)
 
 def canonical_path(morf: TMorf, directory: bool = False) -> str:
     """Return the canonical path of the module or file `morf`.
