@@ -41,7 +41,7 @@ jaraco-context==6.0.1
     # via keyring
 jaraco-functools==4.1.0
     # via keyring
-keyring==25.4.1
+keyring==25.5.0
     # via twine
 markdown-it-py==3.0.0
     # via rich
@@ -53,7 +53,7 @@ more-itertools==10.5.0
     #   jaraco-functools
 nh3==0.2.18
     # via readme-renderer
-packaging==24.1
+packaging==24.2
     # via
     #   auditwheel
     #   build
@@ -80,9 +80,9 @@ requests-toolbelt==1.0.0
     # via twine
 rfc3986==2.0.0
     # via twine
-rich==13.9.2
+rich==13.9.4
     # via twine
-tomli==2.0.2
+tomli==2.1.0
     # via
     #   build
     #   cibuildwheel
@@ -96,11 +96,11 @@ urllib3==2.2.3
     # via
     #   requests
     #   twine
-wheel==0.44.0
+wheel==0.45.0
     # via -r requirements/kit.in
-zipp==3.20.2
+zipp==3.21.0
     # via importlib-metadata
 
 # The following packages are considered to be unsafe in a requirements file:
-setuptools==75.2.0
+setuptools==75.5.0
     # via -r requirements/kit.in

@@ -16,15 +16,15 @@ execnet==2.1.1
     # via pytest-xdist
 flaky==3.8.1
     # via -r requirements/pytest.in
-hypothesis==6.115.3
+hypothesis==6.118.8
     # via -r requirements/pytest.in
 iniconfig==2.0.0
     # via pytest
-mypy==1.12.1
+mypy==1.13.0
     # via -r requirements/mypy.in
 mypy-extensions==1.0.0
     # via mypy
-packaging==24.1
+packaging==24.2
     # via pytest
 pluggy==1.5.0
     # via pytest
@@ -38,7 +38,7 @@ pytest-xdist==3.6.1
     # via -r requirements/pytest.in
 sortedcontainers==2.4.0
     # via hypothesis
-tomli==2.0.2
+tomli==2.1.0
     # via
     #   mypy
     #   pytest

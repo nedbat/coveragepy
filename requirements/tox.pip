@@ -18,7 +18,7 @@ filelock==3.16.1
     # via
     #   tox
     #   virtualenv
-packaging==24.1
+packaging==24.2
     # via
     #   pyproject-api
     #   tox
@@ -30,11 +30,11 @@ pluggy==1.5.0
     # via tox
 pyproject-api==1.8.0
     # via tox
-tomli==2.0.2
+tomli==2.1.0
     # via
     #   pyproject-api
     #   tox
-tox==4.23.0
+tox==4.23.2
     # via
     #   -r requirements/tox.in
     #   tox-gh
@@ -42,5 +42,5 @@ tox-gh==1.4.4
     # via -r requirements/tox.in
 typing-extensions==4.12.2
     # via tox
-virtualenv==20.27.0
+virtualenv==20.27.1
     # via tox

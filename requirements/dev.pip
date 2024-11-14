@@ -49,7 +49,7 @@ flaky==3.8.1
     # via -r requirements/pytest.in
 greenlet==3.1.1
     # via -r requirements/dev.in
-hypothesis==6.115.3
+hypothesis==6.118.8
     # via -r requirements/pytest.in
 idna==3.10
     # via requests
@@ -68,9 +68,9 @@ jaraco-context==6.0.1
     # via keyring
 jaraco-functools==4.1.0
     # via keyring
-jedi==0.19.1
+jedi==0.19.2
     # via pudb
-keyring==25.4.1
+keyring==25.5.0
     # via twine
 libsass==0.23.0
     # via -r requirements/dev.in
@@ -86,7 +86,7 @@ more-itertools==10.5.0
     #   jaraco-functools
 nh3==0.2.18
     # via readme-renderer
-packaging==24.1
+packaging==24.2
     # via
     #   build
     #   pudb
@@ -139,13 +139,13 @@ requests-toolbelt==1.0.0
     # via twine
 rfc3986==2.0.0
     # via twine
-rich==13.9.2
+rich==13.9.4
     # via twine
 sortedcontainers==2.4.0
     # via hypothesis
 tabulate==0.9.0
     # via -r requirements/dev.in
-tomli==2.0.2
+tomli==2.1.0
     # via
     #   build
     #   check-manifest
@@ -155,7 +155,7 @@ tomli==2.0.2
     #   tox
 tomlkit==0.13.2
     # via pylint
-tox==4.23.0
+tox==4.23.2
     # via
     #   -r requirements/tox.in
     #   tox-gh
@@ -180,19 +180,19 @@ urwid==2.6.16
     #   urwid-readline
 urwid-readline==0.15.1
     # via pudb
-virtualenv==20.27.0
+virtualenv==20.27.1
     # via
     #   -r requirements/pip.in
     #   tox
 wcwidth==0.2.13
     # via urwid
-zipp==3.20.2
+zipp==3.21.0
     # via importlib-metadata
 
 # The following packages are considered to be unsafe in a requirements file:
-pip==24.2
+pip==24.3.1
     # via -r requirements/pip.in
-setuptools==75.2.0
+setuptools==75.5.0
     # via
     #   -r requirements/pip.in
     #   check-manifest
