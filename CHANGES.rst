@@ -20,8 +20,12 @@ upgrading your version of coverage.py.
     ..  Version 9.8.1 — 2027-07-27
     ..  --------------------------
 
-Unreleased
-----------
+.. start-releases
+
+.. _changes_7-6-5:
+
+Version 7.6.5 — 2024-11-14
+--------------------------
 
 - fix: fine-tuned the exact Python version (3.12.6) when exiting from ``with``
   statements changed how they traced.  This affected whether people saw the
@@ -35,8 +39,6 @@ Unreleased
 
 .. _pytest-cov-666: https://github.com/pytest-dev/pytest-cov/issues/666
 
-
-.. start-releases
 
 .. _changes_7-6-4:
 
