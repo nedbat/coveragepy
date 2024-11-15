@@ -444,8 +444,8 @@ class ByteParser:
                 if line_incr >= 0x80:
                     line_incr -= 0x100
                 line_num += line_incr
-            assert line_num != last_line_num, f"Oops: {self.code.co_name}@{line_num}"
-            yield line_num
+            if line_num != last_line_num:
+                yield line_num
 
     def _find_statements(self) -> Iterable[TLineNo]:
         """Find the statements in `self.code`.

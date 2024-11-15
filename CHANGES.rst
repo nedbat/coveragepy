@@ -23,7 +23,8 @@ upgrading your version of coverage.py.
 Unreleased
 ----------
 
-Nothing yet.
+- fix: ugh, the other assert from 7.6.5 can also be encountered in the wild,
+  so it's been restored to a conditional.  Sorry for the churn.
 
 
 .. start-releases
