@@ -419,6 +419,15 @@ def do_edit_for_release():
     )
     update_file("doc/conf.py", r"(?s)# @@@ editable\n.*# @@@ end\n", new_conf)
 
+def do_release_version():
+    """Set the version to 'final' for a release."""
+    facts = get_release_facts()
+    rel_vi = facts.vi[:3] + ("final", 0)
+    rel_version = f"version_info = {rel_vi}\n_dev = 0".replace("'", '"')
+    update_file(
+        "coverage/version.py", r"(?m)^version_info = .*\n_dev = \d+$", rel_version,
+    )
+
 
 def do_bump_version():
     """Edit a few files right after a release to bump the version."""

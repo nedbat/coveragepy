@@ -176,11 +176,14 @@ sample_html_beta: _sample_cog_html	## Generate sample HTML report for a beta rel
 
 ##@ Kitting: making releases
 
-.PHONY: edit_for_release cheats relbranch relcommit1 relcommit2
+.PHONY: release_version edit_for_release cheats relbranch relcommit1 relcommit2
 .PHONY: kit pypi_upload test_upload kit_local build_kits
 .PHONY: tag bump_version
 
 REPO_OWNER = nedbat/coveragepy
+
+release_version:			#: Update the version for a release.
+	python igor.py release_version
 
 edit_for_release:			#: Edit sources to insert release facts (see howto.txt).
 	python igor.py edit_for_release

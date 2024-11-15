@@ -3,16 +3,19 @@
 - Check that the current virtualenv matches the current coverage branch.
 - start branch for release work
     $ make relbranch
-- Edit version number in coverage/version.py
+- check version number in coverage/version.py
+    - IF PRE-RELEASE:
+        - edit to look like one of these:
         version_info = (4, 0, 2, "alpha", 1)
         version_info = (4, 0, 2, "beta", 1)
         version_info = (4, 0, 2, "candidate", 1)
         version_info = (4, 0, 2, "final", 0)
-    - make sure: _dev = 0
-- Edit supported Python version numbers. Search for "PYVERSIONS".
-    - Especially README.rst and doc/index.rst
+    - IF NOT PRE-RELEASE:
+        $ make release_version
 - Update source files with release facts, and get useful snippets:
     $ make edit_for_release cheats
+- Edit supported Python version numbers. Search for "PYVERSIONS".
+    - Especially README.rst and doc/index.rst
 - Look over CHANGES.rst
 - Update README.rst
     - "New in x.y:"
