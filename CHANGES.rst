@@ -20,14 +20,16 @@ upgrading your version of coverage.py.
     ..  Version 9.8.1 — 2027-07-27
     ..  --------------------------
 
-Unreleased
-----------
+.. start-releases
+
+.. _changes_7-6-7:
+
+Version 7.6.7 — 2024-11-15
+--------------------------
 
 - fix: ugh, the other assert from 7.6.5 can also be encountered in the wild,
   so it's been restored to a conditional.  Sorry for the churn.
 
-
-.. start-releases
 
 .. _changes_7-6-6:
 
