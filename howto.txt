@@ -36,38 +36,36 @@
         $ make sample_html
         - check in the new sample html
             $ make relcommit2
-- Done with changes to source files
-    - g puo; gshipit
-        - check them in on the release prep branch
-        - wait for ci to finish
-        - merge to master
-        - git push
-- Start the kits:
-    - opvars github
-    - Trigger the kit GitHub Action
-        $ make build_kits
 - Build and publish docs:
     - IF PRE-RELEASE:
         $ make publishbeta
     - ELSE:
         $ make publish
     - commit and publish nedbatchelder.com
+- Done with changes to source files
+    $ g puo; gshipit
+        - check them in on the release prep branch
+        - wait for ci to finish
+        - merge to master
+        - git push
+- Start the kits:
+    $ opvars github
+    - Trigger the kit GitHub Action
+        $ make build_kits
 - Kits:
     - Wait for kits to finish:
         - https://github.com/nedbat/coveragepy/actions/workflows/kit.yml
     - test the pypi upload:
         $ make test_upload
-        - you'll need to approve the action
+        - approve the action
             - https://github.com/nedbat/coveragepy/actions/workflows/publish.yml
     - upload kits:
         $ make pypi_upload
-        - you'll need to approve the action
+        - approve the action
             - https://github.com/nedbat/coveragepy/actions/workflows/publish.yml
-- Tag the tree
-    $ make tag
-- Update GitHub releases and comment on issues:
-    $ make clean github_releases comment_on_fixes
-- deopvars
+- Tag the tree, update GitHub releases and comment on issues:
+    $ make clean tag github_releases comment_on_fixes
+$ deopvars
 - Bump version:
     $ make bump_version
 - Update readthedocs
@@ -79,7 +77,7 @@
         - @ https://readthedocs.org/dashboard/coverage/advanced/
             - change the "default version" to the new version
 - Once CI passes, merge the bump-version branch to master and push it
-    - gshipit
+    $ gshipit
 
 - things to automate:
     - readthedocs api to do the readthedocs changes
