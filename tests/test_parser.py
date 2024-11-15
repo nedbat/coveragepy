@@ -197,6 +197,16 @@ class PythonParserTest(PythonParserTestBase):
         with pytest.raises(NotPython, match=msg):
             self.parse_text("]")
 
+    def test_bug_1891(self) -> None:
+        # This code exercises a code path I thought was impossible.
+        parser = self.parse_text("""\
+            res = siblings(
+                'configure',
+                **ca,
+            )
+            """)
+        assert parser.exit_counts() == { 1:1 }
+
 
 class ExclusionParserTest(PythonParserTestBase):
     """Tests for the exclusion code in PythonParser."""

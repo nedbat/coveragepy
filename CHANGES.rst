@@ -23,7 +23,10 @@ upgrading your version of coverage.py.
 Unreleased
 ----------
 
-Nothing yet.
+- One of the new asserts from 7.6.5 caused problems in real projects, as
+  reported in `issue 1891`_.  The assert has been removed.
+
+.. _issue 1891: https://github.com/nedbat/coveragepy/issues/1891
 
 
 .. start-releases
