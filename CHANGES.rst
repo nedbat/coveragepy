@@ -20,16 +20,18 @@ upgrading your version of coverage.py.
     ..  Version 9.8.1 — 2027-07-27
     ..  --------------------------
 
-Unreleased
-----------
+.. start-releases
+
+.. _changes_7-6-6:
+
+Version 7.6.6 — 2024-11-15
+--------------------------
 
 - One of the new asserts from 7.6.5 caused problems in real projects, as
   reported in `issue 1891`_.  The assert has been removed.
 
 .. _issue 1891: https://github.com/nedbat/coveragepy/issues/1891
 
-
-.. start-releases
 
 .. _changes_7-6-5:
 
