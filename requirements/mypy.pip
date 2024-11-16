@@ -7,7 +7,7 @@
 attrs==24.2.0
     # via hypothesis
 colorama==0.4.6
-    # via -r requirements/pytest.in
+    # via -r /Users/ned/coverage/trunk/requirements/pytest.in
 exceptiongroup==1.2.2
     # via
     #   hypothesis
@@ -15,9 +15,9 @@ exceptiongroup==1.2.2
 execnet==2.1.1
     # via pytest-xdist
 flaky==3.8.1
-    # via -r requirements/pytest.in
-hypothesis==6.118.8
-    # via -r requirements/pytest.in
+    # via -r /Users/ned/coverage/trunk/requirements/pytest.in
+hypothesis==6.119.1
+    # via -r /Users/ned/coverage/trunk/requirements/pytest.in
 iniconfig==2.0.0
     # via pytest
 mypy==1.13.0
@@ -29,13 +29,13 @@ packaging==24.2
 pluggy==1.5.0
     # via pytest
 pygments==2.18.0
-    # via -r requirements/pytest.in
+    # via -r /Users/ned/coverage/trunk/requirements/pytest.in
 pytest==8.3.3
     # via
-    #   -r requirements/pytest.in
+    #   -r /Users/ned/coverage/trunk/requirements/pytest.in
     #   pytest-xdist
 pytest-xdist==3.6.1
-    # via -r requirements/pytest.in
+    # via -r /Users/ned/coverage/trunk/requirements/pytest.in
 sortedcontainers==2.4.0
     # via hypothesis
 tomli==2.1.0
