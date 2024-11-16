@@ -177,10 +177,11 @@ sample_html_beta: _sample_cog_html	## Generate sample HTML report for a beta rel
 ##@ Kitting: making releases
 
 .PHONY: release_version edit_for_release cheats relbranch relcommit1 relcommit2
-.PHONY: kit pypi_upload test_upload kit_local build_kits
+.PHONY: kit pypi_upload test_upload kit_local build_kits update_rtd
 .PHONY: tag bump_version
 
 REPO_OWNER = nedbat/coveragepy
+RTD_PROJECT = coverage
 
 release_version:			#: Update the version for a release.
 	python igor.py release_version
@@ -227,6 +228,9 @@ build_kits:				## Trigger GitHub to build kits
 tag:					#: Make a git tag with the version number (see howto.txt).
 	git tag -s -m "Version $$(python setup.py --version)" $$(python setup.py --version)
 	git push --follow-tags
+
+update_rtd:				#: Update ReadTheDocs with the versions to show
+	python ci/update-rtfd.py $(RTD_PROJECT)
 
 bump_version:				#: Edit sources to bump the version after a release (see howto.txt).
 	git switch -c nedbat/bump-version

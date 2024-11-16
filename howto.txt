@@ -69,18 +69,14 @@ $ deopvars
 - Bump version:
     $ make bump_version
 - Update readthedocs
-    - @ https://readthedocs.org/projects/coverage/versions/
+    - IF PRE-RELEASE
         - find the latest tag in the inactive list, edit it, make it active.
         - keep just the latest version of each x.y release, make the rest active but hidden.
             - pre-releases should be hidden
     - IF NOT PRE-RELEASE:
-        - @ https://readthedocs.org/dashboard/coverage/advanced/
-            - change the "default version" to the new version
+        $ make update_rtd
 - Once CI passes, merge the bump-version branch to master and push it
     $ gshipit
-
-- things to automate:
-    - readthedocs api to do the readthedocs changes
 
 
 * Testing
