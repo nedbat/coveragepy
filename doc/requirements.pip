@@ -42,7 +42,7 @@ jinja2==3.1.4
     # via sphinx
 markupsafe==3.0.2
     # via jinja2
-packaging==24.1
+packaging==24.2
     # via sphinx
 pbr==6.1.0
     # via stevedore
@@ -56,7 +56,7 @@ pygments==2.18.0
     # via
     #   doc8
     #   sphinx
-regex==2024.9.11
+regex==2024.11.6
     # via sphinx-lint
 requests==2.32.3
     # via sphinx
@@ -81,7 +81,7 @@ sphinx-code-tabs==0.5.5
     # via -r doc/requirements.in
 sphinx-lint==1.0.0
     # via -r doc/requirements.in
-sphinx-rtd-theme==3.0.1
+sphinx-rtd-theme==3.0.2
     # via -r doc/requirements.in
 sphinxcontrib-applehelp==2.0.0
     # via sphinx
@@ -101,7 +101,7 @@ sphinxcontrib-serializinghtml==2.0.0
     # via sphinx
 sphinxcontrib-spelling==8.0.0
     # via -r doc/requirements.in
-starlette==0.41.0
+starlette==0.41.2
     # via sphinx-autobuild
 stevedore==5.3.0
     # via doc8
@@ -111,5 +111,5 @@ uvicorn==0.32.0
     # via sphinx-autobuild
 watchfiles==0.24.0
     # via sphinx-autobuild
-websockets==13.1
+websockets==14.1
     # via sphinx-autobuild
