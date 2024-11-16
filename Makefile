@@ -192,7 +192,7 @@ cheats:					## Create some useful snippets for releasing.
 	python igor.py cheats | tee cheats.txt
 
 relbranch:				#: Create the branch for releasing (see howto.txt).
-	git switch -c nedbat/release-$$(date +%Y%m%d)
+	git switch -c nedbat/release-$$(date +%Y%m%d-%H%M%S)
 
 relcommit1:				#: Commit the first release changes (see howto.txt).
 	git commit -am "docs: prep for $$(python setup.py --version)"
@@ -206,9 +206,11 @@ kit:					## Make the source distribution.
 
 pypi_upload:				## Upload the built distributions to PyPI.
 	python ci/trigger_action.py $(REPO_OWNER) publish-pypi
+	@echo "Use that^ URL to approve the upload"
 
 test_upload:				## Upload the distributions to PyPI's testing server.
 	python ci/trigger_action.py $(REPO_OWNER) publish-testpypi
+	@echo "Use that^ URL to approve the upload"
 
 kit_local:
 	# pip.conf looks like this:
