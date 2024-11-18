@@ -230,7 +230,7 @@ tag:					#: Make a git tag with the version number (see howto.txt).
 	git push --follow-tags
 
 update_rtd:				#: Update ReadTheDocs with the versions to show
-	python ci/update-rtfd.py $(RTD_PROJECT)
+	python ci/update_rtfd.py $(RTD_PROJECT)
 
 bump_version:				#: Edit sources to bump the version after a release (see howto.txt).
 	git switch -c nedbat/bump-version
