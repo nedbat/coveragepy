@@ -197,7 +197,7 @@ class CoverageTest(
         del sys.modules[modname]
 
         # Get the analysis results, and check that they are right.
-        analysis = cov._analyze(mod)
+        analysis = cov.analyze(mod)
         statements = sorted(analysis.statements)
         if lines:
             if isinstance(lines[0], int):
@@ -493,7 +493,7 @@ class CoverageTest(
         assert self.last_module_name is not None
         filename = self.last_module_name + ".py"
         fr = cov._get_file_reporter(filename)
-        arcs_executed = cov._analyze(filename).arcs_executed
+        arcs_executed = cov.analyze(filename).arcs_executed
         return fr.missing_arc_description(start, end, arcs_executed)
 
 

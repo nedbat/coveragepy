@@ -55,4 +55,5 @@ only.  :ref:`dbschema` explains more.
     api_module
     api_plugin
     api_coveragedata
+    api_analysis
     dbschema

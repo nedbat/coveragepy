@@ -926,7 +926,7 @@ class Coverage(TConfigurable):
         coverage data.
 
         """
-        analysis = self._analyze(morf)
+        analysis = self.analyze(morf)
         return (
             analysis.filename,
             sorted(analysis.statements),
@@ -935,7 +935,7 @@ class Coverage(TConfigurable):
             analysis.missing_formatted(),
         )
 
-    def _analyze(self, morf: TMorf) -> Analysis:
+    def analyze(self, morf: TMorf) -> Analysis:
         """Analyze a module or file.  Private for now."""
         self._init()
         self._post_init()
