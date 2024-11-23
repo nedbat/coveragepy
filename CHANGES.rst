@@ -44,7 +44,7 @@ Unreleased
 Version 7.6.7 — 2024-11-15
 --------------------------
 
-- fix: ugh, the other assert from 7.6.5 can also be encountered in the wild,
+- Fix: ugh, the other assert from 7.6.5 can also be encountered in the wild,
   so it's been restored to a conditional.  Sorry for the churn.
 
 
@@ -64,14 +64,14 @@ Version 7.6.6 — 2024-11-15
 Version 7.6.5 — 2024-11-14
 --------------------------
 
-- fix: fine-tuned the exact Python version (3.12.6) when exiting from ``with``
+- Fix: fine-tuned the exact Python version (3.12.6) when exiting from ``with``
   statements changed how they traced.  This affected whether people saw the
   fix for `issue 1880`_.
 
-- fix: isolate our code more from mocking in the os module that in rare cases
+- Fix: isolate our code more from mocking in the os module that in rare cases
   can cause `bizarre behavior <pytest-cov-666_>`_.
 
-- refactor: some code unreachable code paths in parser.py were changed to
+- Refactor: some code unreachable code paths in parser.py were changed to
   asserts.  If you encounter any of these, please let me know!
 
 .. _pytest-cov-666: https://github.com/pytest-dev/pytest-cov/issues/666
@@ -82,7 +82,7 @@ Version 7.6.5 — 2024-11-14
 Version 7.6.4 — 2024-10-20
 --------------------------
 
-- fix: multi-line ``with`` statements could cause contained branches to be
+- Fix: multi-line ``with`` statements could cause contained branches to be
   incorrectly marked as missing (`issue 1880`_).  This is now fixed.
 
 .. _issue 1880: https://github.com/nedbat/coveragepy/issues/1880
