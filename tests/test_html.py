@@ -840,7 +840,6 @@ class HtmlGoldTest(HtmlTestHelpers, CoverageTest):
         cov = coverage.Coverage(branch=True)
         b = self.start_import_stop(cov, "b")
         cov.html_report(b, directory="out/b_branch")
-
         compare_html(gold_path("html/b_branch"), "out/b_branch")
         contains(
             "out/b_branch/b_py.html",
@@ -856,13 +855,9 @@ class HtmlGoldTest(HtmlTestHelpers, CoverageTest):
             ('<span class="annotate short">12&#x202F;&#x219B;&#x202F;exit</span>' +
              '<span class="annotate long">line 12 didn\'t return from function \'two\' ' +
                             'because the condition on line 12 was always true</span>'),
-            ('<span class="annotate short">20&#x202F;&#x219B;&#x202F;21,&nbsp;&nbsp; ' +
-                            '20&#x202F;&#x219B;&#x202F;23</span>' +
-             '<span class="annotate long">2 missed branches: ' +
-                            '1) line 20 didn\'t jump to line 21 ' +
-                                'because the condition on line 20 was never true, ' +
-                            '2) line 20 didn\'t jump to line 23 ' +
-                                'because the condition on line 20 was always true</span>'),
+            ('<span class="annotate short">20&#x202F;&#x219B;&#x202F;anywhere</span>' +
+             '<span class="annotate long">line 20 didn\'t jump anywhere: ' +
+                            'it always raised an exception.</span>'),
         )
         contains(
             "out/b_branch/index.html",

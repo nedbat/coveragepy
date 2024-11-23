@@ -23,10 +23,16 @@ upgrading your version of coverage.py.
 Unreleased
 ----------
 
-- fix: the LCOV report code assumed that a branch line that took no branches
+- Fix: the LCOV report code assumed that a branch line that took no branches
   meant that the entire line was unexecuted.  This isn't true in a few cases:
   the line might always raise an exception, or might have been optimized away.
   Fixes `issue 1896`_.
+
+- Fix: similarly, the HTML report will now explain that a line that jumps to
+  none of its expected destinations must have always raised an exception.
+  Previously, it would say something nonsensical like, "line 4 didn't jump to
+  line 5 because line 4 was never true, and it didn't jump to line 7 because
+  line 4 was always true."  This was also shown in `issue 1896`_.
 
 .. _issue 1896: https://github.com/nedbat/coveragepy/issues/1896
 

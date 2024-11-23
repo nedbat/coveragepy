@@ -137,6 +137,7 @@ class HtmlDataGeneration:
             contexts_by_lineno = self.data.contexts_by_lineno(analysis.filename)
 
         lines = []
+        branch_stats = analysis.branch_stats()
 
         for lineno, tokens in enumerate(fr.source_token_lines(), start=1):
             # Figure out how to mark this line.
@@ -150,12 +151,22 @@ class HtmlDataGeneration:
                 category = "mis"
             elif self.has_arcs and lineno in missing_branch_arcs:
                 category = "par"
-                for b in missing_branch_arcs[lineno]:
-                    if b < 0:
-                        short_annotations.append("exit")
-                    else:
-                        short_annotations.append(str(b))
-                    long_annotations.append(fr.missing_arc_description(lineno, b, arcs_executed))
+                mba = missing_branch_arcs[lineno]
+                if len(mba) == branch_stats[lineno][0]:
+                    # None of the branches were taken from this line.
+                    short_annotations.append("anywhere")
+                    long_annotations.append(
+                        f"line {lineno} didn't jump anywhere: it always raised an exception."
+                    )
+                else:
+                    for b in missing_branch_arcs[lineno]:
+                        if b < 0:
+                            short_annotations.append("exit")
+                        else:
+                            short_annotations.append(str(b))
+                        long_annotations.append(
+                            fr.missing_arc_description(lineno, b, arcs_executed)
+                        )
             elif lineno in analysis.statements:
                 category = "run"
 
@@ -486,16 +497,12 @@ class HtmlReporter:
 
             if ldata.long_annotations:
                 longs = ldata.long_annotations
-                if len(longs) == 1:
-                    ldata.annotate_long = longs[0]
-                else:
-                    ldata.annotate_long = "{:d} missed branches: {}".format(
-                        len(longs),
-                        ", ".join(
-                            f"{num:d}) {ann_long}"
-                            for num, ann_long in enumerate(longs, start=1)
-                        ),
-                    )
+                # A line can only have two branch destinations. If there were
+                # two missing, we would have written one as "always raised."
+                assert len(longs) == 1, (
+                    f"Had long annotations in {ftr.fr.relative_filename()}: {longs}"
+                )
+                ldata.annotate_long = longs[0]
             else:
                 ldata.annotate_long = None
 
