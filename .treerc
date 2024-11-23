@@ -7,6 +7,7 @@ ignore =
     html0
     .tox*
     .coverage* .metacov
+    coverage.json coverage.xml coverage.lcov
     *.min.js style.css
     gold
     sample_html sample_html_beta
