@@ -23,7 +23,12 @@ upgrading your version of coverage.py.
 Unreleased
 ----------
 
-Nothing yet.
+- fix: the LCOV report code assumed that a branch line that took no branches
+  meant that the entire line was unexecuted.  This isn't true in a few cases:
+  the line might always raise an exception, or might have been optimized away.
+  Fixes `issue 1896`_.
+
+.. _issue 1896: https://github.com/nedbat/coveragepy/issues/1896
 
 
 .. start-releases

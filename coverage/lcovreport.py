@@ -118,10 +118,8 @@ def lcov_arcs(
 
         if taken == 0:
             # When _none_ of the out arcs from 'line' were executed,
-            # this probably means 'line' was never executed at all.
-            # Cross-check with the line stats.
+            # it can mean the line always raised an exception.
             assert len(executed_arcs[line]) == 0
-            assert line in analysis.missing
             destinations = [
                 (dst, "-") for dst in missing_arcs[line]
             ]

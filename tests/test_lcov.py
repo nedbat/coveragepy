@@ -526,3 +526,35 @@ class LcovTest(CoverageTest):
             """)
         actual_result = self.get_lcov_report_content()
         assert expected_result == actual_result
+
+    def test_always_raise(self) -> None:
+        self.make_file("always_raise.py", """\
+            try:
+                if not_defined:
+                    print("Yes")
+                else:
+                    print("No")
+            except Exception:
+                pass
+        """)
+        cov = coverage.Coverage(source=".", branch=True)
+        self.start_import_stop(cov, "always_raise")
+        cov.lcov_report()
+        expected_result = textwrap.dedent("""\
+            SF:always_raise.py
+            DA:1,1
+            DA:2,1
+            DA:3,0
+            DA:5,0
+            DA:6,1
+            DA:7,1
+            LF:6
+            LH:4
+            BRDA:2,0,jump to line 3,-
+            BRDA:2,0,jump to line 5,-
+            BRF:2
+            BRH:0
+            end_of_record
+            """)
+        actual_result = self.get_lcov_report_content()
+        assert expected_result == actual_result
