@@ -20,8 +20,12 @@ upgrading your version of coverage.py.
     ..  Version 9.8.1 — 2027-07-27
     ..  --------------------------
 
-Unreleased
-----------
+.. start-releases
+
+.. _changes_7-6-8:
+
+Version 7.6.8 — 2024-11-23
+--------------------------
 
 - Fix: the LCOV report code assumed that a branch line that took no branches
   meant that the entire line was unexecuted.  This isn't true in a few cases:
@@ -36,8 +40,6 @@ Unreleased
 
 .. _issue 1896: https://github.com/nedbat/coveragepy/issues/1896
 
-
-.. start-releases
 
 .. _changes_7-6-7:
 
