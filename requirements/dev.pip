@@ -49,7 +49,7 @@ flaky==3.8.1
     # via -r /Users/ned/coverage/trunk/requirements/pytest.in
 greenlet==3.1.1
     # via -r requirements/dev.in
-hypothesis==6.119.1
+hypothesis==6.119.4
     # via -r /Users/ned/coverage/trunk/requirements/pytest.in
 idna==3.10
     # via requests
@@ -192,7 +192,7 @@ zipp==3.21.0
 # The following packages are considered to be unsafe in a requirements file:
 pip==24.3.1
     # via -r /Users/ned/coverage/trunk/requirements/pip.in
-setuptools==75.5.0
+setuptools==75.6.0
     # via
     #   -r /Users/ned/coverage/trunk/requirements/pip.in
     #   check-manifest
