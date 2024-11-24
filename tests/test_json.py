@@ -559,3 +559,20 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
 
     def test_context_relative(self) -> None:
         self.run_context_test(relative_files=True)
+
+    def test_l1_equals_l2(self) -> None:
+        # In results.py, we had a line checking `if l1 == l2` that was never
+        # true.  This test makes it true. The annotations are essential, I
+        # don't know why.
+        self.make_file("wtf.py", """\
+            def function(
+                x: int,
+                y: int,
+            ) -> None:
+                return x + y
+
+            assert function(3, 5) == 8
+            """)
+        cov = coverage.Coverage(branch=True)
+        mod = self.start_import_stop(cov, "wtf")
+        cov.json_report(mod)

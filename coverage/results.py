@@ -202,8 +202,7 @@ class Analysis:
         branch_lines = set(self._branch_lines())
         mba = collections.defaultdict(list)
         for l1, l2 in missing:
-            if l1 == l2:
-                continue
+            assert l1 != l2, f"In {self.filename}, didn't expect {l1} == {l2}"
             if l1 in branch_lines:
                 mba[l1].append(l2)
         return mba
