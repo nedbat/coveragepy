@@ -9,7 +9,7 @@ from session import get_session
 
 # How many from each level to show.
 NUM_MAJORS = 3
-NUM_MINORS = 4
+NUM_MINORS = 3
 OLD_MINORS = 1
 NUM_MICROS = 1
 OLD_MICROS = 1

@@ -65,7 +65,6 @@
             - https://github.com/nedbat/coveragepy/actions/workflows/publish.yml
 - Tag the tree, update GitHub releases and comment on issues:
     $ make clean tag github_releases comment_on_fixes
-$ deopvars
 - Bump version:
     $ make bump_version
 - Update readthedocs
@@ -74,7 +73,9 @@ $ deopvars
         - keep just the latest version of each x.y release, make the rest active but hidden.
             - pre-releases should be hidden
     - IF NOT PRE-RELEASE:
+        $ opvars
         $ make update_rtd
+$ deopvars
 - Once CI passes, merge the bump-version branch to master and push it
     $ gshipit
 
