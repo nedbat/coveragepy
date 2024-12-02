@@ -16,7 +16,7 @@ execnet==2.1.1
     # via pytest-xdist
 flaky==3.8.1
     # via -r /Users/ned/coverage/trunk/requirements/pytest.in
-hypothesis==6.119.4
+hypothesis==6.122.1
     # via -r /Users/ned/coverage/trunk/requirements/pytest.in
 iniconfig==2.0.0
     # via pytest
@@ -30,7 +30,7 @@ pluggy==1.5.0
     # via pytest
 pygments==2.18.0
     # via -r /Users/ned/coverage/trunk/requirements/pytest.in
-pytest==8.3.3
+pytest==8.3.4
     # via
     #   -r /Users/ned/coverage/trunk/requirements/pytest.in
     #   pytest-xdist
@@ -38,7 +38,7 @@ pytest-xdist==3.6.1
     # via -r /Users/ned/coverage/trunk/requirements/pytest.in
 sortedcontainers==2.4.0
     # via hypothesis
-tomli==2.1.0
+tomli==2.2.1
     # via
     #   mypy
     #   pytest

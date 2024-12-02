@@ -53,7 +53,7 @@ more-itertools==10.5.0
     # via
     #   jaraco-classes
     #   jaraco-functools
-nh3==0.2.18
+nh3==0.2.19
     # via readme-renderer
 packaging==24.2
     # via
@@ -61,7 +61,8 @@ packaging==24.2
     #   build
     #   cibuildwheel
     #   dependency-groups
-pkginfo==1.10.0
+    #   twine
+pkginfo==1.11.2
     # via twine
 platformdirs==4.3.6
     # via cibuildwheel
@@ -85,12 +86,12 @@ rfc3986==2.0.0
     # via twine
 rich==13.9.4
     # via twine
-tomli==2.1.0
+tomli==2.2.1
     # via
     #   build
     #   cibuildwheel
     #   dependency-groups
-twine==5.1.1
+twine==6.0.1
     # via -r requirements/kit.in
 typing-extensions==4.12.2
     # via

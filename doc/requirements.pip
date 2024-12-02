@@ -109,7 +109,7 @@ urllib3==2.2.3
     # via requests
 uvicorn==0.32.1
     # via sphinx-autobuild
-watchfiles==0.24.0
+watchfiles==1.0.0
     # via sphinx-autobuild
 websockets==14.1
     # via sphinx-autobuild

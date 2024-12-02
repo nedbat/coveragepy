@@ -30,7 +30,7 @@ pluggy==1.5.0
     # via tox
 pyproject-api==1.8.0
     # via tox
-tomli==2.1.0
+tomli==2.2.1
     # via
     #   pyproject-api
     #   tox
@@ -42,5 +42,5 @@ tox-gh==1.4.4
     # via -r requirements/tox.in
 typing-extensions==4.12.2
     # via tox
-virtualenv==20.27.1
+virtualenv==20.28.0
     # via tox
