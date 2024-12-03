@@ -178,7 +178,7 @@ class Analysis:
         """Returns a sorted list of the un-executed arcs in the code."""
         missing = (
             p for p in self.arc_possibilities
-                if p not in self.arcs_executed
+                if p not in self.arcs_executed_set
                     and p[0] not in self.no_branch
                     and p[1] not in self.excluded
         )
