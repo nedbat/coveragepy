@@ -23,7 +23,10 @@ upgrading your version of coverage.py.
 Unreleased
 ----------
 
-Nothing yet.
+- Fix: `Tomas Uribe fixed <pull 1901_>`_ a performance problem in the XML
+  report.  Large code bases should produce XML reports much faster now.
+
+.. _pull 1901: https://github.com/nedbat/coveragepy/pull/1901
 
 
 .. start-releases
