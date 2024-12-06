@@ -20,16 +20,18 @@ upgrading your version of coverage.py.
     ..  Version 9.8.1 — 2027-07-27
     ..  --------------------------
 
-Unreleased
-----------
+.. start-releases
+
+.. _changes_7-6-9:
+
+Version 7.6.9 — 2024-12-06
+--------------------------
 
 - Fix: `Tomas Uribe fixed <pull 1901_>`_ a performance problem in the XML
   report.  Large code bases should produce XML reports much faster now.
 
 .. _pull 1901: https://github.com/nedbat/coveragepy/pull/1901
 
-
-.. start-releases
 
 .. _changes_7-6-8:
 
