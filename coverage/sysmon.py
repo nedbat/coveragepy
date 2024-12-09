@@ -3,6 +3,8 @@
 
 """Callback functions and support for sys.monitoring data collection."""
 
+# TODO: https://github.com/python/cpython/issues/111963#issuecomment-2386584080
+
 from __future__ import annotations
 
 import functools
