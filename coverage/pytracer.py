@@ -28,6 +28,15 @@ from coverage.types import (
     Tracer,
 )
 
+
+# I don't understand why, but if we use `cast(set[TLineNo], ...)` inside
+# the _trace() function, we get some strange behavior on PyPy 3.10.
+# Assigning these names here and using them below fixes the problem.
+# See https://github.com/nedbat/coveragepy/issues/1902
+set_TLineNo = set[TLineNo]
+set_TArc = set[TArc]
+
+
 # We need the YIELD_VALUE opcode below, in a comparison-friendly form.
 # PYVERSIONS: RESUME is new in Python3.11
 RESUME = dis.opmap.get("RESUME")
@@ -253,9 +262,9 @@ class PyTracer(Tracer):
                 flineno: TLineNo = frame.f_lineno
 
                 if self.trace_arcs:
-                    cast(set[TArc], self.cur_file_data).add((self.last_line, flineno))
+                    cast(set_TArc, self.cur_file_data).add((self.last_line, flineno))
                 else:
-                    cast(set[TLineNo], self.cur_file_data).add(flineno)
+                    cast(set_TLineNo, self.cur_file_data).add(flineno)
                 self.last_line = flineno
 
         elif event == "return":
@@ -286,7 +295,7 @@ class PyTracer(Tracer):
                         real_return = True
                 if real_return:
                     first = frame.f_code.co_firstlineno
-                    cast(set[TArc], self.cur_file_data).add((self.last_line, -first))
+                    cast(set_TArc, self.cur_file_data).add((self.last_line, -first))
 
             # Leaving this function, pop the filename stack.
             self.cur_file_data, self.cur_file_name, self.last_line, self.started_context = (

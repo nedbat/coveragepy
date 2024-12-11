@@ -23,7 +23,12 @@ upgrading your version of coverage.py.
 Unreleased
 ----------
 
-Nothing yet.
+- Fixed an obscure and mysterious problem on PyPy 3.10 seemingly involving
+  mocks, imports, and trace functions: `issue 1902`_.  To be honest, I don't
+  understand the problem or the solution, but ``git bisect`` helped find it,
+  and now it's fixed.
+
+.. _issue 1902: https://github.com/nedbat/coveragepy/issues/1902
 
 
 .. start-releases
