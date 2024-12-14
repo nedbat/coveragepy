@@ -159,10 +159,10 @@ class PYBEHAVIOR:
     # PEP649 and PEP749: Deferred annotations
     deferred_annotations = (PYVERSION >= (3, 14))
 
-    # Does sys.monitoring support BRANCH_TAKEN?
-    branch_taken = (
+    # Does sys.monitoring support BRANCH_RIGHT and BRANCH_LEFT?
+    branch_right_left = (
         pep669 and
-        hasattr(sys.monitoring.events, "BRANCH_TAKEN") # type:ignore[attr-defined,unused-ignore]
+        hasattr(sys.monitoring.events, "BRANCH_RIGHT") # type:ignore[attr-defined,unused-ignore]
     )
 
 

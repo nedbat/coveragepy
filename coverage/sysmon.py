@@ -246,8 +246,8 @@ class SysMonitor(Tracer):
         if self.trace_arcs:
             register(events.PY_RETURN, self.sysmon_py_return)
             register(events.LINE, self.sysmon_line_arcs)
-            register(events.BRANCH_TAKEN, self.sysmon_branch_taken)
-            register(events.BRANCH_NOT_TAKEN, self.sysmon_branch_not_taken)
+            register(events.BRANCH_RIGHT, self.sysmon_branch_right)     # type:ignore[attr-defined]
+            register(events.BRANCH_LEFT, self.sysmon_branch_left)       # type:ignore[attr-defined]
         else:
             register(events.LINE, self.sysmon_line_lines)
         sys_monitoring.restart_events()
@@ -343,9 +343,9 @@ class SysMonitor(Tracer):
                         assert sys_monitoring is not None
                         local_events = events.PY_RETURN | events.PY_RESUME | events.LINE
                         if self.trace_arcs:
-                            assert env.PYBEHAVIOR.branch_taken
+                            assert env.PYBEHAVIOR.branch_right_left
                             local_events |= (
-                                events.BRANCH_TAKEN | events.BRANCH_NOT_TAKEN
+                                events.BRANCH_RIGHT | events.BRANCH_LEFT # type:ignore[attr-defined]
                             )
                         sys_monitoring.set_local_events(self.myid, code, local_events)
                         self.local_event_codes[id(code)] = code
@@ -390,10 +390,10 @@ class SysMonitor(Tracer):
         return DISABLE
 
     @panopticon("code", "@", "@")
-    def sysmon_branch_taken(
+    def sysmon_branch_right(
         self, code: CodeType, instruction_offset: int, destination_offset: int
     ) -> MonitorReturn:
-        """Handed BRANCH_TAKEN and BRANCH_NOT_TAKEN events."""
+        """Handed BRANCH_RIGHT and BRANCH_LEFT events."""
         code_info = self.code_infos[id(code)]
         if code_info.file_data is not None:
             b2l = code_info.byte_to_line
@@ -404,10 +404,10 @@ class SysMonitor(Tracer):
         return DISABLE
 
     @panopticon("code", "@", "@")
-    def sysmon_branch_not_taken(
+    def sysmon_branch_left(
         self, code: CodeType, instruction_offset: int, destination_offset: int
     ) -> MonitorReturn:
-        """Handed BRANCH_TAKEN and BRANCH_NOT_TAKEN events."""
+        """Handed BRANCH_RIGHT and BRANCH_LEFT events."""
         code_info = self.code_infos[id(code)]
         if code_info.file_data is not None:
             b2l = code_info.byte_to_line

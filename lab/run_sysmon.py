@@ -31,8 +31,8 @@ MY_EVENTS = (
     events.PY_RETURN
     | events.PY_RESUME
     | events.LINE
-    | events.BRANCH_TAKEN
-    | events.BRANCH_NOT_TAKEN
+    | events.BRANCH_RIGHT
+    | events.BRANCH_LEFT
     | events.JUMP
 )
 
@@ -82,13 +82,13 @@ def sysmon_branch(code, instruction_offset, destination_offset):
     return sys.monitoring.DISABLE
 
 
-def sysmon_branch_taken(code, instruction_offset, destination_offset):
-    show_off_off("BRANCH_TAKEN", code, instruction_offset, destination_offset)
+def sysmon_branch_right(code, instruction_offset, destination_offset):
+    show_off_off("BRANCH_RIGHT", code, instruction_offset, destination_offset)
     return sys.monitoring.DISABLE
 
 
-def sysmon_branch_not_taken(code, instruction_offset, destination_offset):
-    show_off_off("BRANCH_NOT_TAKEN", code, instruction_offset, destination_offset)
+def sysmon_branch_left(code, instruction_offset, destination_offset):
+    show_off_off("BRANCH_LEFT", code, instruction_offset, destination_offset)
     return sys.monitoring.DISABLE
 
 
@@ -108,8 +108,8 @@ if 1:
     # register(events.PY_UNWIND, sysmon_py_unwind_arcs)
     register(events.LINE, sysmon_line)
     register(events.BRANCH, sysmon_branch)
-    register(events.BRANCH_TAKEN, sysmon_branch_taken)
-    register(events.BRANCH_NOT_TAKEN, sysmon_branch_not_taken)
+    register(events.BRANCH_RIGHT, sysmon_branch_right)
+    register(events.BRANCH_LEFT, sysmon_branch_left)
     register(events.JUMP, sysmon_jump)
 
 exec(code)

@@ -64,12 +64,12 @@ class Core:
                 warn("sys.monitoring isn't available, using default core", slug="no-sysmon")
                 core_name = None
 
-            if core_name == "sysmon" and config.branch and not env.PYBEHAVIOR.branch_taken:
-                warn(
-                    "sys.monitoring can't yet measure branches well, using default core",
-                    slug="no-sysmon",
-                )
-                core_name = None
+            # if core_name == "sysmon" and config.branch and not env.PYBEHAVIOR.branch_right_left:
+            #     warn(
+            #         "sys.monitoring can't yet measure branches well, using default core",
+            #         slug="no-sysmon",
+            #     )
+            #     core_name = None
 
             if not core_name:
                 # Once we're comfortable with sysmon as a default:
