@@ -556,7 +556,7 @@ class MultiprocessingTest(CoverageTest):
         expected_out = f"{nprocs} pids, total = {total}"
         expect_warn = (
             env.PYBEHAVIOR.pep669
-            and (not env.PYBEHAVIOR.branch_taken)
+            and (not env.PYBEHAVIOR.branch_right_left)
             and testenv.SYS_MON
         )
         self.make_file("multi.py", code)

@@ -100,10 +100,10 @@ class PYBEHAVIOR:
     # https://github.com/python/cpython/issues/113728
     lasti_is_yield = (PYVERSION[:2] != (3, 13))
 
-    # Does sys.monitoring support BRANCH_TAKEN?
-    branch_taken = (
+    # Does sys.monitoring support BRANCH_RIGHT and BRANCH_LEFT?
+    branch_right_left = (
         pep669 and
-        hasattr(sys.monitoring.events, "BRANCH_TAKEN") # type:ignore[attr-defined,unused-ignore]
+        hasattr(sys.monitoring.events, "BRANCH_RIGHT") # type:ignore[attr-defined,unused-ignore]
     )
 
 
