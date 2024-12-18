@@ -183,8 +183,11 @@ def show_file(fname):
         print("Odd file:", fname)
 
 def main(args):
-    # "DeprecationWarning: co_lnotab is deprecated, use co_lines instead."
-    warnings.filterwarnings("ignore", category=DeprecationWarning)
+    warnings.filterwarnings(
+        "ignore",
+        "co_lnotab is deprecated, use co_lines instead",
+        category=DeprecationWarning
+    )
     if args[0] == '-c':
         show_py_text(" ".join(args[1:]).replace(";", "\n"))
     else:
