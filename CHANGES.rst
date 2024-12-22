@@ -23,12 +23,19 @@ upgrading your version of coverage.py.
 Unreleased
 ----------
 
+- Fix: Python 3.14 `defers evaluation of annotations <pep649_>`_ by moving them
+  into separate code objects.  That code is rarely executed, so coverage.py
+  would mark them as missing, as reported in `issue 1908`_.  Now they are
+  ignored by coverage automatically.
+
 - Fixed an obscure and mysterious problem on PyPy 3.10 seemingly involving
   mocks, imports, and trace functions: `issue 1902`_.  To be honest, I don't
   understand the problem or the solution, but ``git bisect`` helped find it,
   and now it's fixed.
 
 .. _issue 1902: https://github.com/nedbat/coveragepy/issues/1902
+.. _issue 1908: https://github.com/nedbat/coveragepy/issues/1908
+.. _pep649: https://docs.python.org/3.14/whatsnew/3.14.html#pep-649-deferred-evaluation-of-annotations
 
 
 .. start-releases

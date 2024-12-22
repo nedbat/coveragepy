@@ -413,8 +413,17 @@ class ByteParser:
 
         The iteration includes `self` as its first value.
 
+        We skip code objects named `__annotate__` since they are deferred
+        annotations that usually are never run.  If there are errors in the
+        annotations, they will be caught by type checkers or other tools that
+        use annotations.
+
         """
-        return (ByteParser(self.text, code=c) for c in code_objects(self.code))
+        return (
+            ByteParser(self.text, code=c)
+            for c in code_objects(self.code)
+            if c.co_name != "__annotate__"
+        )
 
     def _line_numbers(self) -> Iterable[TLineNo]:
         """Yield the line numbers possible in this code object.

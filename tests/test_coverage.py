@@ -1290,6 +1290,35 @@ class CompoundStatementTest(CoverageTest):
         )
 
 
+class AnnotationTest(CoverageTest):
+    """Tests specific to annotations."""
+
+    def test_attribute_annotation(self) -> None:
+        if env.PYBEHAVIOR.deferred_annotations:
+            lines = [1, 3]
+        else:
+            lines = [1, 2, 3]
+        self.check_coverage("""\
+            class X:
+                x: int
+                y = 1
+            """,
+            lines=lines,
+            missing="",
+        )
+
+    def test_attribute_annotation_from_future(self) -> None:
+        self.check_coverage("""\
+            from __future__ import annotations
+            class X:
+                x: int
+                y = 1
+            """,
+            lines=[1, 2, 3, 4],
+            missing="",
+        )
+
+
 class ExcludeTest(CoverageTest):
     """Tests of the exclusion feature to mark lines as not covered."""
 

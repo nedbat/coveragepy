@@ -100,6 +100,9 @@ class PYBEHAVIOR:
     # https://github.com/python/cpython/issues/113728
     lasti_is_yield = (PYVERSION[:2] != (3, 13))
 
+    # PEP649 and PEP749: Deferred annotations
+    deferred_annotations = (PYVERSION >= (3, 14))
+
 
 # Coverage.py specifics, about testing scenarios. See tests/testenv.py also.
 
