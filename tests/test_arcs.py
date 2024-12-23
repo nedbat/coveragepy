@@ -381,7 +381,7 @@ class WithTest(CoverageTest):
             branchz_missing="",
         )
 
-    def test_multi_multiline_with_backslask(self) -> None:
+    def test_multi_multiline_with_backslash(self) -> None:
         # https://github.com/nedbat/coveragepy/issues/1880
         self.check_coverage("""\
             import contextlib, itertools
