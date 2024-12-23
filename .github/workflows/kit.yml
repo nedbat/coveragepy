@@ -182,7 +182,7 @@ jobs:
           python -m twine check wheelhouse/*
 
       - name: "Upload wheels"
-        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
+        uses: actions/upload-artifact@6f51ac03b9356f520e9adb1b1b7802705f340c2b # v4.5.0
         with:
           name: dist-${{ env.MATRIX_ID }}
           path: wheelhouse/*.whl
@@ -221,7 +221,7 @@ jobs:
           python -m twine check dist/*
 
       - name: "Upload sdist"
-        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
+        uses: actions/upload-artifact@6f51ac03b9356f520e9adb1b1b7802705f340c2b # v4.5.0
         with:
           name: dist-sdist
           path: dist/*.tar.gz
@@ -265,7 +265,7 @@ jobs:
           python -m twine check dist/*
 
       - name: "Upload wheels"
-        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
+        uses: actions/upload-artifact@6f51ac03b9356f520e9adb1b1b7802705f340c2b # v4.5.0
         with:
           name: dist-pypy
           path: dist/*.whl
@@ -305,7 +305,7 @@ jobs:
           ls -alR
 
       - name: "Upload signatures"
-        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
+        uses: actions/upload-artifact@6f51ac03b9356f520e9adb1b1b7802705f340c2b # v4.5.0
         with:
           name: signatures
           path: "*.sigstore.json"
