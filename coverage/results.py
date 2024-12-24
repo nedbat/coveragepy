@@ -219,8 +219,7 @@ class Analysis:
         branch_lines = set(self._branch_lines())
         eba = collections.defaultdict(list)
         for l1, l2 in self.arcs_executed:
-            if l1 == l2:
-                continue
+            assert l1 != l2, f"Oops: Didn't think this could happen: {l1 = }, {l2 = }"
             if (l1, l2) not in self.arc_possibilities_set:
                 continue
             if l1 in branch_lines:
