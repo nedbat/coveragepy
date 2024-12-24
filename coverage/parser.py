@@ -300,10 +300,14 @@ class PythonParser:
         assert self._ast_root is not None
         aaa = AstArcAnalyzer(self.filename, self._ast_root, self.raw_statements, self._multiline)
         aaa.analyze()
-        self._with_jump_fixers = aaa.with_jump_fixers()
+        arcs = aaa.arcs
+        if env.PYBEHAVIOR.exit_through_with:
+            self._with_jump_fixers = aaa.with_jump_fixers()
+            if self._with_jump_fixers:
+                arcs = self.fix_with_jumps(arcs)
 
         self._all_arcs = set()
-        for l1, l2 in self.fix_with_jumps(aaa.arcs):
+        for l1, l2 in arcs:
             fl1 = self.first_line(l1)
             fl2 = self.first_line(l2)
             if fl1 != fl2:
@@ -312,20 +316,41 @@ class PythonParser:
         self._missing_arc_fragments = aaa.missing_arc_fragments
 
     def fix_with_jumps(self, arcs: Iterable[TArc]) -> set[TArc]:
-        """Adjust arcs to fix jumps leaving `with` statements."""
+        """Adjust arcs to fix jumps leaving `with` statements.
+
+        Consider this code:
+
+            with open("/tmp/test", "w") as f1:
+                a = 2
+                b = 3
+            print(4)
+
+        In 3.10+, we get traces for lines 1, 2, 3, 1, 4.  But we want to present
+        it to the user as if it had been 1, 2, 3, 4.  The arc 3->1 should be
+        replaced with 3->4, and 1->4 should be removed.
+
+        For this code, the fixers dict is {(3, 1): ((1, 4), (3, 4))}.  The key
+        is the actual measured arc from the end of the with block back to the
+        start of the with-statement.  The values are start_next (the with
+        statement to the next statement after the with), and end_next (the end
+        of the with-statement to the next statement after the with).
+
+        With nested with-statements, we have to trace through a few levels to
+        correct a longer chain of arcs.
+
+        """
         to_remove = set()
         to_add = set()
         for arc in arcs:
             if arc in self._with_jump_fixers:
-                start = arc[0]
+                end0 = arc[0]
                 to_remove.add(arc)
-                start_next, prev_next = self._with_jump_fixers[arc]
+                start_next, end_next = self._with_jump_fixers[arc]
                 while start_next in self._with_jump_fixers:
                     to_remove.add(start_next)
-                    start_next, prev_next = self._with_jump_fixers[start_next]
-                    to_remove.add(prev_next)
-                to_add.add((start, prev_next[1]))
-                to_remove.add(arc)
+                    start_next, end_next = self._with_jump_fixers[start_next]
+                    to_remove.add(end_next)
+                to_add.add((end0, end_next[1]))
                 to_remove.add(start_next)
         arcs = (set(arcs) | to_add) - to_remove
         return arcs
@@ -700,15 +725,12 @@ class AstArcAnalyzer:
     def with_jump_fixers(self) -> dict[TArc, tuple[TArc, TArc]]:
         """Get a dict with data for fixing jumps out of with statements.
 
-        Returns a dict.  The keys are arcs leaving a with statement by jumping
+        Returns a dict.  The keys are arcs leaving a with-statement by jumping
         back to its start.  The values are pairs: first, the arc from the start
         to the next statement, then the arc that exits the with without going
         to the start.
 
         """
-        if not env.PYBEHAVIOR.exit_through_with:
-            return {}
-
         fixers = {}
         with_nexts = {
             arc
@@ -721,9 +743,9 @@ class AstArcAnalyzer:
                 continue
             assert len(nexts) == 1, f"Expected one arc, got {nexts} with {start = }"
             nxt = nexts.pop()
-            prvs = {arc[0] for arc in self.with_exits if arc[1] == start}
-            for prv in prvs:
-                fixers[(prv, start)] = ((start, nxt), (prv, nxt))
+            ends = {arc[0] for arc in self.with_exits if arc[1] == start}
+            for end in ends:
+                fixers[(end, start)] = ((start, nxt), (end, nxt))
         return fixers
 
     # Code object dispatchers: _code_object__*

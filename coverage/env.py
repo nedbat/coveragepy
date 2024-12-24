@@ -79,10 +79,66 @@ class PYBEHAVIOR:
     keep_constant_test = pep626
 
     # When leaving a with-block, do we visit the with-line again for the exit?
+    # For example, wwith.py:
+    #
+    #    with open("/tmp/test", "w") as f1:
+    #        a = 2
+    #        with open("/tmp/test2", "w") as f3:
+    #            print(4)
+    #
+    # % python3.9 -m trace -t wwith.py | grep wwith
+    #  --- modulename: wwith, funcname: <module>
+    # wwith.py(1): with open("/tmp/test", "w") as f1:
+    # wwith.py(2):     a = 2
+    # wwith.py(3):     with open("/tmp/test2", "w") as f3:
+    # wwith.py(4):         print(4)
+    #
+    # % python3.10 -m trace -t wwith.py | grep wwith
+    #  --- modulename: wwith, funcname: <module>
+    # wwith.py(1): with open("/tmp/test", "w") as f1:
+    # wwith.py(2):     a = 2
+    # wwith.py(3):     with open("/tmp/test2", "w") as f3:
+    # wwith.py(4):         print(4)
+    # wwith.py(3):     with open("/tmp/test2", "w") as f3:
+    # wwith.py(1): with open("/tmp/test", "w") as f1:
+    #
     exit_through_with = (PYVERSION >= (3, 10, 0, "beta"))
 
     # When leaving a with-block, do we visit the with-line exactly,
-    # or the inner-most context manager?
+    # or the context managers in inner-out order?
+    #
+    # mwith.py:
+    #    with (
+    #        open("/tmp/one", "w") as f2,
+    #        open("/tmp/two", "w") as f3,
+    #        open("/tmp/three", "w") as f4,
+    #    ):
+    #        print("hello 6")
+    #
+    # % python3.11 -m trace -t mwith.py | grep mwith
+    #  --- modulename: mwith, funcname: <module>
+    # mwith.py(2):     open("/tmp/one", "w") as f2,
+    # mwith.py(1): with (
+    # mwith.py(2):     open("/tmp/one", "w") as f2,
+    # mwith.py(3):     open("/tmp/two", "w") as f3,
+    # mwith.py(1): with (
+    # mwith.py(3):     open("/tmp/two", "w") as f3,
+    # mwith.py(4):     open("/tmp/three", "w") as f4,
+    # mwith.py(1): with (
+    # mwith.py(4):     open("/tmp/three", "w") as f4,
+    # mwith.py(6):     print("hello 6")
+    # mwith.py(1): with (
+    #
+    # % python3.12 -m trace -t mwith.py | grep mwith
+    #  --- modulename: mwith, funcname: <module>
+    # mwith.py(2):      open("/tmp/one", "w") as f2,
+    # mwith.py(3):      open("/tmp/two", "w") as f3,
+    # mwith.py(4):      open("/tmp/three", "w") as f4,
+    # mwith.py(6):      print("hello 6")
+    # mwith.py(4):      open("/tmp/three", "w") as f4,
+    # mwith.py(3):      open("/tmp/two", "w") as f3,
+    # mwith.py(2):      open("/tmp/one", "w") as f2,
+
     exit_with_through_ctxmgr = (PYVERSION >= (3, 12, 6))
 
     # Match-case construct.
