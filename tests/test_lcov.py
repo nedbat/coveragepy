@@ -558,3 +558,33 @@ class LcovTest(CoverageTest):
             """)
         actual_result = self.get_lcov_report_content()
         assert expected_result == actual_result
+
+    def test_multiline_conditions(self) -> None:
+        self.make_file("multi.py", """\
+            def fun(x):
+                if (
+                    x
+                ):
+                    print("got here")
+            """)
+        cov = coverage.Coverage(source=".", branch=True)
+        self.start_import_stop(cov, "multi")
+        cov.lcov_report()
+        lcov = self.get_lcov_report_content()
+        assert "BRDA:2,0,return from function 'fun',-" in lcov
+
+    def test_module_exit(self) -> None:
+        self.make_file("modexit.py", """\
+            #! /usr/bin/env python
+            def foo():
+                return bar(
+                )
+            if "x" == "y":  # line 5
+                foo()
+            """)
+        cov = coverage.Coverage(source=".", branch=True)
+        self.start_import_stop(cov, "modexit")
+        cov.lcov_report()
+        lcov = self.get_lcov_report_content()
+        print(lcov)
+        assert "BRDA:5,0,exit the module,1" in lcov

@@ -34,7 +34,8 @@ def analysis_from_file_reporter(
 
     if has_arcs:
         arc_possibilities_set = file_reporter.arcs()
-        arcs = data.arcs(filename) or []
+        arcs: Iterable[TArc] = data.arcs(filename) or []
+        arcs = file_reporter.translate_arcs(arcs)
 
         # Reduce the set of arcs to the ones that could be branches.
         dests = collections.defaultdict(set)

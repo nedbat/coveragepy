@@ -684,7 +684,6 @@ class AstArcAnalyzer:
     ) -> None:
         self.filename = filename
         self.root_node = root_node
-        # TODO: I think this is happening in too many places.
         self.statements = {multiline.get(l, l) for l in statements}
         self.multiline = multiline
 
@@ -812,9 +811,10 @@ class AstArcAnalyzer:
             getattr(self, "_line__" + node_name, None),
         )
         if handler is not None:
-            return handler(node)
+            line = handler(node)
         else:
-            return node.lineno      # type: ignore[attr-defined, no-any-return]
+            line = node.lineno      # type: ignore[attr-defined]
+        return self.multiline.get(line, line)
 
     # First lines: _line__*
     #
@@ -936,8 +936,7 @@ class AstArcAnalyzer:
         # the next node.
         for body_node in body:
             lineno = self.line_for_node(body_node)
-            first_line = self.multiline.get(lineno, lineno)
-            if first_line not in self.statements:
+            if lineno not in self.statements:
                 maybe_body_node = self.find_non_missing_node(body_node)
                 if maybe_body_node is None:
                     continue
@@ -961,8 +960,7 @@ class AstArcAnalyzer:
         # means we can avoid a function call in the 99.9999% case of not
         # optimizing away statements.
         lineno = self.line_for_node(node)
-        first_line = self.multiline.get(lineno, lineno)
-        if first_line in self.statements:
+        if lineno in self.statements:
             return node
 
         missing_fn = cast(
@@ -1110,8 +1108,6 @@ class AstArcAnalyzer:
             # not what we'd think of as the first line in the statement, so map
             # it to the first one.
             assert node.body, f"Oops: {node.body = } in {self.filename}@{node.lineno}"
-            body_start = self.line_for_node(node.body[0])
-            body_start = self.multiline.get(body_start, body_start)
         # The body is handled in collect_arcs.
         assert last is not None
         return {ArcStart(last)}

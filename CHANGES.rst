@@ -23,6 +23,10 @@ upgrading your version of coverage.py.
 Unreleased
 ----------
 
+- Fix: some descriptions of missing branches in HTML and LCOV reports were
+  incorrect when multi-line statements were involved (`issue 1874`_ and `issue
+  1875`_).  These are now fixed.
+
 - Fix: Python 3.14 `defers evaluation of annotations <pep649_>`_ by moving them
   into separate code objects.  That code is rarely executed, so coverage.py
   would mark them as missing, as reported in `issue 1908`_.  Now they are
@@ -33,6 +37,8 @@ Unreleased
   understand the problem or the solution, but ``git bisect`` helped find it,
   and now it's fixed.
 
+.. _issue 1874: https://github.com/nedbat/coveragepy/issues/1874
+.. _issue 1875: https://github.com/nedbat/coveragepy/issues/1875
 .. _issue 1902: https://github.com/nedbat/coveragepy/issues/1902
 .. _issue 1908: https://github.com/nedbat/coveragepy/issues/1908
 .. _pep649: https://docs.python.org/3.14/whatsnew/3.14.html#pep-649-deferred-evaluation-of-annotations
