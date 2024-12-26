@@ -235,7 +235,7 @@ update_rtd:				#: Update ReadTheDocs with the versions to show
 bump_version:				#: Edit sources to bump the version after a release (see howto.txt).
 	git switch -c nedbat/bump-version
 	python igor.py bump_version
-	git commit -a -m "build: bump version"
+	git commit -a -m "build: bump version to $$(python setup.py --version | sed 's/a.*//')"
 	git push -u origin @
 
 
