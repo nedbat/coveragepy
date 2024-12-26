@@ -20,8 +20,12 @@ upgrading your version of coverage.py.
     ..  Version 9.8.1 — 2027-07-27
     ..  --------------------------
 
-Unreleased
-----------
+.. start-releases
+
+.. _changes_7-6-10:
+
+Version 7.6.10 — 2024-12-26
+---------------------------
 
 - Fix: some descriptions of missing branches in HTML and LCOV reports were
   incorrect when multi-line statements were involved (`issue 1874`_ and `issue
@@ -47,8 +51,6 @@ Unreleased
 .. _issue 1908: https://github.com/nedbat/coveragepy/issues/1908
 .. _pep649: https://docs.python.org/3.14/whatsnew/3.14.html#pep-649-deferred-evaluation-of-annotations
 
-
-.. start-releases
 
 .. _changes_7-6-9:
 
