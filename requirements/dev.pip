@@ -4,9 +4,9 @@
 #
 #    make upgrade
 #
-astroid==3.3.5
+astroid==3.3.8
     # via pylint
-attrs==24.2.0
+attrs==24.3.0
     # via hypothesis
 backports-tarfile==1.2.0
     # via jaraco-context
@@ -14,11 +14,11 @@ build==1.2.2.post1
     # via check-manifest
 cachetools==5.5.0
     # via tox
-certifi==2024.8.30
+certifi==2024.12.14
     # via requests
 chardet==5.2.0
     # via tox
-charset-normalizer==3.4.0
+charset-normalizer==3.4.1
     # via requests
 check-manifest==0.50
     # via -r requirements/dev.in
@@ -49,7 +49,7 @@ flaky==3.8.1
     # via -r /Users/ned/coverage/trunk/requirements/pytest.in
 greenlet==3.1.1
     # via -r requirements/dev.in
-hypothesis==6.122.1
+hypothesis==6.123.1
     # via -r /Users/ned/coverage/trunk/requirements/pytest.in
 idna==3.10
     # via requests
@@ -70,7 +70,7 @@ jaraco-functools==4.1.0
     # via keyring
 jedi==0.19.2
     # via pudb
-keyring==25.5.0
+keyring==25.6.0
     # via twine
 libsass==0.23.0
     # via -r requirements/dev.in
@@ -84,7 +84,7 @@ more-itertools==10.5.0
     # via
     #   jaraco-classes
     #   jaraco-functools
-nh3==0.2.19
+nh3==0.2.20
     # via readme-renderer
 packaging==24.2
     # via
@@ -96,7 +96,7 @@ packaging==24.2
     #   twine
 parso==0.8.4
     # via jedi
-pkginfo==1.11.2
+pkginfo==1.12.0
     # via twine
 platformdirs==4.3.6
     # via
@@ -115,7 +115,7 @@ pygments==2.18.0
     #   pudb
     #   readme-renderer
     #   rich
-pylint==3.3.2
+pylint==3.3.3
     # via -r requirements/dev.in
 pyproject-api==1.8.0
     # via tox
@@ -171,7 +171,7 @@ typing-extensions==4.12.2
     #   rich
     #   tox
     #   urwid
-urllib3==2.2.3
+urllib3==2.3.0
     # via
     #   requests
     #   twine

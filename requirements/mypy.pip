@@ -4,7 +4,7 @@
 #
 #    make upgrade
 #
-attrs==24.2.0
+attrs==24.3.0
     # via hypothesis
 colorama==0.4.6
     # via -r /Users/ned/coverage/trunk/requirements/pytest.in
@@ -16,11 +16,11 @@ execnet==2.1.1
     # via pytest-xdist
 flaky==3.8.1
     # via -r /Users/ned/coverage/trunk/requirements/pytest.in
-hypothesis==6.122.1
+hypothesis==6.123.1
     # via -r /Users/ned/coverage/trunk/requirements/pytest.in
 iniconfig==2.0.0
     # via pytest
-mypy==1.13.0
+mypy==1.14.0
     # via -r requirements/mypy.in
 mypy-extensions==1.0.0
     # via mypy
@@ -44,9 +44,9 @@ tomli==2.2.1
     #   pytest
 types-requests==2.32.0.20241016
     # via -r requirements/mypy.in
-types-tabulate==0.9.0.20240106
+types-tabulate==0.9.0.20241207
     # via -r requirements/mypy.in
 typing-extensions==4.12.2
     # via mypy
-urllib3==2.2.3
+urllib3==2.3.0
     # via types-requests

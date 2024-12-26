@@ -14,11 +14,11 @@ bracex==2.5.post1
     # via cibuildwheel
 build==1.2.2.post1
     # via -r requirements/kit.in
-certifi==2024.8.30
+certifi==2024.12.14
     # via
     #   cibuildwheel
     #   requests
-charset-normalizer==3.4.0
+charset-normalizer==3.4.1
     # via requests
 cibuildwheel==2.22.0
     # via -r requirements/kit.in
@@ -43,7 +43,7 @@ jaraco-context==6.0.1
     # via keyring
 jaraco-functools==4.1.0
     # via keyring
-keyring==25.5.0
+keyring==25.6.0
     # via twine
 markdown-it-py==3.0.0
     # via rich
@@ -53,7 +53,7 @@ more-itertools==10.5.0
     # via
     #   jaraco-classes
     #   jaraco-functools
-nh3==0.2.19
+nh3==0.2.20
     # via readme-renderer
 packaging==24.2
     # via
@@ -62,7 +62,7 @@ packaging==24.2
     #   cibuildwheel
     #   dependency-groups
     #   twine
-pkginfo==1.11.2
+pkginfo==1.12.0
     # via twine
 platformdirs==4.3.6
     # via cibuildwheel
@@ -97,7 +97,7 @@ typing-extensions==4.12.2
     # via
     #   cibuildwheel
     #   rich
-urllib3==2.2.3
+urllib3==2.3.0
     # via
     #   requests
     #   twine
