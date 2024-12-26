@@ -606,7 +606,7 @@ class ProcessTest(CoverageTest):
             """)
 
         # Some of our testing infrastructure can issue warnings.
-        # Turn it all off for the sub-process.
+        # Turn it all off for the subprocess.
         self.del_environ("COVERAGE_TESTING")
 
         out = self.run_command("python allok.py")
@@ -1197,9 +1197,9 @@ class YankedDirectoryTest(CoverageTest):
         assert all(line in out for line in lines)
 
 
-@pytest.mark.skipif(env.METACOV, reason="Can't test sub-process pth file during metacoverage")
+@pytest.mark.skipif(env.METACOV, reason="Can't test subprocess pth file during metacoverage")
 class ProcessStartupTest(CoverageTest):
-    """Test that we can measure coverage in sub-processes."""
+    """Test that we can measure coverage in subprocesses."""
 
     def setUp(self) -> None:
         super().setUp()

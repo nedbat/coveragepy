@@ -301,7 +301,7 @@ class Coverage(TConfigurable):
             context=context,
         )
 
-        # If we have sub-process measurement happening automatically, then we
+        # If we have subprocess measurement happening automatically, then we
         # want any explicit creation of a Coverage object to mean, this process
         # is already coverage-aware, so don't auto-measure it.  By now, the
         # auto-creation of a Coverage object has already happened.  But we can

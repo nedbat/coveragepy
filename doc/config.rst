@@ -25,7 +25,7 @@ specification of options that are otherwise only available in the
 :ref:`API <api>`.
 
 Configuration files also make it easier to get coverage testing of spawned
-sub-processes.  See :ref:`subprocess` for more details.
+subprocesses.  See :ref:`subprocess` for more details.
 
 The default name for the configuration file is ``.coveragerc``, in the same
 directory coverage.py is being run in.  Most of the settings in the
@@ -443,11 +443,12 @@ need to know the source origin.
 
 (boolean, default False) if true, register a SIGTERM signal handler to capture
 data when the process ends due to a SIGTERM signal.  This includes
-:meth:`Process.terminate <python:multiprocessing.Process.terminate>`, and other
+:meth:`Process.terminate <python:multiprocessing.Process.terminate>` and other
 ways to terminate a process.  This can help when collecting data in usual
 situations, but can also introduce problems (see `issue 1310`_).
 
-Only on Linux and Mac.
+The signal handler is only registered on Linux and Mac.  On Windows, this
+setting has no effect.
 
 .. _issue 1310: https://github.com/nedbat/coveragepy/issues/1310
 

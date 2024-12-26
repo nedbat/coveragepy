@@ -255,6 +255,7 @@ cogdoc: $(DOCBIN)			## Run docs through cog.
 
 dochtml: cogdoc $(DOCBIN)		## Build the docs HTML output.
 	$(SPHINXBUILD) -b html doc doc/_build/html
+	@echo "Start at: doc/_build/html/index.html"
 
 docdev: dochtml				## Build docs, and auto-watch for changes.
 	PATH=$(DOCBIN):$(PATH) $(SPHINXAUTOBUILD) -b html doc doc/_build/html

@@ -1060,12 +1060,12 @@ Work from the PyCon 2016 Sprints!
 - The ``concurrency`` option can now take multiple values, to support programs
   using multiprocessing and another library such as eventlet.  This is only
   possible in the configuration file, not from the command line. The
-  configuration file is the only way for sub-processes to all run with the same
+  configuration file is the only way for subprocesses to all run with the same
   options.  Fixes `issue 484`_.  Thanks to Josh Williams for prototyping.
 
 - Using a ``concurrency`` setting of ``multiprocessing`` now implies
   ``--parallel`` so that the main program is measured similarly to the
-  sub-processes.
+  subprocesses.
 
 - When using `automatic subprocess measurement`_, running coverage commands
   would create spurious data files.  This is now fixed, thanks to diagnosis and

@@ -37,6 +37,10 @@ Unreleased
   understand the problem or the solution, but ``git bisect`` helped find it,
   and now it's fixed.
 
+- Docs: re-wrote the :ref:`subprocess` page to put multiprocessing first and to
+  highlight the correct use of :class:`multiprocessing.Pool
+  <python:multiprocessing.pool.Pool>`.
+
 .. _issue 1874: https://github.com/nedbat/coveragepy/issues/1874
 .. _issue 1875: https://github.com/nedbat/coveragepy/issues/1875
 .. _issue 1902: https://github.com/nedbat/coveragepy/issues/1902

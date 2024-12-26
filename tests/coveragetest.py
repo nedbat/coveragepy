@@ -377,11 +377,11 @@ class CoverageTest(
     coverage_command = "coverage"
 
     def run_command(self, cmd: str) -> str:
-        """Run the command-line `cmd` in a sub-process.
+        """Run the command-line `cmd` in a subprocess.
 
-        `cmd` is the command line to invoke in a sub-process. Returns the
+        `cmd` is the command line to invoke in a subprocess. Returns the
         combined content of `stdout` and `stderr` output streams from the
-        sub-process.
+        subprocess.
 
         See `run_command_status` for complete semantics.
 
@@ -394,7 +394,7 @@ class CoverageTest(
         return output
 
     def run_command_status(self, cmd: str) -> tuple[int, str]:
-        """Run the command-line `cmd` in a sub-process, and print its output.
+        """Run the command-line `cmd` in a subprocess, and print its output.
 
         Use this when you need to test the process behavior of coverage.
 
@@ -420,7 +420,7 @@ class CoverageTest(
         command_args = split_commandline[1:]
 
         if command_name == "python":
-            # Running a Python interpreter in a sub-processes can be tricky.
+            # Running a Python interpreter in a subprocesses can be tricky.
             # Use the real name of our own executable. So "python foo.py" might
             # get executed as "python3.3 foo.py". This is important because
             # Python 3.x doesn't install as "python", so you might get a Python

@@ -33,7 +33,7 @@ from coverage.types import TArc
 
 
 def run_command(cmd: str) -> tuple[int, str]:
-    """Run a command in a sub-process.
+    """Run a command in a subprocess.
 
     Returns the exit status code and the combined stdout and stderr.
 

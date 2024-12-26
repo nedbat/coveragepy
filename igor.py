@@ -180,7 +180,7 @@ def run_tests_with_coverage(core, *runner_args):
             context = os.environ[context[1:]]
         os.environ["COVERAGE_CONTEXT"] = context + "." + core
 
-    # Create the .pth file that will let us measure coverage in sub-processes.
+    # Create the .pth file that will let us measure coverage in subprocesses.
     # The .pth file seems to have to be alphabetically after easy-install.pth
     # or the sys.path entries aren't created right?
     # There's an entry in "make clean" to get rid of this file.

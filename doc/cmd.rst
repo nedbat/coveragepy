@@ -176,10 +176,10 @@ You can combine multiple values for ``--concurrency``, separated with commas.
 You can specify ``thread`` and also one of ``eventlet``, ``gevent``, or
 ``greenlet``.
 
-If you are using ``--concurrency=multiprocessing``, you must set other options
-in the configuration file.  Options on the command line will not be passed to
-the processes that multiprocessing creates.  Best practice is to use the
-configuration file for all options.
+If you are using ``--concurrency=multiprocessing``, you must set your other
+options in the configuration file.  Options on the command line will not be
+passed to the processes that multiprocessing creates.  Best practice is to use
+the configuration file for all options.
 
 .. _multiprocessing: https://docs.python.org/3/library/multiprocessing.html
 .. _greenlet: https://greenlet.readthedocs.io/
