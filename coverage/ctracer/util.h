@@ -41,13 +41,6 @@
 #define MyFrame_SetTrace(f, obj)    {Py_INCREF(obj); Py_XSETREF((f)->f_trace, (PyObject*)(obj));}
 #endif
 
-// Access f_code should be done through a helper starting in 3.9.
-#if PY_VERSION_HEX >= 0x03090000
-#define MyFrame_GetCode(f)      (PyFrame_GetCode(f))
-#else
-#define MyFrame_GetCode(f)      ((f)->f_code)
-#endif
-
 #if PY_VERSION_HEX >= 0x030B00B1
 #define MyCode_GetCode(co)      (PyCode_GetCode(co))
 #define MyCode_FreeCode(code)   Py_XDECREF(code)
