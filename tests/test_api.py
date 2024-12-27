@@ -1016,7 +1016,7 @@ class AnalysisTest(CoverageTest):
         # Import the Python file, executing it.
         self.start_import_stop(cov, "missing")
 
-        nums = cov._analyze("missing.py").numbers
+        nums = cov.analyze("missing.py").numbers
         assert nums.n_files == 1
         assert nums.n_statements == 7
         assert nums.n_excluded == 1
