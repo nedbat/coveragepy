@@ -1101,6 +1101,24 @@ class MatchCaseMissingArcDescriptionTest(PythonParserTestBase):
         # 4-6 isn't a possible arc, so the description is generic.
         assert parser.missing_arc_description(4, 6) == "line 4 didn't jump to line 6"
 
+    def test_missing_arc_descriptions_bug1775(self) -> None:
+        # Bug: the `if x == 2:` line was marked partial with a message of:
+        # line 6 didn't return from function 'func', because the return on line 4 wasn't executed
+        # At some point it changed to "didn't jump to the function exit," which
+        # is close enough. These situations are hard to describe precisely.
+        parser = self.parse_text("""\
+            def func():
+                x = 2
+                try:
+                    return 4
+                finally:
+                    if x == 2:  # line 6
+                        print("x is 2")
+
+            func()
+            """)
+        assert parser.missing_arc_description(6, -1) == "line 6 didn't jump to the function exit"
+
 
 class ParserFileTest(CoverageTest):
     """Tests for coverage.py's code parsing from files."""
