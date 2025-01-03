@@ -4,9 +4,11 @@
 """Callback functions and support for sys.monitoring data collection."""
 
 # TODO: https://github.com/python/cpython/issues/111963#issuecomment-2386584080
+# commented out stuff with 111963 below...
 
 from __future__ import annotations
 
+import dis
 import functools
 import inspect
 import os
@@ -55,6 +57,15 @@ sys_monitoring = getattr(sys, "monitoring", None)
 DISABLE_TYPE = NewType("DISABLE_TYPE", object)
 MonitorReturn = Optional[DISABLE_TYPE]
 DISABLE = cast(MonitorReturn, getattr(sys_monitoring, "DISABLE", None))
+
+ALWAYS_JUMPS = {
+    dis.opmap[name] for name in
+    ["JUMP_FORWARD", "JUMP_BACKWARD", "JUMP_BACKWARD_NO_INTERRUPT"]
+}
+
+RETURNS = {
+    dis.opmap[name] for name in ["RETURN_VALUE", "RETURN_GENERATOR"]
+}
 
 
 if LOG:  # pragma: debugging
@@ -163,14 +174,101 @@ else:
         return _decorator
 
 
+class InstructionWalker:
+    def __init__(self, code: CodeType):
+        self.code = code
+        self.insts: dict[int, dis.Instruction] = {}
+
+        for inst in dis.get_instructions(code):
+            self.insts[inst.offset] = inst
+
+        self.max_offset = inst.offset
+
+    def walk(self, *, start_at=0, follow_jumps=True):
+        seen = set()
+        offset = start_at
+        while offset < self.max_offset + 1:
+            if offset in seen:
+                break
+            seen.add(offset)
+            if inst := self.insts.get(offset):
+                yield inst
+                if follow_jumps and inst.opcode in ALWAYS_JUMPS:
+                    offset = inst.jump_target
+                    continue
+            offset += 2
+
+
+def populate_branch_trails(code: CodeType, code_info: CodeInfo) -> tuple[list[int], TArc | None]:
+    iwalker = InstructionWalker(code)
+    for inst in iwalker.walk(follow_jumps=False):
+        log(f"considering {inst=}")
+        if not inst.jump_target:
+            log(f"no jump_target")
+            continue
+        if inst.opcode in ALWAYS_JUMPS:
+            log(f"always jumps")
+            continue
+
+        from_line = inst.line_number
+
+        def walkabout(start_at, branch_kind):
+            insts = []
+            to_line = None
+            for inst2 in iwalker.walk(start_at=start_at):
+                insts.append(inst2.offset)
+                if inst2.line_number and inst2.line_number != from_line:
+                    to_line = inst2.line_number
+                    break
+                elif inst2.jump_target and (inst2.opcode not in ALWAYS_JUMPS):
+                    log(f"stop: {inst2.jump_target=}, {inst2.opcode=} ({dis.opname[inst2.opcode]}), {ALWAYS_JUMPS=}")
+                    break
+                elif inst2.opcode in RETURNS:
+                    to_line = -code.co_firstlineno
+                    break
+            # if to_line is None:
+            #     import contextlib
+            #     with open("/tmp/foo.out", "a") as f:
+            #         with contextlib.redirect_stdout(f):
+            #             print()
+            #             print(f"{code = }")
+            #             print(f"{from_line = }, {to_line = }, {start_at = }")
+            #             dis.dis(code)
+            #     1/0
+            if to_line is not None:
+                log(f"possible branch from @{start_at}: {insts}, {(from_line, to_line)} {code}")
+                return insts, (from_line, to_line)
+            else:
+                log(f" no possible branch from @{start_at}: {insts}")
+                return [], None
+
+        code_info.branch_trails[inst.offset] = (
+            walkabout(start_at=inst.offset + 2, branch_kind="not-taken"),
+            walkabout(start_at=inst.jump_target, branch_kind="taken"),
+        )
+
+
 @dataclass
 class CodeInfo:
     """The information we want about each code object."""
 
     tracing: bool
     file_data: TTraceFileData | None
-    # TODO: what is byte_to_line for?
     byte_to_line: dict[int, int] | None
+    # Keys are start instruction offsets for branches.
+    # Values are two tuples:
+    #   (
+    #       ([offset, offset, ...], (from_line, to_line)),
+    #       ([offset, offset, ...], (from_line, to_line)),
+    #   )
+    #   Two possible trails from the branch point, left and right.
+    branch_trails: dict[
+        int,
+        tuple[
+            tuple[list[int], TArc] | None,
+            tuple[list[int], TArc] | None,
+        ]
+    ]
 
 
 def bytes_to_lines(code: CodeType) -> dict[int, int]:
@@ -210,8 +308,9 @@ class SysMonitor(Tracer):
         # A list of code_objects, just to keep them alive so that id's are
         # useful as identity.
         self.code_objects: list[CodeType] = []
-        # Map id(code_object) -> code_object
-        self.local_event_codes: dict[int, CodeType] = {}
+        # 111963:
+        # # Map id(code_object) -> code_object
+        # self.local_event_codes: dict[int, CodeType] = {}
         self.sysmon_on = False
         self.lock = threading.Lock()
 
@@ -238,16 +337,13 @@ class SysMonitor(Tracer):
         events = sys.monitoring.events
         import contextlib
 
-        with open("/tmp/foo.out", "a") as f:
-            with contextlib.redirect_stdout(f):
-                print(f"{events = }")
         sys_monitoring.set_events(self.myid, events.PY_START)
         register(events.PY_START, self.sysmon_py_start)
         if self.trace_arcs:
             register(events.PY_RETURN, self.sysmon_py_return)
             register(events.LINE, self.sysmon_line_arcs)
-            register(events.BRANCH_RIGHT, self.sysmon_branch_right)     # type:ignore[attr-defined]
-            register(events.BRANCH_LEFT, self.sysmon_branch_left)       # type:ignore[attr-defined]
+            register(events.BRANCH_RIGHT, self.sysmon_branch_either)    # type:ignore[attr-defined]
+            register(events.BRANCH_LEFT, self.sysmon_branch_either)     # type:ignore[attr-defined]
         else:
             register(events.LINE, self.sysmon_line_lines)
         sys_monitoring.restart_events()
@@ -264,9 +360,10 @@ class SysMonitor(Tracer):
         sys_monitoring.set_events(self.myid, 0)
         with self.lock:
             self.sysmon_on = False
-            for code in self.local_event_codes.values():
-                sys_monitoring.set_local_events(self.myid, code, 0)
-            self.local_event_codes = {}
+            # 111963:
+            #     for code in self.local_event_codes.values():
+            #         sys_monitoring.set_local_events(self.myid, code, 0)
+            #     self.local_event_codes = {}
         sys_monitoring.free_tool_id(self.myid)
 
     @panopticon()
@@ -329,11 +426,14 @@ class SysMonitor(Tracer):
                 file_data = None
                 b2l = None
 
-            self.code_infos[id(code)] = CodeInfo(
+            code_info = CodeInfo(
                 tracing=tracing_code,
                 file_data=file_data,
                 byte_to_line=b2l,
+                branch_trails={},
             )
+            self.code_infos[id(code)] = code_info
+            populate_branch_trails(code, code_info)     # TODO: should be a method?
             self.code_objects.append(code)
 
             if tracing_code:
@@ -348,7 +448,8 @@ class SysMonitor(Tracer):
                                 events.BRANCH_RIGHT | events.BRANCH_LEFT # type:ignore[attr-defined]
                             )
                         sys_monitoring.set_local_events(self.myid, code, local_events)
-                        self.local_event_codes[id(code)] = code
+                        # 111963:
+                        # self.local_event_codes[id(code)] = code
 
         return None
 
@@ -390,29 +491,19 @@ class SysMonitor(Tracer):
         return DISABLE
 
     @panopticon("code", "@", "@")
-    def sysmon_branch_right(
+    def sysmon_branch_either(
         self, code: CodeType, instruction_offset: int, destination_offset: int
     ) -> MonitorReturn:
-        """Handed BRANCH_RIGHT and BRANCH_LEFT events."""
+        """Handle BRANCH_RIGHT and BRANCH_LEFT events."""
         code_info = self.code_infos[id(code)]
         if code_info.file_data is not None:
-            b2l = code_info.byte_to_line
-            assert b2l is not None
-            arc = (b2l[instruction_offset], b2l[destination_offset])
-            cast(set[TArc], code_info.file_data).add(arc)
-            log(f"adding {arc=}")
-        return DISABLE
-
-    @panopticon("code", "@", "@")
-    def sysmon_branch_left(
-        self, code: CodeType, instruction_offset: int, destination_offset: int
-    ) -> MonitorReturn:
-        """Handed BRANCH_RIGHT and BRANCH_LEFT events."""
-        code_info = self.code_infos[id(code)]
-        if code_info.file_data is not None:
-            b2l = code_info.byte_to_line
-            assert b2l is not None
-            arc = (b2l[instruction_offset], b2l[destination_offset])
-            cast(set[TArc], code_info.file_data).add(arc)
-            log(f"adding {arc=}")
+            dest_info = code_info.branch_trails.get(instruction_offset)
+            log(f"{dest_info = }")
+            if dest_info is not None:
+                for offsets, arc in dest_info:
+                    if arc is None:
+                        continue
+                    if destination_offset in offsets:
+                        cast(set[TArc], code_info.file_data).add(arc)
+                        log(f"adding {arc=}")
         return DISABLE
