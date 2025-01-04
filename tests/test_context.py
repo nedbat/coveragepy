@@ -48,7 +48,6 @@ class StaticContextTest(CoverageTest):
         """
 
     LINES = [1, 2, 4]
-    ARCS = [(-1, 1), (1, 2), (2, 4), (4, -1)]
 
     def run_red_blue(self, **options: TCovKwargs) -> tuple[CoverageData, CoverageData]:
         """Run red.py and blue.py, and return their CoverageData objects."""
@@ -93,6 +92,14 @@ class StaticContextTest(CoverageTest):
 
     def test_combining_arc_contexts(self) -> None:
         red_data, blue_data = self.run_red_blue(branch=True)
+
+        # The exact arc data changes depending on the core and the version.
+        # Extract the red arc data for comparisons below.
+        arc_data = red_data.arcs(
+            next(fname for fname in red_data.measured_files() if "red.py" in fname)
+        )
+        assert arc_data is not None
+
         for datas in [[red_data, blue_data], [blue_data, red_data]]:
             combined = CoverageData(suffix="combined")
             for data in datas:
@@ -121,10 +128,10 @@ class StaticContextTest(CoverageTest):
                 combined.set_query_context(context)
                 assert combined.arcs(filename) == lines
 
-            assert_combined_arcs(fred, 'red', self.ARCS)
+            assert_combined_arcs(fred, 'red', arc_data)
             assert_combined_arcs(fred, 'blue', [])
             assert_combined_arcs(fblue, 'red', [])
-            assert_combined_arcs(fblue, 'blue', self.ARCS)
+            assert_combined_arcs(fblue, 'blue', arc_data)
 
 
 @pytest.mark.skipif(not testenv.DYN_CONTEXTS, reason="No dynamic contexts with this core")
