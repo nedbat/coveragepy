@@ -53,10 +53,7 @@ class PYBEHAVIOR:
 
     # Is "if not __debug__" optimized away? The exact details have changed
     # across versions.
-    if pep626:
-        optimize_if_not_debug = 1
-    else:
-        optimize_if_not_debug = 2
+    optimize_if_not_debug = 1 if pep626 else 2
 
     # 3.7 changed how functions with only docstrings are numbered.
     docstring_only_function = (not PYPY) and (PYVERSION <= (3, 10))
