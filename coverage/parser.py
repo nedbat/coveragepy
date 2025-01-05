@@ -466,7 +466,7 @@ class ByteParser:
             byte_increments = self.code.co_lnotab[0::2]
             line_increments = self.code.co_lnotab[1::2]
 
-            last_line_num = None
+            last_line_num: TLineNo | None = None
             line_num = self.code.co_firstlineno
             byte_num = 0
             for byte_incr, line_incr in zip(byte_increments, line_increments):

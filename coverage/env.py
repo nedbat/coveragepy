@@ -9,7 +9,7 @@ import os
 import platform
 import sys
 
-from typing import Any
+from typing import Any, Final
 from collections.abc import Iterable
 
 # debug_info() at the bottom wants to show all the globals, but not imports.
@@ -53,10 +53,7 @@ class PYBEHAVIOR:
 
     # Is "if not __debug__" optimized away? The exact details have changed
     # across versions.
-    if pep626:
-        optimize_if_not_debug = 1
-    else:
-        optimize_if_not_debug = 2
+    optimize_if_not_debug = 1 if pep626 else 2
 
     # 3.7 changed how functions with only docstrings are numbered.
     docstring_only_function = (not PYPY) and (PYVERSION <= (3, 10))
@@ -148,7 +145,7 @@ class PYBEHAVIOR:
     soft_keywords = (PYVERSION >= (3, 10))
 
     # PEP669 Low Impact Monitoring: https://peps.python.org/pep-0669/
-    pep669 = bool(getattr(sys, "monitoring", None))
+    pep669: Final[bool] = bool(getattr(sys, "monitoring", None))
 
     # Where does frame.f_lasti point when yielding from a generator?
     # It used to point at the YIELD, in 3.13 it points at the RESUME,
