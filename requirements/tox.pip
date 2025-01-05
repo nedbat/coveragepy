@@ -42,5 +42,5 @@ tox-gh==1.4.4
     # via -r requirements/tox.in
 typing-extensions==4.12.2
     # via tox
-virtualenv==20.28.0
+virtualenv==20.28.1
     # via tox

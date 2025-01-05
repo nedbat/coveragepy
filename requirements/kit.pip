@@ -4,7 +4,7 @@
 #
 #    make upgrade
 #
-auditwheel==6.1.0
+auditwheel==6.2.0
     # via -r requirements/kit.in
 backports-tarfile==1.2.0
     # via jaraco-context

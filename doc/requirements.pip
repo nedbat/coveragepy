@@ -6,7 +6,7 @@
 #
 alabaster==1.0.0
     # via sphinx
-anyio==4.7.0
+anyio==4.8.0
     # via
     #   starlette
     #   watchfiles
@@ -103,7 +103,7 @@ sphinxcontrib-serializinghtml==2.0.0
     # via sphinx
 sphinxcontrib-spelling==8.0.1
     # via -r doc/requirements.in
-starlette==0.43.0
+starlette==0.45.2
     # via sphinx-autobuild
 stevedore==5.4.0
     # via doc8
