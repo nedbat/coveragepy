@@ -13,7 +13,7 @@ import os.path
 import re
 
 from typing import (
-    Any, Callable, Union,
+    Any, Callable, Final, Union,
 )
 from collections.abc import Iterable
 
@@ -360,7 +360,8 @@ class CoverageConfig(TConfigurable, TPluginConfig):
         """Return a copy of the configuration."""
         return copy.deepcopy(self)
 
-    CONCURRENCY_CHOICES = {"thread", "gevent", "greenlet", "eventlet", "multiprocessing"}
+    CONCURRENCY_CHOICES: Final[set[str]] = {
+        "thread", "gevent", "greenlet", "eventlet", "multiprocessing"}
 
     CONFIG_FILE_OPTIONS = [
         # These are *args for _set_attr_from_config_option:

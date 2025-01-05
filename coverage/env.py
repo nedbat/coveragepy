@@ -9,7 +9,7 @@ import os
 import platform
 import sys
 
-from typing import Any
+from typing import Any, Final
 from collections.abc import Iterable
 
 # debug_info() at the bottom wants to show all the globals, but not imports.
@@ -148,7 +148,7 @@ class PYBEHAVIOR:
     soft_keywords = (PYVERSION >= (3, 10))
 
     # PEP669 Low Impact Monitoring: https://peps.python.org/pep-0669/
-    pep669 = bool(getattr(sys, "monitoring", None))
+    pep669: Final[bool] = bool(getattr(sys, "monitoring", None))
 
     # Where does frame.f_lasti point when yielding from a generator?
     # It used to point at the YIELD, in 3.13 it points at the RESUME,
