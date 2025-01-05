@@ -343,7 +343,7 @@ def _line_ranges(
     lines = sorted(lines)
 
     pairs = []
-    start = None
+    start: TLineNo | None = None
     lidx = 0
     for stmt in statements:
         if lidx >= len(lines):
