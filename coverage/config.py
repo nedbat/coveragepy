@@ -13,7 +13,7 @@ import os.path
 import re
 
 from typing import (
-    Any, Callable, Final, Union,
+    Any, Callable, Final, Mapping, Union,
 )
 from collections.abc import Iterable
 
@@ -470,7 +470,13 @@ class CoverageConfig(TConfigurable, TPluginConfig):
         """
         # Special-cased options.
         if option_name == "paths":
-            self.paths = value  # type: ignore[assignment]
+            # This is ugly, but type-checks and ensures the values are close
+            # to right.
+            self.paths = {}
+            assert isinstance(value, Mapping)
+            for k, v in value.items():
+                assert isinstance(v, Iterable)
+                self.paths[k] = list(v)
             return
 
         # Check all the hard-coded options.
@@ -501,7 +507,7 @@ class CoverageConfig(TConfigurable, TPluginConfig):
         """
         # Special-cased options.
         if option_name == "paths":
-            return self.paths  # type: ignore[return-value]
+            return self.paths
 
         # Check all the hard-coded options.
         for option_spec in self.CONFIG_FILE_OPTIONS:

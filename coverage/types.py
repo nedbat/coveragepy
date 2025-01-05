@@ -125,8 +125,8 @@ TCovKwargs = Any
 ## Configuration
 
 # One value read from a config file.
-TConfigValueIn = Optional[Union[bool, int, float, str, Iterable[str]]]
-TConfigValueOut = Optional[Union[bool, int, float, str, list[str]]]
+TConfigValueIn = Optional[Union[bool, int, float, str, Iterable[str], Mapping[str, Iterable[str]]]]
+TConfigValueOut = Optional[Union[bool, int, float, str, list[str], dict[str, list[str]]]]
 # An entire config section, mapping option names to values.
 TConfigSectionIn = Mapping[str, TConfigValueIn]
 TConfigSectionOut = Mapping[str, TConfigValueOut]
