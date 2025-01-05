@@ -361,7 +361,8 @@ class CoverageConfig(TConfigurable, TPluginConfig):
         return copy.deepcopy(self)
 
     CONCURRENCY_CHOICES: Final[set[str]] = {
-        "thread", "gevent", "greenlet", "eventlet", "multiprocessing"}
+        "thread", "gevent", "greenlet", "eventlet", "multiprocessing"
+    }
 
     CONFIG_FILE_OPTIONS = [
         # These are *args for _set_attr_from_config_option:
