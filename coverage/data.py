@@ -23,7 +23,7 @@ from collections.abc import Iterable
 from coverage.exceptions import CoverageException, NoDataError
 from coverage.files import PathAliases
 from coverage.misc import Hasher, file_be_gone, human_sorted, plural
-from coverage.sqldata import CoverageData
+from coverage.sqldata import CoverageData as CoverageData  # pylint: disable=useless-import-alias
 
 
 def line_counts(data: CoverageData, fullpath: bool = False) -> dict[str, int]:

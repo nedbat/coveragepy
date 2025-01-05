@@ -17,7 +17,7 @@ import pytest
 
 import coverage
 from coverage import Coverage
-from coverage.control import Plugins
+from coverage.plugin_support import Plugins
 from coverage.data import line_counts, sorted_lines
 from coverage.exceptions import CoverageWarning, NoSource, PluginError
 from coverage.misc import import_local_file

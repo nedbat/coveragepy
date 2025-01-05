@@ -82,8 +82,8 @@ class FilesTest(CoverageTest):
         ],
     )
     def test_relative_dir_for_root(self, curdir: str, sep: str) -> None:
-        with mock.patch.object(files.os, 'curdir', new=curdir):
-            with mock.patch.object(files.os, 'sep', new=sep):
+        with mock.patch.object(files.os, 'curdir', new=curdir):  # type: ignore[attr-defined]
+            with mock.patch.object(files.os, 'sep', new=sep):  # type: ignore[attr-defined]
                 with mock.patch('coverage.files.os.path.normcase', return_value=curdir):
                     files.set_relative_directory()
                     assert files.relative_directory() == curdir

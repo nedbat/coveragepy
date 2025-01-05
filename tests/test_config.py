@@ -313,7 +313,11 @@ class ConfigTest(CoverageTest):
             s = s.replace("~joe/", "/Users/joe/")
             return s
 
-        with mock.patch.object(coverage.config.os.path, 'expanduser', new=expanduser):
+        with mock.patch.object(
+            coverage.config.os.path,  # type: ignore[attr-defined]
+            'expanduser',
+            new=expanduser
+        ):
             cov = coverage.Coverage()
         assert cov.config.data_file == "/Users/me/data.file"
         assert cov.config.html_dir == "/Users/joe/html_dir"
@@ -352,7 +356,11 @@ class ConfigTest(CoverageTest):
             s = s.replace("~joe/", "/Users/joe/")
             return s
 
-        with mock.patch.object(coverage.config.os.path, 'expanduser', new=expanduser):
+        with mock.patch.object(
+            coverage.config.os.path, # type: ignore[attr-defined]
+            'expanduser',
+            new=expanduser
+        ):
             cov = coverage.Coverage()
         assert cov.config.data_file == "/Users/me/data.file"
         assert cov.config.html_dir == "/Users/joe/html_dir"
