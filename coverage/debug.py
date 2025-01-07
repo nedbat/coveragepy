@@ -119,6 +119,11 @@ class NoDebugging(DebugControl):
         """Should we write debug messages?  Never."""
         return False
 
+    @contextlib.contextmanager
+    def without_callers(self) -> Iterator[None]:
+        """A dummy context manager to satisfy the api."""
+        yield
+
     def write(self, msg: str, *, exc: BaseException | None = None) -> None:
         """This will never be called."""
         raise AssertionError("NoDebugging.write should never be called.")
