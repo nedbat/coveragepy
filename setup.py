@@ -170,9 +170,11 @@ class ve_build_ext(build_ext):
 
 
 # There are a few reasons we might not be able to compile the C extension.
-# Figure out if we should attempt the C extension or not.
+# Figure out if we should attempt the C extension or not. Define
+# COVERAGE_DISABLE_EXTENSION in the build environment to explicitly disable the
+# extension.
 
-compile_extension = True
+compile_extension = os.getenv("COVERAGE_DISABLE_EXTENSION", None) is None
 
 if "__pypy__" in sys.builtin_module_names:
     # Pypy can't compile C extensions

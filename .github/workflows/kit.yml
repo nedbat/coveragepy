@@ -162,7 +162,7 @@ jobs:
         run: |
           python -m pip install -r requirements/kit.pip
 
-      - name: "Build wheels"
+      - name: "Build binary wheels"
         env:
           CIBW_BUILD: ${{ matrix.py }}*-*
           CIBW_ARCHS: ${{ matrix.arch }}
@@ -173,7 +173,7 @@ jobs:
         run: |
           python -m cibuildwheel --output-dir wheelhouse
 
-      - name: "List wheels"
+      - name: "List binary wheels"
         run: |
           ls -al wheelhouse/
 
@@ -181,15 +181,15 @@ jobs:
         run: |
           python -m twine check wheelhouse/*
 
-      - name: "Upload wheels"
+      - name: "Upload binary wheels"
         uses: actions/upload-artifact@6f51ac03b9356f520e9adb1b1b7802705f340c2b # v4.5.0
         with:
           name: dist-${{ env.MATRIX_ID }}
           path: wheelhouse/*.whl
           retention-days: 7
 
-  sdist:
-    name: "Source distribution"
+  non-binary:
+    name: "Non-binary artifacts"
     runs-on: ubuntu-latest
     steps:
       - name: "Check out the repo"
@@ -208,23 +208,25 @@ jobs:
         run: |
           python -m pip install -r requirements/kit.pip
 
-      - name: "Build sdist"
+      - name: "Build non-binary artifacts"
+        env:
+          COVERAGE_DISABLE_EXTENSION: 1
         run: |
           python -m build
 
-      - name: "List sdist"
+      - name: "List non-binary artifacts"
         run: |
           ls -al dist/
 
-      - name: "Check sdist"
+      - name: "Check non-binary artifacts"
         run: |
           python -m twine check dist/*
 
-      - name: "Upload sdist"
+      - name: "Upload non-binary artifacts"
         uses: actions/upload-artifact@6f51ac03b9356f520e9adb1b1b7802705f340c2b # v4.5.0
         with:
-          name: dist-sdist
-          path: dist/*.tar.gz
+          name: dist-non-binary
+          path: dist/*
           retention-days: 7
 
   pypy:
@@ -277,7 +279,7 @@ jobs:
     name: "Sign artifacts"
     needs:
       - wheels
-      - sdist
+      - non-binary
       - pypy
     runs-on: ubuntu-latest
     permissions:
