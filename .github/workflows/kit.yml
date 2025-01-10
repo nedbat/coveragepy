@@ -279,7 +279,7 @@ jobs:
     name: "Sign artifacts"
     needs:
       - wheels
-      - sdist
+      - non-binary
       - pypy
     runs-on: ubuntu-latest
     permissions:
