@@ -23,7 +23,10 @@ upgrading your version of coverage.py.
 Unreleased
 ----------
 
-Nothing yet.
+- We now ship a py3-none-any.whl wheel file.  Thanks, `Russell Keith-Magee
+  <pull 1914_>`_.
+
+.. _pull 1914: https://github.com/nedbat/coveragepy/pull/1914
 
 
 .. start-releases
