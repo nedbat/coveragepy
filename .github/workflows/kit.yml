@@ -292,10 +292,15 @@ jobs:
           merge-multiple: true
 
       - name: "List distributions"
+        env:
+          # PYVERSIONS: changing the list of versions will change the number of
+          # expected distributions.
+          EXPECTED: 63
         run: |
           ls -alR
-          echo "Number of dists, there should be 72:"
+          echo "Number of dists, there should be $EXPECTED:"
           ls -1 coverage-* | wc -l
+          files=$(ls coverage-* 2>/dev/null | wc -l) && [ "$files" -eq $EXPECTED ] || exit 1
 
       - name: "Sign artifacts"
         uses: sigstore/gh-action-sigstore-python@f514d46b907ebcd5bedc05145c03b69c1edd8b46 # v3.0.0
