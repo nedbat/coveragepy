@@ -14,3 +14,18 @@ repos:
         exclude: "(status\\.json|\\.min\\.js)$"
       - id: trailing-whitespace
         exclude: "stress_phystoken|\\.py,cover$"
+
+  - repo: https://github.com/pre-commit/pygrep-hooks
+    rev: v1.10.0
+    hooks:
+    - id: rst-directive-colons
+    - id: rst-inline-touching-normal
+
+  - repo: https://github.com/sphinx-contrib/sphinx-lint
+    rev: v1.0.0
+    hooks:
+      - id: sphinx-lint
+
+  - repo: meta
+    hooks:
+      - id: check-useless-excludes
