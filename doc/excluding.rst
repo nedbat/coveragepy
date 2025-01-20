@@ -104,7 +104,7 @@ all of them by adding a regex to the exclusion list:
             [tool.coverage.report]
             exclude_also = [
                 "def __repr__",
-                ]
+            ]
             """,
         )
 .. ]]]
@@ -124,7 +124,7 @@ all of them by adding a regex to the exclusion list:
         [tool.coverage.report]
         exclude_also = [
             "def __repr__",
-            ]
+        ]
 
     .. code-tab:: ini
         :caption: setup.cfg or tox.ini
@@ -133,7 +133,7 @@ all of them by adding a regex to the exclusion list:
         exclude_also =
             def __repr__
 
-.. [[[end]]] (checksum: e3194120285bcbac38a92b109edaa20c)
+.. [[[end]]] (checksum: f3e70ebf128fbef4087efe75dcfadcb8)
 
 For example, here's a list of exclusions I've used:
 
@@ -166,7 +166,7 @@ For example, here's a list of exclusions I've used:
                 "if TYPE_CHECKING:",
                 "class .*\\bProtocol\\):",
                 "@(abc\\.)?abstractmethod",
-                ]
+            ]
             """,
         )
 .. ]]]
@@ -204,7 +204,7 @@ For example, here's a list of exclusions I've used:
             "if TYPE_CHECKING:",
             "class .*\\bProtocol\\):",
             "@(abc\\.)?abstractmethod",
-            ]
+        ]
 
     .. code-tab:: ini
         :caption: setup.cfg or tox.ini
@@ -222,7 +222,7 @@ For example, here's a list of exclusions I've used:
             class .*\bProtocol\):
             @(abc\.)?abstractmethod
 
-.. [[[end]]] (checksum: 91f09828a1e6d0e92543e14a8ea3ba39)
+.. [[[end]]] (checksum: 06c7f40b1001590369df604495524f48)
 
 The :ref:`config_report_exclude_also` option adds regexes to the built-in
 default list so that you can add your own exclusions.  The older
@@ -275,7 +275,7 @@ Here are some examples:
                 "no cover: start(?s:.)*?no cover: stop",
                 # 3. A pragma comment that excludes an entire file:
                 "\\A(?s:.*# pragma: exclude file.*)\\Z",
-                ]
+            ]
             """,
         )
 .. ]]]
@@ -305,7 +305,7 @@ Here are some examples:
             "no cover: start(?s:.)*?no cover: stop",
             # 3. A pragma comment that excludes an entire file:
             "\\A(?s:.*# pragma: exclude file.*)\\Z",
-            ]
+        ]
 
     .. code-tab:: ini
         :caption: setup.cfg or tox.ini
@@ -319,7 +319,7 @@ Here are some examples:
             ; 3. A pragma comment that excludes an entire file:
             \A(?s:.*# pragma: exclude file.*)\Z
 
-.. [[[end]]] (checksum: ee3ef14b5a5d73f987b924df623a4927)
+.. [[[end]]] (checksum: 261daf325d747cdf05310e75db827af6)
 
 The first regex matches a specific except line followed by a specific function
 call.  Both lines must be present for the exclusion to take effect. Note that
