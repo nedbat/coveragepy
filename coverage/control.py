@@ -16,6 +16,7 @@ import signal
 import sys
 import threading
 import time
+import typing
 import warnings
 
 from types import FrameType
@@ -43,14 +44,14 @@ from coverage.misc import bool_or_none, join_regex
 from coverage.misc import DefaultValue, ensure_dir_for_file, isolate_module
 from coverage.multiproc import patch_multiprocessing
 from coverage.plugin import FileReporter
-from coverage.plugin_support import Plugins
+from coverage.plugin_support import Plugins, TCoverageInit
 from coverage.python import PythonFileReporter
 from coverage.report import SummaryReporter
 from coverage.report_core import render_report
 from coverage.results import Analysis, analysis_from_file_reporter
 from coverage.types import (
     FilePath, TConfigurable, TConfigSectionIn, TConfigValueIn, TConfigValueOut,
-    TFileDisposition, TLineNo, TMorf,
+    TFileDisposition, TLineNo, TMorf
 )
 from coverage.xmlreport import XmlReporter
 
@@ -138,6 +139,7 @@ class Coverage(TConfigurable):
         check_preimported: bool = False,
         context: str | None = None,
         messages: bool = False,
+        plugins: Iterable[Callable[..., None]] | None = None,
     ) -> None:
         """
         Many of these arguments duplicate and override values that can be
@@ -211,6 +213,12 @@ class Coverage(TConfigurable):
         If `messages` is true, some messages will be printed to stdout
         indicating what is happening.
 
+        If `plugins` are passed, they are an iterable of functions with the
+        `coverage_init` signature (meaning they take a plugin registry and a
+        dictionary of configuration options as arguments). When they are
+        provided, they will override the plugins found in the coverage
+        configuration file.
+
         .. versionadded:: 4.0
             The `concurrency` parameter.
 
@@ -260,6 +268,10 @@ class Coverage(TConfigurable):
         self._debug: DebugControl = NoDebugging()
         self._inorout: InOrOut | None = None
         self._plugins: Plugins = Plugins()
+        self._plugin_override = typing.cast(
+            typing.Union[Iterable[TCoverageInit], None],
+            plugins
+        )
         self._data: CoverageData | None = None
         self._core: Core | None = None
         self._collector: Collector | None = None
@@ -340,7 +352,12 @@ class Coverage(TConfigurable):
             self._file_mapper = relative_filename
 
         # Load plugins
-        self._plugins = Plugins.load_plugins(self.config.plugins, self.config, self._debug)
+        self._plugins = Plugins.load_plugins(
+            self.config.plugins,
+            self.config,
+            self._debug,
+            plugin_override=self._plugin_override
+        )
 
         # Run configuring plugins.
         for plugin in self._plugins.configurers:

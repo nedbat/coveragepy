@@ -272,6 +272,21 @@ class PluginTest(CoverageTest):
         out = self.run_command("coverage html -q")  # sneak in a test of -q
         assert out == ""
 
+    def test_coverage_init_plugins(self) -> None:
+        called = False
+        def coverage_init(
+            reg: Plugins, # pylint: disable=unused-argument
+            options: TConfigSectionOut # pylint: disable=unused-argument
+        ) -> None:
+            nonlocal called
+            called = True
+
+        cov = coverage.Coverage(plugins=[coverage_init])
+        # Calls _init() and loads plugins
+        cov.sys_info()
+
+        assert called
+
 
 @pytest.mark.skipif(testenv.PLUGINS, reason="This core doesn't support plugins.")
 class PluginWarningOnPyTracerTest(CoverageTest):
