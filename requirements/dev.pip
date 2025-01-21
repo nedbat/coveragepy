@@ -49,11 +49,11 @@ flaky==3.8.1
     # via -r /Users/ned/coverage/trunk/requirements/pytest.in
 greenlet==3.1.1
     # via -r requirements/dev.in
-hypothesis==6.124.0
+hypothesis==6.124.1
     # via -r /Users/ned/coverage/trunk/requirements/pytest.in
 idna==3.10
     # via requests
-importlib-metadata==8.5.0
+importlib-metadata==8.6.1
     # via
     #   build
     #   keyring
@@ -181,8 +181,9 @@ urwid==2.6.16
     #   urwid-readline
 urwid-readline==0.15.1
     # via pudb
-virtualenv==20.29.0
+virtualenv==20.28.1
     # via
+    #   -c /Users/ned/coverage/trunk/requirements/pins.pip
     #   -r /Users/ned/coverage/trunk/requirements/pip.in
     #   tox
 wcwidth==0.2.13

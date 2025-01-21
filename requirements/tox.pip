@@ -42,5 +42,7 @@ tox-gh==1.5.0
     # via -r requirements/tox.in
 typing-extensions==4.12.2
     # via tox
-virtualenv==20.29.0
-    # via tox
+virtualenv==20.28.1
+    # via
+    #   -c /Users/ned/coverage/trunk/requirements/pins.pip
+    #   tox
