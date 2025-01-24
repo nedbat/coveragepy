@@ -12,7 +12,7 @@ backports-tarfile==1.2.0
     # via jaraco-context
 build==1.2.2.post1
     # via check-manifest
-cachetools==5.5.0
+cachetools==5.5.1
     # via tox
 certifi==2024.12.14
     # via requests
@@ -41,7 +41,7 @@ exceptiongroup==1.2.2
     #   pytest
 execnet==2.1.1
     # via pytest-xdist
-filelock==3.16.1
+filelock==3.17.0
     # via
     #   tox
     #   virtualenv
@@ -49,8 +49,10 @@ flaky==3.8.1
     # via -r /Users/ned/coverage/trunk/requirements/pytest.in
 greenlet==3.1.1
     # via -r requirements/dev.in
-hypothesis==6.124.1
+hypothesis==6.124.2
     # via -r /Users/ned/coverage/trunk/requirements/pytest.in
+id==1.5.0
+    # via twine
 idna==3.10
     # via requests
 importlib-metadata==8.6.1
@@ -96,8 +98,6 @@ packaging==24.2
     #   twine
 parso==0.8.4
     # via jedi
-pkginfo==1.12.0
-    # via twine
 platformdirs==4.3.6
     # via
     #   pylint
@@ -117,7 +117,7 @@ pygments==2.19.1
     #   rich
 pylint==3.3.3
     # via -r requirements/dev.in
-pyproject-api==1.8.0
+pyproject-api==1.9.0
     # via tox
 pyproject-hooks==1.2.0
     # via build
@@ -134,6 +134,7 @@ readme-renderer==44.0
 requests==2.32.3
     # via
     #   -r requirements/dev.in
+    #   id
     #   requests-toolbelt
     #   twine
 requests-toolbelt==1.0.0
@@ -156,13 +157,13 @@ tomli==2.2.1
     #   tox
 tomlkit==0.13.2
     # via pylint
-tox==4.23.2
+tox==4.24.1
     # via
     #   -r /Users/ned/coverage/trunk/requirements/tox.in
     #   tox-gh
 tox-gh==1.5.0
     # via -r /Users/ned/coverage/trunk/requirements/tox.in
-twine==6.0.1
+twine==6.1.0
     # via -r requirements/dev.in
 typing-extensions==4.12.2
     # via
