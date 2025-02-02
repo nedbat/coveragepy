@@ -303,7 +303,7 @@ CTracer_handle_call(CTracer *self, PyFrameObject *frame)
     PyObject * plugin = NULL;
     PyObject * plugin_name = NULL;
     PyObject * next_tracename = NULL;
-#ifdef RESUME
+#ifdef RESUME   // >=3.11
     PyObject * pCode = NULL;
 #endif
 
