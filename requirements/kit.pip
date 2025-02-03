@@ -14,7 +14,7 @@ bracex==2.5.post1
     # via cibuildwheel
 build==1.2.2.post1
     # via -r requirements/kit.in
-certifi==2024.12.14
+certifi==2025.1.31
     # via
     #   cibuildwheel
     #   requests

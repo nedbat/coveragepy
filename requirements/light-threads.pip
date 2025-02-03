@@ -8,7 +8,7 @@ cffi==1.17.1
     # via -r requirements/light-threads.in
 dnspython==2.7.0
     # via eventlet
-eventlet==0.38.2
+eventlet==0.39.0
     # via -r requirements/light-threads.in
 gevent==24.11.1
     # via -r requirements/light-threads.in
