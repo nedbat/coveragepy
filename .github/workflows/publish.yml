@@ -37,7 +37,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: "Record run id"
+    - name: "Record run id" # zizmor: ignore[template-injection]
       id: run-id
       run: |
         echo "run-id=${{ fromJson(steps.runs.outputs.data).workflow_runs[0].id }}" >> "$GITHUB_OUTPUT"
