@@ -58,6 +58,8 @@ def set_warnings() -> None:
     # https://github.com/python/cpython/issues/105539
     warnings.filterwarnings("ignore", r"unclosed database", category=ResourceWarning)
 
+    warnings.filterwarnings("ignore", r".*no-sysmon")
+
 
 @pytest.fixture(autouse=True)
 def reset_sys_path() -> Iterator[None]:
@@ -86,6 +88,7 @@ WORKER = os.getenv("PYTEST_XDIST_WORKER", "none")
 
 def pytest_sessionstart() -> None:
     """Run once at the start of the test session."""
+    warnings.filterwarnings("ignore", r".*no-sysmon")
     # Only in the main process...
     if WORKER == "none":
         # Create a .pth file for measuring subprocess coverage.

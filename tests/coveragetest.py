@@ -60,7 +60,7 @@ def arcs_to_branches(arcs: Iterable[TArc]) -> dict[TLineNo, list[TLineNo]]:
 
 
 def branches_to_arcs(branches: dict[TLineNo, list[TLineNo]]) -> list[TArc]:
-    """Convert a dict od branches into a list of arcs."""
+    """Convert a dict of branches into a list of arcs."""
     return [(fromno, tono) for fromno, tonos in branches.items() for tono in tonos]
 
 

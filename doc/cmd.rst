@@ -273,14 +273,26 @@ Conflicting dynamic contexts (dynamic-conflict)
   :meth:`.Coverage.switch_context` function to change the context. Only one of
   these mechanisms should be in use at a time.
 
-sys.monitoring isn't available, using default core (no-sysmon)
+sys.monitoring isn't available in this version, using default core (no-sysmon)
   You requested to use the sys.monitoring measurement core, but are running on
   Python 3.11 or lower where it isn't available.  A default core will be used
   instead.
 
+sys.monitoring can't measure branches in this version, using default core (no-sysmon)
+  You requested the sys.monitoring measurement core and also branch coverage.
+  This isn't supported until the later alphas of Python 3.14.  A default core
+  will be used instead.
+
+sys.monitoring doesn't yet support dynamic contexts, using default core (no-sysmon)
+  You requested the sys.monitoring measurement core and also dynamic contexts.
+  This isn't supported by coverage.py yet.  A default core will be used
+  instead.
+
 Individual warnings can be disabled with the :ref:`disable_warnings
-<config_run_disable_warnings>` configuration setting.  To silence "No data was
-collected," add this to your configuration file:
+<config_run_disable_warnings>` configuration setting.  It is a list of the
+short parenthetical nicknames in the warning messages.  For example, to silence
+"No data was collected (no-data-collected)", add this to your configuration
+file:
 
 .. [[[cog
     show_configs(

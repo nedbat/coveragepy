@@ -133,7 +133,10 @@ def should_skip(core):
         only_one = os.getenv("COVERAGE_ONE_CORE")
         if only_one:
             if CPYTHON:
-                if core != "ctrace":
+                if sys.version_info >= (3, 12):
+                    if core != "sysmon":
+                        skipper = f"Only one core: not running {core}"
+                elif core != "ctrace":
                     skipper = f"Only one core: not running {core}"
             else:
                 if core != "pytrace":

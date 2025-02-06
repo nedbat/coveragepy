@@ -1101,6 +1101,8 @@ class CoverageCoreTest(CoverageTest):
         out = self.run_command("coverage run --debug=sys numbers.py")
         assert out.endswith("123 456\n")
         core = re_line(r" core:", out).strip()
+        # if env.PYBEHAVIOR.pep669:
+        #     assert core == "core: SysMonitor"
         if self.has_ctracer:
             assert core == "core: CTracer"
         else:
@@ -1139,6 +1141,14 @@ class CoverageCoreTest(CoverageTest):
         else:
             assert core in ("core: CTracer", "core: PyTracer")
             assert warns
+
+    def test_core_request_nosuchcore(self) -> None:
+        self.del_environ("COVERAGE_TEST_CORES")
+        self.set_environ("COVERAGE_CORE", "nosuchcore")
+        self.make_file("numbers.py", "print(123, 456)")
+        out = self.run_command("coverage run numbers.py")
+        assert "Unknown core value: 'nosuchcore'\n" in out
+        assert "123 456" not in out
 
 
 class FailUnderNoFilesTest(CoverageTest):

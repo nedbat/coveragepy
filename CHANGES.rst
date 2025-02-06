@@ -28,6 +28,11 @@ Unreleased
   with one path not taken.  Now it is understood as always true and no coverage
   is missing.
 
+- The experimental sys.monitoring support should now work for branch coverage
+  if you are using Python newer than 3.14.0 alpha 5.  This should greatly
+  reduce the overhead coverage.py imposes on your test suite. Set the
+  environment variable ``COVERAGE_CORE=sysmon`` to try it out.
+
 - The :class:`Coverage constructor<.Coverage>` now has a ``plugins`` parameter
   for passing in plugin objects directly, thanks to `Alex Gaynor <pull
   1919_>`_.

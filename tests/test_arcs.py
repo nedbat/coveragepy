@@ -1660,7 +1660,7 @@ class OptimizedIfTest(CoverageTest):
                         lines.add(5)
                 else:
                     lines.add(7)
-            assert lines == set([7])
+            assert lines == {7}
             """,
             branchz=branchz,
         )

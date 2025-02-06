@@ -156,6 +156,11 @@ class PYBEHAVIOR:
     # PEP649 and PEP749: Deferred annotations
     deferred_annotations = (PYVERSION >= (3, 14))
 
+    # Does sys.monitoring support BRANCH_RIGHT and BRANCH_LEFT?  The names
+    # were added in early 3.14 alphas, but didn't work entirely correctly until
+    # after 3.14.0a5.
+    branch_right_left = (pep669 and (PYVERSION > (3, 14, 0, "alpha", 5, 0)))
+
 
 # Coverage.py specifics, about testing scenarios. See tests/testenv.py also.
 

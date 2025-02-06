@@ -10,6 +10,7 @@ import sys
 from typing import Any
 
 from coverage import env
+from coverage.config import CoverageConfig
 from coverage.disposition import FileDisposition
 from coverage.exceptions import ConfigError
 from coverage.misc import isolate_module
@@ -17,8 +18,8 @@ from coverage.pytracer import PyTracer
 from coverage.sysmon import SysMonitor
 from coverage.types import (
     TFileDisposition,
-    Tracer,
     TWarnFn,
+    Tracer,
 )
 
 
@@ -52,36 +53,47 @@ class Core:
     packed_arcs: bool
     systrace: bool
 
-    def __init__(self,
+    def __init__(
+        self,
         warn: TWarnFn,
-        timid: bool,
+        config: CoverageConfig,
+        dynamic_contexts: bool,
         metacov: bool,
     ) -> None:
-        # Defaults
-        self.tracer_kwargs = {}
+        # Check the conditions that preclude us from using sys.monitoring.
+        reason_no_sysmon = ""
+        if not env.PYBEHAVIOR.pep669:
+            reason_no_sysmon = "isn't available in this version"
+        elif config.branch and not env.PYBEHAVIOR.branch_right_left:
+            reason_no_sysmon = "can't measure branches in this version"
+        elif dynamic_contexts:
+            reason_no_sysmon = "doesn't yet support dynamic contexts"
 
-        core_name: str | None
-        if timid:
+        core_name: str | None = None
+        if config.timid:
             core_name = "pytrace"
-        else:
+
+        if core_name is None:
             core_name = os.getenv("COVERAGE_CORE")
 
-            if core_name == "sysmon" and not env.PYBEHAVIOR.pep669:
-                warn("sys.monitoring isn't available, using default core", slug="no-sysmon")
-                core_name = None
+        if core_name == "sysmon" and reason_no_sysmon:
+            warn(f"sys.monitoring {reason_no_sysmon}, using default core", slug="no-sysmon")
+            core_name = None
 
-            if not core_name:
-                # Once we're comfortable with sysmon as a default:
-                # if env.PYBEHAVIOR.pep669 and self.should_start_context is None:
-                #     core_name = "sysmon"
-                if HAS_CTRACER:
-                    core_name = "ctrace"
-                else:
-                    core_name = "pytrace"
+        if core_name is None:
+            # Someday we will default to sysmon, but it's still experimental:
+            #   if not reason_no_sysmon:
+            #       core_name = "sysmon"
+            if HAS_CTRACER:
+                core_name = "ctrace"
+            else:
+                core_name = "pytrace"
+
+        self.tracer_kwargs = {}
 
         if core_name == "sysmon":
             self.tracer_class = SysMonitor
-            self.tracer_kwargs = {"tool_id": 3 if metacov else 1}
+            self.tracer_kwargs["tool_id"] = 3 if metacov else 1
             self.file_disposition_class = FileDisposition
             self.supports_plugins = False
             self.packed_arcs = False
