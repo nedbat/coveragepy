@@ -64,7 +64,10 @@ def qualname_from_frame(frame: FrameType) -> str | None:
     if method is None:
         func = frame.f_globals.get(fname)
         if func is None:
-            return None
+            try:
+                return frame.f_code.co_qualname
+            except AttributeError:
+                return f"staticmethod({fname})"
         return cast(str, func.__module__ + "." + fname)
 
     func = getattr(method, "__func__", None)
