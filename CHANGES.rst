@@ -23,11 +23,16 @@ upgrading your version of coverage.py.
 Unreleased
 ----------
 
+- Fix: a memory leak in CTracer has been fixed.  The details are in `issue
+  1924`_ and `pytest-dev 676`_.  This should reduce the memory footprint for
+  everyone even if it hadn't caused a problem before.
+
 - We now ship a py3-none-any.whl wheel file.  Thanks, `Russell Keith-Magee
   <pull 1914_>`_.
 
 .. _pull 1914: https://github.com/nedbat/coveragepy/pull/1914
-
+.. _issue 1924: https://github.com/nedbat/coveragepy/issues/1924
+.. _pytest-dev 676: https://github.com/pytest-dev/pytest-cov/issues/676
 
 .. start-releases
 

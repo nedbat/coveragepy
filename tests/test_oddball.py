@@ -206,6 +206,21 @@ class MemoryLeakTest(CoverageTest):
         if fails > 8:
             pytest.fail("RAM grew by %d" % (ram_growth))      # pragma: only failure
 
+    @pytest.mark.skipif(not testenv.C_TRACER, reason="Only the C tracer has refcounting issues")
+    # In fact, sysmon explicitly holds onto all code objects,
+    # so this will definitely fail with sysmon.
+    def test_eval_codeobject_leak(self) -> None:
+        # https://github.com/nedbat/coveragepy/issues/1924
+        code = """\
+            for i in range(100_000):
+                r = eval("'a' + '1'")
+                assert r == 'a1'
+            """
+        ram_0 = osinfo.process_ram()
+        self.check_coverage(code, [1, 2, 3], "")
+        ram_growth = osinfo.process_ram() - ram_0
+        assert ram_growth < 2_000 * 1024
+
 
 class MemoryFumblingTest(CoverageTest):
     """Test that we properly manage the None refcount."""
