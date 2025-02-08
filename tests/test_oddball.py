@@ -209,17 +209,25 @@ class MemoryLeakTest(CoverageTest):
     @pytest.mark.skipif(not testenv.C_TRACER, reason="Only the C tracer has refcounting issues")
     # In fact, sysmon explicitly holds onto all code objects,
     # so this will definitely fail with sysmon.
-    def test_eval_codeobject_leak(self) -> None:
+    @pytest.mark.parametrize("branch", [False, True])
+    def test_eval_codeobject_leak(self, branch: bool) -> None:
         # https://github.com/nedbat/coveragepy/issues/1924
         code = """\
-            for i in range(100_000):
+            for i in range(10_000):
                 r = eval("'a' + '1'")
                 assert r == 'a1'
             """
-        ram_0 = osinfo.process_ram()
-        self.check_coverage(code, [1, 2, 3], "")
-        ram_growth = osinfo.process_ram() - ram_0
-        assert ram_growth < 2_000 * 1024
+        # Looking for leaks is hard.  We consider the leak fixed if at least
+        # one of our loops only increased the footprint by a small amount.
+        base = osinfo.process_ram()
+        deltas = []
+        for _ in range(10):
+            self.check_coverage(code, [1, 2, 3], "", branch=branch)
+            now = osinfo.process_ram()
+            deltas.append(now - base)
+            print(f"Mem delta: {(now - base)//1024}")
+            base = now
+        assert any(d < 50 * 1024 for d in deltas)
 
 
 class MemoryFumblingTest(CoverageTest):
