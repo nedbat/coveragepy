@@ -57,12 +57,10 @@
         - https://github.com/nedbat/coveragepy/actions/workflows/kit.yml
     - test the pypi upload:
         $ make test_upload
-        - approve the action
-            - https://github.com/nedbat/coveragepy/actions/workflows/publish.yml
+        - approve the action using the url printed out
     - upload kits:
         $ make pypi_upload
-        - approve the action
-            - https://github.com/nedbat/coveragepy/actions/workflows/publish.yml
+        - approve the action using the url printed out
 - Tag the tree, update GitHub releases and comment on issues:
     $ make clean tag github_releases comment_on_fixes
 - Bump version:
