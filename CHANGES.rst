@@ -20,8 +20,12 @@ upgrading your version of coverage.py.
     ..  Version 9.8.1 — 2027-07-27
     ..  --------------------------
 
-Unreleased
-----------
+.. start-releases
+
+.. _changes_7-6-11:
+
+Version 7.6.11 — 2025-02-08
+---------------------------
 
 - Fix: a memory leak in CTracer has been fixed.  The details are in `issue
   1924`_ and `pytest-dev 676`_.  This should reduce the memory footprint for
@@ -33,8 +37,6 @@ Unreleased
 .. _pull 1914: https://github.com/nedbat/coveragepy/pull/1914
 .. _issue 1924: https://github.com/nedbat/coveragepy/issues/1924
 .. _pytest-dev 676: https://github.com/pytest-dev/pytest-cov/issues/676
-
-.. start-releases
 
 .. _changes_7-6-10:
 
