@@ -153,6 +153,7 @@ class CoverageTest(
         partials: Iterable[str] = (),
         branchz: str | None = None,
         branchz_missing: str | None = None,
+        branch: bool = True,
     ) -> Coverage:
         """Check the coverage measurement of `text`.
 
@@ -184,7 +185,7 @@ class CoverageTest(
             branches_missing = arcz_to_arcs(branchz_missing)
 
         # Start up coverage.py.
-        cov = coverage.Coverage(branch=True)
+        cov = coverage.Coverage(branch=branch)
         cov.erase()
         for exc in excludes or []:
             cov.exclude(exc)
