@@ -1905,7 +1905,7 @@ class LambdaArcTest(CoverageTest):
 # I don't understand why it failed, I don't understand why it passed,
 # so just skip the whole thing.
 skip_eventlet_670 = pytest.mark.skipif(
-    env.PYVERSION[:2] == (3, 9) and env.CPYTHON and env.OSX,
+    env.PYVERSION[:2] == (3, 9) and env.CPYTHON and env.MACOS,
     reason="Avoid an eventlet bug on Mac 3.9: eventlet#670",
     # https://github.com/eventlet/eventlet/issues/670
 )

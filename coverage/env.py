@@ -22,7 +22,7 @@ _UNINTERESTING_GLOBALS += ["PYBEHAVIOR", "debug_info"]
 # Operating systems.
 WINDOWS = sys.platform == "win32"
 LINUX = sys.platform.startswith("linux")
-OSX = sys.platform == "darwin"
+MACOS = sys.platform == "darwin"
 
 # Python implementations.
 CPYTHON = (platform.python_implementation() == "CPython")
