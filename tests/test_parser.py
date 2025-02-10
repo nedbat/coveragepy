@@ -5,6 +5,7 @@
 
 from __future__ import annotations
 
+import ast
 import re
 import textwrap
 from unittest import mock
@@ -13,7 +14,7 @@ import pytest
 
 from coverage import env
 from coverage.exceptions import NoSource, NotPython
-from coverage.parser import PythonParser
+from coverage.parser import PythonParser, is_constant_test_expr
 
 from tests.coveragetest import CoverageTest
 from tests.helpers import arcz_to_arcs
@@ -1192,3 +1193,24 @@ class ParserFileTest(CoverageTest):
         with pytest.raises(NoSource, match=re.escape(msg)):
             with mock.patch("coverage.python.read_python_source", side_effect=OSError("Fake!")):
                 PythonParser(filename="cant-read.py")
+
+
+@pytest.mark.parametrize(
+    ["expr", "is_constant"],
+    [
+        ("True", True),
+        ("False", True),
+        ("__debug__", True),
+        ("not __debug__", True),
+        ("not(__debug__)", True),
+        ("-__debug__", False),
+        ("__debug__ or True", True),
+        ("__debug__ + True", False),
+        ("x", False),
+        ("__debug__ or debug", False),
+    ]
+)
+def test_is_constant_test_expr(expr: str, is_constant: bool) -> None:
+    node = ast.parse(expr, mode="eval").body
+    print(ast.dump(node, indent=4))
+    assert is_constant_test_expr(node) == is_constant

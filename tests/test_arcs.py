@@ -485,11 +485,23 @@ class LoopArcTest(CoverageTest):
         )
 
     def test_while_true(self) -> None:
-        # With "while True", 2.x thinks it's computation,
-        # 3.x thinks it's constant.
         self.check_coverage("""\
             a, i = 1, 0
             while True:
+                if i >= 3:
+                    a = 4
+                    break
+                i += 1
+            assert a == 4 and i == 3
+            """,
+            branchz="34 36",
+            branchz_missing="",
+        )
+
+    def test_while_not_false(self) -> None:
+        self.check_coverage("""\
+            a, i = 1, 0
+            while not False:
                 if i >= 3:
                     a = 4
                     break

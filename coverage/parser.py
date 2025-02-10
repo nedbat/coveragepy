@@ -654,6 +654,25 @@ class NodeList(ast.AST):
 # TODO: Shouldn't the cause messages join with "and" instead of "or"?
 
 
+def is_constant_test_expr(node: ast.AST) -> bool:
+    """Is this a compile-time constant test expression?"""
+    node_name = node.__class__.__name__
+    if node_name in [       # in PYVERSIONS:
+        "Constant",         # all
+        "NameConstant",     # 9 10 11, gone in 12
+        "Num",              # 9 10 11, gone in 12
+    ]:
+        return True
+    elif isinstance(node, ast.Name):
+        if node.id in ["True", "False", "None", "__debug__"]:
+            return True
+    elif isinstance(node, ast.UnaryOp) and isinstance(node.op, ast.Not):
+        return is_constant_test_expr(node.operand)
+    elif isinstance(node, ast.BoolOp):
+        return all(is_constant_test_expr(v) for v in node.values)
+    return False
+
+
 class AstArcAnalyzer:
     """Analyze source text with an AST to find executable code paths.
 
@@ -1022,16 +1041,6 @@ class AstArcAnalyzer:
         new_while.orelse = []
         return new_while
 
-    def is_constant_expr(self, node: ast.AST) -> bool:
-        """Is this a compile-time constant?"""
-        node_name = node.__class__.__name__
-        if node_name in ["Constant", "NameConstant", "Num"]:
-            return True
-        elif isinstance(node, ast.Name):
-            if node.id in ["True", "False", "None", "__debug__"]:
-                return True
-        return False
-
     # In the fullness of time, these might be good tests to write:
     #   while EXPR:
     #   while False:
@@ -1262,7 +1271,7 @@ class AstArcAnalyzer:
 
     def _handle__While(self, node: ast.While) -> set[ArcStart]:
         start = to_top = self.line_for_node(node.test)
-        constant_test = self.is_constant_expr(node.test)
+        constant_test = is_constant_test_expr(node.test)
         top_is_body0 = False
         if constant_test:
             top_is_body0 = True
