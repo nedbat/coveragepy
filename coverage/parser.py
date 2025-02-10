@@ -1022,15 +1022,15 @@ class AstArcAnalyzer:
         new_while.orelse = []
         return new_while
 
-    def is_constant_expr(self, node: ast.AST) -> str | None:
+    def is_constant_expr(self, node: ast.AST) -> bool:
         """Is this a compile-time constant?"""
         node_name = node.__class__.__name__
         if node_name in ["Constant", "NameConstant", "Num"]:
-            return "Num"
+            return True
         elif isinstance(node, ast.Name):
             if node.id in ["True", "False", "None", "__debug__"]:
-                return "Name"
-        return None
+                return True
+        return False
 
     # In the fullness of time, these might be good tests to write:
     #   while EXPR:
