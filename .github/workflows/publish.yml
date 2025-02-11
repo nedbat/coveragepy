@@ -40,6 +40,9 @@ jobs:
     - name: "Record run id" # zizmor: ignore[template-injection]
       id: run-id
       run: |
+        # There must be a shorter way to write this...
+        [ "${{ fromJson(steps.runs.outputs.data).workflow_runs[0].status}}" = "completed" ] || exit 1
+        [ "${{ fromJson(steps.runs.outputs.data).workflow_runs[0].conclusion}}" = "success" ] || exit 1
         echo "run-id=${{ fromJson(steps.runs.outputs.data).workflow_runs[0].id }}" >> "$GITHUB_OUTPUT"
 
   publish-to-test-pypi:
