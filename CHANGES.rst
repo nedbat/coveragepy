@@ -20,15 +20,17 @@ upgrading your version of coverage.py.
     ..  Version 9.8.1 — 2027-07-27
     ..  --------------------------
 
-Unreleased
-----------
+.. start-releases
+
+.. _changes_7-6-12:
+
+Version 7.6.12 — 2025-02-11
+---------------------------
 
 - Fix: some aarch64 distributions were missing (`issue 1927`_).  These are now
   building reliably.
 
 .. _issue 1927: https://github.com/nedbat/coveragepy/issues/1927
-
-.. start-releases
 
 .. _changes_7-6-11:
 
