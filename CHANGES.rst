@@ -23,8 +23,10 @@ upgrading your version of coverage.py.
 Unreleased
 ----------
 
-Nothing yet.
+- Fix: some aarch64 distributions were missing (`issue 1927`_).  These are now
+  building reliably.
 
+.. _issue 1927: https://github.com/nedbat/coveragepy/issues/1927
 
 .. start-releases
 

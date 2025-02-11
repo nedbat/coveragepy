@@ -37,6 +37,9 @@ defaults:
 
 env:
   PIP_DISABLE_PIP_VERSION_CHECK: 1
+  # PYVERSIONS: changing the list of versions will change the number of
+  # expected distributions.
+  EXPECTED: 63
 
 permissions:
   contents: read
@@ -99,6 +102,9 @@ jobs:
           #               }
           #               if the_os == "macos":
           #                   them["os-version"] = "13"
+          #               if the_arch == "aarch64":
+          #                   # https://github.com/pypa/cibuildwheel/issues/2257
+          #                   them["os-version"] = "22.04-arm"
           #               print(f"- {json.dumps(them)}")
           # ]]]
           - {"os": "ubuntu", "py": "cp39", "arch": "x86_64"}
@@ -111,11 +117,11 @@ jobs:
           - {"os": "ubuntu", "py": "cp311", "arch": "i686"}
           - {"os": "ubuntu", "py": "cp312", "arch": "i686"}
           - {"os": "ubuntu", "py": "cp313", "arch": "i686"}
-          - {"os": "ubuntu", "py": "cp39", "arch": "aarch64"}
-          - {"os": "ubuntu", "py": "cp310", "arch": "aarch64"}
-          - {"os": "ubuntu", "py": "cp311", "arch": "aarch64"}
-          - {"os": "ubuntu", "py": "cp312", "arch": "aarch64"}
-          - {"os": "ubuntu", "py": "cp313", "arch": "aarch64"}
+          - {"os": "ubuntu", "py": "cp39", "arch": "aarch64", "os-version": "22.04-arm"}
+          - {"os": "ubuntu", "py": "cp310", "arch": "aarch64", "os-version": "22.04-arm"}
+          - {"os": "ubuntu", "py": "cp311", "arch": "aarch64", "os-version": "22.04-arm"}
+          - {"os": "ubuntu", "py": "cp312", "arch": "aarch64", "os-version": "22.04-arm"}
+          - {"os": "ubuntu", "py": "cp313", "arch": "aarch64", "os-version": "22.04-arm"}
           - {"os": "macos", "py": "cp39", "arch": "arm64", "os-version": "13"}
           - {"os": "macos", "py": "cp310", "arch": "arm64", "os-version": "13"}
           - {"os": "macos", "py": "cp311", "arch": "arm64", "os-version": "13"}
@@ -136,16 +142,10 @@ jobs:
           - {"os": "windows", "py": "cp311", "arch": "AMD64"}
           - {"os": "windows", "py": "cp312", "arch": "AMD64"}
           - {"os": "windows", "py": "cp313", "arch": "AMD64"}
-        # [[[end]]] (checksum: 38b83d67f00c838e5e7f69f803b7536c)
+        # [[[end]]] (checksum: 7c3758a4ca41df53d7ebcad68f12d0d0)
       fail-fast: false
 
     steps:
-      - name: "Setup QEMU"
-        if: matrix.os == 'ubuntu'
-        uses: docker/setup-qemu-action@4574d27a4764455b42196d70a065bc6853246a25 # v3.4.0
-        with:
-          platforms: arm64
-
       - name: "Check out the repo"
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
@@ -292,10 +292,6 @@ jobs:
           merge-multiple: true
 
       - name: "List distributions"
-        env:
-          # PYVERSIONS: changing the list of versions will change the number of
-          # expected distributions.
-          EXPECTED: 63
         run: |
           ls -alR
           echo "Number of dists, there should be $EXPECTED:"

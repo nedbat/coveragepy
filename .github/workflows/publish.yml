@@ -14,6 +14,11 @@ defaults:
   run:
     shell: bash
 
+env:
+  # PYVERSIONS: changing the list of versions will change the number of
+  # expected distributions.
+  EXPECTED: 63
+
 permissions:
   contents: read
 
@@ -71,8 +76,9 @@ jobs:
     - name: "What did we get?"
       run: |
         ls -alR
-        echo "Number of dists, should be 72:"
+        echo "Number of dists, should be $EXPECTED:"
         ls -1 dist | wc -l
+        files=$(ls dist 2>/dev/null | wc -l) && [ "$files" -eq $EXPECTED ] || exit 1
 
     - name: "Generate attestations"
       uses: actions/attest-build-provenance@520d128f165991a6c774bcb264f323e3d70747f4 # v2.2.0
@@ -110,8 +116,9 @@ jobs:
     - name: "What did we get?"
       run: |
         ls -alR
-        echo "Number of dists, should be 72:"
+        echo "Number of dists, should be $EXPECTED:"
         ls -1 dist | wc -l
+        files=$(ls dist 2>/dev/null | wc -l) && [ "$files" -eq $EXPECTED ] || exit 1
 
     - name: "Generate attestations"
       uses: actions/attest-build-provenance@520d128f165991a6c774bcb264f323e3d70747f4 # v2.2.0
