@@ -655,13 +655,13 @@ class NodeList(ast.AST):
 
 
 def is_constant_test_expr(node: ast.AST) -> bool:
-    """Is this a compile-time constant test expression?"""
-    node_name = node.__class__.__name__
-    if node_name in [       # in PYVERSIONS:
-        "Constant",         # all
-        "NameConstant",     # 9 10 11, gone in 12
-        "Num",              # 9 10 11, gone in 12
-    ]:
+    """Is this a compile-time constant test expression?
+
+    We don't try to mimic all of CPython's optimizations.  We just have to
+    handle the kinds of constant expressions people might actually use.
+
+    """
+    if isinstance(node, ast.Constant):
         return True
     elif isinstance(node, ast.Name):
         if node.id in ["True", "False", "None", "__debug__"]:

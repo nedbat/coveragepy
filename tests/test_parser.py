@@ -1200,6 +1200,8 @@ class ParserFileTest(CoverageTest):
     [
         ("True", True),
         ("False", True),
+        ("1", True),
+        ("0", True),
         ("__debug__", True),
         ("not __debug__", True),
         ("not(__debug__)", True),
