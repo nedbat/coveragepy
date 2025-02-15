@@ -23,7 +23,10 @@ upgrading your version of coverage.py.
 Unreleased
 ----------
 
-Nothing yet.
+- Many constant tests in if statements are now recognized as being optimized
+  away.  For example, previously ``if 13:`` would have been considered a branch
+  with one path not taken.  Now it is understood as always true and no coverage
+  is missing.
 
 
 .. start-releases

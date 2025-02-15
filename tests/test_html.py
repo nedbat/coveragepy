@@ -1078,7 +1078,7 @@ assert len(math) == 18
             contains(
                 "out/partial_626/index.html",
                 '<a href="partial_py.html">partial.py</a>',
-                '<span class="pc_cov">87%</span>',
+                '<span class="pc_cov">92%</span>',
             )
         else:
             cov.html_report(partial, directory="out/partial")

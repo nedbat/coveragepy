@@ -1196,23 +1196,23 @@ class ParserFileTest(CoverageTest):
 
 
 @pytest.mark.parametrize(
-    ["expr", "is_constant"],
+    ["expr", "ret"],
     [
-        ("True", True),
-        ("False", True),
-        ("1", True),
-        ("0", True),
-        ("__debug__", True),
-        ("not __debug__", True),
-        ("not(__debug__)", True),
-        ("-__debug__", False),
-        ("__debug__ or True", True),
-        ("__debug__ + True", False),
-        ("x", False),
-        ("__debug__ or debug", False),
+        ("True", (True, True)),
+        ("False", (True, False)),
+        ("1", (True, True)),
+        ("0", (True, False)),
+        ("__debug__", (True, True)),
+        ("not __debug__", (True, False)),
+        ("not(__debug__)", (True, False)),
+        ("-__debug__", (False, False)),
+        ("__debug__ or True", (True, True)),
+        ("__debug__ + True", (False, False)),
+        ("x", (False, False)),
+        ("__debug__ or debug", (False, False)),
     ]
 )
-def test_is_constant_test_expr(expr: str, is_constant: bool) -> None:
+def test_is_constant_test_expr(expr: str, ret: tuple[bool, bool]) -> None:
     node = ast.parse(expr, mode="eval").body
     print(ast.dump(node, indent=4))
-    assert is_constant_test_expr(node) == is_constant
+    assert is_constant_test_expr(node) == ret

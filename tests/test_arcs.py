@@ -469,6 +469,23 @@ class LoopArcTest(CoverageTest):
             branchz_missing="17 25",
         )
 
+    def test_if_1(self) -> None:
+        lines = [1, 3, 6]
+        if env.PYBEHAVIOR.keep_constant_test:
+            lines.append(2)
+        self.check_coverage("""\
+            a = 1
+            if not not 1:
+                a = 3
+            else:
+                a = 5
+            assert a == 3
+            """,
+            lines=sorted(lines),
+            branchz="",
+            branchz_missing="",
+        )
+
     def test_while_1(self) -> None:
         # With "while 1", the loop knows it's constant.
         self.check_coverage("""\
@@ -485,6 +502,9 @@ class LoopArcTest(CoverageTest):
         )
 
     def test_while_true(self) -> None:
+        lines = [1, 3, 4, 5, 6, 7]
+        if env.PYBEHAVIOR.keep_constant_test:
+            lines.append(2)
         self.check_coverage("""\
             a, i = 1, 0
             while True:
@@ -494,7 +514,23 @@ class LoopArcTest(CoverageTest):
                 i += 1
             assert a == 4 and i == 3
             """,
+            lines=sorted(lines),
             branchz="34 36",
+            branchz_missing="",
+        )
+
+    def test_while_false(self) -> None:
+        lines = [1, 4]
+        if env.PYBEHAVIOR.keep_constant_test:
+            lines.append(2)
+        self.check_coverage("""\
+            a, i = 1, 0
+            while False:
+                1/0
+            assert a == 1 and i == 0
+            """,
+            lines=sorted(lines),
+            branchz="",
             branchz_missing="",
         )
 
@@ -1482,10 +1518,7 @@ class OptimizedIfTest(CoverageTest):
     def test_optimized_away_if_0(self) -> None:
         if env.PYBEHAVIOR.keep_constant_test:
             lines = [1, 2, 3, 4, 8, 9]
-            # 49 isn't missing because line 4 is matched by the default partial
-            # exclusion regex, and no branches are considered missing if they
-            # start from an excluded line.
-            branchz = "23 24 48 49"
+            branchz = "23 24"
             branchz_missing = "24"
         else:
             lines = [1, 2, 3, 8, 9]
@@ -1511,10 +1544,7 @@ class OptimizedIfTest(CoverageTest):
     def test_optimized_away_if_1(self) -> None:
         if env.PYBEHAVIOR.keep_constant_test:
             lines = [1, 2, 3, 4, 5, 6, 9]
-            # 49 isn't missing because line 4 is matched by the default partial
-            # exclusion regex, and no branches are considered missing if they
-            # start from an excluded line.
-            branchz = "23 24 45 49 56 59"
+            branchz = "23 24 56 59"
             branchz_missing = "24 59"
         else:
             lines = [1, 2, 3, 5, 6, 9]
@@ -1540,15 +1570,8 @@ class OptimizedIfTest(CoverageTest):
     def test_optimized_away_if_1_no_else(self) -> None:
         if env.PYBEHAVIOR.keep_constant_test:
             lines = [1, 2, 3, 4, 5]
-            # 25 isn't missing because line 2 is matched by the default partial
-            # exclusion regex, and no branches are considered missing if they
-            # start from an excluded line.
-            branchz = "23 25"
-            branchz_missing = ""
         else:
             lines = [1, 3, 4, 5]
-            branchz = ""
-            branchz_missing = ""
         self.check_coverage("""\
             a = 1
             if 1:
@@ -1557,22 +1580,15 @@ class OptimizedIfTest(CoverageTest):
             d = 5
             """,
             lines=lines,
-            branchz=branchz,
-            branchz_missing=branchz_missing,
+            branchz="",
+            branchz_missing="",
         )
 
     def test_optimized_if_nested(self) -> None:
         if env.PYBEHAVIOR.keep_constant_test:
             lines = [1, 2, 8, 11, 12, 13, 14, 15]
-            branchz = "28 2F 8B 8F"
-            branchz_missing = ""
-            # 2F and 8F aren't missing because they're matched by the default
-            # partial exclusion regex, and no branches are considered missing
-            # if they start from an excluded line.
         else:
             lines = [1, 12, 14, 15]
-            branchz = ""
-            branchz_missing = ""
 
         self.check_coverage("""\
             a = 1
@@ -1592,8 +1608,8 @@ class OptimizedIfTest(CoverageTest):
             i = 15
             """,
             lines=lines,
-            branchz=branchz,
-            branchz_missing=branchz_missing,
+            branchz="",
+            branchz_missing="",
         )
 
     def test_dunder_debug(self) -> None:
@@ -1615,10 +1631,8 @@ class OptimizedIfTest(CoverageTest):
     def test_if_debug(self) -> None:
         if env.PYBEHAVIOR.optimize_if_debug:
             branchz = "12 1. 24 26"
-            branchz_missing = ""
         else:
-            branchz = "12 23 31 34 26 1."
-            branchz_missing = "31"
+            branchz = "12 1. 23 26"
         self.check_coverage("""\
             for value in [True, False]:
                 if value:
@@ -1628,7 +1642,7 @@ class OptimizedIfTest(CoverageTest):
                     x = 6
             """,
             branchz=branchz,
-            branchz_missing=branchz_missing,
+            branchz_missing="",
         )
 
     def test_if_not_debug(self) -> None:
