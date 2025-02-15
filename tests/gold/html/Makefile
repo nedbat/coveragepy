@@ -6,7 +6,7 @@ help:
 	@grep '^[a-zA-Z]' $(MAKEFILE_LIST) | sort | awk -F ':.*?## ' 'NF==2 {printf "  %-26s%s\n", $$1, $$2}'
 
 complete: 	## Copy support files into directories so the HTML can be viewed properly.
-	@for sub in *; do \
+	@for sub in * ../../actual/html/*; do \
 		if [ -f "$$sub/index.html" ]; then \
 			echo Copying into $$sub ; \
 			cp -n support/* $$sub ; \
