@@ -209,8 +209,31 @@ class CoverageTest(
             else:
                 # lines is a list of possible line number lists, one of them
                 # must match.
-                for line_list in lines:
+                for i, line_list in enumerate(lines):   # pylint: disable=unused-variable
                     if statements == line_list:
+                        # PYVERSIONS: we might be able to trim down multiple
+                        # lines passed into this function.
+                        # Uncomment this code, run the whole test suite, then
+                        # sort /tmp/check_coverage_multi_line.out to group the
+                        # tests together and see if any of the `lines` elements
+                        # haven't been used.
+                        # One of the calls in test_successful_coverage passes
+                        # three `lines` elements, only one of which is right.
+                        # We need to keep that test until we can delete the
+                        # multi-lines option entirely.
+                        #
+                        # import inspect, platform
+                        # frinfo = inspect.getframeinfo(inspect.currentframe().f_back)
+                        # version = "{} {}.{}".format(
+                        #     platform.python_implementation(),
+                        #     *sys.version_info[:2],
+                        # )
+                        # with open("/tmp/check_coverage_multi_line.out", "a") as f:
+                        #     print(
+                        #         f"{frinfo.filename}@{frinfo.lineno}: "
+                        #         + f"lines {i + 1}/{len(lines)}: {version}",
+                        #         file=f,
+                        #     )
                         break
                 else:
                     assert False, f"None of the lines choices matched {statements!r}"

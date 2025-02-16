@@ -329,7 +329,7 @@ class SimpleStatementTest(CoverageTest):
                 pass
             foo()
             """,
-            lines=([1,3,4], [1,4]),
+            lines=[1,3,4],
             missing="",
         )
         self.check_coverage("""\
@@ -348,7 +348,7 @@ class SimpleStatementTest(CoverageTest):
                     pass
             Foo().foo()
             """,
-            lines=([1,2,4,5], [1,2,5]),
+            lines=[1,2,4,5],
             missing="",
         )
 
@@ -683,7 +683,7 @@ class SimpleStatementTest(CoverageTest):
             c = 6
             assert (a,b,c) == (1,3,6)
             """,
-            lines=([1,3,6,7], [1,3,5,6,7], [1,3,4,5,6,7], [1,2,3,4,5,6,7]),
+            lines=([1,3,6,7], [1,2,3,4,5,6,7]),
             missing="",
         )
 
