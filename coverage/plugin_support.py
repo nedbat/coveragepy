@@ -11,13 +11,14 @@ import sys
 
 from types import FrameType
 from typing import Any
+from typing import Callable
 from collections.abc import Iterable, Iterator
 
 from coverage.exceptions import PluginError
 from coverage.misc import isolate_module
 from coverage.plugin import CoveragePlugin, FileTracer, FileReporter
 from coverage.types import (
-    TArc, TConfigurable, TDebugCtl, TLineNo, TPluginConfig, TSourceTokenLines,
+    TArc, TConfigurable, TDebugCtl, TLineNo, TPluginConfig, TSourceTokenLines, TConfigSectionOut
 )
 
 os = isolate_module(os)
@@ -42,6 +43,7 @@ class Plugins:
         modules: Iterable[str],
         config: TPluginConfig,
         debug: TDebugCtl | None = None,
+        plugin_override: Iterable[TCoverageInit] | None = None,
     ) -> Plugins:
         """Load plugins from `modules`.
 
@@ -51,19 +53,23 @@ class Plugins:
         plugins = cls()
         plugins.debug = debug
 
-        for module in modules:
-            plugins.current_module = module
-            __import__(module)
-            mod = sys.modules[module]
+        if plugin_override is not None:
+            for override in plugin_override:
+                override(plugins, {})
+        else:
+            for module in modules:
+                plugins.current_module = module
+                __import__(module)
+                mod = sys.modules[module]
 
-            coverage_init = getattr(mod, "coverage_init", None)
-            if not coverage_init:
-                raise PluginError(
-                    f"Plugin module {module!r} didn't define a coverage_init function",
-                )
+                coverage_init = getattr(mod, "coverage_init", None)
+                if not coverage_init:
+                    raise PluginError(
+                        f"Plugin module {module!r} didn't define a coverage_init function",
+                    )
 
-            options = config.get_plugin_options(module)
-            coverage_init(plugins, options)
+                options = config.get_plugin_options(module)
+                coverage_init(plugins, options)
 
         plugins.current_module = None
         return plugins
@@ -136,6 +142,9 @@ class Plugins:
     def get(self, plugin_name: str) -> CoveragePlugin:
         """Return a plugin by name."""
         return self.names[plugin_name]
+
+
+TCoverageInit = Callable[[Plugins, TConfigSectionOut], None]
 
 
 class LabelledDebug:
