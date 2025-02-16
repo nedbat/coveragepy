@@ -146,6 +146,7 @@ class CoverageTest(
     def check_coverage(
         self,
         text: str,
+        *,
         lines: Sequence[TLineNo] | Sequence[list[TLineNo]] | None = None,
         missing: str = "",
         report: str = "",

@@ -2119,7 +2119,7 @@ class ExcludeTest(CoverageTest):
             if e:#\tpragma:\tno branch
                 f = 9
             """,
-            [1,2,3,4,5,6,7,8,9],
+            lines=[1,2,3,4,5,6,7,8,9],
             branchz="23 24 56 57 89 8.",
             branchz_missing="",
         )
@@ -2132,7 +2132,7 @@ class ExcludeTest(CoverageTest):
                 break
             assert c == 5-2
             """,
-            [1,2,3,4,5],
+            lines=[1,2,3,4,5],
             partials=["only some"],
             branchz="23 25", branchz_missing="",
         )

@@ -44,7 +44,8 @@ class ThreadingTest(CoverageTest):
             fromMainThread()
             other.join()
             """,
-            [1, 3, 4, 6, 7, 9, 10, 12, 13, 14, 15], "10",
+            lines=[1, 3, 4, 6, 7, 9, 10, 12, 13, 14, 15],
+            missing="10",
         )
 
     def test_thread_run(self) -> None:
@@ -64,7 +65,8 @@ class ThreadingTest(CoverageTest):
             thd.start()
             thd.join()
             """,
-            [1, 3, 4, 5, 6, 7, 9, 10, 12, 13, 14], "",
+            lines=[1, 3, 4, 5, 6, 7, 9, 10, 12, 13, 14],
+            missing="",
         )
 
 
@@ -83,7 +85,8 @@ class RecursionTest(CoverageTest):
             recur(495)  # We can get at least this many stack frames.
             i = 8       # and this line will be traced
             """,
-            [1, 2, 3, 5, 7, 8], "",
+            lines=[1, 2, 3, 5, 7, 8],
+            missing="",
         )
 
     def test_long_recursion(self) -> None:
@@ -99,7 +102,8 @@ class RecursionTest(CoverageTest):
 
                     recur(100000)  # This is definitely too many frames.
                     """,
-                    [1, 2, 3, 5, 7], "",
+                    lines=[1, 2, 3, 5, 7],
+                    missing="",
                 )
 
     def test_long_recursion_recovery(self) -> None:
@@ -193,9 +197,9 @@ class MemoryLeakTest(CoverageTest):
         fails = 0
         for _ in range(10):
             ram_0 = osinfo.process_ram()
-            self.check_coverage(code.replace("ITERS", "10"), lines, "")
+            self.check_coverage(code.replace("ITERS", "10"), lines=lines, missing="")
             ram_10 = osinfo.process_ram()
-            self.check_coverage(code.replace("ITERS", "10000"), lines, "")
+            self.check_coverage(code.replace("ITERS", "10000"), lines=lines, missing="")
             ram_10k = osinfo.process_ram()
             # Running the code 10k times shouldn't grow the ram much more than
             # running it 10 times.
@@ -222,7 +226,7 @@ class MemoryLeakTest(CoverageTest):
         base = osinfo.process_ram()
         deltas = []
         for _ in range(10):
-            self.check_coverage(code, [1, 2, 3], "", branch=branch)
+            self.check_coverage(code, lines=[1, 2, 3], missing="", branch=branch)
             now = osinfo.process_ram()
             deltas.append(now - base)
             print(f"Mem delta: {(now - base)//1024}")
