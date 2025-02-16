@@ -10,15 +10,14 @@ import os.path
 import sys
 
 from types import FrameType
-from typing import Any
-from typing import Callable
+from typing import Any, Callable
 from collections.abc import Iterable, Iterator
 
 from coverage.exceptions import PluginError
 from coverage.misc import isolate_module
 from coverage.plugin import CoveragePlugin, FileTracer, FileReporter
 from coverage.types import (
-    TArc, TConfigurable, TDebugCtl, TLineNo, TPluginConfig, TSourceTokenLines, TConfigSectionOut
+    TArc, TConfigurable, TDebugCtl, TLineNo, TPluginConfig, TSourceTokenLines
 )
 
 os = isolate_module(os)
@@ -27,7 +26,7 @@ os = isolate_module(os)
 class Plugins:
     """The currently loaded collection of coverage.py plugins."""
 
-    def __init__(self) -> None:
+    def __init__(self, debug: TDebugCtl | None = None) -> None:
         self.order: list[CoveragePlugin] = []
         self.names: dict[str, CoveragePlugin] = {}
         self.file_tracers: list[CoveragePlugin] = []
@@ -35,44 +34,38 @@ class Plugins:
         self.context_switchers: list[CoveragePlugin] = []
 
         self.current_module: str | None = None
-        self.debug: TDebugCtl | None
+        self.debug = debug
 
-    @classmethod
-    def load_plugins(
-        cls,
+    def load_from_config(
+        self,
         modules: Iterable[str],
         config: TPluginConfig,
-        debug: TDebugCtl | None = None,
-        plugin_override: Iterable[TCoverageInit] | None = None,
-    ) -> Plugins:
-        """Load plugins from `modules`.
+    ) -> None:
+        """Load plugin modules, and read their settings from configuration."""
 
-        Returns a Plugins object with the loaded and configured plugins.
+        for module in modules:
+            self.current_module = module
+            __import__(module)
+            mod = sys.modules[module]
 
-        """
-        plugins = cls()
-        plugins.debug = debug
+            coverage_init = getattr(mod, "coverage_init", None)
+            if not coverage_init:
+                raise PluginError(
+                    f"Plugin module {module!r} didn't define a coverage_init function",
+                )
 
-        if plugin_override is not None:
-            for override in plugin_override:
-                override(plugins, {})
-        else:
-            for module in modules:
-                plugins.current_module = module
-                __import__(module)
-                mod = sys.modules[module]
+            options = config.get_plugin_options(module)
+            coverage_init(self, options)
 
-                coverage_init = getattr(mod, "coverage_init", None)
-                if not coverage_init:
-                    raise PluginError(
-                        f"Plugin module {module!r} didn't define a coverage_init function",
-                    )
+        self.current_module = None
 
-                options = config.get_plugin_options(module)
-                coverage_init(plugins, options)
-
-        plugins.current_module = None
-        return plugins
+    def load_from_callables(
+        self,
+        plugin_inits: Iterable[TCoverageInit],
+    ) -> None:
+        """Load plugins from callables provided."""
+        for fn in plugin_inits:
+            fn(self)
 
     def add_file_tracer(self, plugin: CoveragePlugin) -> None:
         """Add a file tracer plugin.
@@ -144,7 +137,7 @@ class Plugins:
         return self.names[plugin_name]
 
 
-TCoverageInit = Callable[[Plugins, TConfigSectionOut], None]
+TCoverageInit = Callable[[Plugins], None]
 
 
 class LabelledDebug:

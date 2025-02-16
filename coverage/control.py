@@ -16,11 +16,10 @@ import signal
 import sys
 import threading
 import time
-import typing
 import warnings
 
 from types import FrameType
-from typing import cast, Any, Callable, IO
+from typing import cast, Any, Callable, IO, Union
 from collections.abc import Iterable, Iterator
 
 from coverage import env
@@ -213,11 +212,10 @@ class Coverage(TConfigurable):
         If `messages` is true, some messages will be printed to stdout
         indicating what is happening.
 
-        If `plugins` are passed, they are an iterable of functions with the
-        `coverage_init` signature (meaning they take a plugin registry and a
-        dictionary of configuration options as arguments). When they are
-        provided, they will override the plugins found in the coverage
-        configuration file.
+        If `plugins` are passed, they are an iterable of function objects
+        accepting a `reg` object to register plugins, as described in
+        :ref:`api_plugin`.  When they are provided, they will override the
+        plugins found in the coverage configuration file.
 
         .. versionadded:: 4.0
             The `concurrency` parameter.
@@ -233,6 +231,9 @@ class Coverage(TConfigurable):
 
         .. versionadded:: 6.0
             The `messages` parameter.
+
+        .. versionadded:: 7.7
+            The `plugins` parameter.
 
         """
         # Start self.config as a usable default configuration. It will soon be
@@ -268,10 +269,7 @@ class Coverage(TConfigurable):
         self._debug: DebugControl = NoDebugging()
         self._inorout: InOrOut | None = None
         self._plugins: Plugins = Plugins()
-        self._plugin_override = typing.cast(
-            typing.Union[Iterable[TCoverageInit], None],
-            plugins
-        )
+        self._plugin_override = cast(Union[Iterable[TCoverageInit], None], plugins)
         self._data: CoverageData | None = None
         self._core: Core | None = None
         self._collector: Collector | None = None
@@ -352,12 +350,11 @@ class Coverage(TConfigurable):
             self._file_mapper = relative_filename
 
         # Load plugins
-        self._plugins = Plugins.load_plugins(
-            self.config.plugins,
-            self.config,
-            self._debug,
-            plugin_override=self._plugin_override
-        )
+        self._plugins = Plugins(self._debug)
+        if self._plugin_override:
+            self._plugins.load_from_callables(self._plugin_override)
+        else:
+            self._plugins.load_from_config(self.config.plugins, self.config)
 
         # Run configuring plugins.
         for plugin in self._plugins.configurers:

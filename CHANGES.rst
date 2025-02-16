@@ -28,6 +28,12 @@ Unreleased
   with one path not taken.  Now it is understood as always true and no coverage
   is missing.
 
+- The :class:`Coverage constructor<.Coverage>` now has a ``plugins`` parameter
+  for passing in plugin objects directly, thanks to `Alex Gaynor <pull
+  1919_>`_.
+
+.. _pull 1919: https://github.com/nedbat/coveragepy/pull/1919
+
 
 .. start-releases
 

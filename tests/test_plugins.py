@@ -10,7 +10,7 @@ import io
 import math
 import os.path
 
-from typing import Any
+from typing import Any, Iterable
 from xml.etree import ElementTree
 
 import pytest
@@ -53,8 +53,18 @@ class FakeConfig(TPluginConfig):
             return {}
 
 
+def make_plugins(
+    modules: Iterable[str],
+    config: TPluginConfig,
+) -> Plugins:
+    """Construct a Plugins and call plugins.load_from_config() for convenience."""
+    plugins = Plugins()
+    plugins.load_from_config(modules, config)
+    return plugins
+
+
 class LoadPluginsTest(CoverageTest):
-    """Test Plugins.load_plugins directly."""
+    """Test Plugins construction."""
 
     def test_implicit_boolean(self) -> None:
         self.make_file("plugin1.py", """\
@@ -68,10 +78,10 @@ class LoadPluginsTest(CoverageTest):
             """)
 
         config = FakeConfig("plugin1", {})
-        plugins = Plugins.load_plugins([], config)
+        plugins = make_plugins([], config)
         assert not plugins
 
-        plugins = Plugins.load_plugins(["plugin1"], config)
+        plugins = make_plugins(["plugin1"], config)
         assert plugins
 
     def test_importing_and_configuring(self) -> None:
@@ -88,7 +98,7 @@ class LoadPluginsTest(CoverageTest):
             """)
 
         config = FakeConfig("plugin1", {'a': 'hello'})
-        plugins = list(Plugins.load_plugins(["plugin1"], config))
+        plugins = list(make_plugins(["plugin1"], config))
 
         assert len(plugins) == 1
         assert plugins[0].this_is == "me"                   # type: ignore
@@ -119,7 +129,7 @@ class LoadPluginsTest(CoverageTest):
             """)
 
         config = FakeConfig("plugin1", {'a': 'hello'})
-        plugins = list(Plugins.load_plugins(["plugin1", "plugin2"], config))
+        plugins = list(make_plugins(["plugin1", "plugin2"], config))
 
         assert len(plugins) == 2
         assert plugins[0].this_is == "me"                   # type: ignore
@@ -129,7 +139,7 @@ class LoadPluginsTest(CoverageTest):
 
         # The order matters...
         config = FakeConfig("plugin1", {'a': 'second'})
-        plugins = list(Plugins.load_plugins(["plugin2", "plugin1"], config))
+        plugins = list(make_plugins(["plugin2", "plugin1"], config))
 
         assert len(plugins) == 2
         assert plugins[0].options == {}                     # type: ignore
@@ -138,7 +148,7 @@ class LoadPluginsTest(CoverageTest):
 
     def test_cant_import(self) -> None:
         with pytest.raises(ImportError, match="No module named '?plugin_not_there'?"):
-            _ = Plugins.load_plugins(["plugin_not_there"], NullConfig())
+            _ = make_plugins(["plugin_not_there"], NullConfig())
 
     def test_plugin_must_define_coverage_init(self) -> None:
         self.make_file("no_plugin.py", """\
@@ -147,7 +157,7 @@ class LoadPluginsTest(CoverageTest):
             """)
         msg_pat = "Plugin module 'no_plugin' didn't define a coverage_init function"
         with pytest.raises(PluginError, match=msg_pat):
-            list(Plugins.load_plugins(["no_plugin"], NullConfig()))
+            list(make_plugins(["no_plugin"], NullConfig()))
 
 
 class PluginTest(CoverageTest):
@@ -274,10 +284,7 @@ class PluginTest(CoverageTest):
 
     def test_coverage_init_plugins(self) -> None:
         called = False
-        def coverage_init(
-            reg: Plugins, # pylint: disable=unused-argument
-            options: TConfigSectionOut # pylint: disable=unused-argument
-        ) -> None:
+        def coverage_init(reg: Plugins) -> None:    # pylint: disable=unused-argument
             nonlocal called
             called = True
 
