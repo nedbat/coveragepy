@@ -1710,7 +1710,7 @@ Version 5.4 — 2021-01-24
 - Combining files on Windows across drives now works properly, fixing `issue
   577`_.  Thanks, `Valentin Lab <pr1080_>`_.
 
-- Fix an obscure warning from deep in the _decimal module, as reported in
+- Fix an obscure warning from deep in the decimal module, as reported in
   `issue 1084`_.
 
 - Update to support Python 3.10 alphas in progress, including `PEP 626: Precise

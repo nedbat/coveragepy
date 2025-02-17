@@ -288,6 +288,7 @@ RELNOTES_JSON = tmp/relnotes.json
 
 $(CHANGES_MD): CHANGES.rst $(DOCBIN)
 	$(SPHINXBUILD) -b rst doc tmp/rst_rst
+	pandoc --version
 	pandoc -frst -tmarkdown_strict --markdown-headings=atx --wrap=none tmp/rst_rst/changes.rst > $(CHANGES_MD)
 
 relnotes_json: $(RELNOTES_JSON)		## Convert changelog to JSON for further parsing.
