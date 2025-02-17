@@ -1111,8 +1111,8 @@ class AstArcAnalyzer:
             last = None
             for dec_node in decs:
                 dec_start = self.line_for_node(dec_node)
-                if last is not None and dec_start != last:  # type: ignore[unreachable]
-                    self.add_arc(last, dec_start)           # type: ignore[unreachable]
+                if last is not None and dec_start != last:
+                    self.add_arc(last, dec_start)
                 last = dec_start
             assert last is not None
             self.add_arc(last, main_line)

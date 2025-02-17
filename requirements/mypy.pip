@@ -16,11 +16,11 @@ execnet==2.1.1
     # via pytest-xdist
 flaky==3.8.1
     # via -r /Users/ned/coverage/trunk/requirements/pytest.in
-hypothesis==6.125.1
+hypothesis==6.125.3
     # via -r /Users/ned/coverage/trunk/requirements/pytest.in
 iniconfig==2.0.0
     # via pytest
-mypy==1.14.1
+mypy==1.15.0
     # via -r requirements/mypy.in
 mypy-extensions==1.0.0
     # via mypy
