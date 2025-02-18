@@ -123,7 +123,7 @@ class PythonParserTest(PythonParserTestBase):
         )
     ])
     def test_not_python(self, text: str) -> None:
-        msg = r"Couldn't parse '<code>' as Python source: '.*' at line \d+"
+        msg = r"Couldn't parse '<code>' as Python source: ['\"].*['\"] at line \d+"
         with pytest.raises(NotPython, match=msg):
             _ = self.parse_text(text)
 
