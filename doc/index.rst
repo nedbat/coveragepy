@@ -19,7 +19,7 @@ supported on:
 .. PYVERSIONS
 
 * Python 3.9 through 3.14 alpha 4, including free-threading.
-* PyPy3 versions 3.9 and 3.10.
+* PyPy3 versions 3.9, 3.10, and 3.11.
 
 .. ifconfig:: prerelease
 

@@ -788,7 +788,10 @@ class SigtermTest(CoverageTest):
 
                 signal.signal(signal.SIGTERM, on_sigterm)
                 x.value = 0
-                time.sleep(.1)
+                try:
+                    time.sleep(.1)
+                except OSError: # This happens on PyPy3.11 on Mac
+                    pass
                 print("END", flush=True)
 
             if __name__ == "__main__":

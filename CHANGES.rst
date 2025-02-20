@@ -32,6 +32,8 @@ Unreleased
   for passing in plugin objects directly, thanks to `Alex Gaynor <pull
   1919_>`_.
 
+- Confirmed support for PyPy 3.11. Thanks Michał Górny.
+
 .. _pull 1919: https://github.com/nedbat/coveragepy/pull/1919
 
 

@@ -255,7 +255,7 @@ jobs:
         run: |
           # One wheel works for all PyPy versions. PYVERSIONS
           # yes, this is weird syntax: https://github.com/pypa/build/issues/202
-          echo -e "[bdist_wheel]\npython_tag=pp39.pp310" > $DIST_EXTRA_CONFIG
+          echo -e "[bdist_wheel]\npython_tag=pp39.pp310.pp311" > $DIST_EXTRA_CONFIG
           pypy3 -m build -w
 
       - name: "List wheels"
