@@ -115,7 +115,10 @@ if LOG:  # pragma: debugging
             # f"{root}-{pid}-{tslug}.out",
         ]:
             with open(filename, "a") as f:
-                print(f"{pid}:{tslug}: {msg}", file=f, flush=True)
+                try:
+                    print(f"{pid}:{tslug}: {msg}", file=f, flush=True)
+                except UnicodeError:
+                    print(f"{pid}:{tslug}: {ascii(msg)}", file=f, flush=True)
 
     def arg_repr(arg: Any) -> str:
         """Make a customized repr for logged values."""
@@ -176,7 +179,14 @@ else:
 
 
 class InstructionWalker:
-    """Utility to step through trails of instructions."""
+    """Utility to step through trails of instructions.
+
+    We have two reasons to need sequences of instructions from a code object:
+    First, in strict sequence to visit all the instructions in the object.
+    This is `walk(follow_jumps=False)`.  Second, we want to follow jumps to
+    understand how execution will flow: `walk(follow_jumps=True)`.
+
+    """
 
     def __init__(self, code: CodeType) -> None:
         self.code = code
@@ -213,19 +223,35 @@ class InstructionWalker:
 def populate_branch_trails(code: CodeType, code_info: CodeInfo) -> None:
     """
     Populate the `branch_trails` attribute on `code_info`.
+
+    Instructions can have a jump_target, where they might jump to next.  Some
+    instructions with a jump_target are unconditional jumps (ALWAYS_JUMPS), so
+    they aren't interesting to us, since they aren't the start of a branch
+    possibility.
+
+    Instructions that might or might not jump somewhere else are branch
+    possibilities.  For each of those, we track a trail of instructions.  These
+    are lists of instruction offsets, the next instructions that can execute.
+    We follow the trail until we get to a new source line.  That gives us the
+    arc from the original instruction's line to the new source line.
+
     """
+    log(f"populate_branch_trails: {code}")
     iwalker = InstructionWalker(code)
     for inst in iwalker.walk(follow_jumps=False):
         log(f"considering {inst=}")
         if not inst.jump_target:
+            # We only care about instructions with jump targets.
             log("no jump_target")
             continue
         if inst.opcode in ALWAYS_JUMPS:
+            # We don't care about unconditional jumps.
             log("always jumps")
             continue
 
         from_line = inst.line_number
-        assert from_line is not None
+        if from_line is None:
+            continue
 
         def walk_one_branch(
             start_at: TOffset, branch_kind: str
@@ -255,14 +281,26 @@ def populate_branch_trails(code: CodeType, code_info: CodeInfo) -> None:
                 )
                 return inst_offsets, (from_line, to_line)
             else:
-                log(f" no possible branch from @{start_at}: {inst_offsets}")
+                log(f"no possible branch from @{start_at}: {inst_offsets}")
                 return [], None
 
-        code_info.branch_trails[inst.offset] = (
+        # Calculate two trails: one from the next instruction, and one from the
+        # jump_target instruction.
+        trails = [
             walk_one_branch(start_at=inst.offset + 2, branch_kind="not-taken"),
             walk_one_branch(start_at=inst.jump_target, branch_kind="taken"),
-        )
+        ]
+        code_info.branch_trails[inst.offset] = trails
 
+        # Sometimes we get BRANCH_RIGHT or BRANCH_LEFT events from instructions
+        # other than the original jump possibility instruction.  Register each
+        # trail under all of their offsets so we can pick up in the middle of a
+        # trail if need be.
+        for trail in trails:
+            for offset in trail[0]:
+                if offset not in code_info.branch_trails:
+                    code_info.branch_trails[offset] = []
+                code_info.branch_trails[offset].append(trail)
 
 @dataclass
 class CodeInfo:
@@ -271,19 +309,17 @@ class CodeInfo:
     tracing: bool
     file_data: TTraceFileData | None
     byte_to_line: dict[TOffset, TLineNo] | None
+
     # Keys are start instruction offsets for branches.
-    # Values are two tuples:
-    #   (
+    # Values are lists:
+    #   [
     #       ([offset, offset, ...], (from_line, to_line)),
     #       ([offset, offset, ...], (from_line, to_line)),
-    #   )
+    #   ]
     #   Two possible trails from the branch point, left and right.
     branch_trails: dict[
         TOffset,
-        tuple[
-            tuple[list[TOffset], TArc | None],
-            tuple[list[TOffset], TArc | None],
-        ],
+        list[tuple[list[TOffset], TArc | None]],
     ]
 
 
@@ -447,7 +483,9 @@ class SysMonitor(Tracer):
                 branch_trails={},
             )
             self.code_infos[id(code)] = code_info
-            populate_branch_trails(code, code_info)  # TODO: should be a method?
+            if self.trace_arcs:
+                populate_branch_trails(code, code_info)
+                log(f"branch_trails for {code}:\n    {code_info.branch_trails}")
             self.code_objects.append(code)
 
             if tracing_code:
@@ -487,8 +525,8 @@ class SysMonitor(Tracer):
     @panopticon("code", "line")
     def sysmon_line_lines(self, code: CodeType, line_number: TLineNo) -> MonitorReturn:
         """Handle sys.monitoring.events.LINE events for line coverage."""
-        code_info = self.code_infos[id(code)]
-        if code_info.file_data is not None:
+        code_info = self.code_infos.get(id(code))
+        if code_info is not None and code_info.file_data is not None:
             cast(set[TLineNo], code_info.file_data).add(line_number)
             log(f"adding {line_number=}")
         return DISABLE
@@ -509,6 +547,7 @@ class SysMonitor(Tracer):
     ) -> MonitorReturn:
         """Handle BRANCH_RIGHT and BRANCH_LEFT events."""
         code_info = self.code_infos[id(code)]
+        added_arc = False
         if code_info.file_data is not None:
             dest_info = code_info.branch_trails.get(instruction_offset)
             log(f"{dest_info = }")
@@ -519,4 +558,17 @@ class SysMonitor(Tracer):
                     if destination_offset in offsets:
                         cast(set[TArc], code_info.file_data).add(arc)
                         log(f"adding {arc=}")
+                        added_arc = True
+                        break
+
+        if not added_arc:
+            # This could be an exception jumping from line to line.
+            assert code_info.byte_to_line is not None
+            l1 = code_info.byte_to_line[instruction_offset]
+            l2 = code_info.byte_to_line[destination_offset]
+            if l1 != l2:
+                arc = (l1, l2)
+                cast(set[TArc], code_info.file_data).add(arc)
+                log(f"adding unforeseen {arc=}")
+
         return DISABLE

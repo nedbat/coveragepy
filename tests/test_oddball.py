@@ -502,7 +502,7 @@ class GettraceTest(CoverageTest):
 
     def test_setting_new_trace_function(self) -> None:
         # https://github.com/nedbat/coveragepy/issues/436
-        if testenv.SETTRACE_CORE:
+        if testenv.SETTRACE_CORE or not env.PYBEHAVIOR.branch_right_left:
             missing = "5-7, 13-14"
         else:
             missing = "5-7"
