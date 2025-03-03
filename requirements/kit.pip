@@ -20,7 +20,7 @@ certifi==2025.1.31
     #   requests
 charset-normalizer==3.4.1
     # via requests
-cibuildwheel==2.22.0
+cibuildwheel==2.23.0
     # via -r requirements/kit.in
 colorama==0.4.6
     # via -r requirements/kit.in
@@ -55,7 +55,7 @@ more-itertools==10.6.0
     # via
     #   jaraco-classes
     #   jaraco-functools
-nh3==0.2.20
+nh3==0.2.21
     # via readme-renderer
 packaging==24.2
     # via
@@ -66,7 +66,7 @@ packaging==24.2
     #   twine
 platformdirs==4.3.6
     # via cibuildwheel
-pyelftools==0.31
+pyelftools==0.32
     # via auditwheel
 pygments==2.19.1
     # via
@@ -108,5 +108,5 @@ zipp==3.21.0
     # via importlib-metadata
 
 # The following packages are considered to be unsafe in a requirements file:
-setuptools==75.8.0
+setuptools==75.8.2
     # via -r requirements/kit.in

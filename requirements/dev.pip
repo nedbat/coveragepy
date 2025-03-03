@@ -12,7 +12,7 @@ backports-tarfile==1.2.0
     # via jaraco-context
 build==1.2.2.post1
     # via check-manifest
-cachetools==5.5.1
+cachetools==5.5.2
     # via tox
 certifi==2025.1.31
     # via requests
@@ -49,7 +49,7 @@ flaky==3.8.1
     # via -r /Users/ned/coverage/trunk/requirements/pytest.in
 greenlet==3.1.1
     # via -r requirements/dev.in
-hypothesis==6.125.3
+hypothesis==6.127.5
     # via -r /Users/ned/coverage/trunk/requirements/pytest.in
 id==1.5.0
     # via twine
@@ -62,7 +62,7 @@ importlib-metadata==8.6.1
     #   twine
 iniconfig==2.0.0
     # via pytest
-isort==6.0.0
+isort==6.0.1
     # via pylint
 jaraco-classes==3.4.0
     # via keyring
@@ -86,7 +86,7 @@ more-itertools==10.6.0
     # via
     #   jaraco-classes
     #   jaraco-functools
-nh3==0.2.20
+nh3==0.2.21
     # via readme-renderer
 packaging==24.2
     # via
@@ -121,7 +121,7 @@ pyproject-api==1.9.0
     # via tox
 pyproject-hooks==1.2.0
     # via build
-pytest==8.3.4
+pytest==8.3.5
     # via
     #   -r /Users/ned/coverage/trunk/requirements/pytest.in
     #   pytest-xdist
@@ -195,7 +195,7 @@ zipp==3.21.0
 # The following packages are considered to be unsafe in a requirements file:
 pip==25.0.1
     # via -r /Users/ned/coverage/trunk/requirements/pip.in
-setuptools==75.8.0
+setuptools==75.8.2
     # via
     #   -r /Users/ned/coverage/trunk/requirements/pip.in
     #   check-manifest
