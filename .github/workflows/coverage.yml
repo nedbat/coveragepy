@@ -125,7 +125,7 @@ jobs:
           mv .metacov .metacov.$MATRIX_ID
 
       - name: "Upload coverage data"
-        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
+        uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4.6.1
         with:
           name: metacov-${{ env.MATRIX_ID }}
           path: .metacov.*
@@ -170,7 +170,7 @@ jobs:
           python igor.py zip_mods
 
       - name: "Download coverage data"
-        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
+        uses: actions/download-artifact@cc203385981b70ca67e1cc392babf9cc229d5806 # v4.1.9
         with:
           pattern: metacov-*
           merge-multiple: true
@@ -184,7 +184,7 @@ jobs:
           python igor.py combine_html
 
       - name: "Upload HTML report"
-        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
+        uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4.6.1
         with:
           name: html_report
           path: htmlcov
@@ -239,7 +239,7 @@ jobs:
 
       - name: "Download coverage HTML report"
         if: ${{ github.ref == 'refs/heads/master' }}
-        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
+        uses: actions/download-artifact@cc203385981b70ca67e1cc392babf9cc229d5806 # v4.1.9
         with:
           name: html_report
           path: reports_repo/${{ env.report_dir }}
