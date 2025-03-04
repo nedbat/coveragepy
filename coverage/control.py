@@ -258,7 +258,7 @@ class Coverage(TConfigurable):
         self._warn_no_data = True
         self._warn_unimported_source = True
         self._warn_preimported_source = check_preimported
-        self._no_warn_slugs: list[str] = []
+        self._no_warn_slugs: set[str] = []
         self._messages = messages
 
         # A record of all the warnings that have been issued.
@@ -438,7 +438,7 @@ class Coverage(TConfigurable):
 
         """
         if not self._no_warn_slugs:
-            self._no_warn_slugs = list(self.config.disable_warnings)
+            self._no_warn_slugs = set(self.config.disable_warnings)
 
         if slug in self._no_warn_slugs:
             # Don't issue the warning
@@ -453,7 +453,7 @@ class Coverage(TConfigurable):
 
         if once:
             assert slug is not None
-            self._no_warn_slugs.append(slug)
+            self._no_warn_slugs.add(slug)
 
     def _message(self, msg: str) -> None:
         """Write a message to the user, if configured to do so."""
