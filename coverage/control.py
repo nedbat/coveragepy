@@ -258,7 +258,7 @@ class Coverage(TConfigurable):
         self._warn_no_data = True
         self._warn_unimported_source = True
         self._warn_preimported_source = check_preimported
-        self._no_warn_slugs: set[str] = []
+        self._no_warn_slugs: set[str] = set()
         self._messages = messages
 
         # A record of all the warnings that have been issued.
