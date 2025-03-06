@@ -120,7 +120,11 @@ markers = [
 # How come these warnings are suppressed successfully here, but not in conftest.py??
 filterwarnings = [
     # Sample 'ignore':
-    #"ignore:the imp module is deprecated in favour of importlib:DeprecationWarning",
+    # "ignore:the imp module is deprecated in favour of importlib:DeprecationWarning",
+
+    # Note: when writing the regex for the message, it's matched with re.match,
+    # so it has to match the beginning of the message.  Add ".*" to make it
+    # match something in the middle of the message.
 
     ## Pytest warns if it can't collect things that seem to be tests. This should be an error.
     "error::pytest.PytestCollectionWarning",

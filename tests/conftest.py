@@ -19,7 +19,6 @@ from collections.abc import Iterator
 
 import pytest
 
-from coverage import env
 from coverage.files import set_relative_directory
 
 # Pytest will rewrite assertions in test modules, but not elsewhere.
@@ -45,9 +44,9 @@ def set_warnings() -> None:
     # Warnings to suppress:
     # How come these warnings are successfully suppressed here, but not in pyproject.toml??
 
-    if env.PYPY:
-        # pypy3 warns about unclosed files a lot.
-        warnings.filterwarnings("ignore", r".*unclosed file", category=ResourceWarning)
+    # Note: when writing the regex for the message, it's matched with re.match,
+    # so it has to match the beginning of the message.  Add ".*" to make it
+    # match something in the middle of the message.
 
     # Don't warn about unclosed SQLite connections.
     # We don't close ":memory:" databases because we don't have a way to connect
