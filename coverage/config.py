@@ -12,11 +12,10 @@ import os
 import os.path
 import re
 
-from typing import (
-    Any, Callable, Final, Mapping, Union,
-)
 from collections.abc import Iterable
+from typing import Any, Callable, Final, Mapping, Union
 
+from coverage import env
 from coverage.exceptions import ConfigError
 from coverage.misc import isolate_module, human_sorted_items, substitute_variables
 from coverage.tomlconfig import TomlConfigParser, TomlDecodeError
@@ -559,7 +558,7 @@ def config_files_to_try(config_file: bool | str) -> list[tuple[str, bool, bool]]
     specified_file = (config_file is not True)
     if not specified_file:
         # No file was specified. Check COVERAGE_RCFILE.
-        rcfile = os.getenv("COVERAGE_RCFILE")
+        rcfile = env.getenv("COVERAGE_RCFILE")
         if rcfile:
             config_file = rcfile
             specified_file = True
@@ -612,11 +611,11 @@ def read_coverage_config(
                 raise ConfigError(f"Couldn't read {fname!r} as a config file")
 
     # 3) from environment variables:
-    env_data_file = os.getenv("COVERAGE_FILE")
+    env_data_file = env.getenv("COVERAGE_FILE")
     if env_data_file:
         config.data_file = env_data_file
     # $set_env.py: COVERAGE_DEBUG - Debug options: https://coverage.rtfd.io/cmd.html#debug
-    debugs = os.getenv("COVERAGE_DEBUG")
+    debugs = env.getenv("COVERAGE_DEBUG")
     if debugs:
         config.debug.extend(d.strip() for d in debugs.split(","))
 
@@ -624,7 +623,7 @@ def read_coverage_config(
     config.from_args(**kwargs)
 
     # 5) for our benchmark, force settings using a secret environment variable:
-    force_file = os.getenv("COVERAGE_FORCE_CONFIG")
+    force_file = env.getenv("COVERAGE_FORCE_CONFIG")
     if force_file:
         config.from_file(force_file, warn, our_file=True)
 

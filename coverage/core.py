@@ -30,7 +30,7 @@ try:
     HAS_CTRACER = True
 except ImportError:
     # Couldn't import the C extension, maybe it isn't built.
-    if os.getenv("COVERAGE_CORE") == "ctrace":      # pragma: part covered
+    if env.getenv("COVERAGE_CORE") == "ctrace":     # pragma: part covered
         # During testing, we use the COVERAGE_CORE environment variable
         # to indicate that we've fiddled with the environment to test this
         # fallback code.  If we thought we had a C tracer, but couldn't import
@@ -55,7 +55,6 @@ class Core:
     def __init__(self,
         warn: TWarnFn,
         timid: bool,
-        metacov: bool,
     ) -> None:
         # Defaults
         self.tracer_kwargs = {}
@@ -64,7 +63,7 @@ class Core:
         if timid:
             core_name = "pytrace"
         else:
-            core_name = os.getenv("COVERAGE_CORE")
+            core_name = env.getenv("COVERAGE_CORE")
 
             if core_name == "sysmon" and not env.PYBEHAVIOR.pep669:
                 warn("sys.monitoring isn't available, using default core", slug="no-sysmon")
@@ -81,7 +80,7 @@ class Core:
 
         if core_name == "sysmon":
             self.tracer_class = SysMonitor
-            self.tracer_kwargs = {"tool_id": 3 if metacov else 1}
+            self.tracer_kwargs = {"tool_id": 3 if env.OUTER_METACOV else 1}
             self.file_disposition_class = FileDisposition
             self.supports_plugins = False
             self.packed_arcs = False

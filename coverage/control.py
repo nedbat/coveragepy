@@ -316,7 +316,7 @@ class Coverage(TConfigurable):
         # is already coverage-aware, so don't auto-measure it.  By now, the
         # auto-creation of a Coverage object has already happened.  But we can
         # find it and tell it not to save its data.
-        if not env.METACOV:
+        if not env.INNER_METACOV:
             _prevent_sub_process_measurement()
 
     def _init(self) -> None:
@@ -549,7 +549,6 @@ class Coverage(TConfigurable):
         self._core = Core(
             warn=self._warn,
             timid=self.config.timid,
-            metacov=self._metacov,
         )
         self._collector = Collector(
             core=self._core,
@@ -1347,7 +1346,7 @@ class Coverage(TConfigurable):
 
 # Mega debugging...
 # $set_env.py: COVERAGE_DEBUG_CALLS - Lots and lots of output about calls to Coverage.
-if int(os.getenv("COVERAGE_DEBUG_CALLS", 0)):               # pragma: debugging
+if int(env.getenv("COVERAGE_DEBUG_CALLS", "0")):            # pragma: debugging
     from coverage.debug import decorate_methods, show_calls
 
     Coverage = decorate_methods(        # type: ignore[misc]
@@ -1379,7 +1378,7 @@ def process_startup() -> Coverage | None:
     not started by this call.
 
     """
-    cps = os.getenv("COVERAGE_PROCESS_START")
+    cps = env.getenv("COVERAGE_PROCESS_START")
     if not cps:
         # No request for coverage, nothing to do.
         return None

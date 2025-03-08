@@ -145,7 +145,7 @@ class RecursionTest(CoverageTest):
         assert expected_missing == missing
 
         # Get a warning about the stackoverflow effect on the tracing function.
-        if pytrace and not env.METACOV:                     # pragma: no metacov
+        if pytrace and not env.INNER_METACOV:               # pragma: no metacov
             assert len(cov._warnings) == 1
             assert re.fullmatch(
                 r"Trace function changed, data is likely wrong: None != " +
@@ -547,7 +547,7 @@ class GettraceTest(CoverageTest):
         assert expected == out
 
     @pytest.mark.expensive
-    @pytest.mark.skipif(env.METACOV, reason="Can't set trace functions during meta-coverage")
+    @pytest.mark.skipif(env.INNER_METACOV, reason="Can't set trace functions during meta-coverage")
     def test_atexit_gettrace(self) -> None:
         # This is not a test of coverage at all, but of our understanding
         # of this edge-case behavior in various Pythons.

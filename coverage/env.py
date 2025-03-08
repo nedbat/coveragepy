@@ -9,7 +9,7 @@ import os
 import platform
 import sys
 
-from typing import Any, Final
+from typing import Any, Final, overload
 from collections.abc import Iterable
 
 # debug_info() at the bottom wants to show all the globals, but not imports.
@@ -17,7 +17,7 @@ from collections.abc import Iterable
 # above this line will be in the output.
 _UNINTERESTING_GLOBALS = list(globals())
 # These names also shouldn't be shown.
-_UNINTERESTING_GLOBALS += ["PYBEHAVIOR", "debug_info"]
+_UNINTERESTING_GLOBALS += ["PYBEHAVIOR", "debug_info", "PREFIX", "getenv"]
 
 # Operating systems.
 WINDOWS = sys.platform == "win32"
@@ -156,16 +156,36 @@ class PYBEHAVIOR:
     # PEP649 and PEP749: Deferred annotations
     deferred_annotations = (PYVERSION >= (3, 14))
 
+# Environment variable access.
+PREFIX = "COVERAGE_"
+
+@overload
+def getenv(name: str) -> str | None:
+    ...
+
+@overload
+def getenv(name: str, default: str) -> str:
+    ...
+
+def getenv(name: str, default: str = "") -> str | None:
+    """Like os.getenv, but understands about switching prefixes."""
+    real_name = name.replace("COVERAGE_", PREFIX, 1)
+    return os.getenv(real_name, default)
+
 
 # Coverage.py specifics, about testing scenarios. See tests/testenv.py also.
 
 # Are we coverage-measuring ourselves?
-METACOV = os.getenv("COVERAGE_COVERAGE") is not None
+OUTER_METACOV = bool(getenv("COVERAGE_METAFILE"))
+if OUTER_METACOV:
+    PREFIX = "METACOV_"
+
+INNER_METACOV = bool(getenv("COVERAGE_INNER_META"))
 
 # Are we running our test suite?
 # Even when running tests, you can use COVERAGE_TESTING=0 to disable the
 # test-specific behavior like AST checking.
-TESTING = os.getenv("COVERAGE_TESTING") == "True"
+TESTING = getenv("COVERAGE_TESTING") == "True"
 
 
 def debug_info() -> Iterable[tuple[str, Any]]:

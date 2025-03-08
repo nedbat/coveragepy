@@ -747,7 +747,7 @@ class CurrentInstanceTest(CoverageTest):
         # overall coverage measurement will still be on the current-stack.
         # Since we know they will be wrong, and we have non-meta test runs
         # also, don't assert them.
-        if not env.METACOV:
+        if not env.INNER_METACOV:
             assert current is None
 
     def test_current(self) -> None:

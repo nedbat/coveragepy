@@ -5,16 +5,16 @@
 
 from __future__ import annotations
 
-import os
+from coverage import env
 
 # Are we testing the C-implemented trace function?
-C_TRACER = os.getenv("COVERAGE_CORE", "ctrace") == "ctrace"
+C_TRACER = env.getenv("COVERAGE_CORE", "ctrace") == "ctrace"
 
 # Are we testing the Python-implemented trace function?
-PY_TRACER = os.getenv("COVERAGE_CORE", "ctrace") == "pytrace"
+PY_TRACER = env.getenv("COVERAGE_CORE", "ctrace") == "pytrace"
 
 # Are we testing the sys.monitoring implementation?
-SYS_MON = os.getenv("COVERAGE_CORE", "ctrace") == "sysmon"
+SYS_MON = env.getenv("COVERAGE_CORE", "ctrace") == "sysmon"
 
 # Are we using a settrace function as a core?
 SETTRACE_CORE = C_TRACER or PY_TRACER

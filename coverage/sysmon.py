@@ -90,7 +90,7 @@ if LOG:  # pragma: debugging
         if tid not in seen_threads:
             seen_threads.add(tid)
             log(f"New thread {tid} {tslug}:\n{short_stack()}")
-        # log_seq = int(os.getenv("PANSEQ", "0"))
+        # log_seq = int(env.getenv("PANSEQ", "0"))
         # root = f"/tmp/pan.{log_seq:03d}"
         for filename in [
             "/tmp/foo.out",

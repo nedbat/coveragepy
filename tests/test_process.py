@@ -460,7 +460,7 @@ class ProcessTest(CoverageTest):
         assert "warning" not in out
         assert "Exception" not in out
 
-    @pytest.mark.skipif(env.METACOV, reason="Can't test tracers changing during metacoverage")
+    @pytest.mark.skipif(env.INNER_METACOV, reason="Can't test tracers changing during metacoverage")
     def test_warnings_trace_function_changed_with_threads(self) -> None:
         # https://github.com/nedbat/coveragepy/issues/164
 
@@ -481,7 +481,7 @@ class ProcessTest(CoverageTest):
         assert "Hello\n" in out
         assert "warning" not in out
 
-    @pytest.mark.skipif(env.METACOV, reason="Can't test tracers changing during metacoverage")
+    @pytest.mark.skipif(env.INNER_METACOV, reason="Can't test tracers changing during metacoverage")
     def test_warning_trace_function_changed(self) -> None:
         self.make_file("settrace.py", """\
             import sys
@@ -497,7 +497,7 @@ class ProcessTest(CoverageTest):
 
     # When meta-coverage testing, this test doesn't work, because it finds
     # coverage.py's own trace function.
-    @pytest.mark.skipif(env.METACOV, reason="Can't test timid during coverage measurement.")
+    @pytest.mark.skipif(env.INNER_METACOV, reason="Can't test timid during coverage measurement.")
     def test_timid(self) -> None:
         # Test that the --timid command line argument properly swaps the tracer
         # function for a simpler one.
@@ -1197,7 +1197,7 @@ class YankedDirectoryTest(CoverageTest):
         assert all(line in out for line in lines)
 
 
-@pytest.mark.skipif(env.METACOV, reason="Can't test subprocess pth file during metacoverage")
+@pytest.mark.skipif(env.INNER_METACOV, reason="Can't test subprocess pth file during metacoverage")
 class ProcessStartupTest(CoverageTest):
     """Test that we can measure coverage in subprocesses."""
 

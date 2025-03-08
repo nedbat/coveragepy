@@ -24,7 +24,7 @@ from typing import (
 from collections.abc import Collection, Iterable, Iterator, Mapping, Sequence
 
 import coverage
-from coverage import Coverage
+from coverage import Coverage, env
 from coverage.cmdline import CoverageScript
 from coverage.data import CoverageData
 from coverage.misc import import_local_file
@@ -44,7 +44,7 @@ TESTS_DIR = os.path.dirname(__file__)
 # Install arguments to pass to pip when reinstalling ourselves.
 # Defaults to the top of the source tree, but can be overridden if we need
 # some help on certain platforms.
-COVERAGE_INSTALL_ARGS = os.getenv("COVERAGE_INSTALL_ARGS", nice_file(TESTS_DIR, ".."))
+COVERAGE_INSTALL_ARGS = env.getenv("COVERAGE_INSTALL_ARGS", nice_file(TESTS_DIR, ".."))
 
 
 def arcs_to_branches(arcs: Iterable[TArc]) -> dict[TLineNo, list[TLineNo]]:

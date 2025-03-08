@@ -69,7 +69,7 @@ def run_command(cmd: str) -> tuple[int, str]:
 
 
 # $set_env.py: COVERAGE_DIS - Disassemble test code to /tmp/dis
-SHOW_DIS = bool(int(os.getenv("COVERAGE_DIS", "0")))
+SHOW_DIS = bool(int(env.getenv("COVERAGE_DIS", "0")))
 
 def make_file(
     filename: str,

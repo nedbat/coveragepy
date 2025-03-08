@@ -19,12 +19,10 @@ import traceback
 import types
 import _thread
 
-from typing import (
-    overload,
-    Any, Callable, Final, IO,
-)
+from typing import overload, Any, Callable, Final, IO
 from collections.abc import Iterable, Iterator, Mapping
 
+from coverage import env
 from coverage.misc import human_sorted_items, isolate_module
 from coverage.types import AnyCallable, TWritable
 
@@ -35,7 +33,7 @@ os = isolate_module(os)
 # debugging the configuration mechanisms you usually use to control debugging!
 # This is a list of forced debugging options.
 FORCED_DEBUG: list[str] = []
-FORCED_DEBUG_FILE = None
+FORCED_DEBUG_FILE = ""
 
 
 class DebugControl:
@@ -402,7 +400,7 @@ class PytestTracker:
 
     def filter(self, text: str) -> str:
         """Add a message when the pytest test changes."""
-        test_name = os.getenv("PYTEST_CURRENT_TEST")
+        test_name = env.getenv("PYTEST_CURRENT_TEST")
         if test_name != self.test_name:
             text = f"Pytest context: {test_name}\n" + text
             self.test_name = test_name
@@ -452,7 +450,7 @@ class DebugOutputFile:
                 fileobj = open(file_name, "a", encoding="utf-8")
             else:
                 # $set_env.py: COVERAGE_DEBUG_FILE - Where to write debug output
-                file_name = os.getenv("COVERAGE_DEBUG_FILE", FORCED_DEBUG_FILE)
+                file_name = env.getenv("COVERAGE_DEBUG_FILE", FORCED_DEBUG_FILE)
                 if file_name in ("stdout", "stderr"):
                     fileobj = getattr(sys, file_name)
                 elif file_name:
@@ -587,14 +585,14 @@ def show_calls(
     return _decorator
 
 
-def relevant_environment_display(env: Mapping[str, str]) -> list[tuple[str, str]]:
+def relevant_environment_display(env_map: Mapping[str, str]) -> Iterable[tuple[str, str]]:
     """Filter environment variables for a debug display.
 
     Select variables to display (with COV or PY in the name, or HOME, TEMP, or
     TMP), and also cloak sensitive values with asterisks.
 
     Arguments:
-        env: a dict of environment variable names and values.
+        env_map: a dict of environment variable names and values.
 
     Returns:
         A list of pairs (name, value) to show.
@@ -605,7 +603,7 @@ def relevant_environment_display(env: Mapping[str, str]) -> list[tuple[str, str]
     cloak = {"API", "TOKEN", "KEY", "SECRET", "PASS", "SIGNATURE"}
 
     to_show = []
-    for name, val in env.items():
+    for name, val in env_map.items():
         keep = False
         if name in include:
             keep = True

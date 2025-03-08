@@ -14,6 +14,7 @@ import glob
 import inspect
 import itertools
 import os
+import os.path
 import platform
 import pprint
 import re
@@ -170,6 +171,9 @@ def run_tests(core, *runner_args):
 
 def run_tests_with_coverage(core, *runner_args):
     """Run tests, but with coverage."""
+    if "coverage" in sys.modules:
+        raise RuntimeError("Something imported coverage too early! `make clean` to fix.")
+
     # Need to define this early enough that the first import of env.py sees it.
     os.environ["COVERAGE_TESTING"] = "True"
     os.environ["COVERAGE_PROCESS_START"] = os.path.abspath("metacov.ini")
@@ -177,7 +181,7 @@ def run_tests_with_coverage(core, *runner_args):
     context = os.getenv("COVERAGE_CONTEXT")
     if context:
         if context[0] == "$":
-            context = os.environ[context[1:]]
+            context = os.getenv(context[1:])
         os.environ["COVERAGE_CONTEXT"] = context + "." + core
 
     # Create the .pth file that will let us measure coverage in subprocesses.
@@ -197,27 +201,24 @@ def run_tests_with_coverage(core, *runner_args):
     cov = coverage.Coverage(config_file="metacov.ini")
     cov._warn_unimported_source = False
     cov._warn_preimported_source = False
-    cov._metacov = True
     cov.start()
 
+    del os.environ["COVERAGE_METAFILE"]
+
     try:
-        # Re-import coverage to get it coverage tested!  I don't understand all
-        # the mechanics here, but if I don't carry over the imported modules
-        # (in covmods), then things go haywire (os is None, eventually).
-        covmods = {}
+        # Re-import coverage to get it coverage tested!
         covdir = os.path.split(coverage.__file__)[0]
         # We have to make a list since we'll be deleting in the loop.
         modules = list(sys.modules.items())
         for name, mod in modules:
             if name.startswith("coverage"):
                 if getattr(mod, "__file__", "??").startswith(covdir):
-                    covmods[name] = mod
                     del sys.modules[name]
+
+        os.environ["COVERAGE_INNER_META"] = "1"
         import coverage  # pylint: disable=reimported
 
-        sys.modules.update(covmods)
-
-        # Run tests, with the arguments from our command line.
+        # Run tests with the arguments from our command line.
         status = run_tests(core, *runner_args)
 
     finally:

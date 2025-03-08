@@ -348,7 +348,7 @@ class PyTracer(Tracer):
         # warn if we are measuring ourselves.
         suppress_warning = (
             (env.PYPY and self.in_atexit and tf is None)
-            or env.METACOV
+            or env.INNER_METACOV
         )
         if self.warn and not suppress_warning:
             if tf != self._cached_bound_method_trace:   # pylint: disable=comparison-with-callable

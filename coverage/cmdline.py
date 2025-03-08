@@ -991,7 +991,7 @@ def main(argv: list[str] | None = None) -> int | None:
 #   pip install git+https://github.com/emin63/ox_profile.git
 #
 # $set_env.py: COVERAGE_PROFILE - Set to use ox_profile.
-_profile = os.getenv("COVERAGE_PROFILE")
+_profile = env.getenv("COVERAGE_PROFILE")
 if _profile:                                                # pragma: debugging
     from ox_profile.core.launchers import SimpleLauncher    # pylint: disable=import-error
     original_main = main
