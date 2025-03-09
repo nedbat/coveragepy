@@ -38,7 +38,7 @@ idna==3.10
     #   requests
 imagesize==1.4.1
     # via sphinx
-jinja2==3.1.5
+jinja2==3.1.6
     # via sphinx
 markupsafe==3.0.2
     # via jinja2
@@ -105,7 +105,7 @@ sphinxcontrib-serializinghtml==2.0.0
     # via sphinx
 sphinxcontrib-spelling==8.0.1
     # via -r doc/requirements.in
-starlette==0.46.0
+starlette==0.46.1
     # via sphinx-autobuild
 stevedore==5.4.1
     # via doc8
@@ -117,9 +117,9 @@ uvicorn==0.34.0
     # via sphinx-autobuild
 watchfiles==1.0.4
     # via sphinx-autobuild
-websockets==15.0
+websockets==15.0.1
     # via sphinx-autobuild
 
 # The following packages are considered to be unsafe in a requirements file:
-setuptools==75.8.2
+setuptools==76.0.0
     # via pbr
