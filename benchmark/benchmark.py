@@ -823,7 +823,9 @@ class CoverageSource(Coverage):
         tweaks: TweaksType = None,
         env_vars: Env_VarsType = None,
     ):
+        # Check that it really is a coverage source directory.
         directory = file_must_exist(directory_name, "coverage directory")
+        file_must_exist(str(directory / "igor.py"))
         super().__init__(
             slug=slug,
             pip_args=str(directory),

@@ -72,7 +72,7 @@ if 0:
         ],
     )
 
-if 1:
+if 0:
     # Compare N Python versions
     vers = [10, 11, 12, 13]
     run_experiment(
@@ -93,12 +93,13 @@ if 1:
         ],
     )
 
-if 0:
+if 1:
     # Compare sysmon on many projects
 
     run_experiment(
         py_versions=[
-            Python(3, 12),
+            # Python(3, 12),
+            AdHocPython("/usr/local/cpython", "main"),
         ],
         cov_versions=[
             NoCoverage("nocov"),
@@ -107,14 +108,14 @@ if 0:
         ],
         projects=[
             # ProjectSphinx(),  # Works, slow
-            ProjectPygments(),  # Works
+            # ProjectPygments(),  # Doesn't work on 3.14
             # ProjectRich(),  # Doesn't work
             # ProjectTornado(),  # Works, tests fail
             # ProjectDulwich(),  # Works
             # ProjectBlack(),  # Works, slow
-            # ProjectMpmath(),  # Works, slow
-            ProjectMypy(),  # Works, slow
-            # ProjectHtml5lib(),  # Works
+            ProjectMpmath(),  # Works, slow
+            # ProjectMypy(),  # Works, slow
+            # ProjectHtml5lib(),  # Doesn't work on 3.14
             # ProjectUrllib3(),  # Works
         ],
         rows=["pyver", "proj"],
