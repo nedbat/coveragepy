@@ -6,7 +6,7 @@
 from __future__ import annotations
 
 import glob
-import optparse     # pylint: disable=deprecated-module
+import optparse
 import os
 import os.path
 import shlex
