@@ -45,8 +45,11 @@ os = isolate_module(os)
 
 # pylint: disable=unused-argument
 
-# $set_env.py: COVERAGE_LOG_SYSMON - Log sys.monitoring activity
-LOG = bool(int(os.getenv("COVERAGE_LOG_SYSMON", 0)))
+# $set_env.py: COVERAGE_SYSMON_LOG - Log sys.monitoring activity
+LOG = bool(int(os.getenv("COVERAGE_SYSMON_LOG", 0)))
+
+# $set_env.py: COVERAGE_SYSMON_STATS - Collect sys.monitoring stats
+COLLECT_STATS = bool(int(os.getenv("COVERAGE_SYSMON_STATS", 0)))
 
 # This module will be imported in all versions of Python, but only used in 3.12+
 # It will be type-checked for 3.12, but not for earlier versions.
@@ -236,17 +239,17 @@ def populate_branch_trails(code: CodeType, code_info: CodeInfo) -> None:
     arc from the original instruction's line to the new source line.
 
     """
-    log(f"populate_branch_trails: {code}")
+    # log(f"populate_branch_trails: {code}")
     iwalker = InstructionWalker(code)
     for inst in iwalker.walk(follow_jumps=False):
-        log(f"considering {inst=}")
+        # log(f"considering {inst=}")
         if not inst.jump_target:
             # We only care about instructions with jump targets.
-            log("no jump_target")
+            # log("no jump_target")
             continue
         if inst.opcode in ALWAYS_JUMPS:
             # We don't care about unconditional jumps.
-            log("always jumps")
+            # log("always jumps")
             continue
 
         from_line = inst.line_number
@@ -265,23 +268,23 @@ def populate_branch_trails(code: CodeType, code_info: CodeInfo) -> None:
                     to_line = inst2.line_number
                     break
                 elif inst2.jump_target and (inst2.opcode not in ALWAYS_JUMPS):
-                    log(
-                        f"stop: {inst2.jump_target=}, "
-                        + f"{inst2.opcode=} ({dis.opname[inst2.opcode]}), "
-                        + f"{ALWAYS_JUMPS=}"
-                    )
+                    # log(
+                    #     f"stop: {inst2.jump_target=}, "
+                    #     + f"{inst2.opcode=} ({dis.opname[inst2.opcode]}), "
+                    #     + f"{ALWAYS_JUMPS=}"
+                    # )
                     break
                 elif inst2.opcode in RETURNS:
                     to_line = -code.co_firstlineno
                     break
             if to_line is not None:
-                log(
-                    f"possible branch from @{start_at}: "
-                    + f"{inst_offsets}, {(from_line, to_line)} {code}"
-                )
+                # log(
+                #     f"possible branch from @{start_at}: "
+                #     + f"{inst_offsets}, {(from_line, to_line)} {code}"
+                # )
                 return inst_offsets, (from_line, to_line)
             else:
-                log(f"no possible branch from @{start_at}: {inst_offsets}")
+                # log(f"no possible branch from @{start_at}: {inst_offsets}")
                 return [], None
 
         # Calculate two trails: one from the next instruction, and one from the
@@ -301,6 +304,7 @@ def populate_branch_trails(code: CodeType, code_info: CodeInfo) -> None:
                 if offset not in code_info.branch_trails:
                     code_info.branch_trails[offset] = []
                 code_info.branch_trails[offset].append(trail)
+
 
 @dataclass
 class CodeInfo:
@@ -363,9 +367,11 @@ class SysMonitor(Tracer):
         self.sysmon_on = False
         self.lock = threading.Lock()
 
-        self.stats = {
-            "starts": 0,
-        }
+        self.stats: dict[str, int] | None = None
+        if COLLECT_STATS:
+            self.stats = {
+                "starts": 0,
+            }
 
         self.stopped = False
         self._activity = False
@@ -431,7 +437,7 @@ class SysMonitor(Tracer):
 
     def get_stats(self) -> dict[str, int] | None:
         """Return a dictionary of statistics, or None."""
-        return None
+        return self.stats
 
     @panopticon("code", "@")
     def sysmon_py_start(  # pylint: disable=useless-return
@@ -440,7 +446,8 @@ class SysMonitor(Tracer):
         """Handle sys.monitoring.events.PY_START events."""
         # Entering a new frame.  Decide if we should trace in this file.
         self._activity = True
-        self.stats["starts"] += 1
+        if self.stats is not None:
+            self.stats["starts"] += 1
 
         code_info = self.code_infos.get(id(code))
         tracing_code: bool | None = None
@@ -483,9 +490,6 @@ class SysMonitor(Tracer):
                 branch_trails={},
             )
             self.code_infos[id(code)] = code_info
-            if self.trace_arcs:
-                populate_branch_trails(code, code_info)
-                log(f"branch_trails for {code}:\n    {code_info.branch_trails}")
             self.code_objects.append(code)
 
             if tracing_code:
@@ -519,7 +523,7 @@ class SysMonitor(Tracer):
             if last_line is not None:
                 arc = (last_line, -code.co_firstlineno)
                 cast(set[TArc], code_info.file_data).add(arc)
-                log(f"adding {arc=}")
+                # log(f"adding {arc=}")
         return None
 
     @panopticon("code", "line")
@@ -528,7 +532,7 @@ class SysMonitor(Tracer):
         code_info = self.code_infos.get(id(code))
         if code_info is not None and code_info.file_data is not None:
             cast(set[TLineNo], code_info.file_data).add(line_number)
-            log(f"adding {line_number=}")
+            # log(f"adding {line_number=}")
         return DISABLE
 
     @panopticon("code", "line")
@@ -538,7 +542,7 @@ class SysMonitor(Tracer):
         if code_info.file_data is not None:
             arc = (line_number, line_number)
             cast(set[TArc], code_info.file_data).add(arc)
-            log(f"adding {arc=}")
+            # log(f"adding {arc=}")
         return DISABLE
 
     @panopticon("code", "@", "@")
@@ -547,28 +551,31 @@ class SysMonitor(Tracer):
     ) -> MonitorReturn:
         """Handle BRANCH_RIGHT and BRANCH_LEFT events."""
         code_info = self.code_infos[id(code)]
-        added_arc = False
         if code_info.file_data is not None:
+            if not code_info.branch_trails:
+                populate_branch_trails(code, code_info)
+                # log(f"branch_trails for {code}:\n    {code_info.branch_trails}")
+            added_arc = False
             dest_info = code_info.branch_trails.get(instruction_offset)
-            log(f"{dest_info = }")
+            # log(f"{dest_info = }")
             if dest_info is not None:
                 for offsets, arc in dest_info:
                     if arc is None:
                         continue
                     if destination_offset in offsets:
                         cast(set[TArc], code_info.file_data).add(arc)
-                        log(f"adding {arc=}")
+                        # log(f"adding {arc=}")
                         added_arc = True
                         break
 
-        if not added_arc:
-            # This could be an exception jumping from line to line.
-            assert code_info.byte_to_line is not None
-            l1 = code_info.byte_to_line[instruction_offset]
-            l2 = code_info.byte_to_line[destination_offset]
-            if l1 != l2:
-                arc = (l1, l2)
-                cast(set[TArc], code_info.file_data).add(arc)
-                log(f"adding unforeseen {arc=}")
+            if not added_arc:
+                # This could be an exception jumping from line to line.
+                assert code_info.byte_to_line is not None
+                l1 = code_info.byte_to_line[instruction_offset]
+                l2 = code_info.byte_to_line[destination_offset]
+                if l1 != l2:
+                    arc = (l1, l2)
+                    cast(set[TArc], code_info.file_data).add(arc)
+                    # log(f"adding unforeseen {arc=}")
 
         return DISABLE
