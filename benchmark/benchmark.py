@@ -191,11 +191,15 @@ class ProjectToTest:
 
     # Where can we clone the project from?
     git_url: str = ""
+    local_git: str = ""
     slug: str = ""
     env_vars: Env_VarsType = {}
 
     def __init__(self) -> None:
-        url_must_exist(self.git_url)
+        if self.git_url:
+            url_must_exist(self.git_url)
+        if self.local_git:
+            file_must_exist(self.local_git)
         if not self.slug:
             if self.git_url:
                 self.slug = self.git_url.split("/")[-1]
@@ -211,12 +215,13 @@ class ProjectToTest:
 
     def get_source(self, shell: ShellSession, retries: int = 5) -> None:
         """Get the source of the project."""
+        git_source = self.local_git or self.git_url
         for retry in range(retries):
             try:
-                shell.run_command(f"git clone {self.git_url} {self.dir}")
+                shell.run_command(f"git clone {git_source} {self.dir}")
                 return
             except Exception as e:
-                print(f"Retrying to clone {self.git_url} due to error:\n{e}")
+                print(f"Retrying to clone {git_source} due to error:\n{e}")
                 if retry == retries - 1:
                     raise e
 
@@ -421,6 +426,38 @@ class ProjectMashumaroBranch(ProjectMashumaro):
     def __init__(self, more_pytest_args: str = ""):
         super().__init__(more_pytest_args="--cov-branch " + more_pytest_args)
         self.slug = "mashbranch"
+
+
+class ProjectPillow(ProjectToTest):
+    git_url = "https://github.com/python-pillow/Pillow"
+    local_git = "/src/Pillow"
+
+    def __init__(self, more_pytest_args: str = ""):
+        super().__init__()
+        self.more_pytest_args = more_pytest_args
+
+    def prep_environment(self, env: Env) -> None:
+        env.shell.run_command(f"{env.python} -m pip install '.[tests]'")
+
+    def run_no_coverage(self, env: Env) -> float:
+        env.shell.run_command(f"{env.python} -m pytest {self.more_pytest_args}")
+        return env.shell.last_duration
+
+    def run_with_coverage(self, env: Env, cov_ver: Coverage) -> float:
+        env.shell.run_command(f"{env.python} -m pip install {cov_ver.pip_args}")
+        env.shell.run_command(
+            f"{env.python} -m pytest --cov=PIL --cov=Tests {self.more_pytest_args}"
+        )
+        duration = env.shell.last_duration
+        report = env.shell.run_command(f"{env.python} -m coverage report --precision=6")
+        print("Results:", report.splitlines()[-1])
+        return duration
+
+
+class ProjectPillowBranch(ProjectPillow):
+    def __init__(self, more_pytest_args: str = ""):
+        super().__init__(more_pytest_args="--cov-branch " + more_pytest_args)
+        self.slug = "Pilbranch"
 
 
 class ProjectOperator(ProjectToTest):

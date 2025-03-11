@@ -107,13 +107,15 @@ if 1:
             CoverageSource(slug="sysmon", env_vars={"COVERAGE_CORE": "sysmon"}),
         ],
         projects=[
+            ProjectPillow(), #"-k test_pickle"),
+            ProjectPillowBranch(), #"-k test_pickle"),
             # ProjectSphinx(),  # Works, slow
             # ProjectPygments(),  # Doesn't work on 3.14
             # ProjectRich(),  # Doesn't work
             # ProjectTornado(),  # Works, tests fail
             # ProjectDulwich(),  # Works
             # ProjectBlack(),  # Works, slow
-            ProjectMpmath(),  # Works, slow
+            # ProjectMpmath(),  # Works, slow
             # ProjectMypy(),  # Works, slow
             # ProjectHtml5lib(),  # Doesn't work on 3.14
             # ProjectUrllib3(),  # Works
