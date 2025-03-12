@@ -17,6 +17,7 @@ from importlib.machinery import ModuleSpec
 from types import CodeType, ModuleType
 from typing import Any
 
+from coverage import env
 from coverage.exceptions import CoverageException, _ExceptionDuringRun, NoCode, NoSource
 from coverage.files import canonical_filename, python_reported_file
 from coverage.misc import isolate_module
@@ -117,7 +118,7 @@ class PyRunner:
             top_file_dir_abs = canonical_filename(top_file_dir_abs)
             if sys_path_0_abs != top_file_dir_abs:
                 path0 = None
-                print(f"setting path0 = None")
+                print("setting path0 = None")
 
         else:
             # sys.path[0] is a file. Is the next entry the directory containing
