@@ -108,6 +108,8 @@ class SummaryReporter:
         for end_line in end_lines:
             self.write(end_line)
 
+        self.write("")
+
     def _report_markdown(
         self,
         header: list[str],
