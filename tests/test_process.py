@@ -674,7 +674,7 @@ class EnvironmentTest(CoverageTest):
         expected = self.run_command("python run_me.py")
         actual = self.run_command("coverage run run_me.py")
         self.assert_tryexecfile_output(expected, actual)
-        1/0 # See what the output looks like without safepath
+        #1/0 # See what the output looks like without safepath
 
     def test_coverage_run_far_away_is_like_python(self) -> None:
         with open(TRY_EXECFILE) as f:
