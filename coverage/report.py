@@ -108,8 +108,6 @@ class SummaryReporter:
         for end_line in end_lines:
             self.write(end_line)
 
-        self.write("")
-
     def _report_markdown(
         self,
         header: list[str],
@@ -171,6 +169,8 @@ class SummaryReporter:
         self.write_items(total_line_items)
         for end_line in end_lines:
             self.write(end_line)
+
+        self.write("")
 
     def report(self, morfs: Iterable[TMorf] | None, outfile: IO[str] | None = None) -> float:
         """Writes a report summarizing coverage statistics per module.
