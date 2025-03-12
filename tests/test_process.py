@@ -666,6 +666,7 @@ class EnvironmentTest(CoverageTest):
         """
         # First, is this even credible try_execfile.py output?
         assert '"DATA": "xyzzy"' in actual
+        # If this fails, "+" is actual, and "-" is expected
         assert actual == expected
 
     def test_coverage_run_is_like_python_runme(self) -> None:
