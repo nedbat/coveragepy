@@ -506,7 +506,7 @@ class SysMonitor(Tracer):
                             )
                         sys_monitoring.set_local_events(self.myid, code, local_events)
 
-        return None
+        return DISABLE
 
     @panopticon("code", "@", None)
     def sysmon_py_return(  # pylint: disable=useless-return
@@ -524,7 +524,7 @@ class SysMonitor(Tracer):
                 arc = (last_line, -code.co_firstlineno)
                 cast(set[TArc], code_info.file_data).add(arc)
                 # log(f"adding {arc=}")
-        return None
+        return DISABLE
 
     @panopticon("code", "line")
     def sysmon_line_lines(self, code: CodeType, line_number: TLineNo) -> MonitorReturn:
