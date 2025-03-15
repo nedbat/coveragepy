@@ -440,7 +440,7 @@ class SysMonitor(Tracer):
         return self.stats
 
     @panopticon("code", "@")
-    def sysmon_py_start(  # pylint: disable=useless-return
+    def sysmon_py_start(
         self, code: CodeType, instruction_offset: TOffset
     ) -> MonitorReturn:
         """Handle sys.monitoring.events.PY_START events."""
@@ -509,7 +509,7 @@ class SysMonitor(Tracer):
         return DISABLE
 
     @panopticon("code", "@", None)
-    def sysmon_py_return(  # pylint: disable=useless-return
+    def sysmon_py_return(
         self,
         code: CodeType,
         instruction_offset: TOffset,
