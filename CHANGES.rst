@@ -20,8 +20,12 @@ upgrading your version of coverage.py.
     ..  Version 9.8.1 — 2027-07-27
     ..  --------------------------
 
-Unreleased
-----------
+.. start-releases
+
+.. _changes_7-7-0:
+
+Version 7.7.0 — 2025-03-16
+--------------------------
 
 - The Coverage object has a new method, :meth:`.Coverage.branch_stats` for
   getting simple branch information for a module.  Closes `issue 1888`_.
@@ -45,8 +49,6 @@ Unreleased
 .. _issue 1888: https://github.com/nedbat/coveragepy/issues/1888
 .. _pull 1919: https://github.com/nedbat/coveragepy/pull/1919
 
-
-.. start-releases
 
 .. _changes_7-6-12:
 
