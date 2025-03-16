@@ -26,19 +26,19 @@ Unreleased
 - The Coverage object has a new method, :meth:`.Coverage.branch_stats` for
   getting simple branch information for a module.  Closes `issue 1888`_.
 
+- The :class:`Coverage constructor<.Coverage>` now has a ``plugins`` parameter
+  for passing in plugin objects directly, thanks to `Alex Gaynor <pull
+  1919_>`_.
+
 - Many constant tests in if statements are now recognized as being optimized
   away.  For example, previously ``if 13:`` would have been considered a branch
   with one path not taken.  Now it is understood as always true and no coverage
   is missing.
 
-- The experimental sys.monitoring support should now work for branch coverage
-  if you are using Python newer than 3.14.0 alpha 5.  This should greatly
-  reduce the overhead coverage.py imposes on your test suite. Set the
-  environment variable ``COVERAGE_CORE=sysmon`` to try it out.
-
-- The :class:`Coverage constructor<.Coverage>` now has a ``plugins`` parameter
-  for passing in plugin objects directly, thanks to `Alex Gaynor <pull
-  1919_>`_.
+- The experimental sys.monitoring support now works for branch coverage if you
+  are using Python 3.14.0 alpha 6 or newer.  This should reduce the overhead
+  coverage.py imposes on your test suite. Set the environment variable
+  ``COVERAGE_CORE=sysmon`` to try it out.
 
 - Confirmed support for PyPy 3.11. Thanks Michał Górny.
 
