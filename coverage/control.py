@@ -950,6 +950,7 @@ class Coverage(TConfigurable):
             analysis.missing_formatted(),
         )
 
+    @functools.lru_cache(maxsize=1)
     def _analyze(self, morf: TMorf) -> Analysis:
         """Analyze a module or file.  Private for now."""
         self._init()
@@ -959,6 +960,20 @@ class Coverage(TConfigurable):
         file_reporter = self._get_file_reporter(morf)
         filename = self._file_mapper(file_reporter.filename)
         return analysis_from_file_reporter(data, self.config.precision, file_reporter, filename)
+
+    def branch_stats(self, morf: TMorf) -> dict[TLineNo, tuple[int, int]]:
+        """Get branch statistics about a module.
+
+        `morf` is a module or a file name.
+
+        Returns a dict mapping line numbers to a tuple:
+        (total_exits, taken_exits).
+
+        .. versionadded:: 7.7
+
+        """
+        analysis = self._analyze(morf)
+        return analysis.branch_stats()
 
     @functools.lru_cache(maxsize=1)
     def _get_file_reporter(self, morf: TMorf) -> FileReporter:

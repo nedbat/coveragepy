@@ -1008,7 +1008,10 @@ class AnalysisTest(CoverageTest):
                 print("done")           # pragma: nocover
 
             def fun2(x):
-                print("x")
+                if x:
+                    print("x")
+                else:
+                    print("not x")
 
             fun2(3)
             """)
@@ -1018,12 +1021,22 @@ class AnalysisTest(CoverageTest):
 
         nums = cov._analyze("missing.py").numbers
         assert nums.n_files == 1
-        assert nums.n_statements == 7
+        assert nums.n_statements == 9
         assert nums.n_excluded == 1
-        assert nums.n_missing == 3
-        assert nums.n_branches == 2
-        assert nums.n_partial_branches == 0
-        assert nums.n_missing_branches == 2
+        assert nums.n_missing == 4
+        assert nums.n_branches == 4
+        assert nums.n_partial_branches == 1
+        assert nums.n_missing_branches == 3
+
+        filename, statements, excluded, missing, missing_formatted = cov.analysis2("missing.py")
+        assert os.path.relpath(filename) == "missing.py"
+        assert statements == [1, 2, 3, 5, 8, 9, 10, 12, 14]
+        assert excluded == [6]
+        assert missing == [2, 3, 5, 12]
+        assert missing_formatted == "2-5, 12"
+
+        branch_stats = cov.branch_stats("missing.py")
+        assert branch_stats == {2: (2, 0), 9: (2, 1)}
 
 
 class TestRunnerPluginTest(CoverageTest):

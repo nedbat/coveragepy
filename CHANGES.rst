@@ -23,6 +23,9 @@ upgrading your version of coverage.py.
 Unreleased
 ----------
 
+- The Coverage object has a new method, :meth:`.Coverage.branch_stats` for
+  getting simple branch information for a module.  Closes `issue 1888`_.
+
 - Many constant tests in if statements are now recognized as being optimized
   away.  For example, previously ``if 13:`` would have been considered a branch
   with one path not taken.  Now it is understood as always true and no coverage
@@ -39,6 +42,7 @@ Unreleased
 
 - Confirmed support for PyPy 3.11. Thanks Michał Górny.
 
+.. _issue 1888: https://github.com/nedbat/coveragepy/issues/1888
 .. _pull 1919: https://github.com/nedbat/coveragepy/pull/1919
 
 

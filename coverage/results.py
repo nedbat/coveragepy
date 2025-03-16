@@ -231,6 +231,7 @@ class Analysis:
 
         Returns a dict mapping line numbers to a tuple:
         (total_exits, taken_exits).
+
         """
 
         missing_arcs = self.missing_branch_arcs()
