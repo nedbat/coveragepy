@@ -600,6 +600,12 @@ detail the missed branches::
     ---------------------------------------------------------------------
     TOTAL                        91     12     18      3    87%
 
+Ranges of lines are shown with a dash: "17-23" means all lines from 17 to 23
+inclusive are missing coverage.  Missed branches are shown with an arrow:
+"40->45" means the branch from line 40 to line 45 is missing.  A branch can go
+backwards in a file, so you might see a branch from a later line to an earlier
+line, like "55->50".
+
 You can restrict the report to only certain files by naming them on the
 command line::
 
