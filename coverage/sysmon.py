@@ -522,13 +522,13 @@ class SysMonitor(Tracer):
         if self.stats is not None:
             self.stats["returns"] += 1
         code_info = self.code_infos.get(id(code))
-        if code_info is not None and code_info.file_data is not None:
-            assert code_info.byte_to_line is not None
-            last_line = code_info.byte_to_line[instruction_offset]
-            if last_line is not None:
-                arc = (last_line, -code.co_firstlineno)
-                cast(set[TArc], code_info.file_data).add(arc)
-                # log(f"adding {arc=}")
+        # code_info is not None and code_info.file_data is not None, since we
+        # wouldn't have enabled this event if they were.
+        last_line = code_info.byte_to_line[instruction_offset]  # type: ignore
+        if last_line is not None:
+            arc = (last_line, -code.co_firstlineno)
+            code_info.file_data.add(arc)  # type: ignore
+            # log(f"adding {arc=}")
         return DISABLE
 
     @panopticon("code", "line")
@@ -537,9 +537,12 @@ class SysMonitor(Tracer):
         if self.stats is not None:
             self.stats["line_lines"] += 1
         code_info = self.code_infos.get(id(code))
+        # It should be true that code_info is not None and code_info.file_data
+        # is not None, since we wouldn't have enabled this event if they were.
+        # But somehow code_info can be None here, so we have to check.
         if code_info is not None and code_info.file_data is not None:
-            cast(set[TLineNo], code_info.file_data).add(line_number)
-            # log(f"adding {line_number=}")
+            code_info.file_data.add(line_number)  # type: ignore
+        # log(f"adding {line_number=}")
         return DISABLE
 
     @panopticon("code", "line")
@@ -548,10 +551,11 @@ class SysMonitor(Tracer):
         if self.stats is not None:
             self.stats["line_arcs"] += 1
         code_info = self.code_infos[id(code)]
-        if code_info.file_data is not None:
-            arc = (line_number, line_number)
-            cast(set[TArc], code_info.file_data).add(arc)
-            # log(f"adding {arc=}")
+        # code_info is not None and code_info.file_data is not None, since we
+        # wouldn't have enabled this event if they were.
+        arc = (line_number, line_number)
+        code_info.file_data.add(arc)  # type: ignore
+        # log(f"adding {arc=}")
         return DISABLE
 
     @panopticon("code", "@", "@")
@@ -562,33 +566,34 @@ class SysMonitor(Tracer):
         if self.stats is not None:
             self.stats["branches"] += 1
         code_info = self.code_infos[id(code)]
-        if code_info.file_data is not None:
-            if not code_info.branch_trails:
-                if self.stats is not None:
-                    self.stats["branch_trails"] += 1
-                populate_branch_trails(code, code_info)
-                # log(f"branch_trails for {code}:\n    {code_info.branch_trails}")
-            added_arc = False
-            dest_info = code_info.branch_trails.get(instruction_offset)
-            # log(f"{dest_info = }")
-            if dest_info is not None:
-                for offsets, arc in dest_info:
-                    if arc is None:
-                        continue
-                    if destination_offset in offsets:
-                        cast(set[TArc], code_info.file_data).add(arc)
-                        # log(f"adding {arc=}")
-                        added_arc = True
-                        break
+        # code_info is not None and code_info.file_data is not None, since we
+        # wouldn't have enabled this event if they were.
+        if not code_info.branch_trails:
+            if self.stats is not None:
+                self.stats["branch_trails"] += 1
+            populate_branch_trails(code, code_info)
+            # log(f"branch_trails for {code}:\n    {code_info.branch_trails}")
+        added_arc = False
+        dest_info = code_info.branch_trails.get(instruction_offset)
+        # log(f"{dest_info = }")
+        if dest_info is not None:
+            for offsets, arc in dest_info:
+                if arc is None:
+                    continue
+                if destination_offset in offsets:
+                    code_info.file_data.add(arc)  # type: ignore
+                    # log(f"adding {arc=}")
+                    added_arc = True
+                    break
 
-            if not added_arc:
-                # This could be an exception jumping from line to line.
-                assert code_info.byte_to_line is not None
-                l1 = code_info.byte_to_line[instruction_offset]
-                l2 = code_info.byte_to_line[destination_offset]
-                if l1 != l2:
-                    arc = (l1, l2)
-                    cast(set[TArc], code_info.file_data).add(arc)
-                    # log(f"adding unforeseen {arc=}")
+        if not added_arc:
+            # This could be an exception jumping from line to line.
+            assert code_info.byte_to_line is not None
+            l1 = code_info.byte_to_line[instruction_offset]
+            l2 = code_info.byte_to_line[destination_offset]
+            if l1 != l2:
+                arc = (l1, l2)
+                code_info.file_data.add(arc)  # type: ignore
+                # log(f"adding unforeseen {arc=}")
 
         return DISABLE
