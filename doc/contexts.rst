@@ -103,12 +103,12 @@ The ``[run] dynamic_context`` setting has only one option now.  Set it to
         dynamic_context = "test_function"
 
     .. code-tab:: ini
-        :caption: setup.cfg, tox.ini
+        :caption: setup.cfg or tox.ini
 
         [coverage:run]
         dynamic_context = test_function
 
-.. [[[end]]] (checksum: 5c5d120ee876e5fe26e573e1a5e8551d)
+.. [[[end]]] (checksum: 7594c36231f0ef52b554aad8c835ccf4)
 
 Each test function you run will be considered a separate dynamic context, and
 coverage data will be segregated for each.  A test function is any function

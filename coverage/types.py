@@ -10,10 +10,11 @@ from __future__ import annotations
 import os
 import pathlib
 
+from collections.abc import Iterable, Mapping
 from types import FrameType, ModuleType
 from typing import (
-    Any, Callable, Dict, Iterable, List, Mapping, Optional, Protocol,
-    Set, Tuple, Type, Union, TYPE_CHECKING,
+    Any, Callable, Optional, Protocol,
+    Union, TYPE_CHECKING,
 )
 
 if TYPE_CHECKING:
@@ -32,7 +33,7 @@ else:
     FilePath = Union[str, os.PathLike]
 # For testing FilePath arguments
 FilePathClasses = [str, pathlib.Path]
-FilePathType = Union[Type[str], Type[pathlib.Path]]
+FilePathType = Union[type[str], type[pathlib.Path]]
 
 ## Python tracing
 
@@ -52,7 +53,7 @@ class TTraceFn(Protocol):
 # Line numbers are pervasive enough that they deserve their own type.
 TLineNo = int
 
-TArc = Tuple[TLineNo, TLineNo]
+TArc = tuple[TLineNo, TLineNo]
 
 class TFileDisposition(Protocol):
     """A simple value type for recording what to do with a file."""
@@ -74,18 +75,23 @@ class TFileDisposition(Protocol):
 # - If measuring arcs in the C tracer, the values are sets of packed arcs (two
 #   line numbers combined into one integer).
 
-TTraceFileData = Union[Set[TLineNo], Set[TArc], Set[int]]
+TTraceFileData = Union[set[TLineNo], set[TArc], set[int]]
 
-TTraceData = Dict[str, TTraceFileData]
+TTraceData = dict[str, TTraceFileData]
 
-class TracerCore(Protocol):
+# Functions passed into collectors.
+TShouldTraceFn = Callable[[str, FrameType], TFileDisposition]
+TCheckIncludeFn = Callable[[str, FrameType], bool]
+TShouldStartContextFn = Callable[[FrameType], Union[str, None]]
+
+class Tracer(Protocol):
     """Anything that can report on Python execution."""
 
     data: TTraceData
     trace_arcs: bool
-    should_trace: Callable[[str, FrameType], TFileDisposition]
+    should_trace: TShouldTraceFn
     should_trace_cache: Mapping[str, TFileDisposition | None]
-    should_start_context: Callable[[FrameType], str | None] | None
+    should_start_context: TShouldStartContextFn | None
     switch_context: Callable[[str | None], None] | None
     lock_data: Callable[[], None]
     unlock_data: Callable[[], None]
@@ -119,8 +125,8 @@ TCovKwargs = Any
 ## Configuration
 
 # One value read from a config file.
-TConfigValueIn = Optional[Union[bool, int, float, str, Iterable[str]]]
-TConfigValueOut = Optional[Union[bool, int, float, str, List[str]]]
+TConfigValueIn = Optional[Union[bool, int, float, str, Iterable[str], Mapping[str, Iterable[str]]]]
+TConfigValueOut = Optional[Union[bool, int, float, str, list[str], dict[str, list[str]]]]
 # An entire config section, mapping option names to values.
 TConfigSectionIn = Mapping[str, TConfigValueIn]
 TConfigSectionOut = Mapping[str, TConfigValueOut]
@@ -161,7 +167,7 @@ class TPluginConfig(Protocol):
 
 TMorf = Union[ModuleType, str]
 
-TSourceTokenLines = Iterable[List[Tuple[str, str]]]
+TSourceTokenLines = Iterable[list[tuple[str, str]]]
 
 
 ## Plugins

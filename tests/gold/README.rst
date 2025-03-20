@@ -14,19 +14,18 @@ output is in the tests/actual directory. Those files are ignored by git.
 There's a Makefile in the html directory for working with gold files and their
 associated support files.
 
-To view the tests/actual files, you need to tentatively copy them to the gold
-directories, and then add the supporting files so they can be viewed as
-complete output. For example::
+The gold files and the actual output files are not viewable as-is: they are
+missing the support files (css etc) they need.  You can copy those support
+files with::
 
-    cp tests/actual/html/contexts/* tests/gold/html/contexts
-    cd tests/actual/html
+    cd tests/gold/html
     make complete
 
-If the new actual output is correct, you can use "make update-gold" to copy the
-actual output as the new gold files.
+If the new actual output is correct, you can use ``make update-gold`` to copy
+the actual output as the new gold files.
 
-If you have changed some of the supporting files (.css or .js), then "make
-update-support" will copy the updated files to the tests/gold/html/support
+If you have changed some of the supporting files (.css or .js), then ``make
+update-support`` will copy the updated files to the tests/gold/html/support
 directory for checking test output.
 
 If you have added a gold test, you'll need to manually copy the tests/actual
@@ -39,11 +38,11 @@ again, you can run just the failed tests again with::
 
 The saved HTML files in the html directories can't be viewed properly without
 the supporting CSS and Javascript files. But we don't want to save copies of
-those files in every subdirectory. The make target "make complete" in
+those files in every subdirectory. The make target ``make complete`` in
 tests/gold/html will copy the support files so you can open the HTML files to
-see how they look.  When you are done checking the output, you can use "make
-clean" to remove the support files from the gold directories.
+see how they look.  When you are done checking the output, you can use ``make
+clean`` to remove the support files from the gold directories.
 
-If the output files are correct, you can update the gold files with "make
-update-gold".  If there are version-specific gold files (for example,
+If the output files are correct, you can update the gold files with ``make
+update-gold``.  If there are version-specific gold files (for example,
 bom/2/\*), you'll need to update them manually.

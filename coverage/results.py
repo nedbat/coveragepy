@@ -8,8 +8,8 @@ from __future__ import annotations
 import collections
 import dataclasses
 
-from collections.abc import Container
-from typing import Iterable, TYPE_CHECKING
+from collections.abc import Container, Iterable
+from typing import TYPE_CHECKING
 
 from coverage.exceptions import ConfigError
 from coverage.misc import nice_pair
@@ -33,13 +33,33 @@ def analysis_from_file_reporter(
     executed = file_reporter.translate_lines(data.lines(filename) or [])
 
     if has_arcs:
-        _arc_possibilities_set = file_reporter.arcs()
-        _arcs_executed_set = file_reporter.translate_arcs(data.arcs(filename) or [])
+        arc_possibilities_set = file_reporter.arcs()
+        arcs: Iterable[TArc] = data.arcs(filename) or []
+        arcs = file_reporter.translate_arcs(arcs)
+
+        # Reduce the set of arcs to the ones that could be branches.
+        dests = collections.defaultdict(set)
+        for fromno, tono in arc_possibilities_set:
+            dests[fromno].add(tono)
+        single_dests = {
+            fromno: list(tonos)[0]
+            for fromno, tonos in dests.items()
+            if len(tonos) == 1
+        }
+        new_arcs = set()
+        for fromno, tono in arcs:
+            if fromno != tono:
+                new_arcs.add((fromno, tono))
+            else:
+                if fromno in single_dests:
+                    new_arcs.add((fromno, single_dests[fromno]))
+
+        arcs_executed_set = file_reporter.translate_arcs(new_arcs)
         exit_counts = file_reporter.exit_counts()
         no_branch = file_reporter.no_branch_lines()
     else:
-        _arc_possibilities_set = set()
-        _arcs_executed_set = set()
+        arc_possibilities_set = set()
+        arcs_executed_set = set()
         exit_counts = {}
         no_branch = set()
 
@@ -50,8 +70,8 @@ def analysis_from_file_reporter(
         statements=statements,
         excluded=excluded,
         executed=executed,
-        _arc_possibilities_set=_arc_possibilities_set,
-        _arcs_executed_set=_arcs_executed_set,
+        arc_possibilities_set=arc_possibilities_set,
+        arcs_executed_set=arcs_executed_set,
         exit_counts=exit_counts,
         no_branch=no_branch,
     )
@@ -67,14 +87,14 @@ class Analysis:
     statements: set[TLineNo]
     excluded: set[TLineNo]
     executed: set[TLineNo]
-    _arc_possibilities_set: set[TArc]
-    _arcs_executed_set: set[TArc]
+    arc_possibilities_set: set[TArc]
+    arcs_executed_set: set[TArc]
     exit_counts: dict[TLineNo, int]
     no_branch: set[TLineNo]
 
     def __post_init__(self) -> None:
-        self.arc_possibilities = sorted(self._arc_possibilities_set)
-        self.arcs_executed = sorted(self._arcs_executed_set)
+        self.arc_possibilities = sorted(self.arc_possibilities_set)
+        self.arcs_executed = sorted(self.arcs_executed_set)
         self.missing = self.statements - self.executed
 
         if self.has_arcs:
@@ -108,12 +128,12 @@ class Analysis:
         executed = {lno for lno in self.executed if lno in lines}
 
         if self.has_arcs:
-            _arc_possibilities_set = {
-                (a, b) for a, b in self._arc_possibilities_set
+            arc_possibilities_set = {
+                (a, b) for a, b in self.arc_possibilities_set
                 if a in lines or b in lines
             }
-            _arcs_executed_set = {
-                (a, b) for a, b in self._arcs_executed_set
+            arcs_executed_set = {
+                (a, b) for a, b in self.arcs_executed_set
                 if a in lines or b in lines
             }
             exit_counts = {
@@ -122,8 +142,8 @@ class Analysis:
             }
             no_branch = {lno for lno in self.no_branch if lno in lines}
         else:
-            _arc_possibilities_set = set()
-            _arcs_executed_set = set()
+            arc_possibilities_set = set()
+            arcs_executed_set = set()
             exit_counts = {}
             no_branch = set()
 
@@ -134,8 +154,8 @@ class Analysis:
             statements=statements,
             excluded=excluded,
             executed=executed,
-            _arc_possibilities_set=_arc_possibilities_set,
-            _arcs_executed_set=_arcs_executed_set,
+            arc_possibilities_set=arc_possibilities_set,
+            arcs_executed_set=arcs_executed_set,
             exit_counts=exit_counts,
             no_branch=no_branch,
         )
@@ -159,26 +179,11 @@ class Analysis:
         """Returns a sorted list of the un-executed arcs in the code."""
         missing = (
             p for p in self.arc_possibilities
-                if p not in self.arcs_executed
+                if p not in self.arcs_executed_set
                     and p[0] not in self.no_branch
                     and p[1] not in self.excluded
         )
         return sorted(missing)
-
-    def arcs_unpredicted(self) -> list[TArc]:
-        """Returns a sorted list of the executed arcs missing from the code."""
-        # Exclude arcs here which connect a line to itself.  They can occur
-        # in executed data in some cases.  This is where they can cause
-        # trouble, and here is where it's the least burden to remove them.
-        # Also, generators can somehow cause arcs from "enter" to "exit", so
-        # make sure we have at least one positive value.
-        unpredicted = (
-            e for e in self.arcs_executed
-                if e not in self.arc_possibilities
-                    and e[0] != e[1]
-                    and (e[0] > 0 or e[1] > 0)
-        )
-        return sorted(unpredicted)
 
     def _branch_lines(self) -> list[TLineNo]:
         """Returns a list of line numbers that have more than one exit."""
@@ -198,6 +203,7 @@ class Analysis:
         branch_lines = set(self._branch_lines())
         mba = collections.defaultdict(list)
         for l1, l2 in missing:
+            assert l1 != l2, f"In {self.filename}, didn't expect {l1} == {l2}"
             if l1 in branch_lines:
                 mba[l1].append(l2)
         return mba
@@ -205,12 +211,17 @@ class Analysis:
     def executed_branch_arcs(self) -> dict[TLineNo, list[TLineNo]]:
         """Return arcs that were executed from branch lines.
 
+        Only include ones that we considered possible.
+
         Returns {l1:[l2a,l2b,...], ...}
 
         """
         branch_lines = set(self._branch_lines())
         eba = collections.defaultdict(list)
         for l1, l2 in self.arcs_executed:
+            assert l1 != l2, f"Oops: Didn't think this could happen: {l1 = }, {l2 = }"
+            if (l1, l2) not in self.arc_possibilities_set:
+                continue
             if l1 in branch_lines:
                 eba[l1].append(l2)
         return eba
@@ -220,6 +231,7 @@ class Analysis:
 
         Returns a dict mapping line numbers to a tuple:
         (total_exits, taken_exits).
+
         """
 
         missing_arcs = self.missing_branch_arcs()
@@ -332,7 +344,7 @@ def _line_ranges(
     lines = sorted(lines)
 
     pairs = []
-    start = None
+    start: TLineNo | None = None
     lidx = 0
     for stmt in statements:
         if lidx >= len(lines):

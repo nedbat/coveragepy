@@ -27,7 +27,280 @@ Unreleased
   supported, closing `issue 1696`_.  Thanks, `Philipp A. <pull 1700_>`_.
 
 
-.. scriv-start-here
+.. start-releases
+
+.. _changes_7-7-0:
+
+Version 7.7.0 — 2025-03-16
+--------------------------
+
+- The Coverage object has a new method, :meth:`.Coverage.branch_stats` for
+  getting simple branch information for a module.  Closes `issue 1888`_.
+
+- The :class:`Coverage constructor<.Coverage>` now has a ``plugins`` parameter
+  for passing in plugin objects directly, thanks to `Alex Gaynor <pull
+  1919_>`_.
+
+- Many constant tests in if statements are now recognized as being optimized
+  away.  For example, previously ``if 13:`` would have been considered a branch
+  with one path not taken.  Now it is understood as always true and no coverage
+  is missing.
+
+- The experimental sys.monitoring support now works for branch coverage if you
+  are using Python 3.14.0 alpha 6 or newer.  This should reduce the overhead
+  coverage.py imposes on your test suite. Set the environment variable
+  ``COVERAGE_CORE=sysmon`` to try it out.
+
+- Confirmed support for PyPy 3.11. Thanks Michał Górny.
+
+.. _issue 1888: https://github.com/nedbat/coveragepy/issues/1888
+.. _pull 1919: https://github.com/nedbat/coveragepy/pull/1919
+
+
+.. _changes_7-6-12:
+
+Version 7.6.12 — 2025-02-11
+---------------------------
+
+- Fix: some aarch64 distributions were missing (`issue 1927`_).  These are now
+  building reliably.
+
+.. _issue 1927: https://github.com/nedbat/coveragepy/issues/1927
+
+.. _changes_7-6-11:
+
+Version 7.6.11 — 2025-02-08
+---------------------------
+
+- Fix: a memory leak in CTracer has been fixed.  The details are in `issue
+  1924`_ and `pytest-dev 676`_.  This should reduce the memory footprint for
+  everyone even if it hadn't caused a problem before.
+
+- We now ship a py3-none-any.whl wheel file.  Thanks, `Russell Keith-Magee
+  <pull 1914_>`_.
+
+.. _pull 1914: https://github.com/nedbat/coveragepy/pull/1914
+.. _issue 1924: https://github.com/nedbat/coveragepy/issues/1924
+.. _pytest-dev 676: https://github.com/pytest-dev/pytest-cov/issues/676
+
+.. _changes_7-6-10:
+
+Version 7.6.10 — 2024-12-26
+---------------------------
+
+- Fix: some descriptions of missing branches in HTML and LCOV reports were
+  incorrect when multi-line statements were involved (`issue 1874`_ and `issue
+  1875`_).  These are now fixed.
+
+- Fix: Python 3.14 `defers evaluation of annotations <pep649_>`_ by moving them
+  into separate code objects.  That code is rarely executed, so coverage.py
+  would mark them as missing, as reported in `issue 1908`_.  Now they are
+  ignored by coverage automatically.
+
+- Fixed an obscure and mysterious problem on PyPy 3.10 seemingly involving
+  mocks, imports, and trace functions: `issue 1902`_.  To be honest, I don't
+  understand the problem or the solution, but ``git bisect`` helped find it,
+  and now it's fixed.
+
+- Docs: re-wrote the :ref:`subprocess` page to put multiprocessing first and to
+  highlight the correct use of :class:`multiprocessing.Pool
+  <python:multiprocessing.pool.Pool>`.
+
+.. _issue 1874: https://github.com/nedbat/coveragepy/issues/1874
+.. _issue 1875: https://github.com/nedbat/coveragepy/issues/1875
+.. _issue 1902: https://github.com/nedbat/coveragepy/issues/1902
+.. _issue 1908: https://github.com/nedbat/coveragepy/issues/1908
+.. _pep649: https://docs.python.org/3.14/whatsnew/3.14.html#pep-649-deferred-evaluation-of-annotations
+
+
+.. _changes_7-6-9:
+
+Version 7.6.9 — 2024-12-06
+--------------------------
+
+- Fix: `Tomas Uribe fixed <pull 1901_>`_ a performance problem in the XML
+  report.  Large code bases should produce XML reports much faster now.
+
+.. _pull 1901: https://github.com/nedbat/coveragepy/pull/1901
+
+
+.. _changes_7-6-8:
+
+Version 7.6.8 — 2024-11-23
+--------------------------
+
+- Fix: the LCOV report code assumed that a branch line that took no branches
+  meant that the entire line was unexecuted.  This isn't true in a few cases:
+  the line might always raise an exception, or might have been optimized away.
+  Fixes `issue 1896`_.
+
+- Fix: similarly, the HTML report will now explain that a line that jumps to
+  none of its expected destinations must have always raised an exception.
+  Previously, it would say something nonsensical like, "line 4 didn't jump to
+  line 5 because line 4 was never true, and it didn't jump to line 7 because
+  line 4 was always true."  This was also shown in `issue 1896`_.
+
+.. _issue 1896: https://github.com/nedbat/coveragepy/issues/1896
+
+
+.. _changes_7-6-7:
+
+Version 7.6.7 — 2024-11-15
+--------------------------
+
+- Fix: ugh, the other assert from 7.6.5 can also be encountered in the wild,
+  so it's been restored to a conditional.  Sorry for the churn.
+
+
+.. _changes_7-6-6:
+
+Version 7.6.6 — 2024-11-15
+--------------------------
+
+- One of the new asserts from 7.6.5 caused problems in real projects, as
+  reported in `issue 1891`_.  The assert has been removed.
+
+.. _issue 1891: https://github.com/nedbat/coveragepy/issues/1891
+
+
+.. _changes_7-6-5:
+
+Version 7.6.5 — 2024-11-14
+--------------------------
+
+- Fix: fine-tuned the exact Python version (3.12.6) when exiting from ``with``
+  statements changed how they traced.  This affected whether people saw the
+  fix for `issue 1880`_.
+
+- Fix: isolate our code more from mocking in the os module that in rare cases
+  can cause `bizarre behavior <pytest-cov-666_>`_.
+
+- Refactor: some code unreachable code paths in parser.py were changed to
+  asserts.  If you encounter any of these, please let me know!
+
+.. _pytest-cov-666: https://github.com/pytest-dev/pytest-cov/issues/666
+
+
+.. _changes_7-6-4:
+
+Version 7.6.4 — 2024-10-20
+--------------------------
+
+- Fix: multi-line ``with`` statements could cause contained branches to be
+  incorrectly marked as missing (`issue 1880`_).  This is now fixed.
+
+.. _issue 1880: https://github.com/nedbat/coveragepy/issues/1880
+
+
+.. _changes_7-6-3:
+
+Version 7.6.3 — 2024-10-13
+--------------------------
+
+- Fix: nested context managers could incorrectly be analyzed to flag a missing
+  branch on the last context manager, as described in `issue 1876`_.  This is
+  now fixed.
+
+- Fix: the missing branch message about not exiting a module had an extra
+  "didn't," as described in `issue 1873`_.  This is now fixed.
+
+.. _issue 1873: https://github.com/nedbat/coveragepy/issues/1873
+.. _issue 1876: https://github.com/nedbat/coveragepy/issues/1876
+
+
+.. _changes_7-6-2:
+
+Version 7.6.2 — 2024-10-09
+--------------------------
+
+- Dropped support for Python 3.8 and PyPy 3.8.
+
+- Fix: a final wildcard match/case clause assigning to a name (``case _ as
+  value``) was incorrectly marked as a missing branch.  This is now fixed,
+  closing `issue 1860`_.
+
+- Fewer things are considered branches now. Lambdas, comprehensions, and
+  generator expressions are no longer marked as missing branches if they don't
+  complete execution.  Closes `issue 1852`_.
+
+- Fix: the HTML report didn't properly show multi-line f-strings that end with
+  a backslash continuation.  This is now fixed, closing `issue 1836`_, thanks
+  to `LiuYinCarl and Marco Ricci <pull 1838_>`_.
+
+- Fix: the LCOV report now has correct line numbers (fixing `issue 1846`_) and
+  better branch descriptions for BRDA records (fixing `issue 1850`_).  There
+  are other changes to lcov also, including a new configuration option
+  :ref:`line_checksums <config_lcov_line_checksums>` to control whether line
+  checksums are included in the lcov report.  The default is false. To keep
+  checksums set it to true.  All this work is thanks to Zack Weinberg
+  (`pull 1849`_ and `pull 1851`_).
+
+- Fixed the docs for multi-line regex exclusions, closing `issue 1863`_.
+
+- Fixed a potential crash in the C tracer, closing `issue 1835`_, thanks to
+  `Jan Kühle <pull 1843_>`_.
+
+.. _issue 1835: https://github.com/nedbat/coveragepy/issues/1835
+.. _issue 1836: https://github.com/nedbat/coveragepy/issues/1836
+.. _pull 1838: https://github.com/nedbat/coveragepy/pull/1838
+.. _pull 1843: https://github.com/nedbat/coveragepy/pull/1843
+.. _issue 1846: https://github.com/nedbat/coveragepy/issues/1846
+.. _pull 1849: https://github.com/nedbat/coveragepy/pull/1849
+.. _issue 1850: https://github.com/nedbat/coveragepy/issues/1850
+.. _pull 1851: https://github.com/nedbat/coveragepy/pull/1851
+.. _issue 1852: https://github.com/nedbat/coveragepy/issues/1852
+.. _issue 1860: https://github.com/nedbat/coveragepy/issues/1860
+.. _issue 1863: https://github.com/nedbat/coveragepy/issues/1863
+
+
+.. _changes_7-6-1:
+
+Version 7.6.1 — 2024-08-04
+--------------------------
+
+- Fix: coverage used to fail when measuring code using :func:`runpy.run_path
+  <python:runpy.run_path>` with a :class:`Path <python:pathlib.Path>` argument.
+  This is now fixed, thanks to `Ask Hjorth Larsen <pull 1819_>`_.
+
+- Fix: backslashes preceding a multi-line backslashed string could confuse the
+  HTML report.  This is now fixed, thanks to `LiuYinCarl <pull 1828_>`_.
+
+- Now we publish wheels for Python 3.13, both regular and free-threaded.
+
+.. _pull 1819: https://github.com/nedbat/coveragepy/pull/1819
+.. _pull 1828: https://github.com/nedbat/coveragepy/pull/1828
+
+
+.. _changes_7-6-0:
+
+Version 7.6.0 — 2024-07-11
+--------------------------
+
+- Exclusion patterns can now be multi-line, thanks to `Daniel Diniz <pull
+  1807_>`_.  This enables many interesting exclusion use-cases, including those
+  requested in issues `118 <issue 118_>`_ (entire files), `996
+  <issue 996_>`_ (multiple lines only when appearing together), `1741
+  <issue 1741_>`_ (remainder of a function), and `1803 <issue 1803_>`_
+  (arbitrary sequence of marked lines).  See the :ref:`multi_line_exclude`
+  section of the docs for more details and examples.
+
+- The JSON report now includes per-function and per-class coverage information.
+  Thanks to `Daniel Diniz <pull 1809_>`_ for getting the work started. This
+  closes `issue 1793`_ and `issue 1532`_.
+
+- Fixed an incorrect calculation of "(no class)" lines in the HTML classes
+  report.
+
+- Python 3.13.0b3 is supported.
+
+.. _issue 118: https://github.com/nedbat/coveragepy/issues/118
+.. _issue 996: https://github.com/nedbat/coveragepy/issues/996
+.. _issue 1532: https://github.com/nedbat/coveragepy/issues/1532
+.. _issue 1741: https://github.com/nedbat/coveragepy/issues/1741
+.. _issue 1793: https://github.com/nedbat/coveragepy/issues/1793
+.. _issue 1803: https://github.com/nedbat/coveragepy/issues/1803
+.. _pull 1807: https://github.com/nedbat/coveragepy/pull/1807
+.. _pull 1809: https://github.com/nedbat/coveragepy/pull/1809
 
 .. _changes_7-5-4:
 
@@ -1459,7 +1732,7 @@ Version 5.4 — 2021-01-24
 - Combining files on Windows across drives now works properly, fixing `issue
   577`_.  Thanks, `Valentin Lab <pr1080_>`_.
 
-- Fix an obscure warning from deep in the _decimal module, as reported in
+- Fix an obscure warning from deep in the decimal module, as reported in
   `issue 1084`_.
 
 - Update to support Python 3.10 alphas in progress, including `PEP 626: Precise
@@ -1521,7 +1794,7 @@ Version 5.3 — 2020-09-13
 .. _issue 1011: https://github.com/nedbat/coveragepy/issues/1011
 
 
-.. scriv-end-here
+.. endchangesinclude
 
 Older changes
 -------------

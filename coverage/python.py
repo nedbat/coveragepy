@@ -9,7 +9,8 @@ import os.path
 import types
 import zipimport
 
-from typing import Iterable, TYPE_CHECKING
+from typing import TYPE_CHECKING
+from collections.abc import Iterable
 
 from coverage import env
 from coverage.exceptions import CoverageException, NoSource
@@ -225,7 +226,14 @@ class PythonFileReporter(FileReporter):
         end: TLineNo,
         executed_arcs: Iterable[TArc] | None = None,
     ) -> str:
-        return self.parser.missing_arc_description(start, end, executed_arcs)
+        return self.parser.missing_arc_description(start, end)
+
+    def arc_description(
+        self,
+        start: TLineNo,
+        end: TLineNo
+    ) -> str:
+        return self.parser.arc_description(start, end)
 
     def source(self) -> str:
         if self._source is None:

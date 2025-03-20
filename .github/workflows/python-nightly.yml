@@ -60,8 +60,6 @@ jobs:
           - "3.13-dev"
           - "3.14-dev"
           # https://github.com/actions/setup-python#available-versions-of-pypy
-          - "pypy-3.8-nightly"
-          - "pypy-3.9-nightly"
           - "pypy-3.10-nightly"
         nogil:
           - false
@@ -73,8 +71,6 @@ jobs:
         exclude:
           - python-version: "3.12-dev"
             nogil: true
-          - python-version: "pypy-3.8-nightly"
-            nogil: true
           - python-version: "pypy-3.9-nightly"
             nogil: true
           - python-version: "pypy-3.10-nightly"
@@ -84,17 +80,19 @@ jobs:
 
     steps:
       - name: "Check out the repo"
-        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
 
       - name: "Install ${{ matrix.python-version }} with deadsnakes"
-        uses: deadsnakes/action@6c8b9b82fe0b4344f4b98f2775fcc395df45e494 # v3.1.0
+        uses: deadsnakes/action@e640ac8743173a67cca4d7d77cd837e514bf98e8 # v3.2.0
         if: "!startsWith(matrix.python-version, 'pypy-')"
         with:
           python-version: "${{ matrix.python-version }}"
           nogil: "${{ matrix.nogil || false }}"
 
       - name: "Install ${{ matrix.python-version }} with setup-python"
-        uses: actions/setup-python@82c7e631bb3cdc910f68e0081d67478d79c6982d # v5.1.0
+        uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5.4.0
         if: "startsWith(matrix.python-version, 'pypy-')"
         with:
           python-version: "${{ matrix.python-version }}"
@@ -104,10 +102,27 @@ jobs:
           set -xe
           python -VV
           python -m site
+          python -m sysconfig
           python -c "import sys; print('GIL:', getattr(sys, '_is_gil_enabled', lambda: True)())"
           python -m coverage debug sys
           python -m coverage debug pybehave
           env | sort
+
+      - name: "Check build recency"
+        #if: "!startsWith(matrix.python-version, 'pypy-')"
+        shell: python
+        run: |
+          import platform
+          from datetime import datetime
+          for fmt in ["%b %d %Y %H:%M:%S", "%b %d %Y"]:
+              try:
+                  built = datetime.strptime(platform.python_build()[1], fmt)
+              except ValueError:
+                  continue
+          now = datetime.now()
+          days = (now - built).days
+          print(f"Days since Python was built: {days}")
+          assert days <= 7
 
       - name: "Install dependencies"
         run: |

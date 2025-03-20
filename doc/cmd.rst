@@ -176,10 +176,10 @@ You can combine multiple values for ``--concurrency``, separated with commas.
 You can specify ``thread`` and also one of ``eventlet``, ``gevent``, or
 ``greenlet``.
 
-If you are using ``--concurrency=multiprocessing``, you must set other options
-in the configuration file.  Options on the command line will not be passed to
-the processes that multiprocessing creates.  Best practice is to use the
-configuration file for all options.
+If you are using ``--concurrency=multiprocessing``, you must set your other
+options in the configuration file.  Options on the command line will not be
+passed to the processes that multiprocessing creates.  Best practice is to use
+the configuration file for all options.
 
 .. _multiprocessing: https://docs.python.org/3/library/multiprocessing.html
 .. _greenlet: https://greenlet.readthedocs.io/
@@ -273,14 +273,26 @@ Conflicting dynamic contexts (dynamic-conflict)
   :meth:`.Coverage.switch_context` function to change the context. Only one of
   these mechanisms should be in use at a time.
 
-sys.monitoring isn't available, using default core (no-sysmon)
+sys.monitoring isn't available in this version, using default core (no-sysmon)
   You requested to use the sys.monitoring measurement core, but are running on
   Python 3.11 or lower where it isn't available.  A default core will be used
   instead.
 
+sys.monitoring can't measure branches in this version, using default core (no-sysmon)
+  You requested the sys.monitoring measurement core and also branch coverage.
+  This isn't supported until the later alphas of Python 3.14.  A default core
+  will be used instead.
+
+sys.monitoring doesn't yet support dynamic contexts, using default core (no-sysmon)
+  You requested the sys.monitoring measurement core and also dynamic contexts.
+  This isn't supported by coverage.py yet.  A default core will be used
+  instead.
+
 Individual warnings can be disabled with the :ref:`disable_warnings
-<config_run_disable_warnings>` configuration setting.  To silence "No data was
-collected," add this to your configuration file:
+<config_run_disable_warnings>` configuration setting.  It is a list of the
+short parenthetical nicknames in the warning messages.  For example, to silence
+"No data was collected (no-data-collected)", add this to your configuration
+file:
 
 .. [[[cog
     show_configs(
@@ -310,12 +322,12 @@ collected," add this to your configuration file:
         disable_warnings = ["no-data-collected"]
 
     .. code-tab:: ini
-        :caption: setup.cfg, tox.ini
+        :caption: setup.cfg or tox.ini
 
         [coverage:run]
         disable_warnings = no-data-collected
 
-.. [[[end]]] (checksum: 66c0c28e863c2a44218190a8a6a3f707)
+.. [[[end]]] (checksum: 489285bcfa173b69a286f03fe13e4554)
 
 
 .. _cmd_datafile:

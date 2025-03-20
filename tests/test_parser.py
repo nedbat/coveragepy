@@ -5,16 +5,19 @@
 
 from __future__ import annotations
 
+import ast
+import re
 import textwrap
+from unittest import mock
 
 import pytest
 
 from coverage import env
-from coverage.exceptions import NotPython
-from coverage.parser import PythonParser
+from coverage.exceptions import NoSource, NotPython
+from coverage.parser import PythonParser, is_constant_test_expr
 
 from tests.coveragetest import CoverageTest
-from tests.helpers import arcz_to_arcs, xfail_pypy38
+from tests.helpers import arcz_to_arcs
 
 
 class PythonParserTestBase(CoverageTest):
@@ -50,22 +53,6 @@ class PythonParserTest(PythonParserTestBase):
             2:1, 3:1, 4:2, 5:1, 7:1, 9:1, 10:1,
         }
 
-    def test_generator_exit_counts(self) -> None:
-        # https://github.com/nedbat/coveragepy/issues/324
-        parser = self.parse_text("""\
-            def gen(input):
-                for n in inp:
-                    yield (i * 2 for i in range(n))
-
-            list(gen([1,2,3]))
-            """)
-        assert parser.exit_counts() == {
-            1:1,    # def -> list
-            2:2,    # for -> yield; for -> exit
-            3:2,    # yield -> for;  genexp exit
-            5:1,    # list -> exit
-        }
-
     def test_try_except(self) -> None:
         parser = self.parse_text("""\
             try:
@@ -79,7 +66,7 @@ class PythonParserTest(PythonParserTestBase):
             b = 9
             """)
         assert parser.exit_counts() == {
-            1: 1, 2:1, 3:2, 4:1, 5:2, 6:1, 7:1, 8:1, 9:1,
+            1: 1, 2:1, 3:1, 4:1, 5:1, 6:1, 7:1, 8:1, 9:1,
         }
 
     def test_excluded_classes(self) -> None:
@@ -92,9 +79,7 @@ class PythonParserTest(PythonParserTestBase):
                 class Bar:
                     pass
             """)
-        assert parser.exit_counts() == {
-            1:0, 2:1, 3:1,
-        }
+        assert parser.exit_counts() == { 2:1, 3:1 }
 
     def test_missing_branch_to_excluded_code(self) -> None:
         parser = self.parse_text("""\
@@ -138,7 +123,7 @@ class PythonParserTest(PythonParserTestBase):
         )
     ])
     def test_not_python(self, text: str) -> None:
-        msg = r"Couldn't parse '<code>' as Python source: '.*' at line \d+"
+        msg = r"Couldn't parse '<code>' as Python source: ['\"].*['\"] at line \d+"
         with pytest.raises(NotPython, match=msg):
             _ = self.parse_text(text)
 
@@ -157,21 +142,35 @@ class PythonParserTest(PythonParserTestBase):
             """)
 
         expected_statements = {1, 2, 4, 5, 8, 9, 10}
-        expected_arcs = set(arcz_to_arcs(".1 14 45 58 89 9.  .2 2.  -8A A-8"))
+        expected_arcs = set(arcz_to_arcs("14 45 58 89 9.  2.  A-8"))
         expected_exits = {1: 1, 2: 1, 4: 1, 5: 1, 8: 1, 9: 1, 10: 1}
 
         if env.PYBEHAVIOR.docstring_only_function:
             # 3.7 changed how functions with only docstrings are numbered.
-            expected_arcs.update(set(arcz_to_arcs("-46 6-4")))
+            expected_arcs.update(set(arcz_to_arcs("6-4")))
             expected_exits.update({6: 1})
-
-        if env.PYBEHAVIOR.trace_decorator_line_again:
-            expected_arcs.update(set(arcz_to_arcs("54 98")))
-            expected_exits.update({9: 2, 5: 2})
 
         assert expected_statements == parser.statements
         assert expected_arcs == parser.arcs()
         assert expected_exits == parser.exit_counts()
+
+    def test_nested_context_managers(self) -> None:
+        # https://github.com/nedbat/coveragepy/issues/1876
+        parser = self.parse_text("""\
+            a = 1
+            with suppress(ValueError):
+                with suppress(ValueError):
+                    x = 4
+                with suppress(ValueError):
+                    x = 6
+                with suppress(ValueError):
+                    x = 8
+            a = 9
+            """)
+
+        one_nine = set(range(1, 10))
+        assert parser.statements == one_nine
+        assert parser.exit_counts() == dict.fromkeys(one_nine, 1)
 
     def test_module_docstrings(self) -> None:
         parser = self.parse_text("""\
@@ -198,6 +197,24 @@ class PythonParserTest(PythonParserTestBase):
             self.parse_text("]")
         with pytest.raises(NotPython, match=msg):
             self.parse_text("]")
+
+    def test_bug_1891(self) -> None:
+        # These examples exercise code paths I thought were impossible.
+        parser = self.parse_text("""\
+            res = siblings(
+                'configure',
+                **ca,
+            )
+            """)
+        assert parser.exit_counts() == {1: 1}
+        parser = self.parse_text("""\
+            def g2():
+                try:
+                    return 2
+                finally:
+                    return 3
+            """)
+        assert parser.exit_counts() == {1: 1, 2: 1, 3: 1, 5: 1}
 
 
 class ExclusionParserTest(PythonParserTestBase):
@@ -677,6 +694,19 @@ class ExclusionParserTest(PythonParserTestBase):
         )
         assert parser.statements == {2, 4}
 
+    def test_no_exclude_at_all(self) -> None:
+        parser = self.parse_text("""\
+            def foo():
+                if fooey:
+                    a = 3
+                else:
+                    a = 5
+            b = 6
+            """,
+            exclude="",
+        )
+        assert parser.exit_counts() == { 1:1, 2:2, 3:1, 5:1, 6:1 }
+
     def test_formfeed(self) -> None:
         # https://github.com/nedbat/coveragepy/issues/461
         parser = self.parse_text("""\
@@ -694,7 +724,6 @@ class ExclusionParserTest(PythonParserTestBase):
         )
         assert parser.statements == {1, 6}
 
-    @xfail_pypy38
     def test_decorator_pragmas(self) -> None:
         parser = self.parse_text("""\
             # 1
@@ -728,7 +757,6 @@ class ExclusionParserTest(PythonParserTestBase):
         assert parser.raw_statements == raw_statements
         assert parser.statements == {8}
 
-    @xfail_pypy38
     def test_decorator_pragmas_with_colons(self) -> None:
         # A colon in a decorator expression would confuse the parser,
         # ending the exclusion of the decorated function.
@@ -747,10 +775,6 @@ class ExclusionParserTest(PythonParserTestBase):
         assert parser.raw_statements == raw_statements
         assert parser.statements == set()
 
-    @pytest.mark.xfail(
-        env.PYPY and env.PYVERSION[:2] == (3, 8),
-        reason="AST doesn't mark end of classes correctly",
-    )
     def test_class_decorator_pragmas(self) -> None:
         parser = self.parse_text("""\
             class Foo(object):
@@ -780,6 +804,201 @@ class ExclusionParserTest(PythonParserTestBase):
             """)
         assert parser.raw_statements == {1, 3, 4, 5, 6, 8, 9}
         assert parser.statements == {1, 8, 9}
+
+    def test_multiline_exclusion_single_line(self) -> None:
+        regex = r"print\('.*'\)"
+        parser = self.parse_text("""\
+            def foo():
+                print('Hello, world!')
+            """, regex)
+        assert parser.lines_matching(regex) == {2}
+        assert parser.raw_statements == {1, 2}
+        assert parser.statements == {1}
+
+    def test_multiline_exclusion_suite(self) -> None:
+        # A multi-line exclusion that matches a colon line still excludes the entire block.
+        regex = r"if T:\n\s+print\('Hello, world!'\)"
+        parser = self.parse_text("""\
+            def foo():
+                if T:
+                    print('Hello, world!')
+                    print('This is a multiline regex test.')
+            a = 5
+            """, regex)
+        assert parser.lines_matching(regex) == {2, 3}
+        assert parser.raw_statements == {1, 2, 3, 4, 5}
+        assert parser.statements == {1, 5}
+
+    def test_multiline_exclusion_no_match(self) -> None:
+        regex = r"nonexistent"
+        parser = self.parse_text("""\
+            def foo():
+                print('Hello, world!')
+            """, regex)
+        assert parser.lines_matching(regex) == set()
+        assert parser.raw_statements == {1, 2}
+        assert parser.statements == {1, 2}
+
+    def test_multiline_exclusion_no_source(self) -> None:
+        regex = r"anything"
+        parser = PythonParser(text="", filename="dummy.py", exclude=regex)
+        assert parser.lines_matching(regex) == set()
+        assert parser.raw_statements == set()
+        assert parser.statements == set()
+
+    def test_multiline_exclusion_all_lines_must_match(self) -> None:
+        # https://github.com/nedbat/coveragepy/issues/996
+        regex = r"except ValueError:\n\s*print\('false'\)"
+        parser = self.parse_text("""\
+            try:
+                a = 2
+                print('false')
+            except ValueError:
+                print('false')
+            except ValueError:
+                print('something else')
+            except IndexError:
+                print('false')
+            """, regex)
+        assert parser.lines_matching(regex) == {4, 5}
+        assert parser.raw_statements == {1, 2, 3, 4, 5, 6, 7, 8, 9}
+        assert parser.statements == {1, 2, 3, 6, 7, 8, 9}
+
+    def test_multiline_exclusion_multiple_matches(self) -> None:
+        regex = r"print\('.*'\)\n\s+. = \d"
+        parser = self.parse_text("""\
+            def foo():
+                print('Hello, world!')
+                a = 5
+            def bar():
+                print('Hello again!')
+                b = 6
+            """, regex)
+        assert parser.lines_matching(regex) == {2, 3, 5, 6}
+        assert parser.raw_statements == {1, 2, 3, 4, 5, 6}
+        assert parser.statements == {1, 4}
+
+    def test_multiline_exclusion_suite2(self) -> None:
+        regex = r"print\('Hello, world!'\)\n\s+if T:"
+        parser = self.parse_text("""\
+            def foo():
+                print('Hello, world!')
+                if T:
+                    print('This is a test.')
+            """, regex)
+        assert parser.lines_matching(regex) == {2, 3}
+        assert parser.raw_statements == {1, 2, 3, 4}
+        assert parser.statements == {1}
+
+    def test_multiline_exclusion_match_all(self) -> None:
+        regex = (
+            r"def foo\(\):\n\s+print\('Hello, world!'\)\n"
+            + r"\s+if T:\n\s+print\('This is a test\.'\)"
+        )
+        parser = self.parse_text("""\
+            def foo():
+                print('Hello, world!')
+                if T:
+                    print('This is a test.')
+            """, regex)
+        assert parser.lines_matching(regex) == {1, 2, 3, 4}
+        assert parser.raw_statements == {1, 2, 3, 4}
+        assert parser.statements == set()
+
+    def test_multiline_exclusion_block(self) -> None:
+        # https://github.com/nedbat/coveragepy/issues/1803
+        regex = "# no cover: start(?s:.)*?# no cover: stop"
+        parser = self.parse_text("""\
+            a = my_function1()
+            if debug:
+                msg = "blah blah"
+                # no cover: start
+                log_message(msg, a)
+                b = my_function2()
+                # no cover: stop
+            """, regex)
+        assert parser.lines_matching(regex) == {4, 5, 6, 7}
+        assert parser.raw_statements == {1, 2, 3, 5, 6}
+        assert parser.statements == {1, 2, 3}
+
+    @pytest.mark.skipif(not env.PYBEHAVIOR.match_case, reason="Match-case is new in 3.10")
+    def test_multiline_exclusion_block2(self) -> None:
+        # https://github.com/nedbat/coveragepy/issues/1797
+        regex = r"case _:\n\s+assert_never\("
+        parser = self.parse_text("""\
+            match something:
+                case type_1():
+                    logic_1()
+                case type_2():
+                    logic_2()
+                case _:
+                    assert_never(something)
+            match something:
+                case type_1():
+                    logic_1()
+                case type_2():
+                    logic_2()
+                case _:
+                    print("Default case")
+            """, regex)
+        assert parser.lines_matching(regex) == {6, 7}
+        assert parser.raw_statements == {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14}
+        assert parser.statements == {1, 2, 3, 4, 5, 8, 9, 10, 11, 12, 13, 14}
+
+    def test_multiline_exclusion_block3(self) -> None:
+        # https://github.com/nedbat/coveragepy/issues/1741
+        # This will only work if there's exactly one return statement in the rest of the function
+        regex = r"# no cover: to return(?s:.)*?return"
+        parser = self.parse_text("""\
+            def my_function(args, j):
+                if args.command == Commands.CMD.value:
+                    return cmd_handler(j, args)
+                # no cover: to return
+                print(f"Command '{args.command}' was not handled.", file=sys.stderr)
+                parser.print_help(file=sys.stderr)
+
+                return os.EX_USAGE
+            print("not excluded")
+            """, regex)
+        assert parser.lines_matching(regex) == {4, 5, 6, 7, 8}
+        assert parser.raw_statements == {1, 2, 3, 5, 6, 8, 9}
+        assert parser.statements == {1, 2, 3, 9}
+
+    def test_multiline_exclusion_whole_source(self) -> None:
+        # https://github.com/nedbat/coveragepy/issues/118
+        regex = r"\A(?s:.*# pragma: exclude file.*)\Z"
+        parser = self.parse_text("""\
+            import coverage
+            # pragma: exclude file
+            def the_void() -> None:
+                if "py" not in __file__:
+                    print("Not a Python file.")
+                print("Everything here is excluded.")
+
+                return
+            print("Excluded too")
+            """, regex)
+        assert parser.lines_matching(regex) == {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
+        assert parser.raw_statements == {1, 3, 4, 5, 6, 8, 9}
+        assert parser.statements == set()
+
+    def test_multiline_exclusion_from_marker(self) -> None:
+        # https://github.com/nedbat/coveragepy/issues/118
+        regex = r"# pragma: rest of file(?s:.)*\Z"
+        parser = self.parse_text("""\
+            import coverage
+            # pragma: rest of file
+            def the_void() -> None:
+                if "py" not in __file__:
+                    print("Not a Python file.")
+                print("Everything here is excluded.")
+
+                return
+            print("Excluded too")
+            """, regex)
+        assert parser.lines_matching(regex) == {2, 3, 4, 5, 6, 7, 8, 9, 10}
+        assert parser.raw_statements == {1, 3, 4, 5, 6, 8, 9}
+        assert parser.statements == {1}
 
 
 class ParserMissingArcDescriptionTest(PythonParserTestBase):
@@ -821,26 +1040,6 @@ class ParserMissingArcDescriptionTest(PythonParserTestBase):
         )
         assert expected == parser.missing_arc_description(11, 13)
 
-    def test_missing_arc_descriptions_for_small_callables(self) -> None:
-        parser = self.parse_text("""\
-            callables = [
-                lambda: 2,
-                (x for x in range(3)),
-                {x:1 for x in range(4)},
-                {x for x in range(5)},
-            ]
-            x = 7
-            """)
-        expected = "line 2 didn't finish the lambda on line 2"
-        assert expected == parser.missing_arc_description(2, -2)
-        expected = "line 3 didn't finish the generator expression on line 3"
-        assert expected == parser.missing_arc_description(3, -3)
-        if env.PYBEHAVIOR.comprehensions_are_functions:
-            expected = "line 4 didn't finish the dictionary comprehension on line 4"
-            assert expected == parser.missing_arc_description(4, -4)
-            expected = "line 5 didn't finish the set comprehension on line 5"
-            assert expected == parser.missing_arc_description(5, -5)
-
     def test_missing_arc_descriptions_for_exceptions(self) -> None:
         parser = self.parse_text("""\
             try:
@@ -860,91 +1059,6 @@ class ParserMissingArcDescriptionTest(PythonParserTestBase):
             "because the exception caught by line 5 didn't happen"
         )
         assert expected == parser.missing_arc_description(5, 6)
-
-    def test_missing_arc_descriptions_for_finally(self) -> None:
-        parser = self.parse_text("""\
-            def function():
-                for i in range(2):
-                    try:
-                        if something(4):
-                            break
-                        elif something(6):
-                            x = 7
-                        else:
-                            if something(9):
-                                continue
-                            else:
-                                continue
-                        if also_this(13):
-                            return 14
-                        else:
-                            raise Exception(16)
-                    finally:
-                        this_thing(18)
-                that_thing(19)
-            """)
-        if env.PYBEHAVIOR.finally_jumps_back:
-            expected = "line 18 didn't jump to line 5 because the break on line 5 wasn't executed"
-            assert expected == parser.missing_arc_description(18, 5)
-            expected = "line 5 didn't jump to line 19 because the break on line 5 wasn't executed"
-            assert expected == parser.missing_arc_description(5, 19)
-            expected = (
-                "line 18 didn't jump to line 10 " +
-                "because the continue on line 10 wasn't executed"
-            )
-            assert expected == parser.missing_arc_description(18, 10)
-            expected = (
-                "line 10 didn't jump to line 2 " +
-                "because the continue on line 10 wasn't executed"
-            )
-            assert expected == parser.missing_arc_description(10, 2)
-            expected = (
-                "line 18 didn't jump to line 14 " +
-                "because the return on line 14 wasn't executed"
-            )
-            assert expected == parser.missing_arc_description(18, 14)
-            expected = (
-                "line 14 didn't return from function 'function' " +
-                "because the return on line 14 wasn't executed"
-            )
-            assert expected == parser.missing_arc_description(14, -1)
-            expected = (
-                "line 18 didn't except from function 'function' " +
-                "because the raise on line 16 wasn't executed"
-            )
-            assert expected == parser.missing_arc_description(18, -1)
-        else:
-            expected = (
-                "line 18 didn't jump to line 19 " +
-                "because the break on line 5 wasn't executed"
-            )
-            assert expected == parser.missing_arc_description(18, 19)
-            expected = (
-                "line 18 didn't jump to line 2 " +
-                    "because the continue on line 10 wasn't executed" +
-                " or " +
-                    "the continue on line 12 wasn't executed"
-            )
-            assert expected == parser.missing_arc_description(18, 2)
-            expected = (
-                "line 18 didn't except from function 'function' " +
-                    "because the raise on line 16 wasn't executed" +
-                " or " +
-                "line 18 didn't return from function 'function' " +
-                    "because the return on line 14 wasn't executed"
-            )
-            assert expected == parser.missing_arc_description(18, -1)
-
-    def test_missing_arc_descriptions_bug460(self) -> None:
-        parser = self.parse_text("""\
-            x = 1
-            d = {
-                3: lambda: [],
-                4: lambda: [],
-            }
-            x = 6
-            """)
-        assert parser.missing_arc_description(2, -3) == "line 3 didn't finish the lambda on line 3"
 
 
 @pytest.mark.skipif(not env.PYBEHAVIOR.match_case, reason="Match-case is new in 3.10")
@@ -987,6 +1101,24 @@ class MatchCaseMissingArcDescriptionTest(PythonParserTestBase):
         )
         # 4-6 isn't a possible arc, so the description is generic.
         assert parser.missing_arc_description(4, 6) == "line 4 didn't jump to line 6"
+
+    def test_missing_arc_descriptions_bug1775(self) -> None:
+        # Bug: the `if x == 2:` line was marked partial with a message of:
+        # line 6 didn't return from function 'func', because the return on line 4 wasn't executed
+        # At some point it changed to "didn't jump to the function exit," which
+        # is close enough. These situations are hard to describe precisely.
+        parser = self.parse_text("""\
+            def func():
+                x = 2
+                try:
+                    return 4
+                finally:
+                    if x == 2:  # line 6
+                        print("x is 2")
+
+            func()
+            """)
+        assert parser.missing_arc_description(6, -1) == "line 6 didn't jump to the function exit"
 
 
 class ParserFileTest(CoverageTest):
@@ -1054,3 +1186,33 @@ class ParserFileTest(CoverageTest):
 
         parser = self.parse_file("abrupt.py")
         assert parser.statements == {1}
+
+    def test_os_error(self) -> None:
+        self.make_file("cant-read.py", "BOOM!")
+        msg = "No source for code: 'cant-read.py': Fake!"
+        with pytest.raises(NoSource, match=re.escape(msg)):
+            with mock.patch("coverage.python.read_python_source", side_effect=OSError("Fake!")):
+                PythonParser(filename="cant-read.py")
+
+
+@pytest.mark.parametrize(
+    ["expr", "ret"],
+    [
+        ("True", (True, True)),
+        ("False", (True, False)),
+        ("1", (True, True)),
+        ("0", (True, False)),
+        ("__debug__", (True, True)),
+        ("not __debug__", (True, False)),
+        ("not(__debug__)", (True, False)),
+        ("-__debug__", (False, False)),
+        ("__debug__ or True", (True, True)),
+        ("__debug__ + True", (False, False)),
+        ("x", (False, False)),
+        ("__debug__ or debug", (False, False)),
+    ]
+)
+def test_is_constant_test_expr(expr: str, ret: tuple[bool, bool]) -> None:
+    node = ast.parse(expr, mode="eval").body
+    print(ast.dump(node, indent=4))
+    assert is_constant_test_expr(node) == ret

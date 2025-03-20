@@ -20,7 +20,7 @@ import json
 import sqlite3
 
 from itertools import zip_longest
-from typing import Iterable
+from collections.abc import Iterable
 
 
 def nums_to_numbits(nums: Iterable[int]) -> bytes:

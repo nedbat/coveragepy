@@ -15,7 +15,7 @@ from __future__ import annotations
 import re
 
 from typing import (
-    Any, Callable, Dict, NoReturn, cast,
+    Any, Callable, NoReturn, cast,
 )
 
 
@@ -237,7 +237,7 @@ class Templite:
         code.dedent()
         self._render_function = cast(
             Callable[
-                [Dict[str, Any], Callable[..., Any]],
+                [dict[str, Any], Callable[..., Any]],
                 str,
             ],
             code.get_globals()["render_function"],

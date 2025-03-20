@@ -176,11 +176,15 @@ sample_html_beta: _sample_cog_html	## Generate sample HTML report for a beta rel
 
 ##@ Kitting: making releases
 
-.PHONY: edit_for_release cheats relbranch relcommit1 relcommit2
-.PHONY: kit pypi_upload test_upload kit_local build_kits
+.PHONY: release_version edit_for_release cheats relbranch relcommit1 relcommit2
+.PHONY: kit pypi_upload test_upload kit_local build_kits update_rtd
 .PHONY: tag bump_version
 
 REPO_OWNER = nedbat/coveragepy
+RTD_PROJECT = coverage
+
+release_version:			#: Update the version for a release.
+	python igor.py release_version
 
 edit_for_release:			#: Edit sources to insert release facts (see howto.txt).
 	python igor.py edit_for_release
@@ -189,7 +193,7 @@ cheats:					## Create some useful snippets for releasing.
 	python igor.py cheats | tee cheats.txt
 
 relbranch:				#: Create the branch for releasing (see howto.txt).
-	git switch -c nedbat/release-$$(date +%Y%m%d)
+	git switch -c nedbat/release-$$(date +%Y%m%d-%H%M%S)
 
 relcommit1:				#: Commit the first release changes (see howto.txt).
 	git commit -am "docs: prep for $$(python setup.py --version)"
@@ -203,9 +207,11 @@ kit:					## Make the source distribution.
 
 pypi_upload:				## Upload the built distributions to PyPI.
 	python ci/trigger_action.py $(REPO_OWNER) publish-pypi
+	@echo "Use that^ URL to approve the upload"
 
 test_upload:				## Upload the distributions to PyPI's testing server.
 	python ci/trigger_action.py $(REPO_OWNER) publish-testpypi
+	@echo "Use that^ URL to approve the upload"
 
 kit_local:
 	# pip.conf looks like this:
@@ -223,10 +229,13 @@ tag:					#: Make a git tag with the version number (see howto.txt).
 	git tag -s -m "Version $$(python setup.py --version)" $$(python setup.py --version)
 	git push --follow-tags
 
+update_rtd:				#: Update ReadTheDocs with the versions to show
+	python ci/update_rtfd.py $(RTD_PROJECT)
+
 bump_version:				#: Edit sources to bump the version after a release (see howto.txt).
 	git switch -c nedbat/bump-version
 	python igor.py bump_version
-	git commit -a -m "build: bump version"
+	git commit -a -m "build: bump version to $$(python setup.py --version | sed 's/a.*//')"
 	git push -u origin @
 
 
@@ -246,6 +255,7 @@ cogdoc: $(DOCBIN)			## Run docs through cog.
 
 dochtml: cogdoc $(DOCBIN)		## Build the docs HTML output.
 	$(SPHINXBUILD) -b html doc doc/_build/html
+	@echo "Start at: doc/_build/html/index.html"
 
 docdev: dochtml				## Build docs, and auto-watch for changes.
 	PATH=$(DOCBIN):$(PATH) $(SPHINXAUTOBUILD) -b html doc doc/_build/html
@@ -278,14 +288,15 @@ RELNOTES_JSON = tmp/relnotes.json
 
 $(CHANGES_MD): CHANGES.rst $(DOCBIN)
 	$(SPHINXBUILD) -b rst doc tmp/rst_rst
+	pandoc --version
 	pandoc -frst -tmarkdown_strict --markdown-headings=atx --wrap=none tmp/rst_rst/changes.rst > $(CHANGES_MD)
 
 relnotes_json: $(RELNOTES_JSON)		## Convert changelog to JSON for further parsing.
 $(RELNOTES_JSON): $(CHANGES_MD)
 	$(DOCBIN)/python ci/parse_relnotes.py tmp/rst_rst/changes.md $(RELNOTES_JSON)
 
-github_releases: $(DOCBIN)		## Update GitHub releases.
-	$(DOCBIN)/python -m scriv github-release --all
+github_releases: $(RELNOTES_JSON)	## Update GitHub releases.
+	$(DOCBIN)/python ci/github_releases.py $(RELNOTES_JSON) $(REPO_OWNER)
 
 comment_on_fixes: $(RELNOTES_JSON)	## Add a comment to issues that were fixed.
 	python ci/comment_on_fixes.py $(REPO_OWNER)

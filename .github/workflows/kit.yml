@@ -37,6 +37,9 @@ defaults:
 
 env:
   PIP_DISABLE_PIP_VERSION_CHECK: 1
+  # PYVERSIONS: changing the list of versions will change the number of
+  # expected distributions.
+  EXPECTED: 63
 
 permissions:
   contents: read
@@ -77,10 +80,9 @@ jobs:
           #       "macos": ["arm64", "x86_64"],
           #       "windows": ["x86", "AMD64"],
           #   }
-          #   # PYVERSIONS. Available versions:
-          #   # https://github.com/actions/python-versions/blob/main/versions-manifest.json
+          #   # PYVERSIONS. Available versions: https://pypi.org/project/cibuildwheel/
           #   # PyPy versions are handled further below in the "pypy" step.
-          #   pys = ["cp38", "cp39", "cp310", "cp311", "cp312"]
+          #   pys = ["cp39", "cp310", "cp311", "cp312", "cp313"]
           #
           #   # Some OS/arch combinations need overrides for the Python versions:
           #   os_arch_pys = {
@@ -100,61 +102,59 @@ jobs:
           #               }
           #               if the_os == "macos":
           #                   them["os-version"] = "13"
+          #               if the_arch == "aarch64":
+          #                   # https://github.com/pypa/cibuildwheel/issues/2257
+          #                   them["os-version"] = "22.04-arm"
           #               print(f"- {json.dumps(them)}")
           # ]]]
-          - {"os": "ubuntu", "py": "cp38", "arch": "x86_64"}
           - {"os": "ubuntu", "py": "cp39", "arch": "x86_64"}
           - {"os": "ubuntu", "py": "cp310", "arch": "x86_64"}
           - {"os": "ubuntu", "py": "cp311", "arch": "x86_64"}
           - {"os": "ubuntu", "py": "cp312", "arch": "x86_64"}
-          - {"os": "ubuntu", "py": "cp38", "arch": "i686"}
+          - {"os": "ubuntu", "py": "cp313", "arch": "x86_64"}
           - {"os": "ubuntu", "py": "cp39", "arch": "i686"}
           - {"os": "ubuntu", "py": "cp310", "arch": "i686"}
           - {"os": "ubuntu", "py": "cp311", "arch": "i686"}
           - {"os": "ubuntu", "py": "cp312", "arch": "i686"}
-          - {"os": "ubuntu", "py": "cp38", "arch": "aarch64"}
-          - {"os": "ubuntu", "py": "cp39", "arch": "aarch64"}
-          - {"os": "ubuntu", "py": "cp310", "arch": "aarch64"}
-          - {"os": "ubuntu", "py": "cp311", "arch": "aarch64"}
-          - {"os": "ubuntu", "py": "cp312", "arch": "aarch64"}
-          - {"os": "macos", "py": "cp38", "arch": "arm64", "os-version": "13"}
+          - {"os": "ubuntu", "py": "cp313", "arch": "i686"}
+          - {"os": "ubuntu", "py": "cp39", "arch": "aarch64", "os-version": "22.04-arm"}
+          - {"os": "ubuntu", "py": "cp310", "arch": "aarch64", "os-version": "22.04-arm"}
+          - {"os": "ubuntu", "py": "cp311", "arch": "aarch64", "os-version": "22.04-arm"}
+          - {"os": "ubuntu", "py": "cp312", "arch": "aarch64", "os-version": "22.04-arm"}
+          - {"os": "ubuntu", "py": "cp313", "arch": "aarch64", "os-version": "22.04-arm"}
           - {"os": "macos", "py": "cp39", "arch": "arm64", "os-version": "13"}
           - {"os": "macos", "py": "cp310", "arch": "arm64", "os-version": "13"}
           - {"os": "macos", "py": "cp311", "arch": "arm64", "os-version": "13"}
           - {"os": "macos", "py": "cp312", "arch": "arm64", "os-version": "13"}
-          - {"os": "macos", "py": "cp38", "arch": "x86_64", "os-version": "13"}
+          - {"os": "macos", "py": "cp313", "arch": "arm64", "os-version": "13"}
           - {"os": "macos", "py": "cp39", "arch": "x86_64", "os-version": "13"}
           - {"os": "macos", "py": "cp310", "arch": "x86_64", "os-version": "13"}
           - {"os": "macos", "py": "cp311", "arch": "x86_64", "os-version": "13"}
           - {"os": "macos", "py": "cp312", "arch": "x86_64", "os-version": "13"}
-          - {"os": "windows", "py": "cp38", "arch": "x86"}
+          - {"os": "macos", "py": "cp313", "arch": "x86_64", "os-version": "13"}
           - {"os": "windows", "py": "cp39", "arch": "x86"}
           - {"os": "windows", "py": "cp310", "arch": "x86"}
           - {"os": "windows", "py": "cp311", "arch": "x86"}
           - {"os": "windows", "py": "cp312", "arch": "x86"}
-          - {"os": "windows", "py": "cp38", "arch": "AMD64"}
+          - {"os": "windows", "py": "cp313", "arch": "x86"}
           - {"os": "windows", "py": "cp39", "arch": "AMD64"}
           - {"os": "windows", "py": "cp310", "arch": "AMD64"}
           - {"os": "windows", "py": "cp311", "arch": "AMD64"}
           - {"os": "windows", "py": "cp312", "arch": "AMD64"}
-        # [[[end]]] (checksum: 16ed28c185d540b2d9972a0217864472)
+          - {"os": "windows", "py": "cp313", "arch": "AMD64"}
+        # [[[end]]] (checksum: 7c3758a4ca41df53d7ebcad68f12d0d0)
       fail-fast: false
 
     steps:
-      - name: "Setup QEMU"
-        if: matrix.os == 'ubuntu'
-        uses: docker/setup-qemu-action@68827325e0b33c7199eb31dd4e31fbe9023e06e3 # v3.0.0
-        with:
-          platforms: arm64
-
       - name: "Check out the repo"
-        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
-
-      - name: "Install Python 3.8"
-        uses: actions/setup-python@82c7e631bb3cdc910f68e0081d67478d79c6982d # v5.1.0
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
-          # PYVERSIONS
-          python-version: "3.8"
+          persist-credentials: false
+
+      - name: "Install Python"
+        uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5.4.0
+        with:
+          python-version: "3.9" # Minimum of PYVERSIONS
           cache: pip
           cache-dependency-path: 'requirements/*.pip'
 
@@ -162,17 +162,18 @@ jobs:
         run: |
           python -m pip install -r requirements/kit.pip
 
-      - name: "Build wheels"
+      - name: "Build binary wheels"
         env:
-          CIBW_BUILD: ${{ matrix.py }}-*
+          CIBW_BUILD: ${{ matrix.py }}*-*
           CIBW_ARCHS: ${{ matrix.arch }}
           CIBW_ENVIRONMENT: PIP_DISABLE_PIP_VERSION_CHECK=1
           CIBW_PRERELEASE_PYTHONS: True
+          CIBW_FREE_THREADED_SUPPORT: True
           CIBW_TEST_COMMAND: python -c "from coverage.tracer import CTracer; print('CTracer OK!')"
         run: |
           python -m cibuildwheel --output-dir wheelhouse
 
-      - name: "List wheels"
+      - name: "List binary wheels"
         run: |
           ls -al wheelhouse/
 
@@ -180,25 +181,26 @@ jobs:
         run: |
           python -m twine check wheelhouse/*
 
-      - name: "Upload wheels"
-        uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # v4.3.3
+      - name: "Upload binary wheels"
+        uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4.6.1
         with:
           name: dist-${{ env.MATRIX_ID }}
           path: wheelhouse/*.whl
           retention-days: 7
 
-  sdist:
-    name: "Source distribution"
+  non-binary:
+    name: "Non-binary artifacts"
     runs-on: ubuntu-latest
     steps:
       - name: "Check out the repo"
-        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
-
-      - name: "Install Python 3.8"
-        uses: actions/setup-python@82c7e631bb3cdc910f68e0081d67478d79c6982d # v5.1.0
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
-          # PYVERSIONS
-          python-version: "3.8"
+          persist-credentials: false
+
+      - name: "Install Python"
+        uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5.4.0
+        with:
+          python-version: "3.9" # Minimum of PYVERSIONS
           cache: pip
           cache-dependency-path: 'requirements/*.pip'
 
@@ -206,23 +208,25 @@ jobs:
         run: |
           python -m pip install -r requirements/kit.pip
 
-      - name: "Build sdist"
+      - name: "Build non-binary artifacts"
+        env:
+          COVERAGE_DISABLE_EXTENSION: 1
         run: |
           python -m build
 
-      - name: "List sdist"
+      - name: "List non-binary artifacts"
         run: |
           ls -al dist/
 
-      - name: "Check sdist"
+      - name: "Check non-binary artifacts"
         run: |
           python -m twine check dist/*
 
-      - name: "Upload sdist"
-        uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # v4.3.3
+      - name: "Upload non-binary artifacts"
+        uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4.6.1
         with:
-          name: dist-sdist
-          path: dist/*.tar.gz
+          name: dist-non-binary
+          path: dist/*
           retention-days: 7
 
   pypy:
@@ -230,12 +234,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "Check out the repo"
-        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
 
       - name: "Install PyPy"
-        uses: actions/setup-python@82c7e631bb3cdc910f68e0081d67478d79c6982d # v5.1.0
+        uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5.4.0
         with:
-          python-version: "pypy-3.8" # Minimum of PyPy PYVERSIONS
+          python-version: "pypy-3.9" # Minimum of PyPy PYVERSIONS
           cache: pip
           cache-dependency-path: 'requirements/*.pip'
 
@@ -249,7 +255,7 @@ jobs:
         run: |
           # One wheel works for all PyPy versions. PYVERSIONS
           # yes, this is weird syntax: https://github.com/pypa/build/issues/202
-          echo -e "[bdist_wheel]\npython_tag=pp38.pp39.pp310" > $DIST_EXTRA_CONFIG
+          echo -e "[bdist_wheel]\npython_tag=pp39.pp310.pp311" > $DIST_EXTRA_CONFIG
           pypy3 -m build -w
 
       - name: "List wheels"
@@ -261,7 +267,7 @@ jobs:
           python -m twine check dist/*
 
       - name: "Upload wheels"
-        uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # v4.3.3
+        uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4.6.1
         with:
           name: dist-pypy
           path: dist/*.whl
@@ -273,20 +279,27 @@ jobs:
     name: "Sign artifacts"
     needs:
       - wheels
-      - sdist
+      - non-binary
       - pypy
     runs-on: ubuntu-latest
     permissions:
       id-token: write
     steps:
       - name: "Download artifacts"
-        uses: actions/download-artifact@65a9edc5881444af0b9093a5e628f2fe47ea3b2e # v4.1.7
+        uses: actions/download-artifact@cc203385981b70ca67e1cc392babf9cc229d5806 # v4.1.9
         with:
           pattern: dist-*
           merge-multiple: true
 
+      - name: "List distributions"
+        run: |
+          ls -alR
+          echo "Number of dists, there should be $EXPECTED:"
+          ls -1 coverage-* | wc -l
+          files=$(ls coverage-* 2>/dev/null | wc -l) && [ "$files" -eq $EXPECTED ] || exit 1
+
       - name: "Sign artifacts"
-        uses: sigstore/gh-action-sigstore-python@61f6a500bbfdd9a2a339cf033e5421951fbc1cd2 # v2.1.1
+        uses: sigstore/gh-action-sigstore-python@f514d46b907ebcd5bedc05145c03b69c1edd8b46 # v3.0.0
         with:
           inputs: coverage-*.*
 
@@ -295,11 +308,8 @@ jobs:
           ls -alR
 
       - name: "Upload signatures"
-        uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # v4.3.3
+        uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4.6.1
         with:
           name: signatures
-          path: |
-            *.crt
-            *.sig
-            *.sigstore
+          path: "*.sigstore.json"
           retention-days: 7

@@ -3,4 +3,5 @@
 
 # Version pins, for use as a constraints file.
 
-# None for now!
+# https://github.com/pypa/virtualenv/issues/2829
+virtualenv<20.29.0

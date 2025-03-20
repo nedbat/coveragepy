@@ -5,7 +5,7 @@
 
 from __future__ import annotations
 
-from typing import Any, List, cast
+from typing import Any, cast
 
 import coverage
 from coverage.plugin_support import Plugins
@@ -17,7 +17,7 @@ class Plugin(coverage.CoveragePlugin):
     def configure(self, config: TConfigurable) -> None:
         """Configure all the things!"""
         opt_name = "report:exclude_lines"
-        exclude_lines = cast(List[str], config.get_option(opt_name))
+        exclude_lines = cast(list[str], config.get_option(opt_name))
         exclude_lines.append(r"pragma: custom")
         exclude_lines.append(r"pragma: or whatever")
         config.set_option(opt_name, exclude_lines)

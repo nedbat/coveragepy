@@ -78,13 +78,13 @@ a coverage.py plug-in called ``something.plugin``.
            plugins = [ "something.plugin" ]
 
        .. code-tab:: ini
-           :caption: setup.cfg, tox.ini
+           :caption: setup.cfg or tox.ini
 
            [coverage:run]
            plugins =
                something.plugin
 
-   .. [[[end]]] (checksum: 788b15abb3c53370ccae3d9348e65385)
+   .. [[[end]]] (checksum: 6e866323d4bc319d42e3199b08615111)
 
 #. If the plug-in needs its own configuration, you can add those settings in
    the .coveragerc file in a section named for the plug-in:
@@ -121,13 +121,13 @@ a coverage.py plug-in called ``something.plugin``.
            option2 = "abc.foo"
 
        .. code-tab:: ini
-           :caption: setup.cfg, tox.ini
+           :caption: setup.cfg or tox.ini
 
            [coverage:something.plugin]
            option1 = True
            option2 = abc.foo
 
-   .. [[[end]]] (checksum: 71aa2ad856e03d228758fd5026fd3a52)
+   .. [[[end]]] (checksum: b690115dbe7f6c7806567e009b5715c4)
 
    Check the documentation for the plug-in for details on the options it takes.
 

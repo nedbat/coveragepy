@@ -118,7 +118,8 @@ import dataclasses
 import functools
 
 from types import FrameType
-from typing import Any, Iterable
+from typing import Any
+from collections.abc import Iterable
 
 from coverage import files
 from coverage.misc import _needs_to_implement
@@ -541,6 +542,14 @@ class FileReporter(CoveragePluginBase):
 
         """
         return f"Line {start} didn't jump to line {end}"
+
+    def arc_description(
+        self,
+        start: TLineNo,     # pylint: disable=unused-argument
+        end: TLineNo
+    ) -> str:
+        """Provide an English description of an arc's effect."""
+        return f"jump to line {end}"
 
     def source_token_lines(self) -> TSourceTokenLines:
         """Generate a series of tokenized lines, one for each line in `source`.

@@ -9,6 +9,7 @@ import importlib.util
 import inspect
 import itertools
 import os
+import os.path
 import platform
 import re
 import sys
@@ -17,15 +18,16 @@ import traceback
 
 from types import FrameType, ModuleType
 from typing import (
-    cast, Any, Iterable, TYPE_CHECKING,
+    cast, Any, TYPE_CHECKING,
 )
+from collections.abc import Iterable
 
 from coverage import env
 from coverage.disposition import FileDisposition, disposition_init
 from coverage.exceptions import CoverageException, PluginError
 from coverage.files import TreeMatcher, GlobMatcher, ModuleMatcher
 from coverage.files import prep_patterns, find_python_files, canonical_filename
-from coverage.misc import sys_modules_saved
+from coverage.misc import isolate_module, sys_modules_saved
 from coverage.python import source_for_file, source_for_morf
 from coverage.types import TFileDisposition, TMorf, TWarnFn, TDebugCtl
 
@@ -55,6 +57,8 @@ if env.PYPY:
     except ImportError:
         pass
 
+
+os = isolate_module(os)
 
 def canonical_path(morf: TMorf, directory: bool = False) -> str:
     """Return the canonical path of the module or file `morf`.
@@ -321,7 +325,8 @@ class InOrOut:
             # co_filename value.
             dunder_file = frame.f_globals and frame.f_globals.get("__file__")
             if dunder_file:
-                filename = source_for_file(dunder_file)
+                # Danger: __file__ can (rarely?) be of type Path.
+                filename = source_for_file(str(dunder_file))
                 if original_filename and not original_filename.startswith("<"):
                     orig = os.path.basename(original_filename)
                     if orig != os.path.basename(filename):

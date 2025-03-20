@@ -73,7 +73,7 @@ def show_configs(ini, toml):
 
     `ini` is the ini-file syntax, `toml` is the equivalent TOML syntax.
     The equivalence is checked for accuracy, and the process fails if there's
-    a mismtach.
+    a mismatch.
 
     A three-tabbed box will be produced.
     """
@@ -81,7 +81,7 @@ def show_configs(ini, toml):
     toml, toml_vals = _read_config(toml, "covrc.toml")
     for key, val in ini_vals.items():
         if val != toml_vals[key]:
-            cog.error(f"Mismatch! {key}: {val!r} vs {toml_vals[key]!r}")
+            cog.error(f"Mismatch! {key}:\nini:  {val!r}\ntoml: {toml_vals[key]!r}")
 
     ini2 = re.sub(r"(?m)^\[", "[coverage:", ini)
     print()
@@ -89,7 +89,7 @@ def show_configs(ini, toml):
     for name, syntax, text in [
         (".coveragerc", "ini", ini),
         ("pyproject.toml", "toml", toml),
-        ("setup.cfg, tox.ini", "ini", ini2),
+        ("setup.cfg or tox.ini", "ini", ini2),
     ]:
         print(f"    .. code-tab:: {syntax}")
         print(f"        :caption: {name}")

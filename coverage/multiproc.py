@@ -94,7 +94,7 @@ def patch_multiprocessing(rcfile: str) -> None:
 
     # When spawning processes rather than forking them, we have no state in the
     # new process.  We sneak in there with a Stowaway: we stuff one of our own
-    # objects into the data that gets pickled and sent to the sub-process. When
+    # objects into the data that gets pickled and sent to the subprocess. When
     # the Stowaway is unpickled, its __setstate__ method is called, which
     # re-applies the monkey-patch.
     # Windows only spawns, so this is needed to keep Windows working.

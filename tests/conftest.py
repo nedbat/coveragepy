@@ -15,11 +15,10 @@ import sysconfig
 import warnings
 
 from pathlib import Path
-from typing import Iterator
+from collections.abc import Iterator
 
 import pytest
 
-from coverage import env
 from coverage.files import set_relative_directory
 
 # Pytest will rewrite assertions in test modules, but not elsewhere.
@@ -45,9 +44,9 @@ def set_warnings() -> None:
     # Warnings to suppress:
     # How come these warnings are successfully suppressed here, but not in pyproject.toml??
 
-    if env.PYPY:
-        # pypy3 warns about unclosed files a lot.
-        warnings.filterwarnings("ignore", r".*unclosed file", category=ResourceWarning)
+    # Note: when writing the regex for the message, it's matched with re.match,
+    # so it has to match the beginning of the message.  Add ".*" to make it
+    # match something in the middle of the message.
 
     # Don't warn about unclosed SQLite connections.
     # We don't close ":memory:" databases because we don't have a way to connect
@@ -58,6 +57,8 @@ def set_warnings() -> None:
     # without any reported problems, so just quiet the warning.
     # https://github.com/python/cpython/issues/105539
     warnings.filterwarnings("ignore", r"unclosed database", category=ResourceWarning)
+
+    warnings.filterwarnings("ignore", r".*no-sysmon")
 
 
 @pytest.fixture(autouse=True)
@@ -87,6 +88,7 @@ WORKER = os.getenv("PYTEST_XDIST_WORKER", "none")
 
 def pytest_sessionstart() -> None:
     """Run once at the start of the test session."""
+    warnings.filterwarnings("ignore", r".*no-sysmon")
     # Only in the main process...
     if WORKER == "none":
         # Create a .pth file for measuring subprocess coverage.

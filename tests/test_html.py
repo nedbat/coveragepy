@@ -14,8 +14,9 @@ import os.path
 import re
 import sys
 
-from unittest import mock
+from html.parser import HTMLParser
 from typing import Any, IO
+from unittest import mock
 
 import pytest
 
@@ -94,6 +95,12 @@ class HtmlTestHelpers(CoverageTest):
         )
         return index
 
+    def get_html_report_text_lines(self, module: str) -> list[str]:
+        """Parse the HTML report, and return a list of strings, the text rendered."""
+        parser = HtmlReportParser()
+        parser.feed(self.get_html_report_content(module))
+        return parser.text()
+
     def assert_correct_timestamp(self, html: str) -> None:
         """Extract the time stamp from `html`, and assert it is recent."""
         timestamp_pat = r"created at (\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2})"
@@ -131,6 +138,43 @@ class HtmlTestHelpers(CoverageTest):
             assert os.path.exists(f"{directory}/{href}"), (
                 f"These files link to {href!r}, which doesn't exist: {', '.join(sources)}"
             )
+
+
+class HtmlReportParser(HTMLParser):     # pylint: disable=abstract-method
+    """An HTML parser for our HTML reports.
+
+    Assertions are made about the structure we expect.
+    """
+    def __init__(self) -> None:
+        super().__init__()
+        self.lines: list[list[str]] = []
+        self.in_source = False
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        if tag == "main":
+            assert attrs == [("id", "source")]
+            self.in_source = True
+        elif self.in_source and tag == "a":
+            dattrs = dict(attrs)
+            assert "id" in dattrs
+            ida = dattrs["id"]
+            assert ida is not None
+            assert ida[0] == "t"
+            line_no = int(ida[1:])
+            self.lines.append([])
+            assert line_no == len(self.lines)
+
+    def handle_endtag(self, tag: str) -> None:
+        if tag == "main":
+            self.in_source = False
+
+    def handle_data(self, data: str) -> None:
+        if self.in_source and self.lines:
+            self.lines[-1].append(data)
+
+    def text(self) -> list[str]:
+        """Get the rendered text as a list of strings, one per line."""
+        return ["".join(l).rstrip() for l in self.lines]
 
 
 class FileWriteTracker:
@@ -762,10 +806,6 @@ class HtmlGoldTest(HtmlTestHelpers, CoverageTest):
             '<td class="right" data-ratio="2 3">67%</td>',
         )
 
-    @pytest.mark.skipif(
-        env.PYPY and env.PYVERSION[:2] == (3, 8),
-        reason="PyPy 3.8 produces different results!?",
-    )
     def test_b_branch(self) -> None:
         self.make_file("b.py", """\
             def one(x):
@@ -800,7 +840,6 @@ class HtmlGoldTest(HtmlTestHelpers, CoverageTest):
         cov = coverage.Coverage(branch=True)
         b = self.start_import_stop(cov, "b")
         cov.html_report(b, directory="out/b_branch")
-
         compare_html(gold_path("html/b_branch"), "out/b_branch")
         contains(
             "out/b_branch/b_py.html",
@@ -816,13 +855,9 @@ class HtmlGoldTest(HtmlTestHelpers, CoverageTest):
             ('<span class="annotate short">12&#x202F;&#x219B;&#x202F;exit</span>' +
              '<span class="annotate long">line 12 didn\'t return from function \'two\' ' +
                             'because the condition on line 12 was always true</span>'),
-            ('<span class="annotate short">20&#x202F;&#x219B;&#x202F;21,&nbsp;&nbsp; ' +
-                            '20&#x202F;&#x219B;&#x202F;23</span>' +
-             '<span class="annotate long">2 missed branches: ' +
-                            '1) line 20 didn\'t jump to line 21 ' +
-                                'because the condition on line 20 was never true, ' +
-                            '2) line 20 didn\'t jump to line 23 ' +
-                                'because the condition on line 20 was always true</span>'),
+            ('<span class="annotate short">20&#x202F;&#x219B;&#x202F;anywhere</span>' +
+             '<span class="annotate long">line 20 didn\'t jump anywhere: ' +
+                            'it always raised an exception.</span>'),
         )
         contains(
             "out/b_branch/index.html",
@@ -1043,7 +1078,7 @@ assert len(math) == 18
             contains(
                 "out/partial_626/index.html",
                 '<a href="partial_py.html">partial.py</a>',
-                '<span class="pc_cov">87%</span>',
+                '<span class="pc_cov">92%</span>',
             )
         else:
             cov.html_report(partial, directory="out/partial")
@@ -1130,6 +1165,64 @@ assert len(math) == 18
         )
 
         doesnt_contain("out/tabbed_py.html", "\t")
+
+    def test_bug_1828(self) -> None:
+        # https://github.com/nedbat/coveragepy/pull/1828
+        self.make_file("backslashes.py", """\
+            a = ["aaa",\\
+                 "bbb \\
+                 ccc"]
+            """)
+
+        cov = coverage.Coverage()
+        backslashes = self.start_import_stop(cov, "backslashes")
+        cov.html_report(backslashes)
+
+        contains(
+            "htmlcov/backslashes_py.html",
+            # line 2 is `"bbb \`
+            r'<a id="t2" href="#t2">2</a></span>'
+                + r'<span class="t">     <span class="str">"bbb \</span>',
+            # line 3 is `ccc"]`
+            r'<a id="t3" href="#t3">3</a></span>'
+                + r'<span class="t"><span class="str">     ccc"</span><span class="op">]</span>',
+        )
+
+        assert self.get_html_report_text_lines("backslashes.py") == [
+            '1a = ["aaa",\\',
+            '2     "bbb \\',
+            '3     ccc"]',
+            ]
+
+    @pytest.mark.parametrize(
+        "leader", ["", "f", "r", "fr", "rf"],
+        ids=["string", "f-string", "raw_string", "f-raw_string", "raw_f-string"]
+    )
+    def test_bug_1836(self, leader: str) -> None:
+        # https://github.com/nedbat/coveragepy/issues/1836
+        self.make_file("py312_fstrings.py", f"""\
+            prog_name = 'bug.py'
+            err_msg = {leader}'''\\
+            {{prog_name}}: ERROR: This is the first line of the error.
+            {{prog_name}}: ERROR: This is the second line of the error.
+            \\
+            {{prog_name}}: ERROR: This is the third line of the error.
+            '''
+            """)
+
+        cov = coverage.Coverage()
+        py312_fstrings = self.start_import_stop(cov, "py312_fstrings")
+        cov.html_report(py312_fstrings)
+
+        assert self.get_html_report_text_lines("py312_fstrings.py") == [
+            "1" + "prog_name = 'bug.py'",
+            "2" + f"err_msg = {leader}'''\\",
+            "3" + "{prog_name}: ERROR: This is the first line of the error.",
+            "4" + "{prog_name}: ERROR: This is the second line of the error.",
+            "5" + "\\",
+            "6" + "{prog_name}: ERROR: This is the third line of the error.",
+            "7" + "'''",
+            ]
 
     def test_unicode(self) -> None:
         surrogate = "\U000e0100"

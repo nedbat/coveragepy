@@ -18,8 +18,8 @@ supported on:
 
 .. PYVERSIONS
 
-* Python 3.8 through 3.12, and 3.13.0b2.
-* PyPy3 versions 3.8 through 3.10.
+* Python 3.9 through 3.14 alpha 6, including free-threading.
+* PyPy3 versions 3.9, 3.10, and 3.11.
 
 .. ifconfig:: prerelease
 
@@ -64,7 +64,7 @@ Getting started is easy:
     normally run your test suite, you can use your test runner under coverage.
 
     .. tip::
-        If your test runner command starts with "python", just replace the initial
+        If your test runner command starts with "python", replace the initial
         "python" with "coverage run".
 
         ``python something.py`` becomes ``coverage run something.py``

@@ -15,7 +15,8 @@ import re
 import string
 
 from dataclasses import dataclass, field
-from typing import Any, Iterable, TYPE_CHECKING
+from typing import Any, TYPE_CHECKING
+from collections.abc import Iterable
 
 import coverage
 from coverage.data import CoverageData, add_data_to_hash
@@ -136,6 +137,7 @@ class HtmlDataGeneration:
             contexts_by_lineno = self.data.contexts_by_lineno(analysis.filename)
 
         lines = []
+        branch_stats = analysis.branch_stats()
 
         for lineno, tokens in enumerate(fr.source_token_lines(), start=1):
             # Figure out how to mark this line.
@@ -149,12 +151,22 @@ class HtmlDataGeneration:
                 category = "mis"
             elif self.has_arcs and lineno in missing_branch_arcs:
                 category = "par"
-                for b in missing_branch_arcs[lineno]:
-                    if b < 0:
-                        short_annotations.append("exit")
-                    else:
-                        short_annotations.append(str(b))
-                    long_annotations.append(fr.missing_arc_description(lineno, b, arcs_executed))
+                mba = missing_branch_arcs[lineno]
+                if len(mba) == branch_stats[lineno][0]:
+                    # None of the branches were taken from this line.
+                    short_annotations.append("anywhere")
+                    long_annotations.append(
+                        f"line {lineno} didn't jump anywhere: it always raised an exception."
+                    )
+                else:
+                    for b in missing_branch_arcs[lineno]:
+                        if b < 0:
+                            short_annotations.append("exit")
+                        else:
+                            short_annotations.append(str(b))
+                        long_annotations.append(
+                            fr.missing_arc_description(lineno, b, arcs_executed)
+                        )
             elif lineno in analysis.statements:
                 category = "run"
 
@@ -201,7 +213,7 @@ class FileToReport:
 
 HTML_SAFE = string.ascii_letters + string.digits + "!#$%'()*+,-./:;=?@[]^_`{|}~"
 
-@functools.lru_cache(maxsize=None)
+@functools.cache
 def encode_int(n: int) -> str:
     """Create a short HTML-safe string from an integer, using HTML_SAFE."""
     if n == 0:
@@ -212,6 +224,23 @@ def encode_int(n: int) -> str:
         n, t = divmod(n, len(HTML_SAFE))
         r.append(HTML_SAFE[t])
     return "".join(r)
+
+
+def copy_with_cache_bust(src: str, dest_dir: str) -> str:
+    """Copy `src` to `dest_dir`, adding a hash to the name.
+
+    Returns the updated destination file name with hash.
+    """
+    with open(src, "rb") as f:
+        text = f.read()
+    h = Hasher()
+    h.update(text)
+    cache_bust = h.hexdigest()[:8]
+    src_base = os.path.basename(src)
+    dest = src_base.replace(".", f"_cb_{cache_bust}.")
+    with open(os.path.join(dest_dir, dest), "wb") as f:
+        f.write(text)
+    return dest
 
 
 class HtmlReporter:
@@ -362,18 +391,10 @@ class HtmlReporter:
 
     def copy_static_file(self, src: str, slug: str = "") -> None:
         """Copy a static file into the output directory with cache busting."""
-        with open(src, "rb") as f:
-            text = f.read()
-        h = Hasher()
-        h.update(text)
-        cache_bust = h.hexdigest()[:8]
-        src_base = os.path.basename(src)
-        dest = src_base.replace(".", f"_cb_{cache_bust}.")
+        dest = copy_with_cache_bust(src, self.directory)
         if not slug:
-            slug = src_base.replace(".", "_")
+            slug = os.path.basename(src).replace(".", "_")
         self.template_globals["statics"][slug] = dest # type: ignore
-        with open(os.path.join(self.directory, dest), "wb") as f:
-            f.write(text)
 
     def make_local_static_report_files(self) -> None:
         """Make local instances of static files for HTML report."""
@@ -476,16 +497,12 @@ class HtmlReporter:
 
             if ldata.long_annotations:
                 longs = ldata.long_annotations
-                if len(longs) == 1:
-                    ldata.annotate_long = longs[0]
-                else:
-                    ldata.annotate_long = "{:d} missed branches: {}".format(
-                        len(longs),
-                        ", ".join(
-                            f"{num:d}) {ann_long}"
-                            for num, ann_long in enumerate(longs, start=1)
-                        ),
-                    )
+                # A line can only have two branch destinations. If there were
+                # two missing, we would have written one as "always raised."
+                assert len(longs) == 1, (
+                    f"Had long annotations in {ftr.fr.relative_filename()}: {longs}"
+                )
+                ldata.annotate_long = longs[0]
             else:
                 ldata.annotate_long = None
 
@@ -533,11 +550,11 @@ class HtmlReporter:
         for ftr in files_to_report:
             region_nouns = [pair[0] for pair in ftr.fr.code_region_kinds()]
             num_lines = len(ftr.fr.source().splitlines())
-            outside_lines = set(range(1, num_lines + 1))
             regions = ftr.fr.code_regions()
 
             for noun in region_nouns:
                 page_data = self.index_pages[noun]
+                outside_lines = set(range(1, num_lines + 1))
 
                 for region in regions:
                     if region.kind != noun:

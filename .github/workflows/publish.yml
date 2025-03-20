@@ -14,6 +14,11 @@ defaults:
   run:
     shell: bash
 
+env:
+  # PYVERSIONS: changing the list of versions will change the number of
+  # expected distributions.
+  EXPECTED: 63
+
 permissions:
   contents: read
 
@@ -31,15 +36,18 @@ jobs:
     steps:
     - name: "Find latest kit.yml run"
       id: runs
-      uses: octokit/request-action@872c5c97b3c85c23516a572f02b31401ef82415d # v2.3.1
+      uses: octokit/request-action@dad4362715b7fb2ddedf9772c8670824af564f0d # v2.4.0
       with:
         route: GET /repos/nedbat/coveragepy/actions/workflows/kit.yml/runs
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: "Record run id"
+    - name: "Record run id" # zizmor: ignore[template-injection]
       id: run-id
       run: |
+        # There must be a shorter way to write this...
+        [ "${{ fromJson(steps.runs.outputs.data).workflow_runs[0].status}}" = "completed" ] || exit 1
+        [ "${{ fromJson(steps.runs.outputs.data).workflow_runs[0].conclusion}}" = "success" ] || exit 1
         echo "run-id=${{ fromJson(steps.runs.outputs.data).workflow_runs[0].id }}" >> "$GITHUB_OUTPUT"
 
   publish-to-test-pypi:
@@ -56,10 +64,10 @@ jobs:
 
     steps:
     - name: "Download dists"
-      uses: actions/download-artifact@65a9edc5881444af0b9093a5e628f2fe47ea3b2e # v4.1.7
+      uses: actions/download-artifact@cc203385981b70ca67e1cc392babf9cc229d5806 # v4.1.9
       with:
         repository: "nedbat/coveragepy"
-        run-id: ${{needs.find-run.outputs.run-id}}
+        run-id: ${{ needs.find-run.outputs.run-id }}
         github-token: ${{ secrets.GITHUB_TOKEN }}
         pattern: "dist-*"
         merge-multiple: true
@@ -68,16 +76,17 @@ jobs:
     - name: "What did we get?"
       run: |
         ls -alR
-        echo "Number of dists:"
+        echo "Number of dists, should be $EXPECTED:"
         ls -1 dist | wc -l
+        files=$(ls dist 2>/dev/null | wc -l) && [ "$files" -eq $EXPECTED ] || exit 1
 
     - name: "Generate attestations"
-      uses: actions/attest-build-provenance@bdd51370e0416ac948727f861e03c2f05d32d78e # v1.3.2
+      uses: actions/attest-build-provenance@c074443f1aee8d4aeeae555aebba3282517141b2 # v2.2.3
       with:
         subject-path: "dist/*"
 
     - name: "Publish dists to Test PyPI"
-      uses: pypa/gh-action-pypi-publish@ec4db0b4ddc65acdf4bff5fa45ac92d78b56bdf0 # v1.9.0
+      uses: pypa/gh-action-pypi-publish@76f52bc884231f62b9a034ebfe128415bbaabdfc # v1.12.4
       with:
         repository-url: https://test.pypi.org/legacy/
 
@@ -95,10 +104,10 @@ jobs:
 
     steps:
     - name: "Download dists"
-      uses: actions/download-artifact@65a9edc5881444af0b9093a5e628f2fe47ea3b2e # v4.1.7
+      uses: actions/download-artifact@cc203385981b70ca67e1cc392babf9cc229d5806 # v4.1.9
       with:
         repository: "nedbat/coveragepy"
-        run-id: ${{needs.find-run.outputs.run-id}}
+        run-id: ${{ needs.find-run.outputs.run-id }}
         github-token: ${{ secrets.GITHUB_TOKEN }}
         pattern: "dist-*"
         merge-multiple: true
@@ -107,13 +116,14 @@ jobs:
     - name: "What did we get?"
       run: |
         ls -alR
-        echo "Number of dists:"
+        echo "Number of dists, should be $EXPECTED:"
         ls -1 dist | wc -l
+        files=$(ls dist 2>/dev/null | wc -l) && [ "$files" -eq $EXPECTED ] || exit 1
 
     - name: "Generate attestations"
-      uses: actions/attest-build-provenance@bdd51370e0416ac948727f861e03c2f05d32d78e # v1.3.2
+      uses: actions/attest-build-provenance@c074443f1aee8d4aeeae555aebba3282517141b2 # v2.2.3
       with:
         subject-path: "dist/*"
 
     - name: "Publish dists to PyPI"
-      uses: pypa/gh-action-pypi-publish@ec4db0b4ddc65acdf4bff5fa45ac92d78b56bdf0 # v1.9.0
+      uses: pypa/gh-action-pypi-publish@76f52bc884231f62b9a034ebfe128415bbaabdfc # v1.12.4

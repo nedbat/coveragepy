@@ -31,6 +31,7 @@ jobs:
   tests:
     name: "${{ matrix.python-version }} on ${{ matrix.os }}"
     runs-on: "${{ matrix.os }}-${{ matrix.os-version || 'latest' }}"
+    timeout-minutes: 30
     # Don't run tests if the branch name includes "-notests"
     if: "!contains(github.ref, '-notests')"
     strategy:
@@ -45,24 +46,22 @@ jobs:
           # Available versions:
           # https://github.com/actions/python-versions/blob/main/versions-manifest.json
           # https://github.com/actions/setup-python/blob/main/docs/advanced-usage.md#available-versions-of-python-and-pypy
-          - "3.8"
           - "3.9"
           - "3.10"
           - "3.11"
           - "3.12"
           - "3.13"
-          - "pypy-3.8"
+          - "3.14"
           - "pypy-3.9"
           - "pypy-3.10"
-        exclude:
-          # Windows pypy 3.9 and 3.10 get stuck with PyPy 7.3.15.  I hope to
-          # unstick them, but I don't want that to block all other progress, so
-          # skip them for now. These excludes can be removed once GitHub uses
-          # PyPy 7.3.16 on Windows.  https://github.com/pypy/pypy/issues/4876
-          - os: windows
-            python-version: "pypy-3.9"
-          - os: windows
-            python-version: "pypy-3.10"
+          - "pypy-3.11"
+        #
+        # If we need to exclude any combinations, do it like this:
+        #  exclude:
+        #    # Windows pypy 3.9 and 3.10 get stuck with PyPy 7.3.15.
+        #    - os: windows
+        #      python-version: "pypy-3.10"
+        #
         # If we need to tweak the os version we can do it with an include like
         # this:
         #  include:
@@ -74,10 +73,12 @@ jobs:
 
     steps:
       - name: "Check out the repo"
-        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
 
       - name: "Set up Python"
-        uses: actions/setup-python@82c7e631bb3cdc910f68e0081d67478d79c6982d # v5.1.0
+        uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5.4.0
         with:
           python-version: "${{ matrix.python-version }}"
           allow-prereleases: true

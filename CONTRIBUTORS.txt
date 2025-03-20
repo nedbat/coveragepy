@@ -5,6 +5,7 @@ Other contributions, including writing code, updating docs, and submitting
 useful bug reports, have been made by:
 
 Abdeali Kothari
+Adam Turner
 Adi Roiban
 Agbonze O. Jeremiah
 Albertas Agejevas
@@ -25,6 +26,7 @@ Artem Dayneko
 Arthur Deygin
 Arthur Rio
 Asher Foa
+Ask Hjorth Larsen
 Ben Carlsson
 Ben Finney
 Benjamin Parzella
@@ -105,6 +107,7 @@ JT Olds
 Jacqueline Lee
 Jakub Wilk
 James Valleroy
+Jan Kühle
 Jan Rusak
 Janakarajan Natarajan
 Jerin Peter George
@@ -134,6 +137,7 @@ Leonardo Pistone
 Lewis Gaul
 Lex Berezhny
 Liam DeVoe
+LiuYinCarl
 Loïc Dachary
 Lorenzo Micò
 Louis Heredero
@@ -145,6 +149,7 @@ Marc Abramowitz
 Marc Gibbons
 Marc Legendre
 Marcelo Trylesinski
+Marco Ricci
 Marcus Cobden
 Mariatta
 Marius Gedminas
@@ -169,6 +174,7 @@ Naveen Srinivasan
 Naveen Yadav
 Neil Pilgrim
 Nicholas Nadeau
+Nick Drozd
 Nikita Bloshchanevich
 Nikita Sobolev
 Nils Kattenbeck
@@ -222,6 +228,7 @@ Thomas Grainger
 Timo Furrer
 Titus Brown
 Tom Gurion
+Tomas Uribe
 Valentin Lab
 Ville Skyttä
 Vince Salvino
@@ -230,4 +237,5 @@ Xie Yanbo
 Yilei "Dolee" Yang
 Yury Selivanov
 Zac Hatfield-Dodds
+Zack Weinberg
 Zooko Wilcox-O'Hearn

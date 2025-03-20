@@ -10,7 +10,8 @@ import os.path
 import shutil
 
 from pathlib import Path
-from typing import Iterator, cast
+from typing import cast
+from collections.abc import Iterator
 
 import pytest
 

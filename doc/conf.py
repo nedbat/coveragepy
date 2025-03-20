@@ -49,7 +49,7 @@ autodoc_typehints = "description"
 templates_path = []
 
 # The suffix of source filenames.
-source_suffix = '.rst'
+source_suffix = {'.rst': 'restructuredtext'}
 
 # The encoding of source files.
 #source_encoding = 'utf-8'
@@ -65,13 +65,13 @@ project = 'Coverage.py'
 # built documents.
 
 # @@@ editable
-copyright = "2009–2024, Ned Batchelder" # pylint: disable=redefined-builtin
+copyright = "2009–2025, Ned Batchelder" # pylint: disable=redefined-builtin
 # The short X.Y.Z version.
-version = "7.5.4"
+version = "7.7.0"
 # The full version, including alpha/beta/rc tags.
-release = "7.5.4"
+release = "7.7.0"
 # The date of release, in "monthname day, year" format.
-release_date = "June 22, 2024"
+release_date = "March 16, 2025"
 # @@@ end
 
 rst_epilog = f"""

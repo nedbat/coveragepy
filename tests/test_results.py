@@ -7,7 +7,8 @@ from __future__ import annotations
 
 import math
 
-from typing import Iterable, cast
+from typing import cast
+from collections.abc import Iterable
 
 import pytest
 

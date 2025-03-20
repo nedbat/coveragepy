@@ -21,8 +21,9 @@ import types
 
 from types import ModuleType
 from typing import (
-    Any, Iterable, Iterator, Mapping, NoReturn, Sequence, TypeVar,
+    Any, NoReturn, TypeVar,
 )
+from collections.abc import Iterable, Iterator, Mapping, Sequence
 
 from coverage.exceptions import CoverageException
 from coverage.types import TArc
@@ -158,7 +159,7 @@ def ensure_dir_for_file(path: str) -> None:
 class Hasher:
     """Hashes Python data for fingerprinting."""
     def __init__(self) -> None:
-        self.hash = hashlib.new("sha3_256")
+        self.hash = hashlib.new("sha3_256", usedforsecurity=False)
 
     def update(self, v: Any) -> None:
         """Add `v` to the hash, recursively if needed."""
@@ -301,7 +302,7 @@ def import_local_file(modname: str, modfile: str | None = None) -> ModuleType:
     return mod
 
 
-@functools.lru_cache(maxsize=None)
+@functools.cache
 def _human_key(s: str) -> tuple[list[str | int], str]:
     """Turn a string into a list of string and number chunks.
 

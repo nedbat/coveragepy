@@ -20,20 +20,20 @@ import warnings
 
 from pathlib import Path
 from typing import (
-    Any, Callable, Iterable, Iterator, NoReturn, TypeVar, cast,
+    Any, Callable, NoReturn, TypeVar, cast,
 )
+from collections.abc import Iterable, Iterator
 
 import flaky
-import pytest
 
 from coverage import env
 from coverage.debug import DebugControl
 from coverage.exceptions import CoverageWarning
-from coverage.types import TArc, TLineNo
+from coverage.types import TArc
 
 
 def run_command(cmd: str) -> tuple[int, str]:
-    """Run a command in a sub-process.
+    """Run a command in a subprocess.
 
     Returns the exit status code and the combined stdout and stderr.
 
@@ -259,38 +259,6 @@ def arcz_to_arcs(arcz: str) -> list[TArc]:
     return sorted(arcs)
 
 
-_arcz_unmap = {val: ch for ch, val in _arcz_map.items()}
-
-
-def _arcs_to_arcz_repr_one(num: TLineNo) -> str:
-    """Return an arcz form of the number `num`, or "?" if there is none."""
-    if num == -1:
-        return "."
-    z = ""
-    if num < 0:
-        z += "-"
-        num *= -1
-    z += _arcz_unmap.get(num, "?")
-    return z
-
-
-def arcs_to_arcz_repr(arcs: Iterable[TArc] | None) -> str:
-    """Convert a list of arcs to a readable multi-line form for asserting.
-
-    Each pair is on its own line, with a comment showing the arcz form,
-    to make it easier to decode when debugging test failures.
-
-    """
-    repr_list = []
-    for a, b in (arcs or ()):
-        line = repr((a, b))
-        line += " # "
-        line += _arcs_to_arcz_repr_one(a)
-        line += _arcs_to_arcz_repr_one(b)
-        repr_list.append(line)
-    return "\n".join(repr_list) + "\n"
-
-
 @contextlib.contextmanager
 def change_dir(new_dir: str | Path) -> Iterator[None]:
     """Change directory, and then change back.
@@ -356,12 +324,6 @@ def swallow_warnings(
     with warnings.catch_warnings():
         warnings.filterwarnings("ignore", category=category, message=message)
         yield
-
-
-xfail_pypy38 = pytest.mark.xfail(
-    env.PYPY and env.PYVERSION[:2] == (3, 8) and env.PYPYVERSION < (7, 3, 11),
-    reason="These tests fail on older PyPy 3.8",
-)
 
 
 class FailingProxy:

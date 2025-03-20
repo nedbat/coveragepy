@@ -59,7 +59,7 @@ class ShellSession:
             self.foutput.close()
 
     @contextlib.contextmanager
-    def set_env(self, *env_varss: dict[str, str] | None) -> Iterator[None]:
+    def set_env(self, *env_varss: Env_VarsType) -> Iterator[None]:
         """Set environment variables.
 
         All the arguments are dicts of name:value, or None.  All are applied
@@ -116,12 +116,13 @@ class ShellSession:
         return output.strip()
 
 
-def rmrf(path: Path) -> None:
+def remake(path: Path) -> None:
     """
-    Remove a directory tree.  It's OK if it doesn't exist.
+    Remove a directory tree and recreate it.  It's OK if it doesn't exist.
     """
     if path.exists():
         shutil.rmtree(path)
+    path.mkdir(parents=True)
 
 
 @contextlib.contextmanager
@@ -190,11 +191,15 @@ class ProjectToTest:
 
     # Where can we clone the project from?
     git_url: str = ""
+    local_git: str = ""
     slug: str = ""
     env_vars: Env_VarsType = {}
 
     def __init__(self) -> None:
-        url_must_exist(self.git_url)
+        if self.git_url:
+            url_must_exist(self.git_url)
+        if self.local_git:
+            file_must_exist(self.local_git)
         if not self.slug:
             if self.git_url:
                 self.slug = self.git_url.split("/")[-1]
@@ -204,17 +209,19 @@ class ProjectToTest:
 
     def make_dir(self) -> None:
         self.dir = Path(f"work_{self.slug}")
-        if self.dir.exists():
-            rmrf(self.dir)
+        remake(self.dir)
+        self.tmpdir = Path(f"tmp_{self.slug}").resolve()
+        remake(self.tmpdir)
 
     def get_source(self, shell: ShellSession, retries: int = 5) -> None:
         """Get the source of the project."""
+        git_source = self.local_git or self.git_url
         for retry in range(retries):
             try:
-                shell.run_command(f"git clone {self.git_url} {self.dir}")
+                shell.run_command(f"git clone {git_source} {self.dir}")
                 return
             except Exception as e:
-                print(f"Retrying to clone {self.git_url} due to error:\n{e}")
+                print(f"Retrying to clone {git_source} due to error:\n{e}")
                 if retry == retries - 1:
                     raise e
 
@@ -277,11 +284,18 @@ class EmptyProject(ProjectToTest):
 class ToxProject(ProjectToTest):
     """A project using tox to run the test suite."""
 
+    ALLOWABLE_ENV_VARS = [
+        "COVERAGE_DEBUG",
+        "COVERAGE_CORE",
+        "COVERAGE_FORCE_CONFIG",
+        "PATH",
+        "TMPDIR",
+    ]
+
     env_vars: Env_VarsType = {
         **(ProjectToTest.env_vars or {}),
         # Allow some environment variables into the tox execution.
-        "TOX_OVERRIDE": "testenv.pass_env+=COVERAGE_DEBUG,COVERAGE_CORE,COVERAGE_FORCE_CONFIG",
-        "COVERAGE_DEBUG": "config,sys",
+        "TOX_OVERRIDE": "testenv.pass_env+=" + ",".join(ALLOWABLE_ENV_VARS),
     }
 
     def prep_environment(self, env: Env) -> None:
@@ -414,6 +428,38 @@ class ProjectMashumaroBranch(ProjectMashumaro):
         self.slug = "mashbranch"
 
 
+class ProjectPillow(ProjectToTest):
+    git_url = "https://github.com/python-pillow/Pillow"
+    local_git = "/src/Pillow"
+
+    def __init__(self, more_pytest_args: str = ""):
+        super().__init__()
+        self.more_pytest_args = more_pytest_args
+
+    def prep_environment(self, env: Env) -> None:
+        env.shell.run_command(f"{env.python} -m pip install '.[tests]'")
+
+    def run_no_coverage(self, env: Env) -> float:
+        env.shell.run_command(f"{env.python} -m pytest {self.more_pytest_args}")
+        return env.shell.last_duration
+
+    def run_with_coverage(self, env: Env, cov_ver: Coverage) -> float:
+        env.shell.run_command(f"{env.python} -m pip install {cov_ver.pip_args}")
+        env.shell.run_command(
+            f"{env.python} -m pytest --cov=PIL --cov=Tests {self.more_pytest_args}"
+        )
+        duration = env.shell.last_duration
+        report = env.shell.run_command(f"{env.python} -m coverage report --precision=6")
+        print("Results:", report.splitlines()[-1])
+        return duration
+
+
+class ProjectPillowBranch(ProjectPillow):
+    def __init__(self, more_pytest_args: str = ""):
+        super().__init__(more_pytest_args="--cov-branch " + more_pytest_args)
+        self.slug = "Pilbranch"
+
+
 class ProjectOperator(ProjectToTest):
     git_url = "https://github.com/nedbat/operator"
 
@@ -423,22 +469,19 @@ class ProjectOperator(ProjectToTest):
 
     def prep_environment(self, env: Env) -> None:
         env.shell.run_command(f"{env.python} -m pip install tox")
-        Path("/tmp/operator_tmp").mkdir(exist_ok=True)
         env.shell.run_command(f"{env.python} -m tox -e unit --notest")
         env.shell.run_command(f"{env.python} -m tox -e unitnocov --notest")
 
     def run_no_coverage(self, env: Env) -> float:
         env.shell.run_command(
-            f"TMPDIR=/tmp/operator_tmp {env.python} -m tox -e unitnocov --skip-pkg-install"
-            + f" -- {self.more_pytest_args}"
+            f"{env.python} -m tox -e unitnocov --skip-pkg-install -- {self.more_pytest_args}"
         )
         return env.shell.last_duration
 
     def run_with_coverage(self, env: Env, cov_ver: Coverage) -> float:
         env.shell.run_command(f"{env.python} -m pip install {cov_ver.pip_args}")
         env.shell.run_command(
-            f"TMPDIR=/tmp/operator_tmp {env.python} -m tox -e unit --skip-pkg-install"
-            + f" -- {self.more_pytest_args}"
+            f"{env.python} -m tox -e unit --skip-pkg-install -- {self.more_pytest_args}"
         )
         duration = env.shell.last_duration
         report = env.shell.run_command(f"{env.python} -m coverage report --precision=6")
@@ -817,7 +860,9 @@ class CoverageSource(Coverage):
         tweaks: TweaksType = None,
         env_vars: Env_VarsType = None,
     ):
+        # Check that it really is a coverage source directory.
         directory = file_must_exist(directory_name, "coverage directory")
+        file_must_exist(str(directory / "igor.py"))
         super().__init__(
             slug=slug,
             pip_args=str(directory),
@@ -848,18 +893,17 @@ class Experiment:
         py_versions: list[PyVersion],
         cov_versions: list[Coverage],
         projects: list[ProjectToTest],
-        results_file: str = "results.json",
+        results_file: Path = Path("results.json"),
         load: bool = False,
-        cwd: str = "",
     ):
         self.py_versions = py_versions
         self.cov_versions = cov_versions
         self.projects = projects
-        self.results_file = Path(cwd) / Path(results_file)
-        self.result_data: dict[ResultKey, list[float]] = (
-            self.load_results() if load else {}
-        )
+        self.results_file = results_file
+        self.result_data: dict[ResultKey, list[float]] = {}
         self.summary_data: dict[ResultKey, float] = {}
+        if load:
+            self.result_data = self.load_results()
 
     def save_results(self) -> None:
         """Save current results to the JSON file."""
@@ -933,8 +977,13 @@ class Experiment:
                 )
                 print(banner)
                 env.shell.print_banner(banner)
+                env_vars = [
+                    proj.env_vars,
+                    cov_ver.env_vars,
+                    {"TMPDIR": str(proj.tmpdir)},
+                ]
                 with change_dir(proj.dir):
-                    with env.shell.set_env(proj.env_vars, cov_ver.env_vars):
+                    with env.shell.set_env(*env_vars):
                         try:
                             if cov_ver.pip_args is None:
                                 dur = proj.run_no_coverage(env)
@@ -1056,16 +1105,16 @@ def run_experiment(
         )
 
     print(f"Removing and re-making {PERF_DIR}")
-    rmrf(PERF_DIR)
+    remake(PERF_DIR)
 
-    cwd = str(Path.cwd())
+    results_file = Path("results.json").resolve()
     with change_dir(PERF_DIR):
         exp = Experiment(
             py_versions=py_versions,
             cov_versions=cov_versions,
             projects=projects,
+            results_file=results_file,
             load=load,
-            cwd=cwd,
         )
         exp.run(num_runs=int(num_runs))
         exp.show_results(rows=rows, column=column, ratios=ratios)

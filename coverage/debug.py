@@ -21,8 +21,9 @@ import _thread
 
 from typing import (
     overload,
-    Any, Callable, IO, Iterable, Iterator, Mapping,
+    Any, Callable, Final, IO,
 )
+from collections.abc import Iterable, Iterator, Mapping
 
 from coverage.misc import human_sorted_items, isolate_module
 from coverage.types import AnyCallable, TWritable
@@ -117,6 +118,11 @@ class NoDebugging(DebugControl):
     def should(self, option: str) -> bool:
         """Should we write debug messages?  Never."""
         return False
+
+    @contextlib.contextmanager
+    def without_callers(self) -> Iterator[None]:
+        """A dummy context manager to satisfy the api."""
+        yield
 
     def write(self, msg: str, *, exc: BaseException | None = None) -> None:
         """This will never be called."""
@@ -379,9 +385,8 @@ class ProcessTracker:
             welcome = (
                 f"New process: {pid=}, executable: {sys.executable!r}\n"
                 + f"New process: cmd: {argv!r}\n"
+                + f"New process parent pid: {os.getppid()!r}\n"
             )
-            if hasattr(os, "getppid"):
-                welcome += f"New process parent pid: {os.getppid()!r}\n"
 
         if welcome:
             self.did_welcome = True
@@ -467,8 +472,8 @@ class DebugOutputFile:
     # a process-wide singleton. So stash it in sys.modules instead of
     # on a class attribute. Yes, this is aggressively gross.
 
-    SYS_MOD_NAME = "$coverage.debug.DebugOutputFile.the_one"
-    SINGLETON_ATTR = "the_one_and_is_interim"
+    SYS_MOD_NAME: Final[str] = "$coverage.debug.DebugOutputFile.the_one"
+    SINGLETON_ATTR: Final[str] = "the_one_and_is_interim"
 
     @classmethod
     def _set_singleton_data(cls, the_one: DebugOutputFile, interim: bool) -> None:

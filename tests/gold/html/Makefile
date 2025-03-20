@@ -6,7 +6,7 @@ help:
 	@grep '^[a-zA-Z]' $(MAKEFILE_LIST) | sort | awk -F ':.*?## ' 'NF==2 {printf "  %-26s%s\n", $$1, $$2}'
 
 complete: 	## Copy support files into directories so the HTML can be viewed properly.
-	@for sub in *; do \
+	@for sub in * ../../actual/html/*; do \
 		if [ -f "$$sub/index.html" ]; then \
 			echo Copying into $$sub ; \
 			cp -n support/* $$sub ; \
@@ -24,4 +24,8 @@ update-gold:	## Copy actual output files from latest tests to gold files.
 	true
 
 update-support:	## Copy latest support files here for posterity.
-	cp ../../../coverage/htmlfiles/*.{css,js,png} support
+	python -m pip install -e ../../..
+	git rm --ignore-unmatch support/*.{css,js,png}
+	mkdir -p support
+	python ../../../igor.py copy_with_hash ../../../coverage/htmlfiles/*.{css,js,png} support
+	git add support

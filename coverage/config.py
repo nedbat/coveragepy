@@ -13,8 +13,9 @@ import os.path
 import re
 
 from typing import (
-    Any, Callable, Iterable, Union,
+    Any, Callable, Final, Mapping, Union,
 )
+from collections.abc import Iterable
 
 from coverage.exceptions import ConfigError
 from coverage.misc import isolate_module, human_sorted_items, substitute_variables
@@ -250,6 +251,7 @@ class CoverageConfig(TConfigurable, TPluginConfig):
 
         # Defaults for [lcov]
         self.lcov_output = "coverage.lcov"
+        self.lcov_line_checksums = False
 
         # Defaults for [paths]
         self.paths: dict[str, list[str]] = {}
@@ -358,7 +360,9 @@ class CoverageConfig(TConfigurable, TPluginConfig):
         """Return a copy of the configuration."""
         return copy.deepcopy(self)
 
-    CONCURRENCY_CHOICES = {"thread", "gevent", "greenlet", "eventlet", "multiprocessing"}
+    CONCURRENCY_CHOICES: Final[set[str]] = {
+        "thread", "gevent", "greenlet", "eventlet", "multiprocessing"
+    }
 
     CONFIG_FILE_OPTIONS = [
         # These are *args for _set_attr_from_config_option:
@@ -428,6 +432,7 @@ class CoverageConfig(TConfigurable, TPluginConfig):
 
         # [lcov]
         ("lcov_output", "lcov:output"),
+        ("lcov_line_checksums", "lcov:line_checksums", "boolean")
     ]
 
     def _set_attr_from_config_option(
@@ -465,7 +470,13 @@ class CoverageConfig(TConfigurable, TPluginConfig):
         """
         # Special-cased options.
         if option_name == "paths":
-            self.paths = value  # type: ignore[assignment]
+            # This is ugly, but type-checks and ensures the values are close
+            # to right.
+            self.paths = {}
+            assert isinstance(value, Mapping)
+            for k, v in value.items():
+                assert isinstance(v, Iterable)
+                self.paths[k] = list(v)
             return
 
         # Check all the hard-coded options.
@@ -496,7 +507,7 @@ class CoverageConfig(TConfigurable, TPluginConfig):
         """
         # Special-cased options.
         if option_name == "paths":
-            return self.paths  # type: ignore[return-value]
+            return self.paths
 
         # Check all the hard-coded options.
         for option_spec in self.CONFIG_FILE_OPTIONS:

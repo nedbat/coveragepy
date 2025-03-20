@@ -32,6 +32,11 @@ previous work in the area.  Things are not always as straightforward as they
 seem, and having the benefit of lessons learned by those before you can save
 you frustration.
 
+We have a `#coverage channel in the Python Discord <discord_>`_ that can be a
+good place to explore ideas, get help, or help people with coverage.py.
+`Join us <discord_>`_!
+
+.. _discord: https://discord.com/channels/267624335836053506/1253355750684753950
 
 Getting the code
 ----------------
@@ -49,7 +54,7 @@ these steps:
 
 #.  (Optional) Create a virtualenv to work in, and activate it.  There
     are a number of ways to do this.  Use the method you are comfortable with.
-    Ideally, use Python3.8 (the lowest version coverage.py supports).
+    Ideally, use Python 3.9 (the lowest version coverage.py supports).
 
 #.  Clone the repository::
 
@@ -257,7 +262,7 @@ files.  These are created by running ``make upgrade``.
 
 .. minimum of PYVERSIONS:
 
-It's important to use Python 3.8 to run ``make upgrade`` so that the pinned
+It's important to use Python 3.9 to run ``make upgrade`` so that the pinned
 versions will work on all of the Python versions currently supported by
 coverage.py.
 

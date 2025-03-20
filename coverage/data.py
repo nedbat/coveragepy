@@ -17,12 +17,13 @@ import glob
 import hashlib
 import os.path
 
-from typing import Callable, Iterable
+from typing import Callable
+from collections.abc import Iterable
 
 from coverage.exceptions import CoverageException, NoDataError
 from coverage.files import PathAliases
 from coverage.misc import Hasher, file_be_gone, human_sorted, plural
-from coverage.sqldata import CoverageData
+from coverage.sqldata import CoverageData as CoverageData  # pylint: disable=useless-import-alias
 
 
 def line_counts(data: CoverageData, fullpath: bool = False) -> dict[str, int]:
@@ -138,7 +139,7 @@ def combine_parallel_data(
     if aliases is None:
         map_path = None
     else:
-        map_path = functools.lru_cache(maxsize=None)(aliases.map)
+        map_path = functools.cache(aliases.map)
 
     file_hashes = set()
     combined_any = False
@@ -160,7 +161,7 @@ def combine_parallel_data(
             rel_file_name = f
 
         with open(f, "rb") as fobj:
-            hasher = hashlib.new("sha3_256")
+            hasher = hashlib.new("sha3_256", usedforsecurity=False)
             hasher.update(fobj.read())
             sha = hasher.digest()
             combine_this_one = sha not in file_hashes

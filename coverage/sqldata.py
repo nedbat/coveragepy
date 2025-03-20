@@ -21,9 +21,9 @@ import threading
 import zlib
 
 from typing import (
-    cast, Any, Callable, Collection, Mapping,
-    Sequence,
+    cast, Any, Callable,
 )
+from collections.abc import Collection, Mapping, Sequence
 
 from coverage.debug import NoDebugging, auto_repr
 from coverage.exceptions import CoverageException, DataError

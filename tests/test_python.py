@@ -63,3 +63,24 @@ def test_source_for_file_windows(tmp_path: pathlib.Path) -> None:
     # If both pyw and py exist, py is preferred
     a_py.write_text("")
     assert source_for_file(src + 'c') == src
+
+
+class RunpyTest(CoverageTest):
+    """Tests using runpy."""
+
+    @pytest.mark.parametrize("convert_to", ["str", "Path"])
+    def test_runpy_path(self, convert_to: str) -> None:
+        # Ensure runpy.run_path(path) works when path is pathlib.Path or str.
+        #
+        # runpy.run_path(pathlib.Path(...)) causes __file__ to be a Path,
+        # which may make source_for_file() stumble (#1819) with:
+        #
+        #    AttributeError: 'PosixPath' object has no attribute 'endswith'
+
+        self.check_coverage(f"""\
+            import runpy
+            from pathlib import Path
+            pyfile = Path('script.py')
+            pyfile.write_text('')
+            runpy.run_path({convert_to}(pyfile))
+        """)

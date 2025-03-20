@@ -16,7 +16,7 @@ import threading
 import time
 
 from types import ModuleType
-from typing import Iterable
+from collections.abc import Iterable
 
 from flaky import flaky
 import pytest
@@ -554,13 +554,19 @@ class MultiprocessingTest(CoverageTest):
         code = (SQUARE_OR_CUBE_WORK + MULTI_CODE).format(NPROCS=nprocs, UPTO=upto)
         total = sum(x*x if x%2 else x*x*x for x in range(upto))
         expected_out = f"{nprocs} pids, total = {total}"
+        expect_warn = (
+            env.PYBEHAVIOR.pep669
+            and (not env.PYBEHAVIOR.branch_right_left)
+            and testenv.SYS_MON
+        )
         self.make_file("multi.py", code)
         self.make_file("multi.rc", """\
             [run]
             concurrency = multiprocessing
             branch = True
             omit = */site-packages/*
-            """)
+            """ + ("disable_warnings = no-sysmon" if expect_warn else "")
+            )
 
         out = self.run_command(f"coverage run --rcfile=multi.rc multi.py {start_method}")
         assert out.rstrip() == expected_out
@@ -788,7 +794,10 @@ class SigtermTest(CoverageTest):
 
                 signal.signal(signal.SIGTERM, on_sigterm)
                 x.value = 0
-                time.sleep(.1)
+                try:
+                    time.sleep(.1)
+                except OSError: # This happens on PyPy3.11 on Mac
+                    pass
                 print("END", flush=True)
 
             if __name__ == "__main__":

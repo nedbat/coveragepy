@@ -3,57 +3,75 @@
 
 .. _subprocess:
 
-=======================
-Measuring sub-processes
-=======================
+======================
+Measuring subprocesses
+======================
 
-Complex test suites may spawn sub-processes to run tests, either to run them in
-parallel, or because sub-process behavior is an important part of the system
-under test. Measuring coverage in those sub-processes can be tricky because you
-have to modify the code spawning the process to invoke coverage.py.
+If your system under test spawns subprocesses, you'll have to take extra steps
+to measure coverage in those processes.  There are a few ways to ensure they
+get measured.  The approach you use depends on how you create the processes.
 
-There's an easier way to do it: coverage.py includes a function,
-:func:`coverage.process_startup` designed to be invoked when Python starts.  It
-examines the ``COVERAGE_PROCESS_START`` environment variable, and if it is set,
-begins coverage measurement. The environment variable's value will be used as
-the name of the :ref:`configuration file <config>` to use.
+No matter how your subprocesses are created, you will need the :ref:`parallel
+option <config_run_parallel>` to collect separate data for each process, and
+the :ref:`coverage combine <cmd_combine>` command to combine them together
+before reporting.
+
+To successfully write a coverage data file, the Python subprocess under
+measurement must shut down cleanly and have a chance for coverage.py to run its
+termination code.  It will do that when the process ends naturally, or when a
+SIGTERM signal is received.
+
+If your processes are ending with SIGTERM, you must enable the
+:ref:`config_run_sigterm` setting to configure coverage to catch SIGTERM
+signals and write its data.
+
+Other ways of ending a process, like SIGKILL or :func:`os._exit
+<python:os._exit>`, will prevent coverage.py from writing its data file,
+leaving you with incomplete or non-existent coverage data.
 
 .. note::
 
-    The subprocess only sees options in the configuration file.  Options set on
-    the command line will not be used in the subprocesses.
-
-.. note::
-
-    If you have subprocesses created with :mod:`multiprocessing
-    <python:multiprocessing>`, the ``--concurrency=multiprocessing``
-    command-line option should take care of everything for you.  See
-    :ref:`cmd_run` for details.
-
-When using this technique, be sure to set the parallel option to true so that
-multiple coverage.py runs will each write their data to a distinct file.
+    Subprocesses will only see coverage options in the configuration file.
+    Options set on the command line will not be visible to subprocesses.
 
 
-Configuring Python for sub-process measurement
-----------------------------------------------
+Using multiprocessing
+---------------------
 
-Measuring coverage in sub-processes is a little tricky.  When you spawn a
-sub-process, you are invoking Python to run your program.  Usually, to get
-coverage measurement, you have to use coverage.py to run your program.  Your
-sub-process won't be using coverage.py, so we have to convince Python to use
-coverage.py even when not explicitly invoked.
+The :mod:`multiprocessing <python:multiprocessing>` module in the Python
+standard library provides high-level tools for managing subprocesses.  If you
+use it, the :ref:`concurrency=multiprocessing <config_run_concurrency>` and
+:ref:`sigterm <config_run_sigterm>` settings will configure coverage to measure
+the subprocesses.
 
-To do that, we'll configure Python to run a little coverage.py code when it
-starts.  That code will look for an environment variable that tells it to start
-coverage measurement at the start of the process.
+Even with multiprocessing, you have to be careful that all subprocesses
+terminate cleanly or they won't record their coverage measurements.  For
+example, the correct way to use a Pool requires closing and joining the pool
+before terminating::
+
+    with multiprocessing.Pool() as pool:
+        # ... use any of the pool methods ...
+        pool.close()
+        pool.join()
+
+
+Implicit coverage
+-----------------
+
+If you are starting subprocesses another way, you can configure Python to start
+coverage when it runs.  Coverage.py includes a function designed to be invoked
+when Python starts: :func:`coverage.process_startup`.  It examines the
+``COVERAGE_PROCESS_START`` environment variable, and if it is set, begins
+coverage measurement. The environment variable's value will be used as the name
+of the :ref:`configuration file <config>` to use.
 
 To arrange all this, you have to do two things: set a value for the
 ``COVERAGE_PROCESS_START`` environment variable, and then configure Python to
 invoke :func:`coverage.process_startup` when Python processes start.
 
 How you set ``COVERAGE_PROCESS_START`` depends on the details of how you create
-sub-processes.  As long as the environment variable is visible in your
-sub-process, it will work.
+subprocesses.  As long as the environment variable is visible in your
+subprocess, it will work.
 
 You can configure your Python installation to invoke the ``process_startup``
 function in two ways:
@@ -84,17 +102,11 @@ start-up.  Be sure to remove the change when you uninstall coverage.py, or use
 a more defensive approach to importing it.
 
 
-Process termination
--------------------
+Explicit coverage
+-----------------
 
-To successfully write a coverage data file, the Python sub-process under
-analysis must shut down cleanly and have a chance for coverage.py to run its
-termination code.  It will do that when the process ends naturally, or when a
-SIGTERM signal is received.
-
-Coverage.py uses :mod:`atexit <python:atexit>` to handle usual process ends,
-and a :mod:`signal <python:signal>` handler to catch SIGTERM signals.
-
-Other ways of ending a process, like SIGKILL or :func:`os._exit
-<python:os._exit>`, will prevent coverage.py from writing its data file,
-leaving you with incomplete or non-existent coverage data.
+Another option for running coverage on your subprocesses it to run coverage
+explicitly as the command for your subprocess instead of using "python" as the
+command.  This isn't recommended, since it requires running different code
+when running coverage than when not, which can complicate your test
+environment.

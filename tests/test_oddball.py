@@ -44,7 +44,8 @@ class ThreadingTest(CoverageTest):
             fromMainThread()
             other.join()
             """,
-            [1, 3, 4, 6, 7, 9, 10, 12, 13, 14, 15], "10",
+            lines=[1, 3, 4, 6, 7, 9, 10, 12, 13, 14, 15],
+            missing="10",
         )
 
     def test_thread_run(self) -> None:
@@ -64,7 +65,8 @@ class ThreadingTest(CoverageTest):
             thd.start()
             thd.join()
             """,
-            [1, 3, 4, 5, 6, 7, 9, 10, 12, 13, 14], "",
+            lines=[1, 3, 4, 5, 6, 7, 9, 10, 12, 13, 14],
+            missing="",
         )
 
 
@@ -83,7 +85,8 @@ class RecursionTest(CoverageTest):
             recur(495)  # We can get at least this many stack frames.
             i = 8       # and this line will be traced
             """,
-            [1, 2, 3, 5, 7, 8], "",
+            lines=[1, 2, 3, 5, 7, 8],
+            missing="",
         )
 
     def test_long_recursion(self) -> None:
@@ -99,7 +102,8 @@ class RecursionTest(CoverageTest):
 
                     recur(100000)  # This is definitely too many frames.
                     """,
-                    [1, 2, 3, 5, 7], "",
+                    lines=[1, 2, 3, 5, 7],
+                    missing="",
                 )
 
     def test_long_recursion_recovery(self) -> None:
@@ -193,9 +197,9 @@ class MemoryLeakTest(CoverageTest):
         fails = 0
         for _ in range(10):
             ram_0 = osinfo.process_ram()
-            self.check_coverage(code.replace("ITERS", "10"), lines, "")
+            self.check_coverage(code.replace("ITERS", "10"), lines=lines, missing="")
             ram_10 = osinfo.process_ram()
-            self.check_coverage(code.replace("ITERS", "10000"), lines, "")
+            self.check_coverage(code.replace("ITERS", "10000"), lines=lines, missing="")
             ram_10k = osinfo.process_ram()
             # Running the code 10k times shouldn't grow the ram much more than
             # running it 10 times.
@@ -205,6 +209,29 @@ class MemoryLeakTest(CoverageTest):
 
         if fails > 8:
             pytest.fail("RAM grew by %d" % (ram_growth))      # pragma: only failure
+
+    @pytest.mark.skipif(not testenv.C_TRACER, reason="Only the C tracer has refcounting issues")
+    # In fact, sysmon explicitly holds onto all code objects,
+    # so this will definitely fail with sysmon.
+    @pytest.mark.parametrize("branch", [False, True])
+    def test_eval_codeobject_leak(self, branch: bool) -> None:
+        # https://github.com/nedbat/coveragepy/issues/1924
+        code = """\
+            for i in range(10_000):
+                r = eval("'a' + '1'")
+                assert r == 'a1'
+            """
+        # Looking for leaks is hard.  We consider the leak fixed if at least
+        # one of our loops only increased the footprint by a small amount.
+        base = osinfo.process_ram()
+        deltas = []
+        for _ in range(10):
+            self.check_coverage(code, lines=[1, 2, 3], missing="", branch=branch)
+            now = osinfo.process_ram()
+            deltas.append(now - base)
+            print(f"Mem delta: {(now - base)//1024}")
+            base = now
+        assert any(d < 50 * 1024 for d in deltas)
 
 
 class MemoryFumblingTest(CoverageTest):
@@ -475,7 +502,7 @@ class GettraceTest(CoverageTest):
 
     def test_setting_new_trace_function(self) -> None:
         # https://github.com/nedbat/coveragepy/issues/436
-        if testenv.SETTRACE_CORE:
+        if testenv.SETTRACE_CORE or not env.PYBEHAVIOR.branch_right_left:
             missing = "5-7, 13-14"
         else:
             missing = "5-7"
@@ -543,8 +570,8 @@ class GettraceTest(CoverageTest):
             """)
         status, out = self.run_command_status("python atexit_gettrace.py")
         assert status == 0
-        if env.PYPY and env.PYPYVERSION >= (5, 4):
-            # Newer PyPy clears the trace function before atexit runs.
+        if env.PYPY:
+            # PyPy clears the trace function before atexit runs.
             assert out == "None\n"
         else:
             # Other Pythons leave the trace function in place.

@@ -5,7 +5,7 @@
 
 from typing import Any, Dict
 
-from coverage.types import TFileDisposition, TTraceData, TTraceFn, TracerCore
+from coverage.types import TFileDisposition, TTraceData, TTraceFn, Tracer
 
 class CFileDisposition(TFileDisposition):
     """CFileDisposition is in ctracer/filedisp.c"""
@@ -18,7 +18,7 @@ class CFileDisposition(TFileDisposition):
     trace: Any
     def __init__(self) -> None: ...
 
-class CTracer(TracerCore):
+class CTracer(Tracer):
     """CTracer is in ctracer/tracer.c"""
     check_include: Any
     concur_id_func: Any

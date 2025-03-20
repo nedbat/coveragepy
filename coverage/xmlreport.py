@@ -12,7 +12,8 @@ import time
 import xml.dom.minidom
 
 from dataclasses import dataclass
-from typing import Any, IO, Iterable, TYPE_CHECKING
+from typing import Any, IO, TYPE_CHECKING
+from collections.abc import Iterable
 
 from coverage import __version__, files
 from coverage.misc import isolate_module, human_sorted, human_sorted_items

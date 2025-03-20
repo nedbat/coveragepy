@@ -5,7 +5,8 @@
 
 from __future__ import annotations
 
-from typing import IO, Iterable
+from typing import IO
+from collections.abc import Iterable
 
 import pytest
 

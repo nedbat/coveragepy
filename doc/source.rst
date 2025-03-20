@@ -128,7 +128,7 @@ current directory:
             ]
 
     .. code-tab:: ini
-        :caption: setup.cfg, tox.ini
+        :caption: setup.cfg or tox.ini
 
         [coverage:run]
         omit =
@@ -139,7 +139,7 @@ current directory:
             # omit this single file
             utils/tirefire.py
 
-.. [[[end]]] (checksum: 9fa764509b4c484ea613298a20d4b577)
+.. [[[end]]] (checksum: 84ad2743cc0c7a077770e50fcedab29d)
 
 The ``source``, ``include``, and ``omit`` values all work together to determine
 the source that will be measured.

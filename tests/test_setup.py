@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import sys
 
-from typing import List, cast
+from typing import cast
 
 import pytest
 
@@ -48,7 +48,7 @@ class SetupPyTest(CoverageTest):
         sys.path.insert(0, '')
         from setup import setup_args
 
-        classifiers = cast(List[str], setup_args['classifiers'])
+        classifiers = cast(list[str], setup_args['classifiers'])
         assert len(classifiers) > 7
         assert classifiers[-1].startswith("Development Status ::")
         assert "Programming Language :: Python :: %d" % sys.version_info[:1] in classifiers

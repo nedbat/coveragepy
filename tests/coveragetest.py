@@ -5,9 +5,9 @@
 
 from __future__ import annotations
 
+import collections
 import contextlib
 import datetime
-import difflib
 import glob
 import io
 import os
@@ -19,8 +19,9 @@ import sys
 
 from types import ModuleType
 from typing import (
-    Any, Collection, Iterable, Iterator, Mapping, Sequence,
+    Any,
 )
+from collections.abc import Collection, Iterable, Iterator, Mapping, Sequence
 
 import coverage
 from coverage import Coverage
@@ -29,7 +30,7 @@ from coverage.data import CoverageData
 from coverage.misc import import_local_file
 from coverage.types import TArc, TLineNo
 
-from tests.helpers import arcs_to_arcz_repr, arcz_to_arcs, assert_count_equal
+from tests.helpers import arcz_to_arcs, assert_count_equal
 from tests.helpers import nice_file, run_command
 from tests.mixins import PytestBase, StdStreamCapturingMixin, RestoreModulesMixin, TempDirMixin
 
@@ -44,6 +45,23 @@ TESTS_DIR = os.path.dirname(__file__)
 # Defaults to the top of the source tree, but can be overridden if we need
 # some help on certain platforms.
 COVERAGE_INSTALL_ARGS = os.getenv("COVERAGE_INSTALL_ARGS", nice_file(TESTS_DIR, ".."))
+
+
+def arcs_to_branches(arcs: Iterable[TArc]) -> dict[TLineNo, list[TLineNo]]:
+    """Convert a list of arcs into a dict showing branches."""
+    arcs_combined = collections.defaultdict(set)
+    for fromno, tono in arcs:
+        arcs_combined[fromno].add(tono)
+    branches = collections.defaultdict(list)
+    for fromno, tono in arcs:
+        if len(arcs_combined[fromno]) > 1:
+            branches[fromno].append(tono)
+    return branches
+
+
+def branches_to_arcs(branches: dict[TLineNo, list[TLineNo]]) -> list[TArc]:
+    """Convert a dict of branches into a list of arcs."""
+    return [(fromno, tono) for fromno, tonos in branches.items() for tono in tonos]
 
 
 class CoverageTest(
@@ -125,42 +143,18 @@ class CoverageTest(
         self.last_module_name = 'coverage_test_' + str(random.random())[2:]
         return self.last_module_name
 
-    def _check_arcs(
-        self,
-        a1: Iterable[TArc] | None,
-        a2: Iterable[TArc] | None,
-        arc_type: str,
-    ) -> str:
-        """Check that the arc lists `a1` and `a2` are equal.
-
-        If they are equal, return empty string. If they are unequal, return
-        a string explaining what is different.
-        """
-        # Make them into multi-line strings so we can see what's going wrong.
-        s1 = arcs_to_arcz_repr(a1)
-        s2 = arcs_to_arcz_repr(a2)
-        if s1 != s2:
-            lines1 = s1.splitlines(True)
-            lines2 = s2.splitlines(True)
-            diff = "".join(difflib.ndiff(lines1, lines2))
-            return "\n" + arc_type + " arcs differ: minus is expected, plus is actual\n" + diff
-        else:
-            return ""
-
     def check_coverage(
         self,
         text: str,
+        *,
         lines: Sequence[TLineNo] | Sequence[list[TLineNo]] | None = None,
         missing: str = "",
         report: str = "",
         excludes: Iterable[str] | None = None,
         partials: Iterable[str] = (),
-        arcz: str | None = None,
-        arcz_missing: str | None = None,
-        arcz_unpredicted: str | None = None,
-        arcs: Iterable[TArc] | None = None,
-        arcs_missing: Iterable[TArc] | None = None,
-        arcs_unpredicted: Iterable[TArc] | None = None,
+        branchz: str | None = None,
+        branchz_missing: str | None = None,
+        branch: bool = True,
     ) -> Coverage:
         """Check the coverage measurement of `text`.
 
@@ -170,12 +164,9 @@ class CoverageTest(
         regexes to match against for excluding lines, and `report` is the text
         of the measurement report.
 
-        For arc measurement, `arcz` is a string that can be decoded into arcs
-        in the code (see `arcz_to_arcs` for the encoding scheme).
-        `arcz_missing` are the arcs that are not executed, and
-        `arcz_unpredicted` are the arcs executed in the code, but not deducible
-        from the code.  These last two default to "", meaning we explicitly
-        check that there are no missing or unpredicted arcs.
+        For branch measurement, `branchz` is a string that can be decoded into
+        arcs in the code (see `arcz_to_arcs` for the encoding scheme).
+        `branchz_missing` are the arcs that are not executed.
 
         Returns the Coverage object, in case you want to poke at it some more.
 
@@ -188,15 +179,14 @@ class CoverageTest(
 
         self.make_file(modname + ".py", text)
 
-        if arcs is None and arcz is not None:
-            arcs = arcz_to_arcs(arcz)
-        if arcs_missing is None and arcz_missing is not None:
-            arcs_missing = arcz_to_arcs(arcz_missing)
-        if arcs_unpredicted is None and arcz_unpredicted is not None:
-            arcs_unpredicted = arcz_to_arcs(arcz_unpredicted)
+        branches = branches_missing = None
+        if branchz is not None:
+            branches = arcz_to_arcs(branchz)
+        if branchz_missing is not None:
+            branches_missing = arcz_to_arcs(branchz_missing)
 
         # Start up coverage.py.
-        cov = coverage.Coverage(branch=True)
+        cov = coverage.Coverage(branch=branch)
         cov.erase()
         for exc in excludes or []:
             cov.exclude(exc)
@@ -219,8 +209,31 @@ class CoverageTest(
             else:
                 # lines is a list of possible line number lists, one of them
                 # must match.
-                for line_list in lines:
+                for i, line_list in enumerate(lines):   # pylint: disable=unused-variable
                     if statements == line_list:
+                        # PYVERSIONS: we might be able to trim down multiple
+                        # lines passed into this function.
+                        # Uncomment this code, run the whole test suite, then
+                        # sort /tmp/check_coverage_multi_line.out to group the
+                        # tests together and see if any of the `lines` elements
+                        # haven't been used.
+                        # One of the calls in test_successful_coverage passes
+                        # three `lines` elements, only one of which is right.
+                        # We need to keep that test until we can delete the
+                        # multi-lines option entirely.
+                        #
+                        # import inspect, platform
+                        # frinfo = inspect.getframeinfo(inspect.currentframe().f_back)
+                        # version = "{} {}.{}".format(
+                        #     platform.python_implementation(),
+                        #     *sys.version_info[:2],
+                        # )
+                        # with open("/tmp/check_coverage_multi_line.out", "a") as f:
+                        #     print(
+                        #         f"{frinfo.filename}@{frinfo.lineno}: "
+                        #         + f"lines {i + 1}/{len(lines)}: {version}",
+                        #         file=f,
+                        #     )
                         break
                 else:
                     assert False, f"None of the lines choices matched {statements!r}"
@@ -229,20 +242,19 @@ class CoverageTest(
             msg = f"missing: {missing_formatted!r} != {missing!r}"
             assert missing_formatted == missing, msg
 
-        if arcs is not None:
-            # print("Possible arcs:")
-            # print(" expected:", arcs)
-            # print(" actual:", analysis.arc_possibilities)
-            # print("Executed:")
-            # print(" actual:", sorted(set(analysis.arcs_executed)))
-            # TODO: this would be nicer with pytest-check, once we can run that.
-            msg = (
-                self._check_arcs(arcs, analysis.arc_possibilities, "Possible") +
-                self._check_arcs(arcs_missing, analysis.arcs_missing(), "Missing") +
-                self._check_arcs(arcs_unpredicted, analysis.arcs_unpredicted(), "Unpredicted")
+        if branches is not None:
+            trimmed_arcs = branches_to_arcs(arcs_to_branches(analysis.arc_possibilities))
+            assert branches == trimmed_arcs, (
+                f"Wrong possible branches: {branches} != {trimmed_arcs}"
             )
-            if msg:
-                assert False, msg
+            if branches_missing is not None:
+                assert set(branches_missing) <= set(branches), (
+                    f"{branches_missing = }, has non-branches in it."
+                )
+                analysis_missing = branches_to_arcs(analysis.missing_branch_arcs())
+                assert branches_missing == analysis_missing, (
+                    f"Wrong missing branches: {branches_missing} != {analysis_missing}"
+                )
 
         if report:
             frep = io.StringIO()
@@ -390,11 +402,11 @@ class CoverageTest(
     coverage_command = "coverage"
 
     def run_command(self, cmd: str) -> str:
-        """Run the command-line `cmd` in a sub-process.
+        """Run the command-line `cmd` in a subprocess.
 
-        `cmd` is the command line to invoke in a sub-process. Returns the
+        `cmd` is the command line to invoke in a subprocess. Returns the
         combined content of `stdout` and `stderr` output streams from the
-        sub-process.
+        subprocess.
 
         See `run_command_status` for complete semantics.
 
@@ -407,7 +419,7 @@ class CoverageTest(
         return output
 
     def run_command_status(self, cmd: str) -> tuple[int, str]:
-        """Run the command-line `cmd` in a sub-process, and print its output.
+        """Run the command-line `cmd` in a subprocess, and print its output.
 
         Use this when you need to test the process behavior of coverage.
 
@@ -433,7 +445,7 @@ class CoverageTest(
         command_args = split_commandline[1:]
 
         if command_name == "python":
-            # Running a Python interpreter in a sub-processes can be tricky.
+            # Running a Python interpreter in a subprocesses can be tricky.
             # Use the real name of our own executable. So "python foo.py" might
             # get executed as "python3.3 foo.py". This is important because
             # Python 3.x doesn't install as "python", so you might get a Python

@@ -12,13 +12,30 @@ import sys
 import threading
 
 from types import FrameType, ModuleType
-from typing import Any, Callable, Set, cast
+from typing import Any, Callable, cast
 
 from coverage import env
 from coverage.types import (
-    TArc, TFileDisposition, TLineNo, TTraceData, TTraceFileData, TTraceFn,
-    TracerCore, TWarnFn,
+    TArc,
+    TFileDisposition,
+    TLineNo,
+    TShouldStartContextFn,
+    TShouldTraceFn,
+    TTraceData,
+    TTraceFileData,
+    TTraceFn,
+    TWarnFn,
+    Tracer,
 )
+
+
+# I don't understand why, but if we use `cast(set[TLineNo], ...)` inside
+# the _trace() function, we get some strange behavior on PyPy 3.10.
+# Assigning these names here and using them below fixes the problem.
+# See https://github.com/nedbat/coveragepy/issues/1902
+set_TLineNo = set[TLineNo]
+set_TArc = set[TArc]
+
 
 # We need the YIELD_VALUE opcode below, in a comparison-friendly form.
 # PYVERSIONS: RESUME is new in Python3.11
@@ -36,7 +53,7 @@ else:
 
 THIS_FILE = __file__.rstrip("co")
 
-class PyTracer(TracerCore):
+class PyTracer(Tracer):
     """Python implementation of the raw data tracer."""
 
     # Because of poor implementations of trace-function-manipulating tools,
@@ -64,9 +81,9 @@ class PyTracer(TracerCore):
         # Attributes set from the collector:
         self.data: TTraceData
         self.trace_arcs = False
-        self.should_trace: Callable[[str, FrameType], TFileDisposition]
+        self.should_trace: TShouldTraceFn
         self.should_trace_cache: dict[str, TFileDisposition | None]
-        self.should_start_context: Callable[[FrameType], str | None] | None = None
+        self.should_start_context: TShouldStartContextFn | None = None
         self.switch_context: Callable[[str | None], None] | None = None
         self.lock_data: Callable[[], None]
         self.unlock_data: Callable[[], None]
@@ -245,9 +262,9 @@ class PyTracer(TracerCore):
                 flineno: TLineNo = frame.f_lineno
 
                 if self.trace_arcs:
-                    cast(Set[TArc], self.cur_file_data).add((self.last_line, flineno))
+                    cast(set_TArc, self.cur_file_data).add((self.last_line, flineno))
                 else:
-                    cast(Set[TLineNo], self.cur_file_data).add(flineno)
+                    cast(set_TLineNo, self.cur_file_data).add(flineno)
                 self.last_line = flineno
 
         elif event == "return":
@@ -278,7 +295,7 @@ class PyTracer(TracerCore):
                         real_return = True
                 if real_return:
                     first = frame.f_code.co_firstlineno
-                    cast(Set[TArc], self.cur_file_data).add((self.last_line, -first))
+                    cast(set_TArc, self.cur_file_data).add((self.last_line, -first))
 
             # Leaving this function, pop the filename stack.
             self.cur_file_data, self.cur_file_name, self.last_line, self.started_context = (

@@ -50,6 +50,15 @@ for the table.  There will be a row for each combination of the two dimensions.
 The `column` argument is the remaining dimension that is used to add columns to
 the table, one for each item in that dimension.
 
+To run a benchmark, create a Python file with a run_experiment call in it.
+Many are in run.py, guarded by ``if 0:`` and ``if 1:`` clauses.  In the
+benchmark directory, run your Python file.  If you haven't provided the
+``num_runs`` argument to run_experiment, put the number of runs on the command
+line::
+
+    % cd benchmark
+    % python3 run.py 3
+
 For example::
 
     run_experiment(

@@ -19,16 +19,15 @@ import time
 import warnings
 
 from types import FrameType
-from typing import (
-    cast,
-    Any, Callable, IO, Iterable, Iterator, List,
-)
+from typing import cast, Any, Callable, IO, Union
+from collections.abc import Iterable, Iterator
 
 from coverage import env
 from coverage.annotate import AnnotateReporter
-from coverage.collector import Collector, HAS_CTRACER
+from coverage.collector import Collector
 from coverage.config import CoverageConfig, read_coverage_config
 from coverage.context import should_start_context_test_function, combine_context_switchers
+from coverage.core import Core, HAS_CTRACER
 from coverage.data import CoverageData, combine_parallel_data
 from coverage.debug import (
     DebugControl, NoDebugging, short_stack, write_formatted_info, relevant_environment_display,
@@ -44,14 +43,14 @@ from coverage.misc import bool_or_none, join_regex
 from coverage.misc import DefaultValue, ensure_dir_for_file, isolate_module
 from coverage.multiproc import patch_multiprocessing
 from coverage.plugin import FileReporter
-from coverage.plugin_support import Plugins
+from coverage.plugin_support import Plugins, TCoverageInit
 from coverage.python import PythonFileReporter
 from coverage.report import SummaryReporter
 from coverage.report_core import render_report
 from coverage.results import Analysis, analysis_from_file_reporter
 from coverage.types import (
     FilePath, TConfigurable, TConfigSectionIn, TConfigValueIn, TConfigValueOut,
-    TFileDisposition, TLineNo, TMorf,
+    TFileDisposition, TLineNo, TMorf
 )
 from coverage.xmlreport import XmlReporter
 
@@ -139,6 +138,7 @@ class Coverage(TConfigurable):
         check_preimported: bool = False,
         context: str | None = None,
         messages: bool = False,
+        plugins: Iterable[Callable[..., None]] | None = None,
     ) -> None:
         """
         Many of these arguments duplicate and override values that can be
@@ -212,6 +212,11 @@ class Coverage(TConfigurable):
         If `messages` is true, some messages will be printed to stdout
         indicating what is happening.
 
+        If `plugins` are passed, they are an iterable of function objects
+        accepting a `reg` object to register plugins, as described in
+        :ref:`api_plugin`.  When they are provided, they will override the
+        plugins found in the coverage configuration file.
+
         .. versionadded:: 4.0
             The `concurrency` parameter.
 
@@ -226,6 +231,9 @@ class Coverage(TConfigurable):
 
         .. versionadded:: 6.0
             The `messages` parameter.
+
+        .. versionadded:: 7.7
+            The `plugins` parameter.
 
         """
         # Start self.config as a usable default configuration. It will soon be
@@ -250,7 +258,7 @@ class Coverage(TConfigurable):
         self._warn_no_data = True
         self._warn_unimported_source = True
         self._warn_preimported_source = check_preimported
-        self._no_warn_slugs: list[str] = []
+        self._no_warn_slugs: set[str] = set()
         self._messages = messages
 
         # A record of all the warnings that have been issued.
@@ -261,7 +269,9 @@ class Coverage(TConfigurable):
         self._debug: DebugControl = NoDebugging()
         self._inorout: InOrOut | None = None
         self._plugins: Plugins = Plugins()
+        self._plugin_override = cast(Union[Iterable[TCoverageInit], None], plugins)
         self._data: CoverageData | None = None
+        self._core: Core | None = None
         self._collector: Collector | None = None
         self._metacov = False
 
@@ -301,7 +311,7 @@ class Coverage(TConfigurable):
             context=context,
         )
 
-        # If we have sub-process measurement happening automatically, then we
+        # If we have subprocess measurement happening automatically, then we
         # want any explicit creation of a Coverage object to mean, this process
         # is already coverage-aware, so don't auto-measure it.  By now, the
         # auto-creation of a Coverage object has already happened.  But we can
@@ -340,7 +350,11 @@ class Coverage(TConfigurable):
             self._file_mapper = relative_filename
 
         # Load plugins
-        self._plugins = Plugins.load_plugins(self.config.plugins, self.config, self._debug)
+        self._plugins = Plugins(self._debug)
+        if self._plugin_override:
+            self._plugins.load_from_callables(self._plugin_override)
+        else:
+            self._plugins.load_from_config(self.config.plugins, self.config)
 
         # Run configuring plugins.
         for plugin in self._plugins.configurers:
@@ -424,7 +438,7 @@ class Coverage(TConfigurable):
 
         """
         if not self._no_warn_slugs:
-            self._no_warn_slugs = list(self.config.disable_warnings)
+            self._no_warn_slugs = set(self.config.disable_warnings)
 
         if slug in self._no_warn_slugs:
             # Don't issue the warning
@@ -439,7 +453,7 @@ class Coverage(TConfigurable):
 
         if once:
             assert slug is not None
-            self._no_warn_slugs.append(slug)
+            self._no_warn_slugs.add(slug)
 
     def _message(self, msg: str) -> None:
         """Write a message to the user, if configured to do so."""
@@ -532,16 +546,21 @@ class Coverage(TConfigurable):
 
         should_start_context = combine_context_switchers(context_switchers)
 
+        self._core = Core(
+            warn=self._warn,
+            config=self.config,
+            dynamic_contexts=(should_start_context is not None),
+            metacov=self._metacov,
+        )
         self._collector = Collector(
+            core=self._core,
             should_trace=self._should_trace,
             check_include=self._check_include_omit_etc,
             should_start_context=should_start_context,
             file_mapper=self._file_mapper,
-            timid=self.config.timid,
             branch=self.config.branch,
             warn=self._warn,
             concurrency=concurrency,
-            metacov=self._metacov,
         )
 
         suffix = self._data_suffix_specified
@@ -563,7 +582,7 @@ class Coverage(TConfigurable):
         self._collector.use_data(self._data, self.config.context)
 
         # Early warning if we aren't going to be able to support plugins.
-        if self._plugins.file_tracers and not self._collector.supports_plugins:
+        if self._plugins.file_tracers and not self._core.supports_plugins:
             self._warn(
                 "Plugin file tracers ({}) aren't supported with {}".format(
                     ", ".join(
@@ -584,7 +603,7 @@ class Coverage(TConfigurable):
             include_namespace_packages=self.config.include_namespace_packages,
         )
         self._inorout.plugins = self._plugins
-        self._inorout.disp_class = self._collector.file_disposition_class
+        self._inorout.disp_class = self._core.file_disposition_class
 
         # It's useful to write debug info after initing for start.
         self._should_write_debug = True
@@ -675,7 +694,7 @@ class Coverage(TConfigurable):
         try:
             yield
         finally:
-            self.stop()
+            self.stop()     # pragma: nested
 
     def _atexit(self, event: str = "atexit") -> None:
         """Clean up on process shutdown."""
@@ -778,7 +797,7 @@ class Coverage(TConfigurable):
 
         """
         self._init()
-        return cast(List[str], getattr(self.config, which + "_list"))
+        return cast(list[str], getattr(self.config, which + "_list"))
 
     def save(self) -> None:
         """Save the collected coverage data to the data file."""
@@ -931,6 +950,7 @@ class Coverage(TConfigurable):
             analysis.missing_formatted(),
         )
 
+    @functools.lru_cache(maxsize=1)
     def _analyze(self, morf: TMorf) -> Analysis:
         """Analyze a module or file.  Private for now."""
         self._init()
@@ -940,6 +960,20 @@ class Coverage(TConfigurable):
         file_reporter = self._get_file_reporter(morf)
         filename = self._file_mapper(file_reporter.filename)
         return analysis_from_file_reporter(data, self.config.precision, file_reporter, filename)
+
+    def branch_stats(self, morf: TMorf) -> dict[TLineNo, tuple[int, int]]:
+        """Get branch statistics about a module.
+
+        `morf` is a module or a file name.
+
+        Returns a dict mapping line numbers to a tuple:
+        (total_exits, taken_exits).
+
+        .. versionadded:: 7.7
+
+        """
+        analysis = self._analyze(morf)
+        return analysis.branch_stats()
 
     @functools.lru_cache(maxsize=1)
     def _get_file_reporter(self, morf: TMorf) -> FileReporter:

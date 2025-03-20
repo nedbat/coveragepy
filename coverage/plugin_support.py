@@ -10,13 +10,14 @@ import os.path
 import sys
 
 from types import FrameType
-from typing import Any, Iterable, Iterator
+from typing import Any, Callable
+from collections.abc import Iterable, Iterator
 
 from coverage.exceptions import PluginError
 from coverage.misc import isolate_module
 from coverage.plugin import CoveragePlugin, FileTracer, FileReporter
 from coverage.types import (
-    TArc, TConfigurable, TDebugCtl, TLineNo, TPluginConfig, TSourceTokenLines,
+    TArc, TConfigurable, TDebugCtl, TLineNo, TPluginConfig, TSourceTokenLines
 )
 
 os = isolate_module(os)
@@ -25,7 +26,7 @@ os = isolate_module(os)
 class Plugins:
     """The currently loaded collection of coverage.py plugins."""
 
-    def __init__(self) -> None:
+    def __init__(self, debug: TDebugCtl | None = None) -> None:
         self.order: list[CoveragePlugin] = []
         self.names: dict[str, CoveragePlugin] = {}
         self.file_tracers: list[CoveragePlugin] = []
@@ -33,25 +34,17 @@ class Plugins:
         self.context_switchers: list[CoveragePlugin] = []
 
         self.current_module: str | None = None
-        self.debug: TDebugCtl | None
+        self.debug = debug
 
-    @classmethod
-    def load_plugins(
-        cls,
+    def load_from_config(
+        self,
         modules: Iterable[str],
         config: TPluginConfig,
-        debug: TDebugCtl | None = None,
-    ) -> Plugins:
-        """Load plugins from `modules`.
-
-        Returns a Plugins object with the loaded and configured plugins.
-
-        """
-        plugins = cls()
-        plugins.debug = debug
+    ) -> None:
+        """Load plugin modules, and read their settings from configuration."""
 
         for module in modules:
-            plugins.current_module = module
+            self.current_module = module
             __import__(module)
             mod = sys.modules[module]
 
@@ -62,10 +55,17 @@ class Plugins:
                 )
 
             options = config.get_plugin_options(module)
-            coverage_init(plugins, options)
+            coverage_init(self, options)
 
-        plugins.current_module = None
-        return plugins
+        self.current_module = None
+
+    def load_from_callables(
+        self,
+        plugin_inits: Iterable[TCoverageInit],
+    ) -> None:
+        """Load plugins from callables provided."""
+        for fn in plugin_inits:
+            fn(self)
 
     def add_file_tracer(self, plugin: CoveragePlugin) -> None:
         """Add a file tracer plugin.
@@ -135,6 +135,9 @@ class Plugins:
     def get(self, plugin_name: str) -> CoveragePlugin:
         """Return a plugin by name."""
         return self.names[plugin_name]
+
+
+TCoverageInit = Callable[[Plugins], None]
 
 
 class LabelledDebug:

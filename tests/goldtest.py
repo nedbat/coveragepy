@@ -13,7 +13,7 @@ import os.path
 import re
 import xml.etree.ElementTree
 
-from typing import Iterable
+from collections.abc import Iterable
 
 from tests.coveragetest import TESTS_DIR
 from tests.helpers import os_sep
@@ -91,6 +91,8 @@ def compare(
             print(f":::: diff '{expected_file}' and '{actual_file}'")
             print("\n".join(difflib.Differ().compare(expected_lines, actual_lines)))
             print(f":::: end diff '{expected_file}' and '{actual_file}'")
+            print(f"==== expected output in '{os.path.abspath(expected_dir)}'")
+            print(f"==== actual output in '{os.path.abspath(actual_dir)}'")
             save_mismatch(f)
 
     if not actual_extra:

@@ -13,7 +13,8 @@ import posixpath
 import re
 import sys
 
-from typing import Callable, Iterable
+from typing import Callable
+from collections.abc import Iterable
 
 from coverage import env
 from coverage.exceptions import ConfigError
@@ -99,7 +100,11 @@ def flat_rootname(filename: str) -> str:
     """
     dirname, basename = ntpath.split(filename)
     if dirname:
-        fp = hashlib.new("sha3_256", dirname.encode("UTF-8")).hexdigest()[:16]
+        fp = hashlib.new(
+            "sha3_256",
+            dirname.encode("UTF-8"),
+            usedforsecurity=False,
+        ).hexdigest()[:16]
         prefix = f"z_{fp}_"
     else:
         prefix = ""
@@ -185,9 +190,7 @@ def source_exists(path: str) -> bool:
 
 def python_reported_file(filename: str) -> str:
     """Return the string as Python would describe this file name."""
-    if env.PYBEHAVIOR.report_absolute_files:
-        filename = os.path.abspath(filename)
-    return filename
+    return os.path.abspath(filename)
 
 
 def isabs_anywhere(filename: str) -> bool:

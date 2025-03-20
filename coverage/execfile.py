@@ -17,7 +17,6 @@ from importlib.machinery import ModuleSpec
 from types import CodeType, ModuleType
 from typing import Any
 
-from coverage import env
 from coverage.exceptions import CoverageException, _ExceptionDuringRun, NoCode, NoSource
 from coverage.files import canonical_filename, python_reported_file
 from coverage.misc import isolate_module
@@ -148,10 +147,8 @@ class PyRunner:
             for ext in [".py", ".pyc", ".pyo"]:
                 try_filename = os.path.join(self.arg0, "__main__" + ext)
                 # 3.8.10 changed how files are reported when running a
-                # directory.  But I'm not sure how far this change is going to
-                # spread, so I'll just hard-code it here for now.
-                if env.PYVERSION >= (3, 8, 10):
-                    try_filename = os.path.abspath(try_filename)
+                # directory.
+                try_filename = os.path.abspath(try_filename)
                 if os.path.exists(try_filename):
                     self.arg0 = try_filename
                     break
@@ -291,13 +288,13 @@ def run_python_file(args: list[str]) -> None:
 
 def make_code_from_py(filename: str) -> CodeType:
     """Get source from `filename` and make a code object of it."""
-    # Open the source file.
     try:
         source = get_python_source(filename)
     except (OSError, NoSource) as exc:
         raise NoSource(f"No file to run: '{filename}'") from exc
 
-    return compile(source, filename, "exec", dont_inherit=True)
+    code = compile(source, filename, mode="exec", dont_inherit=True)
+    return code
 
 
 def make_code_from_pyc(filename: str) -> CodeType:

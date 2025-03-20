@@ -183,7 +183,7 @@ def run_tests_with_coverage(core, *runner_args):
             context = os.environ[context[1:]]
         os.environ["COVERAGE_CONTEXT"] = context + "." + core
 
-    # Create the .pth file that will let us measure coverage in sub-processes.
+    # Create the .pth file that will let us measure coverage in subprocesses.
     # The .pth file seems to have to be alphabetically after easy-install.pth
     # or the sys.path entries aren't created right?
     # There's an entry in "make clean" to get rid of this file.
@@ -321,6 +321,9 @@ def print_banner(label):
     if rev:
         version += f" (rev {rev})"
 
+    gil = "gil" if getattr(sys, '_is_gil_enabled', lambda: True)() else "nogil"
+    version += f" ({gil})"
+
     try:
         which_python = os.path.relpath(sys.executable)
     except ValueError:
@@ -376,7 +379,7 @@ def update_file(fname, pattern, replacement):
 
 
 UNRELEASED = "Unreleased\n----------"
-SCRIV_START = ".. scriv-start-here\n\n"
+RELEASES_START = ".. start-releases\n\n"
 
 
 def do_edit_for_release():
@@ -397,8 +400,8 @@ def do_edit_for_release():
     rule = "-" * len(title)
     new_head = f".. _changes_{facts.anchor}:\n\n{title}\n{rule}"
 
-    update_file("CHANGES.rst", re.escape(SCRIV_START), "")
-    update_file("CHANGES.rst", re.escape(UNRELEASED), SCRIV_START + new_head)
+    update_file("CHANGES.rst", re.escape(RELEASES_START), "")
+    update_file("CHANGES.rst", re.escape(UNRELEASED), RELEASES_START + new_head)
 
     # doc/conf.py
     new_conf = textwrap.dedent(
@@ -416,6 +419,15 @@ def do_edit_for_release():
     )
     update_file("doc/conf.py", r"(?s)# @@@ editable\n.*# @@@ end\n", new_conf)
 
+def do_release_version():
+    """Set the version to 'final' for a release."""
+    facts = get_release_facts()
+    rel_vi = facts.vi[:3] + ("final", 0)
+    rel_version = f"version_info = {rel_vi}\n_dev = 0".replace("'", '"')
+    update_file(
+        "coverage/version.py", r"(?m)^version_info = .*\n_dev = \d+$", rel_version,
+    )
+
 
 def do_bump_version():
     """Edit a few files right after a release to bump the version."""
@@ -424,8 +436,8 @@ def do_bump_version():
     # CHANGES.rst
     update_file(
         "CHANGES.rst",
-        re.escape(SCRIV_START),
-        f"{UNRELEASED}\n\nNothing yet.\n\n\n" + SCRIV_START,
+        re.escape(RELEASES_START),
+        f"{UNRELEASED}\n\nNothing yet.\n\n\n" + RELEASES_START,
     )
 
     # coverage/version.py
@@ -473,6 +485,14 @@ def do_cheats():
         + f"cd {repo.partition('/')[-1]}\n"
         + f"git checkout {facts.sha}",
     )
+
+
+def do_copy_with_hash(*args):
+    """Copy files with a cache-busting hash.  Used in tests/gold/html/Makefile."""
+    from coverage.html import copy_with_cache_bust
+    *srcs, dest_dir = args
+    for src in srcs:
+        copy_with_cache_bust(src, dest_dir)
 
 
 def do_help():

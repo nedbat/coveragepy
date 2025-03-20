@@ -21,8 +21,10 @@ comment = (
 print(f"Comment will be:\n\n{comment}\n")
 
 repo_owner = sys.argv[1]
-for m in re.finditer(fr"https://github.com/{repo_owner}/(issues|pull)/(\d+)", latest["text"]):
-    kind, number = m.groups()
+url_matches = re.finditer(fr"https://github.com/{repo_owner}/(issues|pull)/(\d+)", latest["text"])
+urls = set((m[0], m[1], m[2]) for m in url_matches)
+
+for url, kind, number in urls:
     do_comment = False
 
     if kind == "issues":
@@ -31,7 +33,7 @@ for m in re.finditer(fr"https://github.com/{repo_owner}/(issues|pull)/(\d+)", la
         if issue_data["state"] == "closed":
             do_comment = True
         else:
-            print(f"Still open, comment manually: {m[0]}")
+            print(f"Still open, comment manually: {url}")
     else:
         url = f"https://api.github.com/repos/{repo_owner}/pulls/{number}"
         pull_data = get_session().get(url).json()
@@ -39,12 +41,12 @@ for m in re.finditer(fr"https://github.com/{repo_owner}/(issues|pull)/(\d+)", la
             if pull_data["merged"]:
                 do_comment = True
             else:
-                print(f"Not merged, comment manually: {m[0]}")
+                print(f"Not merged, comment manually: {url}")
         else:
-            print(f"Still open, comment manually: {m[0]}")
+            print(f"Still open, comment manually: {url}")
 
     if do_comment:
-        print(f"Commenting on {m[0]}")
+        print(f"Commenting on {url}")
         url = f"https://api.github.com/repos/{repo_owner}/issues/{number}/comments"
         resp = get_session().post(url, json={"body": comment})
         print(resp)

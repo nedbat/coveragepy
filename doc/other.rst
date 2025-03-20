@@ -7,7 +7,6 @@
 Other resources
 ===============
 
-
 There are a number of projects that help integrate coverage.py into other
 systems, provide help using it, offer assistance, and so on.
 
@@ -17,6 +16,7 @@ a pull request`_ or `get in touch`_ some other way.
 
 .. _open a pull request: https://github.com/nedbat/coveragepy/blob/master/doc/other.rst
 .. _get in touch: https://nedbatchelder.com/site/aboutned.html
+
 
 Test runners
 ------------
@@ -47,15 +47,20 @@ Tools to provide more control over how coverage is configured.
 
   __ https://github.com/wemake-services/coverage-conditional-plugin
 
+* `coverage-simple-excludes`__ defines new comment formats for excluding code
+  based on Python versions and operating system.
+
+  __ https://pypi.org/project/coverage-simple-excludes/
+
 
 Language plugins
 ----------------
 
 Coverage.py plugins to enable coverage measurement of other languages.
 
-* `django-coverage`__ measures the coverage of Django templates.
+* `django-coverage-plugin`__ measures the coverage of Django templates.
 
-  __ https://pypi.org/project/django-coverage/
+  __ https://pypi.org/project/django-coverage-plugin/
 
 * `Cython`__ provides a plugin for measuring Cythonized code.
 

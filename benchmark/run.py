@@ -72,26 +72,24 @@ if 0:
         ],
     )
 
-
 if 0:
-    # Compare two Python versions
-    v1 = 10
-    v2 = 11
+    # Compare N Python versions
+    vers = [10, 11, 12, 13]
     run_experiment(
-        py_versions=[
-            Python(3, v1),
-            Python(3, v2),
-        ],
+        py_versions=[Python(3, v) for v in vers],
         cov_versions=[
-            Coverage("753", "coverage==7.5.3"),
+            Coverage("761", "coverage==7.6.1"),
         ],
         projects=[
             ProjectMashumaro(),
+            ProjectPygments(),
+            ProjectMypy(),
         ],
         rows=["cov", "proj"],
         column="pyver",
         ratios=[
-            (f"3.{v2} vs 3.{v1}", f"python3.{v2}", f"python3.{v1}"),
+            (f"3.{b} vs 3.{a}", f"python3.{b}", f"python3.{a}")
+            for a, b in zip(vers, vers[1:])
         ],
     )
 
@@ -100,7 +98,8 @@ if 1:
 
     run_experiment(
         py_versions=[
-            Python(3, 12),
+            # Python(3, 12),
+            AdHocPython("/usr/local/cpython", "main"),
         ],
         cov_versions=[
             NoCoverage("nocov"),
@@ -108,15 +107,17 @@ if 1:
             CoverageSource(slug="sysmon", env_vars={"COVERAGE_CORE": "sysmon"}),
         ],
         projects=[
+            ProjectPillow(), #"-k test_pickle"),
+            ProjectPillowBranch(), #"-k test_pickle"),
             # ProjectSphinx(),  # Works, slow
-            ProjectPygments(),  # Works
+            # ProjectPygments(),  # Doesn't work on 3.14
             # ProjectRich(),  # Doesn't work
             # ProjectTornado(),  # Works, tests fail
             # ProjectDulwich(),  # Works
             # ProjectBlack(),  # Works, slow
             # ProjectMpmath(),  # Works, slow
-            ProjectMypy(),  # Works, slow
-            # ProjectHtml5lib(),  # Works
+            # ProjectMypy(),  # Works, slow
+            # ProjectHtml5lib(),  # Doesn't work on 3.14
             # ProjectUrllib3(),  # Works
         ],
         rows=["pyver", "proj"],
@@ -166,32 +167,6 @@ if 0:
         projects=[
             ProjectMashumaro(),     # small: "-k ck"
             ProjectOperator(),      # small: "-k irk"
-        ],
-        rows=["pyver", "proj"],
-        column="cov",
-        ratios=[
-            (f"732%", "732", "nocov"),
-            (f"sysmon%", "sysmon", "nocov"),
-        ],
-    )
-
-if 0:
-    # Compare 3.12 coverage vs no coverage
-    run_experiment(
-        py_versions=[
-            Python(3, 12),
-        ],
-        cov_versions=[
-            NoCoverage("nocov"),
-            Coverage("732", "coverage==7.3.2"),
-            CoverageSource(
-                slug="sysmon",
-                env_vars={"COVERAGE_CORE": "sysmon"},
-            ),
-        ],
-        projects=[
-            ProjectMashumaro(),         # small: "-k ck"
-            ProjectMashumaroBranch(),   # small: "-k ck"
         ],
         rows=["pyver", "proj"],
         column="cov",

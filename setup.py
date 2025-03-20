@@ -3,17 +3,14 @@
 
 """Code coverage measurement for Python"""
 
-# Distutils setup for coverage.py
+# Setuptools setup for coverage.py
 # This file is used unchanged under all versions of Python.
 
 import os
 import sys
 
-# Setuptools has to be imported before distutils, or things break.
-from setuptools import setup
-from distutils.core import Extension  # pylint: disable=wrong-import-order
+from setuptools import Extension, errors, setup
 from setuptools.command.build_ext import build_ext  # pylint: disable=wrong-import-order
-from distutils import errors  # pylint: disable=wrong-import-order
 
 # Get or massage our metadata.  We exec coverage/version.py so we can avoid
 # importing the product code into setup.py.
@@ -26,12 +23,12 @@ License :: OSI Approved :: Apache Software License
 Operating System :: OS Independent
 Programming Language :: Python
 Programming Language :: Python :: 3
-Programming Language :: Python :: 3.8
 Programming Language :: Python :: 3.9
 Programming Language :: Python :: 3.10
 Programming Language :: Python :: 3.11
 Programming Language :: Python :: 3.12
 Programming Language :: Python :: 3.13
+Programming Language :: Python :: 3.14
 Programming Language :: Python :: Implementation :: CPython
 Programming Language :: Python :: Implementation :: PyPy
 Topic :: Software Development :: Quality Assurance
@@ -123,7 +120,7 @@ setup_args = dict(
         "Mastodon": "https://hachyderm.io/@coveragepy",
         "Mastodon (nedbat)": "https://hachyderm.io/@nedbat",
     },
-    python_requires=">=3.8",  # minimum of PYVERSIONS
+    python_requires=">=3.9",  # minimum of PYVERSIONS
 )
 
 # A replacement for the build_ext command which raises a single exception
@@ -131,12 +128,11 @@ setup_args = dict(
 
 ext_errors = (
     errors.CCompilerError,
-    errors.DistutilsExecError,
-    errors.DistutilsPlatformError,
+    errors.ExecError,
+    errors.PlatformError,
 )
 if sys.platform == "win32":
-    # distutils.msvc9compiler can raise an IOError when failing to
-    # find the compiler
+    # IOError can be raised when failing to find the compiler
     ext_errors += (IOError,)
 
 
@@ -155,7 +151,7 @@ class ve_build_ext(build_ext):
         """Wrap `run` with `BuildFailed`."""
         try:
             build_ext.run(self)
-        except errors.DistutilsPlatformError as exc:
+        except errors.PlatformError as exc:
             raise BuildFailed() from exc
 
     def build_extension(self, ext):
@@ -174,9 +170,11 @@ class ve_build_ext(build_ext):
 
 
 # There are a few reasons we might not be able to compile the C extension.
-# Figure out if we should attempt the C extension or not.
+# Figure out if we should attempt the C extension or not. Define
+# COVERAGE_DISABLE_EXTENSION in the build environment to explicitly disable the
+# extension.
 
-compile_extension = True
+compile_extension = os.getenv("COVERAGE_DISABLE_EXTENSION", None) is None
 
 if "__pypy__" in sys.builtin_module_names:
     # Pypy can't compile C extensions
