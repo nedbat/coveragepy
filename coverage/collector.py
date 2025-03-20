@@ -367,7 +367,7 @@ class Collector:
             tracer.stop()
             stats = tracer.get_stats()
             if stats:
-                print("\nCoverage.py tracer stats:")
+                print(f"\nCoverage.py {tracer.__class__.__name__} stats:")
                 for k, v in human_sorted_items(stats.items()):
                     print(f"{k:>20}: {v}")
         if self.threading:

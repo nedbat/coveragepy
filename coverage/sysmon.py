@@ -369,9 +369,10 @@ class SysMonitor(Tracer):
 
         self.stats: dict[str, int] | None = None
         if COLLECT_STATS:
-            self.stats = {
-                "starts": 0,
-            }
+            self.stats = dict.fromkeys(
+                "starts start_tracing returns line_lines line_arcs branches branch_trails".split(),
+                0,
+            )
 
         self.stopped = False
         self._activity = False
@@ -493,6 +494,8 @@ class SysMonitor(Tracer):
             self.code_objects.append(code)
 
             if tracing_code:
+                if self.stats is not None:
+                    self.stats["start_tracing"] += 1
                 events = sys.monitoring.events
                 with self.lock:
                     if self.sysmon_on:
@@ -516,6 +519,8 @@ class SysMonitor(Tracer):
         retval: object,
     ) -> MonitorReturn:
         """Handle sys.monitoring.events.PY_RETURN events for branch coverage."""
+        if self.stats is not None:
+            self.stats["returns"] += 1
         code_info = self.code_infos.get(id(code))
         if code_info is not None and code_info.file_data is not None:
             assert code_info.byte_to_line is not None
@@ -529,6 +534,8 @@ class SysMonitor(Tracer):
     @panopticon("code", "line")
     def sysmon_line_lines(self, code: CodeType, line_number: TLineNo) -> MonitorReturn:
         """Handle sys.monitoring.events.LINE events for line coverage."""
+        if self.stats is not None:
+            self.stats["line_lines"] += 1
         code_info = self.code_infos.get(id(code))
         if code_info is not None and code_info.file_data is not None:
             cast(set[TLineNo], code_info.file_data).add(line_number)
@@ -538,6 +545,8 @@ class SysMonitor(Tracer):
     @panopticon("code", "line")
     def sysmon_line_arcs(self, code: CodeType, line_number: TLineNo) -> MonitorReturn:
         """Handle sys.monitoring.events.LINE events for branch coverage."""
+        if self.stats is not None:
+            self.stats["line_arcs"] += 1
         code_info = self.code_infos[id(code)]
         if code_info.file_data is not None:
             arc = (line_number, line_number)
@@ -550,9 +559,13 @@ class SysMonitor(Tracer):
         self, code: CodeType, instruction_offset: TOffset, destination_offset: TOffset
     ) -> MonitorReturn:
         """Handle BRANCH_RIGHT and BRANCH_LEFT events."""
+        if self.stats is not None:
+            self.stats["branches"] += 1
         code_info = self.code_infos[id(code)]
         if code_info.file_data is not None:
             if not code_info.branch_trails:
+                if self.stats is not None:
+                    self.stats["branch_trails"] += 1
                 populate_branch_trails(code, code_info)
                 # log(f"branch_trails for {code}:\n    {code_info.branch_trails}")
             added_arc = False
