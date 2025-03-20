@@ -332,7 +332,7 @@ def _glob_to_regex(pattern: str) -> str:
     # Turn all backslashes into slashes to simplify the tokenizer.
     pattern = pattern.replace("\\", "/")
     if "/" not in pattern:
-        pattern = "**/" + pattern
+        pattern = f"**/{pattern}"
     path_rx = []
     pos = 0
     while pos < len(pattern):

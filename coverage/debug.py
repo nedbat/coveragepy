@@ -362,7 +362,7 @@ class CwdTracker:
         """Add a cwd message for each new cwd."""
         cwd = os.getcwd()
         if cwd != self.cwd:
-            text = f"cwd is now {cwd!r}\n" + text
+            text = f"cwd is now {cwd!r}\n{text}"
             self.cwd = cwd
         return text
 
@@ -404,7 +404,7 @@ class PytestTracker:
         """Add a message when the pytest test changes."""
         test_name = os.getenv("PYTEST_CURRENT_TEST")
         if test_name != self.test_name:
-            text = f"Pytest context: {test_name}\n" + text
+            text = f"Pytest context: {test_name}\n{text}"
             self.test_name = test_name
         return text
 

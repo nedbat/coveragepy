@@ -266,7 +266,7 @@ class CoverageData:
             self._filename = self._basename
             suffix = filename_suffix(self._suffix)
             if suffix:
-                self._filename += "." + suffix
+                self._filename += f".{suffix}"
 
     def _reset(self) -> None:
         """Reset our attributes."""

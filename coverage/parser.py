@@ -741,7 +741,7 @@ class AstArcAnalyzer:
         """Examine the AST tree from `self.root_node` to determine possible arcs."""
         for node in ast.walk(self.root_node):
             node_name = node.__class__.__name__
-            code_object_handler = getattr(self, "_code_object__" + node_name, None)
+            code_object_handler = getattr(self, f"_code_object__{node_name}", None)
             if code_object_handler is not None:
                 code_object_handler(node)
 
@@ -832,7 +832,7 @@ class AstArcAnalyzer:
         node_name = node.__class__.__name__
         handler = cast(
             Optional[Callable[[ast.AST], TLineNo]],
-            getattr(self, "_line__" + node_name, None),
+            getattr(self, f"_line__{node_name}", None),
         )
         if handler is not None:
             line = handler(node)
@@ -913,7 +913,7 @@ class AstArcAnalyzer:
         node_name = node.__class__.__name__
         handler = cast(
             Optional[Callable[[ast.AST], set[ArcStart]]],
-            getattr(self, "_handle__" + node_name, None),
+            getattr(self, f"_handle__{node_name}", None),
         )
         if handler is not None:
             arc_starts = handler(node)
@@ -989,7 +989,7 @@ class AstArcAnalyzer:
 
         missing_fn = cast(
             Optional[Callable[[ast.AST], Optional[ast.AST]]],
-            getattr(self, "_missing__" + node.__class__.__name__, None),
+            getattr(self, f"_missing__{node.__class__.__name__}", None),
         )
         if missing_fn is not None:
             ret_node = missing_fn(node)

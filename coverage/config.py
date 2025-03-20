@@ -449,7 +449,7 @@ class CoverageConfig(TConfigurable, TPluginConfig):
         """
         section, option = where.split(":")
         if cp.has_option(section, option):
-            method = getattr(cp, "get" + type_)
+            method = getattr(cp, f"get{type_}")
             setattr(self, attr, method(section, option))
             return True
         return False

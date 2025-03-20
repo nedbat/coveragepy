@@ -142,7 +142,7 @@ class PyRunner:
             # Running a directory means running the __main__.py file in that
             # directory.
             for ext in [".py", ".pyc", ".pyo"]:
-                try_filename = os.path.join(self.arg0, "__main__" + ext)
+                try_filename = os.path.join(self.arg0, f"__main__{ext}")
                 # 3.8.10 changed how files are reported when running a
                 # directory.
                 try_filename = os.path.abspath(try_filename)

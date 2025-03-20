@@ -6,7 +6,6 @@
 from __future__ import annotations
 
 from types import FrameType
-from typing import cast
 from collections.abc import Sequence
 
 from coverage.types import TShouldStartContextFn
@@ -65,11 +64,11 @@ def qualname_from_frame(frame: FrameType) -> str | None:
         func = frame.f_globals.get(fname)
         if func is None:
             return None
-        return cast(str, func.__module__ + "." + fname)
+        return f"{func.__module__}.{fname}"
 
     func = getattr(method, "__func__", None)
     if func is None:
         cls = self.__class__
-        return cast(str, cls.__module__ + "." + cls.__name__ + "." + fname)
+        return f"{cls.__module__}.{cls.__name__}.{fname}"
 
-    return cast(str, func.__module__ + "." + func.__qualname__)
+    return f"{func.__module__}.{func.__qualname__}"
