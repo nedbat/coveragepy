@@ -20,13 +20,16 @@ upgrading your version of coverage.py.
     ..  Version 9.8.1 — 2027-07-27
     ..  --------------------------
 
-Unreleased
-----------
-
-Nothing yet.
-
-
 .. start-releases
+
+.. _changes_7-7-1:
+
+Version 7.7.1 — 2025-03-21
+--------------------------
+
+- A few small tweaks to the sys.monitoring support for Python 3.14.  Please
+  test!
+
 
 .. _changes_7-7-0:
 
