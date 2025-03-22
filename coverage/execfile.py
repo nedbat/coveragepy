@@ -75,7 +75,10 @@ class PyRunner:
     """
     def __init__(self, args: list[str], as_module: bool = False) -> None:
         self.args = args
+        # was the `coverage run -m` option used?
         self.as_module = as_module
+        # was coverage run as `python -m coverage`?
+        self.we_are_dashm = False
 
         self.arg0 = args[0]
         self.package: str | None = None
@@ -84,13 +87,23 @@ class PyRunner:
         self.loader: DummyLoader | None = None
         self.spec: ModuleSpec | None = None
 
+    def set_we_are_dashm(self) -> None:
+        """Indicates that coverage was run as `python -m coverage`."""
+        self.we_are_dashm = True
+
     def prepare(self) -> None:
         """Set sys.path properly.
 
         This needs to happen before any importing, and without importing anything.
         """
         path0: str | None
-        if env.PYVERSION >= (3, 11) and os.getenv("PYTHONSAFEPATH"):
+
+        safe_path = env.PYVERSION >= (3, 11) and getattr(sys.flags, 'safe_path')
+        if env.WINDOWS and self.we_are_dashm:
+            # Seems to be a Windows bug: https://github.com/python/cpython/issues/131484
+            safe_path = False
+
+        if safe_path:
             # See https://docs.python.org/3/using/cmdline.html#cmdoption-P
             path0 = None
         elif self.as_module:

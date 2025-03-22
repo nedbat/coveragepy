@@ -1086,6 +1086,9 @@ class CmdMainTest(CoverageTest):
     class CoverageScriptStub:
         """A stub for coverage.cmdline.CoverageScript, used by CmdMainTest."""
 
+        def __init__(self, dashm: bool = False) -> None:
+            pass
+
         def command_line(self, argv: list[str]) -> int:
             """Stub for command_line, the arg determines what it will do."""
             if argv[0] == 'hello':

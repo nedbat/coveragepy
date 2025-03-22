@@ -601,7 +601,8 @@ OK, ERR, FAIL_UNDER = 0, 1, 2
 class CoverageScript:
     """The command-line interface to coverage.py."""
 
-    def __init__(self) -> None:
+    def __init__(self, dashm: bool = False) -> None:
+        self.dashm = dashm
         self.global_option = False
         self.coverage: Coverage
 
@@ -846,6 +847,8 @@ class CoverageScript:
         os.environ["COVERAGE_RUN"] = "true"
 
         runner = PyRunner(args, as_module=bool(options.module))
+        if self.dashm:
+            runner.set_we_are_dashm()
         runner.prepare()
 
         if options.append:
@@ -958,16 +961,20 @@ HELP_TOPICS = {
 }
 
 
-def main(argv: list[str] | None = None) -> int | None:
+def main(argv: list[str] | None = None, dashm: bool = False) -> int | None:
     """The main entry point to coverage.py.
 
     This is installed as the script entry point.
+
+    `dashm` indicates whether we were run as `coverage blah` (dashm=False) or
+    `python -m coverage blah` (dashm=True).  Unfortunately we need to know this
+    later on for proper execution emulation.
 
     """
     if argv is None:
         argv = sys.argv[1:]
     try:
-        status = CoverageScript().command_line(argv)
+        status = CoverageScript(dashm=dashm).command_line(argv)
     except _ExceptionDuringRun as err:
         # An exception was caught while running the product code.  The
         # sys.exc_info() return tuple is packed into an _ExceptionDuringRun
@@ -997,12 +1004,12 @@ if _profile:                                                # pragma: debugging
     original_main = main
 
     def main(                                               # pylint: disable=function-redefined
-        argv: list[str] | None = None,
+             argv: list[str] | None = None, dashm: bool = False,
     ) -> int | None:
         """A wrapper around main that profiles."""
         profiler = SimpleLauncher.launch()
         try:
-            return original_main(argv)
+            return original_main(argv, dashm)
         finally:
             data, _ = profiler.query(re_filter="coverage", max_records=100)
             print(profiler.show(query=data, limit=100, sep="", col=""))
