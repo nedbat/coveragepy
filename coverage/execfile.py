@@ -120,29 +120,30 @@ class PyRunner:
             path0 = os.path.abspath(os.path.dirname(self.arg0))
             print(f"else: {path0 = }")
 
-        if os.path.isdir(sys.path[0]):
-            # sys.path fakery.  If we are being run as a command, then sys.path[0]
-            # is the directory of the "coverage" script.  If this is so, replace
-            # sys.path[0] with the directory of the file we're running, or the
-            # current directory when running modules.  If it isn't so, then we
-            # don't know what's going on, and just leave it alone.
-            top_file = inspect.stack()[-1][0].f_code.co_filename
-            sys_path_0_abs = os.path.abspath(sys.path[0])
-            top_file_dir_abs = os.path.abspath(os.path.dirname(top_file))
-            sys_path_0_abs = canonical_filename(sys_path_0_abs)
-            top_file_dir_abs = canonical_filename(top_file_dir_abs)
-            if sys_path_0_abs != top_file_dir_abs:
-                path0 = None
-                print("setting path0 = None")
+        if path0 is not None:
+            if os.path.isdir(sys.path[0]):
+                # sys.path fakery.  If we are being run as a command, then sys.path[0]
+                # is the directory of the "coverage" script.  If this is so, replace
+                # sys.path[0] with the directory of the file we're running, or the
+                # current directory when running modules.  If it isn't so, then we
+                # don't know what's going on, and just leave it alone.
+                top_file = inspect.stack()[-1][0].f_code.co_filename
+                sys_path_0_abs = os.path.abspath(sys.path[0])
+                top_file_dir_abs = os.path.abspath(os.path.dirname(top_file))
+                sys_path_0_abs = canonical_filename(sys_path_0_abs)
+                top_file_dir_abs = canonical_filename(top_file_dir_abs)
+                if sys_path_0_abs != top_file_dir_abs:
+                    path0 = None
+                    print("setting path0 = None")
 
-        else:
-            # sys.path[0] is a file. Is the next entry the directory containing
-            # that file?
-            print(f"{sys.path[1] = }, {sys.path[0] = }")
-            if sys.path[1] == os.path.dirname(sys.path[0]):
-                # Can it be right to always remove that?
-                del sys.path[1]
-                print("deleted sys.path[1]")
+            else:
+                # sys.path[0] is a file. Is the next entry the directory containing
+                # that file?
+                print(f"{sys.path[1] = }, {sys.path[0] = }")
+                if sys.path[1] == os.path.dirname(sys.path[0]):
+                    # Can it be right to always remove that?
+                    del sys.path[1]
+                    print("deleted sys.path[1]")
 
         if path0 is not None:
             print(f"before setting, {sys.path[0] = }")
