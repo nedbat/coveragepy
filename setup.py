@@ -19,7 +19,6 @@ from setuptools.command.build_ext import build_ext  # pylint: disable=wrong-impo
 classifiers = """\
 Environment :: Console
 Intended Audience :: Developers
-License :: OSI Approved :: Apache Software License
 Operating System :: OS Independent
 Programming Language :: Python
 Programming Language :: Python :: 3
