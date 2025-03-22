@@ -100,9 +100,10 @@ class PyRunner:
 
         safe_path = env.PYVERSION >= (3, 11) and getattr(sys.flags, 'safe_path')
         print(f"first, {safe_path = }")
-        if env.WINDOWS and self.we_are_dashm:
+        if safe_path and env.WINDOWS and self.we_are_dashm:
             # Seems to be a Windows bug: https://github.com/python/cpython/issues/131484
-            safe_path = False
+            print("windows bug, del {sys.path[0] = }")
+            del sys.path[0]
         print(f"then, {safe_path = }")
 
         if safe_path:
