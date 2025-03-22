@@ -817,6 +817,14 @@ class EnvironmentTest(CoverageTest):
         actual = self.run_command("coverage run run_me.py")
         self.assert_tryexecfile_output(expected, actual)
 
+    def test_pythonsafepath_dashm_runme(self) -> None:
+        with open(TRY_EXECFILE) as f:
+            self.make_file("run_me.py", f.read())
+        self.set_environ("PYTHONSAFEPATH", "1")
+        expected = self.run_command("python run_me.py")
+        actual = self.run_command("python -m coverage run run_me.py")
+        self.assert_tryexecfile_output(expected, actual)
+
     @pytest.mark.skipif(env.PYVERSION < (3, 11), reason="PYTHONSAFEPATH is new in 3.11")
     def test_pythonsafepath_dashm(self) -> None:
         with open(TRY_EXECFILE) as f:
