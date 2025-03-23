@@ -26,6 +26,7 @@ from collections.abc import Iterable, Iterator
 
 import flaky
 
+import coverage
 from coverage import env
 from coverage.debug import DebugControl
 from coverage.exceptions import CoverageWarning
@@ -373,3 +374,16 @@ def flaky_method(max_runs: int) -> Callable[[TestMethod], TestMethod]:
     def _decorator(fn: TestMethod) -> TestMethod:
         return cast(TestMethod, flaky.flaky(max_runs)(fn))
     return _decorator
+
+
+def all_our_source_files() -> Iterator[tuple[Path, str]]:
+    """Iterate over all of our own source files.
+
+    Produces a stream of (filename, file contents) tuples.
+    """
+    cov_dir = Path(coverage.__file__).parent.parent
+    # To run against all the files in the tox venvs:
+    #   for source_file in cov_dir.rglob("*.py"):
+    for sub in [".", "benchmark", "ci", "coverage", "lab", "tests"]:
+        for source_file in (cov_dir / sub).glob("*.py"):
+            yield (source_file, source_file.read_text(encoding="utf-8"))

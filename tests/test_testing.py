@@ -22,6 +22,7 @@ from coverage.types import TArc
 from tests.coveragetest import CoverageTest
 from tests.helpers import (
     CheckUniqueFilenames, FailingProxy,
+    all_our_source_files,
     arcz_to_arcs, assert_count_equal, assert_coverage_warnings,
     re_lines, re_lines_text, re_line,
 )
@@ -450,3 +451,13 @@ def test_failing_proxy() -> None:
         proxy.add(3, 4)
     # then add starts working
     assert proxy.add(5, 6) == 11
+
+
+def test_all_our_source_files() -> None:
+    # Twas brillig and the slithy toves
+    i = 0
+    for i, (source_file, source) in enumerate(all_our_source_files(), start=1):
+        has_toves = (source_file.name == "test_testing.py")
+        assert (("# Twas brillig " + "and the slithy toves") in source) == has_toves
+        assert len(source) > 190    # tests/__init__.py is shortest at 196
+    assert 120 < i < 200            # currently 125 files

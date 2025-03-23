@@ -11,9 +11,10 @@ from pathlib import Path
 
 import pytest
 
-import coverage
 from coverage.plugin import CodeRegion
 from coverage.regions import code_regions
+
+from tests.helpers import all_our_source_files
 
 
 def test_code_regions() -> None:
@@ -90,24 +91,21 @@ def test_real_code_regions() -> None:
     # Run code_regions on most of the coverage source code, checking that it
     # succeeds and there are no overlaps.
 
-    cov_dir = Path(coverage.__file__).parent.parent
     any_fails = False
-    # To run against all the files in the tox venvs:
-    #   for source_file in cov_dir.rglob("*.py"):
-    for sub in [".", "ci", "coverage", "lab", "tests"]:
-        for source_file in (cov_dir / sub).glob("*.py"):
-            regions = code_regions(source_file.read_text(encoding="utf-8"))
-            for kind in ["function", "class"]:
-                kind_regions = [reg for reg in regions if reg.kind == kind]
-                line_counts = collections.Counter(
-                    lno for reg in kind_regions for lno in reg.lines
+    for source_file, source in all_our_source_files():
+        regions = code_regions(source)
+        for kind in ["function", "class"]:
+            kind_regions = [reg for reg in regions if reg.kind == kind]
+            line_counts = collections.Counter(
+                lno for reg in kind_regions for lno in reg.lines
+            )
+            overlaps = [line for line, count in line_counts.items() if count > 1]
+            if overlaps:    # pragma: only failure
+                print(
+                    f"{kind.title()} overlaps in {source_file.relative_to(Path.cwd())}: "
+                    + f"{overlaps}"
                 )
-                overlaps = [line for line, count in line_counts.items() if count > 1]
-                if overlaps:    # pragma: only failure
-                    print(
-                        f"{kind.title()} overlaps in {source_file.relative_to(Path.cwd())}: "
-                        + f"{overlaps}"
-                    )
-                    any_fails = True
+                any_fails = True
+
     if any_fails:
         pytest.fail("Overlaps were found")  # pragma: only failure
