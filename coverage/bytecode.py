@@ -88,7 +88,7 @@ class InstructionWalker:
             offset += 2
 
 
-TBranchTrail = tuple[list[TOffset], Optional[TArc]]
+TBranchTrail = tuple[set[TOffset], Optional[TArc]]
 TBranchTrails = dict[TOffset, list[TBranchTrail]]
 
 
@@ -124,10 +124,10 @@ def branch_trails(code: CodeType) -> TBranchTrails:
 
         def walk_one_branch(start_at: TOffset) -> TBranchTrail:
             # pylint: disable=cell-var-from-loop
-            inst_offsets: list[TOffset] = []
+            inst_offsets: set[TOffset] = set()
             to_line = None
             for inst2 in iwalker.walk(start_at=start_at):
-                inst_offsets.append(inst2.offset)
+                inst_offsets.add(inst2.offset)
                 if inst2.line_number and inst2.line_number != from_line:
                     to_line = inst2.line_number
                     break
@@ -139,7 +139,7 @@ def branch_trails(code: CodeType) -> TBranchTrails:
             if to_line is not None:
                 return inst_offsets, (from_line, to_line)
             else:
-                return [], None
+                return set(), None
 
         # Calculate two trails: one from the next instruction, and one from the
         # jump_target instruction.
