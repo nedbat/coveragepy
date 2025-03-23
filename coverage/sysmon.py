@@ -5,7 +5,6 @@
 
 from __future__ import annotations
 
-import dis
 import functools
 import inspect
 import os
@@ -19,20 +18,20 @@ from types import CodeType
 from typing import (
     Any,
     Callable,
-    Iterable,
     NewType,
     Optional,
     cast,
 )
 
 from coverage import env
+from coverage.bytecode import TBranchTrails, branch_trails
 from coverage.debug import short_filename, short_stack
 from coverage.misc import isolate_module
 from coverage.types import (
     AnyCallable,
-    TArc,
     TFileDisposition,
     TLineNo,
+    TOffset,
     TShouldStartContextFn,
     TShouldTraceFn,
     TTraceData,
@@ -58,18 +57,6 @@ sys_monitoring = getattr(sys, "monitoring", None)
 DISABLE_TYPE = NewType("DISABLE_TYPE", object)
 MonitorReturn = Optional[DISABLE_TYPE]
 DISABLE = cast(MonitorReturn, getattr(sys_monitoring, "DISABLE", None))
-TOffset = int
-
-ALWAYS_JUMPS: set[int] = set()
-RETURNS: set[int] = set()
-
-if env.PYBEHAVIOR.branch_right_left:
-    ALWAYS_JUMPS.update(
-        dis.opmap[name]
-        for name in ["JUMP_FORWARD", "JUMP_BACKWARD", "JUMP_BACKWARD_NO_INTERRUPT"]
-    )
-
-    RETURNS.update(dis.opmap[name] for name in ["RETURN_VALUE", "RETURN_GENERATOR"])
 
 
 if LOG:  # pragma: debugging
@@ -181,131 +168,6 @@ else:
         return _decorator
 
 
-class InstructionWalker:
-    """Utility to step through trails of instructions.
-
-    We have two reasons to need sequences of instructions from a code object:
-    First, in strict sequence to visit all the instructions in the object.
-    This is `walk(follow_jumps=False)`.  Second, we want to follow jumps to
-    understand how execution will flow: `walk(follow_jumps=True)`.
-
-    """
-
-    def __init__(self, code: CodeType) -> None:
-        self.code = code
-        self.insts: dict[TOffset, dis.Instruction] = {}
-
-        inst = None
-        for inst in dis.get_instructions(code):
-            self.insts[inst.offset] = inst
-
-        assert inst is not None
-        self.max_offset = inst.offset
-
-    def walk(
-        self, *, start_at: TOffset = 0, follow_jumps: bool = True
-    ) -> Iterable[dis.Instruction]:
-        """
-        Yield instructions starting from `start_at`.  Follow unconditional
-        jumps if `follow_jumps` is true.
-        """
-        seen = set()
-        offset = start_at
-        while offset < self.max_offset + 1:
-            if offset in seen:
-                break
-            seen.add(offset)
-            if inst := self.insts.get(offset):
-                yield inst
-                if follow_jumps and inst.opcode in ALWAYS_JUMPS:
-                    offset = inst.jump_target
-                    continue
-            offset += 2
-
-
-def populate_branch_trails(code: CodeType, code_info: CodeInfo) -> None:
-    """
-    Populate the `branch_trails` attribute on `code_info`.
-
-    Instructions can have a jump_target, where they might jump to next.  Some
-    instructions with a jump_target are unconditional jumps (ALWAYS_JUMPS), so
-    they aren't interesting to us, since they aren't the start of a branch
-    possibility.
-
-    Instructions that might or might not jump somewhere else are branch
-    possibilities.  For each of those, we track a trail of instructions.  These
-    are lists of instruction offsets, the next instructions that can execute.
-    We follow the trail until we get to a new source line.  That gives us the
-    arc from the original instruction's line to the new source line.
-
-    """
-    # log(f"populate_branch_trails: {code}")
-    iwalker = InstructionWalker(code)
-    for inst in iwalker.walk(follow_jumps=False):
-        # log(f"considering {inst=}")
-        if not inst.jump_target:
-            # We only care about instructions with jump targets.
-            # log("no jump_target")
-            continue
-        if inst.opcode in ALWAYS_JUMPS:
-            # We don't care about unconditional jumps.
-            # log("always jumps")
-            continue
-
-        from_line = inst.line_number
-        if from_line is None:
-            continue
-
-        def walk_one_branch(
-            start_at: TOffset, branch_kind: str
-        ) -> tuple[list[TOffset], TArc | None]:
-            # pylint: disable=cell-var-from-loop
-            inst_offsets: list[TOffset] = []
-            to_line = None
-            for inst2 in iwalker.walk(start_at=start_at):
-                inst_offsets.append(inst2.offset)
-                if inst2.line_number and inst2.line_number != from_line:
-                    to_line = inst2.line_number
-                    break
-                elif inst2.jump_target and (inst2.opcode not in ALWAYS_JUMPS):
-                    # log(
-                    #     f"stop: {inst2.jump_target=}, "
-                    #     + f"{inst2.opcode=} ({dis.opname[inst2.opcode]}), "
-                    #     + f"{ALWAYS_JUMPS=}"
-                    # )
-                    break
-                elif inst2.opcode in RETURNS:
-                    to_line = -code.co_firstlineno
-                    break
-            if to_line is not None:
-                # log(
-                #     f"possible branch from @{start_at}: "
-                #     + f"{inst_offsets}, {(from_line, to_line)} {code}"
-                # )
-                return inst_offsets, (from_line, to_line)
-            else:
-                # log(f"no possible branch from @{start_at}: {inst_offsets}")
-                return [], None
-
-        # Calculate two trails: one from the next instruction, and one from the
-        # jump_target instruction.
-        trails = [
-            walk_one_branch(start_at=inst.offset + 2, branch_kind="not-taken"),
-            walk_one_branch(start_at=inst.jump_target, branch_kind="taken"),
-        ]
-        code_info.branch_trails[inst.offset] = trails
-
-        # Sometimes we get BRANCH_RIGHT or BRANCH_LEFT events from instructions
-        # other than the original jump possibility instruction.  Register each
-        # trail under all of their offsets so we can pick up in the middle of a
-        # trail if need be.
-        for trail in trails:
-            for offset in trail[0]:
-                if offset not in code_info.branch_trails:
-                    code_info.branch_trails[offset] = []
-                code_info.branch_trails[offset].append(trail)
-
-
 @dataclass
 class CodeInfo:
     """The information we want about each code object."""
@@ -321,10 +183,7 @@ class CodeInfo:
     #       ([offset, offset, ...], (from_line, to_line)),
     #   ]
     #   Two possible trails from the branch point, left and right.
-    branch_trails: dict[
-        TOffset,
-        list[tuple[list[TOffset], TArc | None]],
-    ]
+    branch_trails: TBranchTrails
 
 
 def bytes_to_lines(code: CodeType) -> dict[TOffset, TLineNo]:
@@ -571,7 +430,7 @@ class SysMonitor(Tracer):
         if not code_info.branch_trails:
             if self.stats is not None:
                 self.stats["branch_trails"] += 1
-            populate_branch_trails(code, code_info)
+            code_info.branch_trails = branch_trails(code)
             # log(f"branch_trails for {code}:\n    {code_info.branch_trails}")
         added_arc = False
         dest_info = code_info.branch_trails.get(instruction_offset)

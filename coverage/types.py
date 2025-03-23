@@ -53,6 +53,9 @@ class TTraceFn(Protocol):
 # Line numbers are pervasive enough that they deserve their own type.
 TLineNo = int
 
+# Bytecode offsets are pervasive enough that they deserve their own type.
+TOffset = int
+
 TArc = tuple[TLineNo, TLineNo]
 
 class TFileDisposition(Protocol):
