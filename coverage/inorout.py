@@ -36,26 +36,18 @@ if TYPE_CHECKING:
     from coverage.plugin_support import Plugins
 
 
-# Pypy has some unusual stuff in the "stdlib".  Consider those locations
-# when deciding where the stdlib is.  These modules are not used for anything,
-# they are modules importable from the pypy lib directories, so that we can
-# find those directories.
 modules_we_happen_to_have: list[ModuleType] = [
     inspect, itertools, os, platform, re, sysconfig, traceback,
 ]
 
 if env.PYPY:
-    try:
-        import _structseq
-        modules_we_happen_to_have.append(_structseq)
-    except ImportError:
-        pass
-
-    try:
-        import _pypy_irc_topic
-        modules_we_happen_to_have.append(_pypy_irc_topic)
-    except ImportError:
-        pass
+    # Pypy has some unusual stuff in the "stdlib".  Consider those locations
+    # when deciding where the stdlib is.  These modules are not used for anything,
+    # they are modules importable from the pypy lib directories, so that we can
+    # find those directories.
+    import _pypy_irc_topic      # pylint: disable=import-error
+    import _structseq           # pylint: disable=import-error
+    modules_we_happen_to_have.extend([_structseq, _pypy_irc_topic])
 
 
 os = isolate_module(os)
