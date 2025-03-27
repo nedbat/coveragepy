@@ -259,12 +259,21 @@ class Collector:
     def _start_tracer(self) -> TTraceFn | None:
         """Start a new Tracer object, and store it in self.tracers."""
         tracer = self.core.tracer_class(**self.core.tracer_kwargs)
+        self._init_tracer(tracer)
         tracer.data = self.data
+        tracer.should_trace_cache = self.should_trace_cache
+
+        fn = tracer.start()
+        self.tracers.append(tracer)
+
+        return fn
+
+    def _init_tracer(self, tracer: Tracer) -> None:
+        """Init the immutable parts of a tracer."""
         tracer.lock_data = self.lock_data
         tracer.unlock_data = self.unlock_data
         tracer.trace_arcs = self.branch
         tracer.should_trace = self.should_trace
-        tracer.should_trace_cache = self.should_trace_cache
         tracer.warn = self.warn
 
         if hasattr(tracer, 'concur_id_func'):
@@ -281,11 +290,6 @@ class Collector:
             tracer.switch_context = self.switch_context
         if hasattr(tracer, 'disable_plugin'):
             tracer.disable_plugin = self.disable_plugin
-
-        fn = tracer.start()
-        self.tracers.append(tracer)
-
-        return fn
 
     # The trace function has to be set individually on each thread before
     # execution begins.  Ironically, the only support the threading module has
@@ -385,11 +389,14 @@ class Collector:
 
     def replay(self) -> None:
         replayed_data: TTraceData = {}
+        should_trace_cache = {}
         replayed_any = False
         for tracer in self.tracers:
             replayer = tracer.replayer()
             if replayer is not None:
+                self._init_tracer(replayer)
                 replayer.data = replayed_data
+                replayer.should_trace_cache = should_trace_cache
                 replayer.start()
                 replayer.stop()
                 replayed_any = True

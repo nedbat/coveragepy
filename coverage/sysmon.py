@@ -5,7 +5,6 @@
 
 from __future__ import annotations
 
-import dataclasses
 import functools
 import inspect
 import os
@@ -198,7 +197,7 @@ def bytes_to_lines(code: CodeType) -> dict[TOffset, TLineNo]:
     return b2l
 
 
-@dataclasses.dataclass
+@dataclass
 class FakeFrame:
     # Needs __name__, __file__
     f_globals: dict[str, Any]
@@ -212,14 +211,14 @@ class FakeFrame:
         return cls(f_globals=g)
 
 
-@dataclasses.dataclass
+@dataclass
 class RecordedEvent:
     method_name: str
     args: list[Any]
     frame: FakeFrame | None
 
 
-RECORDING = False
+RECORDING = True
 if RECORDING:
     assert not LOG
     def record_events(*names: str | None) -> AnyCallable:
@@ -473,7 +472,7 @@ class SysMonitor(SysMonitorEvents, Tracer):
     def __repr__(self) -> str:
         points = sum(len(v) for v in self.data.values())
         files = len(self.data)
-        return f"<SysMonitor at {id(self):#x}: {points} data points in {files} files>"
+        return f"<{self.__class__.__name__} at {id(self):#x}: {points} data points in {files} files>"
 
     @panopticon()
     def start(self) -> None:
@@ -547,10 +546,31 @@ class SysMonitor(SysMonitorEvents, Tracer):
         """Return a dictionary of statistics, or None."""
         return self.stats
 
-    def replayer(self) -> None:
+    def replayer(self) -> SysMonitor | None:
         """Replay events for metacoverage."""
-        import contextlib # DELETE ME
-        with open("/tmp/foo.out", "a") as f:
-            with contextlib.redirect_stdout(f):
-                print(f"==" * 80)
-                import pprint; pprint.pprint(self.data)
+        if self.recorded_events is not None:
+            return SysMonitorReplayer(self.myid, self.recorded_events)
+        else:
+            return None
+
+
+class SysMonitorReplayer(SysMonitor):
+    def __init__(self, tool_id: int, recorded_events: list[RecordedEvent]) -> None:
+        super().__init__(tool_id = tool_id)
+        self.events: list[RecordedEvent] = recorded_events
+        self.recorded_events = None
+        self.evi = 0
+
+    def start(self) -> None:
+        for self.evi, ev in enumerate(self.events):
+            meth = getattr(self, ev.method_name)
+            meth(*ev.args)
+
+    def caller_frame(self) -> FrameType:
+        frame = self.events[self.evi].frame
+        # We shouldn't be calling caller_frame now if we didn't call it the first time.
+        assert frame is not None
+        return frame    # type: ignore[return-value]
+
+    def stop(self) -> None:
+        ...

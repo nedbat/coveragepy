@@ -118,7 +118,7 @@ class Tracer(Protocol):
     def get_stats(self) -> dict[str, int] | None:
         """Return a dictionary of statistics, or None."""
 
-    def replayer(self) -> Optional[Tracer]:
+    def replayer(self) -> Tracer | None:
         """Possibly provide a tracer that can replay events for metacoverage."""
 
 
