@@ -5,6 +5,7 @@
 
 from __future__ import annotations
 
+import dataclasses
 import functools
 import inspect
 import os
@@ -197,6 +198,58 @@ def bytes_to_lines(code: CodeType) -> dict[TOffset, TLineNo]:
     return b2l
 
 
+@dataclasses.dataclass
+class FakeFrame:
+    # Needs __name__, __file__
+    f_globals: dict[str, Any]
+
+    @classmethod
+    def from_frame(cls, frame: FrameType) -> FakeFrame:
+        g = {}
+        for k in ["__name__", "__file__"]:
+            if k in frame.f_globals:
+                g[k] = frame.f_globals[k]
+        return cls(f_globals=g)
+
+
+@dataclasses.dataclass
+class RecordedEvent:
+    method_name: str
+    args: list[Any]
+    frame: FakeFrame | None
+
+
+RECORDING = False
+if RECORDING:
+    assert not LOG
+    def record_events(*names: str | None) -> AnyCallable:
+        """Decorate a function to record its calls."""
+
+        def _decorator(method: AnyCallable) -> AnyCallable:
+            @functools.wraps(method)
+            def _wrapped(self: Any, *args: Any) -> Any:
+                if self.recorded_events is not None:
+                    event = RecordedEvent(method.__name__, [], None)
+                    for name, arg in zip(names, args):
+                        if name is None:
+                            arg = None
+                        event.args.append(arg)
+                    self.recorded_events.append(event)
+                return method(self, *args)
+
+            return _wrapped
+
+        return _decorator
+else:
+    def record_events(*names: str | None) -> AnyCallable:
+        """Decorate a function to log its calls, but not really."""
+
+        def _decorator(meth: AnyCallable) -> AnyCallable:
+            return meth
+
+        return _decorator
+
+
 class SysMonitorEvents:
     def __init__(self) -> None:
         # Attributes set from the collector:
@@ -227,11 +280,22 @@ class SysMonitorEvents:
                 0,
             )
 
+        self.recorded_events: list[RecordedEvent] | None = None
+
     if LOG:
-        # @panopticon adds a frame.
+        # decorators add a frame.
         def caller_frame(self) -> FrameType:
             """The frame of our caller's caller."""
             return inspect.currentframe().f_back.f_back.f_back  # type: ignore
+    elif RECORDING:
+        # decorators add a frame.
+        def caller_frame(self) -> FrameType:
+            """The frame of our caller's caller."""
+            frame = inspect.currentframe().f_back.f_back.f_back  # type: ignore
+            assert isinstance(frame, FrameType)
+            if self.recorded_events is not None:
+                self.recorded_events[-1].frame = FakeFrame.from_frame(frame)
+            return frame
     else:
         def caller_frame(self) -> FrameType:
             """The frame of our caller's caller."""
@@ -241,6 +305,7 @@ class SysMonitorEvents:
         pass
 
     @panopticon("code", "@")
+    @record_events("code", "instruction_offset")
     def sysmon_py_start(
         self, code: CodeType, instruction_offset: TOffset
     ) -> MonitorReturn:
@@ -264,8 +329,8 @@ class SysMonitorEvents:
                 frame = self.caller_frame()
                 disp = self.should_trace(filename, frame)
                 self.should_trace_cache[filename] = disp
-
             tracing_code = disp.trace
+
             if tracing_code:
                 tracename = disp.source_filename
                 assert tracename is not None
@@ -298,6 +363,7 @@ class SysMonitorEvents:
         return DISABLE
 
     @panopticon("code", "@", None)
+    @record_events("code", "instruction_offset", None)
     def sysmon_py_return(
         self,
         code: CodeType,
@@ -318,6 +384,7 @@ class SysMonitorEvents:
         return DISABLE
 
     @panopticon("code", "line")
+    @record_events("code", "line_number")
     def sysmon_line_lines(self, code: CodeType, line_number: TLineNo) -> MonitorReturn:
         """Handle sys.monitoring.events.LINE events for line coverage."""
         if self.stats is not None:
@@ -332,6 +399,7 @@ class SysMonitorEvents:
         return DISABLE
 
     @panopticon("code", "line")
+    @record_events("code", "line_number")
     def sysmon_line_arcs(self, code: CodeType, line_number: TLineNo) -> MonitorReturn:
         """Handle sys.monitoring.events.LINE events for branch coverage."""
         if self.stats is not None:
@@ -345,6 +413,7 @@ class SysMonitorEvents:
         return DISABLE
 
     @panopticon("code", "@", "@")
+    @record_events("code", "instruction_offset", "destination_offset")
     def sysmon_branch_either(
         self, code: CodeType, instruction_offset: TOffset, destination_offset: TOffset
     ) -> MonitorReturn:
@@ -398,6 +467,8 @@ class SysMonitor(SysMonitorEvents, Tracer):
         self.lock = threading.Lock()
 
         self.stopped = False
+
+        self.recorded_events = [] if RECORDING else None
 
     def __repr__(self) -> str:
         points = sum(len(v) for v in self.data.values())
@@ -475,3 +546,11 @@ class SysMonitor(SysMonitorEvents, Tracer):
     def get_stats(self) -> dict[str, int] | None:
         """Return a dictionary of statistics, or None."""
         return self.stats
+
+    def replayer(self) -> None:
+        """Replay events for metacoverage."""
+        import contextlib # DELETE ME
+        with open("/tmp/foo.out", "a") as f:
+            with contextlib.redirect_stdout(f):
+                print(f"==" * 80)
+                import pprint; pprint.pprint(self.data)

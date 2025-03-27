@@ -1023,6 +1023,12 @@ CTracer_reset_activity(CTracer *self, PyObject *args_unused)
 }
 
 static PyObject *
+CTracer_replayer(CTracer *self, PyObject *args_unused)
+{
+    Py_RETURN_NONE;
+}
+
+static PyObject *
 CTracer_get_stats(CTracer *self, PyObject *args_unused)
 {
 #if COLLECT_STATS
@@ -1104,6 +1110,9 @@ CTracer_methods[] = {
 
     { "reset_activity", (PyCFunction) CTracer_reset_activity, METH_VARARGS,
             PyDoc_STR("Reset the activity flag") },
+
+    { "replayer", (PyCFunction) CTracer_replayer, METH_VARARGS,
+            PyDoc_STR("We can't replay events") },
 
     { NULL }
 };

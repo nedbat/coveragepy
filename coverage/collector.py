@@ -383,6 +383,19 @@ class Collector:
             else:
                 self._start_tracer()
 
+    def replay(self) -> None:
+        replayed_data: TTraceData = {}
+        replayed_any = False
+        for tracer in self.tracers:
+            replayer = tracer.replayer()
+            if replayer is not None:
+                replayer.data = replayed_data
+                replayer.start()
+                replayer.stop()
+                replayed_any = True
+        if replayed_any:
+            assert self.data == replayed_data
+
     def post_fork(self) -> None:
         """After a fork, tracers might need to adjust."""
         for tracer in self.tracers:

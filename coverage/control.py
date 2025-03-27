@@ -370,7 +370,7 @@ class Coverage(TConfigurable):
             self._should_write_debug = False
             self._write_startup_debug()
 
-        # "[run] _crash" will raise an exception if the value is close by in
+# "[run] _crash" will raise an exception if the value is close by in
         # the call stack, for testing error handling.
         if self.config._crash and self.config._crash in short_stack():
             raise RuntimeError(f"Crashing because called by {self.config._crash}")
@@ -677,7 +677,9 @@ class Coverage(TConfigurable):
         """Stop measuring code coverage."""
         if self._instances:
             if self._instances[-1] is self:
-                self._instances.pop()
+                prev = self._instances.pop()
+                if prev._collector is not None:
+                    prev._collector.replay()
         if self._started:
             assert self._collector is not None
             self._collector.stop()

@@ -3,7 +3,7 @@
 
 """Typing information for the constructs from our .c files."""
 
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 from coverage.types import TFileDisposition, TTraceData, TTraceFn, Tracer
 
@@ -39,3 +39,4 @@ class CTracer(Tracer):
     def reset_activity(self) -> Any: ...
     def start(self) -> TTraceFn: ...
     def stop(self) -> None: ...
+    def replayer(self) -> Optional[Tracer]: ...

@@ -369,3 +369,6 @@ class PyTracer(Tracer):
     def get_stats(self) -> dict[str, int] | None:
         """Return a dictionary of statistics, or None."""
         return None
+
+    def replayer(self) -> None:
+        """We can't replay."""
