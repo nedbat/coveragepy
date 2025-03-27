@@ -13,8 +13,9 @@ import sys
 import threading
 import traceback
 
+from collections.abc import MutableMapping
 from dataclasses import dataclass
-from types import CodeType
+from types import CodeType, FrameType
 from typing import (
     Any,
     Callable,
@@ -196,36 +197,29 @@ def bytes_to_lines(code: CodeType) -> dict[TOffset, TLineNo]:
     return b2l
 
 
-class SysMonitor(Tracer):
-    """Python implementation of the raw data tracer for PEP669 implementations."""
-
-    # One of these will be used across threads. Be careful.
-
-    def __init__(self, tool_id: int) -> None:
+class SysMonitorEvents:
+    def __init__(self) -> None:
         # Attributes set from the collector:
         self.data: TTraceData
         self.trace_arcs = False
         self.should_trace: TShouldTraceFn
-        self.should_trace_cache: dict[str, TFileDisposition | None]
+        self.should_trace_cache: MutableMapping[str, TFileDisposition | None]
+        self.lock_data: Callable[[], None]
+        self.unlock_data: Callable[[], None]
         # TODO: should_start_context and switch_context are unused!
         # Change tests/testenv.py:DYN_CONTEXTS when this is updated.
         self.should_start_context: TShouldStartContextFn | None = None
         self.switch_context: Callable[[str | None], None] | None = None
-        self.lock_data: Callable[[], None]
-        self.unlock_data: Callable[[], None]
         # TODO: warn is unused.
         self.warn: TWarnFn
-
-        self.myid = tool_id
 
         # Map id(code_object) -> CodeInfo
         self.code_infos: dict[int, CodeInfo] = {}
         # A list of code_objects, just to keep them alive so that id's are
         # useful as identity.
         self.code_objects: list[CodeType] = []
-        self.sysmon_on = False
-        self.lock = threading.Lock()
 
+        self._activity = False
         self.stats: dict[str, int] | None = None
         if COLLECT_STATS:
             self.stats = dict.fromkeys(
@@ -233,71 +227,18 @@ class SysMonitor(Tracer):
                 0,
             )
 
-        self.stopped = False
-        self._activity = False
+    if LOG:
+        # @panopticon adds a frame.
+        def caller_frame(self) -> FrameType:
+            """The frame of our caller's caller."""
+            return inspect.currentframe().f_back.f_back.f_back  # type: ignore
+    else:
+        def caller_frame(self) -> FrameType:
+            """The frame of our caller's caller."""
+            return inspect.currentframe().f_back.f_back         # type: ignore
 
-    def __repr__(self) -> str:
-        points = sum(len(v) for v in self.data.values())
-        files = len(self.data)
-        return f"<SysMonitor at {id(self):#x}: {points} data points in {files} files>"
-
-    @panopticon()
-    def start(self) -> None:
-        """Start this Tracer."""
-        self.stopped = False
-
-        assert sys_monitoring is not None
-        sys_monitoring.use_tool_id(self.myid, "coverage.py")
-        register = functools.partial(sys_monitoring.register_callback, self.myid)
-        events = sys.monitoring.events
-
-        sys_monitoring.set_events(self.myid, events.PY_START)
-        register(events.PY_START, self.sysmon_py_start)
-        if self.trace_arcs:
-            register(events.PY_RETURN, self.sysmon_py_return)
-            register(events.LINE, self.sysmon_line_arcs)
-            if env.PYBEHAVIOR.branch_right_left:
-                register(
-                    events.BRANCH_RIGHT,  # type:ignore[attr-defined]
-                    self.sysmon_branch_either,
-                )
-                register(
-                    events.BRANCH_LEFT,  # type:ignore[attr-defined]
-                    self.sysmon_branch_either,
-                )
-        else:
-            register(events.LINE, self.sysmon_line_lines)
-        sys_monitoring.restart_events()
-        self.sysmon_on = True
-
-    @panopticon()
-    def stop(self) -> None:
-        """Stop this Tracer."""
-        if not self.sysmon_on:
-            # In forking situations, we might try to stop when we are not
-            # started.  Do nothing in that case.
-            return
-        assert sys_monitoring is not None
-        sys_monitoring.set_events(self.myid, 0)
-        self.sysmon_on = False
-        sys_monitoring.free_tool_id(self.myid)
-
-    @panopticon()
-    def post_fork(self) -> None:
-        """The process has forked, clean up as needed."""
-        self.stop()
-
-    def activity(self) -> bool:
-        """Has there been any activity?"""
-        return self._activity
-
-    def reset_activity(self) -> None:
-        """Reset the activity() flag."""
-        self._activity = False
-
-    def get_stats(self) -> dict[str, int] | None:
-        """Return a dictionary of statistics, or None."""
-        return self.stats
+    def start_for_code(self, code: CodeType) -> None:
+        pass
 
     @panopticon("code", "@")
     def sysmon_py_start(
@@ -320,11 +261,8 @@ class SysMonitor(Tracer):
             filename = code.co_filename
             disp = self.should_trace_cache.get(filename)
             if disp is None:
-                frame = inspect.currentframe().f_back  # type: ignore[union-attr]
-                if LOG:
-                    # @panopticon adds a frame.
-                    frame = frame.f_back  # type: ignore[union-attr]
-                disp = self.should_trace(filename, frame)  # type: ignore[arg-type]
+                frame = self.caller_frame()
+                disp = self.should_trace(filename, frame)
                 self.should_trace_cache[filename] = disp
 
             tracing_code = disp.trace
@@ -355,18 +293,7 @@ class SysMonitor(Tracer):
             if tracing_code:
                 if self.stats is not None:
                     self.stats["start_tracing"] += 1
-                events = sys.monitoring.events
-                with self.lock:
-                    if self.sysmon_on:
-                        assert sys_monitoring is not None
-                        local_events = events.PY_RETURN | events.PY_RESUME | events.LINE
-                        if self.trace_arcs:
-                            assert env.PYBEHAVIOR.branch_right_left
-                            local_events |= (
-                                events.BRANCH_RIGHT  # type:ignore[attr-defined]
-                                | events.BRANCH_LEFT  # type:ignore[attr-defined]
-                            )
-                        sys_monitoring.set_local_events(self.myid, code, local_events)
+                self.start_for_code(code)
 
         return DISABLE
 
@@ -456,3 +383,95 @@ class SysMonitor(Tracer):
                 # log(f"adding unforeseen {arc=}")
 
         return DISABLE
+
+
+class SysMonitor(SysMonitorEvents, Tracer):
+    """Python implementation of the raw data tracer for PEP669 implementations."""
+
+    # One of these will be used across threads. Be careful.
+
+    def __init__(self, tool_id: int) -> None:
+        super().__init__()
+        self.myid = tool_id
+
+        self.sysmon_on = False
+        self.lock = threading.Lock()
+
+        self.stopped = False
+
+    def __repr__(self) -> str:
+        points = sum(len(v) for v in self.data.values())
+        files = len(self.data)
+        return f"<SysMonitor at {id(self):#x}: {points} data points in {files} files>"
+
+    @panopticon()
+    def start(self) -> None:
+        """Start this Tracer."""
+        self.stopped = False
+
+        assert sys_monitoring is not None
+        sys_monitoring.use_tool_id(self.myid, "coverage.py")
+        register = functools.partial(sys_monitoring.register_callback, self.myid)
+        events = sys.monitoring.events
+
+        sys_monitoring.set_events(self.myid, events.PY_START)
+        register(events.PY_START, self.sysmon_py_start)
+        if self.trace_arcs:
+            register(events.PY_RETURN, self.sysmon_py_return)
+            register(events.LINE, self.sysmon_line_arcs)
+            if env.PYBEHAVIOR.branch_right_left:
+                register(
+                    events.BRANCH_RIGHT,  # type:ignore[attr-defined]
+                    self.sysmon_branch_either,
+                )
+                register(
+                    events.BRANCH_LEFT,  # type:ignore[attr-defined]
+                    self.sysmon_branch_either,
+                )
+        else:
+            register(events.LINE, self.sysmon_line_lines)
+        sys_monitoring.restart_events()
+        self.sysmon_on = True
+
+    @panopticon()
+    def stop(self) -> None:
+        """Stop this Tracer."""
+        if not self.sysmon_on:
+            # In forking situations, we might try to stop when we are not
+            # started.  Do nothing in that case.
+            return
+        assert sys_monitoring is not None
+        sys_monitoring.set_events(self.myid, 0)
+        self.sysmon_on = False
+        sys_monitoring.free_tool_id(self.myid)
+
+    @panopticon()
+    def post_fork(self) -> None:
+        """The process has forked, clean up as needed."""
+        self.stop()
+
+    def start_for_code(self, code: CodeType) -> None:
+        events = sys.monitoring.events
+        with self.lock:
+            if self.sysmon_on:
+                assert sys_monitoring is not None
+                local_events = events.PY_RETURN | events.PY_RESUME | events.LINE
+                if self.trace_arcs:
+                    assert env.PYBEHAVIOR.branch_right_left
+                    local_events |= (
+                        events.BRANCH_RIGHT  # type:ignore[attr-defined]
+                        | events.BRANCH_LEFT  # type:ignore[attr-defined]
+                    )
+                sys_monitoring.set_local_events(self.myid, code, local_events)
+
+    def activity(self) -> bool:
+        """Has there been any activity?"""
+        return self._activity
+
+    def reset_activity(self) -> None:
+        """Reset the activity() flag."""
+        self._activity = False
+
+    def get_stats(self) -> dict[str, int] | None:
+        """Return a dictionary of statistics, or None."""
+        return self.stats

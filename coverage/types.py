@@ -10,7 +10,7 @@ from __future__ import annotations
 import os
 import pathlib
 
-from collections.abc import Iterable, Mapping
+from collections.abc import Iterable, Mapping, MutableMapping
 from types import FrameType, ModuleType
 from typing import (
     Any, Callable, Optional, Protocol,
@@ -93,7 +93,7 @@ class Tracer(Protocol):
     data: TTraceData
     trace_arcs: bool
     should_trace: TShouldTraceFn
-    should_trace_cache: Mapping[str, TFileDisposition | None]
+    should_trace_cache: MutableMapping[str, TFileDisposition | None]
     should_start_context: TShouldStartContextFn | None
     switch_context: Callable[[str | None], None] | None
     lock_data: Callable[[], None]
