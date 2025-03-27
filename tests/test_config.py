@@ -510,6 +510,7 @@ class ConfigFileTest(UsingModulesMixin, CoverageTest):
         omit = twenty
         source = myapp
         source_pkgs = ned
+        source_dirs = cooldir
         plugins =
             plugins.a_plugin
             plugins.another
@@ -604,6 +605,7 @@ class ConfigFileTest(UsingModulesMixin, CoverageTest):
         assert cov.config.concurrency == ["thread"]
         assert cov.config.source == ["myapp"]
         assert cov.config.source_pkgs == ["ned"]
+        assert cov.config.source_dirs == ["cooldir"]
         assert cov.config.disable_warnings == ["abcd", "efgh"]
 
         assert cov.get_exclude_list() == ["if 0:", r"pragma:?\s+no cover", "another_tab"]

@@ -131,6 +131,7 @@ class Coverage(TConfigurable):
         config_file: FilePath | bool = True,
         source: Iterable[str] | None = None,
         source_pkgs: Iterable[str] | None = None,
+        source_dirs: Iterable[str] | None = None,
         omit: str | Iterable[str] | None = None,
         include: str | Iterable[str] | None = None,
         debug: Iterable[str] | None = None,
@@ -188,6 +189,10 @@ class Coverage(TConfigurable):
         `source`, but can be used to name packages where the name can also be
         interpreted as a file path.
 
+        `source_dirs` is a list of file paths. It works the same as
+        `source`, but raises an error if the path doesn't exist, rather
+        than being treated as a package name.
+
         `include` and `omit` are lists of file name patterns. Files that match
         `include` will be measured, files that match `omit` will not.  Each
         will also accept a single string argument.
@@ -235,6 +240,8 @@ class Coverage(TConfigurable):
         .. versionadded:: 7.7
             The `plugins` parameter.
 
+        .. versionadded:: ???
+            The `source_dirs` parameter.
         """
         # Start self.config as a usable default configuration. It will soon be
         # replaced with the real configuration.
@@ -302,6 +309,7 @@ class Coverage(TConfigurable):
             parallel=bool_or_none(data_suffix),
             source=source,
             source_pkgs=source_pkgs,
+            source_dirs=source_dirs,
             run_omit=omit,
             run_include=include,
             debug=debug,
