@@ -73,6 +73,8 @@ class Core:
         if config.timid:
             core_name = "pytrace"
 
+        if core_name is None and metacov:
+            core_name = os.getenv("COVERAGE_METACOV_CORE")
         if core_name is None:
             core_name = os.getenv("COVERAGE_CORE")
 

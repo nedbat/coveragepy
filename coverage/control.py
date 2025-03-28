@@ -1422,6 +1422,7 @@ def process_startup() -> Coverage | None:
     cov._warn_unimported_source = False
     cov._warn_preimported_source = False
     cov._auto_save = True
+    cov._metacov = (os.getenv("COVERAGE_COVERAGE", "no") == "yes")
     cov.start()
 
     return cov

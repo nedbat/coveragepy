@@ -193,7 +193,8 @@ def run_tests_with_coverage(core, *runner_args):
         pth_file.write("import coverage; coverage.process_startup()\n")
 
     suffix = f"{make_env_id(core)}_{platform.platform()}"
-    os.environ["COVERAGE_METAFILE"] = os.path.abspath(".metacov." + suffix)
+    os.environ["COVERAGE_METACOV_FILE"] = os.path.abspath(".metacov." + suffix)
+    os.environ["COVERAGE_METACOV_CORE"] = "sysmon"
 
     import coverage
 
