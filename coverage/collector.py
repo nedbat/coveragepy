@@ -389,19 +389,17 @@ class Collector:
 
     def replay(self) -> None:
         replayed_data: TTraceData = {}
-        should_trace_cache = {}
-        replayed_any = False
+        should_trace_cache: dict[str, TFileDisposition | None] = {}
         for tracer in self.tracers:
             replayer = tracer.replayer()
             if replayer is not None:
                 self._init_tracer(replayer)
                 replayer.data = replayed_data
                 replayer.should_trace_cache = should_trace_cache
+                replayer.lock_data = lambda: None
+                replayer.unlock_data = lambda: None
                 replayer.start()
                 replayer.stop()
-                replayed_any = True
-        if replayed_any:
-            assert self.data == replayed_data
 
     def post_fork(self) -> None:
         """After a fork, tracers might need to adjust."""

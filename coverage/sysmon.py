@@ -218,7 +218,7 @@ class RecordedEvent:
     frame: FakeFrame | None
 
 
-RECORDING = True
+RECORDING = env.METACOV
 if RECORDING:
     assert not LOG
     def record_events(*names: str | None) -> AnyCallable:

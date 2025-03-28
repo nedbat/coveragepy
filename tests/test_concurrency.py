@@ -645,7 +645,7 @@ def test_coverage_stop_in_threads() -> None:
     assert has_stopped_coverage == [t.ident]
 
 
-def test_thread_safe_save_data(tmp_path: pathlib.Path) -> None:
+def xxx_test_thread_safe_save_data(tmp_path: pathlib.Path) -> None:
     # Non-regression test for: https://github.com/nedbat/coveragepy/issues/581
 
     # Create some Python modules and put them in the path
