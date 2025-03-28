@@ -211,6 +211,7 @@ class CoverageConfig(TConfigurable, TPluginConfig):
         self.sigterm = False
         self.source: list[str] | None = None
         self.source_pkgs: list[str] = []
+        self.source_dirs: list[str] = []
         self.timid = False
         self._crash: str | None = None
 
@@ -392,6 +393,7 @@ class CoverageConfig(TConfigurable, TPluginConfig):
         ("sigterm", "run:sigterm", "boolean"),
         ("source", "run:source", "list"),
         ("source_pkgs", "run:source_pkgs", "list"),
+        ("source_dirs", "run:source_dirs", "list"),
         ("timid", "run:timid", "boolean"),
         ("_crash", "run:_crash"),
 

@@ -24,7 +24,7 @@ from collections.abc import Iterable
 
 from coverage import env
 from coverage.disposition import FileDisposition, disposition_init
-from coverage.exceptions import CoverageException, PluginError
+from coverage.exceptions import ConfigError, CoverageException, PluginError
 from coverage.files import TreeMatcher, GlobMatcher, ModuleMatcher
 from coverage.files import prep_patterns, find_python_files, canonical_filename
 from coverage.misc import isolate_module, sys_modules_saved
@@ -183,14 +183,25 @@ class InOrOut:
         self.debug = debug
         self.include_namespace_packages = include_namespace_packages
 
-        self.source: list[str] = []
         self.source_pkgs: list[str] = []
         self.source_pkgs.extend(config.source_pkgs)
+        self.source_dirs: list[str] = []
+        self.source_dirs.extend(config.source_dirs)
         for src in config.source or []:
             if os.path.isdir(src):
-                self.source.append(canonical_filename(src))
+                self.source_dirs.append(src)
             else:
                 self.source_pkgs.append(src)
+
+        # Canonicalize everything in `source_dirs`.
+        # Also confirm that they actually are directories.
+        for i, src in enumerate(self.source_dirs):
+            self.source_dirs[i] = canonical_filename(src)
+
+            if not os.path.isdir(src):
+                raise ConfigError(f"Source dir doesn't exist, or is not a directory: {src}")
+
+
         self.source_pkgs_unmatched = self.source_pkgs[:]
 
         self.include = prep_patterns(config.run_include)
@@ -225,10 +236,10 @@ class InOrOut:
         self.pylib_match = None
         self.include_match = self.omit_match = None
 
-        if self.source or self.source_pkgs:
+        if self.source_dirs or self.source_pkgs:
             against = []
-            if self.source:
-                self.source_match = TreeMatcher(self.source, "source")
+            if self.source_dirs:
+                self.source_match = TreeMatcher(self.source_dirs, "source")
                 against.append(f"trees {self.source_match!r}")
             if self.source_pkgs:
                 self.source_pkgs_match = ModuleMatcher(self.source_pkgs, "source_pkgs")
@@ -277,7 +288,7 @@ class InOrOut:
                             )
                             self.source_in_third_paths.add(pathdir)
 
-        for src in self.source:
+        for src in self.source_dirs:
             if self.third_match.match(src):
                 _debug(f"Source in third-party: source directory {src!r}")
                 self.source_in_third_paths.add(src)
@@ -449,12 +460,12 @@ class InOrOut:
     def warn_conflicting_settings(self) -> None:
         """Warn if there are settings that conflict."""
         if self.include:
-            if self.source or self.source_pkgs:
+            if self.source_dirs or self.source_pkgs:
                 self.warn("--include is ignored because --source is set", slug="include-ignored")
 
     def warn_already_imported_files(self) -> None:
         """Warn if files have already been imported that we will be measuring."""
-        if self.include or self.source or self.source_pkgs:
+        if self.include or self.source_dirs or self.source_pkgs:
             warned = set()
             for mod in list(sys.modules.values()):
                 filename = getattr(mod, "__file__", None)
@@ -527,7 +538,7 @@ class InOrOut:
             pkg_file = source_for_file(cast(str, sys.modules[pkg].__file__))
             yield from self._find_executable_files(canonical_path(pkg_file))
 
-        for src in self.source:
+        for src in self.source_dirs:
             yield from self._find_executable_files(src)
 
     def _find_plugin_files(self, src_dir: str) -> Iterable[tuple[str, str]]:

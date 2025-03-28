@@ -476,6 +476,18 @@ ambiguities between packages and directories.
 .. versionadded:: 5.3
 
 
+.. _config_run_source_dirs:
+
+[run] source_dirs
+.................
+
+(multi-string) A list of directories, the source to measure during execution.
+Operates the same as ``source``, but only names directories, for resolving
+ambiguities between packages and directories.
+
+.. versionadded:: ???
+
+
 .. _config_run_timid:
 
 [run] timid

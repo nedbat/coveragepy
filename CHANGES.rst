@@ -32,6 +32,13 @@ Unreleased
 .. _issue 1696: https://github.com/nedbat/coveragepy/issues/1696
 .. _pull 1700: https://github.com/nedbat/coveragepy/pull/1700
 
+- Added a new ``source_dirs`` setting for symmetry with the existing
+  ``source_pkgs`` setting. It's preferable to the existing ``source`` setting,
+  because you'll get a clear error when directories don't exist. Fixes `issue
+  1942`_.
+
+.. _issue 1942: https://github.com/nedbat/coveragepy/issues/1942
+
 
 .. start-releases
 

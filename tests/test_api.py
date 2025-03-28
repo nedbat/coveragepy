@@ -23,7 +23,7 @@ import pytest
 import coverage
 from coverage import Coverage, env
 from coverage.data import line_counts, sorted_lines
-from coverage.exceptions import CoverageException, DataError, NoDataError, NoSource
+from coverage.exceptions import ConfigError, CoverageException, DataError, NoDataError, NoSource
 from coverage.files import abs_file, relative_filename
 from coverage.misc import import_local_file
 from coverage.types import FilePathClasses, FilePathType, TCovKwargs
@@ -962,6 +962,22 @@ class SourceIncludeOmitTest(IncludeOmitTestsMixin, CoverageTest):
         self.filenames_not_in(list(lines), "p2a p2b othera otherb osa osb ambiguous")
         # Because source= was specified, we do search for un-executed files.
         assert lines['p1c'] == 0
+
+    def test_source_dirs(self) -> None:
+        os.chdir("tests_dir_modules")
+        assert os.path.isdir("pkg1")
+        lines = self.coverage_usepkgs_counts(source_dirs=["pkg1"])
+        self.filenames_in(list(lines), "p1a p1b")
+        self.filenames_not_in(list(lines), "p2a p2b othera otherb osa osb")
+        # Because source_dirs= was specified, we do search for un-executed files.
+        assert lines['p1c'] == 0
+
+    def test_non_existent_source_dir(self) -> None:
+        with pytest.raises(
+            ConfigError,
+            match=re.escape("Source dir doesn't exist, or is not a directory: i-do-not-exist"),
+        ):
+            self.coverage_usepkgs_counts(source_dirs=["i-do-not-exist"])
 
 
 class ReportIncludeOmitTest(IncludeOmitTestsMixin, CoverageTest):
