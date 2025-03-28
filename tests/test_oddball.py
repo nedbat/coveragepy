@@ -23,6 +23,22 @@ from tests.coveragetest import CoverageTest
 from tests.helpers import swallow_warnings
 
 
+# class TempTest(CoverageTest):
+#     def test_thisone(self):
+#         cur = coverage.Coverage.current()
+#         print(cur._collector)
+#         print(cur._collector._collectors)
+#         self.check_coverage("""\
+#             import coverage
+#             cur = coverage.Coverage.current()
+#             print(cur._collector)
+#             print(cur._collector._collectors)
+#             """,
+#             lines=[1,2,3],
+#         )
+#         1/0
+
+
 class ThreadingTest(CoverageTest):
     """Tests of the threading support."""
 

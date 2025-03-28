@@ -69,17 +69,42 @@ class Core:
         elif dynamic_contexts:
             reason_no_sysmon = "doesn't yet support dynamic contexts"
 
+        # import contextlib # DELETE ME
+        # with open("/tmp/foo.out", "a") as f:
+        #     with contextlib.redirect_stdout(f):
+        #         print(f"== Core.__init__({metacov=})")
+        #         print(f"{sys.argv = }")
+        #         print(f"{sys.orig_argv = }")
+        #         from coverage.debug import short_stack
+        #         print(short_stack(full=True))
+        #         for name, val in os.environ.items():
+        #             if name.startswith(("COV", "PY")):
+        #                 print(f"{os.getpid()}: {name} = {val!r}")
+
         core_name: str | None = None
         if config.timid:
             core_name = "pytrace"
 
         if core_name is None and metacov:
             core_name = os.getenv("COVERAGE_METACOV_CORE")
+            # import contextlib # DELETE ME
+            # with open("/tmp/foo.out", "a") as f:
+            #     with contextlib.redirect_stdout(f):
+            #         print(f"{os.getpid()}: COVERAGE_METACOV_CORE was {core_name!r}")
+
         if core_name is None:
             core_name = os.getenv("COVERAGE_CORE")
+            # import contextlib # DELETE ME
+            # with open("/tmp/foo.out", "a") as f:
+            #     with contextlib.redirect_stdout(f):
+            #         print(f"{os.getpid()}: COVERAGE_CORE was {core_name!r}")
 
         if core_name == "sysmon" and reason_no_sysmon:
             warn(f"sys.monitoring {reason_no_sysmon}, using default core", slug="no-sysmon")
+            # import contextlib # DELETE ME
+            # with open("/tmp/foo.out", "a") as f:
+            #     with contextlib.redirect_stdout(f):
+            #         print(f"{os.getpid()}: {reason_no_sysmon = }")
             core_name = None
 
         if core_name is None:
