@@ -485,7 +485,7 @@ ambiguities between packages and directories.
 Operates the same as ``source``, but only names directories, for resolving
 ambiguities between packages and directories.
 
-.. versionadded:: ???
+.. versionadded:: 7.8
 
 
 .. _config_run_timid:

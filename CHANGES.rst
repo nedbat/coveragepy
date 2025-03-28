@@ -23,6 +23,11 @@ upgrading your version of coverage.py.
 Unreleased
 ----------
 
+- Added a new ``source_dirs`` setting for symmetry with the existing
+  ``source_pkgs`` setting. It's preferable to the existing ``source`` setting,
+  because you'll get a clear error when directories don't exist. Fixes `issue
+  1942`_.  Thanks, `Jeremy Fleischman <pull 1943_>`_.
+
 - Fix: the PYTHONSAFEPATH environment variable new in Python 3.11 is properly
   supported, closing `issue 1696`_.  Thanks, `Philipp A. <pull 1700_>`_.  This
   works properly except for a detail when using the ``coverage`` command on
@@ -31,14 +36,8 @@ Unreleased
 
 .. _issue 1696: https://github.com/nedbat/coveragepy/issues/1696
 .. _pull 1700: https://github.com/nedbat/coveragepy/pull/1700
-
-- Added a new ``source_dirs`` setting for symmetry with the existing
-  ``source_pkgs`` setting. It's preferable to the existing ``source`` setting,
-  because you'll get a clear error when directories don't exist. Fixes `issue
-  1942`_.
-
 .. _issue 1942: https://github.com/nedbat/coveragepy/issues/1942
-
+.. _pull 1943: https://github.com/nedbat/coveragepy/pull/1943
 
 .. start-releases
 

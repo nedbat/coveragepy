@@ -240,7 +240,7 @@ class Coverage(TConfigurable):
         .. versionadded:: 7.7
             The `plugins` parameter.
 
-        .. versionadded:: ???
+        .. versionadded:: 7.8
             The `source_dirs` parameter.
         """
         # Start self.config as a usable default configuration. It will soon be

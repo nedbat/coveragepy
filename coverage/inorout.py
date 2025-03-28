@@ -196,11 +196,9 @@ class InOrOut:
         # Canonicalize everything in `source_dirs`.
         # Also confirm that they actually are directories.
         for i, src in enumerate(self.source_dirs):
-            self.source_dirs[i] = canonical_filename(src)
-
             if not os.path.isdir(src):
-                raise ConfigError(f"Source dir doesn't exist, or is not a directory: {src}")
-
+                raise ConfigError(f"Source dir is not a directory: {src!r}")
+            self.source_dirs[i] = canonical_filename(src)
 
         self.source_pkgs_unmatched = self.source_pkgs[:]
 

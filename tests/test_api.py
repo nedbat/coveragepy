@@ -975,7 +975,7 @@ class SourceIncludeOmitTest(IncludeOmitTestsMixin, CoverageTest):
     def test_non_existent_source_dir(self) -> None:
         with pytest.raises(
             ConfigError,
-            match=re.escape("Source dir doesn't exist, or is not a directory: i-do-not-exist"),
+            match=re.escape("Source dir is not a directory: 'i-do-not-exist'"),
         ):
             self.coverage_usepkgs_counts(source_dirs=["i-do-not-exist"])
 
