@@ -422,6 +422,12 @@ class InOrOut:
             # We exclude the coverage.py code itself, since a little of it
             # will be measured otherwise.
             if self.cover_match.match(filename):
+                import contextlib # DELETE ME
+                with open("/tmp/foo.out", "a") as f:
+                    with contextlib.redirect_stdout(f):
+                        print(f"{os.getpid()}: inorout part of coverage.py")
+                        from coverage.debug import short_stack
+                        print(short_stack(full=True))
                 return "is part of coverage.py"
 
             # If we aren't supposed to trace installed code, then check if this

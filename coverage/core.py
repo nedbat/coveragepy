@@ -69,17 +69,22 @@ class Core:
         elif dynamic_contexts:
             reason_no_sysmon = "doesn't yet support dynamic contexts"
 
-        # import contextlib # DELETE ME
-        # with open("/tmp/foo.out", "a") as f:
-        #     with contextlib.redirect_stdout(f):
-        #         print(f"== Core.__init__({metacov=})")
-        #         print(f"{sys.argv = }")
-        #         print(f"{sys.orig_argv = }")
-        #         from coverage.debug import short_stack
-        #         print(short_stack(full=True))
-        #         for name, val in os.environ.items():
-        #             if name.startswith(("COV", "PY")):
-        #                 print(f"{os.getpid()}: {name} = {val!r}")
+        import contextlib # DELETE ME
+        with open("/tmp/foo.out", "a") as f:
+            with contextlib.redirect_stdout(f):
+                print(f"== Core.__init__({metacov=})")
+                print(f"{sys.argv = }")
+                print(f"{sys.orig_argv = }")
+                import coverage
+                cur = coverage.Coverage.current()
+                if cur is not None:
+                    print(f"{cur._collector}")
+                    print(f"{cur._collector._collectors}")
+                from coverage.debug import short_stack
+                print(short_stack(full=True))
+                for name, val in os.environ.items():
+                    if name.startswith(("COV", "PY")):
+                        print(f"{os.getpid()}: {name} = {val!r}")
 
         core_name: str | None = None
         if config.timid:
