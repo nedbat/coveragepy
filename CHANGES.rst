@@ -20,8 +20,12 @@ upgrading your version of coverage.py.
     ..  Version 9.8.1 — 2027-07-27
     ..  --------------------------
 
-Unreleased
-----------
+.. start-releases
+
+.. _changes_7-8-0:
+
+Version 7.8.0 — 2025-03-30
+--------------------------
 
 - Added a new ``source_dirs`` setting for symmetry with the existing
   ``source_pkgs`` setting. It's preferable to the existing ``source`` setting,
@@ -38,8 +42,6 @@ Unreleased
 .. _pull 1700: https://github.com/nedbat/coveragepy/pull/1700
 .. _issue 1942: https://github.com/nedbat/coveragepy/issues/1942
 .. _pull 1943: https://github.com/nedbat/coveragepy/pull/1943
-
-.. start-releases
 
 .. _changes_7-7-1:
 
