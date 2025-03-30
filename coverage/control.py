@@ -1397,8 +1397,16 @@ def process_startup() -> Coverage | None:
     not started by this call.
 
     """
+    import contextlib # DELETE ME
+    with open("/tmp/foo.out", "a") as f:
+        with contextlib.redirect_stdout(f):
+            print(f"{os.getpid()}: process_startup()")
     cps = os.getenv("COVERAGE_PROCESS_START")
     if not cps:
+        import contextlib # DELETE ME
+        with open("/tmp/foo.out", "a") as f:
+            with contextlib.redirect_stdout(f):
+                print(f"{os.getpid()}: process_startup: no request for coverage")
         # No request for coverage, nothing to do.
         return None
 
@@ -1414,8 +1422,16 @@ def process_startup() -> Coverage | None:
     if hasattr(process_startup, "coverage"):
         # We've annotated this function before, so we must have already
         # started coverage.py in this process.  Nothing to do.
+        import contextlib # DELETE ME
+        with open("/tmp/foo.out", "a") as f:
+            with contextlib.redirect_stdout(f):
+                print(f"{os.getpid()}: process_startup: already started coverage")
         return None
 
+    import contextlib # DELETE ME
+    with open("/tmp/foo.out", "a") as f:
+        with contextlib.redirect_stdout(f):
+            print(f"{os.getpid()}: process_startup: creating cov")
     cov = Coverage(config_file=cps)
     process_startup.coverage = cov      # type: ignore[attr-defined]
     cov._warn_no_data = False
@@ -1425,6 +1441,10 @@ def process_startup() -> Coverage | None:
     cov._metacov = (os.getenv("COVERAGE_COVERAGE", "no") == "yes")
     cov.start()
 
+    import contextlib # DELETE ME
+    with open("/tmp/foo.out", "a") as f:
+        with contextlib.redirect_stdout(f):
+            print(f"{os.getpid()}: process_startup: created cov")
     return cov
 
 
