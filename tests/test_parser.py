@@ -207,6 +207,8 @@ class PythonParserTest(PythonParserTestBase):
             )
             """)
         assert parser.exit_counts() == {1: 1}
+        # In conftest.py, we silence the SyntaxWarning this code causes. If
+        # we remove this code, we can probably remove that warning.
         parser = self.parse_text("""\
             def g2():
                 try:

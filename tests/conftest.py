@@ -60,6 +60,9 @@ def set_warnings() -> None:
 
     warnings.filterwarnings("ignore", r".*no-sysmon")
 
+    # We have a test that has a return in a finally: test_bug_1891.
+    warnings.filterwarnings("ignore", "'return' in a 'finally' block", category=SyntaxWarning)
+
 
 @pytest.fixture(autouse=True)
 def reset_sys_path() -> Iterator[None]:
