@@ -17,7 +17,6 @@ from importlib.machinery import ModuleSpec
 from types import CodeType, ModuleType
 from typing import Any
 
-from coverage import env
 from coverage.exceptions import CoverageException, _ExceptionDuringRun, NoCode, NoSource
 from coverage.files import canonical_filename, python_reported_file
 from coverage.misc import isolate_module
@@ -90,7 +89,7 @@ class PyRunner:
         This needs to happen before any importing, and without importing anything.
         """
         path0: str | None
-        if env.PYVERSION >= (3, 11) and getattr(sys.flags, "safe_path"):
+        if getattr(sys.flags, "safe_path", False):
             # See https://docs.python.org/3/using/cmdline.html#cmdoption-P
             path0 = None
         elif self.as_module:
