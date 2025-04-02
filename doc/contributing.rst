@@ -73,6 +73,7 @@ Running the tests
 -----------------
 
 .. To get the test output:
+    # Use the lowest of the PYVERSIONS
     # Resize terminal width to 95
     % make sterile
 
@@ -81,66 +82,65 @@ Running the tests
 The tests are written mostly as standard unittest-style tests, and are run with
 pytest running under `tox`_::
 
-    $ python3 -m tox -e py38
-    py38: wheel-0.43.0-py3-none-any.whl already present in /Users/ned/Library/Application Support/virtualenv/wheel/3.8/embed/3/wheel.json
-    py38: pip-24.0-py3-none-any.whl already present in /Users/ned/Library/Application Support/virtualenv/wheel/3.8/embed/3/pip.json
-    py38: setuptools-69.2.0-py3-none-any.whl already present in /Users/ned/Library/Application Support/virtualenv/wheel/3.8/embed/3/setuptools.json
-    py38: install_deps> python -m pip install -U -r requirements/pip.pip -r requirements/pytest.pip -r requirements/light-threads.pip
+    % python3 -m tox -e py39
+    py39: wheel-0.45.1-py3-none-any.whl already present in /Users/ned/Library/Application Support/virtualenv/wheel/3.9/embed/3/wheel.json
+    py39: pip-25.0.1-py3-none-any.whl already present in /Users/ned/Library/Application Support/virtualenv/wheel/3.9/embed/3/pip.json
+    py39: setuptools-78.1.0-py3-none-any.whl already present in /Users/ned/Library/Application Support/virtualenv/wheel/3.9/embed/3/setuptools.json
+    py39: install_deps> python -m pip install -U -r requirements/pip.pip -r requirements/pytest.pip -r requirements/light-threads.pip
     .pkg: install_requires> python -I -m pip install setuptools
-    .pkg: _optional_hooks> python /usr/local/virtualenvs/coverage/lib/python3.8/site-packages/pyproject_api/_backend.py True setuptools.build_meta
-    .pkg: get_requires_for_build_editable> python /usr/local/virtualenvs/coverage/lib/python3.8/site-packages/pyproject_api/_backend.py True setuptools.build_meta
-    .pkg: install_requires_for_build_editable> python -I -m pip install wheel
-    .pkg: build_editable> python /usr/local/virtualenvs/coverage/lib/python3.8/site-packages/pyproject_api/_backend.py True setuptools.build_meta
-    py38: install_package_deps> python -m pip install -U 'tomli; python_full_version <= "3.11.0a6"'
-    py38: install_package> python -m pip install -U --force-reinstall --no-deps .tox/.tmp/package/1/coverage-7.4.5a0.dev1-0.editable-cp38-cp38-macosx_14_0_arm64.whl
-    py38: commands[0]> python igor.py zip_mods
-    py38: commands[1]> python setup.py --quiet build_ext --inplace
-    ld: warning: duplicate -rpath '/usr/local/pyenv/pyenv/versions/3.8.18/lib' ignored
-    ld: warning: duplicate -rpath '/opt/homebrew/lib' ignored
-    py38: commands[2]> python -m pip install -q -e .
-    py38: commands[3]> python igor.py test_with_core ctrace
-    === CPython 3.8.18 with C tracer (.tox/py38/bin/python) ===
+    .pkg: _optional_hooks> python /usr/local/virtualenvs/coverage/lib/python3.9/site-packages/pyproject_api/_backend.py True setuptools.build_meta
+    .pkg: get_requires_for_build_editable> python /usr/local/virtualenvs/coverage/lib/python3.9/site-packages/pyproject_api/_backend.py True setuptools.build_meta
+    .pkg: build_editable> python /usr/local/virtualenvs/coverage/lib/python3.9/site-packages/pyproject_api/_backend.py True setuptools.build_meta
+    py39: install_package_deps> python -m pip install -U 'tomli; python_full_version <= "3.11.0a6"'
+    py39: install_package> python -m pip install -U --force-reinstall --no-deps .tox/.tmp/package/1/coverage-7.8.1a0.dev1-0.editable-cp39-cp39-macosx_15_0_arm64.whl
+    py39: commands[0]> python igor.py zip_mods
+    py39: commands[1]> python igor.py remove_extension
+    py39: commands[2]> python igor.py test_with_core pytrace
+    === CPython 3.9.21 (gil) with Python tracer (.tox/py39/bin/python) ===
     bringing up nodes...
-    ....................................................................................... [  6%]
-    .....................................................x...x............s......s.s....s.. [ 12%]
-    ....................................................................................... [ 18%]
-    ....................................................................................... [ 25%]
-    ....................................................................................... [ 31%]
-    ....................................................................................... [ 37%]
-    ....................................................................................... [ 44%]
-    ....................................................................................... [ 50%]
-    ....................................................................................... [ 56%]
-    ........................s...........s.................................................. [ 63%]
-    ...........................................................................s........... [ 69%]
-    .................................s............s.s.................s.................... [ 75%]
-    ...........................................s........................................s.. [ 81%]
-    ................................s...................................................... [ 88%]
+    ....................................................................................... [  5%]
+    ..................................................................x................s... [ 11%]
+    ......s...s.....s....s......s.s.s.s.................................................... [ 17%]
+    ...........................................s..ss...ss.ss.ss............................ [ 23%]
+    ....................................................................................... [ 29%]
+    ....................................................................................... [ 35%]
+    ....................................................................................... [ 41%]
+    ................................................s...................................... [ 47%]
+    ....................................................................................... [ 53%]
+    ...................................................s..........s........................ [ 59%]
+    ....................................................................................... [ 65%]
+    ..........................ssss......................................................... [ 71%]
+    ..s.....s.ss..........................ss...................s.s..sssssss.ssssss.sssss... [ 77%]
+    .........ss..........................s...s.s......s........s........................s.. [ 83%]
+    .............................s......................................................... [ 88%]
     ....................................................................................... [ 94%]
-    ............................................................s...................        [100%]
-    1368 passed, 15 skipped, 2 xfailed in 13.10s
-    py38: commands[4]> python igor.py remove_extension
-    py38: commands[5]> python igor.py test_with_core pytrace
-    === CPython 3.8.18 with Python tracer (.tox/py38/bin/python) ===
+    .............................................s.......................ss....             [100%]
+    1403 passed, 63 skipped, 1 xfailed in 15.05s
+    py39: commands[3]> python setup.py --quiet build_ext --inplace
+    py39: commands[4]> python -m pip install -q -e .
+    py39: commands[5]> python igor.py test_with_core ctrace
+    === CPython 3.9.21 (gil) with C tracer (.tox/py39/bin/python) ===
     bringing up nodes...
-    ....................................................................................... [  6%]
-    ....................x..x.............................................s.ss...s.......... [ 12%]
-    ..........................................................................s.ss.s..s.... [ 18%]
-    s........s........s..s...s............................................................. [ 25%]
-    ................s...................................................................... [ 31%]
-    ...................s......ss..........................ssss...........................s. [ 37%]
-    ....................................................................................... [ 43%]
-    ....................................................................................... [ 50%]
-    .................................................................s..................... [ 56%]
-    ........s..s.........sss.s............................................................. [ 62%]
-    ...................................................................ss.................. [ 69%]
-    ..............................................ss...........s.s......................... [ 75%]
-    ................................ssssss................................................. [ 81%]
-    ......s...ss........ss................................................................. [ 88%]
-    .............................................s......................................... [ 94%]
-    .......................................................................ss.......        [100%]
-    1333 passed, 50 skipped, 2 xfailed in 11.17s
-      py38: OK (37.60=setup[9.10]+cmd[0.11,0.49,2.83,13.59,0.11,11.39] seconds)
-      congratulations :) (37.91 seconds)
+    ....................................................................................... [  5%]
+    ..........................................sx................................s.......... [ 11%]
+    ..........ss........s....................................s............................. [ 17%]
+    ..............................sss...................................................... [ 23%]
+    ..............................................................s........................ [ 29%]
+    ....................................................................................... [ 35%]
+    ....................................................................................... [ 41%]
+    ......................................................s................................ [ 47%]
+    .............................................s......................................... [ 53%]
+    .......s..................s............................................................ [ 59%]
+    ....................................................................................s.. [ 65%]
+    .......................................................ss.......................s...... [ 71%]
+    ....................................................s............................ss.... [ 77%]
+    ..........................s...................s........................................ [ 83%]
+    ....................................................................................... [ 88%]
+    ............................s......s................................................... [ 94%]
+    .................................................................s.........             [100%]
+    1440 passed, 26 skipped, 1 xfailed in 12.38s
+    py39: OK (40.04=setup[9.03]+cmd[0.17,0.09,15.40,0.13,2.47,12.77] seconds)
+    congratulations :) (40.61 seconds)
 
 Tox runs the complete test suite a few times for each version of Python you
 have installed.  The first run uses the C implementation of the trace function,
@@ -165,15 +165,17 @@ respectively.  The pytest ``-k`` option selects tests based on a word in their
 name, which can be very convenient for ad-hoc test selection.  Of course you
 can combine tox and pytest options::
 
-    $ python3 -m tox -q -e py310 -- -n 0 -vv -k hash
-    ================================== test session starts ===================================
-    platform darwin -- Python 3.10.13, pytest-8.1.1, pluggy-1.4.0 -- /Users/ned/coverage/trunk/.tox/py310/bin/python
+    % python3 -m tox -q -e py310 -- -n 0 -vv -k hash
+    Skipping tests with Python tracer: Only one core: not running pytrace
+    === CPython 3.10.16 (gil) with C tracer (.tox/py310/bin/python) ===
+    ===================================== test session starts =====================================
+    platform darwin -- Python 3.10.16, pytest-8.3.5, pluggy-1.5.0 -- /Users/ned/coverage/trunk/.tox/py310/bin/python
     cachedir: .tox/py310/.pytest_cache
     hypothesis profile 'default' -> database=DirectoryBasedExampleDatabase(PosixPath('/Users/ned/coverage/trunk/.hypothesis/examples'))
     rootdir: /Users/ned/coverage/trunk
     configfile: pyproject.toml
-    plugins: flaky-3.8.1, xdist-3.5.0, hypothesis-6.99.6
-    collected 1385 items / 1375 deselected / 10 selected
+    plugins: flaky-3.8.1, hypothesis-6.128.1, xdist-3.6.1
+    collected 1467 items / 1457 deselected / 10 selected
     run-last-failure: no previously failed tests, not deselecting items.
 
     tests/test_data.py::CoverageDataTest::test_add_to_hash_with_lines PASSED                [ 10%]
@@ -187,11 +189,9 @@ can combine tox and pytest options::
     tests/test_misc.py::HasherTest::test_dict_hashing PASSED                                [ 90%]
     tests/test_misc.py::HasherTest::test_dict_collision PASSED                              [100%]
 
-    ========================== 10 passed, 1375 deselected in 0.60s ===========================
-    Skipping tests with Python tracer: Only one core: not running pytrace
-      py310: OK (6.41 seconds)
-      congratulations :) (6.72 seconds)
-
+    ============================= 10 passed, 1457 deselected in 3.13s =============================
+    py310: OK (16.62 seconds)
+    congratulations :) (16.97 seconds)
 
 You can also affect the test runs with environment variables:
 
@@ -237,7 +237,8 @@ Other style questions are best answered by looking at the existing code.
 Formatting of docstrings, comments, long lines, and so on, should match the
 code that already exists.
 
-Many people love `black`_, but I would prefer not to run it on coverage.py.
+Many people love auto-formatting with `black`_ or `ruff`_, but I would prefer
+not to on coverage.py.
 
 
 Continuous integration
@@ -299,6 +300,7 @@ fixes.  If you need help writing tests, please ask.
 .. _editorconfig.org: http://editorconfig.org
 .. _tox: https://tox.readthedocs.io/
 .. _black: https://pypi.org/project/black/
+.. _ruff: https://pypi.org/project/ruff/
 .. _set_env.py: https://nedbatchelder.com/blog/201907/set_envpy.html
 .. _pytest test selectors: https://doc.pytest.org/en/stable/usage.html#specifying-which-tests-to-run
 .. _sys.monitoring: https://docs.python.org/3/library/sys.monitoring.html
