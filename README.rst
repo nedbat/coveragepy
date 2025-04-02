@@ -151,7 +151,7 @@ Licensed under the `Apache 2.0 License`_.  For details, see `NOTICE.txt`_.
 .. |tidelift| image:: https://tidelift.com/badges/package/pypi/coverage
     :target: https://tidelift.com/subscription/pkg/pypi-coverage?utm_source=pypi-coverage&utm_medium=referral&utm_campaign=readme
     :alt: Tidelift
-.. |stars| image:: https://img.shields.io/github/stars/nedbat/coveragepy.svg?logo=github
+.. |stars| image:: https://img.shields.io/github/stars/nedbat/coveragepy.svg?logo=github&style=flat
     :target: https://github.com/nedbat/coveragepy/stargazers
     :alt: GitHub stars
 .. |mastodon-nedbat| image:: https://img.shields.io/badge/dynamic/json?style=flat&labelColor=450657&logo=mastodon&logoColor=ffffff&label=@nedbat&query=followers_count&url=https%3A%2F%2Fhachyderm.io%2Fapi%2Fv1%2Faccounts%2Flookup%3Facct=nedbat
