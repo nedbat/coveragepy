@@ -25,7 +25,7 @@ zope-interface==7.2
     # via gevent
 
 # The following packages are considered to be unsafe in a requirements file:
-setuptools==76.0.0
+setuptools==78.1.0
     # via
     #   zope-event
     #   zope-interface

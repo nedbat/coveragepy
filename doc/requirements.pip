@@ -6,7 +6,7 @@
 #
 alabaster==1.0.0
     # via sphinx
-anyio==4.8.0
+anyio==4.9.0
     # via
     #   starlette
     #   watchfiles
@@ -109,7 +109,7 @@ starlette==0.46.1
     # via sphinx-autobuild
 stevedore==5.4.1
     # via doc8
-typing-extensions==4.12.2
+typing-extensions==4.13.1
     # via anyio
 urllib3==2.3.0
     # via requests
@@ -121,5 +121,5 @@ websockets==15.0.1
     # via sphinx-autobuild
 
 # The following packages are considered to be unsafe in a requirements file:
-setuptools==76.0.0
+setuptools==78.1.0
     # via pbr
