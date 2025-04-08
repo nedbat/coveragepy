@@ -71,8 +71,6 @@ jobs:
         exclude:
           - python-version: "3.12-dev"
             nogil: true
-          - python-version: "pypy-3.9-nightly"
-            nogil: true
           - python-version: "pypy-3.10-nightly"
             nogil: true
 
@@ -109,7 +107,6 @@ jobs:
           env | sort
 
       - name: "Check build recency"
-        #if: "!startsWith(matrix.python-version, 'pypy-')"
         shell: python
         run: |
           import platform
@@ -119,10 +116,11 @@ jobs:
                   built = datetime.strptime(platform.python_build()[1], fmt)
               except ValueError:
                   continue
-          now = datetime.now()
-          days = (now - built).days
-          print(f"Days since Python was built: {days}")
-          assert days <= 7
+          days = (datetime.now() - built).days
+          impl = platform.python_implementation()
+          recency = 7 if (impl == "CPython") else 21
+          print(f"Days since {impl} was built: {days}, need within {recency}")
+          assert days <= recency
 
       - name: "Install dependencies"
         run: |
