@@ -246,7 +246,7 @@ def substitute_variables(text: str, variables: Mapping[str, str]) -> str:
         (?:                     # then
             (?P<dollar>\$) |        # a dollar sign, or
             (?P<word1>\w+) |        # a plain word, or
-            {                       # a {-wrapped
+            \{                      # a {-wrapped
                 (?P<word2>\w+)          # word,
                 (?:
                     (?P<strict>\?) |        # with a strict marker
