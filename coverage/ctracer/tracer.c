@@ -289,7 +289,7 @@ error:
 }
 
 // Thanks for the idea, memray!
-inline PyCodeObject*
+static inline PyCodeObject*
 MyFrame_BorrowCode(PyFrameObject* frame)
 {
     // Return a borrowed reference.
