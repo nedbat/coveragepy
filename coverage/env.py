@@ -40,6 +40,9 @@ if PYPY:
 else:
     PYPYVERSION = (0,)
 
+# Do we have a GIL?
+GIL = getattr(sys, '_is_gil_enabled', lambda: True)()
+
 # Python behavior.
 class PYBEHAVIOR:
     """Flags indicating this Python's behavior."""

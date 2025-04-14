@@ -128,4 +128,4 @@ jobs:
 
       - name: "Run tox"
         run: |
-          python -m tox -- -rfsEX
+          python -m tox -v -- -rfsEX

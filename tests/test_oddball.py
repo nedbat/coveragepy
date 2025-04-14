@@ -210,9 +210,16 @@ class MemoryLeakTest(CoverageTest):
         if fails > 8:
             pytest.fail("RAM grew by %d" % (ram_growth))      # pragma: only failure
 
-    @pytest.mark.skipif(not testenv.C_TRACER, reason="Only the C tracer has refcounting issues")
-    # In fact, sysmon explicitly holds onto all code objects,
-    # so this will definitely fail with sysmon.
+    @pytest.mark.skipif(
+        not testenv.C_TRACER,
+        reason="Only the C tracer has refcounting issues",
+        # In fact, sysmon explicitly holds onto all code objects,
+        # so this will definitely fail with sysmon.
+    )
+    @pytest.mark.skipif(
+        env.PYVERSION[:2] == (3, 13) and not env.GIL,
+        reason = "3.13t never frees code objects: https://github.com/python/cpython/pull/131989",
+    )
     @pytest.mark.parametrize("branch", [False, True])
     def test_eval_codeobject_leak(self, branch: bool) -> None:
         # https://github.com/nedbat/coveragepy/issues/1924
