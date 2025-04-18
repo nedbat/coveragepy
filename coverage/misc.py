@@ -244,13 +244,13 @@ def substitute_variables(text: str, variables: Mapping[str, str]) -> str:
     dollar_pattern = r"""(?x)   # Use extended regex syntax
         \$                      # A dollar sign,
         (?:                     # then
-            (?P<dollar>\$) |        # a dollar sign, or
-            (?P<word1>\w+) |        # a plain word, or
+            (?P<dollar> \$ ) |      # a dollar sign, or
+            (?P<word1> \w+ ) |      # a plain word, or
             \{                      # a {-wrapped
-                (?P<word2>\w+)          # word,
-                (?:
-                    (?P<strict>\?) |        # with a strict marker
-                    -(?P<defval>[^}]*)      # or a default value
+                (?P<word2> \w+ )        # word,
+                (?:                         # either
+                    (?P<strict> \? ) |      # with a strict marker
+                    -(?P<defval> [^}]* )    # or a default value
                 )?                      # maybe.
             }
         )
