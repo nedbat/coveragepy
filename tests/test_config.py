@@ -808,7 +808,7 @@ class ConfigFileTest(UsingModulesMixin, CoverageTest):
             xyzzy = 17
             """)
         with mock.patch.object(coverage.tomlconfig, "has_tomllib", False):
-            msg = "Can't read '{filename}' without TOML support"
+            msg = f"Can't read '{filename}' without TOML support"
             with pytest.raises(ConfigError, match=msg):
                 coverage.Coverage()
 
@@ -822,7 +822,7 @@ class ConfigFileTest(UsingModulesMixin, CoverageTest):
             run.parallel = true
             """)
         with mock.patch.object(coverage.tomlconfig, "has_tomllib", False):
-            msg = "Can't read '{filename}' without TOML support"
+            msg = f"Can't read '{filename}' without TOML support"
             with pytest.raises(ConfigError, match=msg):
                 coverage.Coverage()
 
