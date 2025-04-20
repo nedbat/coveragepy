@@ -3,17 +3,23 @@
 
 """Add a release comment to all the issues mentioned in the latest release."""
 
-import json
 import re
 import sys
 
+from scriv.scriv import Scriv
+
 from session import get_session
 
-with open("tmp/relnotes.json") as frn:
-    relnotes = json.load(frn)
+scriv = Scriv()
+changelog = scriv.changelog()
+changelog.read()
 
-latest = relnotes[0]
-version = latest["version"]
+# Get the first entry in the changelog:
+for etitle, sections in changelog.entries().items():
+    version = etitle.split()[1]     # particular to our title format.
+    text = "\n".join(sections)
+    break
+
 comment = (
     f"This is now released as part of [coverage {version}]" +
     f"(https://pypi.org/project/coverage/{version})."
@@ -21,7 +27,7 @@ comment = (
 print(f"Comment will be:\n\n{comment}\n")
 
 repo_owner = sys.argv[1]
-url_matches = re.finditer(fr"https://github.com/{repo_owner}/(issues|pull)/(\d+)", latest["text"])
+url_matches = re.finditer(fr"https://github.com/{repo_owner}/(issues|pull)/(\d+)", text)
 urls = set((m[0], m[1], m[2]) for m in url_matches)
 
 for url, kind, number in urls:

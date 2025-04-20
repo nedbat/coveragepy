@@ -147,6 +147,20 @@ balanced_clumps = [
     "GetZipBytesTest",
 ]
 
+## Scriv
+
+[tool.scriv]
+changelog = "tmp/only-changes.md"
+ghrel_template = """
+## {{title}}
+
+{{body}}
+
+:arrow_right:\u00a0 PyPI page: [coverage {{version}}](https://pypi.org/project/coverage/{{version}}).
+:arrow_right:\u00a0 To install: `python3 -m pip install coverage=={{version}}`
+
+"""
+
 ## RUFF
 # We aren't using ruff for real yet...
 

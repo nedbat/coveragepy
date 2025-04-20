@@ -19,9 +19,10 @@ pylint
 readme_renderer
 
 # for kitting.
-requests
-twine
 libsass
+requests
+scriv
+twine
 
 # Just so I have a debugger if I want it.
 pudb

@@ -102,7 +102,7 @@ PIP_COMPILE = pip-compile ${COMPILE_OPTS} --allow-unsafe --resolver=backtracking
 upgrade: 				## Update the *.pip files with the latest packages satisfying *.in files.
 	$(MAKE) _upgrade COMPILE_OPTS="--upgrade"
 
-upgrade_one:				## Update the *.pip files for one package. `make upgrade-one package=...`
+upgrade_one:				## Update the *.pip files for one package. `make upgrade_one package=...`
 	@test -n "$(package)" || { echo "\nUsage: make upgrade-one package=...\n"; exit 1; }
 	$(MAKE) _upgrade COMPILE_OPTS="--upgrade-package $(package)"
 
@@ -267,7 +267,7 @@ docspell: $(DOCBIN)			## Run the spell checker on the docs.
 
 ##@ Publishing docs
 
-.PHONY: publish publishbeta relnotes_json github_releases comment_on_fixes
+.PHONY: publish publishbeta github_releases comment_on_fixes
 
 WEBHOME = ~/web/stellated
 WEBSAMPLE = $(WEBHOME)/files/sample_coverage_html
@@ -284,19 +284,20 @@ publishbeta:
 	cp doc/sample_html_beta/*.* $(WEBSAMPLEBETA)
 
 CHANGES_MD = tmp/rst_rst/changes.md
-RELNOTES_JSON = tmp/relnotes.json
+SCRIV_SOURCE = tmp/only-changes.md
 
 $(CHANGES_MD): CHANGES.rst $(DOCBIN)
 	$(SPHINXBUILD) -b rst doc tmp/rst_rst
-	pandoc --version
 	pandoc -frst -tmarkdown_strict --markdown-headings=atx --wrap=none tmp/rst_rst/changes.rst > $(CHANGES_MD)
 
-relnotes_json: $(RELNOTES_JSON)		## Convert changelog to JSON for further parsing.
-$(RELNOTES_JSON): $(CHANGES_MD)
-	$(DOCBIN)/python ci/parse_relnotes.py tmp/rst_rst/changes.md $(RELNOTES_JSON)
+$(SCRIV_SOURCE): $(CHANGES_MD)
+	@# Trim parts of the file that aren't changelog entries.
+	sed -n -e '/## Version/,/## Earlier/p' < $(CHANGES_MD) > tmp/trimmed.md
+	@# Replace sphinx references with published URLs.
+	sed -r -e 's@]\(([a-zA-Z0-9_]+)\.rst#([^)]+)\)@](https://coverage.readthedocs.io/en/latest/\1.html#\2)@g' < tmp/trimmed.md > $(SCRIV_SOURCE)
 
-github_releases: $(RELNOTES_JSON)	## Update GitHub releases.
-	$(DOCBIN)/python ci/github_releases.py $(RELNOTES_JSON) $(REPO_OWNER)
+github_releases: $(SCRIV_SOURCE)	## Update GitHub releases.
+	$(DOCBIN)/python -m scriv github-release --all
 
-comment_on_fixes: $(RELNOTES_JSON)	## Add a comment to issues that were fixed.
+comment_on_fixes: $(SCRIV_SOURCE)	## Add a comment to issues that were fixed.
 	python ci/comment_on_fixes.py $(REPO_OWNER)

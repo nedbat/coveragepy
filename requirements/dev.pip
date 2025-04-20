@@ -7,7 +7,9 @@
 astroid==3.3.9
     # via pylint
 attrs==25.3.0
-    # via hypothesis
+    # via
+    #   hypothesis
+    #   scriv
 backports-tarfile==1.2.0
     # via jaraco-context
 build==1.2.2.post1
@@ -22,6 +24,12 @@ charset-normalizer==3.4.1
     # via requests
 check-manifest==0.50
     # via -r requirements/dev.in
+click==8.1.8
+    # via
+    #   click-log
+    #   scriv
+click-log==0.4.0
+    # via scriv
 cogapp==3.4.1
     # via -r requirements/dev.in
 colorama==0.4.6
@@ -72,12 +80,18 @@ jaraco-functools==4.1.0
     # via keyring
 jedi==0.19.2
     # via pudb
+jinja2==3.1.6
+    # via scriv
 keyring==25.6.0
     # via twine
 libsass==0.23.0
     # via -r requirements/dev.in
 markdown-it-py==3.0.0
-    # via rich
+    # via
+    #   rich
+    #   scriv
+markupsafe==3.0.2
+    # via jinja2
 mccabe==0.7.0
     # via pylint
 mdurl==0.1.2
@@ -136,6 +150,7 @@ requests==2.32.3
     #   -r requirements/dev.in
     #   id
     #   requests-toolbelt
+    #   scriv
     #   twine
 requests-toolbelt==1.0.0
     # via twine
@@ -143,6 +158,8 @@ rfc3986==2.0.0
     # via twine
 rich==14.0.0
     # via twine
+scriv==1.7.0
+    # via -r requirements/dev.in
 sortedcontainers==2.4.0
     # via hypothesis
 tabulate==0.9.0
