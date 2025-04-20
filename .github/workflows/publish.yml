@@ -34,21 +34,21 @@ jobs:
       run-id: ${{ steps.run-id.outputs.run-id }}
 
     steps:
-    - name: "Find latest kit.yml run"
-      id: runs
-      uses: octokit/request-action@dad4362715b7fb2ddedf9772c8670824af564f0d # v2.4.0
-      with:
-        route: GET /repos/nedbat/coveragepy/actions/workflows/kit.yml/runs
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: "Find latest kit.yml run"
+        id: runs
+        uses: octokit/request-action@dad4362715b7fb2ddedf9772c8670824af564f0d # v2.4.0
+        with:
+          route: GET /repos/nedbat/coveragepy/actions/workflows/kit.yml/runs
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: "Record run id" # zizmor: ignore[template-injection]
-      id: run-id
-      run: |
-        # There must be a shorter way to write this...
-        [ "${{ fromJson(steps.runs.outputs.data).workflow_runs[0].status}}" = "completed" ] || exit 1
-        [ "${{ fromJson(steps.runs.outputs.data).workflow_runs[0].conclusion}}" = "success" ] || exit 1
-        echo "run-id=${{ fromJson(steps.runs.outputs.data).workflow_runs[0].id }}" >> "$GITHUB_OUTPUT"
+      - name: "Record run id" # zizmor: ignore[template-injection]
+        id: run-id
+        run: |
+          # There must be a shorter way to write this...
+          [ "${{ fromJson(steps.runs.outputs.data).workflow_runs[0].status}}" = "completed" ] || exit 1
+          [ "${{ fromJson(steps.runs.outputs.data).workflow_runs[0].conclusion}}" = "success" ] || exit 1
+          echo "run-id=${{ fromJson(steps.runs.outputs.data).workflow_runs[0].id }}" >> "$GITHUB_OUTPUT"
 
   publish-to-test-pypi:
     name: "Publish to Test PyPI"
@@ -63,32 +63,32 @@ jobs:
       - find-run
 
     steps:
-    - name: "Download dists"
-      uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e # v4.2.1
-      with:
-        repository: "nedbat/coveragepy"
-        run-id: ${{ needs.find-run.outputs.run-id }}
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        pattern: "dist-*"
-        merge-multiple: true
-        path: "dist/"
+      - name: "Download dists"
+        uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e # v4.2.1
+        with:
+          repository: "nedbat/coveragepy"
+          run-id: ${{ needs.find-run.outputs.run-id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          pattern: "dist-*"
+          merge-multiple: true
+          path: "dist/"
 
-    - name: "What did we get?"
-      run: |
-        ls -alR
-        echo "Number of dists, should be $EXPECTED:"
-        ls -1 dist | wc -l
-        files=$(ls dist 2>/dev/null | wc -l) && [ "$files" -eq $EXPECTED ] || exit 1
+      - name: "What did we get?"
+        run: |
+          ls -alR
+          echo "Number of dists, should be $EXPECTED:"
+          ls -1 dist | wc -l
+          files=$(ls dist 2>/dev/null | wc -l) && [ "$files" -eq $EXPECTED ] || exit 1
 
-    - name: "Generate attestations"
-      uses: actions/attest-build-provenance@c074443f1aee8d4aeeae555aebba3282517141b2 # v2.2.3
-      with:
-        subject-path: "dist/*"
+      - name: "Generate attestations"
+        uses: actions/attest-build-provenance@c074443f1aee8d4aeeae555aebba3282517141b2 # v2.2.3
+        with:
+          subject-path: "dist/*"
 
-    - name: "Publish dists to Test PyPI"
-      uses: pypa/gh-action-pypi-publish@76f52bc884231f62b9a034ebfe128415bbaabdfc # v1.12.4
-      with:
-        repository-url: https://test.pypi.org/legacy/
+      - name: "Publish dists to Test PyPI"
+        uses: pypa/gh-action-pypi-publish@76f52bc884231f62b9a034ebfe128415bbaabdfc # v1.12.4
+        with:
+          repository-url: https://test.pypi.org/legacy/
 
   publish-to-pypi:
     name: "Publish to PyPI"
@@ -103,27 +103,27 @@ jobs:
       - find-run
 
     steps:
-    - name: "Download dists"
-      uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e # v4.2.1
-      with:
-        repository: "nedbat/coveragepy"
-        run-id: ${{ needs.find-run.outputs.run-id }}
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        pattern: "dist-*"
-        merge-multiple: true
-        path: "dist/"
+      - name: "Download dists"
+        uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e # v4.2.1
+        with:
+          repository: "nedbat/coveragepy"
+          run-id: ${{ needs.find-run.outputs.run-id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          pattern: "dist-*"
+          merge-multiple: true
+          path: "dist/"
 
-    - name: "What did we get?"
-      run: |
-        ls -alR
-        echo "Number of dists, should be $EXPECTED:"
-        ls -1 dist | wc -l
-        files=$(ls dist 2>/dev/null | wc -l) && [ "$files" -eq $EXPECTED ] || exit 1
+      - name: "What did we get?"
+        run: |
+          ls -alR
+          echo "Number of dists, should be $EXPECTED:"
+          ls -1 dist | wc -l
+          files=$(ls dist 2>/dev/null | wc -l) && [ "$files" -eq $EXPECTED ] || exit 1
 
-    - name: "Generate attestations"
-      uses: actions/attest-build-provenance@c074443f1aee8d4aeeae555aebba3282517141b2 # v2.2.3
-      with:
-        subject-path: "dist/*"
+      - name: "Generate attestations"
+        uses: actions/attest-build-provenance@c074443f1aee8d4aeeae555aebba3282517141b2 # v2.2.3
+        with:
+          subject-path: "dist/*"
 
-    - name: "Publish dists to PyPI"
-      uses: pypa/gh-action-pypi-publish@76f52bc884231f62b9a034ebfe128415bbaabdfc # v1.12.4
+      - name: "Publish dists to PyPI"
+        uses: pypa/gh-action-pypi-publish@76f52bc884231f62b9a034ebfe128415bbaabdfc # v1.12.4
