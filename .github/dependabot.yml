@@ -9,6 +9,7 @@ updates:
     schedule:
       # Check for updates to GitHub Actions once a week
       interval: "weekly"
+      day: "sunday"
     groups:
       action-dependencies:
         patterns:
