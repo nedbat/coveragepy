@@ -26,6 +26,30 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  changed:
+    name: "Check what files changed"
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+    outputs:
+      python: ${{ steps.filter.outputs.python }}
+      docs: ${{ steps.filter.outputs.docs }}
+    steps:
+      - name: "Check out the repo"
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+
+      - name: "Examine changed files"
+        uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36 # v3.0.2
+        id: filter
+        with:
+          filters: |
+            python:
+              - "**.py"
+            docs:
+              - "doc/**"
+
   lint:
     name: "Pylint etc"
     # Because pylint can report different things on different OS's (!)
@@ -34,6 +58,9 @@ jobs:
     # GitHub is rolling out macos 14, but it doesn't have Python 3.8 or 3.9.
     # https://mastodon.social/@hugovk/112320493602782374
     runs-on: macos-13
+
+    needs: changed
+    if: ${{ needs.changed.outputs.python == 'true' }}
 
     steps:
       - name: "Check out the repo"
@@ -60,6 +87,9 @@ jobs:
     name: "Check types"
     runs-on: ubuntu-latest
 
+    needs: changed
+    if: ${{ needs.changed.outputs.python == 'true' }}
+
     steps:
       - name: "Check out the repo"
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -84,6 +114,9 @@ jobs:
   doc:
     name: "Build docs"
     runs-on: ubuntu-latest
+
+    needs: changed
+    if: ${{ needs.changed.outputs.docs == 'true' }}
 
     steps:
       - name: "Check out the repo"
