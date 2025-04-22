@@ -34,6 +34,7 @@ jobs:
     outputs:
       python: ${{ steps.filter.outputs.python }}
       docs: ${{ steps.filter.outputs.docs }}
+      actions: ${{ steps.filter.outputs.actions }}
     steps:
       - name: "Check out the repo"
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -49,6 +50,8 @@ jobs:
               - "**.py"
             docs:
               - "doc/**"
+            actions:
+              - ".github/workflows/**"
 
   lint:
     name: "Pylint etc"
@@ -146,3 +149,29 @@ jobs:
       - name: "Tox doc"
         run: |
           python -m tox -e doc
+
+  zizmor:
+    name: "Zizmor GHA security check"
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+
+    needs: changed
+    if: ${{ needs.changed.outputs.actions == 'true' }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+
+      - name: Install the latest version of uv
+        uses: astral-sh/setup-uv@d4b2f3b6ecc6e67c4457f6d3e41ec42d3d0fcb86 #v5.4.2
+        with:
+          enable-cache: false
+
+      - name: Run zizmor
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: uvx zizmor --pedantic .github/workflows
