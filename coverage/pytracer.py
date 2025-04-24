@@ -147,8 +147,8 @@ class PyTracer(Tracer):
         self,
         frame: FrameType,
         event: str,
-        arg: Any,                               # pylint: disable=unused-argument
-        lineno: TLineNo | None = None,       # pylint: disable=unused-argument
+        arg: Any,                           # pylint: disable=unused-argument
+        lineno: TLineNo | None = None,      # pylint: disable=unused-argument
     ) -> TTraceFn | None:
         """The trace function passed to sys.settrace."""
 
@@ -162,7 +162,7 @@ class PyTracer(Tracer):
             # The PyTrace.stop() method has been called, possibly by another
             # thread, let's deactivate ourselves now.
             if 0:
-                f = frame                           # type: ignore[unreachable]
+                f = frame                   # type: ignore[unreachable]
                 self.log("---\nX", f.f_code.co_filename, f.f_lineno)
                 while f:
                     self.log(">", f.f_code.co_filename, f.f_lineno, f.f_code.co_name, f.f_trace)
@@ -306,6 +306,7 @@ class PyTracer(Tracer):
                 assert self.switch_context is not None
                 self.context = None
                 self.switch_context(None)   # pylint: disable=not-callable
+
         return self._cached_bound_method_trace
 
     def start(self) -> TTraceFn:
