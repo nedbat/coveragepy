@@ -14,9 +14,9 @@ backports-tarfile==1.2.0
     # via jaraco-context
 build==1.2.2.post1
     # via check-manifest
-cachetools==6.0.0b2
+cachetools==6.0.0b3
     # via tox
-certifi==2025.1.31
+certifi==2025.4.26
     # via requests
 chardet==5.2.0
     # via tox
@@ -37,7 +37,7 @@ colorama==0.4.6
     #   -r /Users/ned/coverage/trunk/requirements/pytest.in
     #   -r /Users/ned/coverage/trunk/requirements/tox.in
     #   tox
-dill==0.3.9
+dill==0.4.0
     # via pylint
 distlib==0.3.9
     # via virtualenv
@@ -55,15 +55,15 @@ filelock==3.18.0
     #   virtualenv
 flaky==3.8.1
     # via -r /Users/ned/coverage/trunk/requirements/pytest.in
-greenlet==3.1.1
+greenlet==3.2.1
     # via -r requirements/dev.in
-hypothesis==6.130.10
+hypothesis==6.131.9
     # via -r /Users/ned/coverage/trunk/requirements/pytest.in
 id==1.5.0
     # via twine
 idna==3.10
     # via requests
-importlib-metadata==8.6.1
+importlib-metadata==8.7.0
     # via
     #   build
     #   keyring
@@ -96,13 +96,13 @@ mccabe==0.7.0
     # via pylint
 mdurl==0.1.2
     # via markdown-it-py
-more-itertools==10.6.0
+more-itertools==10.7.0
     # via
     #   jaraco-classes
     #   jaraco-functools
 nh3==0.2.21
     # via readme-renderer
-packaging==24.2
+packaging==25.0
     # via
     #   build
     #   pudb
@@ -182,14 +182,14 @@ tox-gh==1.5.0
     # via -r /Users/ned/coverage/trunk/requirements/tox.in
 twine==6.1.0
     # via -r requirements/dev.in
-typing-extensions==4.13.1
+typing-extensions==4.13.2
     # via
     #   astroid
     #   pylint
     #   rich
     #   tox
     #   urwid
-urllib3==2.3.0
+urllib3==2.4.0
     # via
     #   requests
     #   twine
@@ -210,9 +210,9 @@ zipp==3.21.0
     # via importlib-metadata
 
 # The following packages are considered to be unsafe in a requirements file:
-pip==25.0.1
+pip==25.1
     # via -r /Users/ned/coverage/trunk/requirements/pip.in
-setuptools==78.1.0
+setuptools==79.0.1
     # via
     #   -r /Users/ned/coverage/trunk/requirements/pip.in
     #   check-manifest

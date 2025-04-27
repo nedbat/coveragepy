@@ -8,9 +8,9 @@ build==1.2.2.post1
     # via pip-tools
 click==8.1.8
     # via pip-tools
-importlib-metadata==8.6.1
+importlib-metadata==8.7.0
     # via build
-packaging==24.2
+packaging==25.0
     # via build
 pip-tools==7.4.1
     # via -r requirements/pip-tools.in
@@ -28,7 +28,7 @@ zipp==3.21.0
     # via importlib-metadata
 
 # The following packages are considered to be unsafe in a requirements file:
-pip==25.0.1
+pip==25.1
     # via pip-tools
-setuptools==78.1.0
+setuptools==79.0.1
     # via pip-tools
