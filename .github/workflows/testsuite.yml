@@ -34,8 +34,7 @@ jobs:
     permissions:
       pull-requests: read
     outputs:
-      python: ${{ steps.filter.outputs.python }}
-      workflow: ${{ steps.filter.outputs.workflow }}
+      run_tests: ${{ steps.filter.outputs.run_tests }}
     steps:
       - name: "Check out the repo"
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -47,10 +46,12 @@ jobs:
         id: filter
         with:
           filters: |
-            python:
+            run_tests:
               - "**.py"
-            workflow:
               - ".github/workflows/testsuite.yml"
+              - "tox.ini"
+              - "requirements/*.pip"
+              - "tests/gold/**"
 
   tests:
     name: "${{ matrix.python-version }} on ${{ matrix.os }}"
@@ -58,15 +59,12 @@ jobs:
     timeout-minutes: 30
 
     # Don't run tests if the branch name includes "-notests".
-    # Only run tests if Python files or this workflow changed.
+    # Only run tests if files that affect tests have changed.
     needs: changed
     if: |
       ${{
-        !contains(github.ref, '-notests')
-        && (
-          needs.changed.outputs.python == 'true'
-          || needs.changed.outputs.workflow == 'true'
-        )
+        needs.changed.outputs.run_tests == 'true'
+        && !contains(github.ref, '-notests')
       }}
 
     strategy:

@@ -51,10 +51,13 @@ jobs:
               - "**.py"
             docs:
               - "doc/**"
+              - "coverage/**.py"
             actions:
               - ".github/workflows/**"
             workflow:
               - ".github/workflows/quality.yml"
+              - "tox.ini"
+              - "requirements/*.pip"
 
   lint:
     name: "Pylint etc"
