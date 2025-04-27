@@ -119,7 +119,7 @@ jobs:
           persist-credentials: false
 
       - name: "Set up Python"
-        uses: actions/setup-python@8d9ed9ac5c53483de85588cdf95a591a75ab9f55 # v5.5.0
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: "${{ matrix.python-version }}"
           allow-prereleases: true
@@ -182,7 +182,7 @@ jobs:
           persist-credentials: false
 
       - name: "Set up Python"
-        uses: actions/setup-python@8d9ed9ac5c53483de85588cdf95a591a75ab9f55 # v5.5.0
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: "3.9" # Minimum of PYVERSIONS
           # At a certain point, installing dependencies failed on pypy 3.9 and
@@ -205,7 +205,7 @@ jobs:
           python igor.py zip_mods
 
       - name: "Download coverage data"
-        uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e # v4.2.1
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
           pattern: metacov-*
           merge-multiple: true
@@ -274,7 +274,7 @@ jobs:
 
       - name: "Download coverage HTML report"
         if: ${{ github.ref == 'refs/heads/master' }}
-        uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e # v4.2.1
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
           name: html_report
           path: reports_repo/${{ env.report_dir }}
