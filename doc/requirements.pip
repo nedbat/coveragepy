@@ -14,7 +14,7 @@ babel==2.17.0
     # via sphinx
 certifi==2025.4.26
     # via requests
-charset-normalizer==3.4.1
+charset-normalizer==3.4.2
     # via requests
 click==8.1.8
     # via uvicorn
@@ -121,5 +121,5 @@ websockets==15.0.1
     # via sphinx-autobuild
 
 # The following packages are considered to be unsafe in a requirements file:
-setuptools==79.0.1
+setuptools==80.3.0
     # via pbr
