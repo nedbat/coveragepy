@@ -98,7 +98,7 @@ metasmoke:
 DOCBIN = .tox/doc/bin
 
 
-PIP_COMPILE = pip-compile ${COMPILE_OPTS} --allow-unsafe --resolver=backtracking
+PIP_COMPILE = uv pip compile -q ${COMPILE_OPTS}
 upgrade: 				## Update the *.pip files with the latest packages satisfying *.in files.
 	$(MAKE) _upgrade COMPILE_OPTS="--upgrade"
 
@@ -106,10 +106,8 @@ upgrade_one:				## Update the *.pip files for one package. `make upgrade_one pac
 	@test -n "$(package)" || { echo "\nUsage: make upgrade-one package=...\n"; exit 1; }
 	$(MAKE) _upgrade COMPILE_OPTS="--upgrade-package $(package)"
 
-_upgrade: export CUSTOM_COMPILE_COMMAND=make upgrade
+_upgrade: export UV_CUSTOM_COMPILE_COMMAND=make upgrade
 _upgrade:
-	pip install -q -r requirements/pip-tools.pip
-	$(PIP_COMPILE) -o requirements/pip-tools.pip requirements/pip-tools.in
 	$(PIP_COMPILE) -o requirements/pip.pip requirements/pip.in
 	$(PIP_COMPILE) -o requirements/pytest.pip requirements/pytest.in
 	$(PIP_COMPILE) -o requirements/kit.pip requirements/kit.in
@@ -118,10 +116,9 @@ _upgrade:
 	$(PIP_COMPILE) -o requirements/light-threads.pip requirements/light-threads.in
 	$(PIP_COMPILE) -o requirements/mypy.pip requirements/mypy.in
 
-doc_upgrade: export CUSTOM_COMPILE_COMMAND=make doc_upgrade
+doc_upgrade: export UV_CUSTOM_COMPILE_COMMAND=make doc_upgrade
 doc_upgrade: $(DOCBIN)			## Update the doc/requirements.pip file
-	$(DOCBIN)/pip install -q -r requirements/pip-tools.pip
-	$(DOCBIN)/$(PIP_COMPILE) --upgrade -o doc/requirements.pip doc/requirements.in
+	$(PIP_COMPILE) -p $(DOCBIN)/python3 --upgrade -o doc/requirements.pip doc/requirements.in
 
 diff_upgrade:				## Summarize the last `make upgrade`
 	@# The sort flags sort by the package name first, then by the -/+, and
