@@ -69,11 +69,7 @@ jobs:
     runs-on: macos-13
 
     needs: changed
-    if: |
-      ${{
-        needs.changed.outputs.python == 'true'
-        || needs.changed.outputs.workflow == 'true'
-      }}
+    if: ${{ needs.changed.outputs.python == 'true' || needs.changed.outputs.workflow == 'true' }}
 
     steps:
       - name: "Check out the repo"
@@ -101,11 +97,7 @@ jobs:
     runs-on: ubuntu-latest
 
     needs: changed
-    if: |
-      ${{
-        needs.changed.outputs.python == 'true'
-        || needs.changed.outputs.workflow == 'true'
-      }}
+    if: ${{ needs.changed.outputs.python == 'true' || needs.changed.outputs.workflow == 'true' }}
 
     steps:
       - name: "Check out the repo"
@@ -133,11 +125,7 @@ jobs:
     runs-on: ubuntu-latest
 
     needs: changed
-    if: |
-      ${{
-        needs.changed.outputs.docs == 'true'
-        || needs.changed.outputs.workflow == 'true'
-      }}
+    if: ${{ needs.changed.outputs.docs == 'true' || needs.changed.outputs.workflow == 'true' }}
 
     steps:
       - name: "Check out the repo"
@@ -176,11 +164,7 @@ jobs:
       actions: read
 
     needs: changed
-    if: |
-      ${{
-        needs.changed.outputs.actions == 'true'
-        || needs.changed.outputs.workflow == 'true'
-      }}
+    if: ${{ needs.changed.outputs.actions == 'true' || needs.changed.outputs.workflow == 'true' }}
 
     steps:
       - name: Checkout repository
