@@ -51,7 +51,7 @@ sterile: clean				## Remove all non-controlled content, even if expensive.
 	rm -f cheats.txt
 
 install:				## Install the developer tools
-	python3 -m pip install -r requirements/dev.pip
+	uv pip sync requirements/dev.pip
 
 
 ##@ Tests and quality checks
