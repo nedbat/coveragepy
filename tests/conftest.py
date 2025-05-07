@@ -82,10 +82,17 @@ def reset_environment() -> Iterator[None]:
 
 
 @pytest.fixture(autouse=True)
-def reset_filesdotpy_globals() -> Iterator[None]:
+def reset_filesdotpy_globals() -> None:
     """coverage/files.py has some unfortunate globals. Reset them every test."""
     set_relative_directory()
-    yield
+
+@pytest.fixture(autouse=True)
+def force_local_pyc_files() -> None:
+    """Ensure that .pyc files are written next to source files."""
+    # For some tests, we need .pyc files written in the current directory,
+    # so override any local setting.
+    sys.pycache_prefix = None
+
 
 WORKER = os.getenv("PYTEST_XDIST_WORKER", "none")
 
