@@ -37,6 +37,9 @@ jobs:
     # hours needlessly.
     timeout-minutes: 60
 
+    env:
+      TOX_GH_MAJOR_MINOR: "${{ matrix.python-version }}"
+
     strategy:
       matrix:
         os:

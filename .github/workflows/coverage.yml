@@ -65,6 +65,7 @@ jobs:
 
     env:
       MATRIX_ID: "${{ matrix.python-version }}.${{ matrix.os }}"
+      TOX_GH_MAJOR_MINOR: "${{ matrix.python-version }}"
 
     strategy:
       matrix:
@@ -130,22 +131,20 @@ jobs:
       - name: "Show environment"
         run: |
           set -xe
+          echo matrix id: $MATRIX_ID
           python -VV
           python -m site
-          env
+          env | sort
 
       - name: "Install dependencies"
         run: |
-          echo matrix id: $MATRIX_ID
           set -xe
-          python -VV
-          python -m site
           python -m pip install -r requirements/tox.pip
 
       - name: "Run tox coverage for ${{ matrix.python-version }}"
         env:
           COVERAGE_COVERAGE: "yes"
-          COVERAGE_CONTEXT: "${{ matrix.python-version }}.${{ matrix.os }}"
+          COVERAGE_CONTEXT: "${{ env.MATRIX_ID }}"
         run: |
           set -xe
           python -m tox
