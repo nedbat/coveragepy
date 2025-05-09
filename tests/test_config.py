@@ -64,9 +64,10 @@ class ConfigTest(CoverageTest):
         assert not cov.config.branch
         assert cov.config.data_file == "delete.me"
 
-    def test_toml_config_file(self) -> None:
-        # A pyproject.toml file will be read into the configuration.
-        self.make_file("pyproject.toml", """\
+    @pytest.mark.parametrize("filename", ["pyproject.toml", ".coveragerc.toml"])
+    def test_toml_config_file(self, filename) -> None:
+        # A pyproject.toml and coveragerc.toml will be read into the configuration.
+        self.make_file(filename, """\
             # This is just a bogus toml file for testing.
             [tool.somethingelse]
             authors = ["Joe D'Ávila <joe@gmail.com>"]
@@ -94,9 +95,10 @@ class ConfigTest(CoverageTest):
         assert cov.config.fail_under == 90.5
         assert cov.config.get_plugin_options("plugins.a_plugin") == {"hello": "world"}
 
-    def test_toml_ints_can_be_floats(self) -> None:
+    @pytest.mark.parametrize("filename", ["pyproject.toml", ".coveragerc.toml"])
+    def test_toml_ints_can_be_floats(self, filename) -> None:
         # Test that our class doesn't reject integers when loading floats
-        self.make_file("pyproject.toml", """\
+        self.make_file(filename, """\
             # This is just a bogus toml file for testing.
             [tool.coverage.report]
             fail_under = 90
@@ -205,7 +207,8 @@ class ConfigTest(CoverageTest):
         self.make_file(".coveragerc", bad_config)
         with pytest.raises(ConfigError, match=msg):
             coverage.Coverage()
-
+    
+    @pytest.mark.parametrize("filename", ["pyproject.toml", ".coveragerc.toml"])
     @pytest.mark.parametrize("bad_config, msg", [
         ("[tool.coverage.run]\ntimid = \"maybe?\"\n", r"maybe[?]"),
         ("[tool.coverage.run\n", None),
@@ -223,9 +226,9 @@ class ConfigTest(CoverageTest):
         ("[tool.coverage.report]\nprecision=1.23", "not an integer"),
         ('[tool.coverage.report]\nfail_under="s"', "couldn't convert to a float"),
     ])
-    def test_toml_parse_errors(self, bad_config: str, msg: str) -> None:
+    def test_toml_parse_errors(self, filename, bad_config: str, msg: str) -> None:
         # Im-parsable values raise ConfigError, with details.
-        self.make_file("pyproject.toml", bad_config)
+        self.make_file(filename, bad_config)
         with pytest.raises(ConfigError, match=msg):
             coverage.Coverage()
 
@@ -251,9 +254,10 @@ class ConfigTest(CoverageTest):
         assert cov.config.branch is True
         assert cov.config.exclude_list == ["the_$one", "anotherZZZ", "xZZZy", "xy", "huh${X}what"]
 
-    def test_environment_vars_in_toml_config(self) -> None:
+    @pytest.mark.parametrize("filename", ["pyproject.toml", ".coveragerc.toml"])
+    def test_environment_vars_in_toml_config(self, filename) -> None:
         # Config files can have $envvars in them.
-        self.make_file("pyproject.toml", """\
+        self.make_file(filename, """\
             [tool.coverage.run]
             data_file = "$DATA_FILE.fooey"
             branch = "$BRANCH"
@@ -325,9 +329,10 @@ class ConfigTest(CoverageTest):
         assert cov.config.exclude_list == ["~/data.file", "~joe/html_dir"]
         assert cov.config.paths == {'mapping': ['/Users/me/src', '/Users/joe/source']}
 
-    def test_tilde_in_toml_config(self) -> None:
+    @pytest.mark.parametrize("filename", ["pyproject.toml", ".coveragerc.toml"])
+    def test_tilde_in_toml_config(self, filename) -> None:
         # Config entries that are file paths can be tilde-expanded.
-        self.make_file("pyproject.toml", """\
+        self.make_file(filename, """\
             [tool.coverage.run]
             data_file = "~/data.file"
 
@@ -441,22 +446,14 @@ class ConfigTest(CoverageTest):
         msg = r"Unrecognized option '\[run\] xyzzy=' in config file .coveragerc"
         with pytest.warns(CoverageWarning, match=msg):
             _ = coverage.Coverage()
-
-    def test_unknown_option_toml(self) -> None:
-        self.make_file("pyproject.toml", """\
+    
+    @pytest.mark.parametrize("filename", ["pyproject.toml", ".coveragerc.toml"])
+    def test_unknown_option_toml(self, filename) -> None:
+        self.make_file(filename, """\
             [tool.coverage.run]
             xyzzy = 17
             """)
-        msg = r"Unrecognized option '\[tool.coverage.run\] xyzzy=' in config file pyproject.toml"
-        with pytest.warns(CoverageWarning, match=msg):
-            _ = coverage.Coverage()
-
-    def test_misplaced_option(self) -> None:
-        self.make_file(".coveragerc", """\
-            [report]
-            branch = True
-            """)
-        msg = r"Unrecognized option '\[report\] branch=' in config file .coveragerc"
+        msg = f"Unrecognized option '\\[tool.coverage.run\\] xyzzy=' in config file {filename}"
         with pytest.warns(CoverageWarning, match=msg):
             _ = coverage.Coverage()
 
@@ -468,7 +465,7 @@ class ConfigTest(CoverageTest):
         msg = r"Unrecognized option '\[coverage:run\] huh=' in config file setup.cfg"
         with pytest.warns(CoverageWarning, match=msg):
             _ = coverage.Coverage()
-
+    
     def test_exceptions_from_missing_things(self) -> None:
         self.make_file("config.ini", """\
             [run]
@@ -481,8 +478,10 @@ class ConfigTest(CoverageTest):
         with pytest.raises(ConfigError, match="No option 'foo' in section: 'xyzzy'"):
             config.get("xyzzy", "foo")
 
-    def test_exclude_also(self) -> None:
-        self.make_file("pyproject.toml", """\
+    
+    @pytest.mark.parametrize("filename", ["pyproject.toml", ".coveragerc.toml"])
+    def test_exclude_also(self, filename) -> None:
+        self.make_file(filename, """\
             [tool.coverage.report]
             exclude_also = ["foobar", "raise .*Error"]
             """)
@@ -775,35 +774,39 @@ class ConfigFileTest(UsingModulesMixin, CoverageTest):
                 coverage.Coverage(config_file="cov.toml")
 
     @pytest.mark.skipif(env.PYVERSION >= (3, 11), reason="Python 3.11 has toml in stdlib")
-    def test_no_toml_installed_pyproject_toml(self) -> None:
-        # Can't have coverage config in pyproject.toml without toml installed.
-        self.make_file("pyproject.toml", """\
+    @pytest.mark.parametrize("filename", ["pyproject.toml", ".coveragerc.toml"])
+    def test_no_toml_installed_pyproject_toml(self, filename) -> None:
+        # Can't have coverage config in pyproject.toml and .coveragerc.toml without toml installed.
+        self.make_file(filename, """\
             # A toml file!
             [tool.coverage.run]
             xyzzy = 17
             """)
         with mock.patch.object(coverage.tomlconfig, "has_tomllib", False):
-            msg = "Can't read 'pyproject.toml' without TOML support"
+            msg = f"Can't read '{filename}' without TOML support"
             with pytest.raises(ConfigError, match=msg):
                 coverage.Coverage()
 
     @pytest.mark.skipif(env.PYVERSION >= (3, 11), reason="Python 3.11 has toml in stdlib")
-    def test_no_toml_installed_pyproject_toml_shorter_syntax(self) -> None:
+    @pytest.mark.parametrize("filename", ["pyproject.toml", ".coveragerc.toml"])
+    def test_no_toml_installed_pyproject_toml_shorter_syntax(self, filename) -> None:
         # Can't have coverage config in pyproject.toml without toml installed.
-        self.make_file("pyproject.toml", """\
+        self.make_file(filename, """\
             # A toml file!
             [tool.coverage]
             run.parallel = true
             """)
         with mock.patch.object(coverage.tomlconfig, "has_tomllib", False):
-            msg = "Can't read 'pyproject.toml' without TOML support"
+            msg = f"Can't read '{filename}' without TOML support"
             with pytest.raises(ConfigError, match=msg):
                 coverage.Coverage()
 
+
     @pytest.mark.skipif(env.PYVERSION >= (3, 11), reason="Python 3.11 has toml in stdlib")
-    def test_no_toml_installed_pyproject_no_coverage(self) -> None:
+    @pytest.mark.parametrize("filename", ["pyproject.toml", ".coveragerc.toml"])
+    def test_no_toml_installed_pyproject_no_coverage(self, filename) -> None:
         # It's ok to have non-coverage pyproject.toml without toml installed.
-        self.make_file("pyproject.toml", """\
+        self.make_file(filename, """\
             # A toml file!
             [tool.something]
             xyzzy = 17
@@ -814,17 +817,39 @@ class ConfigFileTest(UsingModulesMixin, CoverageTest):
             assert not cov.config.timid
             assert not cov.config.branch
             assert cov.config.data_file == ".coverage"
-
-    def test_exceptions_from_missing_toml_things(self) -> None:
-        self.make_file("pyproject.toml", """\
+    
+    @pytest.mark.parametrize("filename", ["pyproject.toml", ".coveragerc.toml"])
+    def test_exceptions_from_missing_toml_things(self, filename) -> None:
+        self.make_file(filename, """\
             [tool.coverage.run]
             branch = true
             """)
         config = TomlConfigParser(False)
-        config.read("pyproject.toml")
+        config.read(filename)
         with pytest.raises(ConfigError, match="No section: 'xyzzy'"):
             config.options("xyzzy")
         with pytest.raises(ConfigError, match="No section: 'xyzzy'"):
             config.get("xyzzy", "foo")
         with pytest.raises(ConfigError, match="No option 'foo' in section: 'tool.coverage.run'"):
             config.get("run", "foo")
+            
+    def test_coveragerc_toml_priority(self) -> None:
+        """Test that .coveragerc.toml has priority over pyproject.toml."""
+        self.make_file(".coveragerc.toml", """\
+            [tool.coverage.run]
+            timid = true
+            data_file = ".toml-data.dat"
+            branch = true
+            """)
+    
+        self.make_file("pyproject.toml", """\
+            [tool.coverage.run]
+            timid = false
+            data_file = "pyproject-data.dat"
+            branch = false
+            """)
+        cov = coverage.Coverage()
+    
+        assert cov.config.timid is True
+        assert cov.config.data_file == ".toml-data.dat"
+        assert cov.config.branch is True
