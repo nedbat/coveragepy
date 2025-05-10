@@ -3,5 +3,5 @@
 
 # Version pins, for use as a constraints file.
 
-# https://github.com/pypa/virtualenv/issues/2829
-virtualenv<20.29.0
+# We need this until https://github.com/tox-dev/tox/issues/3523 is fixed.
+tox @ git+https://github.com/The-Compiler/tox@python314

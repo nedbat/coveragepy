@@ -32,6 +32,7 @@ tomli==2.2.1
     #   tox
 tox==4.24.1
     # via
+    #   -c requirements/pins.pip
     #   -r requirements/tox.in
     #   tox-gh
 tox-gh==1.5.0

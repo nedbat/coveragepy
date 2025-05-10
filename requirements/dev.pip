@@ -178,6 +178,7 @@ tomlkit==0.13.2
     # via pylint
 tox==4.24.1
     # via
+    #   -c requirements/pins.pip
     #   -r requirements/tox.in
     #   tox-gh
 tox-gh==1.5.0
