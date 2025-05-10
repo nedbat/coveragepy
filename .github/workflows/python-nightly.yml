@@ -38,7 +38,7 @@ jobs:
     timeout-minutes: 60
 
     env:
-      TOX_GH_MAJOR_MINOR: "${{ matrix.python-version }}"
+      TOX_GH_MAJOR_MINOR: "${{ matrix.python-version }}${{ matrix.nogil && 't' || '' }}"
 
     strategy:
       matrix:
@@ -59,22 +59,22 @@ jobs:
           # tox.ini so that tox will run properly. PYVERSIONS
           # Available versions:
           # https://launchpad.net/~deadsnakes/+archive/ubuntu/nightly/+packages
-          - "3.12-dev"
-          - "3.13-dev"
-          - "3.14-dev"
+          - "3.12"
+          - "3.13"
+          - "3.14"
           # https://github.com/actions/setup-python#available-versions-of-pypy
-          - "pypy-3.10-nightly"
+          - "pypy-3.10"
         nogil:
           - false
           - true
         include:
-          - python-version: "pypy-3.10-nightly"
+          - python-version: "pypy-3.10"
             os: "windows-latest"
             os-short: "windows"
         exclude:
-          - python-version: "3.12-dev"
+          - python-version: "3.12"
             nogil: true
-          - python-version: "pypy-3.10-nightly"
+          - python-version: "pypy-3.10"
             nogil: true
 
       fail-fast: false
@@ -89,14 +89,14 @@ jobs:
         uses: deadsnakes/action@e640ac8743173a67cca4d7d77cd837e514bf98e8 # v3.2.0
         if: "!startsWith(matrix.python-version, 'pypy-')"
         with:
-          python-version: "${{ matrix.python-version }}"
+          python-version: "${{ matrix.python-version }}-dev"
           nogil: "${{ matrix.nogil || false }}"
 
       - name: "Install ${{ matrix.python-version }} with setup-python"
         uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         if: "startsWith(matrix.python-version, 'pypy-')"
         with:
-          python-version: "${{ matrix.python-version }}"
+          python-version: "${{ matrix.python-version }}-nightly"
 
       - name: "Show diagnostic info"
         run: |
