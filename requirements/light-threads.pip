@@ -8,14 +8,14 @@ eventlet==0.39.1
     # via -r requirements/light-threads.in
 gevent==25.4.2
     # via -r requirements/light-threads.in
-greenlet==3.2.1
+greenlet==3.2.2
     # via
     #   -r requirements/light-threads.in
     #   eventlet
     #   gevent
 pycparser==2.22
     # via cffi
-setuptools==80.3.0
+setuptools==80.4.0
     # via
     #   zope-event
     #   zope-interface

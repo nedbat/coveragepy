@@ -6,11 +6,9 @@ filelock==3.18.0
     # via virtualenv
 pip==25.1.1
     # via -r requirements/pip.in
-platformdirs==4.3.7
+platformdirs==4.3.8
     # via virtualenv
-setuptools==80.3.0
+setuptools==80.4.0
     # via -r requirements/pip.in
-virtualenv==20.28.1
-    # via
-    #   -c requirements/pins.pip
-    #   -r requirements/pip.in
+virtualenv==20.31.2
+    # via -r requirements/pip.in

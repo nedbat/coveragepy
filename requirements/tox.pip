@@ -18,7 +18,7 @@ packaging==25.0
     # via
     #   pyproject-api
     #   tox
-platformdirs==4.3.7
+platformdirs==4.3.8
     # via
     #   tox
     #   virtualenv
@@ -30,7 +30,7 @@ tomli==2.2.1
     # via
     #   pyproject-api
     #   tox
-tox==4.24.1
+tox @ git+https://github.com/The-Compiler/tox@3c5d56bf8bb8405d0eceef912ba4cad7d077448c
     # via
     #   -c requirements/pins.pip
     #   -r requirements/tox.in
@@ -39,7 +39,5 @@ tox-gh==1.5.0
     # via -r requirements/tox.in
 typing-extensions==4.13.2
     # via tox
-virtualenv==20.28.1
-    # via
-    #   -c requirements/pins.pip
-    #   tox
+virtualenv==20.31.2
+    # via tox
