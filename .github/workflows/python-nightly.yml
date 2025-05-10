@@ -63,18 +63,18 @@ jobs:
           - "3.13"
           - "3.14"
           # https://github.com/actions/setup-python#available-versions-of-pypy
-          - "pypy-3.10"
+          - "pypy-3.11"
         nogil:
           - false
           - true
-        include:
-          - python-version: "pypy-3.10"
-            os: "windows-latest"
-            os-short: "windows"
+        # include:
+        #   - python-version: "pypy-3.11"
+        #     os: "windows-latest"
+        #     os-short: "windows"
         exclude:
           - python-version: "3.12"
             nogil: true
-          - python-version: "pypy-3.10"
+          - python-version: "pypy-3.11"
             nogil: true
 
       fail-fast: false
