@@ -21,7 +21,7 @@ from coverage import Coverage
 from coverage import env
 from coverage.config import CoverageConfig
 from coverage.control import DEFAULT_DATAFILE
-from coverage.core import HAS_CTRACER
+from coverage.core import CTRACER_FILE
 from coverage.data import combinable_files, debug_data_file
 from coverage.debug import info_header, short_stack, write_formatted_info
 from coverage.exceptions import _BaseCoverageException, _ExceptionDuringRun, NoSource
@@ -574,7 +574,7 @@ def show_help(
     help_params = dict(coverage.__dict__)
     help_params["__url__"] = __url__
     help_params["program_name"] = program_name
-    if HAS_CTRACER:
+    if CTRACER_FILE:
         help_params["extension_modifier"] = "with C extension"
     else:
         help_params["extension_modifier"] = "without C extension"

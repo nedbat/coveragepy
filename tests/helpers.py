@@ -379,9 +379,19 @@ def flaky_method(max_runs: int) -> Callable[[TestMethod], TestMethod]:
 def all_our_source_files() -> Iterator[tuple[Path, str]]:
     """Iterate over all of our own source files.
 
+    This is used in tests that need a bunch of Python code to analyze, so we
+    might as well use our own source code as the subject.
+
     Produces a stream of (filename, file contents) tuples.
     """
+    print(f"all_our_source_files: {coverage.__file__ = }")
     cov_dir = Path(coverage.__file__).parent.parent
+    if ".tox" in cov_dir.parts:
+        # We are in a tox-installed environment, look above the .tox dir to
+        # also find the uninstalled source files.
+        cov_dir = Path(os.fspath(cov_dir).partition(".tox")[0])
+
+    print(f"all_our_source_files: {os.path.abspath(cov_dir) = }")
     # To run against all the files in the tox venvs:
     #   for source_file in cov_dir.rglob("*.py"):
     for sub in [".", "benchmark", "ci", "coverage", "lab", "tests"]:

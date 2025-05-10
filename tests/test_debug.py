@@ -199,10 +199,9 @@ class DebugTraceTest(CoverageTest):
         out_text = self.f1_debug_output(["sys"])
         tracer_line = re_line(r"CTracer:", out_text).strip()
         if testenv.C_TRACER or testenv.SYS_MON:
-            expected = "CTracer: available"
+            assert tracer_line.startswith("CTracer: available from ")
         else:
-            expected = "CTracer: unavailable"
-        assert expected == tracer_line
+            assert tracer_line == "CTracer: unavailable"
 
     def test_debug_pybehave(self) -> None:
         out_text = self.f1_debug_output(["pybehave"])

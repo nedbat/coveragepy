@@ -27,7 +27,7 @@ from coverage.annotate import AnnotateReporter
 from coverage.collector import Collector
 from coverage.config import CoverageConfig, read_coverage_config
 from coverage.context import should_start_context_test_function, combine_context_switchers
-from coverage.core import Core, HAS_CTRACER
+from coverage.core import Core, CTRACER_FILE
 from coverage.data import CoverageData, combine_parallel_data
 from coverage.debug import (
     DebugControl, NoDebugging, short_stack, write_formatted_info, relevant_environment_display,
@@ -1336,7 +1336,7 @@ class Coverage(TConfigurable):
             ("coverage_version", covmod.__version__),
             ("coverage_module", covmod.__file__),
             ("core", self._collector.tracer_name() if self._collector is not None else "-none-"),
-            ("CTracer", "available" if HAS_CTRACER else "unavailable"),
+            ("CTracer", f"available from {CTRACER_FILE}" if CTRACER_FILE else "unavailable"),
             ("plugins.file_tracers", plugin_info(self._plugins.file_tracers)),
             ("plugins.configurers", plugin_info(self._plugins.configurers)),
             ("plugins.context_switchers", plugin_info(self._plugins.context_switchers)),

@@ -14,6 +14,7 @@ import glob
 import inspect
 import itertools
 import os
+import os.path
 import platform
 import pprint
 import re
@@ -47,6 +48,7 @@ def ignore_warnings():
         yield
 
 
+# $set_env.py: COVERAGE_IGOR_VERBOSE - More output from igor.py
 VERBOSITY = int(os.getenv("COVERAGE_IGOR_VERBOSE", "0"))
 
 # Functions named do_* are executable from the command line: do_blah is run
@@ -86,21 +88,26 @@ def do_remove_extension(*args):
         )
         roots = [root]
     else:
-        roots = ["coverage", "build/*/coverage"]
+        roots = [
+            "coverage",
+            "build/*/coverage",
+            ".tox/*/[Ll]ib/*/site-packages/coverage",
+            ".tox/*/[Ll]ib/site-packages/coverage",
+        ]
 
     for root, pattern in itertools.product(roots, so_patterns):
-        pattern = os.path.join(root, pattern.strip())
+        pattern = os.path.join(root, pattern)
         if VERBOSITY:
-            print(f"Searching for {pattern}")
+            print(f"Searching for {pattern} from {os.getcwd()}")
         for filename in glob.glob(pattern):
             if os.path.exists(filename):
                 if VERBOSITY:
-                    print(f"Removing {filename}")
+                    print(f"Removing {os.path.abspath(filename)}")
                 try:
                     os.remove(filename)
                 except OSError as exc:
                     if VERBOSITY:
-                        print(f"Couldn't remove {filename}: {exc}")
+                        print(f"Couldn't remove {os.path.abspath(filename)}: {exc}")
 
 
 def label_for_core(core):

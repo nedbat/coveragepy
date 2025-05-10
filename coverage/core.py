@@ -27,8 +27,8 @@ os = isolate_module(os)
 
 try:
     # Use the C extension code when we can, for speed.
-    from coverage.tracer import CTracer, CFileDisposition
-    HAS_CTRACER = True
+    import coverage.tracer
+    CTRACER_FILE: str | None = coverage.tracer.__file__
 except ImportError:
     # Couldn't import the C extension, maybe it isn't built.
     if os.getenv("COVERAGE_CORE") == "ctrace":      # pragma: part covered
@@ -40,7 +40,7 @@ except ImportError:
         # exception here causes all sorts of other noise in unittest.
         sys.stderr.write("*** COVERAGE_CORE is 'ctrace' but can't import CTracer!\n")
         sys.exit(1)
-    HAS_CTRACER = False
+    CTRACER_FILE = None
 
 
 class Core:
@@ -84,7 +84,7 @@ class Core:
             # Someday we will default to sysmon, but it's still experimental:
             #   if not reason_no_sysmon:
             #       core_name = "sysmon"
-            if HAS_CTRACER:
+            if CTRACER_FILE:
                 core_name = "ctrace"
             else:
                 core_name = "pytrace"
@@ -99,8 +99,8 @@ class Core:
             self.packed_arcs = False
             self.systrace = False
         elif core_name == "ctrace":
-            self.tracer_class = CTracer
-            self.file_disposition_class = CFileDisposition
+            self.tracer_class = coverage.tracer.CTracer
+            self.file_disposition_class = coverage.tracer.CFileDisposition
             self.supports_plugins = True
             self.packed_arcs = True
             self.systrace = True
