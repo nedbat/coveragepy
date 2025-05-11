@@ -8,7 +8,7 @@
 
 ##@ Utilities
 
-.PHONY: help clean_platform clean sterile install
+.PHONY: help _clean_platform debug_clean clean_platform clean sterile install
 
 help:					## Show this help.
 	@# Adapted from https://www.thapaliya.com/en/writings/well-documented-makefiles/
@@ -93,7 +93,7 @@ metasmoke:
 # in requirements/pins.pip, and search for "windows" in .in files to find pins
 # and extra requirements that have been needed, but might be obsolete.
 
-.PHONY: upgrade doc_upgrade diff_upgrade
+.PHONY: upgrade upgrade_one _upgrade doc_upgrade diff_upgrade
 
 DOCBIN = .tox/doc/bin
 
