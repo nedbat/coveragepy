@@ -50,8 +50,16 @@ sterile: clean				## Remove all non-controlled content, even if expensive.
 	rm -rf .tox
 	rm -f cheats.txt
 
+# For installing development tooling, use uv if it's available, otherwise pip.
+HAS_UV := $(shell command -v uv 2>/dev/null)
+ifdef HAS_UV
+	INSTALL := uv pip sync
+else
+	INSTALL := python -m pip install -r
+endif
+
 install:				## Install the developer tools
-	uv pip sync requirements/dev.pip
+	$(INSTALL) requirements/dev.pip
 
 
 ##@ Tests and quality checks
