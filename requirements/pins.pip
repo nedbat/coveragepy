@@ -2,6 +2,3 @@
 # For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
 
 # Version pins, for use as a constraints file.
-
-# We need this until https://github.com/tox-dev/tox/issues/3523 is fixed.
-tox @ git+https://github.com/The-Compiler/tox@python314

@@ -4,9 +4,9 @@ cffi==1.17.1
     # via -r requirements/light-threads.in
 dnspython==2.7.0
     # via eventlet
-eventlet==0.39.1
+eventlet==0.40.0
     # via -r requirements/light-threads.in
-gevent==25.4.2
+gevent==25.5.1
     # via -r requirements/light-threads.in
 greenlet==3.2.2
     # via
