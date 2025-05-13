@@ -139,7 +139,7 @@ Version 7.6.10 — 2024-12-26
 .. _issue 1875: https://github.com/nedbat/coveragepy/issues/1875
 .. _issue 1902: https://github.com/nedbat/coveragepy/issues/1902
 .. _issue 1908: https://github.com/nedbat/coveragepy/issues/1908
-.. _pep649: https://docs.python.org/3.14/whatsnew/3.14.html#pep-649-deferred-evaluation-of-annotations
+.. _pep649: https://docs.python.org/3.14/whatsnew/3.14.html#whatsnew314-pep649
 
 
 .. _changes_7-6-9:
