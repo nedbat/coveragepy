@@ -653,7 +653,7 @@ def test_thread_safe_save_data(tmp_path: pathlib.Path) -> None:
     modules_dir.mkdir()
     module_names = [f"m{i:03d}" for i in range(1000)]
     for module_name in module_names:
-        (modules_dir / (module_name + ".py")).write_text("def f(): pass\n")
+        (modules_dir / (module_name + ".py")).write_text("def f(): pass\n", encoding="utf-8")
 
     # Shared variables for threads
     should_run = [True]

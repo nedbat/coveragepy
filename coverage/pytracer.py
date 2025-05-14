@@ -126,7 +126,7 @@ class PyTracer(Tracer):
 
     def log(self, marker: str, *args: Any) -> None:
         """For hard-core logging of what this tracer is doing."""
-        with open("/tmp/debug_trace.txt", "a") as f:
+        with open("/tmp/debug_trace.txt", "a", encoding="utf-8") as f:
             f.write(f"{marker} {self.id}[{len(self.data_stack)}]")
             if 0:   # if you want thread ids..
                 f.write(".{:x}.{:x}".format(                    # type: ignore[unreachable]

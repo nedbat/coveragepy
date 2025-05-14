@@ -51,7 +51,7 @@ def data_filename(fname: str) -> str:
 
 def read_data(fname: str) -> str:
     """Return the contents of a data file of ours."""
-    with open(data_filename(fname)) as data_file:
+    with open(data_filename(fname), encoding="utf-8") as data_file:
         return data_file.read()
 
 
@@ -412,7 +412,7 @@ class HtmlReporter:
         # .gitignore can't be copied from the source tree because if it was in
         # the source tree, it would stop the static files from being checked in.
         if self.directory_was_empty:
-            with open(os.path.join(self.directory, ".gitignore"), "w") as fgi:
+            with open(os.path.join(self.directory, ".gitignore"), "w", encoding="utf-8") as fgi:
                 fgi.write("# Created by coverage.py\n*\n")
 
     def should_report(self, analysis: Analysis, index_page: IndexPage) -> bool:
@@ -706,7 +706,7 @@ class IncrementalChecker:
         """Read the information we stored last time."""
         try:
             status_file = os.path.join(self.directory, self.STATUS_FILE)
-            with open(status_file) as fstatus:
+            with open(status_file, encoding="utf-8") as fstatus:
                 status = json.load(fstatus)
         except (OSError, ValueError):
             # Status file is missing or malformed.
@@ -747,7 +747,7 @@ class IncrementalChecker:
                 for fname, finfo in self.files.items()
             },
         }
-        with open(status_file, "w") as fout:
+        with open(status_file, "w", encoding="utf-8") as fout:
             json.dump(status_data, fout, separators=(",", ":"))
 
     def check_global_data(self, *data: Any) -> None:

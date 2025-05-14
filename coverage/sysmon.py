@@ -104,7 +104,7 @@ if LOG:  # pragma: debugging
             # f"{root}-{pid}.out",
             # f"{root}-{pid}-{tslug}.out",
         ]:
-            with open(filename, "a") as f:
+            with open(filename, "a", encoding="utf-8") as f:
                 try:
                     print(f"{pid}:{tslug}: {msg}", file=f, flush=True)
                 except UnicodeError:

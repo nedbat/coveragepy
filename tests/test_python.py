@@ -57,11 +57,11 @@ def test_source_for_file_windows(tmp_path: pathlib.Path) -> None:
 
     # On windows if a pyw exists, it is an acceptable source
     path_windows = tmp_path / "a.pyw"
-    path_windows.write_text("")
+    path_windows.write_text("", encoding="utf-8")
     assert str(path_windows) == source_for_file(src + 'c')
 
     # If both pyw and py exist, py is preferred
-    a_py.write_text("")
+    a_py.write_text("", encoding="utf-8")
     assert source_for_file(src + 'c') == src
 
 
@@ -81,6 +81,6 @@ class RunpyTest(CoverageTest):
             import runpy
             from pathlib import Path
             pyfile = Path('script.py')
-            pyfile.write_text('')
+            pyfile.write_text('', encoding='utf-8')
             runpy.run_path({convert_to}(pyfile))
         """)

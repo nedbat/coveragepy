@@ -64,7 +64,7 @@ elif sys.platform.startswith("linux"):
         """Read the /proc/PID/status file to find memory use."""
         try:
             # Get pseudo file /proc/<pid>/status
-            with open(f"/proc/{os.getpid()}/status") as t:
+            with open(f"/proc/{os.getpid()}/status", encoding="utf-8") as t:
                 v = t.read()
         except OSError:             # pragma: cant happen
             return 0    # non-Linux?

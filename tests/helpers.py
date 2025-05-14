@@ -15,6 +15,7 @@ import os.path
 import re
 import shutil
 import subprocess
+import sys
 import textwrap
 import warnings
 
@@ -42,10 +43,13 @@ def run_command(cmd: str) -> tuple[int, str]:
     # Subprocesses are expensive, but convenient, and so may be over-used in
     # the test suite.  Use these lines to get a list of the tests using them:
     if 0:  # pragma: debugging
-        with open("/tmp/processes.txt", "a") as proctxt:  # type: ignore[unreachable]
+        pth = "/tmp/processes.txt"
+        with open(pth, "a", encoding="utf-8") as proctxt:  # type: ignore[unreachable]
             print(os.getenv("PYTEST_CURRENT_TEST", "unknown"), file=proctxt, flush=True)
 
-    encoding = os.device_encoding(1) or locale.getpreferredencoding()
+    encoding = os.device_encoding(1) or (
+        locale.getdefaultencoding() if sys.version_info < (3, 10) else locale.getencoding()
+    )
 
     # In some strange cases (PyPy3 in a virtualenv!?) the stdout encoding of
     # the subprocess is set incorrectly to ascii.  Use an environment variable
@@ -113,7 +117,7 @@ def make_file(
 
     if text and basename.endswith(".py") and SHOW_DIS:      # pragma: debugging
         os.makedirs("/tmp/dis", exist_ok=True)
-        with open(f"/tmp/dis/{basename}.dis", "w") as fdis:
+        with open(f"/tmp/dis/{basename}.dis", "w", encoding="utf-8") as fdis:
             print(f"# {os.path.abspath(filename)}", file=fdis)
             cur_test = os.getenv("PYTEST_CURRENT_TEST", "unknown")
             print(f"# PYTEST_CURRENT_TEST = {cur_test}", file=fdis)

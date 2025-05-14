@@ -59,8 +59,8 @@ def compare(
         save_path = expected_dir.replace(os_sep("/gold/"), os_sep("/actual/"))
         os.makedirs(save_path, exist_ok=True)
         save_file = os.path.join(save_path, f)
-        with open(save_file, "w") as savef:
-            with open(os.path.join(actual_dir, f)) as readf:
+        with open(save_file, "w", encoding="utf-8") as savef:
+            with open(os.path.join(actual_dir, f), encoding="utf-8") as readf:
                 savef.write(readf.read())
                 print(os_sep(f"Saved actual output to '{save_file}': see tests/gold/README.rst"))
 
@@ -70,13 +70,13 @@ def compare(
     text_diff = []
     for f in diff_files:
         expected_file = os.path.join(expected_dir, f)
-        with open(expected_file) as fobj:
+        with open(expected_file, encoding="utf-8") as fobj:
             expected = fobj.read()
         if expected_file.endswith(".xml"):
             expected = canonicalize_xml(expected)
 
         actual_file = os.path.join(actual_dir, f)
-        with open(actual_file) as fobj:
+        with open(actual_file, encoding="utf-8") as fobj:
             actual = fobj.read()
         if actual_file.endswith(".xml"):
             actual = canonicalize_xml(actual)
@@ -114,7 +114,7 @@ def contains(filename: str, *strlist: str) -> None:
 
     """
     __tracebackhide__ = True    # pytest, please don't show me this function.
-    with open(filename) as fobj:
+    with open(filename, encoding="utf-8") as fobj:
         text = fobj.read()
     for s in strlist:
         assert s in text, f"Missing content in {filename}: {s!r}"
@@ -128,7 +128,7 @@ def contains_rx(filename: str, *rxlist: str) -> None:
 
     """
     __tracebackhide__ = True    # pytest, please don't show me this function.
-    with open(filename) as fobj:
+    with open(filename, encoding="utf-8") as fobj:
         lines = fobj.readlines()
     for rx in rxlist:
         assert any(re.search(rx, line) for line in lines), (
@@ -144,7 +144,7 @@ def contains_any(filename: str, *strlist: str) -> None:
 
     """
     __tracebackhide__ = True    # pytest, please don't show me this function.
-    with open(filename) as fobj:
+    with open(filename, encoding="utf-8") as fobj:
         text = fobj.read()
     for s in strlist:
         if s in text:
@@ -161,7 +161,7 @@ def doesnt_contain(filename: str, *strlist: str) -> None:
 
     """
     __tracebackhide__ = True    # pytest, please don't show me this function.
-    with open(filename) as fobj:
+    with open(filename, encoding="utf-8") as fobj:
         text = fobj.read()
     for s in strlist:
         assert s not in text, f"Forbidden content in {filename}: {s!r}"

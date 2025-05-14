@@ -89,7 +89,7 @@ class RunFileTest(CoverageTest):
                 a = 1
                 print(f"a is {a!r}")
                 #""")
-        with open("abrupt.py") as f:
+        with open("abrupt.py", encoding="utf-8") as f:
             abrupt = f.read()
         assert abrupt[-1] == '#'
         run_python_file(["abrupt.py"])

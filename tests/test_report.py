@@ -787,7 +787,7 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
             print("Line One")
             os.chdir("subdir")
             print("Line Two")
-            print(open("something").read())
+            print(open("something", encoding="utf-8").read())
             """)
         self.make_file("subdir/something", "hello")
         out = self.run_command("coverage run --source=. chdir.py")

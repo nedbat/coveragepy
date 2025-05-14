@@ -62,7 +62,7 @@ def venv_world_fixture(tmp_path_factory: pytest.TempPathFactory) -> Path:
                 return 3 * x
             """)
         # Use plugin2.py as third.plugin
-        with open(os.path.join(os.path.dirname(__file__), "plugin2.py")) as f:
+        with open(os.path.join(os.path.dirname(__file__), "plugin2.py"), encoding="utf-8") as f:
             make_file("third_pkg/third/plugin.py", f.read())
         # A render function for plugin2 to use for dynamic file names.
         make_file("third_pkg/third/render.py", """\
@@ -194,7 +194,7 @@ class VirtualenvTest(CoverageTest):
 
     def get_trace_output(self) -> str:
         """Get the debug output of coverage.py"""
-        with open("debug_out.txt") as f:
+        with open("debug_out.txt", encoding="utf-8") as f:
             return f.read()
 
     @pytest.mark.parametrize('install_source_in_venv', [True, False])

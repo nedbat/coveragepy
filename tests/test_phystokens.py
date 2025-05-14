@@ -128,7 +128,7 @@ class PhysTokensTest(CoverageTest):
 
             stress = os.path.join(TESTS_DIR, fname)
             self.check_file_tokenization(stress)
-            with open(stress) as fstress:
+            with open(stress, encoding="utf-8") as fstress:
                 assert re.search(r"(?m) $", fstress.read()), f"{stress} needs a trailing space."
 
 

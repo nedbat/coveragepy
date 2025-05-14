@@ -80,7 +80,7 @@ class CompareTest(CoverageTest):
         assert "  D/D/D, Gxxx, Pennsylvania" in stdout
 
         # The actual file was saved.
-        with open(ACTUAL_GETTY_FILE) as f:
+        with open(ACTUAL_GETTY_FILE, encoding="utf-8") as f:
             saved = f.read()
         assert saved == BAD_GETTY
 

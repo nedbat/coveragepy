@@ -265,7 +265,7 @@ class ReportWithJinjaTest(CoverageTest):
         cov = coverage.Coverage()
         cov.load()
         cov.lcov_report()
-        with open("coverage.lcov") as lcov:
+        with open("coverage.lcov", encoding="utf-8") as lcov:
             actual = lcov.read()
         expected = textwrap.dedent("""\
             SF:good.j2
