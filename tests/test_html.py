@@ -72,7 +72,7 @@ class HtmlTestHelpers(CoverageTest):
         """Return the content of the HTML report for `module`."""
         filename = flat_rootname(module) + ".html"
         filename = os.path.join("htmlcov", filename)
-        with open(filename) as f:
+        with open(filename, encoding="utf-8") as f:
             return f.read()
 
     def get_html_index_content(self) -> str:
@@ -81,7 +81,7 @@ class HtmlTestHelpers(CoverageTest):
         Time stamps are replaced with a placeholder so that clocks don't matter.
 
         """
-        with open("htmlcov/index.html") as f:
+        with open("htmlcov/index.html", encoding="utf-8") as f:
             index = f.read()
         index = re.sub(
             r"created at \d{4}-\d{2}-\d{2} \d{2}:\d{2} \+\d{4}",
@@ -122,7 +122,7 @@ class HtmlTestHelpers(CoverageTest):
         """
         hrefs = collections.defaultdict(set)
         for fname in glob.glob(f"{directory}/*.html"):
-            with open(fname) as fhtml:
+            with open(fname, encoding="utf-8") as fhtml:
                 html = fhtml.read()
             for href in re.findall(r""" href=['"]([^'"]*)['"]""", html):
                 if href.startswith("#"):
@@ -182,11 +182,11 @@ class FileWriteTracker:
     def __init__(self, written: set[str]) -> None:
         self.written = written
 
-    def open(self, filename: str, mode: str = "r") -> IO[str]:
+    def open(self, filename: str, mode: str = "r", encoding: str | None = None) -> IO[str]:
         """Be just like `open`, but write written file names to `self.written`."""
         if mode.startswith("w"):
             self.written.add(filename.replace('\\', '/'))
-        return open(filename, mode)
+        return open(filename, mode, encoding=encoding)
 
 
 class HtmlDeltaTest(HtmlTestHelpers, CoverageTest):
@@ -361,12 +361,12 @@ class HtmlDeltaTest(HtmlTestHelpers, CoverageTest):
         self.create_initial_files()
         self.run_coverage()
 
-        with open("htmlcov/status.json") as status_json:
+        with open("htmlcov/status.json", encoding="utf-8") as status_json:
             status_data = json.load(status_json)
 
         assert status_data['format'] == 5
         status_data['format'] = 99
-        with open("htmlcov/status.json", "w") as status_json:
+        with open("htmlcov/status.json", "w", encoding="utf-8") as status_json:
             json.dump(status_data, status_json)
 
         self.run_coverage()
@@ -382,7 +382,7 @@ class HtmlDeltaTest(HtmlTestHelpers, CoverageTest):
         self.create_initial_files()
         self.make_file("htmlcov/.gitignore", "# ignore nothing")
         self.run_coverage()
-        with open("htmlcov/.gitignore") as fgi:
+        with open("htmlcov/.gitignore", encoding="utf-8") as fgi:
             assert fgi.read() == "# ignore nothing"
 
     def test_dont_write_gitignore_into_existing_directory(self) -> None:
@@ -609,9 +609,9 @@ class HtmlTest(HtmlTestHelpers, CoverageTest):
         self.create_initial_files()
         self.run_coverage()
 
-        with open("htmlcov/index.html") as f:
+        with open("htmlcov/index.html", encoding="utf-8") as f:
             self.assert_correct_timestamp(f.read())
-        with open("htmlcov/main_file_py.html") as f:
+        with open("htmlcov/main_file_py.html", encoding="utf-8") as f:
             self.assert_correct_timestamp(f.read())
 
     def test_reporting_on_unmeasured_file(self) -> None:
@@ -1259,7 +1259,7 @@ assert len(math) == 18
         cov.load()
         cov.html_report()
         self.assert_exists("htmlcov/h\xe2t_py.html")
-        with open("htmlcov/index.html") as indexf:
+        with open("htmlcov/index.html", encoding="utf-8") as indexf:
             index = indexf.read()
         assert '<a href="h&#226;t_py.html">h&#226;t.py</a>' in index
 
@@ -1273,7 +1273,7 @@ assert len(math) == 18
         cov.load()
         cov.html_report()
         self.assert_exists("htmlcov/z_5786906b6f0ffeb4_accented_py.html")
-        with open("htmlcov/index.html") as indexf:
+        with open("htmlcov/index.html", encoding="utf-8") as indexf:
             index = indexf.read()
         expected = '<a href="z_5786906b6f0ffeb4_accented_py.html">&#226;%saccented.py</a>'
         assert expected % os.sep in index

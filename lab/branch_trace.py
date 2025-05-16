@@ -11,7 +11,7 @@ def trace(frame, event, arg):
         last = this
     return trace
 
-code = open(sys.argv[1]).read()
+code = open(sys.argv[1], encoding="utf-8").read()
 sys.settrace(trace)
 exec(code)
 print(sorted(pairs))

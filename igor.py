@@ -196,7 +196,7 @@ def run_tests_with_coverage(core, *runner_args):
     # There's an entry in "make clean" to get rid of this file.
     pth_dir = sysconfig.get_path("purelib")
     pth_path = os.path.join(pth_dir, "zzz_metacov.pth")
-    with open(pth_path, "w") as pth_file:
+    with open(pth_path, "w", encoding="utf-8") as pth_file:
         pth_file.write("import coverage; coverage.process_startup()\n")
 
     suffix = f"{make_env_id(core)}_{platform.platform()}"
@@ -374,14 +374,14 @@ def get_release_facts():
 
 def update_file(fname, pattern, replacement):
     """Update the contents of a file, replacing pattern with replacement."""
-    with open(fname) as fobj:
+    with open(fname, encoding="utf-8") as fobj:
         old_text = fobj.read()
 
     new_text = re.sub(pattern, replacement, old_text, count=1)
 
     if new_text != old_text:
         print(f"Updating {fname}")
-        with open(fname, "w") as fobj:
+        with open(fname, "w", encoding="utf-8") as fobj:
             fobj.write(new_text)
 
 

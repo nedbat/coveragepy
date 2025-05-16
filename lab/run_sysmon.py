@@ -9,7 +9,7 @@ import sys
 print(sys.version)
 the_program = sys.argv[1]
 
-code = compile(open(the_program).read(), filename=the_program, mode="exec")
+code = compile(open(the_program, encoding="utf-8").read(), filename=the_program, mode="exec")
 
 my_id = sys.monitoring.COVERAGE_ID
 sys.monitoring.use_tool_id(my_id, "run_sysmon.py")

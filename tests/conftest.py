@@ -104,7 +104,8 @@ def pytest_sessionstart() -> None:
         # Create a .pth file for measuring subprocess coverage.
         pth_dir = find_writable_pth_directory()
         assert pth_dir
-        (pth_dir / "subcover.pth").write_text("import coverage; coverage.process_startup()\n")
+        sub_dir = pth_dir / "subcover.pth"
+        sub_dir.write_text("import coverage; coverage.process_startup()\n", encoding="utf-8")
         # subcover.pth is deleted by pytest_sessionfinish below.
 
 
@@ -137,7 +138,7 @@ def find_writable_pth_directory() -> Path | None:
     for pth_dir in possible_pth_dirs():             # pragma: part covered
         try_it = pth_dir / f"touch_{WORKER}.it"
         try:
-            try_it.write_text("foo")
+            try_it.write_text("foo", encoding="utf-8")
         except OSError:                             # pragma: cant happen
             continue
 

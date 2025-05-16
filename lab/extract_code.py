@@ -52,7 +52,7 @@ else:
     fname, lineno = sys.argv[1:]
 lineno = int(lineno)
 
-with open(fname) as code_file:
+with open(fname, encoding="utf-8") as code_file:
     lines = ["", *code_file]
 
 # Find opening triple-quote

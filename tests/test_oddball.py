@@ -599,7 +599,7 @@ class ExecTest(CoverageTest):
             """)
         self.make_file("main.py", """\
             namespace = {'var': 17}
-            with open("to_exec.py") as to_exec_py:
+            with open("to_exec.py", encoding="utf-8") as to_exec_py:
                 code = compile(to_exec_py.read(), 'to_exec.py', 'exec')
                 exec(code, globals(), namespace)
             \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n

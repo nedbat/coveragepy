@@ -35,7 +35,7 @@ Topic :: Software Development :: Testing
 """
 
 cov_ver_py = os.path.join(os.path.split(__file__)[0], "coverage/version.py")
-with open(cov_ver_py) as version_file:
+with open(cov_ver_py, encoding="utf-8") as version_file:
     # __doc__ will be overwritten by version.py.
     doc = __doc__
     # Keep pylint happy.
@@ -43,7 +43,7 @@ with open(cov_ver_py) as version_file:
     # Execute the code in version.py.
     exec(compile(version_file.read(), cov_ver_py, "exec", dont_inherit=True))
 
-with open("README.rst") as readme:
+with open("README.rst", encoding="utf-8") as readme:
     readme_text = readme.read()
 
 temp_url = __url__.replace("readthedocs", "@@")

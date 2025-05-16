@@ -71,7 +71,7 @@ class BalanceXdistPlugin:       # pragma: debugging
         if self.worker == "none":
             if tests_csv_dir.exists():
                 for csv_file in tests_csv_dir.iterdir():
-                    with csv_file.open(newline="") as fcsv:
+                    with csv_file.open(newline="", encoding="utf-8") as fcsv:
                         reader = csv.reader(fcsv)
                         for row in reader:
                             self.times[row[1]] += float(row[3])
@@ -81,7 +81,7 @@ class BalanceXdistPlugin:       # pragma: debugging
         """Helper to write a row to the tracked-test csv file."""
         if self.running_all:
             self.tests_csv.parent.mkdir(parents=True, exist_ok=True)
-            with self.tests_csv.open("a", newline="") as fcsv:
+            with self.tests_csv.open("a", newline="", encoding="utf-8") as fcsv:
                 csv.writer(fcsv).writerow([self.worker, item.nodeid, phase, duration])
 
     @pytest.hookimpl(hookwrapper=True)
@@ -171,7 +171,7 @@ def show_worker_times():                            # pragma: debugging
     tests_csv_dir = Path("tmp/tests_csv")
 
     for csv_file in tests_csv_dir.iterdir():
-        with csv_file.open(newline="") as fcsv:
+        with csv_file.open(newline="", encoding="utf-8") as fcsv:
             reader = csv.reader(fcsv)
             for row in reader:
                 worker = row[0]

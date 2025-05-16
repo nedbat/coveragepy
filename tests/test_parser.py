@@ -1183,7 +1183,7 @@ class ParserFileTest(CoverageTest):
                 stderr=subprocess.PIPE).communicate()""")   # no final newline.
 
         # Double-check that some test helper wasn't being helpful.
-        with open("abrupt.py") as f:
+        with open("abrupt.py", encoding="utf-8") as f:
             assert f.read()[-1] == ")"
 
         parser = self.parse_file("abrupt.py")

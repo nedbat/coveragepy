@@ -188,7 +188,7 @@ class WithTest(CoverageTest):
     def test_with(self) -> None:
         self.check_coverage("""\
             def example():
-                with open("test", "w") as f:
+                with open("test", "w", encoding="utf-8") as f:
                     f.write("3")
                     a = 4
 
@@ -201,7 +201,7 @@ class WithTest(CoverageTest):
     def test_with_return(self) -> None:
         self.check_coverage("""\
             def example():
-                with open("test", "w") as f:
+                with open("test", "w", encoding="utf-8") as f:
                     f.write("3")
                     return 4
 
@@ -215,7 +215,7 @@ class WithTest(CoverageTest):
         # https://github.com/nedbat/coveragepy/issues/146
         self.check_coverage("""\
             for i in range(2):
-                with open("test", "w") as f:
+                with open("test", "w", encoding="utf-8") as f:
                     print(3)
                 print(4)
             print(5)
@@ -228,9 +228,9 @@ class WithTest(CoverageTest):
     def test_nested_with_return(self) -> None:
         self.check_coverage("""\
             def example(x):
-                with open("test", "w") as f2:
+                with open("test", "w", encoding="utf-8") as f2:
                     a = 3
-                    with open("test2", "w") as f4:
+                    with open("test2", "w", encoding="utf-8") as f4:
                         f2.write("5")
                         return 6
 
@@ -243,7 +243,7 @@ class WithTest(CoverageTest):
     def test_break_through_with(self) -> None:
         self.check_coverage("""\
             for i in range(1+1):
-                with open("test", "w") as f:
+                with open("test", "w", encoding="utf-8") as f:
                     print(3)
                     break
             print(5)
@@ -255,7 +255,7 @@ class WithTest(CoverageTest):
     def test_continue_through_with(self) -> None:
         self.check_coverage("""\
             for i in range(1+1):
-                with open("test", "w") as f:
+                with open("test", "w", encoding="utf-8") as f:
                     print(3)
                     continue
             print(5)

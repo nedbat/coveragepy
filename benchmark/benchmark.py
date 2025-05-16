@@ -148,16 +148,16 @@ def file_replace(file_name: Path, old_text: str, new_text: str) -> Iterator[None
     """
     file_text = ""
     if old_text:
-        file_text = file_name.read_text()
+        file_text = file_name.read_text(encoding="utf-8")
         if old_text not in file_text:
             raise Exception("Old text {old_text!r} not found in {file_name}")
         updated_text = file_text.replace(old_text, new_text)
-        file_name.write_text(updated_text)
+        file_name.write_text(updated_text, encoding="utf-8")
     try:
         yield
     finally:
         if old_text:
-            file_name.write_text(file_text)
+            file_name.write_text(file_text, encoding="utf-8")
 
 
 def file_must_exist(file_name: str, kind: str = "file") -> Path:
@@ -624,7 +624,7 @@ class ProjectMypy(ToxProject):
     def run_with_coverage(self, env: Env, cov_ver: Coverage) -> float:
         env.shell.run_command(f"{env.python} -m pip install {cov_ver.pip_args}")
         pforce = Path("force.ini")
-        pforce.write_text("[run]\nbranch=false\n")
+        pforce.write_text("[run]\nbranch=false\n", encoding="utf-8")
         with env.shell.set_env({"COVERAGE_FORCE_CONFIG": str(pforce.resolve())}):
             env.shell.run_command(f"{env.python} -m pytest {self.FAST} --cov")
             duration = env.shell.last_duration
@@ -907,13 +907,13 @@ class Experiment:
 
     def save_results(self) -> None:
         """Save current results to the JSON file."""
-        with self.results_file.open("w") as f:
+        with self.results_file.open("w", encoding="utf-8") as f:
             json.dump({" ".join(k): v for k, v in self.result_data.items()}, f)
 
     def load_results(self) -> dict[ResultKey, list[float]]:
         """Load results from the JSON file if it exists."""
         if self.results_file.exists():
-            with self.results_file.open("r") as f:
+            with self.results_file.open("r", encoding="utf-8") as f:
                 data: dict[str, list[float]] = json.load(f)
             return {
                 (k.split()[0], k.split()[1], k.split()[2]): v for k, v in data.items()

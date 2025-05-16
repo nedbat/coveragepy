@@ -83,7 +83,7 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
         mod = self.start_import_stop(cov, mod_name)
         output_path = os.path.join(self.temp_dir, f"{mod_name}.json")
         cov.json_report(mod, outfile=output_path)
-        with open(output_path) as result_file:
+        with open(output_path, encoding="utf-8") as result_file:
             parsed_result = json.load(result_file)
         self.assert_recent_datetime(
             datetime.strptime(parsed_result['meta']['timestamp'], "%Y-%m-%dT%H:%M:%S.%f"),

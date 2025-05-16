@@ -64,7 +64,7 @@ def main(argv):
         print("Need either --file or --group")
         return 1
 
-    with open("coverage.json") as j:
+    with open("coverage.json", encoding="utf-8") as j:
         data = json.load(j)
     all_files = list(data["files"].keys())
     selected = select_files(all_files, args.pattern)

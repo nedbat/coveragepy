@@ -171,7 +171,7 @@ class PluginTest(CoverageTest):
                 pass
             def coverage_init(reg, options):
                 reg.add_noop(Plugin())
-            with open("evidence.out", "w") as f:
+            with open("evidence.out", "w", encoding="utf-8") as f:
                 f.write("we are here!")
             """)
 
@@ -181,7 +181,7 @@ class PluginTest(CoverageTest):
         cov.start()
         cov.stop()      # pragma: nested
 
-        with open("evidence.out") as f:
+        with open("evidence.out", encoding="utf-8") as f:
             assert f.read() == "we are here!"
 
     def test_missing_plugin_raises_import_error(self) -> None:

@@ -44,7 +44,7 @@ def show_pyc_file(fname):
     show_code(code)
 
 def show_py_file(fname):
-    text = open(fname).read().replace('\r\n', '\n')
+    text = open(fname, encoding="utf-8").read().replace('\r\n', '\n')
     show_py_text(text, fname=fname)
 
 def show_py_text(text, fname="<string>"):

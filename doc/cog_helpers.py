@@ -52,7 +52,7 @@ def _read_config(text, fname):
     text = textwrap.dedent(text[1:])
 
     os.makedirs("tmp", exist_ok=True)
-    with open(f"tmp/{fname}", "w") as f:
+    with open(f"tmp/{fname}", "w", encoding="utf-8") as f:
         f.write(text)
 
     config = read_coverage_config(f"tmp/{fname}", warn=cog.error)
