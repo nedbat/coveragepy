@@ -50,7 +50,7 @@ def run_command(cmd: str) -> tuple[int, str]:
     encoding = os.device_encoding(1) or (
         locale.getpreferredencoding()
         if sys.version_info < (3, 11)
-        else locale.getencoding()   # type: ignore
+        else locale.getencoding()
     )
 
     # In some strange cases (PyPy3 in a virtualenv!?) the stdout encoding of
