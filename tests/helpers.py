@@ -47,10 +47,13 @@ def run_command(cmd: str) -> tuple[int, str]:
         with open(pth, "a", encoding="utf-8") as proctxt:
             print(os.getenv("PYTEST_CURRENT_TEST", "unknown"), file=proctxt, flush=True)
 
+    # Type checking trick due to "unreachable" being set
+    _locale_type_erased: Any = locale
+
     encoding = os.device_encoding(1) or (
-        locale.getpreferredencoding()
+        _locale_type_erased.getpreferredencoding()
         if sys.version_info < (3, 11)
-        else locale.getencoding()
+        else _locale_type_erased.getencoding()
     )
 
     # In some strange cases (PyPy3 in a virtualenv!?) the stdout encoding of
