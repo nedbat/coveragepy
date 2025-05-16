@@ -8,6 +8,7 @@ from __future__ import annotations
 import os.path
 import re
 import sys
+import warnings
 
 from flaky import flaky
 import pytest
@@ -465,7 +466,11 @@ class DoctestTest(CoverageTest):
             doctest.testmod(sys.modules[__name__])  # we're not __main__ :(
             ''')
         cov = coverage.Coverage()
-        self.start_import_stop(cov, "the_doctest")
+        with warnings.catch_warnings():
+            # Doctest calls pdb which opens ~/.pdbrc without an encoding argument,
+            # but we don't care. PYVERSIONS: this was needed for 3.10 only.
+            warnings.filterwarnings("ignore", r".*'encoding' argument not specified.*")
+            self.start_import_stop(cov, "the_doctest")
         data = cov.get_data()
         assert len(data.measured_files()) == 1
         lines = sorted_lines(data, data.measured_files().pop())

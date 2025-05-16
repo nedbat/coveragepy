@@ -23,8 +23,12 @@ upgrading your version of coverage.py.
 Unreleased
 ----------
 
-Nothing yet.
+- A number of EncodingWarnings were fixed that could appear if you've enabled
+  PYTHONWARNDEFAULTENCODING, fixing `issue 1966`_.  Thanks, `Henry Schreiner
+  <pull 1967_>`_.
 
+.. _issue 1966: https://github.com/nedbat/coveragepy/issues/1966
+.. _pull 1967: https://github.com/nedbat/coveragepy/pull/1967
 
 .. start-releases
 

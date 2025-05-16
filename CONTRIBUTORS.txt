@@ -95,6 +95,7 @@ Greg Rogers
 Guido van Rossum
 Guillaume Chazarain
 Guillaume Pujol
+Henry Schreiner
 Holger Krekel
 Hugo van Kemenade
 Ian Moore
