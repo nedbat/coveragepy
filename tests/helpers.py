@@ -43,12 +43,14 @@ def run_command(cmd: str) -> tuple[int, str]:
     # Subprocesses are expensive, but convenient, and so may be over-used in
     # the test suite.  Use these lines to get a list of the tests using them:
     if 0:  # pragma: debugging
-        pth = "/tmp/processes.txt"
-        with open(pth, "a", encoding="utf-8") as proctxt:  # type: ignore[unreachable]
+        pth = "/tmp/processes.txt"                      # type: ignore[unreachable]
+        with open(pth, "a", encoding="utf-8") as proctxt:
             print(os.getenv("PYTEST_CURRENT_TEST", "unknown"), file=proctxt, flush=True)
 
     encoding = os.device_encoding(1) or (
-        locale.getdefaultencoding() if sys.version_info < (3, 10) else locale.getencoding()
+        locale.getpreferredencoding()
+        if sys.version_info < (3, 11)
+        else locale.getencoding()   # type: ignore
     )
 
     # In some strange cases (PyPy3 in a virtualenv!?) the stdout encoding of
