@@ -491,6 +491,30 @@ class ConfigTest(CoverageTest):
         expected = coverage.config.DEFAULT_EXCLUDE + ["foobar", "raise .*Error"]
         assert cov.config.exclude_list == expected
 
+    def test_core_option(self) -> None:
+        # Test that the core option can be set in the configuration file
+        self.make_file(".coveragerc", """\
+            [run]
+            core = pytrace
+            """)
+
+        # Skip calling Coverage() which would actually initialize the tracer
+        # and instead manually initialize the config
+        from coverage.config import CoverageConfig
+        config = CoverageConfig()
+        config.from_file(".coveragerc", lambda m: None, our_file=True)
+        assert config.core == "pytrace"
+
+        # Test with TOML config file
+        self.make_file("pyproject.toml", """\
+            [tool.coverage.run]
+            core = "ctrace"
+            """)
+
+        config = CoverageConfig()
+        config.from_file("pyproject.toml", lambda m: None, our_file=True)
+        assert config.core == "ctrace"
+
 
 class ConfigFileTest(UsingModulesMixin, CoverageTest):
     """Tests of the config file settings in particular."""

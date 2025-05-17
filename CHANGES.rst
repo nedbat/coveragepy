@@ -27,6 +27,11 @@ Unreleased
   PYTHONWARNDEFAULTENCODING, fixing `issue 1966`_.  Thanks, `Henry Schreiner
   <pull 1967_>`_.
 
+- Added a ``[run] core`` configuration setting to specify the measurement core,
+  which was previously only available through the COVERAGE_CORE environment
+  variable. Finishes `issue 1746`_.
+
+.. _issue 1746: https://github.com/nedbat/coveragepy/issues/1746
 .. _issue 1966: https://github.com/nedbat/coveragepy/issues/1966
 .. _pull 1967: https://github.com/nedbat/coveragepy/pull/1967
 

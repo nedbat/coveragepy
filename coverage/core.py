@@ -31,6 +31,8 @@ try:
     CTRACER_FILE: str | None = coverage.tracer.__file__
 except ImportError:
     # Couldn't import the C extension, maybe it isn't built.
+    # We still need to check the environment variable directly here,
+    # as this code runs before configuration is loaded.
     if os.getenv("COVERAGE_CORE") == "ctrace":      # pragma: part covered
         # During testing, we use the COVERAGE_CORE environment variable
         # to indicate that we've fiddled with the environment to test this
@@ -74,7 +76,7 @@ class Core:
             core_name = "pytrace"
 
         if core_name is None:
-            core_name = os.getenv("COVERAGE_CORE")
+            core_name = config.core
 
         if core_name == "sysmon" and reason_no_sysmon:
             warn(f"sys.monitoring {reason_no_sysmon}, using default core", slug="no-sysmon")

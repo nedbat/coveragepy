@@ -204,8 +204,9 @@ simpler but slower trace method, and might be needed in rare cases.
 
 In Python 3.12 and above, you can try an experimental core based on the new
 :mod:`sys.monitoring <python:sys.monitoring>` module by defining a
-``COVERAGE_CORE=sysmon`` environment variable.  This should be faster, though
-plugins and dynamic contexts are not yet supported with it.
+``COVERAGE_CORE=sysmon`` environment variable or by setting ``core = sysmon``
+in the configuration file.  This should be faster, though plugins and
+dynamic contexts are not yet supported with it.
 
 Coverage.py sets an environment variable, ``COVERAGE_RUN`` to indicate that
 your code is running under coverage measurement.  The value is not relevant,

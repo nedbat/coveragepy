@@ -197,6 +197,7 @@ class CoverageConfig(TConfigurable, TPluginConfig):
         self.command_line: str | None = None
         self.concurrency: list[str] = []
         self.context: str | None = None
+        self.core: str | None = None
         self.cover_pylib = False
         self.data_file = ".coverage"
         self.debug: list[str] = []
@@ -379,6 +380,7 @@ class CoverageConfig(TConfigurable, TPluginConfig):
         ("command_line", "run:command_line"),
         ("concurrency", "run:concurrency", "list"),
         ("context", "run:context"),
+        ("core", "run:core"),
         ("cover_pylib", "run:cover_pylib", "boolean"),
         ("data_file", "run:data_file"),
         ("debug", "run:debug", "list"),
@@ -621,6 +623,10 @@ def read_coverage_config(
     debugs = os.getenv("COVERAGE_DEBUG")
     if debugs:
         config.debug.extend(d.strip() for d in debugs.split(","))
+    # Read the COVERAGE_CORE environment variable for backward compatibility.
+    env_core = os.getenv("COVERAGE_CORE")
+    if env_core:
+        config.core = env_core
 
     # 4) from constructor arguments:
     config.from_args(**kwargs)
