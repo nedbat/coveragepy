@@ -328,6 +328,22 @@ Before version 4.2, this option only accepted a single string.
 .. versionadded:: 5.0
 
 
+.. _config_run_core:
+
+[run] core
+..........
+
+(string) Specify which trace function implementation to use. Valid values are:
+"pytrace" for the pure Python implementation, "ctrace" for the C implementation
+(default), or "sysmon" for the :mod:`sys.monitoring <python:sys.monitoring>`
+implementation (Python 3.12+ only).
+
+This was previously only available as the COVERAGE_CORE environment variable.
+Note that the "sysmon" core does not yet support plugins or dynamic contexts.
+
+.. versionadded:: 7.9
+
+
 .. _config_run_cover_pylib:
 
 [run] cover_pylib

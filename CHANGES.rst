@@ -23,7 +23,11 @@ upgrading your version of coverage.py.
 Unreleased
 ----------
 
-Nothing yet.
+- Added a ``[run] core`` configuration setting to specify the measurement core,
+  which was previously only available through the COVERAGE_CORE environment
+  variable. Finishes `issue 1746`_.
+
+.. _issue 1746: https://github.com/nedbat/coveragepy/issues/1746
 
 
 .. start-releases
