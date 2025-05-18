@@ -233,7 +233,7 @@ class MemoryLeakTest(CoverageTest):
         # one of our loops only increased the footprint by a small amount.
         base = osinfo.process_ram()
         deltas = []
-        for _ in range(10):
+        for _ in range(30):
             self.check_coverage(code, lines=[1, 2, 3], missing="", branch=branch)
             now = osinfo.process_ram()
             deltas.append(now - base)
