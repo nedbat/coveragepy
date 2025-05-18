@@ -8,7 +8,6 @@ of in shell scripts, batch files, or Makefiles.
 
 """
 
-import contextlib
 import datetime
 import glob
 import inspect
@@ -23,7 +22,6 @@ import sys
 import sysconfig
 import textwrap
 import types
-import warnings
 import zipfile
 
 try:
@@ -38,14 +36,6 @@ except ImportError:
 
 CPYTHON = platform.python_implementation() == "CPython"
 PYPY = platform.python_implementation() == "PyPy"
-
-
-@contextlib.contextmanager
-def ignore_warnings():
-    """Context manager to ignore warning within the with statement."""
-    with warnings.catch_warnings():
-        warnings.simplefilter("ignore")
-        yield
 
 
 # $set_env.py: COVERAGE_IGOR_VERBOSE - More output from igor.py
