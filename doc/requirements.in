@@ -2,7 +2,7 @@
 # For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
 
 # PyPI requirements input for building documentation for coverage.py
-# "make doc_upgrade" turns this into doc/requirements.pip
+# "make upgrade" turns this into doc/requirements.pip
 
 -c ../requirements/pins.pip
 

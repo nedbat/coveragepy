@@ -101,7 +101,7 @@ metasmoke:
 # in requirements/pins.pip, and search for "windows" in .in files to find pins
 # and extra requirements that have been needed, but might be obsolete.
 
-.PHONY: upgrade upgrade_one _upgrade doc_upgrade diff_upgrade
+.PHONY: upgrade upgrade_one _upgrade diff_upgrade
 
 DOCBIN = .tox/doc/bin
 
@@ -123,10 +123,7 @@ _upgrade:
 	$(PIP_COMPILE) -o requirements/dev.pip requirements/dev.in
 	$(PIP_COMPILE) -o requirements/light-threads.pip requirements/light-threads.in
 	$(PIP_COMPILE) -o requirements/mypy.pip requirements/mypy.in
-
-doc_upgrade: export UV_CUSTOM_COMPILE_COMMAND=make doc_upgrade
-doc_upgrade: $(DOCBIN)			## Update the doc/requirements.pip file
-	$(PIP_COMPILE) -p $(DOCBIN)/python3 --upgrade -o doc/requirements.pip doc/requirements.in
+	$(PIP_COMPILE) -p $(DOCBIN)/python3 -o doc/requirements.pip doc/requirements.in
 
 diff_upgrade:				## Summarize the last `make upgrade`
 	@# The sort flags sort by the package name first, then by the -/+, and
