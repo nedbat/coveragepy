@@ -233,7 +233,6 @@ class SysMonitor(Tracer):
                 0,
             )
 
-        self.stopped = False
         self._activity = False
 
     def __repr__(self) -> str:
@@ -244,43 +243,43 @@ class SysMonitor(Tracer):
     @panopticon()
     def start(self) -> None:
         """Start this Tracer."""
-        self.stopped = False
+        with self.lock:
+            assert sys_monitoring is not None
+            sys_monitoring.use_tool_id(self.myid, "coverage.py")
+            register = functools.partial(sys_monitoring.register_callback, self.myid)
+            events = sys.monitoring.events
 
-        assert sys_monitoring is not None
-        sys_monitoring.use_tool_id(self.myid, "coverage.py")
-        register = functools.partial(sys_monitoring.register_callback, self.myid)
-        events = sys.monitoring.events
-
-        sys_monitoring.set_events(self.myid, events.PY_START)
-        register(events.PY_START, self.sysmon_py_start)
-        if self.trace_arcs:
-            register(events.PY_RETURN, self.sysmon_py_return)
-            register(events.LINE, self.sysmon_line_arcs)
-            if env.PYBEHAVIOR.branch_right_left:
-                register(
-                    events.BRANCH_RIGHT,  # type:ignore[attr-defined]
-                    self.sysmon_branch_either,
-                )
-                register(
-                    events.BRANCH_LEFT,  # type:ignore[attr-defined]
-                    self.sysmon_branch_either,
-                )
-        else:
-            register(events.LINE, self.sysmon_line_lines)
-        sys_monitoring.restart_events()
-        self.sysmon_on = True
+            sys_monitoring.set_events(self.myid, events.PY_START)
+            register(events.PY_START, self.sysmon_py_start)
+            if self.trace_arcs:
+                register(events.PY_RETURN, self.sysmon_py_return)
+                register(events.LINE, self.sysmon_line_arcs)
+                if env.PYBEHAVIOR.branch_right_left:
+                    register(
+                        events.BRANCH_RIGHT,  # type:ignore[attr-defined]
+                        self.sysmon_branch_either,
+                    )
+                    register(
+                        events.BRANCH_LEFT,  # type:ignore[attr-defined]
+                        self.sysmon_branch_either,
+                    )
+            else:
+                register(events.LINE, self.sysmon_line_lines)
+            sys_monitoring.restart_events()
+            self.sysmon_on = True
 
     @panopticon()
     def stop(self) -> None:
         """Stop this Tracer."""
-        if not self.sysmon_on:
-            # In forking situations, we might try to stop when we are not
-            # started.  Do nothing in that case.
-            return
-        assert sys_monitoring is not None
-        sys_monitoring.set_events(self.myid, 0)
-        self.sysmon_on = False
-        sys_monitoring.free_tool_id(self.myid)
+        with self.lock:
+            if not self.sysmon_on:
+                # In forking situations, we might try to stop when we are not
+                # started.  Do nothing in that case.
+                return
+            assert sys_monitoring is not None
+            sys_monitoring.set_events(self.myid, 0)
+            self.sysmon_on = False
+            sys_monitoring.free_tool_id(self.myid)
 
     @panopticon()
     def post_fork(self) -> None:

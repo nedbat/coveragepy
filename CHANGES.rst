@@ -27,8 +27,12 @@ Unreleased
   PYTHONWARNDEFAULTENCODING, fixing `issue 1966`_.  Thanks, `Henry Schreiner
   <pull 1967_>`_.
 
+- Fixed a race condition when using sys.monitoring with free-threading Python,
+  closing `issue 1970`_.
+
 .. _issue 1966: https://github.com/nedbat/coveragepy/issues/1966
 .. _pull 1967: https://github.com/nedbat/coveragepy/pull/1967
+.. _issue 1970: https://github.com/nedbat/coveragepy/issues/1970
 
 .. start-releases
 
