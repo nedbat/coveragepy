@@ -1,6 +1,8 @@
 * Release checklist
 
 - Check that the current virtualenv matches the current coverage branch.
+    $ python -V # should match lowest PYVERSIONS
+    $ make install
 - start branch for release work
     $ make relbranch
 - check version number in coverage/version.py
@@ -33,9 +35,7 @@
     - IF PRE-RELEASE:
         $ make sample_html_beta
     - IF NOT PRE-RELEASE:
-        $ make sample_html
-        - check in the new sample html
-            $ make relcommit2
+        $ make sample_html relcommit2
 - Build and publish docs:
     - IF PRE-RELEASE:
         $ make publishbeta
