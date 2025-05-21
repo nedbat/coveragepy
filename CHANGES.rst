@@ -20,8 +20,12 @@ upgrading your version of coverage.py.
     ..  Version 9.8.1 — 2027-07-27
     ..  --------------------------
 
-Unreleased
-----------
+.. start-releases
+
+.. _changes_7-8-1:
+
+Version 7.8.1 — 2025-05-21
+--------------------------
 
 - A number of EncodingWarnings were fixed that could appear if you've enabled
   PYTHONWARNDEFAULTENCODING, fixing `issue 1966`_.  Thanks, `Henry Schreiner
@@ -33,8 +37,6 @@ Unreleased
 .. _issue 1966: https://github.com/nedbat/coveragepy/issues/1966
 .. _pull 1967: https://github.com/nedbat/coveragepy/pull/1967
 .. _issue 1970: https://github.com/nedbat/coveragepy/issues/1970
-
-.. start-releases
 
 .. _changes_7-8-0:
 
