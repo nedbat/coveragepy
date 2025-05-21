@@ -83,7 +83,7 @@ rfc3986==2.0.0
     # via twine
 rich==14.0.0
     # via twine
-setuptools==80.7.1
+setuptools==80.8.0
     # via -r requirements/kit.in
 tomli==2.2.1
     # via

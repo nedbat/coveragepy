@@ -9,6 +9,7 @@
 cogapp
 doc8
 pyenchant
+scriv
 sphinx
 sphinx-autobuild
 sphinx_rtd_theme
