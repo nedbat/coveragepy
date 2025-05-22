@@ -162,7 +162,7 @@ jobs:
           cache-dependency-path: 'requirements/*.pip'
 
       # rust toolchain is not currently installed on windows arm64 images https://github.com/actions/partner-runner-images/issues/77
-      - if: ${{ matrix.os-version == "11-arm" }}
+      - if: ${{ matrix.os-version == '11-arm' }}
         name: Setup rust
         id: setup-rust
         run: |
