@@ -56,7 +56,7 @@ jobs:
 
   coverage:
     name: "${{ matrix.python-version }} on ${{ matrix.os }}"
-    runs-on: "${{ matrix.os }}-${{ matrix.os-version || 'latest' }}"
+    runs-on: "${{ matrix.os }}-${{ matrix.os-version || 'latest' }}${{ matrix.os-version || '' }}"
     timeout-minutes: 30
 
     # Only run coverage if Python files or this workflow changed.
@@ -64,7 +64,7 @@ jobs:
     if: ${{ needs.changed.outputs.run_coverage == 'true' }}
 
     env:
-      MATRIX_ID: "${{ matrix.python-version }}.${{ matrix.os }}"
+      MATRIX_ID: "${{ matrix.python-version }}.${{ matrix.os }}${{ matrix.os-version || '' }}"
       TOX_GH_MAJOR_MINOR: "${{ matrix.python-version }}"
 
     strategy:
@@ -73,6 +73,9 @@ jobs:
           - ubuntu
           - macos
           - windows
+        os-version:
+          - ""
+          - "-11-arm"
         python-version:
           # When changing this list, be sure to check the [gh] list in
           # tox.ini so that tox will run properly. PYVERSIONS
@@ -94,6 +97,10 @@ jobs:
             python-version: "pypy-3.9"
           - os: macos
             python-version: "pypy-3.10"
+          - os: macos
+            os-version: "-11-arm"
+          - os: ubuntu
+            os-version: "-11-arm"
           # Windows pypy 3.9 and 3.10 get stuck with PyPy 7.3.15.  I hope to
           # unstick them, but I don't want that to block all other progress, so
           # skip them for now.
@@ -107,6 +114,16 @@ jobs:
             python-version: "3.14"
           - os: windows
             python-version: "3.14t"
+          # setup-python only works on arm64 windows for 3.11+
+          - os: windows
+            os-version: "-11-arm"
+            python-version: "3.9"
+          - os: windows
+            os-version: "-11-arm"
+            python-version: "3.10"
+          
+         
+          
         # If we need to tweak the os version we can do it with an include like
         # this:
         #  include:
