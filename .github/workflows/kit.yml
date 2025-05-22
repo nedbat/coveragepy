@@ -161,6 +161,15 @@ jobs:
           cache: pip
           cache-dependency-path: 'requirements/*.pip'
 
+      # rust toolchain is not currently installed on windows arm64 images https://github.com/actions/partner-runner-images/issues/77
+      - if: ${{ matrix.os-version == "11-arm" }}
+        name: Setup rust
+        id: setup-rust
+        run: |
+          Invoke-WebRequest https://static.rust-lang.org/rustup/dist/aarch64-pc-windows-msvc/rustup-init.exe -OutFile .\rustup-init.exe
+          .\rustup-init.exe -y
+          Add-Content $env:GITHUB_PATH "$env:USERPROFILE\.cargo\bin"
+      
       - name: "Install tools"
         run: |
           python -m pip install -r requirements/kit.pip
