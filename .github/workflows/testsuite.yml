@@ -54,7 +54,7 @@ jobs:
               - "tests/gold/**"
 
   tests:
-    name: "${{ matrix.python-version }} on ${{ matrix.os }}${{ matrix.os-version && format('-{0}', matrix.os-version) || '' }}"
+    name: "${{ matrix.python-version }} on ${{ matrix.os }}"
     runs-on: "${{ matrix.os }}-${{ matrix.os-version || 'latest' }}"
     timeout-minutes: 30
 
@@ -72,9 +72,6 @@ jobs:
           - ubuntu
           - macos
           - windows
-        os-version:
-          - ""
-          - "11-arm"
         python-version:
           # When changing this list, be sure to check the [gh] list in
           # tox.ini so that tox will run properly. PYVERSIONS
@@ -93,33 +90,12 @@ jobs:
           - "pypy-3.10"
           - "pypy-3.11"
         exclude:
-          - os: macos
-            os-version: "11-arm"
-          - os: ubuntu
-            os-version: "11-arm"
           # Windows 3.14.0b1 seems confused somehow about t vs not-t:
           # https://github.com/python/cpython/issues/133779
           - os: windows
             python-version: "3.14"
           - os: windows
             python-version: "3.14t"
-          # setup-python only works on arm64 windows for 3.11+
-          - os: windows
-            os-version: "11-arm"
-            python-version: "3.9"
-          - os: windows
-            os-version: "11-arm"
-            python-version: "3.10"
-          # pypy not available for arm64 windows
-          - os: windows
-            os-version: "11-arm"
-            python-version: "pypy-3.9"
-          - os: windows
-            os-version: "11-arm"
-            python-version: "pypy-3.10"
-          - os: windows
-            os-version: "11-arm"
-            python-version: "pypy-3.11"
         #
         # If we need to exclude any combinations, do it like this:
         #  exclude:
