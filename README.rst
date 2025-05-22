@@ -5,13 +5,14 @@
 Coverage.py
 ===========
 
+.. image:: https://github.com/nedbat/coveragepy/raw/master/doc/media/sleepy-snake-600.png
+    :height: 300
+    :align: center
+
+.. .. image:: https://coverage.readthedocs.io/en/7.8.1/_static/sleepy-snake-circle-150.png
+..     :align: center
+
 Code coverage measurement for Python.
-
-.. image:: https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/banner2-direct.svg
-    :target: https://vshymanskyy.github.io/StandWithUkraine
-    :alt: Stand with Ukraine
-
--------------
 
 |  |kit| |license| |versions|
 |  |test-status| |quality-status| |docs| |metacov|
