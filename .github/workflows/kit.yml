@@ -39,7 +39,7 @@ env:
   PIP_DISABLE_PIP_VERSION_CHECK: 1
   # PYVERSIONS: changing the list of versions will change the number of
   # expected distributions.
-  EXPECTED: 63
+  EXPECTED: 67
 
 permissions:
   contents: read
