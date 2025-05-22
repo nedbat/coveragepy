@@ -165,6 +165,7 @@ jobs:
       - if: ${{ matrix.os-version == '11-arm' }}
         name: Setup rust
         id: setup-rust
+        shell: pwsh
         run: |
           Invoke-WebRequest https://static.rust-lang.org/rustup/dist/aarch64-pc-windows-msvc/rustup-init.exe -OutFile .\rustup-init.exe
           .\rustup-init.exe -y
