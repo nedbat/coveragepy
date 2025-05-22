@@ -142,6 +142,9 @@ jobs:
           - {"os": "windows", "py": "cp311", "arch": "AMD64"}
           - {"os": "windows", "py": "cp312", "arch": "AMD64"}
           - {"os": "windows", "py": "cp313", "arch": "AMD64"}
+          - {"os": "windows", "os-version": "11-arm", "py": "cp311", "arch": "ARM64"}
+          - {"os": "windows", "os-version": "11-arm", "py": "cp312", "arch": "ARM64"}
+          - {"os": "windows", "os-version": "11-arm", "py": "cp313", "arch": "ARM64"}
         # [[[end]]] (checksum: 7c3758a4ca41df53d7ebcad68f12d0d0)
       fail-fast: false
 
