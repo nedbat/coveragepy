@@ -23,8 +23,11 @@ upgrading your version of coverage.py.
 Unreleased
 ----------
 
-Nothing yet.
+- Wheels are provided for Windows ARM64 on Python 3.11, 3.12, and 3.13.
+  Thanks, `Finn Womack <pull 1972_>`_.
 
+.. _issue 1971: https://github.com/nedbat/coveragepy/pull/1971
+.. _pull 1972: https://github.com/nedbat/coveragepy/pull/1972
 
 .. start-releases
 
