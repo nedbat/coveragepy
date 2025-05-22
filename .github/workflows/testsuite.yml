@@ -110,6 +110,16 @@ jobs:
           - os: windows
             os-version: "11-arm"
             python-version: "3.10"
+          # pypy not available for arm64 windows
+          - os: windows
+            os-version: "11-arm"
+            python-version: "pypy-3.9"
+          - os: windows
+            os-version: "11-arm"
+            python-version: "pypy-3.10"
+          - os: windows
+            os-version: "11-arm"
+            python-version: "pypy-3.11"
         #
         # If we need to exclude any combinations, do it like this:
         #  exclude:
