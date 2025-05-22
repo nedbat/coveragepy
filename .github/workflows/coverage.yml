@@ -121,9 +121,7 @@ jobs:
           - os: windows
             os-version: "11-arm"
             python-version: "3.10"
-          
-         
-          
+
         # If we need to tweak the os version we can do it with an include like
         # this:
         #  include:
