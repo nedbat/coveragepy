@@ -78,7 +78,7 @@ jobs:
           #   os_archs = {
           #       "ubuntu": ["x86_64", "i686", "aarch64"],
           #       "macos": ["arm64", "x86_64"],
-          #       "windows": ["x86", "AMD64"],
+          #       "windows": ["x86", "AMD64", "ARM64"],
           #   }
           #   # PYVERSIONS. Available versions: https://pypi.org/project/cibuildwheel/
           #   # PyPy versions are handled further below in the "pypy" step.
@@ -87,6 +87,7 @@ jobs:
           #   # Some OS/arch combinations need overrides for the Python versions:
           #   os_arch_pys = {
           #     # ("macos", "arm64"): ["cp38", "cp39", "cp310", "cp311", "cp312"],
+          #     ("windows", "ARM64"): ["cp311", "cp312", "cp313"],
           #   }
           #
           #   #----- ^^^ ---------------------- ^^^ -----
@@ -102,6 +103,9 @@ jobs:
           #               }
           #               if the_os == "macos":
           #                   them["os-version"] = "13"
+          #               if the_os == "windows" and the_arch == "ARM64":
+          #                   them["os-version"] = "11-arm"
+          #                   them["minpy"] = "3.11"
           #               if the_arch == "aarch64":
           #                   # https://github.com/pypa/cibuildwheel/issues/2257
           #                   them["os-version"] = "22.04-arm"
@@ -142,10 +146,10 @@ jobs:
           - {"os": "windows", "py": "cp311", "arch": "AMD64"}
           - {"os": "windows", "py": "cp312", "arch": "AMD64"}
           - {"os": "windows", "py": "cp313", "arch": "AMD64"}
-          - {"os": "windows", "os-version": "11-arm", "py": "cp311", "arch": "ARM64", minpy: "3.11"}
-          - {"os": "windows", "os-version": "11-arm", "py": "cp312", "arch": "ARM64", minpy: "3.11"}
-          - {"os": "windows", "os-version": "11-arm", "py": "cp313", "arch": "ARM64", minpy: "3.11"}
-        # [[[end]]] (checksum: 7c3758a4ca41df53d7ebcad68f12d0d0)
+          - {"os": "windows", "py": "cp311", "arch": "ARM64", "os-version": "11-arm", "minpy": "3.11"}
+          - {"os": "windows", "py": "cp312", "arch": "ARM64", "os-version": "11-arm", "minpy": "3.11"}
+          - {"os": "windows", "py": "cp313", "arch": "ARM64", "os-version": "11-arm", "minpy": "3.11"}
+        # [[[end]]] (checksum: ce8e88f33d7db22f1e21a767e3256a00)
       fail-fast: false
 
     steps:
