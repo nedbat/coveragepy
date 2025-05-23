@@ -20,16 +20,18 @@ upgrading your version of coverage.py.
     ..  Version 9.8.1 — 2027-07-27
     ..  --------------------------
 
-Unreleased
-----------
+.. start-releases
+
+.. _changes_7-8-2:
+
+Version 7.8.2 — 2025-05-23
+--------------------------
 
 - Wheels are provided for Windows ARM64 on Python 3.11, 3.12, and 3.13.
   Thanks, `Finn Womack <pull 1972_>`_.
 
 .. _issue 1971: https://github.com/nedbat/coveragepy/pull/1971
 .. _pull 1972: https://github.com/nedbat/coveragepy/pull/1972
-
-.. start-releases
 
 .. _changes_7-8-1:
 
