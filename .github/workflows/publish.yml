@@ -16,8 +16,8 @@ defaults:
 
 env:
   # PYVERSIONS: changing the list of versions will change the number of
-  # expected distributions.
-  EXPECTED: 63
+  # expected distributions. This must match the same number in kit.yml.
+  EXPECTED: 67
 
 permissions:
   contents: read
