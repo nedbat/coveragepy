@@ -1129,7 +1129,6 @@ class CoverageCoreTest(CoverageTest):
         has_ctracer = False
 
     def test_core_default(self) -> None:
-        self.del_environ("COVERAGE_TEST_CORES")
         self.del_environ("COVERAGE_CORE")
         self.make_file("numbers.py", "print(123, 456)")
         out = self.run_command("coverage run --debug=sys numbers.py")
@@ -1144,7 +1143,6 @@ class CoverageCoreTest(CoverageTest):
 
     @pytest.mark.skipif(not has_ctracer, reason="No CTracer to request")
     def test_core_request_ctrace(self) -> None:
-        self.del_environ("COVERAGE_TEST_CORES")
         self.set_environ("COVERAGE_CORE", "ctrace")
         self.make_file("numbers.py", "print(123, 456)")
         out = self.run_command("coverage run --debug=sys numbers.py")
@@ -1153,7 +1151,6 @@ class CoverageCoreTest(CoverageTest):
         assert core == "core: CTracer"
 
     def test_core_request_pytrace(self) -> None:
-        self.del_environ("COVERAGE_TEST_CORES")
         self.set_environ("COVERAGE_CORE", "pytrace")
         self.make_file("numbers.py", "print(123, 456)")
         out = self.run_command("coverage run --debug=sys numbers.py")
@@ -1162,7 +1159,6 @@ class CoverageCoreTest(CoverageTest):
         assert core == "core: PyTracer"
 
     def test_core_request_sysmon(self) -> None:
-        self.del_environ("COVERAGE_TEST_CORES")
         self.set_environ("COVERAGE_CORE", "sysmon")
         self.make_file("numbers.py", "print(123, 456)")
         out = self.run_command("coverage run --debug=sys numbers.py")
@@ -1177,7 +1173,6 @@ class CoverageCoreTest(CoverageTest):
             assert warns
 
     def test_core_request_nosuchcore(self) -> None:
-        self.del_environ("COVERAGE_TEST_CORES")
         self.set_environ("COVERAGE_CORE", "nosuchcore")
         self.make_file("numbers.py", "print(123, 456)")
         out = self.run_command("coverage run numbers.py")
