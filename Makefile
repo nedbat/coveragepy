@@ -64,30 +64,22 @@ install:				## Install the developer tools
 
 ##@ Tests and quality checks
 
-.PHONY: lint smoke
+.PHONY: lint
 
 lint:					## Run linters and checkers.
 	tox -q -e lint
-
-PYTEST_SMOKE_ARGS = -n auto -m "not expensive" --maxfail=3 $(ARGS)
-
-smoke: 					## Run tests quickly with the C tracer in the lowest supported Python versions.
-	COVERAGE_TEST_CORES=ctrace tox -q -e py38 -- $(PYTEST_SMOKE_ARGS)
 
 
 ##@ Metacov: coverage measurement of coverage.py itself
 # See metacov.ini for details.
 
-.PHONY: metacov metahtml metasmoke
+.PHONY: metacov metahtml
 
 metacov:				## Run meta-coverage, measuring ourself.
 	COVERAGE_COVERAGE=yes tox -q $(ARGS)
 
 metahtml:				## Produce meta-coverage HTML reports.
 	tox exec -q $(ARGS) -- python3 igor.py combine_html
-
-metasmoke:
-	COVERAGE_TEST_CORES=ctrace ARGS="-e py39" make --keep-going metacov metahtml
 
 
 ##@ Requirements management
