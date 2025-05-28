@@ -27,7 +27,11 @@ Unreleased
   which was previously only available through the COVERAGE_CORE environment
   variable. Finishes `issue 1746`_.
 
+- The C extension module now conforms to `PEP 489`_, closing `issue 1977`_.
+
 .. _issue 1746: https://github.com/nedbat/coveragepy/issues/1746
+.. _issue 1977: https://github.com/nedbat/coveragepy/issues/1977
+.. _PEP 489: https://peps.python.org/pep-0489
 
 
 .. start-releases

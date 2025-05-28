@@ -9,14 +9,60 @@
 
 #define MODULE_DOC PyDoc_STR("Fast coverage tracer.")
 
+/* Module execution function for PEP 489 multi-phase initialization */
+static int
+tracer_exec(PyObject *mod)
+{
+    if (CTracer_intern_strings() < 0) {
+        return -1;
+    }
+
+    /* Initialize CTracer */
+    CTracerType.tp_new = PyType_GenericNew;
+    if (PyType_Ready(&CTracerType) < 0) {
+        return -1;
+    }
+
+    Py_INCREF(&CTracerType);
+    if (PyModule_AddObject(mod, "CTracer", (PyObject *)&CTracerType) < 0) {
+        Py_DECREF(&CTracerType);
+        return -1;
+    }
+
+    /* Initialize CFileDisposition */
+    CFileDispositionType.tp_new = PyType_GenericNew;
+    if (PyType_Ready(&CFileDispositionType) < 0) {
+        Py_DECREF(&CTracerType);
+        return -1;
+    }
+
+    Py_INCREF(&CFileDispositionType);
+    if (PyModule_AddObject(mod, "CFileDisposition", (PyObject *)&CFileDispositionType) < 0) {
+        Py_DECREF(&CTracerType);
+        Py_DECREF(&CFileDispositionType);
+        return -1;
+    }
+
+    return 0;
+}
+
+/* Slots for PEP 489 multi-phase initialization */
+static PyModuleDef_Slot tracer_slots[] = {
+    {Py_mod_exec, tracer_exec},
+#ifdef Py_GIL_DISABLED
+    {Py_mod_gil, Py_MOD_GIL_NOT_USED},
+#endif
+    {0, NULL}
+};
+
 static PyModuleDef
 moduledef = {
     PyModuleDef_HEAD_INIT,
     "coverage.tracer",
     MODULE_DOC,
-    -1,
+    0,          /* m_size */
     NULL,       /* methods */
-    NULL,
+    tracer_slots, /* slots */
     NULL,       /* traverse */
     NULL,       /* clear */
     NULL
@@ -26,48 +72,5 @@ moduledef = {
 PyObject *
 PyInit_tracer(void)
 {
-    PyObject * mod = PyModule_Create(&moduledef);
-    if (mod == NULL) {
-        return NULL;
-    }
-
-#ifdef Py_GIL_DISABLED
-    PyUnstable_Module_SetGIL(mod, Py_MOD_GIL_NOT_USED);
-#endif
-
-    if (CTracer_intern_strings() < 0) {
-        return NULL;
-    }
-
-    /* Initialize CTracer */
-    CTracerType.tp_new = PyType_GenericNew;
-    if (PyType_Ready(&CTracerType) < 0) {
-        Py_DECREF(mod);
-        return NULL;
-    }
-
-    Py_INCREF(&CTracerType);
-    if (PyModule_AddObject(mod, "CTracer", (PyObject *)&CTracerType) < 0) {
-        Py_DECREF(mod);
-        Py_DECREF(&CTracerType);
-        return NULL;
-    }
-
-    /* Initialize CFileDisposition */
-    CFileDispositionType.tp_new = PyType_GenericNew;
-    if (PyType_Ready(&CFileDispositionType) < 0) {
-        Py_DECREF(mod);
-        Py_DECREF(&CTracerType);
-        return NULL;
-    }
-
-    Py_INCREF(&CFileDispositionType);
-    if (PyModule_AddObject(mod, "CFileDisposition", (PyObject *)&CFileDispositionType) < 0) {
-        Py_DECREF(mod);
-        Py_DECREF(&CTracerType);
-        Py_DECREF(&CFileDispositionType);
-        return NULL;
-    }
-
-    return mod;
+    return PyModuleDef_Init(&moduledef);
 }
