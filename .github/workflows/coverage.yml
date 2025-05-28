@@ -49,6 +49,8 @@ jobs:
           filters: |
             run_coverage:
               - "**.py"
+              - "**.h"
+              - "**.c"
               - ".github/workflows/coverage.yml"
               - "tox.ini"
               - "requirements/*.pip"

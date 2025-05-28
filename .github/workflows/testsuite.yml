@@ -48,6 +48,8 @@ jobs:
           filters: |
             run_tests:
               - "**.py"
+              - "**.h"
+              - "**.c"
               - ".github/workflows/testsuite.yml"
               - "tox.ini"
               - "requirements/*.pip"
