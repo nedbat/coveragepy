@@ -9,10 +9,19 @@
 
 #define MODULE_DOC PyDoc_STR("Fast coverage tracer.")
 
-/* Module execution function for PEP 489 multi-phase initialization */
+static int module_loaded = 0;
+
 static int
 tracer_exec(PyObject *mod)
 {
+    // https://docs.python.org/3/howto/isolating-extensions.html#opt-out-limiting-to-one-module-object-per-process
+    if (module_loaded) {
+        PyErr_SetString(PyExc_ImportError,
+                        "cannot load module more than once per process");
+        return -1;
+    }
+    module_loaded = 1;
+
     if (CTracer_intern_strings() < 0) {
         return -1;
     }
@@ -46,30 +55,27 @@ tracer_exec(PyObject *mod)
     return 0;
 }
 
-/* Slots for PEP 489 multi-phase initialization */
 static PyModuleDef_Slot tracer_slots[] = {
     {Py_mod_exec, tracer_exec},
-#ifdef Py_GIL_DISABLED
+#if PY_VERSION_HEX >= 0x030c00f0  // Python 3.12+
+    {Py_mod_multiple_interpreters, Py_MOD_MULTIPLE_INTERPRETERS_NOT_SUPPORTED},
+#endif
+#if PY_VERSION_HEX >= 0x030d00f0  // Python 3.13+
+    // signal that this module supports running without an active GIL
     {Py_mod_gil, Py_MOD_GIL_NOT_USED},
 #endif
     {0, NULL}
 };
 
-static PyModuleDef
-moduledef = {
-    PyModuleDef_HEAD_INIT,
-    "coverage.tracer",
-    MODULE_DOC,
-    0,          /* m_size */
-    NULL,       /* methods */
-    tracer_slots, /* slots */
-    NULL,       /* traverse */
-    NULL,       /* clear */
-    NULL
+static PyModuleDef moduledef = {
+    .m_base = PyModuleDef_HEAD_INIT,
+    .m_name = "coverage.tracer",
+    .m_doc = MODULE_DOC,
+    .m_size = 0,
+    .m_slots = tracer_slots,
 };
 
-
-PyObject *
+PyMODINIT_FUNC
 PyInit_tracer(void)
 {
     return PyModuleDef_Init(&moduledef);
