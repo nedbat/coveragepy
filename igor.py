@@ -311,9 +311,7 @@ def print_banner(label):
     if PYPY:
         version += " (pypy %s)" % ".".join(str(v) for v in sys.pypy_version_info)
 
-    rev = platform.python_revision()
-    if rev:
-        version += f" (rev {rev})"
+    version += f" ({' '.join(platform.python_build())})"
 
     gil = "gil" if getattr(sys, '_is_gil_enabled', lambda: True)() else "nogil"
     version += f" ({gil})"

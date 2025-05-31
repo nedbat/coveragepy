@@ -1350,6 +1350,7 @@ class Coverage(TConfigurable):
             ("python", sys.version.replace("\n", "")),
             ("platform", platform.platform()),
             ("implementation", platform.python_implementation()),
+            ("build", platform.python_build()),
             ("gil_enabled", getattr(sys, '_is_gil_enabled', lambda: True)()),
             ("executable", sys.executable),
             ("def_encoding", sys.getdefaultencoding()),
