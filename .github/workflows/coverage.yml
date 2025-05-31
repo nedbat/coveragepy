@@ -250,8 +250,9 @@ jobs:
         id: info
         env:
           REF: ${{ github.ref }}
+          SHA: ${{ github.sha }}
         run: |
-          export SHA10=$(echo ${{ github.sha }} | cut -c 1-10)
+          export SHA10=$(echo $SHA | cut -c 1-10)
           export SLUG=$(date +'%Y%m%d')_$SHA10
           echo "sha10=$SHA10" >> $GITHUB_ENV
           echo "slug=$SLUG" >> $GITHUB_ENV
@@ -267,9 +268,11 @@ jobs:
 
       - name: "Checkout reports repo"
         if: ${{ github.ref == 'refs/heads/master' }}
+        env:
+          TOKEN: ${{ secrets.COVERAGE_REPORTS_TOKEN }}
         run: |
           set -xe
-          git clone --depth=1 --no-checkout https://${{ secrets.COVERAGE_REPORTS_TOKEN }}@github.com/nedbat/coverage-reports reports_repo
+          git clone --depth=1 --no-checkout https://${TOKEN}@github.com/nedbat/coverage-reports reports_repo
           cd reports_repo
           git sparse-checkout init --cone
           git sparse-checkout set --skip-checks '/*' '!/reports'
