@@ -9,18 +9,14 @@
 
 #define MODULE_DOC PyDoc_STR("Fast coverage tracer.")
 
-static int module_loaded = 0;
+static BOOL module_inited = FALSE;
 
 static int
 tracer_exec(PyObject *mod)
 {
-    // https://docs.python.org/3/howto/isolating-extensions.html#opt-out-limiting-to-one-module-object-per-process
-    if (module_loaded) {
-        PyErr_SetString(PyExc_ImportError,
-                        "cannot load module more than once per process");
-        return -1;
+    if (module_inited) {
+        return 0;
     }
-    module_loaded = 1;
 
     if (CTracer_intern_strings() < 0) {
         return -1;
@@ -52,6 +48,7 @@ tracer_exec(PyObject *mod)
         return -1;
     }
 
+    module_inited = TRUE;
     return 0;
 }
 
