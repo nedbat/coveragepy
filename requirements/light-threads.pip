@@ -15,7 +15,7 @@ greenlet==3.2.2
     #   gevent
 pycparser==2.22
     # via cffi
-setuptools==80.8.0
+setuptools==80.9.0
     # via
     #   zope-event
     #   zope-interface

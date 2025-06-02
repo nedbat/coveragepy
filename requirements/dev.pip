@@ -10,7 +10,7 @@ backports-tarfile==1.2.0
     # via jaraco-context
 build==1.2.2.post1
     # via check-manifest
-cachetools==5.5.2
+cachetools==6.0.0
     # via tox
 certifi==2025.4.26
     # via requests
@@ -53,7 +53,7 @@ flaky==3.8.1
     # via -r requirements/pytest.in
 greenlet==3.2.2
     # via -r requirements/dev.in
-hypothesis==6.131.21
+hypothesis==6.133.0
     # via -r requirements/pytest.in
 id==1.5.0
     # via twine
@@ -125,6 +125,7 @@ pygments==2.19.1
     # via
     #   -r requirements/pytest.in
     #   pudb
+    #   pytest
     #   readme-renderer
     #   rich
 pylint==3.3.7
@@ -133,11 +134,11 @@ pyproject-api==1.9.1
     # via tox
 pyproject-hooks==1.2.0
     # via build
-pytest==8.3.5
+pytest==8.4.0
     # via
     #   -r requirements/pytest.in
     #   pytest-xdist
-pytest-xdist==3.6.1
+pytest-xdist==3.7.0
     # via -r requirements/pytest.in
 readme-renderer==44.0
     # via
@@ -158,7 +159,7 @@ rich==14.0.0
     # via twine
 scriv==1.7.0
     # via -r requirements/dev.in
-setuptools==80.8.0
+setuptools==80.9.0
     # via
     #   -r requirements/pip.in
     #   check-manifest
@@ -184,7 +185,7 @@ tox-gh==1.5.0
     # via -r requirements/tox.in
 twine==6.1.0
     # via -r requirements/dev.in
-typing-extensions==4.13.2
+typing-extensions==4.14.0
     # via
     #   astroid
     #   exceptiongroup
@@ -207,5 +208,5 @@ virtualenv==20.31.2
     #   tox
 wcwidth==0.2.13
     # via urwid
-zipp==3.21.0
+zipp==3.22.0
     # via importlib-metadata

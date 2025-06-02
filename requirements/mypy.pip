@@ -12,25 +12,29 @@ execnet==2.1.1
     # via pytest-xdist
 flaky==3.8.1
     # via -r requirements/pytest.in
-hypothesis==6.131.21
+hypothesis==6.133.0
     # via -r requirements/pytest.in
 iniconfig==2.1.0
     # via pytest
-mypy==1.15.0
+mypy==1.16.0
     # via -r requirements/mypy.in
 mypy-extensions==1.1.0
     # via mypy
 packaging==25.0
     # via pytest
+pathspec==0.12.1
+    # via mypy
 pluggy==1.6.0
     # via pytest
 pygments==2.19.1
-    # via -r requirements/pytest.in
-pytest==8.3.5
+    # via
+    #   -r requirements/pytest.in
+    #   pytest
+pytest==8.4.0
     # via
     #   -r requirements/pytest.in
     #   pytest-xdist
-pytest-xdist==3.6.1
+pytest-xdist==3.7.0
     # via -r requirements/pytest.in
 sortedcontainers==2.4.0
     # via hypothesis
@@ -38,11 +42,11 @@ tomli==2.2.1
     # via
     #   mypy
     #   pytest
-types-requests==2.32.0.20250515
+types-requests==2.32.0.20250602
     # via -r requirements/mypy.in
 types-tabulate==0.9.0.20241207
     # via -r requirements/mypy.in
-typing-extensions==4.13.2
+typing-extensions==4.14.0
     # via
     #   exceptiongroup
     #   mypy
