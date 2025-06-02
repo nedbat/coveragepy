@@ -226,7 +226,7 @@ class XmlReportTest(XmlTestHelpers, CoverageTest):
         cov = self.run_doit()
         cov.xml_report()
         dom = ElementTree.parse("coverage.xml")
-        self.assert_source(dom, ".")
+        self.assert_source(dom, ".")  # type: ignore[arg-type]
         sources = dom.findall(".//source")
         assert len(sources) == 1
 
@@ -250,8 +250,8 @@ class XmlReportTest(XmlTestHelpers, CoverageTest):
         )
         dom = ElementTree.parse("coverage.xml")
 
-        self.assert_source(dom, "src/main")
-        self.assert_source(dom, "also/over/there")
+        self.assert_source(dom, "src/main")         # type: ignore[arg-type]
+        self.assert_source(dom, "also/over/there")  # type: ignore[arg-type]
         sources = dom.findall(".//source")
         assert len(sources) == 2
 
@@ -488,7 +488,7 @@ class XmlPackageStructureTest(XmlTestHelpers, CoverageTest):
             ('class', {'filename': "mod.py", 'name': "mod.py"}),
         ])
         dom = ElementTree.parse("coverage.xml")
-        self.assert_source(dom, "src")
+        self.assert_source(dom, "src")      # type: ignore[arg-type]
 
     @pytest.mark.parametrize("trail", ["", "/", "\\"])
     def test_relative_source(self, trail: str) -> None:

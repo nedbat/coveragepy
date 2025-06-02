@@ -95,6 +95,7 @@ class XmlReporter:
 
         # Write header stuff.
         xcoverage = self.xml_out.documentElement
+        assert xcoverage is not None
         xcoverage.setAttribute("version", __version__)
         xcoverage.setAttribute("timestamp", str(int(time.time()*1000)))
         xcoverage.appendChild(self.xml_out.createComment(

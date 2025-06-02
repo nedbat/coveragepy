@@ -66,7 +66,7 @@ def canonical_path(morf: TMorf, directory: bool = False) -> str:
     return morf_path
 
 
-def name_for_module(filename: str, frame: FrameType | None) -> str:
+def name_for_module(filename: str, frame: FrameType | None) -> str | None:
     """Get the name of the module for a filename and frame.
 
     For configurability's sake, we allow __main__ modules to be matched by
@@ -79,7 +79,7 @@ def name_for_module(filename: str, frame: FrameType | None) -> str:
 
     """
     module_globals = frame.f_globals if frame is not None else {}
-    dunder_name: str = module_globals.get("__name__", None)
+    dunder_name: str | None = module_globals.get("__name__", None)
 
     if isinstance(dunder_name, str) and dunder_name != "__main__":
         # This is the usual case: an imported module.
@@ -411,7 +411,7 @@ class InOrOut:
             extra = ""
             ok = False
             if self.source_pkgs_match:
-                if self.source_pkgs_match.match(modulename):
+                if isinstance(modulename, str) and self.source_pkgs_match.match(modulename):
                     ok = True
                     if modulename in self.source_pkgs_unmatched:
                         self.source_pkgs_unmatched.remove(modulename)

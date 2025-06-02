@@ -61,16 +61,16 @@ class HandyConfigParser(configparser.ConfigParser):
                 return real_section
         return None
 
-    def has_option(self, section: str, option: str) -> bool:
+    def has_option(self, section: str, option: str) -> bool:    # type: ignore[override]
         real_section = self.real_section(section)
         if real_section is not None:
             return super().has_option(real_section, option)
         return False
 
-    def has_section(self, section: str) -> bool:
+    def has_section(self, section: str) -> bool:    # type: ignore[override]
         return bool(self.real_section(section))
 
-    def options(self, section: str) -> list[str]:
+    def options(self, section: str) -> list[str]:   # type: ignore[override]
         real_section = self.real_section(section)
         if real_section is not None:
             return super().options(real_section)
