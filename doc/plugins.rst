@@ -8,7 +8,7 @@
 .. [[[cog
     from cog_helpers import show_configs
 .. ]]]
-.. [[[end]]] (checksum: d41d8cd98f00b204e9800998ecf8427e)
+.. [[[end]]] (sum: 1B2M2Y8Asg)
 
 
 .. _plugins:
@@ -84,7 +84,7 @@ a coverage.py plug-in called ``something.plugin``.
            plugins =
                something.plugin
 
-   .. [[[end]]] (checksum: 6e866323d4bc319d42e3199b08615111)
+   .. [[[end]]] (sum: boZjI9S8MZ)
 
 #. If the plug-in needs its own configuration, you can add those settings in
    the .coveragerc file in a section named for the plug-in:
@@ -127,7 +127,7 @@ a coverage.py plug-in called ``something.plugin``.
            option1 = True
            option2 = abc.foo
 
-   .. [[[end]]] (checksum: b690115dbe7f6c7806567e009b5715c4)
+   .. [[[end]]] (sum: tpARXb5/bH)
 
    Check the documentation for the plug-in for details on the options it takes.
 

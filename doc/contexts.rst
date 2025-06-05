@@ -8,7 +8,7 @@
 .. [[[cog
     from cog_helpers import show_configs
 .. ]]]
-.. [[[end]]] (checksum: d41d8cd98f00b204e9800998ecf8427e)
+.. [[[end]]] (sum: 1B2M2Y8Asg)
 
 
 .. _contexts:
@@ -108,7 +108,7 @@ The ``[run] dynamic_context`` setting has only one option now.  Set it to
         [coverage:run]
         dynamic_context = test_function
 
-.. [[[end]]] (checksum: 7594c36231f0ef52b554aad8c835ccf4)
+.. [[[end]]] (sum: dZTDYjHw71)
 
 Each test function you run will be considered a separate dynamic context, and
 coverage data will be segregated for each.  A test function is any function

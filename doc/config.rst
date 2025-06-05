@@ -8,7 +8,7 @@
 .. [[[cog
     from cog_helpers import show_configs
 .. ]]]
-.. [[[end]]] (checksum: d41d8cd98f00b204e9800998ecf8427e)
+.. [[[end]]] (sum: 1B2M2Y8Asg)
 
 
 .. _config:
@@ -257,7 +257,7 @@ Here's a sample configuration file, in each syntax:
         [coverage:html]
         directory = coverage_html_report
 
-.. [[[end]]] (checksum: 1d4d59eb69af44aacb77c9ebad869b65)
+.. [[[end]]] (sum: HU1Z62mvRK)
 
 
 The specific configuration settings are described below.  Many sections and
@@ -572,7 +572,7 @@ equivalent when combining data from different machines:
             /jenkins/build/*/src
             c:\myproj\src
 
-.. [[[end]]] (checksum: a074a5f121a23135dcb6733bca3e20bd)
+.. [[[end]]] (sum: oHSl8SGiMT)
 
 
 The names of the entries ("source" in this example) are ignored, you may choose

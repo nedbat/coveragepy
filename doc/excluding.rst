@@ -8,7 +8,7 @@
 .. [[[cog
     from cog_helpers import show_configs
 .. ]]]
-.. [[[end]]] (checksum: d41d8cd98f00b204e9800998ecf8427e)
+.. [[[end]]] (sum: 1B2M2Y8Asg)
 
 
 .. _excluding:
@@ -133,7 +133,7 @@ all of them by adding a regex to the exclusion list:
         exclude_also =
             def __repr__
 
-.. [[[end]]] (checksum: f3e70ebf128fbef4087efe75dcfadcb8)
+.. [[[end]]] (sum: 8+cOvxKPvv)
 
 For example, here's a list of exclusions I've used:
 
@@ -222,7 +222,7 @@ For example, here's a list of exclusions I've used:
             class .*\bProtocol\):
             @(abc\.)?abstractmethod
 
-.. [[[end]]] (checksum: 650b209edd27112381b5f0a8d2ee0c45)
+.. [[[end]]] (sum: ZQsgnt0nES)
 
 The :ref:`config_report_exclude_also` option adds regexes to the built-in
 default list so that you can add your own exclusions.  The older
@@ -319,7 +319,7 @@ Here are some examples:
             ; 3. A pragma comment that excludes an entire file:
             \A(?s:.*# pragma: exclude file.*)\Z
 
-.. [[[end]]] (checksum: c46e819ad9a1d3a8e37037a89d28cfde)
+.. [[[end]]] (sum: xG6Bmtmh06)
 
 The first regex matches a specific except line followed by a specific function
 call.  Both lines must be present for the exclusion to take effect. Note that

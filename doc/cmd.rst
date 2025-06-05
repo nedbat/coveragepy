@@ -8,7 +8,7 @@
 .. [[[cog
     from cog_helpers import show_configs, show_help
 .. ]]]
-.. [[[end]]] (checksum: d41d8cd98f00b204e9800998ecf8427e)
+.. [[[end]]] (sum: 1B2M2Y8Asg)
 
 .. _cmd:
 
@@ -143,7 +143,7 @@ There are many options:
       --rcfile=RCFILE       Specify configuration file. By default '.coveragerc',
                             'setup.cfg', 'tox.ini', and 'pyproject.toml' are
                             tried. [env: COVERAGE_RCFILE]
-.. [[[end]]] (checksum: b1a0fffe2768fc142f1d97ae556b621d)
+.. [[[end]]] (sum: saD//ido/B)
 
 If you want :ref:`branch coverage <branch>` measurement, use the ``--branch``
 flag.  Otherwise only statement coverage is measured.
@@ -328,7 +328,7 @@ file:
         [coverage:run]
         disable_warnings = no-data-collected
 
-.. [[[end]]] (checksum: 489285bcfa173b69a286f03fe13e4554)
+.. [[[end]]] (sum: SJKFvPoXO2)
 
 
 .. _cmd_datafile:
@@ -428,7 +428,7 @@ want to keep those files, use the ``--keep`` command-line option.
       --rcfile=RCFILE       Specify configuration file. By default '.coveragerc',
                             'setup.cfg', 'tox.ini', and 'pyproject.toml' are
                             tried. [env: COVERAGE_RCFILE]
-.. [[[end]]] (checksum: 0bdd83f647ee76363c955bedd9ddf749)
+.. [[[end]]] (sum: C92D9kfudj)
 
 
 .. _cmd_combine_remapping:
@@ -477,7 +477,7 @@ To erase the collected data, use the **erase** command:
       --rcfile=RCFILE       Specify configuration file. By default '.coveragerc',
                             'setup.cfg', 'tox.ini', and 'pyproject.toml' are
                             tried. [env: COVERAGE_RCFILE]
-.. [[[end]]] (checksum: cfeaef66ce8d5154dc6914831030b46b)
+.. [[[end]]] (sum: z+rvZs6NUV)
 
 If your configuration file indicates parallel data collection, **erase** will
 remove all of the data files.
@@ -575,7 +575,7 @@ as a percentage.
       --rcfile=RCFILE       Specify configuration file. By default '.coveragerc',
                             'setup.cfg', 'tox.ini', and 'pyproject.toml' are
                             tried. [env: COVERAGE_RCFILE]
-.. [[[end]]] (checksum: 167272a29d9e7eb017a592a0e0747a06)
+.. [[[end]]] (sum: FnJyop2efr)
 
 The ``-m`` flag also shows the line numbers of missing statements::
 
@@ -706,7 +706,7 @@ Click the keyboard icon in the upper right to see the complete list.
       --rcfile=RCFILE       Specify configuration file. By default '.coveragerc',
                             'setup.cfg', 'tox.ini', and 'pyproject.toml' are
                             tried. [env: COVERAGE_RCFILE]
-.. [[[end]]] (checksum: e3a1a6e24ad9b303ba06d42880ed0219)
+.. [[[end]]] (sum: 46Gm4krZsw)
 
 The title of the report can be set with the ``title`` setting in the
 ``[html]`` section of the configuration file, or the ``--title`` switch on
@@ -783,7 +783,7 @@ compatible with `Cobertura`_.
       --rcfile=RCFILE       Specify configuration file. By default '.coveragerc',
                             'setup.cfg', 'tox.ini', and 'pyproject.toml' are
                             tried. [env: COVERAGE_RCFILE]
-.. [[[end]]] (checksum: 8b239d89534be0b2c69489e10b1352a9)
+.. [[[end]]] (sum: iyOdiVNL4L)
 
 You can specify the name of the output file with the ``-o`` switch.
 
@@ -872,7 +872,7 @@ The **json** command writes coverage data to a "coverage.json" file.
       --rcfile=RCFILE       Specify configuration file. By default '.coveragerc',
                             'setup.cfg', 'tox.ini', and 'pyproject.toml' are
                             tried. [env: COVERAGE_RCFILE]
-.. [[[end]]] (checksum: e53e60cb65d971c35d1db1c08324b72e)
+.. [[[end]]] (sum: 5T5gy2XZcc)
 
 You can specify the name of the output file with the ``-o`` switch.  The JSON
 can be nicely formatted by specifying the ``--pretty-print`` switch.
@@ -918,7 +918,7 @@ The **lcov** command writes coverage data to a "coverage.lcov" file.
       --rcfile=RCFILE       Specify configuration file. By default '.coveragerc',
                             'setup.cfg', 'tox.ini', and 'pyproject.toml' are
                             tried. [env: COVERAGE_RCFILE]
-.. [[[end]]] (checksum: 16acfbae8011d2e3b620695c5fe13746)
+.. [[[end]]] (sum: Fqz7roAR0u)
 
 Common reporting options are described above in :ref:`cmd_reporting`.
 Also see :ref:`Configuration: [lcov] <config_lcov>`.
@@ -987,7 +987,7 @@ For example::
       --rcfile=RCFILE       Specify configuration file. By default '.coveragerc',
                             'setup.cfg', 'tox.ini', and 'pyproject.toml' are
                             tried. [env: COVERAGE_RCFILE]
-.. [[[end]]] (checksum: fd7d8fbd2dd6e24d37f868b389c2ad6d)
+.. [[[end]]] (sum: /X2PvS3W4k)
 
 Other common reporting options are described above in :ref:`cmd_reporting`.
 
@@ -1029,7 +1029,7 @@ A few types of information are available:
       --rcfile=RCFILE  Specify configuration file. By default '.coveragerc',
                        'setup.cfg', 'tox.ini', and 'pyproject.toml' are tried.
                        [env: COVERAGE_RCFILE]
-.. [[[end]]] (checksum: c9b8dfb644da3448830b1c99bffa6880)
+.. [[[end]]] (sum: ybjftkTaNE)
 
 .. _cmd_run_debug:
 

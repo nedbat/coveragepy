@@ -34,7 +34,7 @@ to:
 
     SCHEMA_VERSION = 7
 
-.. [[[end]]] (checksum: 95a75340df33237e7e9c93b02dd1814c)
+.. [[[end]]] (sum: ladTQN8zI3)
 
 You can use SQLite tools such as the :mod:`sqlite3 <python:sqlite3>` module in
 the Python standard library to access the data.  Some data is stored in a
@@ -116,7 +116,7 @@ This is the database schema:
         foreign key (file_id) references file (id)
     );
 
-.. [[[end]]] (checksum: 6a04d14b07f08f86cccf43056328dcb7)
+.. [[[end]]] (sum: agTRSwfwj4)
 
 
 .. _numbits:

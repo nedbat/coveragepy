@@ -8,7 +8,7 @@
 .. [[[cog
     from cog_helpers import show_configs
 .. ]]]
-.. [[[end]]] (checksum: d41d8cd98f00b204e9800998ecf8427e)
+.. [[[end]]] (sum: 1B2M2Y8Asg)
 
 
 .. _source:
@@ -139,7 +139,7 @@ current directory:
             # omit this single file
             utils/tirefire.py
 
-.. [[[end]]] (checksum: 84ad2743cc0c7a077770e50fcedab29d)
+.. [[[end]]] (sum: hK0nQ8wMeg)
 
 The ``source``, ``include``, and ``omit`` values all work together to determine
 the source that will be measured.
