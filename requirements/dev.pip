@@ -26,7 +26,7 @@ click==8.1.8
     #   scriv
 click-log==0.4.0
     # via scriv
-cogapp==3.4.1
+cogapp==3.5.0
     # via -r requirements/dev.in
 colorama==0.4.6
     # via
@@ -51,9 +51,9 @@ filelock==3.18.0
     #   virtualenv
 flaky==3.8.1
     # via -r requirements/pytest.in
-greenlet==3.2.2
+greenlet==3.2.3
     # via -r requirements/dev.in
-hypothesis==6.133.0
+hypothesis==6.135.0
     # via -r requirements/pytest.in
 id==1.5.0
     # via twine
@@ -175,7 +175,7 @@ tomli==2.2.1
     #   pyproject-api
     #   pytest
     #   tox
-tomlkit==0.13.2
+tomlkit==0.13.3
     # via pylint
 tox==4.26.0
     # via

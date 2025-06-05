@@ -21,7 +21,7 @@ click==8.2.1
     #   uvicorn
 click-log==0.4.0
     # via scriv
-cogapp==3.4.1
+cogapp==3.5.0
     # via -r doc/requirements.in
 colorama==0.4.6
     # via sphinx-autobuild
