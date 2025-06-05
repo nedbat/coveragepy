@@ -774,39 +774,35 @@ class ConfigFileTest(UsingModulesMixin, CoverageTest):
                 coverage.Coverage(config_file="cov.toml")
 
     @pytest.mark.skipif(env.PYVERSION >= (3, 11), reason="Python 3.11 has toml in stdlib")
-    @pytest.mark.parametrize("filename", ["pyproject.toml", ".coveragerc.toml"])
-    def test_no_toml_installed_pyproject_toml(self, filename) -> None:
-        # Can't have coverage config in pyproject.toml and .coveragerc.toml without toml installed.
-        self.make_file(filename, """\
+    def test_no_toml_installed_pyproject_toml(self) -> None:
+        # Can't have coverage config in pyproject.toml without toml installed.
+        self.make_file("pyproject.toml", """\
             # A toml file!
             [tool.coverage.run]
             xyzzy = 17
             """)
         with mock.patch.object(coverage.tomlconfig, "has_tomllib", False):
-            msg = f"Can't read '{filename}' without TOML support"
+            msg = "Can't read 'pyproject.toml' without TOML support"
             with pytest.raises(ConfigError, match=msg):
                 coverage.Coverage()
 
     @pytest.mark.skipif(env.PYVERSION >= (3, 11), reason="Python 3.11 has toml in stdlib")
-    @pytest.mark.parametrize("filename", ["pyproject.toml", ".coveragerc.toml"])
-    def test_no_toml_installed_pyproject_toml_shorter_syntax(self, filename) -> None:
+    def test_no_toml_installed_pyproject_toml_shorter_syntax(self) -> None:
         # Can't have coverage config in pyproject.toml without toml installed.
-        self.make_file(filename, """\
+        self.make_file("pyproject.toml", """\
             # A toml file!
             [tool.coverage]
             run.parallel = true
             """)
         with mock.patch.object(coverage.tomlconfig, "has_tomllib", False):
-            msg = f"Can't read '{filename}' without TOML support"
+            msg = "Can't read 'pyproject.toml' without TOML support"
             with pytest.raises(ConfigError, match=msg):
                 coverage.Coverage()
 
-
     @pytest.mark.skipif(env.PYVERSION >= (3, 11), reason="Python 3.11 has toml in stdlib")
-    @pytest.mark.parametrize("filename", ["pyproject.toml", ".coveragerc.toml"])
-    def test_no_toml_installed_pyproject_no_coverage(self, filename) -> None:
+    def test_no_toml_installed_pyproject_no_coverage(self) -> None:
         # It's ok to have non-coverage pyproject.toml without toml installed.
-        self.make_file(filename, """\
+        self.make_file("pyproject.toml", """\
             # A toml file!
             [tool.something]
             xyzzy = 17
@@ -853,3 +849,27 @@ class ConfigFileTest(UsingModulesMixin, CoverageTest):
         assert cov.config.timid is True
         assert cov.config.data_file == ".toml-data.dat"
         assert cov.config.branch is True
+        
+    
+    @pytest.mark.skipif(env.PYVERSION >= (3, 11), reason="Python 3.11 has toml in stdlib")
+    def test_toml_file_exists_but_no_toml_support(self) -> None:
+        """Test behavior when .coveragerc.toml exists but TOML support is missing."""
+        self.make_file(".coveragerc.toml", """\
+        [tool.coverage.run]
+        timid = true
+        data_file = ".toml-data.dat"
+        """)
+    
+        with mock.patch.object(coverage.tomlconfig, "has_tomllib", False):
+            msg = "Can't read '.coveragerc.toml' without TOML support"
+            with pytest.raises(ConfigError, match=msg):
+                coverage.Coverage(config_file=".coveragerc.toml")
+            self.make_file(".coveragerc", """\
+                [run]
+                timid = false
+                data_file = .ini-data.dat
+                """)
+        
+            cov = coverage.Coverage()
+            assert not cov.config.timid
+            assert cov.config.data_file == ".ini-data.dat"
