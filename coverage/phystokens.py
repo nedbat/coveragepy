@@ -152,19 +152,16 @@ def source_token_lines(source: str) -> TSourceTokenLines:
                     if keyword.iskeyword(ttext):
                         # Hard keywords are always keywords.
                         tok_class = "key"
-                    elif sys.version_info >= (3, 10):   # PYVERSIONS
-                        # Need the version_info check to keep mypy from borking
-                        # on issoftkeyword here.
-                        if env.PYBEHAVIOR.soft_keywords and keyword.issoftkeyword(ttext):
-                            # Soft keywords appear at the start of their line.
-                            if len(line) == 0:
-                                is_start_of_line = True
-                            elif (len(line) == 1) and line[0][0] == "ws":
-                                is_start_of_line = True
-                            else:
-                                is_start_of_line = False
-                            if is_start_of_line and sline in soft_key_lines:
-                                tok_class = "key"
+                    elif env.PYBEHAVIOR.soft_keywords and keyword.issoftkeyword(ttext):
+                        # Soft keywords appear at the start of their line.
+                        if len(line) == 0:
+                            is_start_of_line = True
+                        elif (len(line) == 1) and line[0][0] == "ws":
+                            is_start_of_line = True
+                        else:
+                            is_start_of_line = False
+                        if is_start_of_line and sline in soft_key_lines:
+                            tok_class = "key"
                 line.append((tok_class, part))
                 mark_end = True
             scol = 0
