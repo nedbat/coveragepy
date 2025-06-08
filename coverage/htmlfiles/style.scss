@@ -501,7 +501,7 @@ $border-indicator-width: .2em;
                 font-weight: bold;
                 line-height: 1px;
             }
-            .str {
+            .str, .fst {
                 color: $light-token-str;
                 @include color-dark($dark-token-str);
             }

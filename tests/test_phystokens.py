@@ -131,6 +131,27 @@ class PhysTokensTest(CoverageTest):
             with open(stress, encoding="utf-8") as fstress:
                 assert re.search(r"(?m) $", fstress.read()), f"{stress} needs a trailing space."
 
+    def test_fstring_middle(self) -> None:
+        tokens = list(source_token_lines(textwrap.dedent("""\
+            f'Look: {x} {{x}}!'
+            """)))
+        if env.PYBEHAVIOR.fstring_syntax:
+            assert tokens == [
+                [
+                    ("fst", "f'"),
+                    ("fst", "Look: "),
+                    ("op", "{"),
+                    ("nam", "x"),
+                    ("op", "}"),
+                    ("fst", " {{"),
+                    ("fst", "x}}"),
+                    ("fst", "!"),
+                    ("fst", "'"),
+                ],
+            ]
+        else:
+            assert tokens == [[("str", "f'Look: {x} {{x}}!'")]]
+
 
 @pytest.mark.skipif(not env.PYBEHAVIOR.soft_keywords, reason="Soft keywords are new in Python 3.10")
 class SoftKeywordTest(CoverageTest):
@@ -154,7 +175,6 @@ class SoftKeywordTest(CoverageTest):
                 global case
             """)
         tokens = list(source_token_lines(source))
-        print(tokens)
         assert tokens[0][0] == ("key", "match")
         assert tokens[0][4] == ("nam", "match")
         assert tokens[1][1] == ("key", "case")
@@ -168,7 +188,7 @@ class SoftKeywordTest(CoverageTest):
         assert tokens[10][2] == ("nam", "match")
         assert tokens[11][3] == ("nam", "case")
 
-    @pytest.mark.skipif(sys.version_info < (3, 12), reason="type is a soft keyword in 3.12")
+    @pytest.mark.skipif(sys.version_info < (3, 12), reason="type isn't a soft keyword until 3.12")
     def test_soft_keyword_type(self) -> None:
         source = textwrap.dedent("""\
             type Point = tuple[float, float]
