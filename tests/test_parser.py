@@ -218,6 +218,10 @@ class PythonParserTest(PythonParserTestBase):
             """)
         assert parser.exit_counts() == {1: 1, 2: 1, 3: 1, 5: 1}
 
+    def test_fuzzed_weirdness(self) -> None:
+        # This used to cause a `min of empty sequence` error:
+        self.parse_text("\r\\\n\n\t\t\\\n\n")
+
 
 class ExclusionParserTest(PythonParserTestBase):
     """Tests for the exclusion code in PythonParser."""

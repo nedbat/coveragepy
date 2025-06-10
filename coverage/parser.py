@@ -201,7 +201,7 @@ class PythonParser:
         # The first line of modules can lie and say 1 always, even if the first
         # line of code is later. If so, map 1 to the actual first line of the
         # module.
-        if env.PYBEHAVIOR.module_firstline_1 and self._multiline:
+        if env.PYBEHAVIOR.module_firstline_1 and self._multiline and self.raw_statements:
             self._multiline[1] = min(self.raw_statements)
 
         self.excluded = self.first_lines(self.excluded)
