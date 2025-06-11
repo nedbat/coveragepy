@@ -26,7 +26,7 @@ Coverage.py runs on these versions of Python:
 
 .. PYVERSIONS
 
-* Python 3.9 through 3.14 beta 1, including free-threading.
+* Python 3.9 through 3.14 beta 2, including free-threading.
 * PyPy3 versions 3.9, 3.10, and 3.11.
 
 Documentation is on `Read the Docs`_.  Code repository and issue tracker are on
@@ -36,6 +36,7 @@ Documentation is on `Read the Docs`_.  Code repository and issue tracker are on
 .. _GitHub: https://github.com/nedbat/coveragepy
 
 **New in 7.x:**
+``[run] core`` setting;
 ``[run] source_dirs`` setting;
 ``Coverage.branch_stats()``;
 multi-line exclusion patterns;

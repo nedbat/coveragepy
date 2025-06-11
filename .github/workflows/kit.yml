@@ -149,7 +149,7 @@ jobs:
           - {"os": "windows", "py": "cp311", "arch": "ARM64", "os-version": "11-arm", "minpy": "3.11"}
           - {"os": "windows", "py": "cp312", "arch": "ARM64", "os-version": "11-arm", "minpy": "3.11"}
           - {"os": "windows", "py": "cp313", "arch": "ARM64", "os-version": "11-arm", "minpy": "3.11"}
-        # [[[end]]] (checksum: ce8e88f33d7db22f1e21a767e3256a00)
+        # [[[end]]] (sum: zo6I8z19si)
         #            ^^^^^^^^
         # If a check fails and points to this checksum line, it means you edited
         # the matrix directly instead of editing the Python code in the comment

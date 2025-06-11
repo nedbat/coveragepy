@@ -20,8 +20,12 @@ upgrading your version of coverage.py.
     ..  Version 9.8.1 — 2027-07-27
     ..  --------------------------
 
-Unreleased
-----------
+.. start-releases
+
+.. _changes_7-9-0:
+
+Version 7.9.0 — 2025-06-11
+--------------------------
 
 - Added a ``[run] core`` configuration setting to specify the measurement core,
   which was previously only available through the COVERAGE_CORE environment
@@ -30,11 +34,11 @@ Unreleased
 - Fixed incorrect rendering of f-strings with doubled braces, closing `issue
   1980`_.
 
-- The C tracer core extension module now conforms to `PEP 489`_, closing `issue
-  1977`_.  Thanks, `Adam Turner <pull 1978_>`_.
-
 - If the C tracer core can't be imported, a warning ("no-ctracer") is issued
   with the reason.
+
+- The C tracer core extension module now conforms to `PEP 489`_, closing `issue
+  1977`_.  Thanks, `Adam Turner <pull 1978_>`_.
 
 - Fixed a "ValueError: min() arg is an empty sequence" error caused by strange
   empty modules, found by `oss-fuzz`_.
@@ -46,8 +50,6 @@ Unreleased
 .. _PEP 489: https://peps.python.org/pep-0489
 .. _oss-fuzz: https://google.github.io/oss-fuzz/
 
-
-.. start-releases
 
 .. _changes_7-8-2:
 
