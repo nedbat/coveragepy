@@ -91,13 +91,6 @@ jobs:
           - "pypy-3.9"
           - "pypy-3.10"
           - "pypy-3.11"
-        exclude:
-          # Windows 3.14.0b1 seems confused somehow about t vs not-t:
-          # https://github.com/python/cpython/issues/133779
-          - os: windows
-            python-version: "3.14"
-          - os: windows
-            python-version: "3.14t"
         #
         # If we need to exclude any combinations, do it like this:
         #  exclude:
