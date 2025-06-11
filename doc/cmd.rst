@@ -274,6 +274,11 @@ Conflicting dynamic contexts (dynamic-conflict)
   :meth:`.Coverage.switch_context` function to change the context. Only one of
   these mechanisms should be in use at a time.
 
+Couldn't import C tracer (no-ctracer)
+  The core tracer implemented in C should have been used, but couldn't be
+  imported.  The reason is included in the warning message.  The Python tracer
+  will be used instead.
+
 sys.monitoring isn't available in this version, using default core (no-sysmon)
   You requested to use the sys.monitoring measurement core, but are running on
   Python 3.11 or lower where it isn't available.  A default core will be used

@@ -30,8 +30,11 @@ Unreleased
 - Fixed incorrect rendering of f-strings with doubled braces, closing `issue
   1980`_.
 
-- The C extension module now conforms to `PEP 489`_, closing `issue 1977`_.
-  Thanks, `Adam Turner <pull 1978_>`_.
+- The C tracer core extension module now conforms to `PEP 489`_, closing `issue
+  1977`_.  Thanks, `Adam Turner <pull 1978_>`_.
+
+- If the C tracer core can't be imported, a warning ("no-ctracer") is issued
+  with the reason.
 
 - Fixed a "ValueError: min() arg is an empty sequence" error caused by strange
   empty modules, found by `oss-fuzz`_.

@@ -25,11 +25,13 @@ from coverage.types import (
 
 os = isolate_module(os)
 
+IMPORT_ERROR: str = ""
+
 try:
     # Use the C extension code when we can, for speed.
     import coverage.tracer
     CTRACER_FILE: str | None = coverage.tracer.__file__
-except ImportError:
+except ImportError as imp_err:
     # Couldn't import the C extension, maybe it isn't built.
     # We still need to check the environment variable directly here,
     # as this code runs before configuration is loaded.
@@ -42,6 +44,7 @@ except ImportError:
         # exception here causes all sorts of other noise in unittest.
         sys.stderr.write("*** COVERAGE_CORE is 'ctrace' but can't import CTracer!\n")
         sys.exit(1)
+    IMPORT_ERROR = str(imp_err)
     CTRACER_FILE = None
 
 
@@ -89,6 +92,8 @@ class Core:
             if CTRACER_FILE:
                 core_name = "ctrace"
             else:
+                if env.CPYTHON and IMPORT_ERROR:
+                    warn(f"Couldn't import C tracer: {IMPORT_ERROR}", slug="no-ctracer", once=True)
                 core_name = "pytrace"
 
         self.tracer_kwargs = {}
