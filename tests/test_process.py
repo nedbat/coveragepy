@@ -1133,11 +1133,12 @@ class CoverageCoreTest(CoverageTest):
         self.make_file("numbers.py", "print(123, 456)")
         out = self.run_command("coverage run --debug=sys numbers.py")
         assert out.endswith("123 456\n")
-        core = re_line(r" core:", out).strip()
-        # if env.PYBEHAVIOR.pep669:
-        #     assert core == "core: SysMonitor"
         warns = re_lines(r"\(no-ctracer\)", out)
-        if self.has_ctracer:
+        core = re_line(r" core:", out).strip()
+        if env.SYSMON_DEFAULT:
+            assert core == "core: SysMonitor"
+            assert not warns
+        elif self.has_ctracer:
             assert core == "core: CTracer"
             assert not warns
         else:

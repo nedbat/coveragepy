@@ -86,13 +86,12 @@ class Core:
             core_name = None
 
         if core_name is None:
-            # Someday we will default to sysmon, but it's still experimental:
-            #   if not reason_no_sysmon:
-            #       core_name = "sysmon"
-            if CTRACER_FILE:
+            if env.SYSMON_DEFAULT and not reason_no_sysmon:
+                core_name = "sysmon"
+            elif CTRACER_FILE:
                 core_name = "ctrace"
             else:
-                if env.CPYTHON and IMPORT_ERROR:
+                if IMPORT_ERROR and env.SHIPPING_WHEELS:
                     warn(f"Couldn't import C tracer: {IMPORT_ERROR}", slug="no-ctracer", once=True)
                 core_name = "pytrace"
 
