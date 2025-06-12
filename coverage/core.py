@@ -30,7 +30,7 @@ IMPORT_ERROR: str = ""
 try:
     # Use the C extension code when we can, for speed.
     import coverage.tracer
-    CTRACER_FILE: str | None = coverage.tracer.__file__
+    CTRACER_FILE: str | None = getattr(coverage.tracer, "__file__", "unknown")
 except ImportError as imp_err:
     # Couldn't import the C extension, maybe it isn't built.
     # We still need to check the environment variable directly here,
