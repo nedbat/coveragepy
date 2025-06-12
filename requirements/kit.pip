@@ -72,7 +72,7 @@ pyproject-hooks==1.2.0
     # via build
 readme-renderer==44.0
     # via twine
-requests==2.32.3
+requests==2.32.4
     # via
     #   id
     #   requests-toolbelt
@@ -102,5 +102,5 @@ urllib3==2.4.0
     #   twine
 wheel==0.45.1
     # via -r requirements/kit.in
-zipp==3.22.0
+zipp==3.23.0
     # via importlib-metadata

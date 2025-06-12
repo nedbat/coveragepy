@@ -21,7 +21,7 @@ click==8.2.1
     #   uvicorn
 click-log==0.4.0
     # via scriv
-cogapp==3.5.0
+cogapp==3.5.1
     # via -r doc/requirements.in
 colorama==0.4.6
     # via sphinx-autobuild
@@ -67,7 +67,7 @@ pygments==2.19.1
     #   sphinx
 regex==2024.11.6
     # via sphinx-lint
-requests==2.32.3
+requests==2.32.4
     # via
     #   scriv
     #   sphinx

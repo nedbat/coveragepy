@@ -26,7 +26,7 @@ click==8.1.8
     #   scriv
 click-log==0.4.0
     # via scriv
-cogapp==3.5.0
+cogapp==3.5.1
     # via -r requirements/dev.in
 colorama==0.4.6
     # via
@@ -53,7 +53,7 @@ flaky==3.8.1
     # via -r requirements/pytest.in
 greenlet==3.2.3
     # via -r requirements/dev.in
-hypothesis==6.135.0
+hypothesis==6.135.7
     # via -r requirements/pytest.in
 id==1.5.0
     # via twine
@@ -144,7 +144,7 @@ readme-renderer==44.0
     # via
     #   -r requirements/dev.in
     #   twine
-requests==2.32.3
+requests==2.32.4
     # via
     #   -r requirements/dev.in
     #   id
@@ -208,5 +208,5 @@ virtualenv==20.31.2
     #   tox
 wcwidth==0.2.13
     # via urwid
-zipp==3.22.0
+zipp==3.23.0
     # via importlib-metadata
