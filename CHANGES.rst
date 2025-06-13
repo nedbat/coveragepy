@@ -20,8 +20,12 @@ upgrading your version of coverage.py.
     ..  Version 9.8.1 — 2027-07-27
     ..  --------------------------
 
-Unreleased
-----------
+.. start-releases
+
+.. _changes_7-9-1:
+
+Version 7.9.1 — 2025-06-13
+--------------------------
 
 - The "no-ctracer" warning is not issued for Python pre-release versions.
   Coverage doesn't ship compiled wheels for those versions, so this was far too
@@ -31,8 +35,6 @@ Unreleased
   your configuration.  Plugins and dynamic contexts are still not supported
   with it.
 
-
-.. start-releases
 
 .. _changes_7-9-0:
 
