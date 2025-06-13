@@ -88,9 +88,11 @@ class Core:
         if core_name is None:
             if env.SYSMON_DEFAULT and not reason_no_sysmon:
                 core_name = "sysmon"
-            elif CTRACER_FILE:
-                core_name = "ctrace"
             else:
+                core_name = "ctrace"
+
+        if core_name == "ctrace":
+            if not CTRACER_FILE:
                 if IMPORT_ERROR and env.SHIPPING_WHEELS:
                     warn(f"Couldn't import C tracer: {IMPORT_ERROR}", slug="no-ctracer", once=True)
                 core_name = "pytrace"

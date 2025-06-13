@@ -1133,8 +1133,8 @@ class CoverageCoreTest(CoverageTest):
         self.make_file("numbers.py", "print(123, 456)")
         out = self.run_command("coverage run --debug=sys numbers.py")
         assert out.endswith("123 456\n")
-        warns = re_lines(r"\(no-ctracer\)", out)
         core = re_line(r" core:", out).strip()
+        warns = re_lines(r"\(no-ctracer\)", out)
         if env.SYSMON_DEFAULT:
             assert core == "core: SysMonitor"
             assert not warns
@@ -1153,6 +1153,18 @@ class CoverageCoreTest(CoverageTest):
         assert out.endswith("123 456\n")
         core = re_line(r" core:", out).strip()
         assert core == "core: CTracer"
+
+    @pytest.mark.skipif(has_ctracer, reason="CTracer needs to be missing")
+    def test_core_request_ctrace_but_missing(self) -> None:
+        self.del_environ("COVERAGE_CORE")
+        self.make_file(".coveragerc", "[run]\ncore = ctrace\n")
+        self.make_file("numbers.py", "print(123, 456)")
+        out = self.run_command("coverage run --debug=sys,pybehave numbers.py")
+        assert out.endswith("123 456\n")
+        core = re_line(r" core:", out).strip()
+        assert core == "core: PyTracer"
+        warns = re_lines(r"\(no-ctracer\)", out)
+        assert bool(warns) == env.SHIPPING_WHEELS
 
     def test_core_request_pytrace(self) -> None:
         self.set_environ("COVERAGE_CORE", "pytrace")

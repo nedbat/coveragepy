@@ -23,7 +23,13 @@ upgrading your version of coverage.py.
 Unreleased
 ----------
 
-Nothing yet.
+- The "no-ctracer" warning is not issued for Python pre-release versions.
+  Coverage doesn't ship compiled wheels for those versions, so this was far too
+  noisy.
+
+- On Python 3.14+, the "sysmon" core is now the default if it's supported for
+  your configuration.  Plugins and dynamic contexts are still not supported
+  with it.
 
 
 .. start-releases
