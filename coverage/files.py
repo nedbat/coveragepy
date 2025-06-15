@@ -166,7 +166,7 @@ def zip_location(filename: str) -> tuple[str, str] | None:
     name is in the zipfile.
 
     """
-    for ext in [".zip", ".whl", ".egg", ".pex"]:
+    for ext in [".zip", ".whl", ".egg", ".pex", ".par"]:
         zipbase, extension, inner = filename.partition(ext + sep(filename))
         if extension:
             zipfile = zipbase + ext
