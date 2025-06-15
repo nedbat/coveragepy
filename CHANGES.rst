@@ -23,7 +23,12 @@ upgrading your version of coverage.py.
 Unreleased
 ----------
 
-Nothing yet.
+- Feature: Added support for ``.coveragerc.toml`` configuration files. This 
+  provides a more flexible approach to manage coverage settings as many 
+  projects have switched to TOML configurations. Closes `issue 1643`_. 
+
+.. _issue 1643: https://github.com/nedbat/coveragepy/issues/1643
+.. _pull 1952: https://github.com/nedbat/coveragepy/pull/1952
 
 
 .. start-releases
