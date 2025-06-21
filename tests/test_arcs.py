@@ -397,6 +397,20 @@ class WithTest(CoverageTest):
             branchz_missing="",
         )
 
+    def test_bug_1987(self) -> None:
+        self.check_coverage("""\
+            import contextlib
+            def f():
+                with contextlib.nullcontext():
+                    with contextlib.nullcontext():
+                        with contextlib.nullcontext():
+                            print(1)
+            f()
+            """,
+            branchz="",
+            branchz_missing="",
+        )
+
 
 class LoopArcTest(CoverageTest):
     """Arc-measuring tests involving loops."""

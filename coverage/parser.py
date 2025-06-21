@@ -339,19 +339,29 @@ class PythonParser:
         correct a longer chain of arcs.
 
         """
+        print(f"{arcs = }")
+        for k in self._with_jump_fixers:
+            print(f"fixer: {k}: {self._with_jump_fixers[k]}")
         to_remove = set()
         to_add = set()
         for arc in arcs:
             if arc in self._with_jump_fixers:
+                print(f"{arc} in the fixers")
                 end0 = arc[0]
                 to_remove.add(arc)
+                print(f"now {to_remove = }")
                 start_next, end_next = self._with_jump_fixers[arc]
+                print(f"{start_next = }, {end_next = }")
                 while start_next in self._with_jump_fixers:
                     to_remove.add(start_next)
+                    print(f"{start_next = } is in the fixers, now {to_remove = }")
                     start_next, end_next = self._with_jump_fixers[start_next]
+                    print(f"fixers gave us {start_next = }, {end_next = }")
                     to_remove.add(end_next)
+                    print(f"so {to_remove = }")
                 to_add.add((end0, end_next[1]))
                 to_remove.add(start_next)
+                print(f"now {to_add = } and {to_remove = }")
         arcs = (set(arcs) | to_add) - to_remove
         return arcs
 
@@ -694,7 +704,7 @@ class AstArcAnalyzer:
     sentences like: "Line 17 didn't {action_msg} because {missing_cause_msg}".
 
     NOTE: Starting in July 2024, I've been whittling this down to only report
-    arc that are part of true branches.  It's not clear how far this work will
+    arcs that are part of true branches.  It's not clear how far this work will
     go.
 
     """
@@ -754,6 +764,8 @@ class AstArcAnalyzer:
         to the start.
 
         """
+        # print(f"{self.all_with_starts = }")
+        # print(f"{self.with_entries = }")
         fixers = {}
         with_nexts = {
             arc
@@ -769,6 +781,8 @@ class AstArcAnalyzer:
             ends = {arc[0] for arc in self.with_exits if arc[1] == start}
             for end in ends:
                 fixers[(end, start)] = ((start, nxt), (end, nxt))
+        # for k in sorted(fixers):
+        #     print(f"fixer {k}: {fixers[k]}")
         return fixers
 
     # Code object dispatchers: _code_object__*
@@ -814,6 +828,7 @@ class AstArcAnalyzer:
             print(short_stack(), end="\n\n")
         self.arcs.add((start, end))
         if start in self.current_with_starts:
+            # print(f"add_arc: {start} in {self.current_with_starts}, so adding {(start, end)}")
             self.with_entries.add((start, end))
 
         if missing_cause_msg is not None or action_msg is not None:
