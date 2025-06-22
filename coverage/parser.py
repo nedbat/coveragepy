@@ -694,7 +694,7 @@ class AstArcAnalyzer:
     sentences like: "Line 17 didn't {action_msg} because {missing_cause_msg}".
 
     NOTE: Starting in July 2024, I've been whittling this down to only report
-    arc that are part of true branches.  It's not clear how far this work will
+    arcs that are part of true branches.  It's not clear how far this work will
     go.
 
     """
@@ -1088,10 +1088,10 @@ class AstArcAnalyzer:
     # Node handlers: _handle__*
     #
     # Each handler deals with a specific AST node type, dispatched from
-    # node_exits.  Handlers return the set of exits from that node, and can
-    # also call self.add_arc to record arcs they find.  These functions mirror
-    # the Python semantics of each syntactic construct.  See the docstring
-    # for node_exits to understand the concept of exits from a node.
+    # `node_exits`. Handlers return the set of exits from that node, and can
+    # also call `self.add_arc` to record arcs they find. These functions mirror
+    # the Python semantics of each syntactic construct. See the docstring
+    # for `node_exits` to understand the concept of exits from a node.
     #
     # Every node type that represents a statement should have a handler, or it
     # should be listed in OK_TO_DEFAULT.
