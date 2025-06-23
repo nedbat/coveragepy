@@ -35,6 +35,7 @@ def analysis_from_file_reporter(
     if has_arcs:
         arc_possibilities_set = file_reporter.arcs()
         arcs: Iterable[TArc] = data.arcs(filename) or []
+        # print("# data arcs")
         arcs = file_reporter.translate_arcs(arcs)
 
         # Reduce the set of arcs to the ones that could be branches.
@@ -54,6 +55,7 @@ def analysis_from_file_reporter(
                 if fromno in single_dests:
                     new_arcs.add((fromno, single_dests[fromno]))
 
+        # print("# reduced arcs")
         arcs_executed_set = file_reporter.translate_arcs(new_arcs)
         exit_counts = file_reporter.exit_counts()
         no_branch = file_reporter.no_branch_lines()

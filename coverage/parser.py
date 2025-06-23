@@ -253,6 +253,7 @@ class PythonParser:
 
     def translate_arcs(self, arcs: Iterable[TArc]) -> set[TArc]:
         """Implement `FileReporter.translate_arcs`."""
+        # print("translate_arcs")
         return {(self.first_line(a), self.first_line(b)) for (a, b) in self.fix_with_jumps(arcs)}
 
     def parse_source(self) -> None:
@@ -304,6 +305,7 @@ class PythonParser:
         if env.PYBEHAVIOR.exit_through_with:
             self._with_jump_fixers = aaa.with_jump_fixers()
             if self._with_jump_fixers:
+                # print("_analyze_ast")
                 arcs = self.fix_with_jumps(arcs)
 
         self._all_arcs = set()
@@ -339,20 +341,68 @@ class PythonParser:
         correct a longer chain of arcs.
 
         """
-        to_remove = set()
-        to_add = set()
-        for arc in arcs:
-            if arc in self._with_jump_fixers:
-                end0 = arc[0]
-                to_remove.add(arc)
-                start_next, end_next = self._with_jump_fixers[arc]
-                while start_next in self._with_jump_fixers:
+        arcs = set(arcs)
+        print(f"arg {sorted(arcs) = }")
+        print(f"{self._with_jump_fixers = }")
+
+        if 1:
+            while True:
+                changed = False
+                for end_start, (start_next, end_next) in self._with_jump_fixers.items():
+                    if end_start in arcs and start_next in arcs:
+                        print(f"{end_start = }, {start_next = }, {end_next = }")
+                        arcs.remove(end_start)
+                        arcs.remove(start_next)
+                        arcs.add(end_next)
+                        print(f"now {sorted(arcs) = }")
+                        changed = True
+                if not changed:
+                    break
+        elif 1:
+            to_remove = set()
+            while True:
+                changed = False
+                for arc in self._with_jump_fixers:
+                    if arc in arcs:
+                        print(f"fixer {arc} in arcs")
+                        end0 = arc[0]
+                        to_remove.add(arc)
+                        print(f"removing arc: {to_remove = }")
+                        start_next, end_next = self._with_jump_fixers[arc]
+                        while start_next in self._with_jump_fixers:
+                            print(f"start_next {start_next} in fixers")
+                            to_remove.add(start_next)
+                            print(f"removing start_next: {to_remove = }")
+                            start_next, end_next = self._with_jump_fixers[start_next]
+                            to_remove.add(end_next)
+                            print(f"removing end_next: {to_remove = }")
+                        new = (end0, end_next[1])
+                        if new not in arcs:
+                            arcs.add(new)
+                            print(f"adding {new = }, {arcs = }")
+                            changed = True
+                        to_remove.add(start_next)
+                        print(f"removing start_next: {to_remove = }")
+                if not changed:
+                    break
+            arcs = set(arcs) - to_remove
+        else:
+            to_remove = set()
+            to_add = set()
+            for arc in arcs:
+                if arc in self._with_jump_fixers:
+                    end0 = arc[0]
+                    to_remove.add(arc)
+                    start_next, end_next = self._with_jump_fixers[arc]
+                    while start_next in self._with_jump_fixers:
+                        to_remove.add(start_next)
+                        start_next, end_next = self._with_jump_fixers[start_next]
+                        to_remove.add(end_next)
+                    to_add.add((end0, end_next[1]))
                     to_remove.add(start_next)
-                    start_next, end_next = self._with_jump_fixers[start_next]
-                    to_remove.add(end_next)
-                to_add.add((end0, end_next[1]))
-                to_remove.add(start_next)
-        arcs = (set(arcs) | to_add) - to_remove
+            arcs = (set(arcs) | to_add) - to_remove
+
+        print(f"ret {sorted(arcs) = }")
         return arcs
 
     @functools.lru_cache
