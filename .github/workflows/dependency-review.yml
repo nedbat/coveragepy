@@ -19,6 +19,7 @@ permissions:
 
 jobs:
   dependency-review:
+    name: "Review dependencies"
     if: github.repository_owner == 'nedbat'
     runs-on: ubuntu-latest
     steps:
