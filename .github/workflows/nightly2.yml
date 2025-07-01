@@ -66,7 +66,7 @@ jobs:
       - name: "Install system dependencies"
         run: |
           sudo apt-get update
-          sudo apt-get install -y clang libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev libffi-dev
+          sudo apt-get install -y libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev libffi-dev
 
       - name: "Install pyenv"
         run: |
@@ -80,7 +80,7 @@ jobs:
           export PYENV_ROOT="$HOME/.pyenv"
           export PATH="$PYENV_ROOT/bin:$PATH"
           eval "$(pyenv init --path)"
-          CC=clang pyenv install ${PYVER} -v
+          pyenv install ${PYVER} -v
           sudo ln -sf $PYENV_ROOT/versions/${PYVER}/bin/python3 /usr/local/bin/python
 
       - name: "Show diagnostic info"
