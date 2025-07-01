@@ -80,8 +80,26 @@ jobs:
           export PYENV_ROOT="$HOME/.pyenv"
           export PATH="$PYENV_ROOT/bin:$PATH"
           eval "$(pyenv init --path)"
-          pyenv install ${PYVER} -v
-          sudo ln -sf $PYENV_ROOT/versions/${PYVER}/bin/python3 /usr/local/bin/python
+          pyenv install $PYVER -v
+          sudo ln -sf $PYENV_ROOT/versions/$PYVER/bin/python3 /usr/local/bin/python
+          # https://gist.github.com/dukenmarga/3b055616ecef3b38a52de0ad81b67c2a
+          # said to:
+          # sudo ln -s /usr/local/lib64/python3.12/lib-dynload /usr/local/lib/python3.12/lib-dynload
+
+      - name: "What's in pyenv"
+        run: |
+          export PYENV_ROOT="$HOME/.pyenv"
+          ls -lR $PYENV_ROOT/versions
+
+      - name: "What's in /usr/local/lib64"
+        run: |
+          export PYENV_ROOT="$HOME/.pyenv"
+          ls -lR /usr/local/lib64
+
+      - name: "What's in /usr/local/lib"
+        run: |
+          export PYENV_ROOT="$HOME/.pyenv"
+          ls -lR /usr/local/lib
 
       - name: "Show diagnostic info"
         run: |
