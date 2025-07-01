@@ -4,9 +4,9 @@
 name: "Python Nightly Tests"
 
 on:
-  push:
-    branches:
-      - "**/*nightly*"
+  #push:
+  #  branches:
+  #    - "**/*nightly*"
   schedule:
     # Run at 2:22am early every morning Eastern time (6/7:22 UTC)
     # so that we get tips of CPython development tested.

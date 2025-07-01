@@ -1,0 +1,103 @@
+# Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
+# For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
+
+name: "Python Nightly 2 Tests"
+
+on:
+  push:
+    branches:
+      - "**/*nightly2*"
+  #schedule:
+  #  # Run at 2:22am early every morning Eastern time (6/7:22 UTC)
+  #  # so that we get tips of CPython development tested.
+  #  # https://crontab.guru/#22_7_%2a_%2a_%2a
+  #  - cron: "22 7 * * *"
+  workflow_dispatch:
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  PIP_DISABLE_PIP_VERSION_CHECK: 1
+  COVERAGE_IGOR_VERBOSE: 1
+
+permissions:
+  contents: read
+
+concurrency:
+  group: "${{ github.workflow }}-${{ github.ref }}"
+  cancel-in-progress: true
+
+jobs:
+  tests:
+    name: "${{ matrix.python-version }}"
+    runs-on: "${{ matrix.os }}"
+    # If it doesn't finish in an hour, it's not going to. Don't spin for six
+    # hours needlessly.
+    timeout-minutes: 60
+
+    env:
+      TOX_GH_MAJOR_MINOR: "${{ matrix.python-version }}"
+
+    strategy:
+      matrix:
+        os:
+          - "ubuntu-latest"
+        python-version:
+          # When changing this list, be sure to check the [gh] list in
+          # tox.ini so that tox will run properly. PYVERSIONS
+          - "3.12"
+          - "3.13"
+          - "3.13t"
+          - "3.14"
+          - "3.14t"
+          - "3.15"
+          - "3.15t"
+
+      fail-fast: false
+
+    steps:
+      - name: "Check out the repo"
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+
+      - name: "Install system dependencies"
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y clang libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev libffi-dev
+
+      - name: "Install pyenv"
+        run: |
+          curl -L https://github.com/pyenv/pyenv-installer/raw/master/bin/pyenv-installer | bash
+
+      - name: "Build Python ${{ matrix.python-version }}-dev"
+        env:
+          PYVER: "${{ matrix.python-version }}-dev"
+        run: |
+          set -xe
+          export PYENV_ROOT="$HOME/.pyenv"
+          export PATH="$PYENV_ROOT/bin:$PATH"
+          eval "$(pyenv init --path)"
+          CC=clang pyenv install ${PYVER} -v
+          sudo ln -sf $PYENV_ROOT/versions/${PYVER}/bin/python3 /usr/local/bin/python
+
+      - name: "Show diagnostic info"
+        run: |
+          set -xe
+          python -VV
+          python -m site
+          python -m sysconfig
+          python -c "import sys; print('GIL:', getattr(sys, '_is_gil_enabled', lambda: True)())"
+          python -m coverage debug sys
+          python -m coverage debug pybehave
+          env | sort
+
+      - name: "Install dependencies"
+        run: |
+          python -m pip install -r requirements/tox.pip
+
+      - name: "Run tox"
+        run: |
+          python -m tox -v -- -rfsEX
