@@ -91,15 +91,19 @@ jobs:
           export PYENV_ROOT="$HOME/.pyenv"
           ls -lR $PYENV_ROOT/versions
 
-      - name: "What's in /usr/local/lib64"
+      - name: "Try the thing"
         run: |
-          export PYENV_ROOT="$HOME/.pyenv"
-          ls -lR /usr/local/lib64
+          python -c "import _posixsubprocess as psp; print(psp)"
 
-      - name: "What's in /usr/local/lib"
-        run: |
-          export PYENV_ROOT="$HOME/.pyenv"
-          ls -lR /usr/local/lib
+      #- name: "What's in /usr/local/lib64"
+      #  run: |
+      #    export PYENV_ROOT="$HOME/.pyenv"
+      #    ls -lR /usr/local/lib64
+      #
+      #- name: "What's in /usr/local/lib"
+      #  run: |
+      #    export PYENV_ROOT="$HOME/.pyenv"
+      #    ls -lR /usr/local/lib
 
       - name: "Show diagnostic info"
         run: |
