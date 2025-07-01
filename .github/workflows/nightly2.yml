@@ -47,6 +47,9 @@ jobs:
         python-version:
           # When changing this list, be sure to check the [gh] list in
           # tox.ini so that tox will run properly. PYVERSIONS
+          - "3.9"
+          - "3.10"
+          - "3.11"
           - "3.12"
           - "3.13"
           - "3.13t"
