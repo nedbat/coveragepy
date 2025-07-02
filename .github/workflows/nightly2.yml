@@ -79,6 +79,7 @@ jobs:
       - name: "Build Python ${{ matrix.python-version }}-dev"
         env:
           PYVER: "${{ matrix.python-version }}-dev"
+          PYTHON_CONFIGURE_OPTS: "--enable-shared --disable-test-modules"
         run: |
           set -xe
           export PYENV_ROOT="$HOME/.pyenv"
@@ -131,6 +132,7 @@ jobs:
         env:
           XXXPYTHONVERBOSE: 2
           PYVER: "${{ matrix.python-version }}-dev"
+          PYTHON_CONFIGURE_OPTS: "--enable-shared --disable-test-modules"
         run: |
           export COVERAGE_ANYPY=$HOME/.pyenv/versions/$PYVER/bin/python3
-          python -m tox -e anypy -v -- -rfsEX
+          python -m tox -v -- -rfsEX
