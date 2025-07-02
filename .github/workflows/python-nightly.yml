@@ -31,52 +31,29 @@ concurrency:
 
 jobs:
   tests:
-    name: "${{ matrix.python-version }}${{ matrix.nogil && ' nogil' || '' }} on ${{ matrix.os-short }}"
+    name: "${{ matrix.python-version }}"
     runs-on: "${{ matrix.os }}"
     # If it doesn't finish in an hour, it's not going to. Don't spin for six
     # hours needlessly.
     timeout-minutes: 60
 
     env:
-      TOX_GH_MAJOR_MINOR: "${{ matrix.python-version }}${{ matrix.nogil && 't' || '' }}"
+      TOX_GH_MAJOR_MINOR: "${{ matrix.python-version }}"
 
     strategy:
       matrix:
         os:
-          # Choose a recent Ubuntu that deadsnakes still builds all the versions for.
-          # For example, deadsnakes doesn't provide 3.10 nightly for 22.04 (jammy)
-          # because jammy ships 3.10, and deadsnakes doesn't want to clobber it.
-          # https://launchpad.net/~deadsnakes/+archive/ubuntu/nightly/+packages
-          # https://github.com/deadsnakes/issues/issues/234
-          # See https://github.com/deadsnakes/nightly for the source of the nightly
-          # builds.
-          # bionic: 18, focal: 20, jammy: 22, noble: 24
-          - "ubuntu-22.04"
-        os-short:
-          - "ubuntu"
+          - "ubuntu-latest"
         python-version:
           # When changing this list, be sure to check the [gh] list in
           # tox.ini so that tox will run properly. PYVERSIONS
-          # Available versions:
-          # https://launchpad.net/~deadsnakes/+archive/ubuntu/nightly/+packages
           - "3.12"
           - "3.13"
+          - "3.13t"
           - "3.14"
+          - "3.14t"
           - "3.15"
-          # https://github.com/actions/setup-python#available-versions-of-pypy
-          - "pypy-3.11"
-        nogil:
-          - false
-          - true
-        # include:
-        #   - python-version: "pypy-3.11"
-        #     os: "windows-latest"
-        #     os-short: "windows"
-        exclude:
-          - python-version: "3.12"
-            nogil: true
-          - python-version: "pypy-3.11"
-            nogil: true
+          - "3.15t"
 
       fail-fast: false
 
@@ -86,18 +63,28 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: "Install ${{ matrix.python-version }} with deadsnakes"
-        uses: deadsnakes/action@e640ac8743173a67cca4d7d77cd837e514bf98e8 # v3.2.0
-        if: "!startsWith(matrix.python-version, 'pypy-')"
-        with:
-          python-version: "${{ matrix.python-version }}-dev"
-          nogil: "${{ matrix.nogil || false }}"
+      - name: "Install system dependencies"
+        run: |
+          sudo sed -i.bak 's/^Types: deb$/Types: deb deb-src/' /etc/apt/sources.list.d/ubuntu.sources
+          sudo apt-get update
+          sudo apt-get build-dep -y python3
 
-      - name: "Install ${{ matrix.python-version }} with setup-python"
-        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
-        if: "startsWith(matrix.python-version, 'pypy-')"
-        with:
-          python-version: "${{ matrix.python-version }}-nightly"
+      - name: "Install pyenv"
+        run: |
+          curl -L https://github.com/pyenv/pyenv-installer/raw/master/bin/pyenv-installer | bash
+
+      - name: "Build Python ${{ matrix.python-version }}-dev"
+        env:
+          PYVER: "${{ matrix.python-version }}-dev"
+          #PYTHON_CONFIGURE_OPTS: "--enable-shared --disable-test-modules"
+        run: |
+          set -xe
+          export PYENV_ROOT="$HOME/.pyenv"
+          export PATH="$PYENV_ROOT/bin:$PATH"
+          echo "$PYENV_ROOT/shims:$PYENV_ROOT/bin" >> $GITHUB_PATH
+          pyenv install $PYVER -v
+          pyenv global $PYVER
+          pyenv rehash
 
       - name: "Show diagnostic info"
         run: |
@@ -110,21 +97,15 @@ jobs:
           python -m coverage debug pybehave
           env | sort
 
-      - name: "Check build recency"
-        shell: python
+      - name: "Check the Python version"
+        env:
+          EXPECTED: "${{ matrix.python-version }}"
         run: |
-          import platform
-          from datetime import datetime
-          for fmt in ["%b %d %Y %H:%M:%S", "%b %d %Y"]:
-              try:
-                  built = datetime.strptime(platform.python_build()[1], fmt)
-              except ValueError:
-                  continue
-          days = (datetime.now() - built).days
-          impl = platform.python_implementation()
-          recency = 7 if (impl == "CPython") else 21
-          print(f"Days since {impl} was built: {days}, need within {recency}")
-          assert days <= recency
+          python -c "
+          import sys
+          assert sys.version.startswith('$EXPECTED'.strip('t'))
+          assert getattr(sys, '_is_gil_enabled', lambda: True)() == (not '$EXPECTED'.endswith('t'))
+          "
 
       - name: "Install dependencies"
         run: |
