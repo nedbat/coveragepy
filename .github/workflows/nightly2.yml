@@ -68,8 +68,9 @@ jobs:
 
       - name: "Install system dependencies"
         run: |
+          sudo sed -i.bak 's/^Types: deb$/Types: deb deb-src/' /etc/apt/sources.list.d/ubuntu.sources
           sudo apt-get update
-          sudo apt-get install -y libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev libffi-dev
+          sudo apt-get build-dep -y python3
 
       - name: "Install pyenv"
         run: |
