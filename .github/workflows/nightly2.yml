@@ -124,6 +124,9 @@ jobs:
         run: |
           python -m pip install -r requirements/tox.pip
 
+      - name: Setup upterm session
+        uses: lhotari/action-upterm@v1
+
       - name: "Run tox"
         env:
           PYTHONVERBOSE: 2
