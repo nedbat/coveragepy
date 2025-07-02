@@ -181,6 +181,20 @@ class SimpleArcTest(CoverageTest):
             branchz_missing="",
         )
 
+    def test_bug_1991(self) -> None:
+        # A bytecode was missing a line number, causing a KeyError in sysmon.py.
+        self.check_coverage("""\
+            def func(x, y):
+                for size in (x or ()) if y else ():
+                    print(size)
+
+            func([5], True)
+            """,
+            branchz="2-1 23",
+            branchz_missing="",
+        )
+        assert self.stdout() == "5\n"
+
 
 class WithTest(CoverageTest):
     """Arc-measuring tests involving context managers."""

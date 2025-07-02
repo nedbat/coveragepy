@@ -448,8 +448,8 @@ class SysMonitor(Tracer):
             # This could be an exception jumping from line to line.
             assert code_info.byte_to_line is not None
             l1 = code_info.byte_to_line[instruction_offset]
-            l2 = code_info.byte_to_line[destination_offset]
-            if l1 != l2:
+            l2 = code_info.byte_to_line.get(destination_offset)
+            if l2 is not None and l1 != l2:
                 arc = (l1, l2)
                 code_info.file_data.add(arc)  # type: ignore
                 # log(f"adding unforeseen {arc=}")

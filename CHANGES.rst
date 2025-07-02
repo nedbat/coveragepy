@@ -23,7 +23,13 @@ upgrading your version of coverage.py.
 Unreleased
 ----------
 
-Nothing yet.
+- Fix: complex conditionals within a line might cause a KeyError when using
+  sys.monitoring, as reported in `issue 1991`_.  This is now fixed.
+
+- Fix: we can now measure coverage for code in Python archive (.par) files.
+
+.. _issue 1991: https://github.com/nedbat/coveragepy/issues/1991
+
 
 
 .. start-releases
