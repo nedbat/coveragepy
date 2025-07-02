@@ -90,10 +90,10 @@ jobs:
           # said to:
           # sudo ln -s /usr/local/lib64/python3.12/lib-dynload /usr/local/lib/python3.12/lib-dynload
 
-      - name: "What's in pyenv"
-        run: |
-          export PYENV_ROOT="$HOME/.pyenv"
-          ls -lR $PYENV_ROOT/versions
+      #- name: "What's in pyenv"
+      #  run: |
+      #    export PYENV_ROOT="$HOME/.pyenv"
+      #    ls -lR $PYENV_ROOT/versions
 
       - name: "Try the thing"
         run: |
@@ -124,11 +124,13 @@ jobs:
         run: |
           python -m pip install -r requirements/tox.pip
 
-      - name: Setup upterm session
-        uses: lhotari/action-upterm@v1
-
+      #- name: Setup upterm session
+      #  uses: lhotari/action-upterm@v1
+      #
       - name: "Run tox"
         env:
-          PYTHONVERBOSE: 2
+          XXXPYTHONVERBOSE: 2
+          PYVER: "${{ matrix.python-version }}-dev"
         run: |
-          python -m tox -v -- -rfsEX
+          export COVERAGE_ANYPY=$HOME/.pyenv/versions/$PYVER/bin/python3
+          python -m tox -e anypy -v -- -rfsEX
