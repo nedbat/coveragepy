@@ -124,5 +124,7 @@ jobs:
           python -m pip install -r requirements/tox.pip
 
       - name: "Run tox"
+        env:
+          PYTHONVERBOSE: 2
         run: |
           python -m tox -v -- -rfsEX
