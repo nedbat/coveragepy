@@ -84,9 +84,12 @@ jobs:
           set -xe
           export PYENV_ROOT="$HOME/.pyenv"
           export PATH="$PYENV_ROOT/bin:$PATH"
-          eval "$(pyenv init --path)"
+          #eval "$(pyenv init --path)"
+          echo "$PYENV_ROOT/shims:$PYENV_ROOT/bin" >> $GITHUB_PATH
           pyenv install $PYVER -v
-          sudo ln -sf $PYENV_ROOT/versions/$PYVER/bin/python3 /usr/local/bin/python
+          pyenv global $PYVER
+          pyenv rehash
+          #sudo ln -sf $PYENV_ROOT/versions/$PYVER/bin/python3 /usr/local/bin/python
           # https://gist.github.com/dukenmarga/3b055616ecef3b38a52de0ad81b67c2a
           # said to:
           # sudo ln -s /usr/local/lib64/python3.12/lib-dynload /usr/local/lib/python3.12/lib-dynload
