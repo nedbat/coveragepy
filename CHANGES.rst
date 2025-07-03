@@ -20,8 +20,12 @@ upgrading your version of coverage.py.
     ..  Version 9.8.1 — 2027-07-27
     ..  --------------------------
 
-Unreleased
-----------
+.. start-releases
+
+.. _changes_7-9-2:
+
+Version 7.9.2 — 2025-07-03
+--------------------------
 
 - Fix: complex conditionals within a line might cause a KeyError when using
   sys.monitoring, as reported in `issue 1991`_.  This is now fixed.
@@ -32,8 +36,6 @@ Unreleased
 .. _pull 1984: https://github.com/nedbat/coveragepy/pull/1984
 .. _issue 1991: https://github.com/nedbat/coveragepy/issues/1991
 
-
-.. start-releases
 
 .. _changes_7-9-1:
 
