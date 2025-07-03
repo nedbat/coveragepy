@@ -27,9 +27,10 @@ Unreleased
   sys.monitoring, as reported in `issue 1991`_.  This is now fixed.
 
 - Fix: we can now measure coverage for code in Python archive (.par) files.
+  Thanks, `Itamer Oren <pull 1984_>`_.
 
+.. _pull 1984: https://github.com/nedbat/coveragepy/pull/1984
 .. _issue 1991: https://github.com/nedbat/coveragepy/issues/1991
-
 
 
 .. start-releases
