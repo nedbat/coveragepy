@@ -12,7 +12,7 @@ execnet==2.1.1
     # via pytest-xdist
 flaky==3.8.1
     # via -r requirements/pytest.in
-hypothesis==6.135.7
+hypothesis==6.135.24
     # via -r requirements/pytest.in
 iniconfig==2.1.0
     # via pytest
@@ -20,19 +20,19 @@ packaging==25.0
     # via pytest
 pluggy==1.6.0
     # via pytest
-pygments==2.19.1
+pygments==2.19.2
     # via
     #   -r requirements/pytest.in
     #   pytest
-pytest==8.4.0
+pytest==8.4.1
     # via
     #   -r requirements/pytest.in
     #   pytest-xdist
-pytest-xdist==3.7.0
+pytest-xdist==3.8.0
     # via -r requirements/pytest.in
 sortedcontainers==2.4.0
     # via hypothesis
 tomli==2.2.1
     # via pytest
-typing-extensions==4.14.0
+typing-extensions==4.14.1
     # via exceptiongroup

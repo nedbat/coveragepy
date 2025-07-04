@@ -10,7 +10,7 @@ attrs==25.3.0
     # via scriv
 babel==2.17.0
     # via sphinx
-certifi==2025.4.26
+certifi==2025.6.15
     # via requests
 charset-normalizer==3.4.2
     # via requests
@@ -25,7 +25,7 @@ cogapp==3.5.1
     # via -r doc/requirements.in
 colorama==0.4.6
     # via sphinx-autobuild
-doc8==1.1.2
+doc8==2.0.0
     # via -r doc/requirements.in
 docutils==0.21.2
     # via
@@ -61,7 +61,7 @@ pyenchant==3.2.2
     # via
     #   -r doc/requirements.in
     #   sphinxcontrib-spelling
-pygments==2.19.1
+pygments==2.19.2
     # via
     #   doc8
     #   sphinx
@@ -119,17 +119,19 @@ sphinxcontrib-serializinghtml==2.0.0
     # via sphinx
 sphinxcontrib-spelling==8.0.1
     # via -r doc/requirements.in
-starlette==0.47.0
+starlette==0.47.1
     # via sphinx-autobuild
 stevedore==5.4.1
     # via doc8
-typing-extensions==4.14.0
-    # via anyio
-urllib3==2.4.0
+typing-extensions==4.14.1
+    # via
+    #   anyio
+    #   starlette
+urllib3==2.5.0
     # via requests
-uvicorn==0.34.3
+uvicorn==0.35.0
     # via sphinx-autobuild
-watchfiles==1.0.5
+watchfiles==1.1.0
     # via sphinx-autobuild
 websockets==15.0.1
     # via sphinx-autobuild
