@@ -195,6 +195,34 @@ class SimpleArcTest(CoverageTest):
         )
         assert self.stdout() == "5\n"
 
+    def test_bug_576(self) -> None:
+        if env.PYBEHAVIOR.pep626:
+            branchz = "34 36 89 8B"
+            branchz_missing = ""
+        else:
+            branchz = "34 38 89 8D"
+            branchz_missing = "38 8D"
+
+        self.check_coverage("""\
+            foo = True
+
+            if foo == True:
+                foo = False
+            else:  # pragma: no cover
+                pass
+
+            if foo == False:
+                foo = True
+            else:  # pragma: no cover
+                None
+
+            print("Done")
+            """,
+            branchz=branchz,
+            branchz_missing=branchz_missing,
+        )
+        assert self.stdout() == "Done\n"
+
 
 class WithTest(CoverageTest):
     """Arc-measuring tests involving context managers."""
