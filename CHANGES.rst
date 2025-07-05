@@ -23,7 +23,11 @@ upgrading your version of coverage.py.
 Unreleased
 ----------
 
-Nothing yet.
+- Two new exclusion patterns are part of the defaults: `...` is automatically
+  excluded as a line and `if TYPE_CHECKING` is excluded as a branch.  Closes
+  `issue 831`_.
+
+.. _issue 831: https://github.com/nedbat/coveragepy/issues/831
 
 
 .. start-releases

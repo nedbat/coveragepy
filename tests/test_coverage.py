@@ -1424,8 +1424,12 @@ class ExcludeTest(CoverageTest):
             e = 5
             f = 6#\tpragma:\tno cover
             g = 7
+            ...
+            i = 9
+            ...     # we don't care about this line
+            k = 11
             """,
-            lines=[1,3,5,7],
+            lines=[1,3,5,7,9,11],
         )
 
     def test_two_excludes(self) -> None:
@@ -1506,13 +1510,13 @@ class ExcludeTest(CoverageTest):
         self.check_coverage("""\
             x, y = [0], [1]
             if x == [2]:
-                raise NotImplementedError   # pragma: NO COVER
+                raise NotImplementedError   # NOCOVPLZ
             if all(_ == __ for _, __ in zip(x, y)):
-                raise NotImplementedError   # pragma: NO COVER
+                raise NotImplementedError   # NOCOVPLZ
             """,
             lines=[1,2,4],
             missing="",
-            excludes=['#pragma: NO COVER'],
+            excludes=['# NOCOVPLZ'],
             branchz="23 24 45 4.",
             branchz_missing="",
         )

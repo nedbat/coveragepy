@@ -70,6 +70,30 @@ Because the ``else`` clause is excluded, the ``if`` only has one possible next
 line, so it isn't considered a branch at all.
 
 
+Default exclusions
+------------------
+
+Coverage.py has a set of built-in exclusion patterns.  For line coverage, these
+lines are automatically excluded:
+
+- Any line with a comment like ``# pragma: no cover``.  Other slight
+  differences in spacing and letter case are also recognized.
+
+- Any line with only ``...`` in the code.
+
+For branch coverage, these kinds of branches are automatically excluded:
+
+- A branch with a comment like ``# pragma: no branch``, including differences
+  in spacing and letter case.
+
+- Some branches that are known at compile time: ``if True:``, ``while True:``,
+  and so on.
+
+- A branch just for type checkers: ``if TYPE_CHECKING:``.
+
+.. versionadded:: 7.10.0 the ``...`` and ``TYPE_CHECKING`` defaults.
+
+
 Advanced exclusion
 ------------------
 
@@ -77,7 +101,8 @@ Coverage.py identifies exclusions by matching source code against a list of
 regular expressions. Using :ref:`configuration files <config>` or the coverage
 :ref:`API <api>`, you can add to that list. This is useful if you have
 often-used constructs to exclude that can be matched with a regex. You can
-exclude them all at once without littering your code with exclusion pragmas.
+exclude them all at once in your configuration without littering your code with
+exclusion pragmas.
 
 Before coverage.py 7.6.0, the regexes were matched against single lines of your
 source code.  Now they can be multi-line regexes that find matches across
@@ -229,11 +254,9 @@ default list so that you can add your own exclusions.  The older
 :ref:`config_report_exclude_lines` option completely overwrites the list of
 regexes.
 
-The regexes only have to match part of a line. Be careful not to over-match.  A
-value of ``...`` will match any line with more than three characters in it.
-
-A similar pragma, "no branch", can be used to tailor branch coverage
-measurement.  See :ref:`branch` for details.
+The regexes only have to match part of a line. Be careful not to over-match.
+The regex ``...`` will match any line with more than three characters in it,
+which is certainly not what you want to exclude.
 
 
 .. _multi_line_exclude:
