@@ -421,6 +421,43 @@ class ProcessTest(CoverageTest):
         reported_pids = {line.split(".")[0] for line in debug_text.splitlines()}
         assert len(reported_pids) == 2
 
+    @pytest.mark.skipif(not hasattr(os, "fork"), reason="Can't test os.fork, it doesn't exist.")
+    @pytest.mark.parametrize("patch", [False, True])
+    def test_os_exit(self, patch: bool) -> None:
+        self.make_file("forky.py", """\
+            import os
+            import tempfile
+            import time
+
+            complete_file = tempfile.mkstemp()[1]
+            pid = os.fork()
+            if pid:
+                while pid: # 3.9 wouldn't count "while True": change this. PYVERSION
+                    with open(complete_file, encoding="ascii") as f:
+                        data = f.read()
+                    if "Complete" in data:
+                        break
+                    time.sleep(.02)
+                os.remove(complete_file)
+            else:
+                time.sleep(.1)
+                with open(complete_file, mode="w", encoding="ascii") as f:
+                    f.write("Complete")
+                os._exit(0)
+            """)
+        total_lines = 17
+        if patch:
+            self.make_file(".coveragerc", "[run]\npatch = os._exit\n")
+        self.run_command("coverage run -p forky.py")
+        self.run_command("coverage combine")
+        data = coverage.CoverageData()
+        data.read()
+        seen = line_counts(data)["forky.py"]
+        if patch:
+            assert seen == total_lines
+        else:
+            assert seen < total_lines
+
     def test_warnings_during_reporting(self) -> None:
         # While fixing issue #224, the warnings were being printed far too
         # often.  Make sure they're not any more.

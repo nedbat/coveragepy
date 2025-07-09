@@ -25,9 +25,11 @@ If your processes are ending with SIGTERM, you must enable the
 :ref:`config_run_sigterm` setting to configure coverage to catch SIGTERM
 signals and write its data.
 
-Other ways of ending a process, like SIGKILL or :func:`os._exit
+Other ways of ending a process, like SIGKILL or :func:`os._exit()
 <python:os._exit>`, will prevent coverage.py from writing its data file,
-leaving you with incomplete or non-existent coverage data.
+leaving you with incomplete or non-existent coverage data.  SIGKILL can't be
+intercepted, but you can fix :func:`!os._exit` with the :ref:`[run] patch
+option <config_run_patch>`.
 
 .. note::
 

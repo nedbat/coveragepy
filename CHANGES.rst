@@ -23,11 +23,22 @@ upgrading your version of coverage.py.
 Unreleased
 ----------
 
-- Two new exclusion patterns are part of the defaults: `...` is automatically
-  excluded as a line and `if TYPE_CHECKING` is excluded as a branch.  Closes
+- A new configuration option: ":ref:`[run] patch <config_run_patch>`" lets you
+  specify named patches to apply to work around some limitations in coverage
+  measurement.  As of now, there is only one patch: ``os._exit`` lets coverage
+  save its data even when :func:`os._exit() <python:os._exit>` is used to
+  abruptly end the process.  This closes long-standing `issue 310`_ as well as
+  its duplicates: `issue 312`_, `issue 1845`_, and `issue 1941`_.
+
+- Two new exclusion patterns are part of the defaults: ``...`` is automatically
+  excluded as a line and ``if TYPE_CHECKING:`` is excluded as a branch.  Closes
   `issue 831`_.
 
+.. _issue 310: https://github.com/nedbat/coveragepy/issues/310
+.. _issue 312: https://github.com/nedbat/coveragepy/issues/312
 .. _issue 831: https://github.com/nedbat/coveragepy/issues/831
+.. _issue 1845: https://github.com/nedbat/coveragepy/issues/1845
+.. _issue 1941: https://github.com/nedbat/coveragepy/issues/1941
 
 
 .. start-releases

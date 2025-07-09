@@ -42,6 +42,7 @@ from coverage.lcovreport import LcovReporter
 from coverage.misc import bool_or_none, join_regex
 from coverage.misc import DefaultValue, ensure_dir_for_file, isolate_module
 from coverage.multiproc import patch_multiprocessing
+from coverage.patch import apply_patches
 from coverage.plugin import FileReporter
 from coverage.plugin_support import Plugins, TCoverageInit
 from coverage.python import PythonFileReporter
@@ -676,6 +677,8 @@ class Coverage(TConfigurable):
 
         if self._auto_load:
             self.load()
+
+        apply_patches(self, self.config)
 
         self._collector.start()
         self._started = True

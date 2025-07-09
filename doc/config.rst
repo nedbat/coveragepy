@@ -427,6 +427,29 @@ to the data file name to simplify collecting data from many processes.  See
 :ref:`cmd_combine` for more information.
 
 
+.. _config_run_patch:
+
+[run] patch
+...........
+
+(multi-string) A list of patch names that coverage can apply to the runtime
+environment to improve coverage measurement.  The available patches correspond
+to Python features that could interfere with coverage.  The patch inserts
+coverage-specific code to collect the correct data.
+
+These must be requested in the configuration instead of being applied
+automatically because they could be invasive and produce undesirable
+side-effects.
+
+Currently there is only one available patch:
+
+- ``os._exit``: The :func:`os._exit() <python:os._exit>` function exits the
+  process immediately without calling cleanup handlers.  This patch saves
+  coverage data before exiting.
+
+.. versionadded:: 7.10
+
+
 .. _config_run_plugins:
 
 [run] plugins

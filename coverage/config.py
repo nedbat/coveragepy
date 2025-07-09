@@ -207,6 +207,7 @@ class CoverageConfig(TConfigurable, TPluginConfig):
         self.disable_warnings: list[str] = []
         self.dynamic_context: str | None = None
         self.parallel = False
+        self.patch: list[str] = []
         self.plugins: list[str] = []
         self.relative_files = False
         self.run_include: list[str] = []
@@ -267,6 +268,7 @@ class CoverageConfig(TConfigurable, TPluginConfig):
         "debug", "concurrency", "plugins",
         "report_omit", "report_include",
         "run_omit", "run_include",
+        "patch",
     }
 
     def from_args(self, **kwargs: TConfigValueIn) -> None:
@@ -390,6 +392,7 @@ class CoverageConfig(TConfigurable, TPluginConfig):
         ("disable_warnings", "run:disable_warnings", "list"),
         ("dynamic_context", "run:dynamic_context"),
         ("parallel", "run:parallel", "boolean"),
+        ("patch", "run:patch", "list"),
         ("plugins", "run:plugins", "list"),
         ("relative_files", "run:relative_files", "boolean"),
         ("run_include", "run:include", "list"),
