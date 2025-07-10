@@ -19,7 +19,7 @@ from coverage.tomlconfig import TomlConfigParser
 from coverage.types import FilePathClasses, FilePathType
 
 from tests.coveragetest import CoverageTest, UsingModulesMixin
-
+from tests.helpers import assert_coverage_warnings
 
 class ConfigTest(CoverageTest):
     """Tests of the different sources of configuration settings."""
@@ -468,6 +468,19 @@ class ConfigTest(CoverageTest):
         msg = r"Unrecognized option '\[tool.coverage.run\] xyzzy=' in config file pyproject.toml"
         with pytest.warns(CoverageWarning, match=msg):
             _ = coverage.Coverage()
+
+    def test_unknown_patch(self) -> None:
+        self.make_file("foo.py", "a = 1")
+        self.make_file(".coveragerc", """\
+            [run]
+            patch =
+                os._exit
+                xyzzy
+            """)
+        with pytest.warns(CoverageWarning) as warns:
+            cov = coverage.Coverage()
+            self.start_import_stop(cov, "foo")
+        assert_coverage_warnings(warns, "Unknown patch 'xyzzy', ignored (unknown-patch)")
 
     def test_misplaced_option(self) -> None:
         self.make_file(".coveragerc", """\
