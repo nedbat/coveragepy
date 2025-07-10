@@ -23,7 +23,7 @@ upgrading your version of coverage.py.
 Unreleased
 ----------
 
-- A new configuration option: ":ref:`[run] patch <config_run_patch>`" lets you
+- A new configuration option: ":ref:`config_run_patch`" lets you
   specify named patches to apply to work around some limitations in coverage
   measurement.  As of now, there is only one patch: ``os._exit`` lets coverage
   save its data even when :func:`os._exit() <python:os._exit>` is used to
@@ -33,6 +33,11 @@ Unreleased
 - Two new exclusion patterns are part of the defaults: ``...`` is automatically
   excluded as a line and ``if TYPE_CHECKING:`` is excluded as a branch.  Closes
   `issue 831`_.
+
+- A new configuration option: ":ref:`config_report_partial_also`" is a list of
+  regexes to add as pragmas for partial branches.  This parallels the
+  ":ref:`config_report_exclude_also`" setting for adding line exclusion
+  patterns.
 
 .. _issue 310: https://github.com/nedbat/coveragepy/issues/310
 .. _issue 312: https://github.com/nedbat/coveragepy/issues/312

@@ -742,6 +742,22 @@ namespace packages`_, and are usually skipped.
 reporting.  See :ref:`source` for details.
 
 
+.. _config_report_partial_also:
+
+[report] partial_also
+.....................
+
+(multi-string) A list of regular expressions.  This setting is similar to
+:ref:`config_report_partial_branches`: it specifies patterns for branches to
+consider fully covered even if they don't exercise both destinations.  This
+setting is preferred, because it will preserve the default exclude patterns
+like ``pragma: no branch`` instead of overwriting them.
+
+See :ref:`config_report_partial_branches` for further details.
+
+.. versionadded:: 7.10.0
+
+
 .. _config_report_partial_branches:
 
 [report] partial_branches
@@ -751,7 +767,9 @@ reporting.  See :ref:`source` for details.
 one of these regexes is excused from being reported as a partial branch.  More
 details are in :ref:`branch`.  If you use this option, you are replacing all
 the partial branch regexes so you'll need to also supply the "pragma: no
-branch" regex if you still want to use it.
+branch" regex if you still want to use it. The
+:ref:`config_report_partial_also` setting can be used to specify patterns
+without overwriting the default set.
 
 
 .. _config_report_precision:

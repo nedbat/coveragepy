@@ -493,6 +493,16 @@ class ConfigTest(CoverageTest):
         expected = coverage.config.DEFAULT_EXCLUDE + ["foobar", "raise .*Error"]
         assert cov.config.exclude_list == expected
 
+    def test_partial_also(self) -> None:
+        self.make_file("pyproject.toml", """\
+            [tool.coverage.report]
+            partial_also = ["foobar", "raise .*Error"]
+            """)
+        cov = coverage.Coverage()
+
+        expected = coverage.config.DEFAULT_PARTIAL + ["foobar", "raise .*Error"]
+        assert cov.config.partial_list == expected
+
     def test_core_option(self) -> None:
         # Test that the core option can be set in the configuration file.
         self.del_environ("COVERAGE_CORE")
