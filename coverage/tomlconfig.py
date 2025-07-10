@@ -178,6 +178,10 @@ class TomlConfigParser:
         bool_strings = {"true": True, "false": False}
         return self._check_type(name, option, value, bool, bool_strings.__getitem__, "a boolean")
 
+    def getfile(self, section: str, option: str) -> str:
+        _, value = self._get_single(section, option)
+        return config.process_file_value(value)
+
     def _get_list(self, section: str, option: str) -> tuple[str, list[str]]:
         """Get a list of strings, substituting environment variables in the elements."""
         name, values = self._get(section, option)

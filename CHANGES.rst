@@ -39,6 +39,11 @@ Unreleased
   ":ref:`config_report_exclude_also`" setting for adding line exclusion
   patterns.
 
+- A few file path configuration settings didn't allow for tilde expansion:
+  :ref:`config_json_output`, :ref:`config_lcov_output` and
+  :ref:`config_run_debug_file`.  This is now fixed.
+
+
 .. _issue 310: https://github.com/nedbat/coveragepy/issues/310
 .. _issue 312: https://github.com/nedbat/coveragepy/issues/312
 .. _issue 831: https://github.com/nedbat/coveragepy/issues/831

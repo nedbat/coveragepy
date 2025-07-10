@@ -307,6 +307,12 @@ class ConfigTest(CoverageTest):
             [html]
             directory = ~joe/html_dir
 
+            [json]
+            output = ~/json/output.json
+
+            [lcov]
+            output = ~/lcov/~foo.lcov
+
             [xml]
             output = ~/somewhere/xml.out
 
@@ -321,23 +327,8 @@ class ConfigTest(CoverageTest):
                 ~/src
                 ~joe/source
             """)
-        def expanduser(s: str) -> str:
-            """Fake tilde expansion"""
-            s = s.replace("~/", "/Users/me/")
-            s = s.replace("~joe/", "/Users/joe/")
-            return s
 
-        with mock.patch.object(
-            coverage.config.os.path,  # type: ignore[attr-defined]
-            'expanduser',
-            new=expanduser
-        ):
-            cov = coverage.Coverage()
-        assert cov.config.data_file == "/Users/me/data.file"
-        assert cov.config.html_dir == "/Users/joe/html_dir"
-        assert cov.config.xml_output == "/Users/me/somewhere/xml.out"
-        assert cov.config.exclude_list == ["~/data.file", "~joe/html_dir"]
-        assert cov.config.paths == {'mapping': ['/Users/me/src', '/Users/joe/source']}
+        self.assert_tilde_results()
 
     def test_tilde_in_toml_config(self) -> None:
         # Config entries that are file paths can be tilde-expanded.
@@ -347,6 +338,12 @@ class ConfigTest(CoverageTest):
 
             [tool.coverage.html]
             directory = "~joe/html_dir"
+
+            [tool.coverage.json]
+            output = "~/json/output.json"
+
+            [tool.coverage.lcov]
+            output = "~/lcov/~foo.lcov"
 
             [tool.coverage.xml]
             output = "~/somewhere/xml.out"
@@ -364,6 +361,11 @@ class ConfigTest(CoverageTest):
                 "~joe/source",
             ]
             """)
+
+        self.assert_tilde_results()
+
+    def assert_tilde_results(self) -> None:
+        """Common assertions for two tilde tests."""
         def expanduser(s: str) -> str:
             """Fake tilde expansion"""
             s = s.replace("~/", "/Users/me/")
@@ -371,13 +373,15 @@ class ConfigTest(CoverageTest):
             return s
 
         with mock.patch.object(
-            coverage.config.os.path, # type: ignore[attr-defined]
+            coverage.config.os.path,  # type: ignore[attr-defined]
             'expanduser',
             new=expanduser
         ):
             cov = coverage.Coverage()
         assert cov.config.data_file == "/Users/me/data.file"
         assert cov.config.html_dir == "/Users/joe/html_dir"
+        assert cov.config.json_output == "/Users/me/json/output.json"
+        assert cov.config.lcov_output == "/Users/me/lcov/~foo.lcov"
         assert cov.config.xml_output == "/Users/me/somewhere/xml.out"
         assert cov.config.exclude_list == ["~/data.file", "~joe/html_dir"]
         assert cov.config.paths == {'mapping': ['/Users/me/src', '/Users/joe/source']}

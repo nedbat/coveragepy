@@ -104,6 +104,11 @@ class HandyConfigParser(configparser.ConfigParser):
         v = substitute_variables(v, os.environ)
         return v
 
+    def getfile(self, section: str, option: str) -> str:
+        """Fix up a file path setting."""
+        path = self.get(section, option)
+        return process_file_value(path)
+
     def getlist(self, section: str, option: str) -> list[str]:
         """Read a list of strings.
 
@@ -376,9 +381,9 @@ class CoverageConfig(TConfigurable, TPluginConfig):
         ("context", "run:context"),
         ("core", "run:core"),
         ("cover_pylib", "run:cover_pylib", "boolean"),
-        ("data_file", "run:data_file"),
+        ("data_file", "run:data_file", "file"),
         ("debug", "run:debug", "list"),
-        ("debug_file", "run:debug_file"),
+        ("debug_file", "run:debug_file", "file"),
         ("disable_warnings", "run:disable_warnings", "list"),
         ("dynamic_context", "run:dynamic_context"),
         ("parallel", "run:parallel", "boolean"),
@@ -415,23 +420,23 @@ class CoverageConfig(TConfigurable, TPluginConfig):
 
         # [html]
         ("extra_css", "html:extra_css"),
-        ("html_dir", "html:directory"),
+        ("html_dir", "html:directory", "file"),
         ("html_skip_covered", "html:skip_covered", "boolean"),
         ("html_skip_empty", "html:skip_empty", "boolean"),
         ("html_title", "html:title"),
         ("show_contexts", "html:show_contexts", "boolean"),
 
         # [xml]
-        ("xml_output", "xml:output"),
+        ("xml_output", "xml:output", "file"),
         ("xml_package_depth", "xml:package_depth", "int"),
 
         # [json]
-        ("json_output", "json:output"),
+        ("json_output", "json:output", "file"),
         ("json_pretty_print", "json:pretty_print", "boolean"),
         ("json_show_contexts", "json:show_contexts", "boolean"),
 
         # [lcov]
-        ("lcov_output", "lcov:output"),
+        ("lcov_output", "lcov:output", "file"),
         ("lcov_line_checksums", "lcov:line_checksums", "boolean")
     ]
 
@@ -523,17 +528,10 @@ class CoverageConfig(TConfigurable, TPluginConfig):
         # If we get here, we didn't find the option.
         raise ConfigError(f"No such option: {option_name!r}")
 
-    def post_process_file(self, path: str) -> str:
-        """Make final adjustments to a file path to make it usable."""
-        return os.path.expanduser(path)
-
     def post_process(self) -> None:
         """Make final adjustments to settings to make them usable."""
-        self.data_file = self.post_process_file(self.data_file)
-        self.html_dir = self.post_process_file(self.html_dir)
-        self.xml_output = self.post_process_file(self.xml_output)
         self.paths = {
-            k: [self.post_process_file(f) for f in v]
+            k: [process_file_value(f) for f in v]
             for k, v in self.paths.items()
         }
         self.exclude_list += self.exclude_also
@@ -544,6 +542,11 @@ class CoverageConfig(TConfigurable, TPluginConfig):
         return human_sorted_items(
             (k, v) for k, v in self.__dict__.items() if not k.startswith("_")
         )
+
+
+def process_file_value(path: str) -> str:
+    """Make adjustments to a file path to make it usable."""
+    return os.path.expanduser(path)
 
 
 def process_regexlist(name: str, option: str, values: list[str]) -> list[str]:
