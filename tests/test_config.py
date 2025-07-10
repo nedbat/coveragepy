@@ -194,8 +194,14 @@ class ConfigTest(CoverageTest):
         ("[report]\nexclude_lines = foo(\n",
             r"Invalid \[report\].exclude_lines value 'foo\(': " +
             r"(unbalanced parenthesis|missing \))"),
+        ("[report]\nexclude_also = foo(\n",
+            r"Invalid \[report\].exclude_also value 'foo\(': " +
+            r"(unbalanced parenthesis|missing \))"),
         ("[report]\npartial_branches = foo[\n",
             r"Invalid \[report\].partial_branches value 'foo\[': " +
+            r"(unexpected end of regular expression|unterminated character set)"),
+        ("[report]\npartial_also = foo[\n",
+            r"Invalid \[report\].partial_also value 'foo\[': " +
             r"(unexpected end of regular expression|unterminated character set)"),
         ("[report]\npartial_branches_always = foo***\n",
             r"Invalid \[report\].partial_branches_always value " +
@@ -214,8 +220,14 @@ class ConfigTest(CoverageTest):
         ('[tool.coverage.report]\nexclude_lines = ["foo("]\n',
          r"Invalid \[tool.coverage.report\].exclude_lines value 'foo\(': " +
          r"(unbalanced parenthesis|missing \))"),
+        ('[tool.coverage.report]\nexclude_also = ["foo("]\n',
+         r"Invalid \[tool.coverage.report\].exclude_also value 'foo\(': " +
+         r"(unbalanced parenthesis|missing \))"),
         ('[tool.coverage.report]\npartial_branches = ["foo["]\n',
          r"Invalid \[tool.coverage.report\].partial_branches value 'foo\[': " +
+         r"(unexpected end of regular expression|unterminated character set)"),
+        ('[tool.coverage.report]\npartial_also = ["foo["]\n',
+         r"Invalid \[tool.coverage.report\].partial_also value 'foo\[': " +
          r"(unexpected end of regular expression|unterminated character set)"),
         ('[tool.coverage.report]\npartial_branches_always = ["foo***"]\n',
          r"Invalid \[tool.coverage.report\].partial_branches_always value " +
