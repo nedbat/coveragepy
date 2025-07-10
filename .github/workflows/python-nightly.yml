@@ -76,7 +76,6 @@ jobs:
       - name: "Build Python ${{ matrix.python-version }}-dev"
         env:
           PYVER: "${{ matrix.python-version }}-dev"
-          #PYTHON_CONFIGURE_OPTS: "--enable-shared --disable-test-modules"
         run: |
           set -xe
           export PYENV_ROOT="$HOME/.pyenv"
@@ -84,7 +83,6 @@ jobs:
           echo "$PYENV_ROOT/shims:$PYENV_ROOT/bin" >> $GITHUB_PATH
           pyenv install $PYVER -v
           pyenv global $PYVER
-          pyenv rehash
 
       - name: "Show diagnostic info"
         run: |
@@ -103,6 +101,7 @@ jobs:
         run: |
           python -c "
           import sys
+          print(f'{sys.version = }')
           assert sys.version.startswith('$EXPECTED'.strip('t'))
           assert getattr(sys, '_is_gil_enabled', lambda: True)() == (not '$EXPECTED'.endswith('t'))
           "
