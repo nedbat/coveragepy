@@ -43,10 +43,14 @@ Unreleased
   :ref:`config_json_output`, :ref:`config_lcov_output` and
   :ref:`config_run_debug_file`.  This is now fixed.
 
+- The HTML report now dimly colors subsequent lines in multi-line statements.
+  They used to have no color.  This gives a better indication of the amount of
+  code executed or missing.  Closes `issue 1308`_.
 
 .. _issue 310: https://github.com/nedbat/coveragepy/issues/310
 .. _issue 312: https://github.com/nedbat/coveragepy/issues/312
 .. _issue 831: https://github.com/nedbat/coveragepy/issues/831
+.. _issue 1308: https://github.com/nedbat/coveragepy/issues/1308
 .. _issue 1845: https://github.com/nedbat/coveragepy/issues/1845
 .. _issue 1941: https://github.com/nedbat/coveragepy/issues/1941
 

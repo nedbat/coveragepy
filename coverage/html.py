@@ -138,10 +138,13 @@ class HtmlDataGeneration:
 
         lines = []
         branch_stats = analysis.branch_stats()
+        multiline_map = {}
+        if hasattr(fr, "multiline_map"):
+            multiline_map = fr.multiline_map()
 
         for lineno, tokens in enumerate(fr.source_token_lines(), start=1):
             # Figure out how to mark this line.
-            category = ""
+            category = category2 = ""
             short_annotations = []
             long_annotations = []
 
@@ -169,6 +172,18 @@ class HtmlDataGeneration:
                         )
             elif lineno in analysis.statements:
                 category = "run"
+            elif first_line := multiline_map.get(lineno):
+                if first_line in analysis.excluded:
+                    category2 = "exc2"
+                elif first_line in analysis.missing:
+                    category2 = "mis2"
+                elif self.has_arcs and first_line in missing_branch_arcs:
+                    category2 = "par2"
+                # I don't understand why this last condition is marked as
+                # partial.  If I add an else with an exception, the exception
+                # is raised.
+                elif first_line in analysis.statements:     # pragma: part covered
+                    category2 = "run2"
 
             contexts = []
             contexts_label = ""
@@ -184,7 +199,7 @@ class HtmlDataGeneration:
             lines.append(LineData(
                 tokens=tokens,
                 number=lineno,
-                category=category,
+                category=category or category2,
                 contexts=contexts,
                 contexts_label=contexts_label,
                 context_list=context_list,
@@ -306,6 +321,10 @@ class HtmlReporter:
                 "mis": "mis show_mis",
                 "par": "par run show_par",
                 "run": "run",
+                "exc2": "exc exc2 show_exc",
+                "mis2": "mis mis2 show_mis",
+                "par2": "par par2 ru2 show_par",
+                "run2": "run run2",
             },
         }
         self.index_tmpl = Templite(read_data("index.html"), self.template_globals)

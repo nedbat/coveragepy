@@ -27,6 +27,7 @@ $font-code:               SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
 $off-button-lighten:      50%;
 $hover-dark-amt:          95%;
+$multi-dim-amt:           50%;
 
 $focus-color:             #007acc;
 
@@ -521,6 +522,22 @@ $border-indicator-width: .2em;
                     @include background-dark(mix($dark-mis-bg, $dark-fg, $hover-dark-amt));
                 }
             }
+
+            &.mis2 {
+                .t {
+                    border-left: $border-indicator-width dotted $mis-color;
+                }
+
+                &.show_mis .t {
+                    background: mix($light-mis-bg, $light-bg, $multi-dim-amt);
+                    @include background-dark(mix($dark-mis-bg, $dark-bg, $multi-dim-amt));
+
+                    &:hover {
+                        background: mix($light-mis-bg, $light-fg, $hover-dark-amt);
+                        @include background-dark(mix($dark-mis-bg, $dark-fg, $hover-dark-amt));
+                    }
+                }
+            }
         }
 
         &.run {
@@ -537,6 +554,22 @@ $border-indicator-width: .2em;
                     @include background-dark(mix($dark-run-bg, $dark-fg, $hover-dark-amt));
                 }
             }
+
+            &.run2 {
+                .t {
+                    border-left: $border-indicator-width dotted $run-color;
+                }
+
+                &.show_run .t {
+                    background: mix($light-run-bg, $light-bg, $multi-dim-amt);
+                    @include background-dark(mix($dark-run-bg, $dark-bg, $multi-dim-amt));
+
+                    &:hover {
+                        background: mix($light-run-bg, $light-fg, $hover-dark-amt);
+                        @include background-dark(mix($dark-run-bg, $dark-fg, $hover-dark-amt));
+                    }
+                }
+            }
         }
 
         &.exc {
@@ -551,6 +584,22 @@ $border-indicator-width: .2em;
                 &:hover {
                     background: mix($light-exc-bg, $light-fg, $hover-dark-amt);
                     @include background-dark(mix($dark-exc-bg, $dark-fg, $hover-dark-amt));
+                }
+            }
+
+            &.exc2 {
+                .t {
+                    border-left: $border-indicator-width dotted $exc-color;
+                }
+
+                &.show_exc .t {
+                    background: mix($light-exc-bg, $light-bg, $multi-dim-amt);
+                    @include background-dark(mix($dark-exc-bg, $dark-bg, $multi-dim-amt));
+
+                    &:hover {
+                        background: mix($light-exc-bg, $light-fg, $hover-dark-amt);
+                        @include background-dark(mix($dark-exc-bg, $dark-fg, $hover-dark-amt));
+                    }
                 }
             }
         }
@@ -570,6 +619,21 @@ $border-indicator-width: .2em;
                 }
             }
 
+            &.par2 {
+                .t {
+                    border-left: $border-indicator-width dotted $par-color;
+                }
+
+                &.show_par .t {
+                    background: mix($light-par-bg, $light-bg, $multi-dim-amt);
+                    @include background-dark(mix($dark-par-bg, $dark-bg, $multi-dim-amt));
+
+                    &:hover {
+                        background: mix($light-par-bg, $light-fg, $hover-dark-amt);
+                        @include background-dark(mix($dark-par-bg, $dark-fg, $hover-dark-amt));
+                    }
+                }
+            }
         }
 
         .r {
