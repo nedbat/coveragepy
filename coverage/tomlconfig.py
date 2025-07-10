@@ -11,7 +11,7 @@ import re
 from typing import Any, Callable, TypeVar
 from collections.abc import Iterable
 
-from coverage import env
+from coverage import config, env
 from coverage.exceptions import ConfigError
 from coverage.misc import import_third_party, isolate_module, substitute_variables
 from coverage.types import TConfigSectionOut, TConfigValueOut
@@ -191,13 +191,7 @@ class TomlConfigParser:
 
     def getregexlist(self, section: str, option: str) -> list[str]:
         name, values = self._get_list(section, option)
-        for value in values:
-            value = value.strip()
-            try:
-                re.compile(value)
-            except re.error as e:
-                raise ConfigError(f"Invalid [{name}].{option} value {value!r}: {e}") from e
-        return values
+        return config.process_regexlist(name, option, values)
 
     def getint(self, section: str, option: str) -> int:
         name, value = self._get_single(section, option)

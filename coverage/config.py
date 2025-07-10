@@ -132,18 +132,7 @@ class HandyConfigParser(configparser.ConfigParser):
 
         """
         line_list = self.get(section, option)
-        value_list = []
-        for value in line_list.splitlines():
-            value = value.strip()
-            try:
-                re.compile(value)
-            except re.error as e:
-                raise ConfigError(
-                    f"Invalid [{section}].{option} value {value!r}: {e}",
-                ) from e
-            if value:
-                value_list.append(value)
-        return value_list
+        return process_regexlist(section, option, line_list.splitlines())
 
 
 TConfigParser = Union[HandyConfigParser, TomlConfigParser]
@@ -555,6 +544,20 @@ class CoverageConfig(TConfigurable, TPluginConfig):
         return human_sorted_items(
             (k, v) for k, v in self.__dict__.items() if not k.startswith("_")
         )
+
+
+def process_regexlist(name: str, option: str, values: list[str]) -> list[str]:
+    """Check the values in a regex list and keep the non-blank ones."""
+    value_list = []
+    for value in values:
+        value = value.strip()
+        try:
+            re.compile(value)
+        except re.error as e:
+            raise ConfigError(f"Invalid [{name}].{option} value {value!r}: {e}") from e
+        if value:
+            value_list.append(value)
+    return value_list
 
 
 def config_files_to_try(config_file: bool | str) -> list[tuple[str, bool, bool]]:
