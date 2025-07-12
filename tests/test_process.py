@@ -687,6 +687,35 @@ class ProcessTest(CoverageTest):
         out = self.run_command("python -m coverage")
         assert "Use 'coverage help' for help" in out
 
+    @pytest.mark.skipif(env.WINDOWS, reason="This test is not for Windows")
+    def test_save_signal(self) -> None:
+        test_file = "dummy_hello.py"
+        self.assert_doesnt_exist(".coverage")
+        self.make_file(test_file, """\
+            import os
+            import signal
+
+            print(f"Sending SIGUSR1 to process {os.getpid()}")
+            os.kill(os.getpid(), signal.SIGUSR1)
+            os.kill(os.getpid(), signal.SIGKILL)
+
+            print('Done and goodbye')
+            """)
+        covered_lines = 4
+        self.run_command(f"coverage run --save-signal USR1 {test_file}")
+        self.assert_exists(".coverage")
+        data = coverage.CoverageData()
+        data.read()
+        assert line_counts(data)[test_file] == covered_lines
+        out = self.run_command("coverage report")
+        assert out == textwrap.dedent("""\
+            Name             Stmts   Miss  Cover
+            ------------------------------------
+            dummy_hello.py       6      2    67%
+            ------------------------------------
+            TOTAL                6      2    67%
+            """)
+
 
 TRY_EXECFILE = os.path.join(os.path.dirname(__file__), "modules/process_test/try_execfile.py")
 
