@@ -137,7 +137,8 @@ There are many options:
                             Define a system signal that will trigger coverage
                             report save operation. It is important that target
                             script do not intercept this signal. Currently
-                            supported options are: USR1, USR2.
+                            supported options are: USR1, USR2. This feature does
+                            not work on Windows.
       --source=SRC1,SRC2,...
                             A list of directories or importable names of code to
                             measure.
@@ -148,7 +149,7 @@ There are many options:
       --rcfile=RCFILE       Specify configuration file. By default '.coveragerc',
                             'setup.cfg', 'tox.ini', and 'pyproject.toml' are
                             tried. [env: COVERAGE_RCFILE]
-.. [[[end]]] (sum: 1+s3B5JO5I)
+.. [[[end]]] (sum: X8Kbvdq2+f)
 
 If you want :ref:`branch coverage <branch>` measurement, use the ``--branch``
 flag.  Otherwise only statement coverage is measured.

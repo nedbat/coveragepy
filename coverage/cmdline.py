@@ -196,7 +196,8 @@ class Opts:
         help=(
             "Define a system signal that will trigger coverage report save operation. " +
             "It is important that target script do not intercept this signal. " +
-            "Currently supported options are: USR1, USR2."
+            "Currently supported options are: USR1, USR2. " +
+            "This feature does not work on Windows."
         ),
     )
     show_contexts = optparse.make_option(
@@ -869,6 +870,9 @@ class CoverageScript:
             self.coverage.load()
 
         if options.save_signal:
+            if env.WINDOWS:
+                show_help("Signals are not supported in Windows environment.")
+                return ERR
             if options.save_signal.upper() == 'USR1':
                 signal.signal(signal.SIGUSR1, self.do_signal_save)
             elif options.save_signal.upper() == 'USR2':
