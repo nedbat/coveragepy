@@ -137,13 +137,18 @@ There are many options:
                             A list of directories or importable names of code to
                             measure.
       --timid               Use the slower Python trace function core.
+      --dump_signal=DUMP_SIGNAL
+                            Define a system signal that will trigger coverage
+                            report dump. It is important that target script do not
+                            intercept this signal. Currently supported options
+                            are: USR1, USR2.
       --debug=OPTS          Debug options, separated by commas. [env:
                             COVERAGE_DEBUG]
       -h, --help            Get help on this command.
       --rcfile=RCFILE       Specify configuration file. By default '.coveragerc',
                             'setup.cfg', 'tox.ini', and 'pyproject.toml' are
                             tried. [env: COVERAGE_RCFILE]
-.. [[[end]]] (sum: saD//ido/B)
+.. [[[end]]] (sum: kxkJi2xQZv)
 
 If you want :ref:`branch coverage <branch>` measurement, use the ``--branch``
 flag.  Otherwise only statement coverage is measured.
@@ -215,6 +220,9 @@ and may change in the future.
 These options can also be set in the :ref:`config_run` section of your
 .coveragerc file.
 
+In case if you are specifying ``--dump_signal``, please make sure that
+your target script doesn't intercept this signal. Otherwise the coverage
+reports will not be generated.
 
 .. _cmd_warnings:
 

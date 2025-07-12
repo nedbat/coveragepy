@@ -10,9 +10,11 @@ import optparse
 import os
 import os.path
 import shlex
+import signal
 import sys
 import textwrap
 import traceback
+import types
 
 from typing import cast, Any, NoReturn
 
@@ -227,7 +229,15 @@ class Opts:
         "", "--version", action="store_true",
         help="Display version information and exit.",
     )
-
+    dump_signal = optparse.make_option(
+        '', '--dump_signal', action='store', metavar='DUMP_SIGNAL',
+        choices = ['USR1', 'USR2'],
+        help=(
+            "Define a system signal that will trigger coverage report dump. " +
+            "It is important that target script do not intercept this signal. " +
+            "Currently supported options are: USR1, USR2."
+        ),
+    )
 
 class CoverageOptionParser(optparse.OptionParser):
     """Base OptionParser for coverage.py.
@@ -251,6 +261,7 @@ class CoverageOptionParser(optparse.OptionParser):
             data_file=None,
             debug=None,
             directory=None,
+            dump_signal=None,
             fail_under=None,
             format=None,
             help=None,
@@ -525,6 +536,7 @@ COMMANDS = {
             Opts.parallel_mode,
             Opts.source,
             Opts.timid,
+            Opts.dump_signal,
             ] + GLOBAL_ARGS,
         usage="[options] <pyfile> [program options]",
         description="Run a Python program, measuring code execution.",
@@ -807,6 +819,11 @@ class CoverageScript:
 
         return False
 
+    def do_dump(self, _signum: int, _frame: types.FrameType | None) -> None:
+        """ Signal handler to dump coverage report """
+        print("Dumping coverage data ...")
+        self.coverage.save()
+
     def do_run(self, options: optparse.Values, args: list[str]) -> int:
         """Implementation of 'coverage run'."""
 
@@ -850,6 +867,15 @@ class CoverageScript:
 
         if options.append:
             self.coverage.load()
+
+        if options.dump_signal:
+            if options.dump_signal.upper() == 'USR1':
+                signal.signal(signal.SIGUSR1, self.do_dump)
+            elif options.dump_signal.upper() == 'USR2':
+                signal.signal(signal.SIGUSR2, self.do_dump)
+            else:
+                show_help(f"Unsupported signal for dump coverage report: {options.dump_signal}")
+                return ERR
 
         # Run the script.
         self.coverage.start()
