@@ -133,22 +133,22 @@ There are many options:
       -p, --parallel-mode   Append the machine name, process id and random number
                             to the data file name to simplify collecting data from
                             many processes.
+      --save-signal=SAVE_SIGNAL
+                            Define a system signal that will trigger coverage
+                            report save operation. It is important that target
+                            script do not intercept this signal. Currently
+                            supported options are: USR1, USR2.
       --source=SRC1,SRC2,...
                             A list of directories or importable names of code to
                             measure.
       --timid               Use the slower Python trace function core.
-      --dump_signal=DUMP_SIGNAL
-                            Define a system signal that will trigger coverage
-                            report dump. It is important that target script do not
-                            intercept this signal. Currently supported options
-                            are: USR1, USR2.
       --debug=OPTS          Debug options, separated by commas. [env:
                             COVERAGE_DEBUG]
       -h, --help            Get help on this command.
       --rcfile=RCFILE       Specify configuration file. By default '.coveragerc',
                             'setup.cfg', 'tox.ini', and 'pyproject.toml' are
                             tried. [env: COVERAGE_RCFILE]
-.. [[[end]]] (sum: kxkJi2xQZv)
+.. [[[end]]] (sum: 1+s3B5JO5I)
 
 If you want :ref:`branch coverage <branch>` measurement, use the ``--branch``
 flag.  Otherwise only statement coverage is measured.
