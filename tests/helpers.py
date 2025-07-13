@@ -34,10 +34,23 @@ from coverage.exceptions import CoverageWarning
 from coverage.types import TArc
 
 
-def run_command(cmd: str) -> tuple[int, str]:
+def _correct_encoding() -> str:
+    """Determine the right encoding to use for subprocesses."""
+    # Type checking trick due to "unreachable" being set
+    _locale_type_erased: Any = locale
+
+    encoding = os.device_encoding(1) or (
+        _locale_type_erased.getpreferredencoding()
+        if sys.version_info < (3, 11)
+        else _locale_type_erased.getencoding()
+    )
+    return encoding
+
+
+def subprocess_popen(cmd: str) -> subprocess.Popen[bytes]:
     """Run a command in a subprocess.
 
-    Returns the exit status code and the combined stdout and stderr.
+    Returns the Popen object.
 
     """
     # Subprocesses are expensive, but convenient, and so may be over-used in
@@ -47,20 +60,11 @@ def run_command(cmd: str) -> tuple[int, str]:
         with open(pth, "a", encoding="utf-8") as proctxt:
             print(os.getenv("PYTEST_CURRENT_TEST", "unknown"), file=proctxt, flush=True)
 
-    # Type checking trick due to "unreachable" being set
-    _locale_type_erased: Any = locale
-
-    encoding = os.device_encoding(1) or (
-        _locale_type_erased.getpreferredencoding()
-        if sys.version_info < (3, 11)
-        else _locale_type_erased.getencoding()
-    )
-
     # In some strange cases (PyPy3 in a virtualenv!?) the stdout encoding of
     # the subprocess is set incorrectly to ascii.  Use an environment variable
     # to force the encoding to be the same as ours.
     sub_env = dict(os.environ)
-    sub_env['PYTHONIOENCODING'] = encoding
+    sub_env["PYTHONIOENCODING"] = _correct_encoding()
 
     proc = subprocess.Popen(
         cmd,
@@ -70,11 +74,21 @@ def run_command(cmd: str) -> tuple[int, str]:
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
     )
+    return proc
+
+
+def run_command(cmd: str) -> tuple[int, str]:
+    """Run a command in a subprocess.
+
+    Returns the exit status code and the combined stdout and stderr.
+
+    """
+    proc = subprocess_popen(cmd)
     output, _ = proc.communicate()
     status = proc.returncode
 
     # Get the output, and canonicalize it to strings with newlines.
-    output_str = output.decode(encoding).replace("\r", "")
+    output_str = output.decode(_correct_encoding()).replace("\r", "")
     return status, output_str
 
 
