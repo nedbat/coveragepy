@@ -822,7 +822,7 @@ class CoverageScript:
 
     def do_signal_save(self, _signum: int, _frame: types.FrameType | None) -> None:
         """ Signal handler to save coverage report """
-        print("Saving coverage data ...")
+        print("Saving coverage data ...", flush=True)
         self.coverage.save()
 
     def do_run(self, options: optparse.Values, args: list[str]) -> int:
