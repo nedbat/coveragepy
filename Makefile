@@ -116,6 +116,7 @@ _upgrade: $(DOCBIN)
 	$(PIP_COMPILE) -o requirements/light-threads.pip requirements/light-threads.in
 	$(PIP_COMPILE) -o requirements/mypy.pip requirements/mypy.in
 	$(PIP_COMPILE) -p $(DOCBIN)/python3 -o doc/requirements.pip doc/requirements.in
+	pre-commit autoupdate
 
 diff_upgrade:				## Summarize the last `make upgrade`
 	@# The sort flags sort by the package name first, then by the -/+, and
