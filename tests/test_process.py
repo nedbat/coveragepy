@@ -270,7 +270,7 @@ class ProcessTest(CoverageTest):
 
         self.run_command("coverage run fleeting.py")
         os.remove("fleeting.py")
-        out = self.run_command("coverage html -d htmlcov")
+        out = self.run_command("coverage html -d htmlcov", status=1)
         assert re.search("No source for code: '.*fleeting.py'", out)
         assert "Traceback" not in out
 
@@ -282,10 +282,9 @@ class ProcessTest(CoverageTest):
 
         self.run_command("coverage run fleeting")
         os.remove("fleeting")
-        status, out = self.run_command_status("coverage html -d htmlcov")
+        out = self.run_command("coverage html -d htmlcov", status=1)
         assert re.search("No source for code: '.*fleeting'", out)
         assert "Traceback" not in out
-        assert status == 1
 
     def test_running_missing_file(self) -> None:
         status, out = self.run_command_status("coverage run xyzzy.py")
@@ -310,8 +309,8 @@ class ProcessTest(CoverageTest):
 
         # The important thing is for "coverage run" and "python" to report the
         # same traceback.
-        status, out = self.run_command_status("coverage run throw.py")
-        out2 = self.run_command("python throw.py")
+        out = self.run_command("coverage run throw.py", status=1)
+        out2 = self.run_command("python throw.py", status=1)
         if env.PYPY:
             # PyPy has an extra frame in the traceback for some reason
             out2 = re_lines_text("toplevel", out2, match=False)
@@ -322,7 +321,6 @@ class ProcessTest(CoverageTest):
         msg = f'File "{re.escape(path)}", line 8, in f2'
         assert re.search(msg, out)
         assert 'raise MyException("hey!")' in out
-        assert status == 1
 
     def test_code_exits(self) -> None:
         self.make_file("exit.py", """\
@@ -483,13 +481,13 @@ class ProcessTest(CoverageTest):
         # Note: the name of the function can't have "warning" in it, or the
         # absolute path of the file will have "warning" in it, and an assertion
         # will fail.
-        out = self.run_command("coverage run i_dont_exist.py")
+        out = self.run_command("coverage run i_dont_exist.py", status=1)
         path = python_reported_file('i_dont_exist.py')
         assert f"No file to run: '{path}'" in out
         assert "warning" not in out
         assert "Exception" not in out
 
-        out = self.run_command("coverage run -m no_such_module")
+        out = self.run_command("coverage run -m no_such_module", status=1)
         assert (
             ("No module named no_such_module" in out) or
             ("No module named 'no_such_module'" in out)
@@ -873,8 +871,8 @@ class EnvironmentTest(CoverageTest):
             self.make_file("with_main/__main__.py", f.read())
 
         self.set_environ("PYTHONSAFEPATH", "1")
-        expected = self.run_command("python -m with_main")
-        actual = self.run_command("coverage run -m with_main")
+        expected = self.run_command("python -m with_main", status=1)
+        actual = self.run_command("coverage run -m with_main", status=1)
         assert re.search("No module named '?with_main'?", actual)
         assert re.search("No module named '?with_main'?", expected)
 
@@ -1039,10 +1037,8 @@ class ExcepthookTest(CoverageTest):
 
             raise RuntimeError('Error Outside')
             """)
-        cov_st, cov_out = self.run_command_status("coverage run excepthook_throw.py")
-        py_st, py_out = self.run_command_status("python excepthook_throw.py")
-        assert cov_st == py_st
-        assert cov_st == 1
+        cov_out = self.run_command("coverage run excepthook_throw.py", status=1)
+        py_out = self.run_command("python excepthook_throw.py", status=1)
         assert "in excepthook" in py_out
         assert cov_out == py_out
 
@@ -1062,8 +1058,9 @@ class AliasedCommandTest(CoverageTest):
         # "coverage2" doesn't work on py3
         assert sys.version_info[0] == 3    # Let us know when Python 4 is out...
         badcmd = "coverage2"
-        out = self.run_command(badcmd)
+        status, out = self.run_command_status(badcmd)
         assert "Code coverage for Python" not in out
+        assert status != 0
 
     def test_specific_alias_works(self) -> None:
         # "coverage-3.9" works on py3.9
@@ -1077,7 +1074,7 @@ class AliasedCommandTest(CoverageTest):
         "coverage-%d.%d" % sys.version_info[:2],
     ])
     def test_aliases_used_in_messages(self, cmd: str) -> None:
-        out = self.run_command(f"{cmd} foobar")
+        out = self.run_command(f"{cmd} foobar", status=1)
         assert "Unknown command: 'foobar'" in out
         assert f"Use '{cmd} help' for help" in out
 
@@ -1228,7 +1225,7 @@ class CoverageCoreTest(CoverageTest):
     def test_core_request_nosuchcore(self) -> None:
         self.set_environ("COVERAGE_CORE", "nosuchcore")
         self.make_file("numbers.py", "print(123, 456)")
-        out = self.run_command("coverage run numbers.py")
+        out = self.run_command("coverage run numbers.py", status=1)
         assert "Unknown core value: 'nosuchcore'\n" in out
         assert "123 456" not in out
 
@@ -1276,7 +1273,7 @@ class YankedDirectoryTest(CoverageTest):
 
     def test_removing_directory_with_error(self) -> None:
         self.make_file("bug806.py", self.BUG_806)
-        out = self.run_command("coverage run bug806.py")
+        out = self.run_command("coverage run bug806.py", status=1)
         path = python_reported_file('bug806.py')
         # Python 3.11 adds an extra line to the traceback.
         # Check that the lines we expect are there.
