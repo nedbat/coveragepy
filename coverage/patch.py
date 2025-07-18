@@ -9,6 +9,8 @@ import os
 
 from typing import NoReturn, TYPE_CHECKING
 
+from coverage.exceptions import ConfigError
+
 if TYPE_CHECKING:
     from coverage import Coverage
     from coverage.config import CoverageConfig
@@ -28,4 +30,4 @@ def apply_patches(cov: Coverage, config: CoverageConfig) -> None:
                 _old_os_exit(status)
             os._exit = _coverage_os_exit_patch
         else:
-            cov._warn(f"Unknown patch {patch!r}, ignored", slug="unknown-patch")
+            raise ConfigError(f"Unknown patch {patch!r}")

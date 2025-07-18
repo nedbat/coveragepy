@@ -300,9 +300,6 @@ sys.monitoring doesn't yet support dynamic contexts, using default core (no-sysm
   This isn't supported by coverage.py yet.  A default core will be used
   instead.
 
-Unknown patch 'XYZ', ignored (unknown-patch)
-  You specified an incorrect patch name in the :ref:`config_run_patch` setting.
-
 Individual warnings can be disabled with the :ref:`disable_warnings
 <config_run_disable_warnings>` configuration setting.  It is a list of the
 short parenthetical nicknames in the warning messages.  For example, to silence
