@@ -162,6 +162,7 @@ def coverage_command_fixture(request: pytest.FixtureRequest) -> str:
     return cast(str, request.param)
 
 
+@pytest.mark.xdist_group(name="virtualenv_test")
 class VirtualenvTest(CoverageTest):
     """Tests of virtualenv considerations."""
 

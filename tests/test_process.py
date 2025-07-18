@@ -1306,7 +1306,8 @@ class ProcessStartupTest(CoverageTest):
             f.close()
             """)
 
-    def test_subprocess_with_pth_files(self) -> None:
+    @pytest.mark.xdist_group(name="needs_pth")
+    def test_subprocess_with_pth_files(self, _create_pth_file: None) -> None:
         # An existing data file should not be read when a subprocess gets
         # measured automatically.  Create the data file here with bogus data in
         # it.
@@ -1330,7 +1331,8 @@ class ProcessStartupTest(CoverageTest):
         data.read()
         assert line_counts(data)['sub.py'] == 3
 
-    def test_subprocess_with_pth_files_and_parallel(self) -> None:
+    @pytest.mark.xdist_group(name="needs_pth")
+    def test_subprocess_with_pth_files_and_parallel(self, _create_pth_file: None) -> None:
         # https://github.com/nedbat/coveragepy/issues/492
         self.make_file("coverage.ini", """\
             [run]
@@ -1377,7 +1379,14 @@ class ProcessStartupWithSourceTest(CoverageTest):
     @pytest.mark.parametrize("dashm", ["-m", ""])
     @pytest.mark.parametrize("package", ["pkg", ""])
     @pytest.mark.parametrize("source", ["main", "sub"])
-    def test_pth_and_source_work_together(self, dashm: str, package: str, source: str) -> None:
+    @pytest.mark.xdist_group(name="needs_pth")
+    def test_pth_and_source_work_together(
+        self,
+        dashm: str,
+        package: str,
+        source: str,
+        _create_pth_file: None,
+    ) -> None:
         """Run the test for a particular combination of factors.
 
         The arguments are all strings:

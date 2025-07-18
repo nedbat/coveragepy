@@ -30,7 +30,6 @@ pytest.register_assert_rewrite("tests.helpers")
 # $set_env.py: PYTEST_ADDOPTS - Extra arguments to pytest.
 
 pytest_plugins = [
-    "tests.balance_xdist_plugin",
     "tests.select_plugin",
 ]
 
@@ -94,29 +93,22 @@ def force_local_pyc_files() -> None:
     sys.pycache_prefix = None
 
 
-WORKER = os.getenv("PYTEST_XDIST_WORKER", "none")
-
-def pytest_sessionstart() -> None:
-    """Run once at the start of the test session."""
-    warnings.filterwarnings("ignore", r".*no-sysmon")
-    # Only in the main process...
-    if WORKER == "none":
-        # Create a .pth file for measuring subprocess coverage.
-        pth_dir = find_writable_pth_directory()
-        assert pth_dir
-        sub_dir = pth_dir / "subcover.pth"
-        sub_dir.write_text("import coverage; coverage.process_startup()\n", encoding="utf-8")
-        # subcover.pth is deleted by pytest_sessionfinish below.
-
-
-def pytest_sessionfinish() -> None:
-    """Hook the end of a test session, to clean up."""
-    # This is called by each of the workers and by the main process.
-    if WORKER == "none":
-        for pth_dir in possible_pth_dirs():             # pragma: part covered
-            pth_file = pth_dir / "subcover.pth"
-            if pth_file.exists():
-                pth_file.unlink()
+# Give this an underscored name so pylint won't complain when we use the fixture.
+@pytest.fixture(name="_create_pth_file")
+def create_pth_file() -> Iterator[None]:
+    """Create and clean up a .pth file for tests that need it for subprocesses."""
+    for pth_dir in possible_pth_dirs():             # pragma: part covered
+        pth_file = pth_dir / "subcover.pth"
+        try:
+            pth_file.write_text("import coverage; coverage.process_startup()\n", encoding="utf-8")
+        except OSError:                             # pragma: cant happen
+            continue
+        else:
+            break
+    try:
+        yield
+    finally:
+        pth_file.unlink()
 
 
 def possible_pth_dirs() -> Iterator[Path]:
@@ -131,18 +123,3 @@ def possible_pth_dirs() -> Iterator[Path]:
     # If we're still looking, then try the Python library directory.
     # https://github.com/nedbat/coveragepy/issues/339
     yield Path(sysconfig.get_path("purelib"))       # pragma: cant happen
-
-
-def find_writable_pth_directory() -> Path | None:
-    """Find a place to write a .pth file."""
-    for pth_dir in possible_pth_dirs():             # pragma: part covered
-        try_it = pth_dir / f"touch_{WORKER}.it"
-        try:
-            try_it.write_text("foo", encoding="utf-8")
-        except OSError:                             # pragma: cant happen
-            continue
-
-        os.remove(try_it)
-        return pth_dir
-
-    return None                                     # pragma: cant happen
