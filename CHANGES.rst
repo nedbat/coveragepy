@@ -33,7 +33,7 @@ Unreleased
 
 - A new configuration option: ":ref:`config_run_patch`" lets you
   specify named patches to apply to work around some limitations in coverage
-  measurement.  As of now, there is only one patch: ``os._exit`` lets coverage
+  measurement.  As of now, there is only one patch: ``_exit`` lets coverage
   save its data even when :func:`os._exit() <python:os._exit>` is used to
   abruptly end the process.  This closes long-standing `issue 310`_ as well as
   its duplicates: `issue 312`_, `issue 1845`_, and `issue 1941`_.

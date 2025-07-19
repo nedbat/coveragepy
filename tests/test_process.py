@@ -447,7 +447,7 @@ class ProcessTest(CoverageTest):
             """)
         total_lines = 17
         if patch:
-            self.make_file(".coveragerc", "[run]\npatch = os._exit\n")
+            self.make_file(".coveragerc", "[run]\npatch = _exit\n")
         self.run_command("coverage run -p forky.py")
         self.run_command("coverage combine")
         data = coverage.CoverageData()

@@ -443,7 +443,7 @@ side-effects.
 
 Currently there is only one available patch:
 
-- ``os._exit``: The :func:`os._exit() <python:os._exit>` function exits the
+- ``_exit``: The :func:`os._exit() <python:os._exit>` function exits the
   process immediately without calling cleanup handlers.  This patch saves
   coverage data before exiting.
 
