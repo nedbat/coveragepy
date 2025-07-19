@@ -38,6 +38,11 @@ Unreleased
   abruptly end the process.  This closes long-standing `issue 310`_ as well as
   its duplicates: `issue 312`_, `issue 1845`_, and `issue 1941`_.
 
+- A new command-line option: ``--save-signal=USR1`` specifies a signal that
+  coverage.py will listen for.  When the signal is sent, the coverage data will
+  be saved.  This makes it possible to save data from within long-running
+  processes.  Thanks, `Arkady Gilinsky <pull 1998_>`_.
+
 - A new configuration option: ":ref:`config_report_partial_also`" is a list of
   regexes to add as pragmas for partial branches.  This parallels the
   ":ref:`config_report_exclude_also`" setting for adding line exclusion
@@ -56,6 +61,7 @@ Unreleased
 .. _issue 1308: https://github.com/nedbat/coveragepy/issues/1308
 .. _issue 1845: https://github.com/nedbat/coveragepy/issues/1845
 .. _issue 1941: https://github.com/nedbat/coveragepy/issues/1941
+.. _pull 1998: https://github.com/nedbat/coveragepy/pull/1998
 .. _issue 2001: https://github.com/nedbat/coveragepy/issues/2001
 
 

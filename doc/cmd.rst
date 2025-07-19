@@ -133,12 +133,9 @@ There are many options:
       -p, --parallel-mode   Append the machine name, process id and random number
                             to the data file name to simplify collecting data from
                             many processes.
-      --save-signal=SAVE_SIGNAL
-                            Define a system signal that will trigger coverage
-                            report save operation. It is important that target
-                            script do not intercept this signal. Currently
-                            supported options are: USR1, USR2. This feature does
-                            not work on Windows.
+      --save-signal=SIGNAL  Specify a signal that will trigger coverage to write
+                            its collected data. Supported values are: USR1, USR2.
+                            Not available on Windows.
       --source=SRC1,SRC2,...
                             A list of directories or importable names of code to
                             measure.
@@ -149,7 +146,7 @@ There are many options:
       --rcfile=RCFILE       Specify configuration file. By default '.coveragerc',
                             'setup.cfg', 'tox.ini', and 'pyproject.toml' are
                             tried. [env: COVERAGE_RCFILE]
-.. [[[end]]] (sum: X8Kbvdq2+f)
+.. [[[end]]] (sum: 1Ks5r6cadh)
 
 If you want :ref:`branch coverage <branch>` measurement, use the ``--branch``
 flag.  Otherwise only statement coverage is measured.
@@ -221,9 +218,9 @@ and may change in the future.
 These options can also be set in the :ref:`config_run` section of your
 .coveragerc file.
 
-In case if you are specifying ``--save-signal``, please make sure that
-your target script doesn't intercept this signal. Otherwise the coverage
-reports will not be generated.
+If you are specifying ``--save-signal``, please make sure that your program
+doesn't intercept this signal. If it does, coverage won't receive the signal
+and the data file will not be written.
 
 .. _cmd_warnings:
 

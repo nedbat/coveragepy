@@ -191,13 +191,11 @@ class Opts:
         ),
     )
     save_signal = optparse.make_option(
-        '', '--save-signal', action='store', metavar='SAVE_SIGNAL',
+        '', '--save-signal', action='store', metavar='SIGNAL',
         choices = ['USR1', 'USR2'],
         help=(
-            "Define a system signal that will trigger coverage report save operation. " +
-            "It is important that target script do not intercept this signal. " +
-            "Currently supported options are: USR1, USR2. " +
-            "This feature does not work on Windows."
+            "Specify a signal that will trigger coverage to write its collected data. " +
+            "Supported values are: USR1, USR2. Not available on Windows."
         ),
     )
     show_contexts = optparse.make_option(
