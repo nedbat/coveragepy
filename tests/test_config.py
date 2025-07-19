@@ -474,7 +474,7 @@ class ConfigTest(CoverageTest):
         self.make_file(".coveragerc", """\
             [run]
             patch =
-                os._exit
+                _exit
                 xyzzy
             """)
         msg = "Unknown patch 'xyzzy'"

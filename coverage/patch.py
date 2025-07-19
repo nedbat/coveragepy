@@ -21,7 +21,7 @@ def apply_patches(cov: Coverage, config: CoverageConfig) -> None:
     """Apply invasive patches requested by `[run] patch=`."""
 
     for patch in set(config.patch):
-        if patch == "os._exit":
+        if patch == "_exit":
             def _coverage_os_exit_patch(status: int) -> NoReturn:
                 try:
                     cov.save()
