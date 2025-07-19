@@ -222,7 +222,7 @@ class ConcurrencyTest(CoverageTest):
         self.make_file("try_it.py", code)
 
         cmd = f"coverage run --concurrency={concurrency} try_it.py"
-        out = self.run_command(cmd)
+        _, out = self.run_command_status(cmd)
 
         expected_cant_trace = cant_trace_msg(concurrency, the_module)
 
@@ -342,7 +342,7 @@ class ConcurrencyTest(CoverageTest):
             answer = q.get()
             assert answer == 1
             """)
-        out = self.run_command("coverage run --concurrency=thread,gevent both.py")
+        _, out = self.run_command_status("coverage run --concurrency=thread,gevent both.py")
         if gevent is None:
             assert out == (
                 "Couldn't trace with concurrency=gevent, the module isn't installed.\n"
@@ -475,7 +475,7 @@ class MultiprocessingTest(CoverageTest):
             """)
 
         cmd = f"coverage run {args} multi.py {start_method}"
-        out = self.run_command(cmd)
+        _, out = self.run_command_status(cmd)
         expected_cant_trace = cant_trace_msg(concurrency, the_module)
 
         if expected_cant_trace is not None:
@@ -591,7 +591,7 @@ class MultiprocessingTest(CoverageTest):
             concurrency = multiprocessing
             _crash = _bootstrap
             """)
-        out = self.run_command("coverage run multi.py")
+        out = self.run_command("coverage run multi.py", status=1)
         assert "Exception during multiprocessing bootstrap init" in out
         assert "RuntimeError: Crashing because called by _bootstrap" in out
 
@@ -770,7 +770,8 @@ class SigtermTest(CoverageTest):
             concurrency = thread
             sigterm = true
             """)
-        out = self.run_command("coverage run handler.py")
+        status, out = self.run_command_status("coverage run handler.py")
+        assert status != 0
         out_lines = out.splitlines()
         assert len(out_lines) in [2, 3]
         assert out_lines[:2] == ["START", "SIGTERM"]

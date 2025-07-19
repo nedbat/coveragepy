@@ -140,7 +140,7 @@ class HtmlTestHelpers(CoverageTest):
             )
 
 
-class HtmlReportParser(HTMLParser):     # pylint: disable=abstract-method
+class HtmlReportParser(HTMLParser):
     """An HTML parser for our HTML reports.
 
     Assertions are made about the structure we expect.

@@ -47,6 +47,7 @@ GOLD_GETTY_FILE_RX = path_regex(GOLD_GETTY_FILE)
 GOLD_PATH_RX = path_regex("/tests/gold/testing/getty/gettysburg.txt")
 OUT_PATH_RX = path_regex("out/gettysburg.txt")
 
+@pytest.mark.xdist_group(name="compare_test")
 class CompareTest(CoverageTest):
     """Tests of goldtest.py:compare()"""
 

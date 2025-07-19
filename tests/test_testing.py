@@ -28,12 +28,6 @@ from tests.helpers import (
 )
 
 
-def test_xdist_sys_path_nuttiness_is_fixed() -> None:
-    # See conftest.py:fix_xdist_sys_path
-    assert sys.path[1] != ""
-    assert os.getenv("PYTHONPATH") is None
-
-
 def test_assert_count_equal() -> None:
     assert_count_equal(set(), set())
     assert_count_equal({"a": 1, "b": 2}, ["b", "a"])

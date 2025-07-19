@@ -140,7 +140,6 @@ if LOG:  # pragma: debugging
                 except Exception as exc:
                     log(f"!!{exc.__class__.__name__}: {exc}")
                     if 1:
-                        # pylint: disable=no-value-for-parameter
                         log("".join(traceback.format_exception(exc)))
                     try:
                         assert sys_monitoring is not None

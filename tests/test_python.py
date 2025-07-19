@@ -17,6 +17,7 @@ from tests.coveragetest import CoverageTest
 from tests.helpers import os_sep
 
 
+@pytest.mark.xdist_group(name="get_zip_bytes_test")
 class GetZipBytesTest(CoverageTest):
     """Tests of `get_zip_bytes`."""
 
