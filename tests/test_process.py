@@ -717,7 +717,7 @@ class ProcessTest(CoverageTest):
         assert "Use 'coverage help' for help" in out
 
     @pytest.mark.skipif(env.WINDOWS, reason="This test is not for Windows")
-    def test_save_signal(self) -> None:
+    def test_save_signal_usr1(self) -> None:
         test_file = "dummy_hello.py"
         self.assert_doesnt_exist(".coverage")
         self.make_file(test_file, """\
@@ -747,7 +747,7 @@ class ProcessTest(CoverageTest):
 
     # Negative test for signal
     @pytest.mark.skipif(env.WINDOWS, reason="This test is not for Windows")
-    def test_save_signal_no_send(self) -> None:
+    def test_save_signal_kill(self) -> None:
         test_file = "dummy_hello.py"
         self.assert_doesnt_exist(".coverage")
         self.make_file(test_file, """\
