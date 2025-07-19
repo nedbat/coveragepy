@@ -10,9 +10,11 @@ import optparse
 import os
 import os.path
 import shlex
+import signal
 import sys
 import textwrap
 import traceback
+import types
 
 from typing import cast, Any, NoReturn
 
@@ -188,6 +190,16 @@ class Opts:
             "'pyproject.toml' are tried. [env: COVERAGE_RCFILE]"
         ),
     )
+    save_signal = optparse.make_option(
+        '', '--save-signal', action='store', metavar='SAVE_SIGNAL',
+        choices = ['USR1', 'USR2'],
+        help=(
+            "Define a system signal that will trigger coverage report save operation. " +
+            "It is important that target script do not intercept this signal. " +
+            "Currently supported options are: USR1, USR2. " +
+            "This feature does not work on Windows."
+        ),
+    )
     show_contexts = optparse.make_option(
         "--show-contexts", action="store_true",
         help="Show contexts for covered lines.",
@@ -228,7 +240,6 @@ class Opts:
         help="Display version information and exit.",
     )
 
-
 class CoverageOptionParser(optparse.OptionParser):
     """Base OptionParser for coverage.py.
 
@@ -264,6 +275,7 @@ class CoverageOptionParser(optparse.OptionParser):
             pylib=None,
             quiet=None,
             rcfile=True,
+            save_signal=None,
             show_contexts=None,
             show_missing=None,
             skip_covered=None,
@@ -523,6 +535,7 @@ COMMANDS = {
             Opts.omit,
             Opts.pylib,
             Opts.parallel_mode,
+            Opts.save_signal,
             Opts.source,
             Opts.timid,
             ] + GLOBAL_ARGS,
@@ -807,6 +820,11 @@ class CoverageScript:
 
         return False
 
+    def do_signal_save(self, _signum: int, _frame: types.FrameType | None) -> None:
+        """ Signal handler to save coverage report """
+        print("Saving coverage data ...", flush=True)
+        self.coverage.save()
+
     def do_run(self, options: optparse.Values, args: list[str]) -> int:
         """Implementation of 'coverage run'."""
 
@@ -850,6 +868,13 @@ class CoverageScript:
 
         if options.append:
             self.coverage.load()
+
+        if options.save_signal:
+            if env.WINDOWS:
+                show_help("--save-signal is not supported on Windows.")
+                return ERR
+            sig = getattr(signal, f"SIG{options.save_signal}")
+            signal.signal(sig, self.do_signal_save)
 
         # Run the script.
         self.coverage.start()

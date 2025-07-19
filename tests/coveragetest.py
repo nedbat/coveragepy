@@ -418,7 +418,11 @@ class CoverageTest(
 
         """
         actual_status, output = self.run_command_status(cmd)
-        assert actual_status == status
+        if actual_status > 128:
+            # Killed by signal, shell returns 128 + signal_num
+            assert actual_status == 128 + (-1 * status)
+        else:
+            assert actual_status == status
         return output
 
     def run_command_status(self, cmd: str) -> tuple[int, str]:
