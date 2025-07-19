@@ -462,7 +462,11 @@ class ProcessTest(CoverageTest):
     @pytest.mark.parametrize("send", [False, True])
     def test_save_signal(self, send: bool) -> None:
         # PyPy on Ubuntu seems to need more time for things to happen.
-        base_time = 0.75 if (env.PYPY and env.LINUX) else 0.0
+        base_time = 0.0
+        if env.PYPY and env.LINUX:
+            base_time += 0.75
+        if env.METACOV:
+            base_time += 1.0
         self.make_file("loop.py", """\
             import time
             print("Starting", flush=True)
