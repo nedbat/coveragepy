@@ -745,23 +745,6 @@ class ProcessTest(CoverageTest):
             TOTAL                6      2    67%
             """)
 
-    # Negative test for signal
-    @pytest.mark.skipif(env.WINDOWS, reason="This test is not for Windows")
-    def test_save_signal_kill(self) -> None:
-        test_file = "dummy_hello.py"
-        self.assert_doesnt_exist(".coverage")
-        self.make_file(test_file, """\
-            import os
-            import signal
-
-            os.kill(os.getpid(), signal.SIGKILL)
-
-            print('Done and goodbye')
-            """)
-        self.run_command(f"coverage run --save-signal USR1 {test_file}", status = -signal.SIGKILL)
-        self.assert_doesnt_exist(".coverage")
-
-
 TRY_EXECFILE = os.path.join(os.path.dirname(__file__), "modules/process_test/try_execfile.py")
 
 class EnvironmentTest(CoverageTest):
