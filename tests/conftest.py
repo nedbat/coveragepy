@@ -11,15 +11,13 @@ from __future__ import annotations
 
 import os
 import sys
-import sysconfig
 import warnings
 
-from pathlib import Path
 from collections.abc import Iterator
 
 import pytest
 
-from coverage.files import set_relative_directory
+from coverage.files import set_relative_directory, create_pth_file
 
 # Pytest will rewrite assertions in test modules, but not elsewhere.
 # This tells pytest to also rewrite assertions in these files:
@@ -95,31 +93,11 @@ def force_local_pyc_files() -> None:
 
 # Give this an underscored name so pylint won't complain when we use the fixture.
 @pytest.fixture(name="_create_pth_file")
-def create_pth_file() -> Iterator[None]:
+def create_pth_file_fixture() -> Iterator[None]:
     """Create and clean up a .pth file for tests that need it for subprocesses."""
-    for pth_dir in possible_pth_dirs():             # pragma: part covered
-        pth_file = pth_dir / "subcover.pth"
-        try:
-            pth_file.write_text("import coverage; coverage.process_startup()\n", encoding="utf-8")
-        except OSError:                             # pragma: cant happen
-            continue
-        else:
-            break
+    pth_file = create_pth_file()
+    assert pth_file is not None
     try:
         yield
     finally:
         pth_file.unlink()
-
-
-def possible_pth_dirs() -> Iterator[Path]:
-    """Produce a sequence of directories for trying to write .pth files."""
-    # First look through sys.path, and if we find a .pth file, then it's a good
-    # place to put ours.
-    for pth_dir in map(Path, sys.path):             # pragma: part covered
-        pth_files = list(pth_dir.glob("*.pth"))
-        if pth_files:
-            yield pth_dir
-
-    # If we're still looking, then try the Python library directory.
-    # https://github.com/nedbat/coveragepy/issues/339
-    yield Path(sysconfig.get_path("purelib"))       # pragma: cant happen

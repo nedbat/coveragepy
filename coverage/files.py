@@ -12,9 +12,11 @@ import os.path
 import posixpath
 import re
 import sys
+import sysconfig
 
+from pathlib import Path
 from typing import Callable
-from collections.abc import Iterable
+from collections.abc import Iterable, Iterator
 
 from coverage import env
 from coverage.exceptions import ConfigError
@@ -214,6 +216,33 @@ def prep_patterns(patterns: Iterable[str]) -> list[str]:
         if not p.startswith(("*", "?")):
             prepped.append(abs_file(p))
     return prepped
+
+
+def create_pth_file() -> Path | None:
+    """Create .pth file for measuring subprocesses."""
+    for pth_dir in _possible_pth_dirs():  # pragma: part covered
+        pth_file = pth_dir / "subcover.pth"
+        try:
+            pth_file.write_text("import coverage; coverage.process_startup()\n", encoding="utf-8")
+        except OSError:  # pragma: cant happen
+            continue
+        else:
+            return pth_file
+    return None  # pragma: cant happen
+
+
+def _possible_pth_dirs() -> Iterator[Path]:
+    """Produce a sequence of directories for trying to write .pth files."""
+    # First look through sys.path, and if we find a .pth file, then it's a good
+    # place to put ours.
+    for pth_dir in map(Path, sys.path):  # pragma: part covered
+        pth_files = list(pth_dir.glob("*.pth"))
+        if pth_files:
+            yield pth_dir
+
+    # If we're still looking, then try the Python library directory.
+    # https://github.com/nedbat/coveragepy/issues/339
+    yield Path(sysconfig.get_path("purelib"))  # pragma: cant happen
 
 
 class TreeMatcher:

@@ -441,11 +441,16 @@ These must be requested in the configuration instead of being applied
 automatically because they could be invasive and produce undesirable
 side-effects.
 
-Currently there is only one available patch:
+Available patches:
 
 - ``_exit``: The :func:`os._exit() <python:os._exit>` function exits the
   process immediately without calling cleanup handlers.  This patch saves
   coverage data before exiting.
+
+- ``subprocess``: Python sub-processes normally won't get coverage measurement.
+  This patch configures Python to start coverage automatically, and will apply
+  to sub-processes created with with :func:`os.system`, :mod:`subprocess`, or
+  one of the :func:`execv <python:os.execl>` family functions.
 
 .. versionadded:: 7.10
 
