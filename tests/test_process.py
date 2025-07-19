@@ -731,7 +731,7 @@ class ProcessTest(CoverageTest):
             print('Done and goodbye')
             """)
         covered_lines = 4
-        self.run_command(f"coverage run --save-signal USR1 {test_file}")
+        self.run_command(f"coverage run --save-signal USR1 {test_file}", status=-signal.SIGKILL)
         self.assert_exists(".coverage")
         data = coverage.CoverageData()
         data.read()
