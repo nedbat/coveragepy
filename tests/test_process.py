@@ -11,9 +11,11 @@ import os
 import os.path
 import platform
 import re
+import signal
 import stat
 import sys
 import textwrap
+import time
 
 from pathlib import Path
 from typing import Any
@@ -27,7 +29,7 @@ from coverage.files import abs_file, python_reported_file
 
 from tests import testenv
 from tests.coveragetest import CoverageTest, TESTS_DIR
-from tests.helpers import re_line, re_lines, re_lines_text
+from tests.helpers import re_line, re_lines, re_lines_text, subprocess_popen
 
 
 class ProcessTest(CoverageTest):
@@ -457,6 +459,33 @@ class ProcessTest(CoverageTest):
             assert seen == total_lines
         else:
             assert seen < total_lines
+
+    @pytest.mark.skipif(env.WINDOWS, reason="Windows can't do --save-signal")
+    @pytest.mark.parametrize("send", [False, True])
+    def test_save_signal(self, send: bool) -> None:
+        # PyPy on Ubuntu seems to need more time for things to happen.
+        base_time = 0.75 if (env.PYPY and env.LINUX) else 0.0
+        self.make_file("loop.py", """\
+            import time
+            print("Starting", flush=True)
+            while True:
+                time.sleep(.02)
+            """)
+        proc = subprocess_popen("coverage run --save-signal=USR1 loop.py", shell=False)
+        time.sleep(base_time + .25)
+        if send:
+            proc.send_signal(signal.SIGUSR1)
+            time.sleep(base_time + .25)
+        proc.kill()
+        proc.wait(timeout=base_time + .25)
+        stdout, _ = proc.communicate()
+        assert b"Starting" in stdout
+        if send:
+            self.assert_exists(".coverage")
+            assert b"Saving coverage data" in stdout
+        else:
+            self.assert_doesnt_exist(".coverage")
+            assert b"Saving coverage data" not in stdout
 
     def test_warnings_during_reporting(self) -> None:
         # While fixing issue #224, the warnings were being printed far too

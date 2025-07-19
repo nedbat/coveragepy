@@ -20,6 +20,7 @@ import pytest
 
 import coverage
 import coverage.cmdline
+from coverage import env
 from coverage.control import DEFAULT_DATAFILE
 from coverage.config import CoverageConfig
 from coverage.exceptions import _ExceptionDuringRun
@@ -941,6 +942,19 @@ class CmdLineTest(BaseCmdLineTest):
 
     def test_bad_command(self) -> None:
         self.cmd_help("xyzzy", "Unknown command: 'xyzzy'")
+
+    def test_save_signal_wrong(self) -> None:
+        self.cmd_help(
+            "run --save-signal=XYZ nothing.py",
+            "option --save-signal: invalid choice: 'XYZ' (choose from 'USR1', 'USR2')",
+        )
+
+    @pytest.mark.skipif(not env.WINDOWS, reason="this is a windows-only error")
+    def test_save_signal_windows(self) -> None:
+        self.cmd_help(
+            "run --save-signal=USR1 nothing.py",
+            "--save-signal is not supported on Windows.",
+        )
 
 
 class CmdLineWithFilesTest(BaseCmdLineTest):
