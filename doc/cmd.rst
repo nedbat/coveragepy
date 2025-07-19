@@ -221,7 +221,7 @@ and may change in the future.
 These options can also be set in the :ref:`config_run` section of your
 .coveragerc file.
 
-In case if you are specifying ``--dump_signal``, please make sure that
+In case if you are specifying ``--save-signal``, please make sure that
 your target script doesn't intercept this signal. Otherwise the coverage
 reports will not be generated.
 
