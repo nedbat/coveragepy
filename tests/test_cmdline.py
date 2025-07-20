@@ -944,9 +944,20 @@ class CmdLineTest(BaseCmdLineTest):
         self.cmd_help("xyzzy", "Unknown command: 'xyzzy'")
 
     def test_save_signal_wrong(self) -> None:
+        # Error message format differs between Python versions
+        if sys.version_info >= (3, 12):
+            expected_msg = (
+                "argument --save-signal: invalid choice: 'XYZ' "
+                "(choose from USR1, USR2)"
+            )
+        else:
+            expected_msg = (
+                "argument --save-signal: invalid choice: 'XYZ' "
+                "(choose from 'USR1', 'USR2')"
+            )
         self.cmd_help(
             "run --save-signal=XYZ nothing.py",
-            "option --save-signal: invalid choice: 'XYZ' (choose from 'USR1', 'USR2')",
+            expected_msg,
         )
 
     @pytest.mark.skipif(not env.WINDOWS, reason="this is a windows-only error")

@@ -6,7 +6,7 @@
 from __future__ import annotations
 
 import glob
-import optparse
+import argparse
 import os
 import os.path
 import shlex
@@ -40,206 +40,206 @@ class Opts:
     # Keep these entries alphabetized (roughly) by the option name as it
     # appears on the command line.
 
-    append = optparse.make_option(
-        "-a", "--append", action="store_true",
+    append = dict(
+        flags=["-a", "--append"], action="store_true",
         help="Append coverage data to .coverage, otherwise it starts clean each time.",
     )
-    branch = optparse.make_option(
-        "", "--branch", action="store_true",
+    branch = dict(
+        flags=["--branch"], action="store_true",
         help="Measure branch coverage in addition to statement coverage.",
     )
-    concurrency = optparse.make_option(
-        "", "--concurrency", action="store", metavar="LIBS",
+    concurrency = dict(
+        flags=["--concurrency"], action="store", metavar="LIBS",
         help=(
             "Properly measure code using a concurrency library. " +
             "Valid values are: {}, or a comma-list of them."
         ).format(", ".join(sorted(CoverageConfig.CONCURRENCY_CHOICES))),
     )
-    context = optparse.make_option(
-        "", "--context", action="store", metavar="LABEL",
+    context = dict(
+        flags=["--context"], action="store", metavar="LABEL",
         help="The context label to record for this coverage run.",
     )
-    contexts = optparse.make_option(
-        "", "--contexts", action="store", metavar="REGEX1,REGEX2,...",
+    contexts = dict(
+        flags=["--contexts"], action="store", metavar="REGEX1,REGEX2,...",
         help=(
             "Only display data from lines covered in the given contexts. " +
             "Accepts Python regexes, which must be quoted."
         ),
     )
-    datafile = optparse.make_option(
-        "", "--data-file", action="store", metavar="DATAFILE",
+    datafile = dict(
+        flags=["--data-file"], action="store", metavar="DATAFILE",
         help=(
             "Base name of the data files to operate on. " +
             "Defaults to '.coverage'. [env: COVERAGE_FILE]"
         ),
     )
-    datafle_input = optparse.make_option(
-        "", "--data-file", action="store", metavar="INFILE",
+    datafle_input = dict(
+        flags=["--data-file"], action="store", metavar="INFILE",
         help=(
             "Read coverage data for report generation from this file. " +
             "Defaults to '.coverage'. [env: COVERAGE_FILE]"
         ),
     )
-    datafile_output = optparse.make_option(
-        "", "--data-file", action="store", metavar="OUTFILE",
+    datafile_output = dict(
+        flags=["--data-file"], action="store", metavar="OUTFILE",
         help=(
             "Write the recorded coverage data to this file. " +
             "Defaults to '.coverage'. [env: COVERAGE_FILE]"
         ),
     )
-    debug = optparse.make_option(
-        "", "--debug", action="store", metavar="OPTS",
+    debug = dict(
+        flags=["--debug"], action="store", metavar="OPTS",
         help="Debug options, separated by commas. [env: COVERAGE_DEBUG]",
     )
-    directory = optparse.make_option(
-        "-d", "--directory", action="store", metavar="DIR",
+    directory = dict(
+        flags=["-d", "--directory"], action="store", metavar="DIR",
         help="Write the output files to DIR.",
     )
-    fail_under = optparse.make_option(
-        "", "--fail-under", action="store", metavar="MIN", type="float",
+    fail_under = dict(
+        flags=["--fail-under"], action="store", metavar="MIN", type=float,
         help="Exit with a status of 2 if the total coverage is less than MIN.",
     )
-    format = optparse.make_option(
-        "", "--format", action="store", metavar="FORMAT",
+    format = dict(
+        flags=["--format"], action="store", metavar="FORMAT",
         help="Output format, either text (default), markdown, or total.",
     )
-    help = optparse.make_option(
-        "-h", "--help", action="store_true",
+    help = dict(
+        flags=["-h", "--help"], action="store_true",
         help="Get help on this command.",
     )
-    ignore_errors = optparse.make_option(
-        "-i", "--ignore-errors", action="store_true",
+    ignore_errors = dict(
+        flags=["-i", "--ignore-errors"], action="store_true",
         help="Ignore errors while reading source files.",
     )
-    include = optparse.make_option(
-        "", "--include", action="store", metavar="PAT1,PAT2,...",
+    include = dict(
+        flags=["--include"], action="store", metavar="PAT1,PAT2,...",
         help=(
             "Include only files whose paths match one of these patterns. " +
             "Accepts shell-style wildcards, which must be quoted."
         ),
     )
-    keep = optparse.make_option(
-        "", "--keep", action="store_true",
+    keep = dict(
+        flags=["--keep"], action="store_true",
         help="Keep original coverage files, otherwise they are deleted.",
     )
-    pylib = optparse.make_option(
-        "-L", "--pylib", action="store_true",
+    pylib = dict(
+        flags=["-L", "--pylib"], action="store_true",
         help=(
             "Measure coverage even inside the Python installed library, " +
             "which isn't done by default."
         ),
     )
-    show_missing = optparse.make_option(
-        "-m", "--show-missing", action="store_true",
+    show_missing = dict(
+        flags=["-m", "--show-missing"], action="store_true",
         help="Show line numbers of statements in each module that weren't executed.",
     )
-    module = optparse.make_option(
-        "-m", "--module", action="store_true",
+    module = dict(
+        flags=["-m", "--module"], action="store_true",
         help=(
             "<pyfile> is an importable Python module, not a script path, " +
             "to be run as 'python -m' would run it."
         ),
     )
-    omit = optparse.make_option(
-        "", "--omit", action="store", metavar="PAT1,PAT2,...",
+    omit = dict(
+        flags=["--omit"], action="store", metavar="PAT1,PAT2,...",
         help=(
             "Omit files whose paths match one of these patterns. " +
             "Accepts shell-style wildcards, which must be quoted."
         ),
     )
-    output_xml = optparse.make_option(
-        "-o", "", action="store", dest="outfile", metavar="OUTFILE",
+    output_xml = dict(
+        flags=["-o"], action="store", dest="outfile", metavar="OUTFILE",
         help="Write the XML report to this file. Defaults to 'coverage.xml'",
     )
-    output_json = optparse.make_option(
-        "-o", "", action="store", dest="outfile", metavar="OUTFILE",
+    output_json = dict(
+        flags=["-o"], action="store", dest="outfile", metavar="OUTFILE",
         help="Write the JSON report to this file. Defaults to 'coverage.json'",
     )
-    output_lcov = optparse.make_option(
-        "-o", "", action="store", dest="outfile", metavar="OUTFILE",
+    output_lcov = dict(
+        flags=["-o"], action="store", dest="outfile", metavar="OUTFILE",
         help="Write the LCOV report to this file. Defaults to 'coverage.lcov'",
     )
-    json_pretty_print = optparse.make_option(
-        "", "--pretty-print", action="store_true",
+    json_pretty_print = dict(
+        flags=["--pretty-print"], action="store_true",
         help="Format the JSON for human readers.",
     )
-    parallel_mode = optparse.make_option(
-        "-p", "--parallel-mode", action="store_true",
+    parallel_mode = dict(
+        flags=["-p", "--parallel-mode"], action="store_true",
         help=(
             "Append the machine name, process id and random number to the " +
             "data file name to simplify collecting data from " +
             "many processes."
         ),
     )
-    precision = optparse.make_option(
-        "", "--precision", action="store", metavar="N", type=int,
+    precision = dict(
+        flags=["--precision"], action="store", metavar="N", type=int,
         help=(
             "Number of digits after the decimal point to display for " +
             "reported coverage percentages."
         ),
     )
-    quiet = optparse.make_option(
-        "-q", "--quiet", action="store_true",
+    quiet = dict(
+        flags=["-q", "--quiet"], action="store_true",
         help="Don't print messages about what is happening.",
     )
-    rcfile = optparse.make_option(
-        "", "--rcfile", action="store",
+    rcfile = dict(
+        flags=["--rcfile"], action="store",
         help=(
             "Specify configuration file. " +
             "By default '.coveragerc', 'setup.cfg', 'tox.ini', and " +
             "'pyproject.toml' are tried. [env: COVERAGE_RCFILE]"
         ),
     )
-    save_signal = optparse.make_option(
-        '', '--save-signal', action='store', metavar='SIGNAL',
+    save_signal = dict(
+        flags=['--save-signal'], action='store', metavar='SIGNAL',
         choices = ['USR1', 'USR2'],
         help=(
             "Specify a signal that will trigger coverage to write its collected data. " +
             "Supported values are: USR1, USR2. Not available on Windows."
         ),
     )
-    show_contexts = optparse.make_option(
-        "--show-contexts", action="store_true",
+    show_contexts = dict(
+        flags=["--show-contexts"], action="store_true",
         help="Show contexts for covered lines.",
     )
-    skip_covered = optparse.make_option(
-        "--skip-covered", action="store_true",
-        help="Skip files with 100% coverage.",
+    skip_covered = dict(
+        flags=["--skip-covered"], action="store_true",
+        help="Skip files with 100%% coverage.",
     )
-    no_skip_covered = optparse.make_option(
-        "--no-skip-covered", action="store_false", dest="skip_covered",
+    no_skip_covered = dict(
+        flags=["--no-skip-covered"], action="store_false", dest="skip_covered",
         help="Disable --skip-covered.",
     )
-    skip_empty = optparse.make_option(
-        "--skip-empty", action="store_true",
+    skip_empty = dict(
+        flags=["--skip-empty"], action="store_true",
         help="Skip files with no code.",
     )
-    sort = optparse.make_option(
-        "--sort", action="store", metavar="COLUMN",
+    sort = dict(
+        flags=["--sort"], action="store", metavar="COLUMN",
         help=(
             "Sort the report by the named column: name, stmts, miss, branch, brpart, or cover. " +
              "Default is name."
         ),
     )
-    source = optparse.make_option(
-        "", "--source", action="store", metavar="SRC1,SRC2,...",
+    source = dict(
+        flags=["--source"], action="store", metavar="SRC1,SRC2,...",
         help="A list of directories or importable names of code to measure.",
     )
-    timid = optparse.make_option(
-        "", "--timid", action="store_true",
+    timid = dict(
+        flags=["--timid"], action="store_true",
         help="Use the slower Python trace function core.",
     )
-    title = optparse.make_option(
-        "", "--title", action="store", metavar="TITLE",
+    title = dict(
+        flags=["--title"], action="store", metavar="TITLE",
         help="A text string to use as the title on the HTML.",
     )
-    version = optparse.make_option(
-        "", "--version", action="store_true",
+    version = dict(
+        flags=["--version"], action="store_true",
         help="Display version information and exit.",
     )
 
-class CoverageOptionParser(optparse.OptionParser):
-    """Base OptionParser for coverage.py.
+class CoverageArgumentParser(argparse.ArgumentParser):
+    """Base ArgumentParser for coverage.py.
 
     Problems don't exit the program.
     Defaults are initialized for all options.
@@ -247,7 +247,7 @@ class CoverageOptionParser(optparse.OptionParser):
     """
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
-        kwargs["add_help_option"] = False
+        kwargs["add_help"] = False
         super().__init__(*args, **kwargs)
         self.set_defaults(
             # Keep these arguments alphabetized by their names.
@@ -270,6 +270,7 @@ class CoverageOptionParser(optparse.OptionParser):
             omit=None,
             parallel_mode=None,
             precision=None,
+            pretty_print=None,
             pylib=None,
             quiet=None,
             rcfile=True,
@@ -285,83 +286,123 @@ class CoverageOptionParser(optparse.OptionParser):
             version=None,
         )
 
-        self.disable_interspersed_args()
-
-    class OptionParserError(Exception):
-        """Used to stop the optparse error handler ending the process."""
+    class ArgumentParserError(Exception):
+        """Used to stop the argparse error handler ending the process."""
         pass
 
-    def parse_args_ok(self, args: list[str]) -> tuple[bool, optparse.Values | None, list[str]]:
-        """Call optparse.parse_args, but return a triple:
+    def parse_args_ok(self, args: list[str]) -> tuple[bool, argparse.Namespace | None, list[str]]:
+        """Call argparse.parse_args, but return a triple:
 
         (ok, options, args)
 
         """
         try:
-            options, args = super().parse_args(args)
-        except self.OptionParserError:
+            options = self.parse_args(args)
+
+            # Extract remaining arguments based on command type
+            if hasattr(self, 'cmd'):
+                if self.cmd == 'run':
+                    remaining_args = getattr(options, 'prog_args', [])
+                elif self.cmd == 'debug':
+                    remaining_args = getattr(options, 'topics', [])
+                elif self.cmd == 'help':
+                    remaining_args = getattr(options, 'commands', [])
+                elif self.cmd in ["annotate", "html", "json", "lcov", "report", "xml"]:
+                    remaining_args = getattr(options, 'modules', [])
+                elif self.cmd == 'combine':
+                    remaining_args = getattr(options, 'paths', [])
+                else:
+                    remaining_args = []
+            else:
+                remaining_args = []
+        except (self.ArgumentParserError, SystemExit):
             return False, None, []
-        return True, options, args
+        return True, options, remaining_args
 
-    def error(self, msg: str) -> NoReturn:
-        """Override optparse.error so sys.exit doesn't get called."""
-        show_help(msg)
-        raise self.OptionParserError
+    def error(self, message: str) -> NoReturn:
+        """Override argparse.error so sys.exit doesn't get called."""
+        show_help(message)
+        raise self.ArgumentParserError
+
+    def _add_arguments(self, options: list[dict[str, Any]]) -> None:
+        """Add arguments from option dictionaries."""
+        for opt in options:
+            opt_copy = opt.copy()
+            flags = opt_copy.pop('flags')
+            self.add_argument(*flags, **opt_copy)
 
 
-class GlobalOptionParser(CoverageOptionParser):
+class GlobalArgumentParser(CoverageArgumentParser):
     """Command-line parser for coverage.py global option arguments."""
 
     def __init__(self) -> None:
         super().__init__()
 
-        self.add_options([
+        self._add_arguments([
             Opts.help,
             Opts.version,
         ])
 
 
-class CmdOptionParser(CoverageOptionParser):
+
+class CmdArgumentParser(CoverageArgumentParser):
     """Parse one of the new-style commands for coverage.py."""
 
     def __init__(
         self,
         action: str,
-        options: list[optparse.Option],
+        options: list[dict[str, Any]],
         description: str,
         usage: str | None = None,
     ):
-        """Create an OptionParser for a coverage.py command.
+        """Create an ArgumentParser for a coverage.py command.
 
         `action` is the slug to put into `options.action`.
-        `options` is a list of Option's for the command.
+        `options` is a list of option dictionaries for the command.
         `description` is the description of the command, for the help text.
         `usage` is the usage string to display in help.
 
         """
+        # Set custom usage format for argparse
         if usage:
-            usage = "%prog " + usage
-        super().__init__(
-            usage=usage,
-            description=description,
-        )
+            usage_str = f"coverage {action} {usage}"
+        else:
+            usage_str = f"coverage {action} [options]"
+        super().__init__(description=description, prog=f"coverage {action}", usage=usage_str)
+        self.custom_usage = usage
         self.set_defaults(action=action)
-        self.add_options(options)
+        self._add_arguments(options)
         self.cmd = action
+
+        # Add positional arguments for specific commands
+        if action == "run":
+            self.add_argument(
+                'prog_args', nargs=argparse.REMAINDER,
+                help='Python file and its arguments'
+            )
+        elif action == "debug":
+            self.add_argument('topics', nargs='*', help='Debug topics')
+        elif action == "help":
+            self.add_argument('commands', nargs='*', help='Commands to get help for')
+        elif action in ["annotate", "html", "json", "lcov", "report", "xml"]:
+            self.add_argument('modules', nargs='*', help='Modules to report on')
+        elif action == "combine":
+            self.add_argument('paths', nargs='*', help='Data files or directories to combine')
 
     def __eq__(self, other: str) -> bool:       # type: ignore[override]
         # A convenience equality, so that I can put strings in unit test
         # results, and they will compare equal to objects.
+        # Keep the original name for backward compatibility with tests
         return (other == f"<CmdOptionParser:{self.cmd}>")
 
     __hash__ = None         # type: ignore[assignment]
 
-    def get_prog_name(self) -> str:
-        """Override of an undocumented function in optparse.OptionParser."""
-        program_name = super().get_prog_name()
-
-        # Include the sub-command for this parser as part of the command.
-        return f"{program_name} {self.cmd}"
+    def format_usage(self) -> str:
+        """Format usage string more concisely like optparse."""
+        if self.custom_usage:
+            return f"usage: coverage {self.cmd} {self.custom_usage}\n"
+        else:
+            return f"usage: coverage {self.cmd} [options]\n"
 
 # In lists of Opts, keep them alphabetized by the option names as they appear
 # on the command line, since these lists determine the order of the options in
@@ -369,22 +410,22 @@ class CmdOptionParser(CoverageOptionParser):
 #
 # In COMMANDS, keep the keys (command names) alphabetized.
 
-GLOBAL_ARGS = [
+GLOBAL_ARGS: list[dict[str, Any]] = [
     Opts.debug,
     Opts.help,
     Opts.rcfile,
 ]
 
 COMMANDS = {
-    "annotate": CmdOptionParser(
+    "annotate": CmdArgumentParser(
         "annotate",
-        [
+        cast(list[dict[str, Any]], [
             Opts.directory,
             Opts.datafle_input,
             Opts.ignore_errors,
             Opts.include,
             Opts.omit,
-            ] + GLOBAL_ARGS,
+        ] + GLOBAL_ARGS),
         usage="[options] [modules]",
         description=(
             "Make annotated copies of the given files, marking statements that are executed " +
@@ -392,7 +433,7 @@ COMMANDS = {
         ),
     ),
 
-    "combine": CmdOptionParser(
+    "combine": CmdArgumentParser(
         "combine",
         [
             Opts.append,
@@ -411,7 +452,7 @@ COMMANDS = {
         ),
     ),
 
-    "debug": CmdOptionParser(
+    "debug": CmdArgumentParser(
         "debug", GLOBAL_ARGS,
         usage="<topic>",
         description=(
@@ -426,7 +467,7 @@ COMMANDS = {
         ),
     ),
 
-    "erase": CmdOptionParser(
+    "erase": CmdArgumentParser(
         "erase",
         [
             Opts.datafile,
@@ -434,15 +475,15 @@ COMMANDS = {
         description="Erase previously collected coverage data.",
     ),
 
-    "help": CmdOptionParser(
+    "help": CmdArgumentParser(
         "help", GLOBAL_ARGS,
         usage="[command]",
         description="Describe how to use coverage.py",
     ),
 
-    "html": CmdOptionParser(
+    "html": CmdArgumentParser(
         "html",
-        [
+        cast(list[dict[str, Any]], [
             Opts.contexts,
             Opts.directory,
             Opts.datafle_input,
@@ -457,7 +498,7 @@ COMMANDS = {
             Opts.no_skip_covered,
             Opts.skip_empty,
             Opts.title,
-            ] + GLOBAL_ARGS,
+        ] + GLOBAL_ARGS),
         usage="[options] [modules]",
         description=(
             "Create an HTML report of the coverage of the files.  " +
@@ -466,9 +507,9 @@ COMMANDS = {
         ),
     ),
 
-    "json": CmdOptionParser(
+    "json": CmdArgumentParser(
         "json",
-        [
+        cast(list[dict[str, Any]], [
             Opts.contexts,
             Opts.datafle_input,
             Opts.fail_under,
@@ -479,14 +520,14 @@ COMMANDS = {
             Opts.json_pretty_print,
             Opts.quiet,
             Opts.show_contexts,
-            ] + GLOBAL_ARGS,
+        ] + GLOBAL_ARGS),
         usage="[options] [modules]",
         description="Generate a JSON report of coverage results.",
     ),
 
-    "lcov": CmdOptionParser(
+    "lcov": CmdArgumentParser(
         "lcov",
-        [
+        cast(list[dict[str, Any]], [
             Opts.datafle_input,
             Opts.fail_under,
             Opts.ignore_errors,
@@ -494,14 +535,14 @@ COMMANDS = {
             Opts.output_lcov,
             Opts.omit,
             Opts.quiet,
-            ] + GLOBAL_ARGS,
+        ] + GLOBAL_ARGS),
         usage="[options] [modules]",
         description="Generate an LCOV report of coverage results.",
     ),
 
-    "report": CmdOptionParser(
+    "report": CmdArgumentParser(
         "report",
-        [
+        cast(list[dict[str, Any]], [
             Opts.contexts,
             Opts.datafle_input,
             Opts.fail_under,
@@ -515,12 +556,12 @@ COMMANDS = {
             Opts.skip_covered,
             Opts.no_skip_covered,
             Opts.skip_empty,
-            ] + GLOBAL_ARGS,
+        ] + GLOBAL_ARGS),
         usage="[options] [modules]",
         description="Report coverage statistics on modules.",
     ),
 
-    "run": CmdOptionParser(
+    "run": CmdArgumentParser(
         "run",
         [
             Opts.append,
@@ -541,9 +582,9 @@ COMMANDS = {
         description="Run a Python program, measuring code execution.",
     ),
 
-    "xml": CmdOptionParser(
+    "xml": CmdArgumentParser(
         "xml",
-        [
+        cast(list[dict[str, Any]], [
             Opts.datafle_input,
             Opts.fail_under,
             Opts.ignore_errors,
@@ -552,7 +593,7 @@ COMMANDS = {
             Opts.output_xml,
             Opts.quiet,
             Opts.skip_empty,
-            ] + GLOBAL_ARGS,
+        ] + GLOBAL_ARGS),
         usage="[options] [modules]",
         description="Generate an XML report of coverage results.",
     ),
@@ -562,7 +603,7 @@ COMMANDS = {
 def show_help(
     error: str | None = None,
     topic: str | None = None,
-    parser: optparse.OptionParser | None = None,
+    parser: argparse.ArgumentParser | None = None,
 ) -> None:
     """Display an error message, or the named topic."""
     assert error or topic or parser
@@ -631,10 +672,10 @@ class CoverageScript:
 
         # The command syntax we parse depends on the first argument.  Global
         # switch syntax always starts with an option.
-        parser: optparse.OptionParser | None
+        parser: argparse.ArgumentParser | None
         self.global_option = argv[0].startswith("-")
         if self.global_option:
-            parser = GlobalOptionParser()
+            parser = GlobalArgumentParser()
         else:
             parser = COMMANDS.get(argv[0])
             if not parser:
@@ -666,8 +707,8 @@ class CoverageScript:
         # Do something.
         self.coverage = Coverage(
             data_file=options.data_file or DEFAULT_DATAFILE,
-            data_suffix=options.parallel_mode,
             cover_pylib=options.pylib,
+            data_suffix=options.parallel_mode,
             timid=options.timid,
             branch=options.branch,
             config_file=options.rcfile,
@@ -782,9 +823,9 @@ class CoverageScript:
 
     def do_help(
         self,
-        options: optparse.Values,
+        options: argparse.Namespace,
         args: list[str],
-        parser: optparse.OptionParser,
+        parser: argparse.ArgumentParser,
     ) -> bool:
         """Deal with help requests.
 
@@ -823,7 +864,7 @@ class CoverageScript:
         print("Saving coverage data...", flush=True)
         self.coverage.save()
 
-    def do_run(self, options: optparse.Values, args: list[str]) -> int:
+    def do_run(self, options: argparse.Namespace, args: list[str]) -> int:
         """Implementation of 'coverage run'."""
 
         if not args:
