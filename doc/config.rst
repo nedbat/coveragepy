@@ -450,7 +450,10 @@ Available patches:
 - ``subprocess``: Python sub-processes normally won't get coverage measurement.
   This patch configures Python to start coverage automatically, and will apply
   to processes created with :mod:`subprocess`, :func:`os.system`, or one of the
-  :func:`execv <python:os.execl>` family of functions.
+  :func:`execv <python:os.execl>` or :func:`spawnv <python:os.spawnl>` family
+  of functions.  If an ``exec*e`` or ``spawn*e`` function is used, the new
+  environment must copy over the ``COVERAGE_PROCESS_START`` environment
+  variable.
 
   The ``subprocess`` patch sets :ref:`parallel = True <config_run_parallel>`
   and will require combining data files before reporting.  See

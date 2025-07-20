@@ -32,7 +32,7 @@ The simplest way is to use the :ref:`patch = subprocess <config_run_patch>`
 setting in your configuration file.  This will configure everything to collect
 data in Python processes you created.  This should work for processes created
 with :mod:`subprocess`, :func:`os.system`, or one of the :func:`execv
-<python:os.execl>` family of functions.
+<python:os.execl>` or :func:`spawnv <python:os.spawnl>` family of functions.
 
 You will also need the :ref:`parallel option <config_run_parallel>` to collect
 separate data for each process, and the :ref:`coverage combine <cmd_combine>`
@@ -61,6 +61,17 @@ before terminating::
         # ... use any of the pool methods ...
         pool.close()
         pool.join()
+
+
+execv and spawnv
+................
+
+The :func:`execv <python:os.execl>` and :func:`spawnv <python:os.spawnl>`
+families of functions start new execution, either replacing the current process
+or starting a new subprocess.  The ``exec*e`` and ``spawn*e`` variants take a
+new set of environment variables to use for the new program.  To start coverage
+measurement, the ``COVERAGE_PROCESS_START`` value must be copied from the
+current environment into the new environment.
 
 
 Ending processes

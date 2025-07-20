@@ -34,8 +34,8 @@ Unreleased
 
   - ``patch = subprocess`` measures coverage in Python subprocesses created
     with :mod:`subprocess`, :func:`os.system`, or one of the :func:`execv
-    <python:os.execl>` family of functions. Closes old `issue 367`_ and
-    duplicate `issue 378`_.
+    <python:os.execl>` or :func:`spawnv <python:os.spawnl>` family of
+    functions. Closes old `issue 367`_ and duplicate `issue 378`_.
 
 - The HTML report now dimly colors subsequent lines in multi-line statements.
   They used to have no color.  This gives a better indication of the amount of
