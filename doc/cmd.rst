@@ -110,7 +110,7 @@ There are many options:
     Run a Python program, measuring code execution.
 
     Options:
-      -a, --append          Append coverage data to .coverage, otherwise it starts
+      -a, --append          Append data to the data file. Otherwise it starts
                             clean each time.
       --branch              Measure branch coverage in addition to statement
                             coverage.
@@ -130,9 +130,8 @@ There are many options:
                             Accepts shell-style wildcards, which must be quoted.
       -L, --pylib           Measure coverage even inside the Python installed
                             library, which isn't done by default.
-      -p, --parallel-mode   Append the machine name, process id and random number
-                            to the data file name to simplify collecting data from
-                            many processes.
+      -p, --parallel-mode   Append a unique suffix to the data file name to
+                            collect separate data from multiple processes.
       --save-signal=SIGNAL  Specify a signal that will trigger coverage to write
                             its collected data. Supported values are: USR1, USR2.
                             Not available on Windows.
@@ -146,18 +145,21 @@ There are many options:
       --rcfile=RCFILE       Specify configuration file. By default '.coveragerc',
                             'setup.cfg', 'tox.ini', and 'pyproject.toml' are
                             tried. [env: COVERAGE_RCFILE]
-.. [[[end]]] (sum: 1Ks5r6cadh)
+.. [[[end]]] (sum: YwMI03MDmQ)
+
+Many of these options can also be set in the :ref:`config_run` section of your
+configuration file.  Remember to put options for run after "run", but before
+the program invocation::
+
+    $ coverage run --source=dir1,dir2 my_program.py arg1 arg2
+    $ coverage run --source=dir1,dir2 -m packagename.modulename arg1 arg2
 
 If you want :ref:`branch coverage <branch>` measurement, use the ``--branch``
 flag.  Otherwise only statement coverage is measured.
 
 You can specify the code to measure with the ``--source``, ``--include``, and
 ``--omit`` switches.  See :ref:`Specifying source files <source_execution>` for
-details of their interpretation.  Remember to put options for run after "run",
-but before the program invocation::
-
-    $ coverage run --source=dir1,dir2 my_program.py arg1 arg2
-    $ coverage run --source=dir1,dir2 -m packagename.modulename arg1 arg2
+details of their interpretation.
 
 .. note::
 
@@ -165,7 +167,6 @@ but before the program invocation::
     subsequent reporting commands like ``coverage xml``.  Use the :ref:`source
     <config_run_source>` setting in the configuration file to apply the setting
     uniformly to all commands.
-
 
 Coverage.py can measure multi-threaded programs by default. If you are using
 more other concurrency support, with the `multiprocessing`_, `greenlet`_,
@@ -205,22 +206,16 @@ If your coverage results seem to be overlooking code that you know has been
 executed, try running coverage.py again with the ``--timid`` flag.  This uses a
 simpler but slower trace method, and might be needed in rare cases.
 
-In Python 3.12 and above, you can try an experimental core based on the new
-:mod:`sys.monitoring <python:sys.monitoring>` module by defining a
-``COVERAGE_CORE=sysmon`` environment variable or by setting ``core = sysmon``
-in the configuration file.  This should be faster, though plugins and
-dynamic contexts are not yet supported with it.
+If you are specifying ``--save-signal``, please make sure that your program
+doesn't intercept this signal. If it does, coverage won't receive the signal
+and the data file will not be written.
+
+.. versionadded:: 7.10 ``--save-signal``
 
 Coverage.py sets an environment variable, ``COVERAGE_RUN`` to indicate that
 your code is running under coverage measurement.  The value is not relevant,
 and may change in the future.
 
-These options can also be set in the :ref:`config_run` section of your
-.coveragerc file.
-
-If you are specifying ``--save-signal``, please make sure that your program
-doesn't intercept this signal. If it does, coverage won't receive the signal
-and the data file will not be written.
 
 .. _cmd_warnings:
 
@@ -426,7 +421,7 @@ want to keep those files, use the ``--keep`` command-line option.
     data files in the default data file's directory are combined.
 
     Options:
-      -a, --append          Append coverage data to .coverage, otherwise it starts
+      -a, --append          Append data to the data file. Otherwise it starts
                             clean each time.
       --data-file=DATAFILE  Base name of the data files to operate on. Defaults to
                             '.coverage'. [env: COVERAGE_FILE]
@@ -439,7 +434,7 @@ want to keep those files, use the ``--keep`` command-line option.
       --rcfile=RCFILE       Specify configuration file. By default '.coveragerc',
                             'setup.cfg', 'tox.ini', and 'pyproject.toml' are
                             tried. [env: COVERAGE_RCFILE]
-.. [[[end]]] (sum: C92D9kfudj)
+.. [[[end]]] (sum: ARyg8KB1fE)
 
 
 .. _cmd_combine_remapping:

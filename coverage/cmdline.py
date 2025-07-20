@@ -42,7 +42,7 @@ class Opts:
 
     append = optparse.make_option(
         "-a", "--append", action="store_true",
-        help="Append coverage data to .coverage, otherwise it starts clean each time.",
+        help="Append data to the data file. Otherwise it starts clean each time.",
     )
     branch = optparse.make_option(
         "", "--branch", action="store_true",
@@ -166,9 +166,8 @@ class Opts:
     parallel_mode = optparse.make_option(
         "-p", "--parallel-mode", action="store_true",
         help=(
-            "Append the machine name, process id and random number to the " +
-            "data file name to simplify collecting data from " +
-            "many processes."
+            "Append a unique suffix to the data file name to collect separate " +
+            "data from multiple processes."
         ),
     )
     precision = optparse.make_option(
