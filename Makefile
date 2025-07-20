@@ -64,10 +64,13 @@ install:				## Install the developer tools
 
 ##@ Tests and quality checks
 
-.PHONY: lint
+.PHONY: lint precommit
 
 lint:					## Run linters and checkers.
 	tox -q -e lint
+
+precommit:				## Run the pre-commit checks.
+	PYTHONWARNDEFAULTENCODING= pre-commit run --all-files
 
 
 ##@ Metacov: coverage measurement of coverage.py itself
