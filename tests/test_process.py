@@ -443,8 +443,10 @@ class ProcessTest(CoverageTest):
                 with open(complete_file, mode="w", encoding="ascii") as f:
                     f.write("Complete")
                 os._exit(0)
+                # if this exists, then we broke os._exit completely
+                open("impossible.txt", mode="w")
             """)
-        total_lines = 17
+        total_lines = 17    # don't count the last impossible.txt line
         if patch:
             self.make_file(".coveragerc", "[run]\npatch = _exit\n")
         self.run_command("coverage run -p forky.py")
@@ -456,6 +458,7 @@ class ProcessTest(CoverageTest):
             assert seen == total_lines
         else:
             assert seen < total_lines
+        self.assert_doesnt_exist("impossible.txt")
 
     def test_warnings_during_reporting(self) -> None:
         # While fixing issue #224, the warnings were being printed far too
