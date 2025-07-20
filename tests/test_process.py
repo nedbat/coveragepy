@@ -1338,6 +1338,20 @@ class ProcessStartupTest(CoverageTest):
             """)
 
     @pytest.mark.xdist_group(name="needs_pth")
+    def test_patch_subprocess(self) -> None:
+        self.make_file(".coveragerc", """\
+            [run]
+            patch = subprocess
+            """)
+        self.run_command("coverage run main.py")
+        self.run_command("coverage combine")
+        self.assert_exists(".coverage")
+        data = coverage.CoverageData(".coverage")
+        data.read()
+        assert line_counts(data)["main.py"] == 3
+        assert line_counts(data)["sub.py"] == 3
+
+    @pytest.mark.xdist_group(name="needs_pth")
     def test_subprocess_with_pth_files(self, _create_pth_file: None) -> None:
         # An existing data file should not be read when a subprocess gets
         # measured automatically.  Create the data file here with bogus data in

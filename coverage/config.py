@@ -534,8 +534,12 @@ class CoverageConfig(TConfigurable, TPluginConfig):
             k: [process_file_value(f) for f in v]
             for k, v in self.paths.items()
         }
+
         self.exclude_list += self.exclude_also
         self.partial_list += self.partial_also
+
+        if "subprocess" in self.patch:
+            self.parallel = True
 
     def debug_info(self) -> list[tuple[str, Any]]:
         """Make a list of (name, value) pairs for writing debug info."""

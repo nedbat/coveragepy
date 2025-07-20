@@ -23,6 +23,20 @@ upgrading your version of coverage.py.
 Unreleased
 ----------
 
+- A new configuration option: ":ref:`config_run_patch`" specifies named patches
+  to work around some limitations in coverage measurement.  These patches are
+  available:
+
+  - ``patch = _exit`` lets coverage save its data even when :func:`os._exit()
+    <python:os._exit>` is used to abruptly end the process.  This closes
+    long-standing `issue 310`_ as well as its duplicates: `issue 312`_, `issue
+    1673`_, `issue 1845`_, and `issue 1941`_.
+
+  - ``patch = subprocess`` measures coverage in Python subprocesses created
+    with :mod:`subprocess`, :func:`os.system`, or one of the :func:`execv
+    <python:os.execl>` family of functions. Closes old `issue 367`_ and
+    duplicate `issue 378`_.
+
 - The HTML report now dimly colors subsequent lines in multi-line statements.
   They used to have no color.  This gives a better indication of the amount of
   code missing in the report.  Closes `issue 1308`_.
@@ -30,13 +44,6 @@ Unreleased
 - Two new exclusion patterns are part of the defaults: ``...`` is automatically
   excluded as a line and ``if TYPE_CHECKING:`` is excluded as a branch.  Closes
   `issue 831`_.
-
-- A new configuration option: ":ref:`config_run_patch`" lets you
-  specify named patches to apply to work around some limitations in coverage
-  measurement.  As of now, there is only one patch: ``_exit`` lets coverage
-  save its data even when :func:`os._exit() <python:os._exit>` is used to
-  abruptly end the process.  This closes long-standing `issue 310`_ as well as
-  its duplicates: `issue 312`_, `issue 1845`_, and `issue 1941`_.
 
 - A new command-line option: ``--save-signal=USR1`` specifies a signal that
   coverage.py will listen for.  When the signal is sent, the coverage data will
@@ -57,8 +64,11 @@ Unreleased
 
 .. _issue 310: https://github.com/nedbat/coveragepy/issues/310
 .. _issue 312: https://github.com/nedbat/coveragepy/issues/312
+.. _issue 367: https://github.com/nedbat/coveragepy/issues/367
+.. _issue 378: https://github.com/nedbat/coveragepy/issues/378
 .. _issue 831: https://github.com/nedbat/coveragepy/issues/831
 .. _issue 1308: https://github.com/nedbat/coveragepy/issues/1308
+.. _issue 1673: https://github.com/nedbat/coveragepy/issues/1673
 .. _issue 1845: https://github.com/nedbat/coveragepy/issues/1845
 .. _issue 1941: https://github.com/nedbat/coveragepy/issues/1941
 .. _pull 1998: https://github.com/nedbat/coveragepy/pull/1998

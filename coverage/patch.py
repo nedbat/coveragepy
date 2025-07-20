@@ -5,11 +5,13 @@
 
 from __future__ import annotations
 
+import atexit
 import os
 
 from typing import NoReturn, TYPE_CHECKING
 
 from coverage.exceptions import ConfigError
+from coverage.files import create_pth_file
 
 if TYPE_CHECKING:
     from coverage import Coverage
@@ -29,5 +31,11 @@ def apply_patches(cov: Coverage, config: CoverageConfig) -> None:
                     pass
                 _old_os_exit(status)
             os._exit = _coverage_os_exit_patch
+        elif patch == "subprocess":
+            pth_file = create_pth_file()
+            assert pth_file is not None
+            atexit.register(pth_file.unlink, missing_ok=True)
+            assert config.config_file is not None
+            os.environ["COVERAGE_PROCESS_START"] = config.config_file
         else:
             raise ConfigError(f"Unknown patch {patch!r}")
