@@ -58,7 +58,7 @@ else
 	INSTALL := python -m pip install -r
 endif
 
-install:				## Install the developer tools
+install:				## Install the developer tools.
 	$(INSTALL) requirements/dev.pip
 
 
@@ -121,7 +121,7 @@ _upgrade: $(DOCBIN)
 	$(PIP_COMPILE) -p $(DOCBIN)/python3 -o doc/requirements.pip doc/requirements.in
 	pre-commit autoupdate
 
-diff_upgrade:				## Summarize the last `make upgrade`
+diff_upgrade:				## Summarize the last `make upgrade`.
 	@# The sort flags sort by the package name first, then by the -/+, and
 	@# sort by version numbers, so we get a summary with lines like this:
 	@#	-bashlex==0.16
@@ -220,7 +220,7 @@ kit_local:
 	# don't go crazy trying to figure out why our new code isn't installing.
 	find ~/Library/Caches/pip/wheels -name 'coverage-*' -delete
 
-build_kits:				## Trigger GitHub to build kits
+build_kits:				## Trigger GitHub to build kits.
 	python ci/trigger_action.py $(REPO_OWNER) build-kits
 
 tag:					#: Make a git tag with the version number (see howto.txt).
