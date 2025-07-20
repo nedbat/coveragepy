@@ -13,7 +13,6 @@ import locale
 import os
 import os.path
 import re
-import shlex
 import shutil
 import subprocess
 import sys
@@ -48,7 +47,7 @@ def _correct_encoding() -> str:
     return encoding
 
 
-def subprocess_popen(cmd: str, shell: bool=True) -> subprocess.Popen[bytes]:
+def subprocess_popen(cmd: str) -> subprocess.Popen[bytes]:
     """Run a command in a subprocess.
 
     Returns the Popen object.
@@ -67,12 +66,9 @@ def subprocess_popen(cmd: str, shell: bool=True) -> subprocess.Popen[bytes]:
     sub_env = dict(os.environ)
     sub_env["PYTHONIOENCODING"] = _correct_encoding()
 
-    if not shell:
-        cmd = shlex.split(cmd)  # type: ignore[assignment]
-
     proc = subprocess.Popen(
         cmd,
-        shell=shell,
+        shell=True,
         env=sub_env,
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,

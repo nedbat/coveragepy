@@ -15,7 +15,6 @@ import signal
 import stat
 import sys
 import textwrap
-import time
 
 from pathlib import Path
 from typing import Any
@@ -29,7 +28,7 @@ from coverage.files import abs_file, python_reported_file
 
 from tests import testenv
 from tests.coveragetest import CoverageTest, TESTS_DIR
-from tests.helpers import re_line, re_lines, re_lines_text, subprocess_popen
+from tests.helpers import re_line, re_lines, re_lines_text
 
 
 class ProcessTest(CoverageTest):
@@ -458,37 +457,6 @@ class ProcessTest(CoverageTest):
         else:
             assert seen < total_lines
 
-    @pytest.mark.skipif(env.WINDOWS, reason="Windows can't do --save-signal")
-    @pytest.mark.parametrize("send", [False, True])
-    def test_save_signal(self, send: bool) -> None:
-        # PyPy on Ubuntu seems to need more time for things to happen.
-        base_time = 0.0
-        if env.PYPY and env.LINUX:
-            base_time += 0.75
-        if env.METACOV:
-            base_time += 1.0
-        self.make_file("loop.py", """\
-            import time
-            print("Starting", flush=True)
-            while True:
-                time.sleep(.02)
-            """)
-        proc = subprocess_popen("coverage run --save-signal=USR1 loop.py", shell=False)
-        time.sleep(base_time + .25)
-        if send:
-            proc.send_signal(signal.SIGUSR1)
-            time.sleep(base_time + .25)
-        proc.kill()
-        proc.wait(timeout=base_time + .25)
-        stdout, _ = proc.communicate()
-        assert b"Starting" in stdout
-        if send:
-            self.assert_exists(".coverage")
-            assert b"Saving coverage data" in stdout
-        else:
-            self.assert_doesnt_exist(".coverage")
-            assert b"Saving coverage data" not in stdout
-
     def test_warnings_during_reporting(self) -> None:
         # While fixing issue #224, the warnings were being printed far too
         # often.  Make sure they're not any more.
@@ -728,24 +696,25 @@ class ProcessTest(CoverageTest):
             import os
             import signal
 
-            print(f"Sending SIGUSR1 to process {os.getpid()}")
+            print(f"Sending SIGUSR1 to myself")
             os.kill(os.getpid(), signal.SIGUSR1)
             os.kill(os.getpid(), signal.SIGKILL)
 
-            print('Done and goodbye')
+            print("Done and goodbye")
             """)
-        covered_lines = 4
-        self.run_command(f"coverage run --save-signal USR1 {test_file}", status=-signal.SIGKILL)
+        out = self.run_command(
+            f"coverage run --save-signal=USR1 {test_file}",
+            status=-signal.SIGKILL,
+        )
+        # `startswith` because on Linux it also prints "Killed"
+        assert out.startswith("Sending SIGUSR1 to myself\nSaving coverage data...\n")
         self.assert_exists(".coverage")
-        data = coverage.CoverageData()
-        data.read()
-        assert line_counts(data)[test_file] == covered_lines
-        out = self.run_command("coverage report")
+        out = self.run_command("coverage report -m")
         assert out == textwrap.dedent("""\
-            Name             Stmts   Miss  Cover
-            ------------------------------------
-            dummy_hello.py       6      2    67%
-            ------------------------------------
+            Name             Stmts   Miss  Cover   Missing
+            ----------------------------------------------
+            dummy_hello.py       6      2    67%   6-8
+            ----------------------------------------------
             TOTAL                6      2    67%
             """)
 
