@@ -25,8 +25,6 @@ from typing import (
 )
 from collections.abc import Iterable, Iterator
 
-import flaky
-
 import coverage
 from coverage import env
 from coverage.debug import DebugControl
@@ -388,15 +386,6 @@ class DebugControlString(DebugControl):
     def get_output(self) -> str:
         """Get the output text from the `DebugControl`."""
         return self.io.getvalue()
-
-
-TestMethod = Callable[[Any], None]
-
-def flaky_method(max_runs: int) -> Callable[[TestMethod], TestMethod]:
-    """flaky.flaky, but with type annotations."""
-    def _decorator(fn: TestMethod) -> TestMethod:
-        return cast(TestMethod, flaky.flaky(max_runs)(fn))
-    return _decorator
 
 
 def all_our_source_files() -> Iterator[tuple[Path, str]]:
