@@ -38,6 +38,7 @@ good place to explore ideas, get help, or help people with coverage.py.
 
 .. _discord: https://discord.com/channels/267624335836053506/1253355750684753950
 
+
 Getting the code
 ----------------
 
