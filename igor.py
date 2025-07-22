@@ -120,7 +120,7 @@ def should_skip(core):
     """
     skipper = ""
 
-    # $set_env.py: COVERAGE_TEST_CORES - List of cores to run
+    # $set_env.py: COVERAGE_TEST_CORES - List of cores to run: ctrace, pytrace, sysmon
     test_cores = os.getenv("COVERAGE_TEST_CORES")
     if test_cores:
         if core not in test_cores:
