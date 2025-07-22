@@ -62,6 +62,9 @@ Unreleased
 - We no longer ship a PyPy-specific wheel. PyPy will install the pure-Python
   wheel.  Closes `issue 2001`_.
 
+- In the very unusual situation of not having a current frame, coverage no
+  longer crashes when using the sysmon core, fixing `issue 2005`_.
+
 .. _issue 310: https://github.com/nedbat/coveragepy/issues/310
 .. _issue 312: https://github.com/nedbat/coveragepy/issues/312
 .. _issue 367: https://github.com/nedbat/coveragepy/issues/367
@@ -73,7 +76,7 @@ Unreleased
 .. _issue 1941: https://github.com/nedbat/coveragepy/issues/1941
 .. _pull 1998: https://github.com/nedbat/coveragepy/pull/1998
 .. _issue 2001: https://github.com/nedbat/coveragepy/issues/2001
-
+.. _issue 2005: https://github.com/nedbat/coveragepy/issues/2005
 
 .. start-releases
 
