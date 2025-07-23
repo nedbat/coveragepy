@@ -113,9 +113,6 @@ ignored-argument-names = "_|unused|.*_unused"
 [tool.pytest.ini_options]
 addopts = "-q -n auto --dist=loadgroup -p no:legacypath --strict-markers --no-flaky-report -rfEX --failed-first"
 python_classes = "*Test"
-markers = [
-    "expensive: too slow to run during \"make smoke\"",
-]
 
 ### pytest.mark.xdist_group() values, and why:
 # "virtualenv_test": because of an expensive session-scoped fixture
