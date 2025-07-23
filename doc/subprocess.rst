@@ -4,9 +4,9 @@
 .. _subprocess:
 .. _processes:
 
-======================
-Coordinating processes
-======================
+==================
+Managing processes
+==================
 
 For coverage measurement to work properly, coverage has to be involved at the
 very beginning and very end of the Python process.  There a number of ways to
@@ -71,7 +71,8 @@ families of functions start new execution, either replacing the current process
 or starting a new subprocess.  The ``exec*e`` and ``spawn*e`` variants take a
 new set of environment variables to use for the new program.  To start coverage
 measurement, the ``COVERAGE_PROCESS_START`` value must be copied from the
-current environment into the new environment.
+current environment into the new environment or set. It should be the absolute
+path to the coverage configuration file to use.
 
 
 Ending processes
@@ -94,6 +95,14 @@ os._exit()
 If your program ends by calling :func:`python:os._exit` (or a library does),
 you can patch that function with :ref:`patch = _exit <config_run_patch>` to
 give coverage a chance to write data before the process exits.
+
+execv
+.....
+
+If your program ends by calling one of the :func:`execv <python:os.execl>`
+functions, using :ref:`patch = execv <config_run_patch>` will let coverage
+write its data before the execution begins.
+
 
 Long-running processes
 ......................

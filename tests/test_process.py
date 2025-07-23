@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import csv
 import glob
+import itertools
 import os
 import os.path
 import platform
@@ -693,9 +694,8 @@ class ProcessTest(CoverageTest):
 
     @pytest.mark.skipif(env.WINDOWS, reason="This test is not for Windows")
     def test_save_signal_usr1(self) -> None:
-        test_file = "dummy_hello.py"
         self.assert_doesnt_exist(".coverage")
-        self.make_file(test_file, """\
+        self.make_file("dummy_hello.py", """\
             import os
             import signal
 
@@ -706,7 +706,7 @@ class ProcessTest(CoverageTest):
             print("Done and goodbye")
             """)
         out = self.run_command(
-            f"coverage run --save-signal=USR1 {test_file}",
+            "coverage run --save-signal=USR1 dummy_hello.py",
             status=-signal.SIGKILL,
         )
         # `startswith` because on Linux it also prints "Killed"
@@ -1321,6 +1321,7 @@ class YankedDirectoryTest(CoverageTest):
 
 
 @pytest.mark.skipif(env.METACOV, reason="Can't test subprocess pth file during metacoverage")
+@pytest.mark.xdist_group(name="needs_pth")
 class ProcessStartupTest(CoverageTest):
     """Test that we can measure coverage in subprocesses."""
 
@@ -1340,7 +1341,6 @@ class ProcessStartupTest(CoverageTest):
             f.close()
             """)
 
-    @pytest.mark.xdist_group(name="needs_pth")
     def test_patch_subprocess(self) -> None:
         self.make_file(".coveragerc", """\
             [run]
@@ -1349,12 +1349,11 @@ class ProcessStartupTest(CoverageTest):
         self.run_command("coverage run main.py")
         self.run_command("coverage combine")
         self.assert_exists(".coverage")
-        data = coverage.CoverageData(".coverage")
+        data = coverage.CoverageData()
         data.read()
         assert line_counts(data)["main.py"] == 3
         assert line_counts(data)["sub.py"] == 3
 
-    @pytest.mark.xdist_group(name="needs_pth")
     def test_subprocess_with_pth_files(self, _create_pth_file: None) -> None:
         # An existing data file should not be read when a subprocess gets
         # measured automatically.  Create the data file here with bogus data in
@@ -1379,7 +1378,6 @@ class ProcessStartupTest(CoverageTest):
         data.read()
         assert line_counts(data)['sub.py'] == 3
 
-    @pytest.mark.xdist_group(name="needs_pth")
     def test_subprocess_with_pth_files_and_parallel(self, _create_pth_file: None) -> None:
         # https://github.com/nedbat/coveragepy/issues/492
         self.make_file("coverage.ini", """\
@@ -1408,6 +1406,76 @@ class ProcessStartupTest(CoverageTest):
             f"extra data files that were not cleaned up: {data_files!r}"
         )
         assert len(data_files) == 1, msg
+
+
+@pytest.mark.skipif(env.METACOV, reason="Can't test subprocess pth file during metacoverage")
+@pytest.mark.skipif(env.WINDOWS, reason="patch=execv isn't supported on Windows")
+@pytest.mark.xdist_group(name="needs_pth")
+class ExecvTest(CoverageTest):
+    """Test that we can measure coverage in subprocesses."""
+
+    @pytest.mark.parametrize("fname",
+        [base + suffix for base, suffix in itertools.product(
+            ["exec", "spawn"],
+            ["l", "le", "lp", "lpe", "v", "ve", "vp", "vpe"],
+        )]
+    )
+    def test_execv_patch(self, fname: str) -> None:
+        if not hasattr(os, fname):
+            pytest.skip(f"This OS doesn't have os.{fname}")
+
+        self.make_file(".coveragerc", """\
+            [run]
+            patch = subprocess, execv
+            """)
+        self.make_file("main.py", f"""\
+            import os, sys
+            print("In main")
+            args = []
+            if "spawn" in {fname!r}:
+                args.append(os.P_WAIT)
+            args.append(sys.executable)
+            prog_args = ["python", {os.path.abspath("other.py")!r}, "cat", "dog"]
+            if "l" in {fname!r}:
+                args.extend(prog_args)
+            else:
+                args.append(prog_args)
+            if {fname!r}.endswith("e"):
+                args.append({{"SUBVAR": "the-sub-var"}})
+            os.environ["MAINVAR"] = "the-main-var"
+            sys.stdout.flush()
+            os.{fname}(*args)
+            """)
+        self.make_file("other.py", """\
+            import os, sys
+            print(f"MAINVAR = {os.getenv('MAINVAR', 'none')}")
+            print(f"SUBVAR = {os.getenv('SUBVAR', 'none')}")
+            print(f"{sys.argv[1:] = }")
+            """)
+
+        out = self.run_command("coverage run main.py")
+        expected = "In main\n"
+        if fname.endswith("e"):
+            expected += "MAINVAR = none\n"
+            expected += "SUBVAR = the-sub-var\n"
+        else:
+            expected += "MAINVAR = the-main-var\n"
+            expected += "SUBVAR = none\n"
+        expected += "sys.argv[1:] = ['cat', 'dog']\n"
+        assert out == expected
+
+        self.run_command("coverage combine")
+        data = coverage.CoverageData()
+        data.read()
+
+        main_lines = 12
+        if "spawn" in fname:
+            main_lines += 1
+        if fname.endswith("e"):
+            main_lines += 1
+
+        assert line_counts(data)["main.py"] == main_lines
+        assert line_counts(data)["other.py"] == 4
 
 
 class ProcessStartupWithSourceTest(CoverageTest):

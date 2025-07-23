@@ -459,6 +459,11 @@ Available patches:
   and will require combining data files before reporting.  See
   :ref:`cmd_combine` for more details.
 
+- ``execv``: The :func:`execv <python:os.execl>` family of functions end the
+  current program without giving coverage a chance to write collected data.
+  This patch adjusts those functions to save the data before starting the next
+  executable. Not available on Windows.
+
 .. versionadded:: 7.10
 
 

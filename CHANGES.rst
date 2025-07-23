@@ -37,6 +37,11 @@ Unreleased
     <python:os.execl>` or :func:`spawnv <python:os.spawnl>` family of
     functions. Closes old `issue 367`_ and duplicate `issue 378`_.
 
+  - ``patch = execv`` adjusts the :func:`execv <python:os.execl>` family of
+    functions to save coverage data before ending the current program and
+    starting the next. Not available on Windows. Closes `issue 43`_ after 15
+    years!
+
 - The HTML report now dimly colors subsequent lines in multi-line statements.
   They used to have no color.  This gives a better indication of the amount of
   code missing in the report.  Closes `issue 1308`_.
@@ -65,6 +70,7 @@ Unreleased
 - In the very unusual situation of not having a current frame, coverage no
   longer crashes when using the sysmon core, fixing `issue 2005`_.
 
+.. _issue 43: https://github.com/nedbat/coveragepy/issues/43
 .. _issue 310: https://github.com/nedbat/coveragepy/issues/310
 .. _issue 312: https://github.com/nedbat/coveragepy/issues/312
 .. _issue 367: https://github.com/nedbat/coveragepy/issues/367
