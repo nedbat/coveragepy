@@ -1428,8 +1428,25 @@ class ExcludeTest(CoverageTest):
             i = 9
             ...     # we don't care about this line
             k = 11
+            def foo12(): ...  # do nothing
+            async def bar13():   ...
+            def method14(self) ->None: ...
+            def method15(   # 15
+                self,
+                some_arg: str = "Hello",
+            ): ...
+            def method19(self): return a[1,...]
+            def method20(
+                self,
+                some_args,
+            ) -> int: ...
+            x = 24
+            def method25(
+                self,
+            ):  return a[1,...]
+            def f28(): print("(well): ... #2 false positive!")
             """,
-            lines=[1,3,5,7,9,11],
+            lines=[1,3,5,7,9,11,19,24,25]
         )
 
     def test_two_excludes(self) -> None:

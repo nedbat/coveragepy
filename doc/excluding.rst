@@ -79,7 +79,8 @@ lines are automatically excluded:
 - Any line with a comment like ``# pragma: no cover``.  Other slight
   differences in spacing and letter case are also recognized.
 
-- Any line with only ``...`` in the code.
+- Any line with only ``...`` in the code, for excluding placeholder function
+  bodies.
 
 For branch coverage, these kinds of branches are automatically excluded:
 

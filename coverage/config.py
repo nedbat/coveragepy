@@ -146,7 +146,7 @@ TConfigParser = Union[HandyConfigParser, TomlConfigParser]
 # The default line exclusion regexes.
 DEFAULT_EXCLUDE = [
     r"#\s*(pragma|PRAGMA)[:\s]?\s*(no|NO)\s*(cover|COVER)",
-    r"^\s*\.\.\.\s*(#|$)",
+    r"^\s*(((async )?def .*?)?\)(\s*->.*?)?:\s*)?\.\.\.\s*(#|$)",
 ]
 
 # The default partial branch regexes, to be modified by the user.
