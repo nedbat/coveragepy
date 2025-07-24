@@ -4,7 +4,7 @@ cffi==1.17.1
     # via -r requirements/light-threads.in
 dnspython==2.7.0
     # via eventlet
-eventlet==0.40.1
+eventlet==0.40.2
     # via -r requirements/light-threads.in
 gevent==25.5.1
     # via -r requirements/light-threads.in
@@ -19,7 +19,7 @@ setuptools==80.9.0
     # via
     #   zope-event
     #   zope-interface
-zope-event==5.1
+zope-event==5.1.1
     # via gevent
 zope-interface==7.2
     # via gevent

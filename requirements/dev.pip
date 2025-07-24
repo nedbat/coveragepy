@@ -35,7 +35,7 @@ colorama==0.4.6
     #   tox
 dill==0.4.0
     # via pylint
-distlib==0.3.9
+distlib==0.4.0
     # via virtualenv
 docutils==0.21.2
     # via readme-renderer
@@ -53,7 +53,7 @@ flaky==3.8.1
     # via -r requirements/pytest.in
 greenlet==3.2.3
     # via -r requirements/dev.in
-hypothesis==6.135.29
+hypothesis==6.136.3
     # via -r requirements/pytest.in
 id==1.5.0
     # via twine
@@ -96,7 +96,7 @@ more-itertools==10.7.0
     # via
     #   jaraco-classes
     #   jaraco-functools
-nh3==0.2.21
+nh3==0.3.0
     # via readme-renderer
 packaging==25.0
     # via
@@ -177,7 +177,7 @@ tomli==2.2.1
     #   tox
 tomlkit==0.13.3
     # via pylint
-tox==4.27.0
+tox==4.28.1
     # via
     #   -r requirements/tox.in
     #   tox-gh
@@ -202,7 +202,7 @@ urwid==3.0.2
     #   urwid-readline
 urwid-readline==0.15.1
     # via pudb
-virtualenv==20.31.2
+virtualenv==20.32.0
     # via
     #   -r requirements/pip.in
     #   tox

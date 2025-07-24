@@ -107,6 +107,12 @@ metahtml:				## Produce meta-coverage HTML reports.
 
 DOCBIN = .tox/doc/bin
 
+# PYVERSION to use for kitting, based on cibuildwheel's requirements.
+KITVER = py311
+KITBIN = .tox/$(KITVER)/bin
+
+$(KITBIN):
+	tox -q -e $(KITVER) --notest
 
 PIP_COMPILE = uv pip compile -q ${COMPILE_OPTS}
 upgrade: 				## Update the *.pip files with the latest packages satisfying *.in files.
@@ -117,10 +123,10 @@ upgrade_one:				## Update the *.pip files for one package. `make upgrade_one pac
 	$(MAKE) _upgrade COMPILE_OPTS="--upgrade-package $(package)"
 
 _upgrade: export UV_CUSTOM_COMPILE_COMMAND=make upgrade
-_upgrade: $(DOCBIN)
+_upgrade: $(DOCBIN) $(KITBIN)
 	$(PIP_COMPILE) -o requirements/pip.pip requirements/pip.in
 	$(PIP_COMPILE) -o requirements/pytest.pip requirements/pytest.in
-	$(PIP_COMPILE) -o requirements/kit.pip requirements/kit.in
+	$(PIP_COMPILE) -p $(KITBIN)/python3 -o requirements/kit.pip requirements/kit.in
 	$(PIP_COMPILE) -o requirements/tox.pip requirements/tox.in
 	$(PIP_COMPILE) -o requirements/dev.pip requirements/dev.in
 	$(PIP_COMPILE) -o requirements/light-threads.pip requirements/light-threads.in

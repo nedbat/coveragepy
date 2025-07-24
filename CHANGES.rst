@@ -64,6 +64,8 @@ Unreleased
   :ref:`config_json_output`, :ref:`config_lcov_output` and
   :ref:`config_run_debug_file`.  This is now fixed.
 
+- Wheels are included for 3.14 now that 3.14 rc1 is available.
+
 - We no longer ship a PyPy-specific wheel. PyPy will install the pure-Python
   wheel.  Closes `issue 2001`_.
 

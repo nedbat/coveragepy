@@ -9,14 +9,16 @@ bashlex==0.18
 bracex==2.6
     # via cibuildwheel
 build==1.2.2.post1
-    # via -r requirements/kit.in
+    # via
+    #   -r requirements/kit.in
+    #   cibuildwheel
 certifi==2025.7.14
     # via
     #   cibuildwheel
     #   requests
 charset-normalizer==3.4.2
     # via requests
-cibuildwheel==2.23.3
+cibuildwheel==3.1.0
     # via -r requirements/kit.in
 colorama==0.4.6
     # via -r requirements/kit.in
@@ -26,15 +28,14 @@ docutils==0.21.2
     # via readme-renderer
 filelock==3.18.0
     # via cibuildwheel
+humanize==4.12.3
+    # via cibuildwheel
 id==1.5.0
     # via twine
 idna==3.10
     # via requests
 importlib-metadata==8.7.0
-    # via
-    #   build
-    #   keyring
-    #   twine
+    # via keyring
 jaraco-classes==3.4.0
     # via keyring
 jaraco-context==6.0.1
@@ -51,7 +52,7 @@ more-itertools==10.7.0
     # via
     #   jaraco-classes
     #   jaraco-functools
-nh3==0.2.21
+nh3==0.3.0
     # via readme-renderer
 packaging==25.0
     # via
@@ -63,7 +64,9 @@ packaging==25.0
 platformdirs==4.3.8
     # via cibuildwheel
 pyelftools==0.32
-    # via auditwheel
+    # via
+    #   auditwheel
+    #   cibuildwheel
 pygments==2.19.2
     # via
     #   readme-renderer
@@ -85,22 +88,15 @@ rich==14.0.0
     # via twine
 setuptools==80.9.0
     # via -r requirements/kit.in
-tomli==2.2.1
-    # via
-    #   build
-    #   cibuildwheel
-    #   dependency-groups
 twine==6.1.0
     # via -r requirements/kit.in
-typing-extensions==4.14.1
-    # via
-    #   cibuildwheel
-    #   rich
 urllib3==2.5.0
     # via
     #   requests
     #   twine
 wheel==0.45.1
-    # via -r requirements/kit.in
+    # via
+    #   -r requirements/kit.in
+    #   cibuildwheel
 zipp==3.23.0
     # via importlib-metadata

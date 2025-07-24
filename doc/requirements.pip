@@ -119,7 +119,7 @@ sphinxcontrib-serializinghtml==2.0.0
     # via sphinx
 sphinxcontrib-spelling==8.0.1
     # via -r doc/requirements.in
-starlette==0.47.1
+starlette==0.47.2
     # via sphinx-autobuild
 stevedore==5.4.1
     # via doc8
