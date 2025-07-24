@@ -36,6 +36,8 @@ Documentation is on `Read the Docs`_.  Code repository and issue tracker are on
 .. _GitHub: https://github.com/nedbat/coveragepy
 
 **New in 7.x:**
+``[run] patch`` setting;
+``--save-signal`` option;
 ``[run] core`` setting;
 ``[run] source_dirs`` setting;
 ``Coverage.branch_stats()``;
