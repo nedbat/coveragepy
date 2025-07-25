@@ -8,7 +8,7 @@ Measure Python code coverage
 
 :Author: Ned Batchelder <ned@nedbatchelder.com>
 :Author: |author|
-:Date: 2022-12-03
+:Date: 2025-07-24
 :Copyright: Apache 2.0 license, attribution and disclaimer required.
 :Manual section: 1
 :Manual group: Coverage.py
@@ -16,6 +16,8 @@ Measure Python code coverage
 ..  |command| replace:: **python-coverage**
 
 ..
+    This file is .rst format to produce a man page source file.
+
     To test this file:
     $ rst2man < doc/python-coverage.1.txt  | groff -man -Tascii
 
@@ -78,8 +80,8 @@ GLOBAL OPTIONS
     Describe how to use coverage.py, in general or a command.
 
 **--rcfile** `RCFILE`
-    Specify configuration file `RCFILE`.  By default '.coveragerc',
-    'setup.cfg', 'tox.ini', and 'pyproject.toml' are tried.
+    Specify configuration file `RCFILE`.  By default ``.coveragerc``,
+    ``setup.cfg``, ``tox.ini``, and ``pyproject.toml`` are tried.
 
 **--debug** `DEBUGOPT`,...
     Debug options `DEBUGOPT`, separated by commas.
@@ -89,7 +91,10 @@ GLOBAL OPTIONS
 COMMAND REFERENCE
 =================
 
-**annotate** [ `option` ... ]
+**annotate** [ `option` ... ] [ `MODULE` ... ]
+
+    Make annotated copies of the given files, marking statements that are
+    executed and statements that are missed.
 
     Options:
 
@@ -98,7 +103,7 @@ COMMAND REFERENCE
 
     \--data-file `INFILE`
         Read coverage data for report generation from this
-        file. Defaults to '.coverage'.
+        file. Defaults to ``.coverage``.
 
     \-i, --ignore-errors
         Ignore errors while reading source files.
@@ -110,6 +115,7 @@ COMMAND REFERENCE
     \--omit `PATTERN` [ , ... ]
         Omit files when their file name matches one of these PATTERNs.
         Usually needs quoting on the command line.
+
 
 **combine** [ `option` ... ] [ `PATH` ... ]
 
@@ -128,7 +134,7 @@ COMMAND REFERENCE
         time.
 
     \--data-file `DATAFILE`
-        Base name of the data files to operate on.  Defaults to '.coverage'.
+        Base name of the data files to operate on.  Defaults to ``.coverage``.
 
     \--keep
         Keep original coverage data files.
@@ -136,7 +142,8 @@ COMMAND REFERENCE
     \-q, --quiet
         Don't print messages about what is happening.
 
-**debug** `TOPIC` ...
+
+**debug** `TOPIC`
 
     Display information about the internals of coverage.py, for diagnosing
     problems.
@@ -149,6 +156,7 @@ COMMAND REFERENCE
         ``premain`` to show what is calling coverage;
         ``pybehave`` to show internal flags describing Python behavior.
 
+
 **erase**
 
     Erase previously collected coverage data.
@@ -156,11 +164,13 @@ COMMAND REFERENCE
     Options:
 
     \--data-file `DATAFILE`
-        Base name of the data files to operate on. Defaults to '.coverage'.
+        Base name of the data files to operate on. Defaults to ``.coverage``.
+
 
 **help** [ `command` ]
 
     Describe how to use coverage.py.
+
 
 **html** [ `option` ... ] [ `MODULE` ... ]
 
@@ -178,7 +188,7 @@ COMMAND REFERENCE
 
     \--data-file `INFILE`
         Read coverage data for report generation from this file.
-        Defaults to '.coverage'.
+        Defaults to ``.coverage``.
 
     \--fail-under `MIN`
         Exit with a status of 2 if the total coverage is less than `MIN`.
@@ -216,6 +226,7 @@ COMMAND REFERENCE
     \--title `TITLE`
         Use the text string `TITLE` as the title on the HTML.
 
+
 **json** [ `option` ... ] [ `MODULE` ... ]
 
     Generate a JSON report of coverage results.
@@ -225,7 +236,7 @@ COMMAND REFERENCE
 
     \--data-file `INFILE`
         Read coverage data for report generation from this file.
-        Defaults to '.coverage'.
+        Defaults to ``.coverage``.
 
     \--fail-under `MIN`
         Exit with a status of 2 if the total coverage is less than `MIN`.
@@ -253,6 +264,7 @@ COMMAND REFERENCE
     \--show-contexts
         Include information about the contexts that executed each line.
 
+
 **lcov** [ `option` ... ] [ `MODULE` ... ]
 
     Create an LCOV report of the coverage results.
@@ -261,7 +273,7 @@ COMMAND REFERENCE
 
     \--data-file `INFILE`
         Read coverage data for report generation from this file.
-        Defaults to '.coverage'.
+        Defaults to ``.coverage``.
 
     \--fail-under `MIN`
         Exit with a status of 2 if the total coverage is less than `MIN`.
@@ -283,6 +295,7 @@ COMMAND REFERENCE
     \-q, --quiet
         Don't print messages about what is happening.
 
+
 **report** [ `option` ... ] [ `MODULE` ... ]
 
     Report coverage statistics on each `MODULE`.
@@ -294,13 +307,13 @@ COMMAND REFERENCE
 
     \--data-file `INFILE`
         Read coverage data for report generation from this file.
-        Defaults to '.coverage'.
+        Defaults to ``.coverage``.
 
     \--fail-under `MIN`
         Exit with a status of 2 if the total coverage is less than `MIN`.
 
     \--format `FORMAT`
-        Output format, either text (default), markdown, or total.
+        Output format, either ``text`` (default), ``markdown``, or ``total``.
 
     \-i, --ignore-errors
         Ignore errors while reading source files.
@@ -331,8 +344,8 @@ COMMAND REFERENCE
         Skip files with no code.
 
     \--sort `COLUMN`
-        Sort the report by thee named column: `name`, `stmts`, `miss`,
-        `branch`, `brpart`, or `cover`.
+        Sort the report by the named column: ``name``, ``stmts``, ``miss``,
+        ``branch``, ``brpart``, or ``cover``.
 
 
 **run** [ `options` ... ] `PROGRAMFILE` [ `program_options` ]
@@ -350,15 +363,15 @@ COMMAND REFERENCE
 
     \--concurrency `LIBS`
         Properly measure code using a concurrency library. Valid values are:
-        thread, gevent, greenlet, eventlet, multiprocessing, or a comma-list of
-        them.
+        ``thread``, ``gevent``, ``greenlet``, ``eventlet``,
+        ``multiprocessing``, or a comma-list of them.
 
     \--context `CONTEXT`
         The context label to record for this coverage run.
 
     \--data-file `OUTFILE`
         Write the recorded coverage data to this file.
-        Defaults to '.coverage'.
+        Defaults to ``.coverage``.
 
     \--include `PATTERN` [ , ... ]
         Include only files whose paths match one of these
@@ -380,11 +393,16 @@ COMMAND REFERENCE
         ``.coverage`` data file name to simplify collecting data from many
         processes.
 
+    \--save-signal `SIGNAL`
+        Specify a signal that will trigger coverage to write its collected
+        data.  Supported values are: ``USR1``, ``USR2``.
+
     \--source `SOURCE` ...
         A list of packages or directories of code to be measured.
 
     \--timid
         Use the slower Python trace function core.
+
 
 **xml** [ `options` ... ] [ `MODULES` ... ]
 
@@ -394,7 +412,7 @@ COMMAND REFERENCE
 
     \--data-file `INFILE`
         Read coverage data for report generation from this file.
-        Defaults to '.coverage'.
+        Defaults to ``.coverage``.
 
     \--fail-under `MIN`
         Exit with a status of 2 if the total coverage is less than `MIN`.
@@ -423,6 +441,14 @@ COMMAND REFERENCE
 ENVIRONMENT VARIABLES
 =====================
 
+COVERAGE_DEBUG
+
+    Debug options, same as for the ``--debug`` option.
+
+COVERAGE_DEBUG_FILE
+
+    Where to write debug information, defaulting to stderr.
+
 COVERAGE_FILE
 
     Path to the file where coverage measurements are collected to and
@@ -431,6 +457,7 @@ COVERAGE_FILE
 COVERAGE_RCFILE
 
     Path to the configuration file, often named ``.coveragerc``.
+
 
 HISTORY
 =======
