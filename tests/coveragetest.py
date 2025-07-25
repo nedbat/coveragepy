@@ -24,7 +24,7 @@ from typing import (
 from collections.abc import Collection, Iterable, Iterator, Mapping, Sequence
 
 import coverage
-from coverage import Coverage, env
+from coverage import Coverage
 from coverage.cmdline import CoverageScript
 from coverage.data import CoverageData
 from coverage.misc import import_local_file
@@ -417,11 +417,12 @@ class CoverageTest(
         Compare with `command_line`.
 
         """
-        if status < 0 and env.LINUX:
+        statuses = [status]
+        if status < 0:
             # Mac properly returns -signal as the exit status. Linux returns 128 + signal.
-            status = 128 - status
+            statuses.append(128 - status)
         actual_status, output = self.run_command_status(cmd)
-        assert actual_status == status
+        assert actual_status in statuses
         return output
 
     def run_command_status(self, cmd: str) -> tuple[int, str]:
