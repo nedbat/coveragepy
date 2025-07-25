@@ -36,6 +36,7 @@ for url, kind, number in urls:
     if kind == "issues":
         url = f"https://api.github.com/repos/{repo_owner}/issues/{number}"
         issue_data = get_session().get(url).json()
+        html_url = issue_data["html_url"]
         if issue_data["state"] == "closed":
             do_comment = True
         else:
@@ -43,16 +44,17 @@ for url, kind, number in urls:
     else:
         url = f"https://api.github.com/repos/{repo_owner}/pulls/{number}"
         pull_data = get_session().get(url).json()
+        html_url = pull_data["html_url"]
         if pull_data["state"] == "closed":
             if pull_data["merged"]:
                 do_comment = True
             else:
-                print(f"Not merged, comment manually: {url}")
+                print(f"Not merged, comment manually: {html_url}")
         else:
-            print(f"Still open, comment manually: {url}")
+            print(f"Still open, comment manually: {html_url}")
 
     if do_comment:
-        print(f"Commenting on {url}")
+        print(f"Commenting on {html_url}")
         url = f"https://api.github.com/repos/{repo_owner}/issues/{number}/comments"
         resp = get_session().post(url, json={"body": comment})
         print(resp)
