@@ -23,7 +23,10 @@ upgrading your version of coverage.py.
 Unreleased
 ----------
 
-Nothing yet.
+- Fix: changed where .pth files are written for ``patch = subprocess``, closing
+  `issue 2006`_.
+
+.. _issue 2006: https://github.com/nedbat/coveragepy/issues/2006
 
 
 .. start-releases
