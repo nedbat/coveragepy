@@ -23,6 +23,10 @@ upgrading your version of coverage.py.
 Unreleased
 ----------
 
+- Fix: the exclusion for ``if TYPE_CHECKING:`` was wrong: it marked the branch
+  as partial, but it should have been a line exclusion so the entire clause
+  would be excluded.
+
 - Fix: changed where .pth files are written for ``patch = subprocess``, closing
   `issue 2006`_.
 

@@ -147,6 +147,7 @@ TConfigParser = Union[HandyConfigParser, TomlConfigParser]
 DEFAULT_EXCLUDE = [
     r"#\s*(pragma|PRAGMA)[:\s]?\s*(no|NO)\s*(cover|COVER)",
     r"^\s*(((async )?def .*?)?\)(\s*->.*?)?:\s*)?\.\.\.\s*(#|$)",
+    r"if (typing\.)?TYPE_CHECKING:",
 ]
 
 # The default partial branch regexes, to be modified by the user.
@@ -160,7 +161,6 @@ DEFAULT_PARTIAL = [
 DEFAULT_PARTIAL_ALWAYS = [
     "while (True|1|False|0):",
     "if (True|1|False|0):",
-    r"if (typing\.)?TYPE_CHECKING:",
 ]
 
 
