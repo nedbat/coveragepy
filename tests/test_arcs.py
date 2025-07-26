@@ -2163,10 +2163,12 @@ class ExcludeTest(CoverageTest):
             import typing
             if typing.TYPE_CHECKING:    # only for mypy
                 g = 12
+            else:
+                h = 14
             """,
-            lines=[1,2,3,4,5,6,7,8,9,10],
+            lines=[1,2,3,4,5,6,7,8,9,10,14],
             missing="",
-            branchz="23 24 56 57 89 8A BC B.",
+            branchz="23 24 56 57 89 8A BC BE",
             branchz_missing="",
         )
 
