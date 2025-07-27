@@ -49,15 +49,14 @@
         - merge to master
         - git push
 - Start the kits:
-    $ opvars github
-    - Trigger the kit GitHub Action
-        $ make build_kits
+    $ opvars github; make build_kits
 - Kits:
     - Wait for kits to finish:
         - https://github.com/nedbat/coveragepy/actions/workflows/kit.yml
     - test the pypi upload:
         $ make test_upload
         - approve the action using the url printed out
+        - take a look: https://test.pypi.org/project/coverage/
     - upload kits:
         $ make pypi_upload
         - approve the action using the url printed out
