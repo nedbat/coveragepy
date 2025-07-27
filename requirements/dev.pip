@@ -53,7 +53,7 @@ flaky==3.8.1
     # via -r requirements/pytest.in
 greenlet==3.2.3
     # via -r requirements/dev.in
-hypothesis==6.136.3
+hypothesis==6.136.4
     # via -r requirements/pytest.in
 id==1.5.0
     # via twine
@@ -155,7 +155,7 @@ requests-toolbelt==1.0.0
     # via twine
 rfc3986==2.0.0
     # via twine
-rich==14.0.0
+rich==14.1.0
     # via twine
 scriv==1.7.0
     # via -r requirements/dev.in
@@ -177,7 +177,7 @@ tomli==2.2.1
     #   tox
 tomlkit==0.13.3
     # via pylint
-tox==4.28.1
+tox==4.28.3
     # via
     #   -r requirements/tox.in
     #   tox-gh
@@ -190,7 +190,6 @@ typing-extensions==4.14.1
     #   astroid
     #   exceptiongroup
     #   pylint
-    #   rich
     #   tox
 urllib3==2.5.0
     # via

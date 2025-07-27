@@ -30,7 +30,7 @@ tomli==2.2.1
     # via
     #   pyproject-api
     #   tox
-tox==4.28.1
+tox==4.28.3
     # via
     #   -r requirements/tox.in
     #   tox-gh
