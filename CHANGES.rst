@@ -20,20 +20,22 @@ upgrading your version of coverage.py.
     ..  Version 9.8.1 — 2027-07-27
     ..  --------------------------
 
-Unreleased
-----------
+.. start-releases
+
+.. _changes_7-10-1:
+
+Version 7.10.1 — 2025-07-27
+---------------------------
 
 - Fix: the exclusion for ``if TYPE_CHECKING:`` was wrong: it marked the branch
   as partial, but it should have been a line exclusion so the entire clause
-  would be excluded.
+  would be excluded. Improves `issue 831`_.
 
 - Fix: changed where .pth files are written for ``patch = subprocess``, closing
   `issue 2006`_.
 
 .. _issue 2006: https://github.com/nedbat/coveragepy/issues/2006
 
-
-.. start-releases
 
 .. _changes_7-10-0:
 
