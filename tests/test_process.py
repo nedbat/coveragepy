@@ -1408,7 +1408,6 @@ class ProcessStartupTest(CoverageTest):
         assert len(data_files) == 1, msg
 
 
-@pytest.mark.skipif(env.METACOV, reason="Can't test subprocess pth file during metacoverage")
 @pytest.mark.skipif(env.WINDOWS, reason="patch=execv isn't supported on Windows")
 @pytest.mark.xdist_group(name="needs_pth")
 class ExecvTest(CoverageTest):
