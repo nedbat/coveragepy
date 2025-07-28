@@ -1420,9 +1420,6 @@ class ExecvTest(CoverageTest):
         )]
     )
     def test_execv_patch(self, fname: str) -> None:
-        if not hasattr(os, fname):
-            pytest.skip(f"This OS doesn't have os.{fname}")
-
         self.make_file(".coveragerc", """\
             [run]
             patch = subprocess, execv
