@@ -736,20 +736,21 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         with pytest.raises(NotPython, match=msg):
             self.get_report(cov, morfs=["accented\xe2.py"])
 
-    def test_dotpy_not_python_ignored(self) -> None:
-        # We run a .py file, and when reporting, we can't parse it as Python,
+    @pytest.mark.parametrize("filename", ["mycode.py", "my_script"])
+    def test_dotpy_not_python_ignored(self, filename: str) -> None:
+        # We run a Python file, and when reporting, we can't parse it as Python,
         # but we've said to ignore errors, so there's no error reported,
         # though we still get a warning.
-        self.make_file("mycode.py", "This isn't python at all!")
-        self.make_data_file(lines={"mycode.py": [1]})
+        self.make_file(filename, "This isn't python at all! I can't cope.")
+        self.make_data_file(lines={filename: [1]})
         cov = coverage.Coverage()
         cov.load()
         with pytest.raises(NoDataError, match="No data to report."):
             with pytest.warns(Warning) as warns:
-                self.get_report(cov, morfs=["mycode.py"], ignore_errors=True)
+                self.get_report(cov, morfs=[filename], ignore_errors=True)
         assert_coverage_warnings(
             warns,
-            re.compile(r"Couldn't parse Python file '.*[/\\]mycode.py' \(couldnt-parse\)"),
+            re.compile(rf"Couldn't parse Python file '.*[/\\]{filename}' \(couldnt-parse\)"),
         )
 
     def test_dothtml_not_python(self) -> None:
