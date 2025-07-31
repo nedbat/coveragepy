@@ -241,7 +241,6 @@ class TreeMatcher:
     """
     def __init__(self, paths: Iterable[str], name: str = "unknown") -> None:
         self.original_paths: list[str] = human_sorted(paths)
-        #self.paths = list(map(os.path.normcase, paths))
         self.paths = [os.path.normcase(p) for p in paths]
         self.name = name
 
