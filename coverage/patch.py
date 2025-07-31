@@ -19,7 +19,7 @@ if TYPE_CHECKING:
     from coverage.config import CoverageConfig
 
 
-def apply_patches(cov: Coverage, config: CoverageConfig) -> None:
+def apply_patches(cov: Coverage, config: CoverageConfig, *, make_pth_file: bool=True) -> None:
     """Apply invasive patches requested by `[run] patch=`."""
 
     for patch in sorted(set(config.patch)):
@@ -78,9 +78,10 @@ def apply_patches(cov: Coverage, config: CoverageConfig) -> None:
             os.execve = make_execv_patch("execve", os.execve)
 
         elif patch == "subprocess":
-            pth_file = create_pth_file()
-            assert pth_file is not None
-            atexit.register(pth_file.unlink, missing_ok=True)
+            if make_pth_file:
+                pth_file = create_pth_file()
+                assert pth_file is not None
+                atexit.register(pth_file.unlink, missing_ok=True)
             assert config.config_file is not None
             os.environ["COVERAGE_PROCESS_START"] = config.config_file
 

@@ -269,6 +269,9 @@ class Coverage(TConfigurable):
         self._no_warn_slugs: set[str] = set()
         self._messages = messages
 
+        # If we're invoked from a .pth file, we shouldn't try to make another one.
+        self._make_pth_file = True
+
         # A record of all the warnings that have been issued.
         self._warnings: list[str] = []
 
@@ -678,7 +681,7 @@ class Coverage(TConfigurable):
         if self._auto_load:
             self.load()
 
-        apply_patches(self, self.config)
+        apply_patches(self, self.config, make_pth_file=self._make_pth_file)
 
         self._collector.start()
         self._started = True
@@ -1432,6 +1435,7 @@ def process_startup() -> Coverage | None:
     cov._warn_unimported_source = False
     cov._warn_preimported_source = False
     cov._auto_save = True
+    cov._make_pth_file = False
     cov.start()
 
     return cov
