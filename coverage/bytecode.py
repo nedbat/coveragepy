@@ -43,7 +43,16 @@ ALWAYS_JUMPS = op_set(
 )
 
 # Opcodes that exit from a function.
-RETURNS = op_set("RETURN_VALUE", "RETURN_GENERATOR")
+RETURNS = op_set(
+    "RETURN_VALUE",
+    "RETURN_GENERATOR",
+)
+
+# Opcodes that do nothing.
+NOPS = op_set(
+    "NOP",
+    "NOT_TAKEN",
+)
 
 
 class InstructionWalker:
@@ -126,7 +135,7 @@ def branch_trails(code: CodeType) -> TBranchTrails:
             # pylint: disable=cell-var-from-loop
             inst_offsets: set[TOffset] = set()
             to_line = None
-            for inst2 in iwalker.walk(start_at=start_at):
+            for inst2 in iwalker.walk(start_at=start_at, follow_jumps=True):
                 inst_offsets.add(inst2.offset)
                 if inst2.line_number and inst2.line_number != from_line:
                     to_line = inst2.line_number
@@ -160,3 +169,18 @@ def branch_trails(code: CodeType) -> TBranchTrails:
                 the_trails[offset].append(trail)
 
     return the_trails
+
+
+def always_jumps(code: CodeType) -> dict[TOffset, TOffset]:
+    """Make a map of unconditional bytecodes jumping to others.
+
+    Only include bytecodes that do no work and go to another bytecode.
+    """
+    jumps = {}
+    iwalker = InstructionWalker(code)
+    for inst in iwalker.walk(follow_jumps=False):
+        if inst.opcode in ALWAYS_JUMPS:
+            jumps[inst.offset] = inst.jump_target
+        elif inst.opcode in NOPS:
+            jumps[inst.offset] = inst.offset + 2
+    return jumps

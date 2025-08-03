@@ -2129,6 +2129,29 @@ class AsyncTest(CoverageTest):
             branchz_missing="29 38 45 56 5. 9A 9.",
         )
 
+    @pytest.mark.skipif(env.PYVERSION[:2] == (3, 9), reason="not sure why it isn't fixed on 3.9")
+    def test_bug_1999(self) -> None:
+        self.check_coverage("""\
+            import asyncio
+
+            async def async_range(number):
+                for n in range(number):
+                    yield n
+
+            async def do_something(number):
+                try:
+                    async for n in async_range(number):
+                        print(n)
+                finally:
+                    print("Done.")
+
+            asyncio.run(do_something(3))
+            """,
+            branchz="4-3 45 9A 9C",
+            branchz_missing="",
+        )
+        assert self.stdout() == "0\n1\n2\nDone.\n"
+
 
 class AnnotationTest(CoverageTest):
     """Tests using type annotations."""

@@ -24,7 +24,7 @@ from typing import (
 )
 
 from coverage import env
-from coverage.bytecode import TBranchTrails, branch_trails
+from coverage.bytecode import TBranchTrails, always_jumps, branch_trails
 from coverage.debug import short_filename, short_stack
 from coverage.misc import isolate_module
 from coverage.types import (
@@ -183,6 +183,10 @@ class CodeInfo:
     #   ]
     #   Two possible trails from the branch point, left and right.
     branch_trails: TBranchTrails
+
+    # Always-jumps are bytecode offsets that do no work but move
+    # to another offset.
+    always_jumps: dict[TOffset, TOffset]
 
 
 def bytes_to_lines(code: CodeType) -> dict[TOffset, TLineNo]:
@@ -348,6 +352,7 @@ class SysMonitor(Tracer):
                 file_data=file_data,
                 byte_to_line=b2l,
                 branch_trails={},
+                always_jumps={},
             )
             self.code_infos[id(code)] = code_info
             self.code_objects.append(code)
@@ -431,15 +436,23 @@ class SysMonitor(Tracer):
             if self.stats is not None:
                 self.stats["branch_trails"] += 1
             code_info.branch_trails = branch_trails(code)
+            code_info.always_jumps = always_jumps(code)
             # log(f"branch_trails for {code}:\n    {code_info.branch_trails}")
         added_arc = False
         dest_info = code_info.branch_trails.get(instruction_offset)
+
+        # Re-map the destination offset through always-jumps to deal with NOP etc.
+        dests = {destination_offset}
+        while (dest := code_info.always_jumps.get(destination_offset)) is not None:
+            destination_offset = dest
+            dests.add(destination_offset)
+
         # log(f"{dest_info = }")
         if dest_info is not None:
             for offsets, arc in dest_info:
                 if arc is None:
                     continue
-                if destination_offset in offsets:
+                if dests & offsets:
                     code_info.file_data.add(arc)  # type: ignore
                     # log(f"adding {arc=}")
                     added_arc = True

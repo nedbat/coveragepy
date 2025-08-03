@@ -23,7 +23,11 @@ upgrading your version of coverage.py.
 Unreleased
 ----------
 
-Nothing yet.
+- Fix: some code with NOP bytecodes could report missing branches that are
+  actually executed. This is now fixed, closing `issue 1999`_. Python 3.9
+  still shows the problem.
+
+.. _issue 1999: https://github.com/nedbat/coveragepy/issues/1999
 
 
 .. start-releases
