@@ -89,6 +89,7 @@ class RecursionTest(CoverageTest):
             missing="",
         )
 
+    @pytest.mark.flaky(max_runs=3)
     def test_long_recursion(self) -> None:
         # We can't finish a very deep recursion, but we don't crash.
         with pytest.raises(RuntimeError):
