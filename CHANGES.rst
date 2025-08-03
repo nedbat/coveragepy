@@ -20,8 +20,12 @@ upgrading your version of coverage.py.
     ..  Version 9.8.1 — 2027-07-27
     ..  --------------------------
 
-Unreleased
-----------
+.. start-releases
+
+.. _changes_7-10-2:
+
+Version 7.10.2 — 2025-08-03
+---------------------------
 
 - Fix: some code with NOP bytecodes could report missing branches that are
   actually executed. This is now fixed, closing `issue 1999`_. Python 3.9
@@ -29,8 +33,6 @@ Unreleased
 
 .. _issue 1999: https://github.com/nedbat/coveragepy/issues/1999
 
-
-.. start-releases
 
 .. _changes_7-10-1:
 
