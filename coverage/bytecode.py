@@ -5,6 +5,7 @@
 
 from __future__ import annotations
 
+import collections
 import dis
 
 from types import CodeType
@@ -98,7 +99,9 @@ class InstructionWalker:
 
 
 TBranchTrail = tuple[set[TOffset], Optional[TArc]]
-TBranchTrails = dict[TOffset, list[TBranchTrail]]
+#TBranchTrails = dict[TOffset, list[TBranchTrail]]
+
+TBranchTrails = dict[TOffset, dict[Optional[TArc], set[TOffset]]]
 
 
 def branch_trails(code: CodeType) -> TBranchTrails:
@@ -117,7 +120,7 @@ def branch_trails(code: CodeType) -> TBranchTrails:
     arc from the original instruction's line to the new source line.
 
     """
-    the_trails: TBranchTrails = {}
+    the_trails: TBranchTrails = collections.defaultdict(lambda:collections.defaultdict(set))
     iwalker = InstructionWalker(code)
     for inst in iwalker.walk(follow_jumps=False):
         if not inst.jump_target:
@@ -131,7 +134,7 @@ def branch_trails(code: CodeType) -> TBranchTrails:
         if from_line is None:
             continue
 
-        def walk_one_branch(start_at: TOffset) -> TBranchTrail:
+        def walk_one_branch(start_at: TOffset) -> tuple[Optional[TArc], set[TOffset]]:
             # pylint: disable=cell-var-from-loop
             inst_offsets: set[TOffset] = set()
             to_line = None
@@ -146,27 +149,26 @@ def branch_trails(code: CodeType) -> TBranchTrails:
                     to_line = -code.co_firstlineno
                     break
             if to_line is not None:
-                return inst_offsets, (from_line, to_line)
+                return (from_line, to_line), inst_offsets
             else:
-                return set(), None
+                return None, set()
 
         # Calculate two trails: one from the next instruction, and one from the
         # jump_target instruction.
-        trails = [
-            walk_one_branch(start_at=inst.offset + 2),
-            walk_one_branch(start_at=inst.jump_target),
-        ]
+        trails = collections.defaultdict(set)
+        arc, offsets = walk_one_branch(start_at=inst.offset + 2)
+        trails[arc].update(offsets)
+        arc, offsets = walk_one_branch(start_at=inst.jump_target)
+        trails[arc].update(offsets)
         the_trails[inst.offset] = trails
 
         # Sometimes we get BRANCH_RIGHT or BRANCH_LEFT events from instructions
         # other than the original jump possibility instruction.  Register each
         # trail under all of their offsets so we can pick up in the middle of a
         # trail if need be.
-        for trail in trails:
-            for offset in trail[0]:
-                if offset not in the_trails:
-                    the_trails[offset] = []
-                the_trails[offset].append(trail)
+        for arc, offsets in trails.items():
+            for offset in offsets:
+                the_trails[offset][arc].update(offsets)
 
     return the_trails
 

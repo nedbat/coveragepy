@@ -176,12 +176,11 @@ class CodeInfo:
     byte_to_line: dict[TOffset, TLineNo] | None
 
     # Keys are start instruction offsets for branches.
-    # Values are lists:
-    #   [
-    #       ([offset, offset, ...], (from_line, to_line)),
-    #       ([offset, offset, ...], (from_line, to_line)),
-    #   ]
-    #   Two possible trails from the branch point, left and right.
+    # Values are dicts:
+    #   {
+    #       (from_line, to_line): {offset, offset, ...},
+    #       (from_line, to_line): {offset, offset, ...},
+    #   }
     branch_trails: TBranchTrails
 
     # Always-jumps are bytecode offsets that do no work but move
@@ -449,7 +448,7 @@ class SysMonitor(Tracer):
 
         # log(f"{dest_info = }")
         if dest_info is not None:
-            for offsets, arc in dest_info:
+            for arc, offsets in dest_info.items():
                 if arc is None:
                     continue
                 if dests & offsets:
