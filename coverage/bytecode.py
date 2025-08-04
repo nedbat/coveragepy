@@ -98,9 +98,6 @@ class InstructionWalker:
             offset += 2
 
 
-TBranchTrail = tuple[set[TOffset], Optional[TArc]]
-#TBranchTrails = dict[TOffset, list[TBranchTrail]]
-
 TBranchTrails = dict[TOffset, dict[Optional[TArc], set[TOffset]]]
 
 
