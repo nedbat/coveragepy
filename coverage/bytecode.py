@@ -63,7 +63,6 @@ class InstructionWalker:
     First, in strict sequence to visit all the instructions in the object.
     This is `walk(follow_jumps=False)`.  Second, we want to follow jumps to
     understand how execution will flow: `walk(follow_jumps=True)`.
-
     """
 
     def __init__(self, code: CodeType) -> None:
@@ -98,7 +97,8 @@ class InstructionWalker:
             offset += 2
 
 
-TBranchTrails = dict[TOffset, dict[Optional[TArc], set[TOffset]]]
+TBranchTrailsOneSource = dict[Optional[TArc], set[TOffset]]
+TBranchTrails = dict[TOffset, TBranchTrailsOneSource]
 
 
 def branch_trails(code: CodeType) -> TBranchTrails:
@@ -117,7 +117,9 @@ def branch_trails(code: CodeType) -> TBranchTrails:
     arc from the original instruction's line to the new source line.
 
     """
-    the_trails: TBranchTrails = collections.defaultdict(lambda:collections.defaultdict(set))
+    the_trails: TBranchTrails = collections.defaultdict(
+        lambda: collections.defaultdict(set)
+    )
     iwalker = InstructionWalker(code)
     for inst in iwalker.walk(follow_jumps=False):
         if not inst.jump_target:
@@ -131,7 +133,10 @@ def branch_trails(code: CodeType) -> TBranchTrails:
         if from_line is None:
             continue
 
-        def walk_one_branch(start_at: TOffset) -> tuple[Optional[TArc], set[TOffset]]:
+        def add_one_branch_trail(
+            trails: TBranchTrailsOneSource,
+            start_at: TOffset,
+        ) -> None:
             # pylint: disable=cell-var-from-loop
             inst_offsets: set[TOffset] = set()
             to_line = None
@@ -146,17 +151,15 @@ def branch_trails(code: CodeType) -> TBranchTrails:
                     to_line = -code.co_firstlineno
                     break
             if to_line is not None:
-                return (from_line, to_line), inst_offsets
+                trails[(from_line, to_line)].update(inst_offsets)
             else:
-                return None, set()
+                trails[None] = set()
 
         # Calculate two trails: one from the next instruction, and one from the
         # jump_target instruction.
-        trails = collections.defaultdict(set)
-        arc, offsets = walk_one_branch(start_at=inst.offset + 2)
-        trails[arc].update(offsets)
-        arc, offsets = walk_one_branch(start_at=inst.jump_target)
-        trails[arc].update(offsets)
+        trails: TBranchTrailsOneSource = collections.defaultdict(set)
+        add_one_branch_trail(trails, start_at=inst.offset + 2)
+        add_one_branch_trail(trails, start_at=inst.jump_target)
         the_trails[inst.offset] = trails
 
         # Sometimes we get BRANCH_RIGHT or BRANCH_LEFT events from instructions

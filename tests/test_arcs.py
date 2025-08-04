@@ -2129,7 +2129,10 @@ class AsyncTest(CoverageTest):
             branchz_missing="29 38 45 56 5. 9A 9.",
         )
 
-    @pytest.mark.skipif(env.PYVERSION[:2] == (3, 9), reason="not sure why it isn't fixed on 3.9")
+    @pytest.mark.skipif(
+        env.PYVERSION[:2] == (3, 9),
+        reason="CPython fix not backported to 3.9: https://github.com/python/cpython/issues/93061",
+    )
     def test_bug_1999(self) -> None:
         self.check_coverage("""\
             import asyncio
