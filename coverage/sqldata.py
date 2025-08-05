@@ -271,12 +271,18 @@ class CoverageData:
     def _reset(self) -> None:
         """Reset our attributes."""
         if not self._no_disk:
-            for db in self._dbs.values():
-                db.close()
-            self._dbs = {}
+            self.close()
         self._file_map = {}
         self._have_used = False
         self._current_context_id = None
+
+    def close(self, force: bool = False) -> None:
+        """Really close all the database objects."""
+        if self._debug.should("dataio"):
+            self._debug.write(f"Closing dbs, force={force}: {self._dbs}")
+        for db in self._dbs.values():
+            db.close(force=force)
+        self._dbs = {}
 
     def _open_db(self) -> None:
         """Open an existing db file, and read its metadata."""

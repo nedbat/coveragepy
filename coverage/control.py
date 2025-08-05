@@ -282,6 +282,7 @@ class Coverage(TConfigurable):
         self._plugins: Plugins = Plugins()
         self._plugin_override = cast(Union[Iterable[TCoverageInit], None], plugins)
         self._data: CoverageData | None = None
+        self._data_to_close: list[CoverageData] = []
         self._core: Core | None = None
         self._collector: Collector | None = None
         self._metacov = False
@@ -646,6 +647,7 @@ class Coverage(TConfigurable):
                 debug=self._debug,
                 no_disk=self._no_disk,
             )
+            self._data_to_close.append(self._data)
 
     def start(self) -> None:
         """Start measuring code coverage.
@@ -718,6 +720,8 @@ class Coverage(TConfigurable):
             self.stop()
         if self._auto_save or event == "sigterm":
             self.save()
+        for d in self._data_to_close:
+            d.close(force=True)
 
     def _on_sigterm(self, signum_unused: int, frame_unused: FrameType | None) -> None:
         """A handler for signal.SIGTERM."""
@@ -1048,6 +1052,7 @@ class Coverage(TConfigurable):
             if self._data is not None:
                 mapped_data.update(self._data, map_path=self._make_aliases().map)
             self._data = mapped_data
+            self._data_to_close.append(mapped_data)
 
     def report(
         self,

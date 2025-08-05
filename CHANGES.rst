@@ -23,7 +23,10 @@ upgrading your version of coverage.py.
 Unreleased
 ----------
 
-Nothing yet.
+- Fix: really close all SQLite databases, even in-memory ones. Closes `issue
+  2017`_.
+
+.. _issue 2017: https://github.com/nedbat/coveragepy/issues/2017
 
 
 .. start-releases

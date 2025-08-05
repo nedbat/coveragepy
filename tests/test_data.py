@@ -670,7 +670,7 @@ class CoverageDataInTempDirTest(CoverageTest):
             covdata.add_lines(LINES_1)
             # I don't know how to make a real error, so let's fake one.
             sqldb = list(covdata._dbs.values())[0]
-            sqldb.close = lambda: 1/0       # type: ignore[assignment]
+            sqldb.close = lambda: 1/0       # type: ignore
             covdata.add_lines(LINES_1)
 
     def test_wrong_schema_version(self) -> None:
@@ -724,8 +724,11 @@ class CoverageDataFilesTest(CoverageTest):
         covdata2.read()
         assert_line_counts(covdata2, SUMMARY_1)
 
+        print(debug.get_output())
+
         assert re.search(
-            r"^Erasing data file '.*\.coverage'\n" +
+            r"^Closing dbs, force=False: {}\n" +
+            r"Erasing data file '.*\.coverage'\n" +
             r"Opening data file '.*\.coverage'\n" +
             r"Initing data file '.*\.coverage'\n" +
             r"Opening data file '.*\.coverage'\n$",
