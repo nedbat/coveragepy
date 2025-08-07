@@ -497,13 +497,15 @@ class DebugOutputFile:
     def write(self, text: str) -> None:
         """Just like file.write, but filter through all our filters."""
         assert self.outfile is not None
-        self.outfile.write(filter_text(text, self.filters))
-        self.outfile.flush()
+        if not self.outfile.closed:
+            self.outfile.write(filter_text(text, self.filters))
+            self.outfile.flush()
 
     def flush(self) -> None:
         """Flush our file."""
         assert self.outfile is not None
-        self.outfile.flush()
+        if not self.outfile.closed:
+            self.outfile.flush()
 
 
 def log(msg: str, stack: bool = False) -> None:             # pragma: debugging
