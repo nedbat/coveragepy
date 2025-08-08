@@ -8,7 +8,7 @@ eventlet==0.40.2
     # via -r requirements/light-threads.in
 gevent==25.5.1
     # via -r requirements/light-threads.in
-greenlet==3.2.3
+greenlet==3.2.4
     # via
     #   -r requirements/light-threads.in
     #   eventlet

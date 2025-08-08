@@ -30,7 +30,7 @@ tomli==2.2.1
     # via
     #   pyproject-api
     #   tox
-tox==4.28.3
+tox==4.28.4
     # via
     #   -r requirements/tox.in
     #   tox-gh
@@ -38,5 +38,5 @@ tox-gh==1.5.0
     # via -r requirements/tox.in
 typing-extensions==4.14.1
     # via tox
-virtualenv==20.32.0
+virtualenv==20.33.1
     # via tox
