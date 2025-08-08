@@ -375,13 +375,14 @@ class Collector:
 
     def resume(self) -> None:
         """Resume tracing after a `pause`."""
-        for tracer in self.tracers:
-            tracer.start()
         if self.core.systrace:
             if self.threading:
                 self.threading.settrace(self._installation_trace)
             else:
                 self._start_tracer()
+        else:
+            for tracer in self.tracers:
+                tracer.start()
 
     def post_fork(self) -> None:
         """After a fork, tracers might need to adjust."""
