@@ -982,8 +982,8 @@ static PyObject *
 CTracer_start(CTracer *self, PyObject *args_unused)
 {
     PyEval_SetTrace((Py_tracefunc)CTracer_trace, (PyObject*)self);
-    self->started = TRUE;
     self->tracing_arcs = self->trace_arcs && PyObject_IsTrue(self->trace_arcs);
+    atomic_store(&self->started, TRUE);
 
     /* start() returns a trace function usable with sys.settrace() */
     Py_INCREF(self);
@@ -993,13 +993,11 @@ CTracer_start(CTracer *self, PyObject *args_unused)
 static PyObject *
 CTracer_stop(CTracer *self, PyObject *args_unused)
 {
-    if (self->started) {
-        /* Set the started flag only. The actual call to
-           PyEval_SetTrace(NULL, NULL) is delegated to the callback
-           itself to ensure that it called from the right thread.
-           */
-        self->started = FALSE;
-    }
+    /* Set the started flag only. The actual call to
+       PyEval_SetTrace(NULL, NULL) is delegated to the callback
+       itself to ensure that it called from the right thread.
+       */
+    atomic_store(&self->started, FALSE);
 
     Py_RETURN_NONE;
 }
