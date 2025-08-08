@@ -155,6 +155,11 @@ class ve_build_ext(build_ext):
 
     def build_extension(self, ext):
         """Wrap `build_extension` with `BuildFailed`."""
+        if self.compiler.compiler_type == "msvc":
+            ext.extra_compile_args = (ext.extra_compile_args or []) + [
+                "/std:c11",
+                "/experimental:c11atomics",
+            ]
         try:
             # Uncomment to test compile failure handling:
             #   raise errors.CCompilerError("OOPS")

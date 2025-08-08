@@ -818,7 +818,7 @@ CTracer_trace(CTracer *self, PyFrameObject *frame, int what, PyObject *arg_unuse
     return RET_OK;
     #endif
 
-    if (!self->started) {
+    if (!atomic_load(&self->started)) {
         /* If CTracer.stop() has been called from another thread, the tracer
            is still active in the current thread. Let's deactivate ourselves
            now. */
@@ -848,7 +848,7 @@ CTracer_trace(CTracer *self, PyFrameObject *frame, int what, PyObject *arg_unuse
     Py_DECREF(ascii);
     #endif
 
-    self->activity = TRUE;
+    atomic_store(&self->activity, TRUE);
 
     switch (what) {
     case PyTrace_CALL:
@@ -981,9 +981,10 @@ done:
 static PyObject *
 CTracer_start(CTracer *self, PyObject *args_unused)
 {
+    assert(atomic_load(&self->started) == FALSE);
     PyEval_SetTrace((Py_tracefunc)CTracer_trace, (PyObject*)self);
-    self->started = TRUE;
     self->tracing_arcs = self->trace_arcs && PyObject_IsTrue(self->trace_arcs);
+    atomic_store(&self->started, TRUE);
 
     /* start() returns a trace function usable with sys.settrace() */
     Py_INCREF(self);
@@ -993,13 +994,11 @@ CTracer_start(CTracer *self, PyObject *args_unused)
 static PyObject *
 CTracer_stop(CTracer *self, PyObject *args_unused)
 {
-    if (self->started) {
-        /* Set the started flag only. The actual call to
-           PyEval_SetTrace(NULL, NULL) is delegated to the callback
-           itself to ensure that it called from the right thread.
-           */
-        self->started = FALSE;
-    }
+    /* Set the started flag only. The actual call to
+       PyEval_SetTrace(NULL, NULL) is delegated to the callback
+       itself to ensure that it called from the right thread.
+       */
+    atomic_store(&self->started, FALSE);
 
     Py_RETURN_NONE;
 }
@@ -1007,7 +1006,7 @@ CTracer_stop(CTracer *self, PyObject *args_unused)
 static PyObject *
 CTracer_activity(CTracer *self, PyObject *args_unused)
 {
-    if (self->activity) {
+    if (atomic_load(&self->activity)) {
         Py_RETURN_TRUE;
     }
     else {
@@ -1018,7 +1017,7 @@ CTracer_activity(CTracer *self, PyObject *args_unused)
 static PyObject *
 CTracer_reset_activity(CTracer *self, PyObject *args_unused)
 {
-    self->activity = FALSE;
+    atomic_store(&self->activity, FALSE);
     Py_RETURN_NONE;
 }
 

@@ -5,6 +5,7 @@
 #define _COVERAGE_UTIL_H
 
 #include <Python.h>
+#include <stdatomic.h>
 
 /* Compile-time debugging helpers */
 #undef WHAT_LOG         /* Define to log the WHAT params in the trace function. */
