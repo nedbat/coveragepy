@@ -80,7 +80,8 @@ Version 7.10.0 — 2025-07-24
   - ``patch = subprocess`` measures coverage in Python subprocesses created
     with :mod:`subprocess`, :func:`os.system`, or one of the :func:`execv
     <python:os.execl>` or :func:`spawnv <python:os.spawnl>` family of
-    functions. Closes old `issue 367`_ and duplicate `issue 378`_.
+    functions. Closes old `issue 367`_, its duplicate `issue 378`_ and old
+    `issue 689`_.
 
   - ``patch = execv`` adjusts the :func:`execv <python:os.execl>` family of
     functions to save coverage data before ending the current program and
@@ -122,6 +123,7 @@ Version 7.10.0 — 2025-07-24
 .. _issue 312: https://github.com/nedbat/coveragepy/issues/312
 .. _issue 367: https://github.com/nedbat/coveragepy/issues/367
 .. _issue 378: https://github.com/nedbat/coveragepy/issues/378
+.. _issue 689: https://github.com/nedbat/coveragepy/issues/689
 .. _issue 831: https://github.com/nedbat/coveragepy/issues/831
 .. _issue 1308: https://github.com/nedbat/coveragepy/issues/1308
 .. _issue 1673: https://github.com/nedbat/coveragepy/issues/1673
