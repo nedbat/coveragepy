@@ -459,6 +459,10 @@ Available patches:
   and will require combining data files before reporting.  See
   :ref:`cmd_combine` for more details.
 
+  .. note:: When using ``patch = subprocess``, all configuration options must
+      be specified in a configuration file.  Options on the ``coverage``
+      command line will not be available to subprocesses.
+
 - ``execv``: The :func:`execv <python:os.execl>` family of functions end the
   current program without giving coverage a chance to write collected data.
   This patch adjusts those functions to save the data before starting the next
