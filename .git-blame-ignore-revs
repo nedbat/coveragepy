@@ -27,3 +27,6 @@ e4e238a9ed8f2ad2b9060247591b4c057c2953bf
 
 # 2024-02-27 style: modernize type hints, a few more f-strings
 401a63bf08bdfd780b662f64d2dfe3603f2584dd
+
+# 2025-08-09 style: ruff check --fix --fixable=I001,Q000 coverage/*.py
+a32cd74bc0aaf0714acaf37beb21c84cbe2ee3ff
