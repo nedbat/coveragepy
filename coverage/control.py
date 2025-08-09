@@ -697,7 +697,7 @@ class Coverage(TConfigurable):
         if self._auto_load:
             self.load()
 
-        apply_patches(self, self.config, make_pth_file=self._make_pth_file)
+        apply_patches(self, self.config, self._debug, make_pth_file=self._make_pth_file)
 
         self._collector.start()
         self._started = True

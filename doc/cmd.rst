@@ -1064,6 +1064,9 @@ of operation to log:
 
 * ``multiproc``: log the start and stop of multiprocessing processes.
 
+* ``patch``: log when patches are applied and when they are executed. See
+  :ref:`config_run_patch`.
+
 * ``pathmap``: log the remapping of paths that happens during ``coverage
   combine``. See :ref:`config_paths`.
 
