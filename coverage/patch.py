@@ -7,11 +7,12 @@ from __future__ import annotations
 
 import atexit
 import os
+import site
+from pathlib import Path
 from typing import TYPE_CHECKING, Any, Callable, NoReturn
 
 from coverage import env
 from coverage.exceptions import ConfigError, CoverageException
-from coverage.files import create_pth_file
 
 if TYPE_CHECKING:
     from coverage import Coverage
@@ -87,3 +88,16 @@ def apply_patches(cov: Coverage, config: CoverageConfig, *, make_pth_file: bool=
 
         else:
             raise ConfigError(f"Unknown patch {patch!r}")
+
+
+def create_pth_file() -> Path | None:
+    """Create .pth file for measuring subprocesses."""
+    for pth_dir in site.getsitepackages():  # pragma: part covered
+        pth_file = Path(pth_dir) / f"subcover_{os.getpid()}.pth"
+        try:
+            pth_file.write_text("import coverage; coverage.process_startup()\n", encoding="utf-8")
+        except OSError:  # pragma: cant happen
+            continue
+        else:
+            return pth_file
+    return None  # pragma: cant happen

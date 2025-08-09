@@ -11,10 +11,8 @@ import os
 import os.path
 import posixpath
 import re
-import site
 import sys
 from collections.abc import Iterable
-from pathlib import Path
 from typing import Callable
 
 from coverage import env
@@ -214,19 +212,6 @@ def prep_patterns(patterns: Iterable[str]) -> list[str]:
         if not p.startswith(("*", "?")):
             prepped.append(abs_file(p))
     return prepped
-
-
-def create_pth_file() -> Path | None:
-    """Create .pth file for measuring subprocesses."""
-    for pth_dir in site.getsitepackages():  # pragma: part covered
-        pth_file = Path(pth_dir) / f"subcover_{os.getpid()}.pth"
-        try:
-            pth_file.write_text("import coverage; coverage.process_startup()\n", encoding="utf-8")
-        except OSError:  # pragma: cant happen
-            continue
-        else:
-            return pth_file
-    return None  # pragma: cant happen
 
 
 class TreeMatcher:

@@ -17,7 +17,9 @@ from collections.abc import Iterator
 
 import pytest
 
-from coverage.files import set_relative_directory, create_pth_file
+from coverage.files import set_relative_directory
+from coverage.patch import create_pth_file
+
 
 # Pytest will rewrite assertions in test modules, but not elsewhere.
 # This tells pytest to also rewrite assertions in these files:
