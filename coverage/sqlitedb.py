@@ -8,9 +8,8 @@ from __future__ import annotations
 import contextlib
 import re
 import sqlite3
-
-from typing import cast, Any
 from collections.abc import Iterable, Iterator
+from typing import Any, cast
 
 from coverage.debug import auto_repr, clipped_repr, exc_one_line
 from coverage.exceptions import DataError

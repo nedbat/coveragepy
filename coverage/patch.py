@@ -7,8 +7,7 @@ from __future__ import annotations
 
 import atexit
 import os
-
-from typing import Any, Callable, NoReturn, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Callable, NoReturn
 
 from coverage import env
 from coverage.exceptions import ConfigError, CoverageException

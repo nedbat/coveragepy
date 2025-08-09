@@ -18,9 +18,8 @@ from __future__ import annotations
 
 import json
 import sqlite3
-
-from itertools import zip_longest
 from collections.abc import Iterable
+from itertools import zip_longest
 
 
 def nums_to_numbits(nums: Iterable[int]) -> bytes:

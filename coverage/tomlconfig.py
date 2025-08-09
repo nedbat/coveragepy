@@ -7,9 +7,8 @@ from __future__ import annotations
 
 import os
 import re
-
-from typing import Any, Callable, TypeVar
 from collections.abc import Iterable
+from typing import Any, Callable, TypeVar
 
 from coverage import config, env
 from coverage.exceptions import ConfigError
@@ -19,7 +18,7 @@ from coverage.types import TConfigSectionOut, TConfigValueOut
 os = isolate_module(os)
 
 if env.PYVERSION >= (3, 11, 0, "alpha", 7):
-    import tomllib      # pylint: disable=import-error
+    import tomllib  # pylint: disable=import-error
     has_tomllib = True
 else:
     # TOML support on Python 3.10 and below is an install-time extra option.
@@ -51,7 +50,7 @@ class TomlConfigParser:
         filename = os.fspath(filenames)
 
         try:
-            with open(filename, encoding='utf-8') as fp:
+            with open(filename, encoding="utf-8") as fp:
                 toml_text = fp.read()
         except OSError:
             return []

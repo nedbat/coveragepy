@@ -8,9 +8,8 @@ from __future__ import annotations
 import os
 import platform
 import sys
-
-from typing import Any, Final
 from collections.abc import Iterable
+from typing import Any, Final
 
 # debug_info() at the bottom wants to show all the globals, but not imports.
 # Grab the global names here to know which names to not show. Nothing defined
@@ -41,7 +40,7 @@ else:
     PYPYVERSION = (0,)
 
 # Do we have a GIL?
-GIL = getattr(sys, '_is_gil_enabled', lambda: True)()
+GIL = getattr(sys, "_is_gil_enabled", lambda: True)()
 
 # Do we ship compiled coveragepy wheels for this version?
 SHIPPING_WHEELS = CPYTHON and PYVERSION[:2] <= (3, 13)

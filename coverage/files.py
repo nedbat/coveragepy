@@ -13,15 +13,13 @@ import posixpath
 import re
 import site
 import sys
-
+from collections.abc import Iterable
 from pathlib import Path
 from typing import Callable
-from collections.abc import Iterable
 
 from coverage import env
 from coverage.exceptions import ConfigError
 from coverage.misc import human_sorted, isolate_module, join_regex
-
 
 os = isolate_module(os)
 

@@ -7,9 +7,8 @@ from __future__ import annotations
 
 import os
 import re
-
-from typing import TYPE_CHECKING
 from collections.abc import Iterable
+from typing import TYPE_CHECKING
 
 from coverage.files import flat_rootname
 from coverage.misc import ensure_dir, isolate_module

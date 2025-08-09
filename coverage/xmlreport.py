@@ -10,13 +10,12 @@ import os.path
 import sys
 import time
 import xml.dom.minidom
-
-from dataclasses import dataclass
-from typing import Any, IO, TYPE_CHECKING
 from collections.abc import Iterable
+from dataclasses import dataclass
+from typing import IO, TYPE_CHECKING, Any
 
 from coverage import __version__, files
-from coverage.misc import isolate_module, human_sorted, human_sorted_items
+from coverage.misc import human_sorted, human_sorted_items, isolate_module
 from coverage.plugin import FileReporter
 from coverage.report_core import get_analysis_to_report
 from coverage.results import Analysis

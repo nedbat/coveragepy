@@ -11,18 +11,25 @@ import copy
 import os
 import os.path
 import re
-
-from typing import (
-    Any, Callable, Final, Mapping, Union,
-)
 from collections.abc import Iterable
+from typing import (
+    Any,
+    Callable,
+    Final,
+    Mapping,
+    Union,
+)
 
 from coverage.exceptions import ConfigError
-from coverage.misc import isolate_module, human_sorted_items, substitute_variables
+from coverage.misc import human_sorted_items, isolate_module, substitute_variables
 from coverage.tomlconfig import TomlConfigParser, TomlDecodeError
 from coverage.types import (
-    TConfigurable, TConfigSectionIn, TConfigValueIn, TConfigSectionOut,
-    TConfigValueOut, TPluginConfig,
+    TConfigSectionIn,
+    TConfigSectionOut,
+    TConfigurable,
+    TConfigValueIn,
+    TConfigValueOut,
+    TPluginConfig,
 )
 
 os = isolate_module(os)

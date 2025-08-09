@@ -8,17 +8,14 @@ from __future__ import annotations
 import os
 import os.path
 import sys
-
+from collections.abc import Iterable, Iterator
 from types import FrameType
 from typing import Any, Callable
-from collections.abc import Iterable, Iterator
 
 from coverage.exceptions import PluginError
 from coverage.misc import isolate_module
-from coverage.plugin import CoveragePlugin, FileTracer, FileReporter
-from coverage.types import (
-    TArc, TConfigurable, TDebugCtl, TLineNo, TPluginConfig, TSourceTokenLines
-)
+from coverage.plugin import CoveragePlugin, FileReporter, FileTracer
+from coverage.types import TArc, TConfigurable, TDebugCtl, TLineNo, TPluginConfig, TSourceTokenLines
 
 os = isolate_module(os)
 

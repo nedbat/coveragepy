@@ -11,7 +11,6 @@ import os
 import os.path
 import sys
 import traceback
-
 from typing import Any
 
 from coverage.debug import DebugControl
@@ -31,7 +30,7 @@ class ProcessWithCoverage(OriginalProcess):         # pylint: disable=abstract-m
         """Wrapper around _bootstrap to start coverage."""
         debug: DebugControl | None = None
         try:
-            from coverage import Coverage       # avoid circular import
+            from coverage import Coverage  # avoid circular import
             cov = Coverage(data_suffix=True, auto_data=True)
             cov._warn_preimported_source = False
             cov.start()

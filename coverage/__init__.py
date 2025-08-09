@@ -11,6 +11,8 @@ https://coverage.readthedocs.io
 
 from __future__ import annotations
 
+# isort: skip_file
+
 # mypy's convention is that "import as" names are public from the module.
 # We import names as themselves to indicate that. Pylint sees it as pointless,
 # so disable its warning.

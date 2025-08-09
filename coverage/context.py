@@ -5,8 +5,8 @@
 
 from __future__ import annotations
 
-from types import FrameType
 from collections.abc import Sequence
+from types import FrameType
 
 from coverage.types import TShouldStartContextFn
 

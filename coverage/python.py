@@ -8,16 +8,15 @@ from __future__ import annotations
 import os.path
 import types
 import zipimport
-
-from typing import TYPE_CHECKING
 from collections.abc import Iterable
+from typing import TYPE_CHECKING
 
 from coverage import env
 from coverage.exceptions import CoverageException, NoSource
 from coverage.files import canonical_filename, relative_filename, zip_location
 from coverage.misc import isolate_module, join_regex
 from coverage.parser import PythonParser
-from coverage.phystokens import source_token_lines, source_encoding
+from coverage.phystokens import source_encoding, source_token_lines
 from coverage.plugin import CodeRegion, FileReporter
 from coverage.regions import code_regions
 from coverage.types import TArc, TLineNo, TMorf, TSourceTokenLines

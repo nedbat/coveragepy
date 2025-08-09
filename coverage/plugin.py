@@ -116,10 +116,9 @@ from __future__ import annotations
 
 import dataclasses
 import functools
-
+from collections.abc import Iterable
 from types import FrameType
 from typing import Any
-from collections.abc import Iterable
 
 from coverage import files
 from coverage.misc import _needs_to_implement
