@@ -13,15 +13,13 @@ import posixpath
 import re
 import site
 import sys
-
+from collections.abc import Iterable
 from pathlib import Path
 from typing import Callable
-from collections.abc import Iterable
 
 from coverage import env
 from coverage.exceptions import ConfigError
 from coverage.misc import human_sorted, isolate_module, join_regex
-
 
 os = isolate_module(os)
 
@@ -221,7 +219,7 @@ def prep_patterns(patterns: Iterable[str]) -> list[str]:
 def create_pth_file() -> Path | None:
     """Create .pth file for measuring subprocesses."""
     for pth_dir in site.getsitepackages():  # pragma: part covered
-        pth_file = Path(pth_dir) / "subcover.pth"
+        pth_file = Path(pth_dir) / f"subcover_{os.getpid()}.pth"
         try:
             pth_file.write_text("import coverage; coverage.process_startup()\n", encoding="utf-8")
         except OSError:  # pragma: cant happen

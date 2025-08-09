@@ -6,14 +6,16 @@
 from __future__ import annotations
 
 import sys
-
-from typing import (
-    Callable, IO, Protocol, TYPE_CHECKING,
-)
 from collections.abc import Iterable, Iterator
+from typing import (
+    IO,
+    TYPE_CHECKING,
+    Callable,
+    Protocol,
+)
 
 from coverage.exceptions import NoDataError, NotPython
-from coverage.files import prep_patterns, GlobMatcher
+from coverage.files import GlobMatcher, prep_patterns
 from coverage.misc import ensure_dir_for_file, file_be_gone
 from coverage.plugin import FileReporter
 from coverage.results import Analysis

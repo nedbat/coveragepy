@@ -12,7 +12,6 @@ import os.path
 import sys
 import threading
 import traceback
-
 from dataclasses import dataclass
 from types import CodeType
 from typing import (
@@ -32,11 +31,11 @@ from coverage.types import (
     TFileDisposition,
     TLineNo,
     TOffset,
+    Tracer,
     TShouldStartContextFn,
     TShouldTraceFn,
     TTraceData,
     TTraceFileData,
-    Tracer,
     TWarnFn,
 )
 

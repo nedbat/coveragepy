@@ -12,12 +12,10 @@ import re
 import sys
 import token
 import tokenize
-
 from collections.abc import Iterable
 
 from coverage import env
 from coverage.types import TLineNo, TSourceTokenLines
-
 
 TokenInfos = Iterable[tokenize.TokenInfo]
 

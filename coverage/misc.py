@@ -18,20 +18,20 @@ import os.path
 import re
 import sys
 import types
-
+from collections.abc import Iterable, Iterator, Mapping, Sequence
 from types import ModuleType
 from typing import (
-    Any, NoReturn, TypeVar,
+    Any,
+    NoReturn,
+    TypeVar,
 )
-from collections.abc import Iterable, Iterator, Mapping, Sequence
-
-from coverage.exceptions import CoverageException
-from coverage.types import TArc
 
 # In 6.0, the exceptions moved from misc.py to exceptions.py.  But a number of
 # other packages were importing the exceptions from misc, so import them here.
 # pylint: disable=unused-wildcard-import
-from coverage.exceptions import *   # pylint: disable=wildcard-import
+from coverage.exceptions import *  # pylint: disable=wildcard-import
+from coverage.exceptions import CoverageException
+from coverage.types import TArc
 
 ISOLATED_MODULES: dict[ModuleType, ModuleType] = {}
 

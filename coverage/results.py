@@ -7,7 +7,6 @@ from __future__ import annotations
 
 import collections
 import dataclasses
-
 from collections.abc import Container, Iterable
 from typing import TYPE_CHECKING
 

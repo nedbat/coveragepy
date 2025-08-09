@@ -6,18 +6,17 @@
 from __future__ import annotations
 
 import ast
-import functools
 import collections
+import functools
 import os
 import re
 import sys
 import token
 import tokenize
-
 from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
 from types import CodeType
-from typing import cast, Callable, Optional, Protocol
+from typing import Callable, Optional, Protocol, cast
 
 from coverage import env
 from coverage.bytecode import code_objects
@@ -113,8 +112,8 @@ class PythonParser:
         last_start_line = 0
         for match in re.finditer(regex, self.text, flags=re.MULTILINE):
             start, end = match.span()
-            start_line = last_start_line + self.text.count('\n', last_start, start)
-            end_line = last_start_line + self.text.count('\n', last_start, end)
+            start_line = last_start_line + self.text.count("\n", last_start, start)
+            end_line = last_start_line + self.text.count("\n", last_start, end)
             matches.update(self._multiline.get(i, i) for i in range(start_line + 1, end_line + 2))
             last_start = start
             last_start_line = start_line

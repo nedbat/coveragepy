@@ -9,12 +9,15 @@ from __future__ import annotations
 
 import os
 import pathlib
-
 from collections.abc import Iterable, Mapping
 from types import FrameType, ModuleType
 from typing import (
-    Any, Callable, Optional, Protocol,
-    Union, TYPE_CHECKING,
+    TYPE_CHECKING,
+    Any,
+    Callable,
+    Optional,
+    Protocol,
+    Union,
 )
 
 if TYPE_CHECKING:

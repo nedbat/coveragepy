@@ -9,10 +9,9 @@ import contextlib
 import functools
 import os
 import sys
-
 from collections.abc import Mapping
 from types import FrameType
-from typing import cast, Any, Callable, TypeVar
+from typing import Any, Callable, TypeVar, cast
 
 from coverage import env
 from coverage.config import CoverageConfig
@@ -26,11 +25,11 @@ from coverage.types import (
     TArc,
     TCheckIncludeFn,
     TFileDisposition,
+    Tracer,
     TShouldStartContextFn,
     TShouldTraceFn,
     TTraceData,
     TTraceFn,
-    Tracer,
     TWarnFn,
 )
 
@@ -146,11 +145,11 @@ class Collector:
                 self.concur_id_func = greenlet.getcurrent
             elif "eventlet" in concurrencies:
                 tried = "eventlet"
-                import eventlet.greenthread     # pylint: disable=import-error,useless-suppression
+                import eventlet.greenthread  # pylint: disable=import-error,useless-suppression
                 self.concur_id_func = eventlet.greenthread.getcurrent
             elif "gevent" in concurrencies:
                 tried = "gevent"
-                import gevent                   # pylint: disable=import-error,useless-suppression
+                import gevent  # pylint: disable=import-error,useless-suppression
                 self.concur_id_func = gevent.getcurrent
 
             if "thread" in concurrencies:
@@ -222,7 +221,7 @@ class Collector:
         # being excluded by the inclusion rules, in which case the
         # FileDisposition will be replaced by None in the cache.
         if env.PYPY:
-            import __pypy__                     # pylint: disable=import-error
+            import __pypy__  # pylint: disable=import-error
             # Alex Gaynor said:
             # should_trace_cache is a strictly growing key: once a key is in
             # it, it never changes.  Further, the keys used to access it are
@@ -267,19 +266,19 @@ class Collector:
         tracer.should_trace_cache = self.should_trace_cache
         tracer.warn = self.warn
 
-        if hasattr(tracer, 'concur_id_func'):
+        if hasattr(tracer, "concur_id_func"):
             tracer.concur_id_func = self.concur_id_func
-        if hasattr(tracer, 'file_tracers'):
+        if hasattr(tracer, "file_tracers"):
             tracer.file_tracers = self.file_tracers
-        if hasattr(tracer, 'threading'):
+        if hasattr(tracer, "threading"):
             tracer.threading = self.threading
-        if hasattr(tracer, 'check_include'):
+        if hasattr(tracer, "check_include"):
             tracer.check_include = self.check_include
-        if hasattr(tracer, 'should_start_context'):
+        if hasattr(tracer, "should_start_context"):
             tracer.should_start_context = self.should_start_context
-        if hasattr(tracer, 'switch_context'):
+        if hasattr(tracer, "switch_context"):
             tracer.switch_context = self.switch_context
-        if hasattr(tracer, 'disable_plugin'):
+        if hasattr(tracer, "disable_plugin"):
             tracer.disable_plugin = self.disable_plugin
 
         fn = tracer.start()

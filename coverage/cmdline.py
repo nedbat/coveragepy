@@ -15,18 +15,16 @@ import sys
 import textwrap
 import traceback
 import types
-
-from typing import cast, Any, NoReturn
+from typing import Any, NoReturn, cast
 
 import coverage
-from coverage import Coverage
-from coverage import env
+from coverage import Coverage, env
 from coverage.config import CoverageConfig
 from coverage.control import DEFAULT_DATAFILE
 from coverage.core import CTRACER_FILE
 from coverage.data import combinable_files, debug_data_file
 from coverage.debug import info_header, short_stack, write_formatted_info
-from coverage.exceptions import _BaseCoverageException, _ExceptionDuringRun, NoSource
+from coverage.exceptions import NoSource, _BaseCoverageException, _ExceptionDuringRun
 from coverage.execfile import PyRunner
 from coverage.results import display_covered, should_fail_under
 from coverage.version import __url__
@@ -190,8 +188,8 @@ class Opts:
         ),
     )
     save_signal = optparse.make_option(
-        '', '--save-signal', action='store', metavar='SIGNAL',
-        choices = ['USR1', 'USR2'],
+        "", "--save-signal", action="store", metavar="SIGNAL",
+        choices = ["USR1", "USR2"],
         help=(
             "Specify a signal that will trigger coverage to write its collected data. " +
             "Supported values are: USR1, USR2. Not available on Windows."
@@ -1015,7 +1013,7 @@ def main(argv: list[str] | None = None) -> int | None:
 # $set_env.py: COVERAGE_PROFILE - Set to use ox_profile.
 _profile = os.getenv("COVERAGE_PROFILE")
 if _profile:                                                # pragma: debugging
-    from ox_profile.core.launchers import SimpleLauncher    # pylint: disable=import-error
+    from ox_profile.core.launchers import SimpleLauncher  # pylint: disable=import-error
     original_main = main
 
     def main(                                               # pylint: disable=function-redefined

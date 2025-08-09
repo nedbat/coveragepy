@@ -17,20 +17,23 @@ import sys
 import threading
 import time
 import warnings
-
-from types import FrameType
-from typing import cast, Any, Callable, IO, Union
 from collections.abc import Iterable, Iterator
+from types import FrameType
+from typing import IO, Any, Callable, Union, cast
 
 from coverage import env
 from coverage.annotate import AnnotateReporter
 from coverage.collector import Collector
 from coverage.config import CoverageConfig, read_coverage_config
-from coverage.context import should_start_context_test_function, combine_context_switchers
-from coverage.core import Core, CTRACER_FILE
+from coverage.context import combine_context_switchers, should_start_context_test_function
+from coverage.core import CTRACER_FILE, Core
 from coverage.data import CoverageData, combine_parallel_data
 from coverage.debug import (
-    DebugControl, NoDebugging, short_stack, write_formatted_info, relevant_environment_display,
+    DebugControl,
+    NoDebugging,
+    relevant_environment_display,
+    short_stack,
+    write_formatted_info,
 )
 from coverage.disposition import disposition_debug_msg
 from coverage.exceptions import ConfigError, CoverageException, CoverageWarning, PluginError
@@ -39,8 +42,13 @@ from coverage.html import HtmlReporter
 from coverage.inorout import InOrOut
 from coverage.jsonreport import JsonReporter
 from coverage.lcovreport import LcovReporter
-from coverage.misc import bool_or_none, join_regex
-from coverage.misc import DefaultValue, ensure_dir_for_file, isolate_module
+from coverage.misc import (
+    DefaultValue,
+    bool_or_none,
+    ensure_dir_for_file,
+    isolate_module,
+    join_regex,
+)
 from coverage.multiproc import patch_multiprocessing
 from coverage.patch import apply_patches
 from coverage.plugin import FileReporter
@@ -50,8 +58,14 @@ from coverage.report import SummaryReporter
 from coverage.report_core import render_report
 from coverage.results import Analysis, analysis_from_file_reporter
 from coverage.types import (
-    FilePath, TConfigurable, TConfigSectionIn, TConfigValueIn, TConfigValueOut,
-    TFileDisposition, TLineNo, TMorf
+    FilePath,
+    TConfigSectionIn,
+    TConfigurable,
+    TConfigValueIn,
+    TConfigValueOut,
+    TFileDisposition,
+    TLineNo,
+    TMorf,
 )
 from coverage.xmlreport import XmlReporter
 
@@ -1362,7 +1376,7 @@ class Coverage(TConfigurable):
             ("platform", platform.platform()),
             ("implementation", platform.python_implementation()),
             ("build", platform.python_build()),
-            ("gil_enabled", getattr(sys, '_is_gil_enabled', lambda: True)()),
+            ("gil_enabled", getattr(sys, "_is_gil_enabled", lambda: True)()),
             ("executable", sys.executable),
             ("def_encoding", sys.getdefaultencoding()),
             ("fs_encoding", sys.getfilesystemencoding()),

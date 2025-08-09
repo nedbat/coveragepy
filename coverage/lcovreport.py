@@ -8,9 +8,8 @@ from __future__ import annotations
 import base64
 import hashlib
 import sys
-
-from typing import IO, TYPE_CHECKING
 from collections.abc import Iterable
+from typing import IO, TYPE_CHECKING
 
 from coverage.plugin import FileReporter
 from coverage.report_core import get_analysis_to_report

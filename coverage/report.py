@@ -6,9 +6,8 @@
 from __future__ import annotations
 
 import sys
-
-from typing import Any, IO, TYPE_CHECKING
 from collections.abc import Iterable
+from typing import IO, TYPE_CHECKING, Any
 
 from coverage.exceptions import ConfigError, NoDataError
 from coverage.misc import human_sorted_items

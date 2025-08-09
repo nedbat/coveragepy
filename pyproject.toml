@@ -158,12 +158,25 @@ ghrel_template = """
 # We aren't using ruff for real yet...
 
 [tool.ruff]
-target-version = "py38"     # Can't use [project]
+# PYVERSION
+target-version = "py39"     # Can't use [project]
 line-length = 100
+src = ["coverage", "tests"]
 
 [tool.ruff.lint]
 select = ["ALL"]
 ignore = [
-    "ANN101",       # Missing type annotation for `self` in method
+    "ANN401",       # any-type
+    "C901",         # complex structure
+    "COM812",       # missing-trailing-comma
+    "D203",         # incorrect-blank-line-before-class
+    "D213",         # multi-line-summary-second-line
+    "EM101",        # Exception must not use a string literal, assign to variable first
+    "EM102",        # Exception must not use an f-string literal, assign to variable first
     "ERA001",       # Found commented-out code
+    "PLR0913",      # Too many arguments in function definition
+    "S101",         # Use of `assert` detected
+    "SIM105",       # Use `contextlib.suppress(Exception)` instead of `try`-`except`-`pass`
+    "TRY003",       # Avoid specifying long messages outside the exception class
 ]
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?)|[a-zA-Z0-9_]+_unused)$"

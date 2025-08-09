@@ -15,21 +15,28 @@ import re
 import sys
 import sysconfig
 import traceback
-
+from collections.abc import Iterable
 from types import FrameType, ModuleType
 from typing import (
-    cast, Any, TYPE_CHECKING,
+    TYPE_CHECKING,
+    Any,
+    cast,
 )
-from collections.abc import Iterable
 
 from coverage import env
 from coverage.disposition import FileDisposition, disposition_init
 from coverage.exceptions import ConfigError, CoverageException, PluginError
-from coverage.files import TreeMatcher, GlobMatcher, ModuleMatcher
-from coverage.files import prep_patterns, find_python_files, canonical_filename
+from coverage.files import (
+    GlobMatcher,
+    ModuleMatcher,
+    TreeMatcher,
+    canonical_filename,
+    find_python_files,
+    prep_patterns,
+)
 from coverage.misc import isolate_module, sys_modules_saved
 from coverage.python import source_for_file, source_for_morf
-from coverage.types import TFileDisposition, TMorf, TWarnFn, TDebugCtl
+from coverage.types import TDebugCtl, TFileDisposition, TMorf, TWarnFn
 
 if TYPE_CHECKING:
     from coverage.config import CoverageConfig
@@ -45,8 +52,8 @@ if env.PYPY:
     # when deciding where the stdlib is.  These modules are not used for anything,
     # they are modules importable from the pypy lib directories, so that we can
     # find those directories.
-    import _pypy_irc_topic      # pylint: disable=import-error
-    import _structseq           # pylint: disable=import-error
+    import _pypy_irc_topic  # pylint: disable=import-error
+    import _structseq  # pylint: disable=import-error
     modules_we_happen_to_have.extend([_structseq, _pypy_irc_topic])
 
 

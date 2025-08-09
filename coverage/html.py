@@ -13,25 +13,29 @@ import json
 import os
 import re
 import string
-
-from dataclasses import dataclass, field
-from typing import Any, TYPE_CHECKING
 from collections.abc import Iterable
+from dataclasses import dataclass, field
+from typing import TYPE_CHECKING, Any
 
 import coverage
 from coverage.data import CoverageData, add_data_to_hash
 from coverage.exceptions import NoDataError
 from coverage.files import flat_rootname
 from coverage.misc import (
-    ensure_dir, file_be_gone, Hasher, isolate_module, format_local_datetime,
-    human_sorted, plural, stdout_link,
+    Hasher,
+    ensure_dir,
+    file_be_gone,
+    format_local_datetime,
+    human_sorted,
+    isolate_module,
+    plural,
+    stdout_link,
 )
 from coverage.report_core import get_analysis_to_report
 from coverage.results import Analysis, Numbers
 from coverage.templite import Templite
 from coverage.types import TLineNo, TMorf
 from coverage.version import __url__
-
 
 if TYPE_CHECKING:
     from coverage import Coverage

@@ -10,7 +10,6 @@ import dis
 import itertools
 import sys
 import threading
-
 from types import FrameType, ModuleType
 from typing import Any, Callable, cast
 
@@ -19,15 +18,14 @@ from coverage.types import (
     TArc,
     TFileDisposition,
     TLineNo,
+    Tracer,
     TShouldStartContextFn,
     TShouldTraceFn,
     TTraceData,
     TTraceFileData,
     TTraceFn,
     TWarnFn,
-    Tracer,
 )
-
 
 # I don't understand why, but if we use `cast(set[TLineNo], ...)` inside
 # the _trace() function, we get some strange behavior on PyPy 3.10.

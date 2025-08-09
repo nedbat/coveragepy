@@ -7,10 +7,9 @@ from __future__ import annotations
 
 import collections
 import dis
-
+from collections.abc import Iterator
 from types import CodeType
 from typing import Iterable, Optional
-from collections.abc import Iterator
 
 from coverage.types import TArc, TOffset
 

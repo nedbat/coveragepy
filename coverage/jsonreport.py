@@ -8,14 +8,13 @@ from __future__ import annotations
 import datetime
 import json
 import sys
-
 from collections.abc import Iterable
-from typing import Any, IO, TYPE_CHECKING
+from typing import IO, TYPE_CHECKING, Any
 
 from coverage import __version__
 from coverage.report_core import get_analysis_to_report
 from coverage.results import Analysis, Numbers
-from coverage.types import TMorf, TLineNo
+from coverage.types import TLineNo, TMorf
 
 if TYPE_CHECKING:
     from coverage import Coverage

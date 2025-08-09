@@ -5,6 +5,7 @@
 
 from __future__ import annotations
 
+import _thread
 import atexit
 import contextlib
 import functools
@@ -17,13 +18,14 @@ import reprlib
 import sys
 import traceback
 import types
-import _thread
-
-from typing import (
-    overload,
-    Any, Callable, Final, IO,
-)
 from collections.abc import Iterable, Iterator, Mapping
+from typing import (
+    IO,
+    Any,
+    Callable,
+    Final,
+    overload,
+)
 
 from coverage.misc import human_sorted_items, isolate_module
 from coverage.types import AnyCallable, TWritable
