@@ -23,9 +23,15 @@ upgrading your version of coverage.py.
 Unreleased
 ----------
 
-- Fix: ``patch = subprocess`` didn't fully account for subprocesses spawning
-  yet more subprocesses simultaneously, and some coveage could be missed.  This
-  is now fixed, closing `issue 2024`_.
+- Fixes for ``patch = subprocess``:
+
+  - It didn't fully account for subprocesses spawning yet more subprocesses
+    simultaneously, and some coverage could be missed.  This is now fixed,
+    closing `issue 2024`_.
+
+  - If subprocesses were created in other directories, their data files were
+    stranded there and not combined into the totals, as described in `issue
+    2025`_.  This is now fixed.
 
 - Fix: really close all SQLite databases, even in-memory ones. Closes `issue
   2017`_.
@@ -37,6 +43,7 @@ Unreleased
 .. _issue 2017: https://github.com/nedbat/coveragepy/issues/2017
 .. _pull 2018: https://github.com/nedbat/coveragepy/pull/2018
 .. _issue 2024: https://github.com/nedbat/coveragepy/issues/2024
+.. _issue 2025: https://github.com/nedbat/coveragepy/issues/2025
 
 
 .. start-releases

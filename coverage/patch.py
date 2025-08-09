@@ -83,6 +83,7 @@ def apply_patches(cov: Coverage, config: CoverageConfig, *, make_pth_file: bool=
                 atexit.register(pth_file.unlink, missing_ok=True)
             assert config.config_file is not None
             os.environ["COVERAGE_PROCESS_START"] = config.config_file
+            os.environ["COVERAGE_PROCESS_DATAFILE"] = os.path.abspath(config.data_file)
 
         else:
             raise ConfigError(f"Unknown patch {patch!r}")

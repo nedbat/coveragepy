@@ -1448,7 +1448,10 @@ def process_startup() -> Coverage | None:
         # started coverage.py in this process.  Nothing to do.
         return None
 
-    cov = Coverage(config_file=cps)
+    cov = Coverage(
+        config_file=cps,
+        data_file=os.getenv("COVERAGE_PROCESS_DATAFILE") or DEFAULT_DATAFILE,
+    )
     process_startup.coverage = cov      # type: ignore[attr-defined]
     cov._warn_no_data = False
     cov._warn_unimported_source = False

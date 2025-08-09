@@ -1325,9 +1325,8 @@ class YankedDirectoryTest(CoverageTest):
 class ProcessStartupTest(CoverageTest):
     """Test that we can measure coverage in subprocesses."""
 
-    def setUp(self) -> None:
-        super().setUp()
-
+    def make_main_and_sub(self) -> None:
+        """Create main.py and sub.py."""
         # Main will run sub.py
         self.make_file("main.py", """\
             import os, os.path, sys
@@ -1342,6 +1341,7 @@ class ProcessStartupTest(CoverageTest):
             """)
 
     def test_patch_subprocess(self) -> None:
+        self.make_main_and_sub()
         self.make_file(".coveragerc", """\
             [run]
             patch = subprocess
@@ -1358,6 +1358,7 @@ class ProcessStartupTest(CoverageTest):
         # An existing data file should not be read when a subprocess gets
         # measured automatically.  Create the data file here with bogus data in
         # it.
+        self.make_main_and_sub()
         data = coverage.CoverageData(".mycovdata")
         data.add_lines({os.path.abspath('sub.py'): range(100)})
         data.write()
@@ -1380,6 +1381,7 @@ class ProcessStartupTest(CoverageTest):
 
     def test_subprocess_with_pth_files_and_parallel(self, _create_pth_file: None) -> None:
         # https://github.com/nedbat/coveragepy/issues/492
+        self.make_main_and_sub()
         self.make_file("coverage.ini", """\
             [run]
             parallel = true
@@ -1406,6 +1408,37 @@ class ProcessStartupTest(CoverageTest):
             f"extra data files that were not cleaned up: {data_files!r}"
         )
         assert len(data_files) == 1, msg
+
+    def test_subprocess_in_directories(self) -> None:
+        # Bug 2025: patch=subprocess didn't find data files from subdirectory
+        # subprocesses.
+        self.make_file("main.py", """\
+            import subprocess
+            import sys
+            print(subprocess.check_output(
+                [sys.executable, "subproc.py"],
+                cwd="subdir",
+                encoding="utf-8",
+            ))
+            """)
+        self.make_file("subdir/subproc.py", """\
+            with open("readme.txt", encoding="utf-8") as f:
+                print(f.read(), end="")
+            """)
+        self.make_file(".coveragerc", """\
+            [run]
+            patch = subprocess
+            data_file = .covdata
+            """)
+        self.make_file("subdir/readme.txt", "hello")
+        out = self.run_command("coverage run main.py")
+        assert out == "hello\n"
+        self.run_command("coverage combine")
+        data = coverage.CoverageData(".covdata")
+        data.read()
+        print(line_counts(data))
+        assert line_counts(data)["main.py"] == 6
+        assert line_counts(data)["subproc.py"] == 2
 
 
 @pytest.mark.skipif(env.WINDOWS, reason="patch=execv isn't supported on Windows")
