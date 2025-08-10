@@ -13,6 +13,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any, NoReturn
 
 from coverage import env
+from coverage.debug import NoDebugging, DevNullDebug
 from coverage.exceptions import ConfigError, CoverageException
 
 if TYPE_CHECKING:
@@ -29,6 +30,7 @@ def apply_patches(
     make_pth_file: bool = True,
 ) -> None:
     """Apply invasive patches requested by `[run] patch=`."""
+    debug = debug if debug.should("patch") else DevNullDebug()
     for patch in sorted(set(config.patch)):
         if patch == "_exit":
             _patch__exit(cov, debug)
@@ -45,15 +47,13 @@ def apply_patches(
 
 def _patch__exit(cov: Coverage, debug: TDebugCtl) -> None:
     """Patch os._exit."""
-    if debug.should("patch"):
-        debug.write("Patching _exit")
+    debug.write("Patching _exit")
 
     old_exit = os._exit
 
     def coverage_os_exit_patch(status: int) -> NoReturn:
         with contextlib.suppress(Exception):
-            if debug.should("patch"):
-                debug.write("Using _exit patch")
+            debug.write("Using _exit patch")
         with contextlib.suppress(Exception):
             cov.save()
         old_exit(status)
@@ -66,14 +66,12 @@ def _patch_execv(cov: Coverage, config: CoverageConfig, debug: TDebugCtl) -> Non
     if env.WINDOWS:
         raise CoverageException("patch=execv isn't supported yet on Windows.")
 
-    if debug.should("patch"):
-        debug.write("Patching execv")
+    debug.write("Patching execv")
 
     def make_execv_patch(fname: str, old_execv: Any) -> Any:
         def coverage_execv_patch(*args: Any, **kwargs: Any) -> Any:
             with contextlib.suppress(Exception):
-                if debug.should("patch"):
-                    debug.write(f"Using execv patch for {fname}")
+                debug.write(f"Using execv patch for {fname}")
             with contextlib.suppress(Exception):
                 cov.save()
 
@@ -105,13 +103,13 @@ def _patch_execv(cov: Coverage, config: CoverageConfig, debug: TDebugCtl) -> Non
 
 def _patch_subprocess(config: CoverageConfig, debug: TDebugCtl, make_pth_file: bool) -> None:
     """Write .pth files and set environment vars to measure subprocesses."""
-    if debug.should("patch"):
-        debug.write("Patching subprocess")
+    debug.write("Patching subprocess")
 
     if make_pth_file:
-        pth_files = create_pth_files()
+        pth_files = create_pth_files(debug)
         def delete_pth_files() -> None:
             for p in pth_files:
+                debug.write(f"Deleting subprocess .pth file: {str(p)!r}")
                 p.unlink(missing_ok=True)
         atexit.register(delete_pth_files)
     assert config.config_file is not None
@@ -133,14 +131,17 @@ else:
     coverage.process_startup()
 """
 
-def create_pth_files() -> list[Path]:
+PTH_TEXT = f"import sys; exec({PTH_CODE!r})"
+
+def create_pth_files(debug: TDebugCtl = NoDebugging()) -> list[Path]:
     """Create .pth files for measuring subprocesses."""
-    pth_text = rf"import sys; exec({PTH_CODE!r})"
     pth_files = []
     for pth_dir in site.getsitepackages():
         pth_file = Path(pth_dir) / f"subcover_{os.getpid()}.pth"
         try:
-            pth_file.write_text(pth_text, encoding="utf-8")
+            if debug.should("patch"):
+                debug.write(f"Writing subprocess .pth file: {str(pth_file)!r}")
+            pth_file.write_text(PTH_TEXT, encoding="utf-8")
         except OSError:  # pragma: cant happen
             continue
         else:

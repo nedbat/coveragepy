@@ -115,7 +115,7 @@ class NoDebugging(DebugControl):
     """A replacement for DebugControl that will never try to do anything."""
     def __init__(self) -> None:
         # pylint: disable=super-init-not-called
-        ...
+        pass
 
     def should(self, option: str) -> bool:
         """Should we write debug messages?  Never."""
@@ -129,6 +129,12 @@ class NoDebugging(DebugControl):
     def write(self, msg: str, *, exc: BaseException | None = None) -> None:
         """This will never be called."""
         raise AssertionError("NoDebugging.write should never be called.")
+
+
+class DevNullDebug(NoDebugging):
+    """A DebugControl that won't write anywhere."""
+    def write(self, msg: str, *, exc: BaseException | None = None) -> None:
+        pass
 
 
 def info_header(label: str) -> str:
