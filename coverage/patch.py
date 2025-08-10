@@ -10,7 +10,7 @@ import contextlib
 import os
 import site
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable, NoReturn
+from typing import TYPE_CHECKING, Any, NoReturn
 
 from coverage import env
 from coverage.exceptions import ConfigError, CoverageException
@@ -29,85 +29,94 @@ def apply_patches(
     make_pth_file: bool = True,
 ) -> None:
     """Apply invasive patches requested by `[run] patch=`."""
-
     for patch in sorted(set(config.patch)):
         if patch == "_exit":
-            if debug.should("patch"):
-                debug.write("Patching _exit")
-
-            def make_exit_patch(
-                old_exit: Callable[[int], NoReturn],
-            ) -> Callable[[int], NoReturn]:
-                def coverage_os_exit_patch(status: int) -> NoReturn:
-                    with contextlib.suppress(Exception):
-                        if debug.should("patch"):
-                            debug.write("Using _exit patch")
-                    with contextlib.suppress(Exception):
-                        cov.save()
-                    old_exit(status)
-
-                return coverage_os_exit_patch
-
-            os._exit = make_exit_patch(os._exit)  # type: ignore[assignment]
+            _patch__exit(cov, debug)
 
         elif patch == "execv":
-            if env.WINDOWS:
-                raise CoverageException("patch=execv isn't supported yet on Windows.")
-
-            if debug.should("patch"):
-                debug.write("Patching execv")
-
-            def make_execv_patch(fname: str, old_execv: Any) -> Any:
-                def coverage_execv_patch(*args: Any, **kwargs: Any) -> Any:
-                    with contextlib.suppress(Exception):
-                        if debug.should("patch"):
-                            debug.write(f"Using execv patch for {fname}")
-                    with contextlib.suppress(Exception):
-                        cov.save()
-
-                    if fname.endswith("e"):
-                        # Assume the `env` argument is passed positionally.
-                        new_env = args[-1]
-                        # Pass our environment variable in the new environment.
-                        new_env["COVERAGE_PROCESS_START"] = config.config_file
-                        if env.TESTING:
-                            # The subprocesses need to use the same core as the main process.
-                            new_env["COVERAGE_CORE"] = os.getenv("COVERAGE_CORE")
-
-                            # When testing locally, we need to honor the pyc file location
-                            # or they get written to the .tox directories and pollute the
-                            # next run with a different core.
-                            if (cache_prefix := os.getenv("PYTHONPYCACHEPREFIX")) is not None:
-                                new_env["PYTHONPYCACHEPREFIX"] = cache_prefix
-
-                            # Without this, it fails on PyPy and Ubuntu.
-                            new_env["PATH"] = os.getenv("PATH")
-                    old_execv(*args, **kwargs)
-
-                return coverage_execv_patch
-
-            # All the exec* and spawn* functions eventually call execv or execve.
-            os.execv = make_execv_patch("execv", os.execv)
-            os.execve = make_execv_patch("execve", os.execve)
+            _patch_execv(cov, config, debug)
 
         elif patch == "subprocess":
-            if debug.should("patch"):
-                debug.write("Patching subprocess")
-
-            if make_pth_file:
-                pth_files = create_pth_files()
-                def make_deleter(pth_files: list[Path]) -> Callable[[], None]:
-                    def delete_pth_files() -> None:
-                        for p in pth_files:
-                            p.unlink(missing_ok=True)
-                    return delete_pth_files
-                atexit.register(make_deleter(pth_files))
-            assert config.config_file is not None
-            os.environ["COVERAGE_PROCESS_START"] = config.config_file
-            os.environ["COVERAGE_PROCESS_DATAFILE"] = os.path.abspath(config.data_file)
+            _patch_subprocess(config, debug, make_pth_file)
 
         else:
             raise ConfigError(f"Unknown patch {patch!r}")
+
+
+def _patch__exit(cov: Coverage, debug: TDebugCtl) -> None:
+    """Patch os._exit."""
+    if debug.should("patch"):
+        debug.write("Patching _exit")
+
+    old_exit = os._exit
+
+    def coverage_os_exit_patch(status: int) -> NoReturn:
+        with contextlib.suppress(Exception):
+            if debug.should("patch"):
+                debug.write("Using _exit patch")
+        with contextlib.suppress(Exception):
+            cov.save()
+        old_exit(status)
+
+    os._exit = coverage_os_exit_patch
+
+
+def _patch_execv(cov: Coverage, config: CoverageConfig, debug: TDebugCtl) -> None:
+    """Patch the execv family of functions."""
+    if env.WINDOWS:
+        raise CoverageException("patch=execv isn't supported yet on Windows.")
+
+    if debug.should("patch"):
+        debug.write("Patching execv")
+
+    def make_execv_patch(fname: str, old_execv: Any) -> Any:
+        def coverage_execv_patch(*args: Any, **kwargs: Any) -> Any:
+            with contextlib.suppress(Exception):
+                if debug.should("patch"):
+                    debug.write(f"Using execv patch for {fname}")
+            with contextlib.suppress(Exception):
+                cov.save()
+
+            if fname.endswith("e"):
+                # Assume the `env` argument is passed positionally.
+                new_env = args[-1]
+                # Pass our environment variable in the new environment.
+                new_env["COVERAGE_PROCESS_START"] = config.config_file
+                if env.TESTING:
+                    # The subprocesses need to use the same core as the main process.
+                    new_env["COVERAGE_CORE"] = os.getenv("COVERAGE_CORE")
+
+                    # When testing locally, we need to honor the pyc file location
+                    # or they get written to the .tox directories and pollute the
+                    # next run with a different core.
+                    if (cache_prefix := os.getenv("PYTHONPYCACHEPREFIX")) is not None:
+                        new_env["PYTHONPYCACHEPREFIX"] = cache_prefix
+
+                    # Without this, it fails on PyPy and Ubuntu.
+                    new_env["PATH"] = os.getenv("PATH")
+            old_execv(*args, **kwargs)
+
+        return coverage_execv_patch
+
+    # All the exec* and spawn* functions eventually call execv or execve.
+    os.execv = make_execv_patch("execv", os.execv)
+    os.execve = make_execv_patch("execve", os.execve)
+
+
+def _patch_subprocess(config: CoverageConfig, debug: TDebugCtl, make_pth_file: bool) -> None:
+    """Write .pth files and set environment vars to measure subprocesses."""
+    if debug.should("patch"):
+        debug.write("Patching subprocess")
+
+    if make_pth_file:
+        pth_files = create_pth_files()
+        def delete_pth_files() -> None:
+            for p in pth_files:
+                p.unlink(missing_ok=True)
+        atexit.register(delete_pth_files)
+    assert config.config_file is not None
+    os.environ["COVERAGE_PROCESS_START"] = config.config_file
+    os.environ["COVERAGE_PROCESS_DATAFILE"] = os.path.abspath(config.data_file)
 
 
 # Writing .pth files is not obvious. On Windows, getsitepackages() returns two
