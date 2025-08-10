@@ -20,14 +20,17 @@ upgrading your version of coverage.py.
     ..  Version 9.8.1 — 2027-07-27
     ..  --------------------------
 
-Unreleased
-----------
+.. start-releases
+
+.. _changes_7-10-3:
+
+Version 7.10.3 — 2025-08-10
+---------------------------
 
 - Fixes for ``patch = subprocess``:
 
-  - It didn't fully account for subprocesses spawning yet more subprocesses
-    simultaneously, and some coverage could be missed.  This is now fixed,
-    closing `issue 2024`_.
+  - If subprocesses spawned yet more subprocesses simultaneously, some coverage
+    could be missed.  This is now fixed, closing `issue 2024`_.
 
   - If subprocesses were created in other directories, their data files were
     stranded there and not combined into the totals, as described in `issue
@@ -54,8 +57,6 @@ Unreleased
 .. _issue 2024: https://github.com/nedbat/coveragepy/issues/2024
 .. _issue 2025: https://github.com/nedbat/coveragepy/issues/2025
 
-
-.. start-releases
 
 .. _changes_7-10-2:
 
