@@ -37,6 +37,8 @@ Unreleased
     ``ModuleNotFound`` error trying to import coverage.  This is now fixed,
     closing `issue 2022`_.
 
+  - Added ``debug=patch`` to help diagnose problems.
+
 - Fix: really close all SQLite databases, even in-memory ones. Closes `issue
   2017`_.
 

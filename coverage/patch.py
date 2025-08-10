@@ -1,11 +1,12 @@
 # Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
 # For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
 
-"""Invasive patches for coverage.py"""
+"""Invasive patches for coverage.py."""
 
 from __future__ import annotations
 
 import atexit
+import contextlib
 import os
 import site
 from pathlib import Path
@@ -17,22 +18,32 @@ from coverage.exceptions import ConfigError, CoverageException
 if TYPE_CHECKING:
     from coverage import Coverage
     from coverage.config import CoverageConfig
+    from coverage.types import TDebugCtl
 
 
-def apply_patches(cov: Coverage, config: CoverageConfig, *, make_pth_file: bool=True) -> None:
+def apply_patches(
+    cov: Coverage,
+    config: CoverageConfig,
+    debug: TDebugCtl,
+    *,
+    make_pth_file: bool = True,
+) -> None:
     """Apply invasive patches requested by `[run] patch=`."""
 
     for patch in sorted(set(config.patch)):
         if patch == "_exit":
+            if debug.should("patch"):
+                debug.write("Patching _exit")
 
             def make_exit_patch(
                 old_exit: Callable[[int], NoReturn],
             ) -> Callable[[int], NoReturn]:
                 def coverage_os_exit_patch(status: int) -> NoReturn:
-                    try:
+                    with contextlib.suppress(Exception):
+                        if debug.should("patch"):
+                            debug.write("Using _exit patch")
+                    with contextlib.suppress(Exception):
                         cov.save()
-                    except:  # pylint: disable=bare-except
-                        pass
                     old_exit(status)
 
                 return coverage_os_exit_patch
@@ -43,12 +54,16 @@ def apply_patches(cov: Coverage, config: CoverageConfig, *, make_pth_file: bool=
             if env.WINDOWS:
                 raise CoverageException("patch=execv isn't supported yet on Windows.")
 
+            if debug.should("patch"):
+                debug.write("Patching execv")
+
             def make_execv_patch(fname: str, old_execv: Any) -> Any:
                 def coverage_execv_patch(*args: Any, **kwargs: Any) -> Any:
-                    try:
+                    with contextlib.suppress(Exception):
+                        if debug.should("patch"):
+                            debug.write(f"Using execv patch for {fname}")
+                    with contextlib.suppress(Exception):
                         cov.save()
-                    except:  # pylint: disable=bare-except
-                        pass
 
                     if fname.endswith("e"):
                         # Assume the `env` argument is passed positionally.
@@ -62,9 +77,7 @@ def apply_patches(cov: Coverage, config: CoverageConfig, *, make_pth_file: bool=
                             # When testing locally, we need to honor the pyc file location
                             # or they get written to the .tox directories and pollute the
                             # next run with a different core.
-                            if (
-                                cache_prefix := os.getenv("PYTHONPYCACHEPREFIX")
-                            ) is not None:
+                            if (cache_prefix := os.getenv("PYTHONPYCACHEPREFIX")) is not None:
                                 new_env["PYTHONPYCACHEPREFIX"] = cache_prefix
 
                             # Without this, it fails on PyPy and Ubuntu.
@@ -78,6 +91,9 @@ def apply_patches(cov: Coverage, config: CoverageConfig, *, make_pth_file: bool=
             os.execve = make_execv_patch("execve", os.execve)
 
         elif patch == "subprocess":
+            if debug.should("patch"):
+                debug.write("Patching subprocess")
+
             if make_pth_file:
                 pth_files = create_pth_files()
                 def make_deleter(pth_files: list[Path]) -> Callable[[], None]:
