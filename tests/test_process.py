@@ -1436,9 +1436,39 @@ class ProcessStartupTest(CoverageTest):
         self.run_command("coverage combine")
         data = coverage.CoverageData(".covdata")
         data.read()
-        print(line_counts(data))
         assert line_counts(data)["main.py"] == 6
         assert line_counts(data)["subproc.py"] == 2
+
+    def test_subprocess_gets_nonfile_config(self) -> None:
+        # https://github.com/nedbat/coveragepy/issues/2021
+        self.make_file("subfunctions.py", """\
+            import subprocess, sys
+
+            def f1():
+                print("function 1")
+            def f2():
+                print("function 2")
+
+            functions = [f1, f2]
+
+            cases = sys.argv[1:]
+            if len(cases) > 1:
+                for c in cases:
+                    subprocess.call([sys.executable, __file__, c])
+            else:
+                functions[int(cases[0])]()
+            """)
+        self.make_file(".coveragerc", """\
+            [run]
+            disable_warnings = no-sysmon
+            patch = subprocess
+            """)
+        out = self.run_command("coverage run --branch subfunctions.py 0 1")
+        assert out.endswith("function 1\nfunction 2\n")
+        self.run_command("coverage combine")
+        data = coverage.CoverageData()
+        data.read()
+        assert line_counts(data)["subfunctions.py"] == 11
 
 
 @pytest.mark.skipif(env.WINDOWS, reason="patch=execv isn't supported on Windows")

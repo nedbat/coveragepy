@@ -37,6 +37,12 @@ Unreleased
     ``ModuleNotFound`` error trying to import coverage.  This is now fixed,
     closing `issue 2022`_.
 
+  - Originally only options set in the coverage configuration file would apply
+    to subprocesses.  Options set on the ``coverage run`` command line (such as
+    ``--branch``) wouldn't be communicated to the subprocesses.  This could
+    lead to combining failures, as described in `issue 2021`_. Now the entire
+    configuration is used in subprocesses, regardless of its origin.
+
   - Added ``debug=patch`` to help diagnose problems.
 
 - Fix: really close all SQLite databases, even in-memory ones. Closes `issue
@@ -44,6 +50,7 @@ Unreleased
 
 .. _issue 2007: https://github.com/nedbat/coveragepy/issues/2007
 .. _issue 2017: https://github.com/nedbat/coveragepy/issues/2017
+.. _issue 2021: https://github.com/nedbat/coveragepy/issues/2021
 .. _issue 2022: https://github.com/nedbat/coveragepy/issues/2022
 .. _issue 2024: https://github.com/nedbat/coveragepy/issues/2024
 .. _issue 2025: https://github.com/nedbat/coveragepy/issues/2025

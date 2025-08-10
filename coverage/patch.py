@@ -113,8 +113,7 @@ def _patch_subprocess(config: CoverageConfig, debug: TDebugCtl, make_pth_file: b
                 p.unlink(missing_ok=True)
         atexit.register(delete_pth_files)
     assert config.config_file is not None
-    os.environ["COVERAGE_PROCESS_START"] = config.config_file
-    os.environ["COVERAGE_PROCESS_DATAFILE"] = os.path.abspath(config.data_file)
+    os.environ["COVERAGE_PROCESS_CONFIG"] = config.serialize()
 
 
 # Writing .pth files is not obvious. On Windows, getsitepackages() returns two
