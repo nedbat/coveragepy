@@ -42,12 +42,8 @@ Unreleased
 - Fix: really close all SQLite databases, even in-memory ones. Closes `issue
   2017`_.
 
-- Fix some thread safety issues reported in `issue 2007`_.  Thanks, `Kumar
-  Aditya <pull 2018_>`_.
-
 .. _issue 2007: https://github.com/nedbat/coveragepy/issues/2007
 .. _issue 2017: https://github.com/nedbat/coveragepy/issues/2017
-.. _pull 2018: https://github.com/nedbat/coveragepy/pull/2018
 .. _issue 2022: https://github.com/nedbat/coveragepy/issues/2022
 .. _issue 2024: https://github.com/nedbat/coveragepy/issues/2024
 .. _issue 2025: https://github.com/nedbat/coveragepy/issues/2025
