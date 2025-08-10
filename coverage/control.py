@@ -1423,12 +1423,12 @@ def process_startup() -> Coverage | None:
     not started by this call.
 
     """
-    cps = os.getenv("COVERAGE_PROCESS_START")
     config_data = os.getenv("COVERAGE_PROCESS_CONFIG")
-    if cps is not None:
-        config_file = cps
-    elif config_data is not None:
+    cps = os.getenv("COVERAGE_PROCESS_START")
+    if config_data is not None:
         config_file = CONFIG_FROM_ENVIRONMENT
+    elif cps is not None:
+        config_file = cps
     else:
         # No request for coverage, nothing to do.
         return None
