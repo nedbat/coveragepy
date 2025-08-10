@@ -18,7 +18,7 @@ from collections.abc import Iterator
 import pytest
 
 from coverage.files import set_relative_directory
-from coverage.patch import create_pth_file
+from coverage.patch import create_pth_files
 
 
 # Pytest will rewrite assertions in test modules, but not elsewhere.
@@ -97,9 +97,9 @@ def force_local_pyc_files() -> None:
 @pytest.fixture(name="_create_pth_file")
 def create_pth_file_fixture() -> Iterator[None]:
     """Create and clean up a .pth file for tests that need it for subprocesses."""
-    pth_file = create_pth_file()
-    assert pth_file is not None
+    pth_files = create_pth_files()
     try:
         yield
     finally:
-        pth_file.unlink()
+        for p in pth_files:
+            p.unlink()

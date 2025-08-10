@@ -79,9 +79,13 @@ def apply_patches(cov: Coverage, config: CoverageConfig, *, make_pth_file: bool=
 
         elif patch == "subprocess":
             if make_pth_file:
-                pth_file = create_pth_file()
-                assert pth_file is not None
-                atexit.register(pth_file.unlink, missing_ok=True)
+                pth_files = create_pth_files()
+                def make_deleter(pth_files: list[Path]) -> Callable[[], None]:
+                    def delete_pth_files() -> None:
+                        for p in pth_files:
+                            p.unlink(missing_ok=True)
+                    return delete_pth_files
+                atexit.register(make_deleter(pth_files))
             assert config.config_file is not None
             os.environ["COVERAGE_PROCESS_START"] = config.config_file
             os.environ["COVERAGE_PROCESS_DATAFILE"] = os.path.abspath(config.data_file)
@@ -90,14 +94,30 @@ def apply_patches(cov: Coverage, config: CoverageConfig, *, make_pth_file: bool=
             raise ConfigError(f"Unknown patch {patch!r}")
 
 
-def create_pth_file() -> Path | None:
-    """Create .pth file for measuring subprocesses."""
-    for pth_dir in site.getsitepackages():  # pragma: part covered
+# Writing .pth files is not obvious. On Windows, getsitepackages() returns two
+# directories.  A .pth file in the first will be run, but coverage isn't
+# importable yet.  We write into all the places we can, but with defensive
+# import code.
+
+PTH_CODE = """\
+try:
+    import coverage
+except:
+    pass
+else:
+    coverage.process_startup()
+"""
+
+def create_pth_files() -> list[Path]:
+    """Create .pth files for measuring subprocesses."""
+    pth_text = rf"import sys; exec({PTH_CODE!r})"
+    pth_files = []
+    for pth_dir in site.getsitepackages():
         pth_file = Path(pth_dir) / f"subcover_{os.getpid()}.pth"
         try:
-            pth_file.write_text("import coverage; coverage.process_startup()\n", encoding="utf-8")
+            pth_file.write_text(pth_text, encoding="utf-8")
         except OSError:  # pragma: cant happen
             continue
         else:
-            return pth_file
-    return None  # pragma: cant happen
+            pth_files.append(pth_file)
+    return pth_files
