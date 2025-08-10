@@ -461,7 +461,7 @@ class DebugOutputFile:
             else:
                 # $set_env.py: COVERAGE_DEBUG_FILE - Where to write debug output
                 file_name = os.getenv("COVERAGE_DEBUG_FILE", FORCED_DEBUG_FILE)
-                if file_name in ("stdout", "stderr"):
+                if file_name in ["stdout", "stderr"]:
                     fileobj = getattr(sys, file_name)
                 elif file_name:
                     fileobj = open(file_name, "a", encoding="utf-8")

@@ -76,10 +76,10 @@ class RunFileTest(CoverageTest):
     def test_universal_newlines(self) -> None:
         # Make sure we can read any sort of line ending.
         pylines = """# try newlines|print('Hello, world!')|""".split('|')
-        for nl in ('\n', '\r\n', '\r'):
-            with open('nl.py', 'wb') as fpy:
-                fpy.write(nl.join(pylines).encode('utf-8'))
-            run_python_file(['nl.py'])
+        for nl in ["\n", "\r\n", "\r"]:
+            with open("nl.py", "wb") as fpy:
+                fpy.write(nl.join(pylines).encode("utf-8"))
+            run_python_file(["nl.py"])
         assert self.stdout() == "Hello, world!\n"*3
 
     def test_missing_final_newline(self) -> None:

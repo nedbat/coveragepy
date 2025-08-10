@@ -385,8 +385,8 @@ class XmlPackageStructureTest(XmlTestHelpers, CoverageTest):
         cov.xml_report()
         dom = ElementTree.parse("coverage.xml")
         for node in dom.iter():
-            if node.tag in ('package', 'class'):
-                yield (node.tag, {a:v for a,v in node.items() if a in ('name', 'filename')})
+            if node.tag in ["package", "class"]:
+                yield (node.tag, {a:v for a,v in node.items() if a in ["name", "filename"]})
 
     def assert_package_and_class_tags(self, cov: Coverage, result: Any) -> None:
         """Check the XML package and class tags from `cov` match `result`."""
