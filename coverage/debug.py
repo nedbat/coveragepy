@@ -613,6 +613,8 @@ def relevant_environment_display(env: Mapping[str, str]) -> list[tuple[str, str]
     slugs = {"COV", "PY"}
     include = {"HOME", "TEMP", "TMP"}
     cloak = {"API", "TOKEN", "KEY", "SECRET", "PASS", "SIGNATURE"}
+    truncate = {"COVERAGE_PROCESS_CONFIG"}
+    truncate_len = 60
 
     to_show = []
     for name, val in env.items():
@@ -624,5 +626,8 @@ def relevant_environment_display(env: Mapping[str, str]) -> list[tuple[str, str]
         if keep:
             if any(slug in name for slug in cloak):
                 val = re.sub(r"\w", "*", val)
+            if name in truncate:
+                if len(val) > truncate_len:
+                    val = val[:truncate_len-3] + "..."
             to_show.append((name, val))
     return human_sorted_items(to_show)
