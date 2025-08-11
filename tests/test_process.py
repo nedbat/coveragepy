@@ -13,12 +13,13 @@ import os.path
 import platform
 import re
 import signal
+import site
 import stat
 import sys
 import textwrap
 
 from pathlib import Path
-from typing import Any
+from typing import Any, Iterable
 
 import pytest
 
@@ -1471,6 +1472,28 @@ class ProcessStartupTest(CoverageTest):
         assert line_counts(data)["subfunctions.py"] == 11
 
 
+@pytest.fixture
+def _clean_pth_files() -> Iterable[None]:
+    """A fixture to clean up any .pth files we created during the test."""
+    # The execv test needs to make .pth files so that subprocesses will get
+    # measured.  But there's no way for coverage to remove those files because
+    # they need to exist when the new program starts, and there's no
+    # information carried over to clean them automatically.
+    #
+    # So for these tests, we clean them as part of the test suite.
+    pth_files: set[Path] = set()
+    for d in site.getsitepackages():
+        pth_files.update(Path(d).glob("*.pth"))
+
+    try:
+        yield
+    finally:
+        for d in site.getsitepackages():
+            for pth in Path(d).glob("*.pth"):
+                if pth not in pth_files:
+                    pth.unlink()
+
+
 @pytest.mark.skipif(env.WINDOWS, reason="patch=execv isn't supported on Windows")
 @pytest.mark.xdist_group(name="needs_pth")
 class ExecvTest(CoverageTest):
@@ -1482,7 +1505,7 @@ class ExecvTest(CoverageTest):
             ["l", "le", "lp", "lpe", "v", "ve", "vp", "vpe"],
         )]
     )
-    def test_execv_patch(self, fname: str) -> None:
+    def test_execv_patch(self, fname: str, _clean_pth_files: None) -> None:
         self.make_file(".coveragerc", """\
             [run]
             patch = subprocess, execv
