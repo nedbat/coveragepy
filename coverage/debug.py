@@ -610,24 +610,24 @@ def relevant_environment_display(env: Mapping[str, str]) -> list[tuple[str, str]
         A list of pairs (name, value) to show.
 
     """
-    slugs = {"COV", "PY"}
-    include = {"HOME", "TEMP", "TMP"}
-    cloak = {"API", "TOKEN", "KEY", "SECRET", "PASS", "SIGNATURE"}
-    truncate = {"COVERAGE_PROCESS_CONFIG"}
-    truncate_len = 60
+    SLUGS = {"COV", "PY"}
+    INCLUDE = {"HOME", "TEMP", "TMP"}
+    CLOAK = {"API", "TOKEN", "KEY", "SECRET", "PASS", "SIGNATURE"}
+    TRUNCATE = {"COVERAGE_PROCESS_CONFIG"}
+    TRUNCATE_LEN = 60
 
     to_show = []
     for name, val in env.items():
-        keep = False
-        if name in include:
-            keep = True
-        elif any(slug in name for slug in slugs):
-            keep = True
-        if keep:
-            if any(slug in name for slug in cloak):
+        show = False
+        if name in INCLUDE:
+            show = True
+        elif any(slug in name for slug in SLUGS):
+            show = True
+        if show:
+            if any(slug in name for slug in CLOAK):
                 val = re.sub(r"\w", "*", val)
-            if name in truncate:
-                if len(val) > truncate_len:
-                    val = val[:truncate_len-3] + "..."
+            if name in TRUNCATE:
+                if len(val) > TRUNCATE_LEN:
+                    val = val[:TRUNCATE_LEN-3] + "..."
             to_show.append((name, val))
     return human_sorted_items(to_show)
