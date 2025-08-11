@@ -25,7 +25,6 @@ from typing import (
 )
 from collections.abc import Iterable, Iterator
 
-import coverage
 from coverage import env
 from coverage.debug import DebugControl
 from coverage.exceptions import CoverageWarning
@@ -396,7 +395,7 @@ def all_our_source_files() -> Iterator[tuple[Path, str]]:
 
     Produces a stream of (filename, file contents) tuples.
     """
-    cov_dir = Path(coverage.__file__).parent.parent
+    cov_dir = Path(__file__).parent.parent
     if ".tox" in cov_dir.parts:
         # We are in a tox-installed environment, look above the .tox dir to
         # also find the uninstalled source files.
