@@ -78,8 +78,8 @@ def _patch_execv(cov: Coverage, config: CoverageConfig, debug: TDebugCtl) -> Non
             if fname.endswith("e"):
                 # Assume the `env` argument is passed positionally.
                 new_env = args[-1]
-                # Pass our environment variable in the new environment.
-                new_env["COVERAGE_PROCESS_START"] = config.config_file
+                # Pass our configuration in the new environment.
+                new_env["COVERAGE_PROCESS_CONFIG"] = config.serialize()
                 if env.TESTING:
                     # The subprocesses need to use the same core as the main process.
                     new_env["COVERAGE_CORE"] = os.getenv("COVERAGE_CORE")
@@ -130,7 +130,7 @@ else:
     coverage.process_startup()
 """
 
-PTH_TEXT = f"import sys; exec({PTH_CODE!r})"
+PTH_TEXT = f"import sys; exec({PTH_CODE!r})\n"
 
 def create_pth_files(debug: TDebugCtl = NoDebugging()) -> list[Path]:
     """Create .pth files for measuring subprocesses."""
