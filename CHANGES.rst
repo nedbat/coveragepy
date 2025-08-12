@@ -23,6 +23,9 @@ upgrading your version of coverage.py.
 Unreleased
 ----------
 
+- Added ``patch = fork`` for times when the built-in forking support is
+  insufficient.
+
 - Fix: ``patch = execv`` also inherits the entire coverage configuration now.
 
 

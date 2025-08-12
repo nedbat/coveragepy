@@ -38,6 +38,9 @@ def apply_patches(
         elif patch == "execv":
             _patch_execv(cov, config, debug)
 
+        elif patch == "fork":
+            _patch_fork(debug)
+
         elif patch == "subprocess":
             _patch_subprocess(config, debug, make_pth_file)
 
@@ -99,6 +102,16 @@ def _patch_execv(cov: Coverage, config: CoverageConfig, debug: TDebugCtl) -> Non
     # All the exec* and spawn* functions eventually call execv or execve.
     os.execv = make_execv_patch("execv", os.execv)
     os.execve = make_execv_patch("execve", os.execve)
+
+
+def _patch_fork(debug: TDebugCtl) -> None:
+    """Ensure Coverage is properly reset after a fork."""
+    from coverage.control import _after_fork_in_child
+    if env.WINDOWS:
+        raise CoverageException("patch=fork isn't supported yet on Windows.")
+
+    debug.write("Patching fork")
+    os.register_at_fork(after_in_child=_after_fork_in_child)
 
 
 def _patch_subprocess(config: CoverageConfig, debug: TDebugCtl, make_pth_file: bool) -> None:
