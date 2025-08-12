@@ -89,7 +89,7 @@ def override_config(cov: Coverage, **kwargs: TConfigValueIn) -> Iterator[None]:
 
 DEFAULT_DATAFILE = DefaultValue("MISSING")
 _DEFAULT_DATAFILE = DEFAULT_DATAFILE  # Just in case, for backwards compatibility
-CONFIG_FROM_ENVIRONMENT = ":envvar:"
+CONFIG_DATA_PREFIX = ":data:"
 
 class Coverage(TConfigurable):
     """Programmatic access to coverage.py.
@@ -317,8 +317,8 @@ class Coverage(TConfigurable):
         self._should_write_debug = True
 
         # Build our configuration from a number of sources.
-        if config_file == CONFIG_FROM_ENVIRONMENT:
-            self.config = deserialize_config(cast(str, os.getenv("COVERAGE_PROCESS_CONFIG")))
+        if isinstance(config_file, str) and config_file.startswith(CONFIG_DATA_PREFIX):
+            self.config = deserialize_config(config_file[len(CONFIG_DATA_PREFIX):])
         else:
             if not isinstance(config_file, bool):
                 config_file = os.fspath(config_file)
@@ -1426,7 +1426,7 @@ def process_startup() -> Coverage | None:
     config_data = os.getenv("COVERAGE_PROCESS_CONFIG")
     cps = os.getenv("COVERAGE_PROCESS_START")
     if config_data is not None:
-        config_file = CONFIG_FROM_ENVIRONMENT
+        config_file = CONFIG_DATA_PREFIX + config_data
     elif cps is not None:
         config_file = cps
     else:
