@@ -1410,7 +1410,7 @@ if int(os.getenv("COVERAGE_DEBUG_CALLS", 0)):               # pragma: debugging
     )(Coverage)
 
 
-def process_startup() -> Coverage | None:
+def process_startup(*, force: bool = False) -> Coverage | None:
     """Call this at Python start-up to perhaps measure coverage.
 
     If the environment variable COVERAGE_PROCESS_START is defined, coverage
@@ -1442,7 +1442,7 @@ def process_startup() -> Coverage | None:
     #
     # https://github.com/nedbat/coveragepy/issues/340 has more details.
 
-    if hasattr(process_startup, "coverage"):
+    if not force and hasattr(process_startup, "coverage"):
         # We've annotated this function before, so we must have already
         # auto-started coverage.py in this process.  Nothing to do.
         return None
@@ -1457,6 +1457,13 @@ def process_startup() -> Coverage | None:
     cov.start()
 
     return cov
+
+
+def _after_fork_in_child() -> None:
+    """Used by patch=fork in the child process to restart coverage."""
+    if cov := Coverage.current():
+        cov.stop()
+    process_startup(force=True)
 
 
 def _prevent_sub_process_measurement() -> None:
