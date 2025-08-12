@@ -124,7 +124,7 @@ class NoDebugging(DebugControl):
     @contextlib.contextmanager
     def without_callers(self) -> Iterator[None]:
         """A dummy context manager to satisfy the api."""
-        yield
+        yield  # pragma: never called
 
     def write(self, msg: str, *, exc: BaseException | None = None) -> None:
         """This will never be called."""

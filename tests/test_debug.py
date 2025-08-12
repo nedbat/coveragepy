@@ -421,7 +421,8 @@ class ShortFilenameTest(CoverageTest):
         assert short_filename(None) is None
 
 
-def test_relevant_environment_display() -> None:
+@pytest.mark.parametrize("long_len", [10, 100])
+def test_relevant_environment_display(long_len: int) -> None:
     env_vars = {
         "HOME": "my home",
         "HOME_DIR": "other place",
@@ -430,8 +431,14 @@ def test_relevant_environment_display() -> None:
         "COVERAGE_THING": "abcd",
         "MY_PYPI_TOKEN": "secret.something",
         "TMP": "temporary",
+        "COVERAGE_PROCESS_CONFIG": "abc" + "x" * (long_len - 3),
     }
+    long_val = {
+        10: "abcxxxxxxx",
+        100: "abc" + "x" * (60 - 3 - 3) + "...",
+    }[long_len]
     expected = [
+        ("COVERAGE_PROCESS_CONFIG", long_val),
         ("COVERAGE_THING", "abcd"),
         ("HOME", "my home"),
         ("MY_PYPI_TOKEN", "******.*********"),
