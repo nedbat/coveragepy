@@ -563,7 +563,8 @@ COMMANDS = {
             Opts.timid,
             ] + GLOBAL_ARGS,
         usage="[options] <pyfile> [program options]",
-        description="Run a Python program, measuring code execution and report without saving in file.",
+        description=(
+            "Run a Python program, measuring code execution and report without saving in file."),
     ),
 
     "xml": CmdOptionParser(
@@ -690,7 +691,8 @@ class CoverageScript:
 
         # Do something.
         self.coverage = Coverage(
-            data_file=None if options.action == "run-report" else options.data_file or DEFAULT_DATAFILE,
+            data_file=(
+                None if options.action == "run-report" else options.data_file or DEFAULT_DATAFILE),
             data_suffix=options.parallel_mode,
             cover_pylib=options.pylib,
             timid=options.timid,
@@ -851,7 +853,7 @@ class CoverageScript:
         print("Saving coverage data...", flush=True)
         self.coverage.save()
 
-    def do_run(self, options: optparse.Values, args: list[str], report=False) -> int:
+    def do_run(self, options: optparse.Values, args: list[str], report: bool = False) -> int:
         """Implementation of 'coverage run'."""
 
         if not args:
