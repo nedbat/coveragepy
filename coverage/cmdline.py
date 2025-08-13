@@ -538,6 +538,34 @@ COMMANDS = {
         description="Run a Python program, measuring code execution.",
     ),
 
+    "run-report": CmdOptionParser(
+        "run-report",
+        [
+            Opts.append,
+            Opts.branch,
+            Opts.concurrency,
+            Opts.context,
+            Opts.fail_under,
+            Opts.format,
+            Opts.ignore_errors,
+            Opts.include,
+            Opts.module,
+            Opts.no_skip_covered,
+            Opts.omit,
+            Opts.precision,
+            Opts.parallel_mode,
+            Opts.pylib,
+            Opts.save_signal,
+            Opts.skip_covered,
+            Opts.skip_empty,
+            Opts.sort,
+            Opts.source,
+            Opts.timid,
+            ] + GLOBAL_ARGS,
+        usage="[options] <pyfile> [program options]",
+        description="Run a Python program, measuring code execution and report without saving in file.",
+    ),
+
     "xml": CmdOptionParser(
         "xml",
         [
@@ -662,7 +690,7 @@ class CoverageScript:
 
         # Do something.
         self.coverage = Coverage(
-            data_file=options.data_file or DEFAULT_DATAFILE,
+            data_file=None if options.action == "run-report" else options.data_file or DEFAULT_DATAFILE,
             data_suffix=options.parallel_mode,
             cover_pylib=options.pylib,
             timid=options.timid,
@@ -687,6 +715,9 @@ class CoverageScript:
 
         elif options.action == "run":
             return self.do_run(options, args)
+
+        elif options.action == "run-report":
+            return self.do_run(options, args, report=True)
 
         elif options.action == "combine":
             if options.append:
@@ -820,7 +851,7 @@ class CoverageScript:
         print("Saving coverage data...", flush=True)
         self.coverage.save()
 
-    def do_run(self, options: optparse.Values, args: list[str]) -> int:
+    def do_run(self, options: optparse.Values, args: list[str], report=False) -> int:
         """Implementation of 'coverage run'."""
 
         if not args:
@@ -882,7 +913,17 @@ class CoverageScript:
         finally:
             self.coverage.stop()
             if code_ran:
-                self.coverage.save()
+                if report:
+                    self.coverage.report(
+                        precision=options.precision,
+                        show_missing=True,
+                        skip_covered=options.skip_covered,
+                        skip_empty=options.skip_empty,
+                        sort=options.sort,
+                        output_format=options.format
+                    )
+                else:
+                    self.coverage.save()
 
         return OK
 
