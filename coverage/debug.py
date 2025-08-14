@@ -8,6 +8,7 @@ from __future__ import annotations
 import _thread
 import atexit
 import contextlib
+import datetime
 import functools
 import inspect
 import itertools
@@ -19,13 +20,7 @@ import sys
 import traceback
 import types
 from collections.abc import Iterable, Iterator, Mapping
-from typing import (
-    IO,
-    Any,
-    Callable,
-    Final,
-    overload,
-)
+from typing import IO, Any, Callable, Final, overload
 
 from coverage.misc import human_sorted_items, isolate_module
 from coverage.types import AnyCallable, TWritable
@@ -220,6 +215,20 @@ def short_filename(filename: str | None) -> str | None:
         for before, after in _FILENAME_SUBS:
             filename = filename.replace(before, after)
     return filename
+
+
+def file_summary(filename: str) -> str:
+    """A one-line summary of a file, for log messages."""
+    try:
+        s = os.stat(filename)
+    except FileNotFoundError:
+        summary = "does not exist"
+    except Exception as e:
+        summary = f"error: {e}"
+    else:
+        mod = datetime.datetime.fromtimestamp(s.st_mtime)
+        summary = f"{s.st_size} bytes, modified {mod}"
+    return summary
 
 
 def short_stack(

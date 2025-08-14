@@ -56,7 +56,7 @@ def _patch__exit(cov: Coverage, debug: TDebugCtl) -> None:
 
     def coverage_os_exit_patch(status: int) -> NoReturn:
         with contextlib.suppress(Exception):
-            debug.write("Using _exit patch")
+            debug.write(f"Using _exit patch with {cov = }")
         with contextlib.suppress(Exception):
             cov.save()
         old_exit(status)
@@ -74,7 +74,7 @@ def _patch_execv(cov: Coverage, config: CoverageConfig, debug: TDebugCtl) -> Non
     def make_execv_patch(fname: str, old_execv: Any) -> Any:
         def coverage_execv_patch(*args: Any, **kwargs: Any) -> Any:
             with contextlib.suppress(Exception):
-                debug.write(f"Using execv patch for {fname}")
+                debug.write(f"Using execv patch for {fname} with {cov = }")
             with contextlib.suppress(Exception):
                 cov.save()
 

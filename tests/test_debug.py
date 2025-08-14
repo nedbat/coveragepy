@@ -162,8 +162,8 @@ class DebugTraceTest(CoverageTest):
     def test_debug_callers(self) -> None:
         out_text = self.f1_debug_output(["pid", "dataop", "dataio", "callers", "lock"])
         # For every real message, there should be a stack trace with a line like
-        #       "f1_debug_output : /Users/ned/coverage/tests/test_debug.py @71"
-        real_messages = re_lines(r":\d+", out_text, match=False)
+        #       "f1_debug_output : /Users/ned/coverage/tests/test_debug.py:71"
+        real_messages = re_lines(r"\.py:\d+$", out_text, match=False)
         frame_pattern = r"\s+f1_debug_output : .*tests[/\\]test_debug.py:\d+$"
         frames = re_lines(frame_pattern, out_text)
         assert len(real_messages) == len(frames)
@@ -173,8 +173,8 @@ class DebugTraceTest(CoverageTest):
         # The details of what to expect on the stack are empirical, and can change
         # as the code changes. This test is here to ensure that the debug code
         # continues working. It's ok to adjust these details over time.
-        assert re_lines(r"^\s*\d+\.\w{4}: Adding file tracers: 0 files", real_messages[-1])
-        assert re_lines(r"\s+add_file_tracers : .*coverage[/\\]sqldata.py:\d+$", last_line)
+        assert re_lines(r"^\s*\d+\.\w{4}: Writing \(no-op\) data file", real_messages[-1])
+        assert re_lines(r"\s+_debug_dataio : .*coverage[/\\]sqldata.py:\d+$", last_line)
 
     def test_debug_config(self) -> None:
         out_text = self.f1_debug_output(["config"])

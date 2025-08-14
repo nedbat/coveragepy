@@ -20,13 +20,9 @@ import textwrap
 import threading
 import zlib
 from collections.abc import Collection, Mapping, Sequence
-from typing import (
-    Any,
-    Callable,
-    cast,
-)
+from typing import Any, Callable, cast
 
-from coverage.debug import NoDebugging, auto_repr
+from coverage.debug import NoDebugging, auto_repr, file_summary
 from coverage.exceptions import CoverageException, DataError
 from coverage.misc import file_be_gone, isolate_module
 from coverage.numbits import numbits_to_nums, numbits_union, nums_to_numbits
@@ -120,7 +116,7 @@ def _locked(method: AnyCallable) -> AnyCallable:
             self._debug.write(f"Locking {self._lock!r} for {method.__name__}")
         with self._lock:
             if self._debug.should("lock"):
-                self._debug.write(f"Locked  {self._lock!r} for {method.__name__}")
+                self._debug.write(f"Locked {self._lock!r} for {method.__name__}")
             return method(self, *args, **kwargs)
     return _wrapped
 
@@ -259,6 +255,11 @@ class CoverageData:
 
     __repr__ = auto_repr
 
+    def _debug_dataio(self, msg: str, filename: str) -> None:
+        """A helper for debug messages which are all similar."""
+        if self._debug.should("dataio"):
+            self._debug.write(f"{msg} {filename!r} ({file_summary(filename)})")
+
     def _choose_filename(self) -> None:
         """Set self._filename based on inited attributes."""
         if self._no_disk:
@@ -287,8 +288,7 @@ class CoverageData:
 
     def _open_db(self) -> None:
         """Open an existing db file, and read its metadata."""
-        if self._debug.should("dataio"):
-            self._debug.write(f"Opening data file {self._filename!r}")
+        self._debug_dataio("Opening data file", self._filename)
         self._dbs[threading.get_ident()] = SqliteDb(self._filename, self._debug)
         self._read_db()
 
@@ -327,8 +327,7 @@ class CoverageData:
 
     def _init_db(self, db: SqliteDb) -> None:
         """Write the initial contents of the database."""
-        if self._debug.should("dataio"):
-            self._debug.write(f"Initing data file {self._filename!r}")
+        self._debug_dataio("Initing data file", self._filename)
         db.executescript(SCHEMA)
         db.execute_void("insert into coverage_schema (version) values (?)", (SCHEMA_VERSION,))
 
@@ -377,8 +376,7 @@ class CoverageData:
         .. versionadded:: 5.0
 
         """
-        if self._debug.should("dataio"):
-            self._debug.write(f"Dumping data from data file {self._filename!r}")
+        self._debug_dataio("Dumping data from data file", self._filename)
         with self._connect() as con:
             script = con.dump()
             return b"z" + zlib.compress(script.encode("utf-8"))
@@ -398,8 +396,7 @@ class CoverageData:
         .. versionadded:: 5.0
 
         """
-        if self._debug.should("dataio"):
-            self._debug.write(f"Loading data into data file {self._filename!r}")
+        self._debug_dataio("Loading data into data file", self._filename)
         if data[:1] != b"z":
             raise DataError(
                 f"Unrecognized serialization: {data[:40]!r} (head of {len(data)} bytes)",
@@ -834,16 +831,14 @@ class CoverageData:
         self._reset()
         if self._no_disk:
             return
-        if self._debug.should("dataio"):
-            self._debug.write(f"Erasing data file {self._filename!r}")
+        self._debug_dataio("Erasing data file", self._filename)
         file_be_gone(self._filename)
         if parallel:
             data_dir, local = os.path.split(self._filename)
             local_abs_path = os.path.join(os.path.abspath(data_dir), local)
             pattern = glob.escape(local_abs_path) + ".*"
             for filename in glob.glob(pattern):
-                if self._debug.should("dataio"):
-                    self._debug.write(f"Erasing parallel data file {filename!r}")
+                self._debug_dataio("Erasing parallel data file", filename)
                 file_be_gone(filename)
 
     def read(self) -> None:
@@ -854,7 +849,7 @@ class CoverageData:
 
     def write(self) -> None:
         """Ensure the data is written to the data file."""
-        pass
+        self._debug_dataio("Writing (no-op) data file", self._filename)
 
     def _start_using(self) -> None:
         """Call this before using the database at all."""
