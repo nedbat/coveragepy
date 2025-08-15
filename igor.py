@@ -302,29 +302,17 @@ def do_zip_mods():
 
 def print_banner(label):
     """Print the version of Python."""
-    try:
-        impl = platform.python_implementation()
-    except AttributeError:
-        impl = "Python"
-
+    impl = platform.python_implementation()
     version = platform.python_version()
-
+    has_gil = getattr(sys, '_is_gil_enabled', lambda: True)()
+    if not has_gil:
+        version += "t"
     if PYPY:
         version += " (pypy %s)" % ".".join(str(v) for v in sys.pypy_version_info)
-
     version += f" ({' '.join(platform.python_build())})"
+    version += " (gil)" if has_gil else " (nogil)"
 
-    gil = "gil" if getattr(sys, '_is_gil_enabled', lambda: True)() else "nogil"
-    version += f" ({gil})"
-
-    try:
-        which_python = os.path.relpath(sys.executable)
-    except ValueError:
-        # On Windows having a python executable on a different drive
-        # than the sources cannot be relative.
-        which_python = sys.executable
-    print(f"=== {impl} {version} {label} ({which_python}) ===")
-    sys.stdout.flush()
+    print(f"=== {impl} {version} {label} ({sys.base_prefix}) ===", flush=True)
 
 
 def do_quietly(command):
