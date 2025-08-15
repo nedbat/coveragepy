@@ -10,7 +10,7 @@ colorama==0.4.6
     #   tox
 distlib==0.4.0
     # via virtualenv
-filelock==3.18.0
+filelock==3.19.1
     # via
     #   tox
     #   virtualenv
@@ -37,6 +37,8 @@ tox==4.28.4
 tox-gh==1.5.0
     # via -r requirements/tox.in
 typing-extensions==4.14.1
-    # via tox
-virtualenv==20.33.1
+    # via
+    #   tox
+    #   virtualenv
+virtualenv==20.34.0
     # via tox
