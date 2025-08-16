@@ -20,16 +20,18 @@ upgrading your version of coverage.py.
     ..  Version 9.8.1 — 2027-07-27
     ..  --------------------------
 
-Unreleased
-----------
+.. start-releases
+
+.. _changes_7-10-4:
+
+Version 7.10.4 — 2025-08-16
+---------------------------
 
 - Added ``patch = fork`` for times when the built-in forking support is
   insufficient.
 
 - Fix: ``patch = execv`` also inherits the entire coverage configuration now.
 
-
-.. start-releases
 
 .. _changes_7-10-3:
 
