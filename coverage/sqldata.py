@@ -18,6 +18,7 @@ import string
 import sys
 import textwrap
 import threading
+import uuid
 import zlib
 from collections.abc import Collection, Mapping, Sequence
 from typing import Any, Callable, cast
@@ -263,7 +264,7 @@ class CoverageData:
     def _choose_filename(self) -> None:
         """Set self._filename based on inited attributes."""
         if self._no_disk:
-            self._filename = ":memory:"
+            self._filename = f"file:coverage-{uuid.uuid4()}?mode=memory&cache=shared"
         else:
             self._filename = self._basename
             suffix = filename_suffix(self._suffix)
@@ -289,7 +290,7 @@ class CoverageData:
     def _open_db(self) -> None:
         """Open an existing db file, and read its metadata."""
         self._debug_dataio("Opening data file", self._filename)
-        self._dbs[threading.get_ident()] = SqliteDb(self._filename, self._debug)
+        self._dbs[threading.get_ident()] = SqliteDb(self._filename, self._debug, self._no_disk)
         self._read_db()
 
     def _read_db(self) -> None:
@@ -402,7 +403,7 @@ class CoverageData:
                 f"Unrecognized serialization: {data[:40]!r} (head of {len(data)} bytes)",
             )
         script = zlib.decompress(data[1:]).decode("utf-8")
-        self._dbs[threading.get_ident()] = db = SqliteDb(self._filename, self._debug)
+        self._dbs[threading.get_ident()] = db = SqliteDb(self._filename, self._debug, self._no_disk)
         with db:
             db.executescript(script)
         self._read_db()
