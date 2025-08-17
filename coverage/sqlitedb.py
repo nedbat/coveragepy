@@ -28,9 +28,10 @@ class SqliteDb:
                     etc(a, b)
 
     """
-    def __init__(self, filename: str, debug: TDebugCtl) -> None:
+    def __init__(self, filename: str, debug: TDebugCtl, no_disk: bool = False) -> None:
         self.debug = debug
         self.filename = filename
+        self.no_disk = no_disk
         self.nest = 0
         self.con: sqlite3.Connection | None = None
 
@@ -49,7 +50,11 @@ class SqliteDb:
         if self.debug.should("sql"):
             self.debug.write(f"Connecting to {self.filename!r}")
         try:
-            self.con = sqlite3.connect(self.filename, check_same_thread=False)
+            # Use uri=True when connecting to memory URIs
+            if self.filename.startswith("file:"):
+                self.con = sqlite3.connect(self.filename, check_same_thread=False, uri=True)
+            else:
+                self.con = sqlite3.connect(self.filename, check_same_thread=False)
         except sqlite3.Error as exc:
             raise DataError(f"Couldn't use data file {self.filename!r}: {exc}") from exc
 
@@ -78,7 +83,7 @@ class SqliteDb:
     def close(self, force: bool = False) -> None:
         """If needed, close the connection."""
         if self.con is not None:
-            if force or self.filename != ":memory:":
+            if force or not self.no_disk:
                 if self.debug.should("sql"):
                     self.debug.write(f"Closing {self.con!r} on {self.filename!r}")
                 self.con.close()
@@ -120,7 +125,7 @@ class SqliteDb:
                 return self.con.execute(sql, parameters)    # type: ignore[arg-type]
         except sqlite3.Error as exc:
             msg = str(exc)
-            if self.filename != ":memory:":
+            if not self.no_disk:
                 try:
                     # `execute` is the first thing we do with the database, so try
                     # hard to provide useful hints if something goes wrong now.
