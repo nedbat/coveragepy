@@ -210,9 +210,8 @@ class SqliteDb:
             # https://github.com/nedbat/coveragepy/issues/1010
             return self.con.executemany(sql, data)
 
-    def executemany_void(self, sql: str, data: Iterable[Any]) -> None:
+    def executemany_void(self, sql: str, data: list[Any]) -> None:
         """Same as :meth:`python:sqlite3.Connection.executemany` when you don't need the cursor."""
-        data = list(data)
         if data:
             self._executemany(sql, data).close()
 
