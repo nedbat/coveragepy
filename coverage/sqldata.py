@@ -685,7 +685,7 @@ class CoverageData:
 
             # Get contexts data.
             with con.execute("select context from context") as cur:
-                contexts = [context for (context,) in cur]
+                contexts = cur.fetchall()
 
             # Get arc data.
             with con.execute(
@@ -743,14 +743,14 @@ class CoverageData:
             # Create all file and context rows in the DB.
             con.executemany_void(
                 "insert or ignore into file (path) values (?)",
-                ((file,) for file in files.values()),
+                [(file,) for file in files.values()],
             )
             with con.execute("select id, path from file") as cur:
                 file_ids = {path: id for id, path in cur}
             self._file_map.update(file_ids)
             con.executemany_void(
                 "insert or ignore into context (context) values (?)",
-                ((context,) for context in contexts),
+                contexts,
             )
             with con.execute("select id, context from context") as cur:
                 context_ids = {context: id for id, context in cur}
@@ -778,10 +778,10 @@ class CoverageData:
             if arcs:
                 self._choose_lines_or_arcs(arcs=True)
 
-                arc_rows = (
+                arc_rows = [
                     (file_ids[file], context_ids[context], fromno, tono)
                     for file, context, fromno, tono in arcs
-                )
+                ]
 
                 # Write the combined data.
                 con.executemany_void(
@@ -813,7 +813,7 @@ class CoverageData:
 
             con.executemany_void(
                 "insert or ignore into tracer (file_id, tracer) values (?, ?)",
-                ((file_ids[filename], tracer) for filename, tracer in tracer_map.items()),
+                [(file_ids[filename], tracer) for filename, tracer in tracer_map.items()],
             )
 
         if not self._no_disk:
