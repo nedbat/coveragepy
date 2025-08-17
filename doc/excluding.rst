@@ -145,6 +145,14 @@ all of them by adding a regex to the exclusion list:
             def __repr__
 
     .. code-tab:: toml
+        :caption: .coveragerc.toml
+
+        [tool.coverage.report]
+        exclude_also = [
+            "def __repr__",
+        ]
+
+    .. code-tab:: toml
         :caption: pyproject.toml
 
         [tool.coverage.report]
@@ -159,7 +167,7 @@ all of them by adding a regex to the exclusion list:
         exclude_also =
             def __repr__
 
-.. [[[end]]] (sum: 8+cOvxKPvv)
+.. [[[end]]] (sum: 4lYsdpcbf/)
 
 For example, here's a list of exclusions I've used:
 
@@ -216,6 +224,23 @@ For example, here's a list of exclusions I've used:
             @(abc\.)?abstractmethod
 
     .. code-tab:: toml
+        :caption: .coveragerc.toml
+
+        [tool.coverage.report]
+        exclude_also = [
+            'def __repr__',
+            'if self.debug:',
+            'if settings.DEBUG',
+            'raise AssertionError',
+            'raise NotImplementedError',
+            'if 0:',
+            'if __name__ == .__main__.:',
+            'if TYPE_CHECKING:',
+            'class .*\bProtocol\):',
+            '@(abc\.)?abstractmethod',
+        ]
+
+    .. code-tab:: toml
         :caption: pyproject.toml
 
         [tool.coverage.report]
@@ -248,7 +273,7 @@ For example, here's a list of exclusions I've used:
             class .*\bProtocol\):
             @(abc\.)?abstractmethod
 
-.. [[[end]]] (sum: ZQsgnt0nES)
+.. [[[end]]] (sum: +D/FLd6oVC)
 
 The :ref:`config_report_exclude_also` option adds regexes to the built-in
 default list so that you can add your own exclusions.  The older
@@ -319,6 +344,19 @@ Here are some examples:
             \A(?s:.*# pragma: exclude file.*)\Z
 
     .. code-tab:: toml
+        :caption: .coveragerc.toml
+
+        [tool.coverage.report]
+        exclude_also = [
+            # 1. Exclude an except clause of a specific form:
+            'except ValueError:\n\s*assume\(False\)',
+            # 2. Comments to turn coverage on and off:
+            'no cover: start(?s:.)*?no cover: stop',
+            # 3. A pragma comment that excludes an entire file:
+            '\A(?s:.*# pragma: exclude file.*)\Z',
+        ]
+
+    .. code-tab:: toml
         :caption: pyproject.toml
 
         [tool.coverage.report]
@@ -343,7 +381,7 @@ Here are some examples:
             ; 3. A pragma comment that excludes an entire file:
             \A(?s:.*# pragma: exclude file.*)\Z
 
-.. [[[end]]] (sum: xG6Bmtmh06)
+.. [[[end]]] (sum: eg9c8WbMqW)
 
 The first regex matches a specific except line followed by a specific function
 call.  Both lines must be present for the exclusion to take effect. Note that
