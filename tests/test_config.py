@@ -35,8 +35,7 @@ class ConfigTest(CoverageTest):
 
     def test_arguments(self) -> None:
         # Arguments to the constructor are applied to the configuration.
-        cov = coverage.Coverage(
-            timid=True, data_file="fooey.dat", concurrency="multiprocessing")
+        cov = coverage.Coverage(timid=True, data_file="fooey.dat", concurrency="multiprocessing")
         assert cov.config.timid
         assert not cov.config.branch
         assert cov.config.data_file == "fooey.dat"
@@ -105,8 +104,7 @@ class ConfigTest(CoverageTest):
         assert cov.config.precision == 3
         assert cov.config.html_title == "tabblo & «ταБЬℓσ»"
         assert cov.config.fail_under == 90.5
-        assert cov.config.get_plugin_options("plugins.a_plugin") == {
-            "hello": "world"}
+        assert cov.config.get_plugin_options("plugins.a_plugin") == {"hello": "world"}
 
     @pytest.mark.parametrize("filename", ["pyproject.toml", ".coveragerc.toml"])
     def test_toml_ints_can_be_floats(self, filename: str) -> None:
@@ -315,8 +313,7 @@ class ConfigTest(CoverageTest):
         cov = coverage.Coverage()
         assert cov.config.data_file == "hello-world.fooey"
         assert cov.config.branch is True
-        assert cov.config.exclude_list == [
-            "the_$one", "anotherZZZ", "xZZZy", "xy", "huh${X}what"]
+        assert cov.config.exclude_list == ["the_$one", "anotherZZZ", "xZZZy", "xy", "huh${X}what"]
 
     @pytest.mark.parametrize("filename", ["pyproject.toml", ".coveragerc.toml"])
     def test_environment_vars_in_toml_config(self, filename: str) -> None:
@@ -446,8 +443,7 @@ class ConfigTest(CoverageTest):
         assert cov.config.lcov_output == "/Users/me/lcov/~foo.lcov"
         assert cov.config.xml_output == "/Users/me/somewhere/xml.out"
         assert cov.config.exclude_list == ["~/data.file", "~joe/html_dir"]
-        assert cov.config.paths == {'mapping': [
-            '/Users/me/src', '/Users/joe/source']}
+        assert cov.config.paths == {'mapping': ['/Users/me/src', '/Users/joe/source']}
 
     def test_tweaks_after_constructor(self) -> None:
         # set_option can be used after construction to affect the config.
@@ -604,8 +600,7 @@ class ConfigTest(CoverageTest):
         )
         cov = coverage.Coverage()
 
-        expected = coverage.config.DEFAULT_EXCLUDE + \
-            ["foobar", "raise .*Error"]
+        expected = coverage.config.DEFAULT_EXCLUDE + ["foobar", "raise .*Error"]
         assert cov.config.exclude_list == expected
 
     def test_partial_also(self) -> None:
@@ -618,8 +613,7 @@ class ConfigTest(CoverageTest):
         )
         cov = coverage.Coverage()
 
-        expected = coverage.config.DEFAULT_PARTIAL + \
-            ["foobar", "raise .*Error"]
+        expected = coverage.config.DEFAULT_PARTIAL + ["foobar", "raise .*Error"]
         assert cov.config.partial_list == expected
 
     def test_core_option(self) -> None:
@@ -817,8 +811,7 @@ class ConfigFileTest(UsingModulesMixin, CoverageTest):
         self.assert_config_settings_are_correct(cov)
 
     def test_config_file_settings_in_setupcfg(self) -> None:
-        self.check_config_file_settings_in_other_file(
-            "setup.cfg", self.SETUP_CFG)
+        self.check_config_file_settings_in_other_file("setup.cfg", self.SETUP_CFG)
 
     def test_config_file_settings_in_toxini(self) -> None:
         self.check_config_file_settings_in_other_file("tox.ini", self.TOX_INI)
