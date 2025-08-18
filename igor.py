@@ -241,7 +241,6 @@ def do_combine_html():
         os.getenv("COVERAGE_DYNCTX") or os.getenv("COVERAGE_CONTEXT"),
     )
     total = cov.html_report(show_contexts=show_contexts)
-    cov.json_report(show_contexts=show_contexts, pretty_print=True)
     print(f"Total: {total:.3f}%")
 
 
