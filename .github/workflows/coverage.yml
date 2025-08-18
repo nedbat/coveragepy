@@ -231,6 +231,14 @@ jobs:
           path: htmlcov
           include-hidden-files: true
 
+      - name: "Show text report"
+        run: |
+          set -xe
+          echo "## Coverage: $(python -m coverage report --format=total)%" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          python -m coverage report --skip-covered >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+
       - name: "Get total"
         id: total
         run: |
@@ -260,12 +268,6 @@ jobs:
           echo "report_dir=reports/$SLUG/htmlcov" >> $GITHUB_ENV
           echo "url=https://htmlpreview.github.io/?https://github.com/nedbat/coverage-reports/blob/main/reports/$SLUG/htmlcov/index.html" >> $GITHUB_ENV
           echo "branch=${REF#refs/heads/}" >> $GITHUB_ENV
-
-      - name: "Summarize"
-        env:
-          TOTAL: ${{ needs.combine.outputs.total }}
-        run: |
-          echo "### TOTAL coverage: ${TOTAL}%" >> $GITHUB_STEP_SUMMARY
 
       - name: "Checkout reports repo"
         if: ${{ github.ref == 'refs/heads/master' }}
