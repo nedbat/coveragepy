@@ -122,6 +122,22 @@ def _locked(method: AnyCallable) -> AnyCallable:
     return _wrapped
 
 
+class NumbitsUnionAgg:
+    """SQLite aggregate function for computing union of numbits."""
+
+    def __init__(self) -> None:
+        self.result = b""
+
+    def step(self, value: bytes) -> None:
+        """Process one value in the aggregation."""
+        if value:
+            self.result = numbits_union(self.result, value)
+
+    def finalize(self) -> bytes:
+        """Return the final aggregated result."""
+        return self.result
+
+
 class CoverageData:
     """Manages collected coverage data, including file storage.
 
@@ -676,146 +692,137 @@ class CoverageData:
 
         # Force the database we're writing to to exist before we start nesting contexts.
         self._start_using()
-
-        # Collector for all arcs, lines and tracers
         other_data.read()
-        with other_data._connect() as con:
-            # Get files data.
-            with con.execute("select path from file") as cur:
-                files = {path: map_path(path) for (path,) in cur}
 
-            # Get contexts data.
-            with con.execute("select context from context") as cur:
-                contexts = cur.fetchall()
-
-            # Get arc data.
-            with con.execute(
-                "select file.path, context.context, arc.fromno, arc.tono " +
-                "from arc " +
-                "inner join file on file.id = arc.file_id " +
-                "inner join context on context.id = arc.context_id",
-            ) as cur:
-                arcs = [
-                    (files[path], context, fromno, tono)
-                    for (path, context, fromno, tono) in cur
-                ]
-
-            # Get line data.
-            with con.execute(
-                "select file.path, context.context, line_bits.numbits " +
-                "from line_bits " +
-                "inner join file on file.id = line_bits.file_id " +
-                "inner join context on context.id = line_bits.context_id",
-            ) as cur:
-                lines: dict[tuple[str, str], bytes] = {}
-                for path, context, numbits in cur:
-                    key = (files[path], context)
-                    if key in lines:
-                        numbits = numbits_union(lines[key], numbits)
-                    lines[key] = numbits
-
-            # Get tracer data.
-            with con.execute(
-                "select file.path, tracer " +
-                "from tracer " +
-                "inner join file on file.id = tracer.file_id",
-            ) as cur:
-                tracers = {files[path]: tracer for (path, tracer) in cur}
+        # Ensure other_data has a properly initialized database
+        with other_data._connect():
+            pass
 
         with self._connect() as con:
             assert con.con is not None
             con.con.isolation_level = "IMMEDIATE"
 
-            # Get all tracers in the DB. Files not in the tracers are assumed
-            # to have an empty string tracer. Since Sqlite does not support
-            # full outer joins, we have to make two queries to fill the
-            # dictionary.
-            with con.execute("select path from file") as cur:
-                this_tracers = {path: "" for path, in cur}
-            with con.execute(
-                "select file.path, tracer from tracer " +
-                "inner join file on file.id = tracer.file_id",
-            ) as cur:
-                this_tracers.update({
-                    map_path(path): tracer
-                    for path, tracer in cur
-                })
-
-            # Create all file and context rows in the DB.
-            con.executemany_void(
-                "insert or ignore into file (path) values (?)",
-                [(file,) for file in files.values()],
+            # Register functions for SQLite
+            con.con.create_function("numbits_union", 2, numbits_union)
+            con.con.create_function("map_path", 1, map_path)
+            con.con.create_aggregate(
+                "numbits_union_agg", 1, NumbitsUnionAgg # type: ignore[arg-type]
             )
-            with con.execute("select id, path from file") as cur:
-                file_ids = {path: id for id, path in cur}
-            self._file_map.update(file_ids)
-            con.executemany_void(
-                "insert or ignore into context (context) values (?)",
-                contexts,
-            )
-            with con.execute("select id, context from context") as cur:
-                context_ids = {context: id for id, context in cur}
 
-            # Prepare tracers and fail, if a conflict is found.
-            # tracer_paths is used to ensure consistency over the tracer data
-            # and tracer_map tracks the tracers to be inserted.
-            tracer_map = {}
-            for path in files.values():
-                this_tracer = this_tracers.get(path)
-                other_tracer = tracers.get(path, "")
-                # If there is no tracer, there is always the None tracer.
-                if this_tracer is not None and this_tracer != other_tracer:
+            # Attach the other database
+            con.execute_void("ATTACH DATABASE ? AS other_db", (other_data.data_filename(),))
+
+            # Create temporary table with mapped file paths to avoid repeated map_path() calls
+            con.execute_void("""
+                CREATE TEMP TABLE other_file_mapped AS
+                SELECT
+                    other_file.id as other_file_id,
+                    map_path(other_file.path) as mapped_path
+                FROM other_db.file AS other_file
+            """)
+
+            # Check for tracer conflicts before proceeding
+            with con.execute("""
+                SELECT other_file_mapped.mapped_path,
+                       COALESCE(main.tracer.tracer, ''),
+                       COALESCE(other_db.tracer.tracer, '')
+                FROM main.file
+                LEFT JOIN main.tracer ON main.file.id = main.tracer.file_id
+                INNER JOIN other_file_mapped ON main.file.path = other_file_mapped.mapped_path
+                LEFT JOIN other_db.tracer ON other_file_mapped.other_file_id = other_db.tracer.file_id
+                WHERE COALESCE(main.tracer.tracer, '') != COALESCE(other_db.tracer.tracer, '')
+            """) as cur:
+                conflicts = list(cur)
+                if conflicts:
+                    path, this_tracer, other_tracer = conflicts[0]
                     raise DataError(
                         "Conflicting file tracer name for '{}': {!r} vs {!r}".format(
                             path, this_tracer, other_tracer,
                         ),
                     )
-                tracer_map[path] = other_tracer
 
-            # Prepare arc and line rows to be inserted by converting the file
-            # and context strings with integer ids. Then use the efficient
-            # `executemany()` to insert all rows at once.
+            # Insert missing files from other_db (with map_path applied)
+            con.execute_void("""
+                INSERT OR IGNORE INTO main.file (path)
+                SELECT DISTINCT mapped_path FROM other_file_mapped
+            """)
 
-            if arcs:
+            # Insert missing contexts from other_db
+            con.execute_void("""
+                INSERT OR IGNORE INTO main.context (context)
+                SELECT context FROM other_db.context
+            """)
+
+            # Update file_map with any new files
+            with con.execute("select id, path from file") as cur:
+                self._file_map.update({path: id for id, path in cur})
+
+            with con.execute("""
+                SELECT
+                    EXISTS(SELECT 1 FROM other_db.arc),
+                    EXISTS(SELECT 1 FROM other_db.line_bits)
+            """) as cur:
+                has_arcs, has_lines = cur.fetchone()
+
+            # Handle arcs if present in other_db
+            if has_arcs:
                 self._choose_lines_or_arcs(arcs=True)
+                con.execute_void("""
+                    INSERT OR IGNORE INTO main.arc (file_id, context_id, fromno, tono)
+                    SELECT
+                        main_file.id,
+                        main_context.id,
+                        other_arc.fromno,
+                        other_arc.tono
+                    FROM other_db.arc AS other_arc
+                    INNER JOIN other_file_mapped ON other_arc.file_id = other_file_mapped.other_file_id
+                    INNER JOIN other_db.context AS other_context ON other_arc.context_id = other_context.id
+                    INNER JOIN main.file AS main_file ON other_file_mapped.mapped_path = main_file.path
+                    INNER JOIN main.context AS main_context ON other_context.context = main_context.context
+                """)
 
-                arc_rows = [
-                    (file_ids[file], context_ids[context], fromno, tono)
-                    for file, context, fromno, tono in arcs
-                ]
-
-                # Write the combined data.
-                con.executemany_void(
-                    "insert or ignore into arc " +
-                    "(file_id, context_id, fromno, tono) values (?, ?, ?, ?)",
-                    arc_rows,
-                )
-
-            if lines:
+            # Handle line_bits if present in other_db
+            if has_lines:
                 self._choose_lines_or_arcs(lines=True)
 
-                for (file, context), numbits in lines.items():
-                    with con.execute(
-                        "select numbits from line_bits where file_id = ? and context_id = ?",
-                        (file_ids[file], context_ids[context]),
-                    ) as cur:
-                        existing = list(cur)
-                    if existing:
-                        lines[(file, context)] = numbits_union(numbits, existing[0][0])
+                # Handle line_bits by aggregating other_db data by mapped target,
+                # then inserting/updating
+                con.execute_void("""
+                    INSERT OR REPLACE INTO main.line_bits (file_id, context_id, numbits)
+                    SELECT
+                        main_file.id,
+                        main_context.id,
+                        numbits_union(
+                            COALESCE((
+                                SELECT numbits FROM main.line_bits
+                                WHERE file_id = main_file.id AND context_id = main_context.id
+                            ), X''),
+                            aggregated.combined_numbits
+                        )
+                    FROM (
+                        SELECT
+                            other_file_mapped.mapped_path,
+                            other_context.context,
+                            numbits_union_agg(other_line_bits.numbits) as combined_numbits
+                        FROM other_db.line_bits AS other_line_bits
+                        INNER JOIN other_file_mapped ON other_line_bits.file_id = other_file_mapped.other_file_id
+                        INNER JOIN other_db.context AS other_context ON other_line_bits.context_id = other_context.id
+                        GROUP BY other_file_mapped.mapped_path, other_context.context
+                    ) AS aggregated
+                    INNER JOIN main.file AS main_file ON aggregated.mapped_path = main_file.path
+                    INNER JOIN main.context AS main_context ON aggregated.context = main_context.context
+                """)
 
-                con.executemany_void(
-                    "insert or replace into line_bits " +
-                    "(file_id, context_id, numbits) values (?, ?, ?)",
-                    [
-                        (file_ids[file], context_ids[context], numbits)
-                        for (file, context), numbits in lines.items()
-                    ],
-                )
-
-            con.executemany_void(
-                "insert or ignore into tracer (file_id, tracer) values (?, ?)",
-                [(file_ids[filename], tracer) for filename, tracer in tracer_map.items()],
-            )
+            # Insert tracers from other_db (avoiding conflicts we already checked)
+            con.execute_void("""
+                INSERT OR IGNORE INTO main.tracer (file_id, tracer)
+                SELECT
+                    main_file.id,
+                    other_tracer.tracer
+                FROM other_db.tracer AS other_tracer
+                INNER JOIN other_file_mapped ON other_tracer.file_id = other_file_mapped.other_file_id
+                INNER JOIN main.file AS main_file ON other_file_mapped.mapped_path = main_file.path
+            """)
 
         if not self._no_disk:
             # Update all internal cache data.
