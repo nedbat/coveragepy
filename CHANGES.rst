@@ -23,10 +23,13 @@ upgrading your version of coverage.py.
 Unreleased
 ----------
 
-- Slight speed improvements to ``coverage combine``, thanks  to `Alex Gaynor
-  <pull 2032_>`_.
+- Big speed improvements for ``coverage combine``: it now takes about half the
+  time it used to!  Huge thanks to Alex Gaynor for pull requests `2032
+  <pull 2032_>`_, `2033 <pull 2033_>`_, and `2034 <pull 2034_>`_.
 
 .. _pull 2032: https://github.com/nedbat/coveragepy/pull/2032
+.. _pull 2033: https://github.com/nedbat/coveragepy/pull/2033
+.. _pull 2034: https://github.com/nedbat/coveragepy/pull/2034
 
 
 .. start-releases
