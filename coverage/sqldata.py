@@ -346,7 +346,7 @@ class CoverageData:
         """Write the initial contents of the database."""
         self._debug_dataio("Initing data file", self._filename)
         db.executescript(SCHEMA)
-        db.execute_void("insert into coverage_schema (version) values (?)", (SCHEMA_VERSION,))
+        db.execute_void("INSERT INTO coverage_schema (version) VALUES (?)", (SCHEMA_VERSION,))
 
         # When writing metadata, avoid information that will needlessly change
         # the hash of the data file, unless we're debugging processes.
@@ -358,7 +358,7 @@ class CoverageData:
                 ("sys_argv", str(getattr(sys, "argv", None))),
                 ("when", datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")),
             ])
-        db.executemany_void("insert or ignore into meta (key, value) values (?, ?)", meta_data)
+        db.executemany_void("INSERT OR IGNORE INTO meta (key, value) VALUES (?, ?)", meta_data)
 
     def _connect(self) -> SqliteDb:
         """Get the SqliteDb object to use."""
@@ -371,7 +371,7 @@ class CoverageData:
             return False
         try:
             with self._connect() as con:
-                with con.execute("select * from file limit 1") as cur:
+                with con.execute("SELECT * FROM file LIMIT 1") as cur:
                     return bool(list(cur))
         except CoverageException:
             return False
@@ -435,7 +435,7 @@ class CoverageData:
             if add:
                 with self._connect() as con:
                     self._file_map[filename] = con.execute_for_rowid(
-                        "insert or replace into file (path) values (?)",
+                        "INSERT OR REPLACE INTO file (path) VALUES (?)",
                         (filename,),
                     )
         return self._file_map.get(filename)
@@ -445,7 +445,7 @@ class CoverageData:
         assert context is not None
         self._start_using()
         with self._connect() as con:
-            row = con.execute_one("select id from context where context = ?", (context,))
+            row = con.execute_one("SELECT id FROM context WHERE context = ?", (context,))
             if row is not None:
                 return cast(int, row[0])
             else:
@@ -475,7 +475,7 @@ class CoverageData:
         else:
             with self._connect() as con:
                 self._current_context_id = con.execute_for_rowid(
-                    "insert into context (context) values (?)",
+                    "INSERT INTO context (context) VALUES (?)",
                     (context,),
                 )
 
@@ -520,15 +520,17 @@ class CoverageData:
             for filename, linenos in line_data.items():
                 line_bits = nums_to_numbits(linenos)
                 file_id = self._file_id(filename, add=True)
-                query = "select numbits from line_bits where file_id = ? and context_id = ?"
+                query = "SELECT numbits FROM line_bits WHERE file_id = ? AND context_id = ?"
                 with con.execute(query, (file_id, self._current_context_id)) as cur:
                     existing = list(cur)
                 if existing:
                     line_bits = numbits_union(line_bits, existing[0][0])
 
                 con.execute_void(
-                    "insert or replace into line_bits " +
-                    " (file_id, context_id, numbits) values (?, ?, ?)",
+                    """
+                    INSERT OR REPLACE INTO line_bits
+                    (file_id, context_id, numbits) VALUES (?, ?, ?)
+                    """,
                     (file_id, self._current_context_id, line_bits),
                 )
 
@@ -561,8 +563,10 @@ class CoverageData:
                 file_id = self._file_id(filename, add=True)
                 data = [(file_id, self._current_context_id, fromno, tono) for fromno, tono in arcs]
                 con.executemany_void(
-                    "insert or ignore into arc " +
-                    "(file_id, context_id, fromno, tono) values (?, ?, ?, ?)",
+                    """
+                    INSERT OR IGNORE INTO arc
+                    (file_id, context_id, fromno, tono) VALUES (?, ?, ?, ?)
+                    """,
                     data,
                 )
 
@@ -583,7 +587,7 @@ class CoverageData:
             self._has_arcs = arcs
             with self._connect() as con:
                 con.execute_void(
-                    "insert or ignore into meta (key, value) values (?, ?)",
+                    "INSERT OR IGNORE INTO meta (key, value) VALUES (?, ?)",
                     ("has_arcs", str(int(arcs))),
                 )
 
@@ -612,7 +616,7 @@ class CoverageData:
                         )
                 elif plugin_name:
                     con.execute_void(
-                        "insert into tracer (file_id, tracer) values (?, ?)",
+                        "INSERT INTO TRACER (file_id, tracer) VALUES (?, ?)",
                         (file_id, plugin_name),
                     )
 
@@ -655,9 +659,9 @@ class CoverageData:
         with self._connect() as con:
 
             if self._has_lines:
-                sql = "delete from line_bits where file_id=?"
+                sql = "DELETE FROM line_bits WHERE file_id=?"
             elif self._has_arcs:
-                sql = "delete from arc where file_id=?"
+                sql = "DELETE FROM arc WHERE file_id=?"
             else:
                 raise DataError("Can't purge files in an empty CoverageData")
 
@@ -754,7 +758,7 @@ class CoverageData:
             """)
 
             # Update file_map with any new files
-            with con.execute("select id, path from file") as cur:
+            with con.execute("SELECT id, path FROM file") as cur:
                 self._file_map.update({path: id for id, path in cur})
 
             with con.execute("""
@@ -891,7 +895,7 @@ class CoverageData:
         """
         self._start_using()
         with self._connect() as con:
-            with con.execute("select distinct(context) from context") as cur:
+            with con.execute("SELECT DISTINCT(context) FROM context") as cur:
                 contexts = {row[0] for row in cur}
         return contexts
 
@@ -908,7 +912,7 @@ class CoverageData:
             file_id = self._file_id(filename)
             if file_id is None:
                 return None
-            row = con.execute_one("select tracer from tracer where file_id = ?", (file_id,))
+            row = con.execute_one("SELECT tracer FROM tracer WHERE file_id = ?", (file_id,))
             if row is not None:
                 return row[0] or ""
             return ""   # File was measured, but no tracer associated.
@@ -926,7 +930,7 @@ class CoverageData:
         """
         self._start_using()
         with self._connect() as con:
-            with con.execute("select id from context where context = ?", (context,)) as cur:
+            with con.execute("SELECT id FROM context WHERE context = ?", (context,)) as cur:
                 self._query_context_ids = [row[0] for row in cur.fetchall()]
 
     def set_query_contexts(self, contexts: Sequence[str] | None) -> None:
@@ -944,8 +948,8 @@ class CoverageData:
         self._start_using()
         if contexts:
             with self._connect() as con:
-                context_clause = " or ".join(["context regexp ?"] * len(contexts))
-                with con.execute("select id from context where " + context_clause, contexts) as cur:
+                context_clause = " or ".join(["context REGEXP ?"] * len(contexts))
+                with con.execute("SELECT id FROM context WHERE " + context_clause, contexts) as cur:
                     self._query_context_ids = [row[0] for row in cur.fetchall()]
         else:
             self._query_context_ids = None
@@ -972,11 +976,11 @@ class CoverageData:
             if file_id is None:
                 return None
             else:
-                query = "select numbits from line_bits where file_id = ?"
+                query = "SELECT numbits FROM line_bits WHERE file_id = ?"
                 data = [file_id]
                 if self._query_context_ids is not None:
                     ids_array = ", ".join("?" * len(self._query_context_ids))
-                    query += " and context_id in (" + ids_array + ")"
+                    query += " AND context_id IN (" + ids_array + ")"
                     data += self._query_context_ids
                 with con.execute(query, data) as cur:
                     bitmaps = list(cur)
@@ -1008,11 +1012,11 @@ class CoverageData:
             if file_id is None:
                 return None
             else:
-                query = "select distinct fromno, tono from arc where file_id = ?"
+                query = "SELECT DISTINCT fromno, tono FROM arc WHERE file_id = ?"
                 data = [file_id]
                 if self._query_context_ids is not None:
                     ids_array = ", ".join("?" * len(self._query_context_ids))
-                    query += " and context_id in (" + ids_array + ")"
+                    query += " AND context_id IN (" + ids_array + ")"
                     data += self._query_context_ids
                 with con.execute(query, data) as cur:
                     return list(cur)
@@ -1034,15 +1038,15 @@ class CoverageData:
 
             lineno_contexts_map = collections.defaultdict(set)
             if self.has_arcs():
-                query = (
-                    "select arc.fromno, arc.tono, context.context " +
-                    "from arc, context " +
-                    "where arc.file_id = ? and arc.context_id = context.id"
-                )
+                query = """
+                    SELECT arc.fromno, arc.tono, context.context
+                    FROM arc, context
+                    WHERE arc.file_id = ? AND arc.context_id = context.id
+                """
                 data = [file_id]
                 if self._query_context_ids is not None:
                     ids_array = ", ".join("?" * len(self._query_context_ids))
-                    query += " and arc.context_id in (" + ids_array + ")"
+                    query += " AND arc.context_id IN (" + ids_array + ")"
                     data += self._query_context_ids
                 with con.execute(query, data) as cur:
                     for fromno, tono, context in cur:
@@ -1051,15 +1055,15 @@ class CoverageData:
                         if tono > 0:
                             lineno_contexts_map[tono].add(context)
             else:
-                query = (
-                    "select l.numbits, c.context from line_bits l, context c " +
-                    "where l.context_id = c.id " +
-                    "and file_id = ?"
-                )
+                query = """
+                    SELECT l.numbits, c.context FROM line_bits l, context c
+                    WHERE l.context_id = c.id
+                    AND file_id = ?
+                """
                 data = [file_id]
                 if self._query_context_ids is not None:
                     ids_array = ", ".join("?" * len(self._query_context_ids))
-                    query += " and l.context_id in (" + ids_array + ")"
+                    query += " AND l.context_id IN (" + ids_array + ")"
                     data += self._query_context_ids
                 with con.execute(query, data) as cur:
                     for numbits, context in cur:
@@ -1076,9 +1080,9 @@ class CoverageData:
 
         """
         with SqliteDb(":memory:", debug=NoDebugging()) as db:
-            with db.execute("pragma temp_store") as cur:
+            with db.execute("PRAGMA temp_store") as cur:
                 temp_store = [row[0] for row in cur]
-            with db.execute("pragma compile_options") as cur:
+            with db.execute("PRAGMA compile_options") as cur:
                 copts = [row[0] for row in cur]
             copts = textwrap.wrap(", ".join(copts), width=75)
 
