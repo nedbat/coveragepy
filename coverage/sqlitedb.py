@@ -217,8 +217,7 @@ class SqliteDb:
 
     def executemany_void(self, sql: str, data: list[Any]) -> None:
         """Same as :meth:`python:sqlite3.Connection.executemany` when you don't need the cursor."""
-        if data:
-            self._executemany(sql, data).close()
+        self._executemany(sql, data).close()
 
     def executescript(self, script: str) -> None:
         """Same as :meth:`python:sqlite3.Connection.executescript`."""

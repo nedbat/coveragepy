@@ -130,8 +130,7 @@ class NumbitsUnionAgg:
 
     def step(self, value: bytes) -> None:
         """Process one value in the aggregation."""
-        if value:
-            self.result = numbits_union(self.result, value)
+        self.result = numbits_union(self.result, value)
 
     def finalize(self) -> bytes:
         """Return the final aggregated result."""
