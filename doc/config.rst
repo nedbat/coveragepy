@@ -39,12 +39,13 @@ environment variable.
 
 If ``.coveragerc`` doesn't exist and another file hasn't been specified, then
 coverage.py will look for settings in other common configuration files, in this
-order: setup.cfg, tox.ini, or pyproject.toml.  The first file found with
+order: .coveragerc.toml, setup.cfg, tox.ini, or pyproject.toml.  The first file found with
 coverage.py settings will be used and other files won't be consulted.
 
-Coverage.py will read from "pyproject.toml" if TOML support is available,
+Coverage.py will read from ".coveragerc.toml" and "pyproject.toml" if TOML support is available,
 either because you are running on Python 3.11 or later, or because you
-installed with the ``toml`` extra (``pip install coverage[toml]``).
+installed with the ``toml`` extra (``pip install coverage[toml]``). Both files
+use the same ``[tool.coverage]`` section structure.
 
 
 Syntax
@@ -136,6 +137,7 @@ Here's a sample configuration file, in each syntax:
             [html]
             directory = coverage_html_report
             """,
+
         toml=r"""
             [tool.coverage.run]
             branch = true
@@ -199,6 +201,36 @@ Here's a sample configuration file, in each syntax:
         directory = coverage_html_report
 
     .. code-tab:: toml
+        :caption: .coveragerc.toml
+
+        [tool.coverage.run]
+        branch = true
+
+        [tool.coverage.report]
+        # Regexes for lines to exclude from consideration
+        exclude_also = [
+            # Don't complain about missing debug-only code:
+            "def __repr__",
+            "if self\\.debug",
+
+            # Don't complain if tests don't hit defensive assertion code:
+            "raise AssertionError",
+            "raise NotImplementedError",
+
+            # Don't complain if non-runnable code isn't run:
+            "if 0:",
+            "if __name__ == .__main__.:",
+
+            # Don't complain about abstract methods, they aren't run:
+            "@(abc\\.)?abstractmethod",
+            ]
+
+        ignore_errors = true
+
+        [tool.coverage.html]
+        directory = "coverage_html_report"
+
+    .. code-tab:: toml
         :caption: pyproject.toml
 
         [tool.coverage.run]
@@ -257,7 +289,7 @@ Here's a sample configuration file, in each syntax:
         [coverage:html]
         directory = coverage_html_report
 
-.. [[[end]]] (sum: HU1Z62mvRK)
+.. [[[end]]] (sum: EQ1Fn4BHJk)
 
 
 The specific configuration settings are described below.  Many sections and
@@ -598,6 +630,16 @@ equivalent when combining data from different machines:
             c:\myproj\src
 
     .. code-tab:: toml
+        :caption: .coveragerc.toml
+
+        [tool.coverage.paths]
+        source = [
+            "src/",
+            "/jenkins/build/*/src",
+            "c:\\myproj\\src",
+            ]
+
+    .. code-tab:: toml
         :caption: pyproject.toml
 
         [tool.coverage.paths]
@@ -616,7 +658,7 @@ equivalent when combining data from different machines:
             /jenkins/build/*/src
             c:\myproj\src
 
-.. [[[end]]] (sum: oHSl8SGiMT)
+.. [[[end]]] (sum: QLgJoxGH3G)
 
 
 The names of the entries ("source" in this example) are ignored, you may choose

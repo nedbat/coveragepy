@@ -72,6 +72,12 @@ a coverage.py plug-in called ``something.plugin``.
                something.plugin
 
        .. code-tab:: toml
+           :caption: .coveragerc.toml
+
+           [tool.coverage.run]
+           plugins = [ "something.plugin" ]
+
+       .. code-tab:: toml
            :caption: pyproject.toml
 
            [tool.coverage.run]
@@ -84,7 +90,7 @@ a coverage.py plug-in called ``something.plugin``.
            plugins =
                something.plugin
 
-   .. [[[end]]] (sum: boZjI9S8MZ)
+   .. [[[end]]] (sum: +V9pwwXF47)
 
 #. If the plug-in needs its own configuration, you can add those settings in
    the .coveragerc file in a section named for the plug-in:
@@ -114,6 +120,13 @@ a coverage.py plug-in called ``something.plugin``.
            option2 = abc.foo
 
        .. code-tab:: toml
+           :caption: .coveragerc.toml
+
+           [tool.coverage.something.plugin]
+           option1 = true
+           option2 = "abc.foo"
+
+       .. code-tab:: toml
            :caption: pyproject.toml
 
            [tool.coverage.something.plugin]
@@ -127,7 +140,7 @@ a coverage.py plug-in called ``something.plugin``.
            option1 = True
            option2 = abc.foo
 
-   .. [[[end]]] (sum: tpARXb5/bH)
+   .. [[[end]]] (sum: woHFW9mOUC)
 
    Check the documentation for the plug-in for details on the options it takes.
 
