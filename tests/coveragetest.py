@@ -17,11 +17,9 @@ import re
 import shlex
 import sys
 
-from types import ModuleType
-from typing import (
-    Any,
-)
 from collections.abc import Collection, Iterable, Iterator, Mapping, Sequence
+from types import ModuleType
+from typing import Any
 
 import coverage
 from coverage import Coverage

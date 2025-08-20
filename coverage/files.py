@@ -307,6 +307,7 @@ def sep(s: str) -> str:
 
 # Tokenizer for _glob_to_regex.
 # None as a sub means disallowed.
+# fmt: off
 G2RX_TOKENS = [(re.compile(rx), sub) for rx, sub in [
     (r"\*\*\*+", None),             # Can't have ***
     (r"[^/]+\*\*+", None),          # Can't have x**
@@ -323,6 +324,7 @@ G2RX_TOKENS = [(re.compile(rx), sub) for rx, sub in [
     (r"[\[\]]", None),              # Can't have single square brackets
     (r".", r"\\\g<0>"),             # Anything else is escaped to be safe
 ]]
+# fmt: on
 
 def _glob_to_regex(pattern: str) -> str:
     """Convert a file-path glob pattern into a regex."""

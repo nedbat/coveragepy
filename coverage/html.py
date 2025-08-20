@@ -446,8 +446,8 @@ class HtmlReporter:
 
         if self.skip_covered:
             # Don't report on 100% files.
-            no_missing_lines = (nums.n_missing == 0)
-            no_missing_branches = (nums.n_partial_branches == 0)
+            no_missing_lines = (nums.n_missing == 0)  # fmt: skip
+            no_missing_branches = (nums.n_partial_branches == 0)  # fmt: skip
             if no_missing_lines and no_missing_branches:
                 index_page.skipped_covered_count += 1
                 return False

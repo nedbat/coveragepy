@@ -16,11 +16,7 @@ from coverage.exceptions import ConfigError
 from coverage.misc import isolate_module
 from coverage.pytracer import PyTracer
 from coverage.sysmon import SysMonitor
-from coverage.types import (
-    TFileDisposition,
-    Tracer,
-    TWarnFn,
-)
+from coverage.types import TFileDisposition, Tracer, TWarnFn
 
 os = isolate_module(os)
 

@@ -269,8 +269,8 @@ class SummaryReporter:
         nums = analysis.numbers
         self.total += nums
 
-        no_missing_lines = (nums.n_missing == 0)
-        no_missing_branches = (nums.n_partial_branches == 0)
+        no_missing_lines = (nums.n_missing == 0)  # fmt: skip
+        no_missing_branches = (nums.n_partial_branches == 0)  # fmt: skip
         if self.config.skip_covered and no_missing_lines and no_missing_branches:
             # Don't report on 100% files.
             self.skipped_count += 1

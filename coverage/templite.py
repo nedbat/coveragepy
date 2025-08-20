@@ -13,12 +13,7 @@ http://aosabook.org/en/500L/a-template-engine.html
 from __future__ import annotations
 
 import re
-from typing import (
-    Any,
-    Callable,
-    NoReturn,
-    cast,
-)
+from typing import Any, Callable, NoReturn, cast
 
 
 class TempliteSyntaxError(ValueError):
@@ -165,7 +160,7 @@ class Templite:
         for token in tokens:
             if token.startswith("{"):
                 start, end = 2, -2
-                squash = (token[-3] == "-")
+                squash = (token[-3] == "-")  # fmt: skip
                 if squash:
                     end = -3
 

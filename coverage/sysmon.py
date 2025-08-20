@@ -14,13 +14,7 @@ import threading
 import traceback
 from dataclasses import dataclass
 from types import CodeType
-from typing import (
-    Any,
-    Callable,
-    NewType,
-    Optional,
-    cast,
-)
+from typing import Any, Callable, NewType, Optional, cast
 
 from coverage import env
 from coverage.bytecode import TBranchTrails, always_jumps, branch_trails

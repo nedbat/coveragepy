@@ -17,11 +17,7 @@ import sysconfig
 import traceback
 from collections.abc import Iterable
 from types import FrameType, ModuleType
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    cast,
-)
+from typing import TYPE_CHECKING, Any, cast
 
 from coverage import env
 from coverage.disposition import FileDisposition, disposition_init

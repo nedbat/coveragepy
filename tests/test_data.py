@@ -12,10 +12,8 @@ import re
 import sqlite3
 import threading
 
-from typing import (
-    Any, Callable, TypeVar, Union,
-)
 from collections.abc import Collection, Iterable, Mapping
+from typing import Any, Callable, TypeVar, Union
 from unittest import mock
 
 import pytest

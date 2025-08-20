@@ -14,13 +14,7 @@ import os
 import os.path
 import re
 from collections.abc import Iterable
-from typing import (
-    Any,
-    Callable,
-    Final,
-    Mapping,
-    Union,
-)
+from typing import Any, Callable, Final, Mapping, Union
 
 from coverage.exceptions import ConfigError
 from coverage.misc import human_sorted_items, isolate_module, substitute_variables
@@ -386,7 +380,7 @@ class CoverageConfig(TConfigurable, TPluginConfig):
         #   where is the section:name to read from the configuration file.
         #   type_ is the optional type to apply, by using .getTYPE to read the
         #       configuration value from the file.
-
+        #
         # [run]
         ("branch", "run:branch", "boolean"),
         ("command_line", "run:command_line"),
@@ -411,7 +405,7 @@ class CoverageConfig(TConfigurable, TPluginConfig):
         ("source_dirs", "run:source_dirs", "list"),
         ("timid", "run:timid", "boolean"),
         ("_crash", "run:_crash"),
-
+        #
         # [report]
         ("exclude_list", "report:exclude_lines", "regexlist"),
         ("exclude_also", "report:exclude_also", "regexlist"),
@@ -430,7 +424,7 @@ class CoverageConfig(TConfigurable, TPluginConfig):
         ("skip_covered", "report:skip_covered", "boolean"),
         ("skip_empty", "report:skip_empty", "boolean"),
         ("sort", "report:sort"),
-
+        #
         # [html]
         ("extra_css", "html:extra_css"),
         ("html_dir", "html:directory", "file"),
@@ -438,16 +432,16 @@ class CoverageConfig(TConfigurable, TPluginConfig):
         ("html_skip_empty", "html:skip_empty", "boolean"),
         ("html_title", "html:title"),
         ("show_contexts", "html:show_contexts", "boolean"),
-
+        #
         # [xml]
         ("xml_output", "xml:output", "file"),
         ("xml_package_depth", "xml:package_depth", "int"),
-
+        #
         # [json]
         ("json_output", "json:output", "file"),
         ("json_pretty_print", "json:pretty_print", "boolean"),
         ("json_show_contexts", "json:show_contexts", "boolean"),
-
+        #
         # [lcov]
         ("lcov_output", "lcov:output", "file"),
         ("lcov_line_checksums", "lcov:line_checksums", "boolean")

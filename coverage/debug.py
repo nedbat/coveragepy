@@ -259,11 +259,13 @@ def short_stack(
 
     """
     # Regexes in initial frames that we don't care about.
+    # fmt: off
     BORING_PRELUDE = [
         "<string>",             # pytest-xdist has string execution.
         r"\bigor.py$",          # Our test runner.
         r"\bsite-packages\b",   # pytest etc getting to our tests.
     ]
+    # fmt: on
 
     stack: Iterable[inspect.FrameInfo] = inspect.stack()[:skip:-1]
     if not full:

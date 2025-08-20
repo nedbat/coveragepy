@@ -11,14 +11,7 @@ import os
 import pathlib
 from collections.abc import Iterable, Mapping
 from types import FrameType, ModuleType
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Callable,
-    Optional,
-    Protocol,
-    Union,
-)
+from typing import TYPE_CHECKING, Any, Callable, Optional, Protocol, Union
 
 if TYPE_CHECKING:
     from coverage.plugin import FileTracer

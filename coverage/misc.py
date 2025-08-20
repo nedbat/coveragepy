@@ -20,11 +20,7 @@ import sys
 import types
 from collections.abc import Iterable, Iterator, Mapping, Sequence
 from types import ModuleType
-from typing import (
-    Any,
-    NoReturn,
-    TypeVar,
-)
+from typing import Any, NoReturn, TypeVar
 
 # In 6.0, the exceptions moved from misc.py to exceptions.py.  But a number of
 # other packages were importing the exceptions from misc, so import them here.

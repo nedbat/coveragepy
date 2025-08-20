@@ -246,9 +246,9 @@ class PyTracer(Tracer):
                 # The current opcode is guaranteed to be RESUME. The argument
                 # determines what kind of resume it is.
                 oparg = frame.f_code.co_code[frame.f_lasti + 1]
-                real_call = (oparg == 0)
+                real_call = (oparg == 0)  # fmt: skip
             else:
-                real_call = (getattr(frame, "f_lasti", -1) < 0)
+                real_call = (getattr(frame, "f_lasti", -1) < 0)  # fmt: skip
             if real_call:
                 self.last_line = -frame.f_code.co_firstlineno
             else:

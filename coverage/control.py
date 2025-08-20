@@ -642,7 +642,7 @@ class Coverage(TConfigurable):
         # Register our clean-up handlers.
         atexit.register(self._atexit)
         if self.config.sigterm:
-            is_main = (threading.current_thread() == threading.main_thread())
+            is_main = (threading.current_thread() == threading.main_thread())  # fmt: skip
             if is_main and not env.WINDOWS:
                 # The Python docs seem to imply that SIGTERM works uniformly even
                 # on Windows, but that's not my experience, and this agrees:

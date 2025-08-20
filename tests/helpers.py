@@ -20,9 +20,7 @@ import textwrap
 import warnings
 
 from pathlib import Path
-from typing import (
-    Any, Callable, NoReturn, TypeVar, cast,
-)
+from typing import Any, Callable, NoReturn, TypeVar, cast
 from collections.abc import Iterable, Iterator
 
 from coverage import env
