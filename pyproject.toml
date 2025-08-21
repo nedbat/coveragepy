@@ -156,13 +156,12 @@ ghrel_template = """
 """
 
 ## RUFF
-# We aren't using ruff for real yet...
+# We are using ruff for formatting, but not for linting.
 
 [tool.ruff]
 # PYVERSION
 target-version = "py39"     # Can't use [project]
 line-length = 100
-src = ["coverage", "tests"]
 
 [tool.ruff.lint]
 select = ["ALL"]

@@ -157,6 +157,8 @@ rfc3986==2.0.0
     # via twine
 rich==14.1.0
     # via twine
+ruff==0.12.9
+    # via -r requirements/dev.in
 scriv==1.7.0
     # via -r requirements/dev.in
 setuptools==80.9.0
