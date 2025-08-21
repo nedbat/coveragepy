@@ -51,6 +51,7 @@ def show_py_text(text, fname="<string>"):
     code = compile(text, fname, "exec", dont_inherit=True)
     show_code(code)
 
+# fmt:off
 CO_FLAGS = [
     ('CO_OPTIMIZED',                0x00001),
     ('CO_NEWLOCALS',                0x00002),
@@ -91,6 +92,7 @@ if sys.version_info >= (3, 14):
     CO_FLAGS += [
         ('CO_NO_MONITORING_EVENTS',     0x2000000),
     ]
+# fmt: on
 
 def show_code(code, indent='', number=None):
     label = ""

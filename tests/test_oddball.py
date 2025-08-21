@@ -136,7 +136,7 @@ class RecursionTest(CoverageTest):
             self.start_import_stop(cov, "recur")
 
         assert cov._collector is not None
-        pytrace = (cov._collector.tracer_name() == "PyTracer")
+        pytrace = (cov._collector.tracer_name() == "PyTracer")  # fmt: skip
         expected_missing = [4]
         if pytrace:                                 # pragma: no metacov
             expected_missing += [10, 11, 12]
