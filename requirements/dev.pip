@@ -53,7 +53,7 @@ flaky==3.8.1
     # via -r requirements/pytest.in
 greenlet==3.2.4
     # via -r requirements/dev.in
-hypothesis==6.138.1
+hypothesis==6.138.2
     # via -r requirements/pytest.in
 id==1.5.0
     # via twine
@@ -72,7 +72,7 @@ jaraco-classes==3.4.0
     # via keyring
 jaraco-context==6.0.1
     # via keyring
-jaraco-functools==4.2.1
+jaraco-functools==4.3.0
     # via keyring
 jedi==0.19.2
     # via pudb
@@ -144,7 +144,7 @@ readme-renderer==44.0
     # via
     #   -r requirements/dev.in
     #   twine
-requests==2.32.4
+requests==2.32.5
     # via
     #   -r requirements/dev.in
     #   id

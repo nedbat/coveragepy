@@ -53,7 +53,7 @@ mdurl==0.1.2
     # via markdown-it-py
 packaging==25.0
     # via sphinx
-pbr==7.0.0
+pbr==7.0.1
     # via stevedore
 polib==1.2.0
     # via sphinx-lint
@@ -67,7 +67,7 @@ pygments==2.19.2
     #   sphinx
 regex==2025.7.34
     # via sphinx-lint
-requests==2.32.4
+requests==2.32.5
     # via
     #   scriv
     #   sphinx
