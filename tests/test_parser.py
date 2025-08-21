@@ -547,87 +547,90 @@ class ExclusionParserTest(PythonParserTestBase):
             exclude="function_to_exclude",
         )
         assert parser.statements == {1, 7}
+        # linters and formatters can't agree about whether strings are too
+        # long, so format in the long variable names that make them too long.
+        long_arg = "super_long_input_argument"
         parser = self.parse_text(
-            """\
+            f"""\
             def my_func(
-                super_long_input_argument_0=0,
-                super_long_input_argument_1=1,
-                super_long_input_argument_2=2):
+                {long_arg}_0=0,
+                {long_arg}_1=1,
+                {long_arg}_2=2):
                 pass
 
-            def my_func_2(super_long_input_argument_0=0, super_long_input_argument_1=1, super_long_input_argument_2=2):
+            def my_func_2({long_arg}_0=0, {long_arg}_1=1, {long_arg}_2=2):
                 pass
             """,
             exclude="my_func",
         )
         assert parser.statements == set()
         parser = self.parse_text(
-            """\
+            f"""\
             def my_func(
-                super_long_input_argument_0=0,
-                super_long_input_argument_1=1,
-                super_long_input_argument_2=2):
+                {long_arg}_0=0,
+                {long_arg}_1=1,
+                {long_arg}_2=2):
                 pass
 
-            def my_func_2(super_long_input_argument_0=0, super_long_input_argument_1=1, super_long_input_argument_2=2):
+            def my_func_2({long_arg}_0=0, {long_arg}_1=1, {long_arg}_2=2):
                 pass
             """,
             exclude="my_func_2",
         )
         assert parser.statements == {1, 5}
         parser = self.parse_text(
-            """\
+            f"""\
             def my_func       (
-                super_long_input_argument_0=0,
-                super_long_input_argument_1=1,
-                super_long_input_argument_2=2):
+                {long_arg}_0=0,
+                {long_arg}_1=1,
+                {long_arg}_2=2):
                 pass
 
-            def my_func_2    (super_long_input_argument_0=0, super_long_input_argument_1=1, super_long_input_argument_2=2):
+            def my_func_2    ({long_arg}_0=0, {long_arg}_1=1, {long_arg}_2=2):
                 pass
             """,
             exclude="my_func_2",
         )
         assert parser.statements == {1, 5}
         parser = self.parse_text(
-            """\
+            f"""\
             def my_func       (
-                super_long_input_argument_0=0,
-                super_long_input_argument_1=1,
-                super_long_input_argument_2=2):
+                {long_arg}_0=0,
+                {long_arg}_1=1,
+                {long_arg}_2=2):
                 pass
 
-            def my_func_2    (super_long_input_argument_0=0, super_long_input_argument_1=1, super_long_input_argument_2=2):
+            def my_func_2    ({long_arg}_0=0, {long_arg}_1=1, {long_arg}_2=2):
                 pass
             """,
             exclude="my_func",
         )
         assert parser.statements == set()
         parser = self.parse_text(
-            """\
+            f"""\
             def my_func \
                 (
-                super_long_input_argument_0=0,
-                super_long_input_argument_1=1
+                {long_arg}_0=0,
+                {long_arg}_1=1
                 ):
                 pass
 
-            def my_func_2(super_long_input_argument_0=0, super_long_input_argument_1=1, super_long_input_argument_2=2):
+            def my_func_2({long_arg}_0=0, {long_arg}_1=1, {long_arg}_2=2):
                 pass
             """,
             exclude="my_func_2",
         )
         assert parser.statements == {1, 5}
         parser = self.parse_text(
-            """\
+            f"""\
             def my_func \
                 (
-                super_long_input_argument_0=0,
-                super_long_input_argument_1=1
+                {long_arg}_0=0,
+                {long_arg}_1=1
                 ):
                 pass
 
-            def my_func_2(super_long_input_argument_0=0, super_long_input_argument_1=1, super_long_input_argument_2=2):
+            def my_func_2({long_arg}_0=0, {long_arg}_1=1, {long_arg}_2=2):
                 pass
             """,
             exclude="my_func",

@@ -55,8 +55,8 @@ def _phys_tokens(toks: TokenInfos) -> TokenInfos:
                 if last_ttext.endswith("\\"):
                     inject_backslash = False
                 elif ttype == token.STRING:
-                    if (
-                        last_line.endswith("\\\n")  # pylint: disable=simplifiable-if-statement
+                    if (  # pylint: disable=simplifiable-if-statement
+                        last_line.endswith("\\\n")
                         and last_line.rstrip(" \\\n").endswith(last_ttext)
                     ):
                         # Deal with special cases like such code::

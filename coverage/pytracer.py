@@ -128,8 +128,8 @@ class PyTracer(Tracer):
         with open("/tmp/debug_trace.txt", "a", encoding="utf-8") as f:
             f.write(f"{marker} {self.id}[{len(self.data_stack)}]")
             if 0:  # if you want thread ids..
-                f.write(
-                    ".{:x}.{:x}".format(  # type: ignore[unreachable]
+                f.write(  # type: ignore[unreachable]
+                    ".{:x}.{:x}".format(
                         self.thread.ident,
                         self.threading.current_thread().ident,
                     )
