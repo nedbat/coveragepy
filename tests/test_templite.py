@@ -49,7 +49,7 @@ class TempliteTest(CoverageTest):
 
         """
         pat = "^" + re.escape(msg) + "$"
-        return pytest.raises(TempliteSyntaxError, match=pat)    # type: ignore
+        return pytest.raises(TempliteSyntaxError, match=pat)  # type: ignore
 
     def test_passthrough(self) -> None:
         # Strings without variables are passed through unchanged.
@@ -58,7 +58,7 @@ class TempliteTest(CoverageTest):
 
     def test_variables(self) -> None:
         # Variables use {{var}} syntax.
-        self.try_render("Hello, {{name}}!", {'name':'Ned'}, "Hello, Ned!")
+        self.try_render("Hello, {{name}}!", {"name": "Ned"}, "Hello, Ned!")
 
     def test_undefined_variables(self) -> None:
         # Using undefined names is an error.
@@ -68,9 +68,9 @@ class TempliteTest(CoverageTest):
     def test_pipes(self) -> None:
         # Variables can be filtered with pipes.
         data = {
-            'name': 'Ned',
-            'upper': lambda x: x.upper(),
-            'second': lambda x: x[1],
+            "name": "Ned",
+            "upper": lambda x: x.upper(),
+            "second": lambda x: x[1],
         }
         self.try_render("Hello, {{name|upper}}!", data, "Hello, NED!")
 
@@ -80,13 +80,13 @@ class TempliteTest(CoverageTest):
     def test_reusability(self) -> None:
         # A single Templite can be used more than once with different data.
         globs = {
-            'upper': lambda x: x.upper(),
-            'punct': '!',
+            "upper": lambda x: x.upper(),
+            "punct": "!",
         }
 
         template = Templite("This is {{name|upper}}{{punct}}", globs)
-        assert template.render({'name':'Ned'}) == "This is NED!"
-        assert template.render({'name':'Ben'}) == "This is BEN!"
+        assert template.render({"name": "Ned"}) == "This is NED!"
+        assert template.render({"name": "Ben"}) == "This is BEN!"
 
     def test_attribute(self) -> None:
         # Variables' attributes can be accessed with dots.
@@ -100,25 +100,28 @@ class TempliteTest(CoverageTest):
         # Variables' member functions can be used, as long as they are nullary.
         class WithMemberFns(SimpleNamespace):
             """A class to try out member function access."""
+
             def ditto(self) -> str:
                 """Return twice the .txt attribute."""
-                return self.txt + self.txt          # type: ignore
+                return self.txt + self.txt  # type: ignore
+
         obj = WithMemberFns(txt="Once")
         self.try_render("{{obj.ditto}}", locals(), "OnceOnce")
 
     def test_item_access(self) -> None:
         # Variables' items can be used.
-        d = {'a':17, 'b':23}
+        d = {"a": 17, "b": 23}
         self.try_render("{{d.a}} < {{d.b}}", locals(), "17 < 23")
 
     def test_loops(self) -> None:
         # Loops work like in Django.
-        nums = [1,2,3,4]
+        nums = [1, 2, 3, 4]
         self.try_render(
             "Look: {% for n in nums %}{{n}}, {% endfor %}done.",
             locals(),
             "Look: 1, 2, 3, 4, done.",
         )
+
         # Loop iterables can be filtered.
         def rev(l: list[int]) -> list[int]:
             """Return the reverse of `l`."""
@@ -135,22 +138,21 @@ class TempliteTest(CoverageTest):
     def test_empty_loops(self) -> None:
         self.try_render(
             "Empty: {% for n in nums %}{{n}}, {% endfor %}done.",
-            {'nums':[]},
+            {"nums": []},
             "Empty: done.",
         )
 
     def test_multiline_loops(self) -> None:
         self.try_render(
             "Look: \n{% for n in nums %}\n{{n}}, \n{% endfor %}done.",
-            {'nums':[1,2,3]},
+            {"nums": [1, 2, 3]},
             "Look: \n\n1, \n\n2, \n\n3, \ndone.",
         )
 
     def test_multiple_loops(self) -> None:
         self.try_render(
-            "{% for n in nums %}{{n}}{% endfor %} and " +
-                                    "{% for n in nums %}{{n}}{% endfor %}",
-            {'nums': [1,2,3]},
+            "{% for n in nums %}{{n}}{% endfor %} and " + "{% for n in nums %}{{n}}{% endfor %}",
+            {"nums": [1, 2, 3]},
             "123 and 123",
         )
 
@@ -158,138 +160,139 @@ class TempliteTest(CoverageTest):
         # Single-line comments work:
         self.try_render(
             "Hello, {# Name goes here: #}{{name}}!",
-            {'name':'Ned'}, "Hello, Ned!",
+            {"name": "Ned"},
+            "Hello, Ned!",
         )
         # and so do multi-line comments:
         self.try_render(
             "Hello, {# Name\ngoes\nhere: #}{{name}}!",
-            {'name':'Ned'}, "Hello, Ned!",
+            {"name": "Ned"},
+            "Hello, Ned!",
         )
 
     def test_if(self) -> None:
         self.try_render(
             "Hi, {% if ned %}NED{% endif %}{% if ben %}BEN{% endif %}!",
-            {'ned': 1, 'ben': 0},
+            {"ned": 1, "ben": 0},
             "Hi, NED!",
         )
         self.try_render(
             "Hi, {% if ned %}NED{% endif %}{% if ben %}BEN{% endif %}!",
-            {'ned': 0, 'ben': 1},
+            {"ned": 0, "ben": 1},
             "Hi, BEN!",
         )
         self.try_render(
             "Hi, {% if ned %}NED{% if ben %}BEN{% endif %}{% endif %}!",
-            {'ned': 0, 'ben': 0},
+            {"ned": 0, "ben": 0},
             "Hi, !",
         )
         self.try_render(
             "Hi, {% if ned %}NED{% if ben %}BEN{% endif %}{% endif %}!",
-            {'ned': 1, 'ben': 0},
+            {"ned": 1, "ben": 0},
             "Hi, NED!",
         )
         self.try_render(
             "Hi, {% if ned %}NED{% if ben %}BEN{% endif %}{% endif %}!",
-            {'ned': 1, 'ben': 1},
+            {"ned": 1, "ben": 1},
             "Hi, NEDBEN!",
         )
 
     def test_complex_if(self) -> None:
         class Complex(SimpleNamespace):
             """A class to try out complex data access."""
-            def getit(self):            # type: ignore
+
+            def getit(self):  # type: ignore
                 """Return it."""
                 return self.it
-        obj = Complex(it={'x':"Hello", 'y': 0})
+
+        obj = Complex(it={"x": "Hello", "y": 0})
         self.try_render(
-            "@" +
-            "{% if obj.getit.x %}X{% endif %}" +
-            "{% if obj.getit.y %}Y{% endif %}" +
-            "{% if obj.getit.y|str %}S{% endif %}" +
-            "!",
-            { 'obj': obj, 'str': str },
+            "@"
+            + "{% if obj.getit.x %}X{% endif %}"
+            + "{% if obj.getit.y %}Y{% endif %}"
+            + "{% if obj.getit.y|str %}S{% endif %}"
+            + "!",
+            {"obj": obj, "str": str},
             "@XS!",
         )
 
     def test_loop_if(self) -> None:
         self.try_render(
             "@{% for n in nums %}{% if n %}Z{% endif %}{{n}}{% endfor %}!",
-            {'nums': [0,1,2]},
+            {"nums": [0, 1, 2]},
             "@0Z1Z2!",
         )
         self.try_render(
             "X{%if nums%}@{% for n in nums %}{{n}}{% endfor %}{%endif%}!",
-            {'nums': [0,1,2]},
+            {"nums": [0, 1, 2]},
             "X@012!",
         )
         self.try_render(
             "X{%if nums%}@{% for n in nums %}{{n}}{% endfor %}{%endif%}!",
-            {'nums': []},
+            {"nums": []},
             "X!",
         )
 
     def test_nested_loops(self) -> None:
         self.try_render(
-            "@" +
-            "{% for n in nums %}" +
-                "{% for a in abc %}{{a}}{{n}}{% endfor %}" +
-            "{% endfor %}" +
-            "!",
-            {'nums': [0,1,2], 'abc': ['a', 'b', 'c']},
+            "@"
+            + "{% for n in nums %}"
+            + "{% for a in abc %}{{a}}{{n}}{% endfor %}"
+            + "{% endfor %}"
+            + "!",
+            {"nums": [0, 1, 2], "abc": ["a", "b", "c"]},
             "@a0b0c0a1b1c1a2b2c2!",
         )
 
     def test_whitespace_handling(self) -> None:
         self.try_render(
-            "@{% for n in nums %}\n" +
-            " {% for a in abc %}{{a}}{{n}}{% endfor %}\n" +
-            "{% endfor %}!\n",
-            {'nums': [0, 1, 2], 'abc': ['a', 'b', 'c']},
+            "@{% for n in nums %}\n"
+            + " {% for a in abc %}{{a}}{{n}}{% endfor %}\n"
+            + "{% endfor %}!\n",
+            {"nums": [0, 1, 2], "abc": ["a", "b", "c"]},
             "@\n a0b0c0\n\n a1b1c1\n\n a2b2c2\n!\n",
         )
         self.try_render(
-            "@{% for n in nums -%}\n" +
-            " {% for a in abc -%}\n" +
-            "  {# this disappears completely -#}\n" +
-            "  {{a-}}\n" +
-            "  {{n -}}\n" +
-            "  {{n    -}}\n" +
-            " {% endfor %}\n" +
-            "{% endfor %}!\n",
-            {'nums': [0, 1, 2], 'abc': ['a', 'b', 'c']},
+            "@{% for n in nums -%}\n"
+            + " {% for a in abc -%}\n"
+            + "  {# this disappears completely -#}\n"
+            + "  {{a-}}\n"
+            + "  {{n -}}\n"
+            + "  {{n    -}}\n"
+            + " {% endfor %}\n"
+            + "{% endfor %}!\n",
+            {"nums": [0, 1, 2], "abc": ["a", "b", "c"]},
             "@a00b00c00\na11b11c11\na22b22c22\n!\n",
         )
         self.try_render(
-            "@{% for n in nums -%}\n" +
-            "  {{n -}}\n" +
-            "  x\n" +
-            "{% endfor %}!\n",
-            {'nums': [0, 1, 2]},
+            "@{% for n in nums -%}\n" + "  {{n -}}\n" + "  x\n" + "{% endfor %}!\n",
+            {"nums": [0, 1, 2]},
             "@0x\n1x\n2x\n!\n",
         )
         self.try_render("  hello  ", {}, "  hello  ")
 
     def test_eat_whitespace(self) -> None:
         self.try_render(
-            "Hey!\n" +
-            "{% joined %}\n" +
-            "@{% for n in nums %}\n" +
-            " {% for a in abc %}\n" +
-            "  {# this disappears completely #}\n" +
-            "  X\n" +
-            "  Y\n" +
-            "  {{a}}\n" +
-            "  {{n }}\n" +
-            " {% endfor %}\n" +
-            "{% endfor %}!\n" +
-            "{% endjoined %}\n",
-            {'nums': [0, 1, 2], 'abc': ['a', 'b', 'c']},
+            "Hey!\n"
+            + "{% joined %}\n"
+            + "@{% for n in nums %}\n"
+            + " {% for a in abc %}\n"
+            + "  {# this disappears completely #}\n"
+            + "  X\n"
+            + "  Y\n"
+            + "  {{a}}\n"
+            + "  {{n }}\n"
+            + " {% endfor %}\n"
+            + "{% endfor %}!\n"
+            + "{% endjoined %}\n",
+            {"nums": [0, 1, 2], "abc": ["a", "b", "c"]},
             "Hey!\n@XYa0XYb0XYc0XYa1XYb1XYc1XYa2XYb2XYc2!\n",
         )
 
     def test_non_ascii(self) -> None:
         self.try_render(
             "{{where}} ollǝɥ",
-            { 'where': 'ǝɹǝɥʇ' },
+            {"where": "ǝɹǝɥʇ"},
             "ǝɹǝɥʇ ollǝɥ",
         )
 
@@ -298,7 +301,9 @@ class TempliteTest(CoverageTest):
         regex = "^Couldn't evaluate None.bar$"
         with pytest.raises(TempliteValueError, match=regex):
             self.try_render(
-                "Hey {{foo.bar.baz}} there", {'foo': None}, "Hey ??? there",
+                "Hey {{foo.bar.baz}} there",
+                {"foo": None},
+                "Hey ??? there",
             )
 
     def test_bad_names(self) -> None:

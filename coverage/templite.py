@@ -18,11 +18,13 @@ from typing import Any, Callable, NoReturn, cast
 
 class TempliteSyntaxError(ValueError):
     """Raised when a template has a syntax error."""
+
     pass
 
 
 class TempliteValueError(ValueError):
     """Raised when an expression won't evaluate in a template."""
+
     pass
 
 
@@ -50,7 +52,7 @@ class CodeBuilder:
         self.code.append(section)
         return section
 
-    INDENT_STEP = 4      # PEP8 says so!
+    INDENT_STEP = 4  # PEP8 says so!
 
     def indent(self) -> None:
         """Increase the current indent for following lines."""
@@ -114,6 +116,7 @@ class Templite:
         })
 
     """
+
     def __init__(self, text: str, *contexts: dict[str, Any]) -> None:
         """Construct a Templite with the given `text`.
 

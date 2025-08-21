@@ -38,7 +38,7 @@ FORCED_DEBUG_FILE = None
 class DebugControl:
     """Control and output for debugging."""
 
-    show_repr_attr = False      # For auto_repr
+    show_repr_attr = False  # For auto_repr
 
     def __init__(
         self,
@@ -73,7 +73,7 @@ class DebugControl:
         """Decide whether to output debug information in category `option`."""
         if option == "callers" and self.suppress_callers:
             return False
-        return (option in self.options)
+        return option in self.options
 
     @contextlib.contextmanager
     def without_callers(self) -> Iterator[None]:
@@ -108,6 +108,7 @@ class DebugControl:
 
 class NoDebugging(DebugControl):
     """A replacement for DebugControl that will never try to do anything."""
+
     def __init__(self) -> None:
         # pylint: disable=super-init-not-called
         pass
@@ -128,13 +129,14 @@ class NoDebugging(DebugControl):
 
 class DevNullDebug(NoDebugging):
     """A DebugControl that won't write anywhere."""
+
     def write(self, msg: str, *, exc: BaseException | None = None) -> None:
         pass
 
 
 def info_header(label: str) -> str:
     """Make a nice header string."""
-    return "--{:-<60s}".format(" "+label+" ")
+    return "--{:-<60s}".format(" " + label + " ")
 
 
 def info_formatter(info: Iterable[tuple[str, Any]]) -> Iterator[str]:
@@ -158,7 +160,7 @@ def info_formatter(info: Iterable[tuple[str, Any]]) -> Iterator[str]:
         elif isinstance(data, (list, set, tuple)):
             prefix = "%*s:" % (label_len, label)
             for e in data:
-                yield "%*s %s" % (label_len+1, prefix, e)
+                yield "%*s %s" % (label_len + 1, prefix, e)
                 prefix = ""
         else:
             yield "%*s: %s" % (label_len, label, data)
@@ -193,13 +195,16 @@ _FILENAME_REGEXES: list[tuple[str, str]] = [
 ]
 _FILENAME_SUBS: list[tuple[str, str]] = []
 
+
 @overload
 def short_filename(filename: str) -> str:
     pass
 
+
 @overload
 def short_filename(filename: None) -> None:
     pass
+
 
 def short_filename(filename: str | None) -> str | None:
     """Shorten a file name. Directories are replaced by prefixes like 'syspath:'"""
@@ -207,6 +212,7 @@ def short_filename(filename: str | None) -> str | None:
         for pathdir in sys.path:
             _FILENAME_SUBS.append((pathdir, "syspath:"))
         import coverage
+
         _FILENAME_SUBS.append((os.path.dirname(coverage.__file__), "cov:"))
         _FILENAME_SUBS.sort(key=(lambda pair: len(pair[0])), reverse=True)
     if filename is not None:
@@ -289,7 +295,7 @@ def short_stack(
 
 def dump_stack_frames(out: TWritable, skip: int = 0) -> None:
     """Print a summary of the stack to `out`."""
-    out.write(short_stack(skip=skip+1) + "\n")
+    out.write(short_stack(skip=skip + 1) + "\n")
 
 
 def clipped_repr(text: str, numchars: int = 50) -> str:
@@ -317,10 +323,12 @@ def add_pid_and_tid(text: str) -> str:
 
 AUTO_REPR_IGNORE = {"$coverage.object_id"}
 
+
 def auto_repr(self: Any) -> str:
     """A function implementing an automatic __repr__ for debugging."""
     show_attrs = (
-        (k, v) for k, v in self.__dict__.items()
+        (k, v)
+        for k, v in self.__dict__.items()
         if getattr(v, "show_repr_attr", True)
         and not inspect.ismethod(v)
         and k not in AUTO_REPR_IGNORE
@@ -332,19 +340,19 @@ def auto_repr(self: Any) -> str:
     )
 
 
-def simplify(v: Any) -> Any:                                # pragma: debugging
+def simplify(v: Any) -> Any:  # pragma: debugging
     """Turn things which are nearly dict/list/etc into dict/list/etc."""
     if isinstance(v, dict):
-        return {k:simplify(vv) for k, vv in v.items()}
+        return {k: simplify(vv) for k, vv in v.items()}
     elif isinstance(v, (list, tuple)):
         return type(v)(simplify(vv) for vv in v)
     elif hasattr(v, "__dict__"):
-        return simplify({"."+k: v for k, v in v.__dict__.items()})
+        return simplify({"." + k: v for k, v in v.__dict__.items()})
     else:
         return v
 
 
-def pp(v: Any) -> None:                                     # pragma: debugging
+def pp(v: Any) -> None:  # pragma: debugging
     """Debug helper to pretty-print data, including SimpleNamespace objects."""
     # Might not be needed in 3.9+
     pprint.pprint(simplify(v))
@@ -362,7 +370,7 @@ def filter_text(text: str, filters: Iterable[Callable[[str], str]]) -> str:
 
     """
     clean_text = text.rstrip()
-    ending = text[len(clean_text):]
+    ending = text[len(clean_text) :]
     text = clean_text
     for filter_fn in filters:
         lines = []
@@ -374,6 +382,7 @@ def filter_text(text: str, filters: Iterable[Callable[[str], str]]) -> str:
 
 class CwdTracker:
     """A class to add cwd info to debug messages."""
+
     def __init__(self) -> None:
         self.cwd: str | None = None
 
@@ -388,6 +397,7 @@ class CwdTracker:
 
 class ProcessTracker:
     """Track process creation for debug logging."""
+
     def __init__(self) -> None:
         self.pid: int = os.getpid()
         self.did_welcome = False
@@ -416,6 +426,7 @@ class ProcessTracker:
 
 class PytestTracker:
     """Track the current pytest test name to add to debug messages."""
+
     def __init__(self) -> None:
         self.test_name: str | None = None
 
@@ -430,6 +441,7 @@ class PytestTracker:
 
 class DebugOutputFile:
     """A file-like object that includes pid and cwd information."""
+
     def __init__(
         self,
         outfile: IO[str] | None,
@@ -482,7 +494,7 @@ class DebugOutputFile:
             the_one = cls(fileobj, filters)
             cls._set_singleton_data(the_one, interim)
 
-        if not(the_one.filters):
+        if not (the_one.filters):
             the_one.filters = list(filters)
         return the_one
 
@@ -527,10 +539,10 @@ class DebugOutputFile:
             self.outfile.flush()
 
 
-def log(msg: str, stack: bool = False) -> None:             # pragma: debugging
+def log(msg: str, stack: bool = False) -> None:  # pragma: debugging
     """Write a log message as forcefully as possible."""
     out = DebugOutputFile.get_one(interim=True)
-    out.write(msg+"\n")
+    out.write(msg + "\n")
     if stack:
         dump_stack_frames(out=out, skip=1)
 
@@ -539,9 +551,10 @@ def decorate_methods(
     decorator: Callable[..., Any],
     butnot: Iterable[str] = (),
     private: bool = False,
-) -> Callable[..., Any]:                                    # pragma: debugging
+) -> Callable[..., Any]:  # pragma: debugging
     """A class decorator to apply a decorator to methods."""
-    def _decorator(cls):                                    # type: ignore[no-untyped-def]
+
+    def _decorator(cls):  # type: ignore[no-untyped-def]
         for name, meth in inspect.getmembers(cls, inspect.isroutine):
             if name not in cls.__dict__:
                 continue
@@ -552,17 +565,21 @@ def decorate_methods(
                 continue
             setattr(cls, name, decorator(meth))
         return cls
+
     return _decorator
 
 
 def break_in_pudb(func: AnyCallable) -> AnyCallable:  # pragma: debugging
     """A function decorator to stop in the debugger for each call."""
+
     @functools.wraps(func)
     def _wrapper(*args: Any, **kwargs: Any) -> Any:
         import pudb
+
         sys.stdout = sys.__stdout__
         pudb.set_trace()
         return func(*args, **kwargs)
+
     return _wrapper
 
 
@@ -570,12 +587,14 @@ OBJ_IDS = itertools.count()
 CALLS = itertools.count()
 OBJ_ID_ATTR = "$coverage.object_id"
 
+
 def show_calls(
     show_args: bool = True,
     show_stack: bool = False,
     show_return: bool = False,
-) -> Callable[..., Any]:                                    # pragma: debugging
+) -> Callable[..., Any]:  # pragma: debugging
     """A method decorator to debug-log each call to the function."""
+
     def _decorator(func: AnyCallable) -> AnyCallable:
         @functools.wraps(func)
         def _wrapper(self: Any, *args: Any, **kwargs: Any) -> Any:
@@ -604,7 +623,9 @@ def show_calls(
                 msg = f"{oid} {callid:04d} {func.__name__} return {ret!r}\n"
                 DebugOutputFile.get_one(interim=True).write(msg)
             return ret
+
         return _wrapper
+
     return _decorator
 
 
@@ -639,6 +660,6 @@ def relevant_environment_display(env: Mapping[str, str]) -> list[tuple[str, str]
                 val = re.sub(r"\w", "*", val)
             if name in TRUNCATE:
                 if len(val) > TRUNCATE_LEN:
-                    val = val[:TRUNCATE_LEN-3] + "..."
+                    val = val[: TRUNCATE_LEN - 3] + "..."
             to_show.append((name, val))
     return human_sorted_items(to_show)

@@ -109,8 +109,10 @@ CREATE TABLE tracer (
 );
 """
 
+
 def _locked(method: AnyCallable) -> AnyCallable:
     """A decorator for methods that should hold self._lock."""
+
     @functools.wraps(method)
     def _wrapped(self: CoverageData, *args: Any, **kwargs: Any) -> Any:
         if self._debug.should("lock"):
@@ -119,6 +121,7 @@ def _locked(method: AnyCallable) -> AnyCallable:
             if self._debug.should("lock"):
                 self._debug.write(f"Locked {self._lock!r} for {method.__name__}")
             return method(self, *args, **kwargs)
+
     return _wrapped
 
 
@@ -320,7 +323,8 @@ class CoverageData:
                 else:
                     raise DataError(
                         "Data file {!r} doesn't seem to be a coverage data file: {}".format(
-                            self._filename, exc,
+                            self._filename,
+                            exc,
                         ),
                     ) from exc
             else:
@@ -328,7 +332,9 @@ class CoverageData:
                 if schema_version != SCHEMA_VERSION:
                     raise DataError(
                         "Couldn't use data file {!r}: wrong schema: {} instead of {}".format(
-                            self._filename, schema_version, SCHEMA_VERSION,
+                            self._filename,
+                            schema_version,
+                            SCHEMA_VERSION,
                         ),
                     )
 
@@ -353,10 +359,12 @@ class CoverageData:
             ("version", __version__),
         ]
         if self._debug.should("process"):
-            meta_data.extend([
-                ("sys_argv", str(getattr(sys, "argv", None))),
-                ("when", datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")),
-            ])
+            meta_data.extend(
+                [
+                    ("sys_argv", str(getattr(sys, "argv", None))),
+                    ("when", datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")),
+                ]
+            )
         db.executemany_void("INSERT OR IGNORE INTO meta (key, value) VALUES (?, ?)", meta_data)
 
     def _connect(self) -> SqliteDb:
@@ -366,7 +374,7 @@ class CoverageData:
         return self._dbs[threading.get_ident()]
 
     def __bool__(self) -> bool:
-        if (threading.get_ident() not in self._dbs and not os.path.exists(self._filename)):
+        if threading.get_ident() not in self._dbs and not os.path.exists(self._filename):
             return False
         try:
             with self._connect() as con:
@@ -504,9 +512,13 @@ class CoverageData:
 
         """
         if self._debug.should("dataop"):
-            self._debug.write("Adding lines: %d files, %d lines total" % (
-                len(line_data), sum(len(lines) for lines in line_data.values()),
-            ))
+            self._debug.write(
+                "Adding lines: %d files, %d lines total"
+                % (
+                    len(line_data),
+                    sum(len(lines) for lines in line_data.values()),
+                )
+            )
             if self._debug.should("dataop2"):
                 for filename, linenos in sorted(line_data.items()):
                     self._debug.write(f"  {filename}: {linenos}")
@@ -544,9 +556,13 @@ class CoverageData:
 
         """
         if self._debug.should("dataop"):
-            self._debug.write("Adding arcs: %d files, %d arcs total" % (
-                len(arc_data), sum(len(arcs) for arcs in arc_data.values()),
-            ))
+            self._debug.write(
+                "Adding arcs: %d files, %d arcs total"
+                % (
+                    len(arc_data),
+                    sum(len(arcs) for arcs in arc_data.values()),
+                )
+            )
             if self._debug.should("dataop2"):
                 for filename, arcs in sorted(arc_data.items()):
                     self._debug.write(f"  {filename}: {arcs}")
@@ -610,7 +626,9 @@ class CoverageData:
                     if existing_plugin != plugin_name:
                         raise DataError(
                             "Conflicting file tracer name for '{}': {!r} vs {!r}".format(
-                                filename, existing_plugin, plugin_name,
+                                filename,
+                                existing_plugin,
+                                plugin_name,
                             ),
                         )
                 elif plugin_name:
@@ -636,7 +654,7 @@ class CoverageData:
         if self._debug.should("dataop"):
             self._debug.write(f"Touching {filenames!r}")
         self._start_using()
-        with self._connect(): # Use this to get one transaction.
+        with self._connect():  # Use this to get one transaction.
             if not self._has_arcs and not self._has_lines:
                 raise DataError("Can't touch files in an empty CoverageData")
 
@@ -656,7 +674,6 @@ class CoverageData:
             self._debug.write(f"Purging data for {filenames!r}")
         self._start_using()
         with self._connect() as con:
-
             if self._has_lines:
                 sql = "DELETE FROM line_bits WHERE file_id=?"
             elif self._has_arcs:
@@ -683,9 +700,11 @@ class CoverageData:
 
         """
         if self._debug.should("dataop"):
-            self._debug.write("Updating with data from {!r}".format(
-                getattr(other_data, "_filename", "???"),
-            ))
+            self._debug.write(
+                "Updating with data from {!r}".format(
+                    getattr(other_data, "_filename", "???"),
+                )
+            )
         if self._has_lines and other_data._has_arcs:
             raise DataError("Can't combine branch coverage data with statement data")
         if self._has_arcs and other_data._has_lines:
@@ -709,7 +728,9 @@ class CoverageData:
             con.con.create_function("numbits_union", 2, numbits_union)
             con.con.create_function("map_path", 1, map_path)
             con.con.create_aggregate(
-                "numbits_union_agg", 1, NumbitsUnionAgg # type: ignore[arg-type]
+                "numbits_union_agg",
+                1,
+                NumbitsUnionAgg,  # type: ignore[arg-type]
             )
 
             # Attach the other database
@@ -740,7 +761,9 @@ class CoverageData:
                     path, this_tracer, other_tracer = conflicts[0]
                     raise DataError(
                         "Conflicting file tracer name for '{}': {!r} vs {!r}".format(
-                            path, this_tracer, other_tracer,
+                            path,
+                            this_tracer,
+                            other_tracer,
                         ),
                     )
 
@@ -914,7 +937,7 @@ class CoverageData:
             row = con.execute_one("SELECT tracer FROM tracer WHERE file_id = ?", (file_id,))
             if row is not None:
                 return row[0] or ""
-            return ""   # File was measured, but no tracer associated.
+            return ""  # File was measured, but no tracer associated.
 
     def set_query_context(self, context: str) -> None:
         """Set a context for subsequent querying.

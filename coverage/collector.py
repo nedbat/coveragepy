@@ -142,14 +142,17 @@ class Collector:
             if "greenlet" in concurrencies:
                 tried = "greenlet"
                 import greenlet
+
                 self.concur_id_func = greenlet.getcurrent
             elif "eventlet" in concurrencies:
                 tried = "eventlet"
                 import eventlet.greenthread  # pylint: disable=import-error,useless-suppression
+
                 self.concur_id_func = eventlet.greenthread.getcurrent
             elif "gevent" in concurrencies:
                 tried = "gevent"
                 import gevent  # pylint: disable=import-error,useless-suppression
+
                 self.concur_id_func = gevent.getcurrent
 
             if "thread" in concurrencies:
@@ -161,7 +164,8 @@ class Collector:
         if self.concur_id_func and not hasattr(core.tracer_class, "concur_id_func"):
             raise ConfigError(
                 "Can't support concurrency={} with {}, only threads are supported.".format(
-                    tried, self.tracer_name(),
+                    tried,
+                    self.tracer_name(),
                 ),
             )
 
@@ -170,6 +174,7 @@ class Collector:
             # it's imported early, and the program being measured uses
             # gevent, then gevent's monkey-patching won't work properly.
             import threading
+
             self.threading = threading
 
         self.reset()
@@ -222,6 +227,7 @@ class Collector:
         # FileDisposition will be replaced by None in the cache.
         if env.PYPY:
             import __pypy__  # pylint: disable=import-error
+
             # Alex Gaynor said:
             # should_trace_cache is a strictly growing key: once a key is in
             # it, it never changes.  Further, the keys used to access it are
@@ -418,7 +424,7 @@ class Collector:
         plugin._coverage_enabled = False
         disposition.trace = False
 
-    @functools.cache          # pylint: disable=method-cache-max-size-none
+    @functools.cache  # pylint: disable=method-cache-max-size-none
     def cached_mapped_file(self, filename: str) -> str:
         """A locally cached version of file names mapped through file_mapper."""
         return self.file_mapper(filename)
@@ -430,14 +436,14 @@ class Collector:
         # in other threads. We try three times in case of concurrent
         # access, hoping to get a clean copy.
         runtime_err = None
-        for _ in range(3):                      # pragma: part covered
+        for _ in range(3):  # pragma: part covered
             try:
                 items = list(d.items())
-            except RuntimeError as ex:          # pragma: cant happen
+            except RuntimeError as ex:  # pragma: cant happen
                 runtime_err = ex
             else:
                 break
-        else:                                   # pragma: cant happen
+        else:  # pragma: cant happen
             assert isinstance(runtime_err, Exception)
             raise runtime_err
 
@@ -487,8 +493,7 @@ class Collector:
             self.covdata.add_lines(self.mapped_file_dict(line_data))
 
         file_tracers = {
-            k: v for k, v in self.file_tracers.items()
-            if v not in self.disabled_plugins
+            k: v for k, v in self.file_tracers.items() if v not in self.disabled_plugins
         }
         self.covdata.add_file_tracers(self.mapped_file_dict(file_tracers))
 

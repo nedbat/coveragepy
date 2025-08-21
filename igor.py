@@ -317,7 +317,7 @@ def print_banner(label):
     """Print the version of Python."""
     impl = platform.python_implementation()
     version = platform.python_version()
-    has_gil = getattr(sys, '_is_gil_enabled', lambda: True)()
+    has_gil = getattr(sys, "_is_gil_enabled", lambda: True)()
     if not has_gil:
         version += "t"
     if PYPY:
@@ -331,7 +331,10 @@ def print_banner(label):
 def do_quietly(command):
     """Run a command in a shell, and suppress all output."""
     proc = subprocess.run(
-        command, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+        command,
+        shell=True,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
     )
     return proc.returncode
 
@@ -386,7 +389,9 @@ def do_edit_for_release():
 
     # NOTICE.txt
     update_file(
-        "NOTICE.txt", r"Copyright 2004.*? Ned", f"Copyright 2004-{facts.now:%Y} Ned",
+        "NOTICE.txt",
+        r"Copyright 2004.*? Ned",
+        f"Copyright 2004-{facts.now:%Y} Ned",
     )
 
     # CHANGES.rst
@@ -413,13 +418,16 @@ def do_edit_for_release():
     )
     update_file("doc/conf.py", r"(?s)# @@@ editable\n.*# @@@ end\n", new_conf)
 
+
 def do_release_version():
     """Set the version to 'final' for a release."""
     facts = get_release_facts()
     rel_vi = facts.vi[:3] + ("final", 0)
     rel_version = f"version_info = {rel_vi}\n_dev = 0".replace("'", '"')
     update_file(
-        "coverage/version.py", r"(?m)^version_info = .*\n_dev = \d+$", rel_version,
+        "coverage/version.py",
+        r"(?m)^version_info = .*\n_dev = \d+$",
+        rel_version,
     )
 
 
@@ -437,7 +445,9 @@ def do_bump_version():
     # coverage/version.py
     next_version = f"version_info = {facts.next_vi}\n_dev = 1".replace("'", '"')
     update_file(
-        "coverage/version.py", r"(?m)^version_info = .*\n_dev = \d+$", next_version,
+        "coverage/version.py",
+        r"(?m)^version_info = .*\n_dev = \d+$",
+        next_version,
     )
 
 
@@ -484,6 +494,7 @@ def do_cheats():
 def do_copy_with_hash(*args):
     """Copy files with a cache-busting hash.  Used in tests/gold/html/Makefile."""
     from coverage.html import copy_with_cache_bust
+
     *srcs, dest_dir = args
     for src in srcs:
         copy_with_cache_bust(src, dest_dir)

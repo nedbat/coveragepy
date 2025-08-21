@@ -41,9 +41,7 @@ def analysis_from_file_reporter(
         for fromno, tono in arc_possibilities_set:
             dests[fromno].add(tono)
         single_dests = {
-            fromno: list(tonos)[0]
-            for fromno, tonos in dests.items()
-            if len(tonos) == 1
+            fromno: list(tonos)[0] for fromno, tonos in dests.items() if len(tonos) == 1
         }
         new_arcs = set()
         for fromno, tono in arcs:
@@ -99,8 +97,8 @@ class Analysis:
         if self.has_arcs:
             n_branches = self._total_branches()
             mba = self.missing_branch_arcs()
-            n_partial_branches = sum(len(v) for k,v in mba.items() if k not in self.missing)
-            n_missing_branches = sum(len(v) for k,v in mba.items())
+            n_partial_branches = sum(len(v) for k, v in mba.items() if k not in self.missing)
+            n_missing_branches = sum(len(v) for k, v in mba.items())
         else:
             n_branches = n_partial_branches = n_missing_branches = 0
 
@@ -128,17 +126,12 @@ class Analysis:
 
         if self.has_arcs:
             arc_possibilities_set = {
-                (a, b) for a, b in self.arc_possibilities_set
-                if a in lines or b in lines
+                (a, b) for a, b in self.arc_possibilities_set if a in lines or b in lines
             }
             arcs_executed_set = {
-                (a, b) for a, b in self.arcs_executed_set
-                if a in lines or b in lines
+                (a, b) for a, b in self.arcs_executed_set if a in lines or b in lines
             }
-            exit_counts = {
-                lno: num for lno, num in self.exit_counts.items()
-                if lno in lines
-            }
+            exit_counts = {lno: num for lno, num in self.exit_counts.items() if lno in lines}
             no_branch = {lno for lno in self.no_branch if lno in lines}
         else:
             arc_possibilities_set = set()
@@ -177,16 +170,17 @@ class Analysis:
     def arcs_missing(self) -> list[TArc]:
         """Returns a sorted list of the un-executed arcs in the code."""
         missing = (
-            p for p in self.arc_possibilities
-                if p not in self.arcs_executed_set
-                    and p[0] not in self.no_branch
-                    and p[1] not in self.excluded
+            p
+            for p in self.arc_possibilities
+            if p not in self.arcs_executed_set
+            and p[0] not in self.no_branch
+            and p[1] not in self.excluded
         )
         return sorted(missing)
 
     def _branch_lines(self) -> list[TLineNo]:
         """Returns a list of line numbers that have more than one exit."""
-        return [l1 for l1,count in self.exit_counts.items() if count > 1]
+        return [l1 for l1, count in self.exit_counts.items() if count > 1]
 
     def _total_branches(self) -> int:
         """How many total branches are there?"""
@@ -312,7 +306,7 @@ class Numbers:
 
     def __radd__(self, other: int) -> Numbers:
         # Implementing 0+Numbers allows us to sum() a list of Numbers.
-        assert other == 0   # we only ever call it this way.
+        assert other == 0  # we only ever call it this way.
         return self
 
 
@@ -324,7 +318,7 @@ def display_covered(pc: float, precision: int) -> str:
     result in either "0" or "100".
 
     """
-    near0 = 1.0 / 10 ** precision
+    near0 = 1.0 / 10**precision
     if 0 < pc < near0:
         pc = near0
     elif (100.0 - near0) < pc < 100:
@@ -389,7 +383,7 @@ def format_lines(
         for line, exits in line_exits:
             for ex in sorted(exits):
                 if line not in lines and ex not in lines:
-                    dest = (ex if ex > 0 else "exit")
+                    dest = ex if ex > 0 else "exit"
                     line_items.append((line, f"{line}->{dest}"))
 
     ret = ", ".join(t[-1] for t in sorted(line_items))

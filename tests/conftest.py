@@ -85,6 +85,7 @@ def reset_filesdotpy_globals() -> None:
     """coverage/files.py has some unfortunate globals. Reset them every test."""
     set_relative_directory()
 
+
 @pytest.fixture(autouse=True)
 def force_local_pyc_files() -> None:
     """Ensure that .pyc files are written next to source files."""

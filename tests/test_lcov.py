@@ -21,15 +21,20 @@ class LcovTest(CoverageTest):
         Helper for tests that handles the common ceremony so the tests can
         show the consequences of changes in the setup.
         """
-        self.make_file("main_file.py", """\
+        self.make_file(
+            "main_file.py",
+            """\
             def cuboid_volume(l):
                 return (l*l*l)
 
             def IsItTrue():
                 return True
-            """)
+            """,
+        )
 
-        self.make_file("test_file.py", """\
+        self.make_file(
+            "test_file.py",
+            """\
             from main_file import cuboid_volume
             import unittest
 
@@ -39,7 +44,8 @@ class LcovTest(CoverageTest):
                     self.assertAlmostEqual(cuboid_volume(1),1)
                     self.assertAlmostEqual(cuboid_volume(0),0)
                     self.assertAlmostEqual(cuboid_volume(5.5),166.375)
-            """)
+            """,
+        )
 
     def get_lcov_report_content(self, filename: str = "coverage.lcov") -> str:
         """Return the content of an LCOV report."""
@@ -49,13 +55,16 @@ class LcovTest(CoverageTest):
     def test_lone_file(self) -> None:
         # For a single file with a couple of functions, the lcov should cover
         # the function definitions themselves, but not the returns.
-        self.make_file("main_file.py", """\
+        self.make_file(
+            "main_file.py",
+            """\
             def cuboid_volume(l):
                 return (l*l*l)
 
             def IsItTrue():
                 return True
-            """)
+            """,
+        )
         expected_result = textwrap.dedent("""\
             SF:main_file.py
             DA:1,1
@@ -81,13 +90,16 @@ class LcovTest(CoverageTest):
         assert expected_result == actual_result
 
     def test_line_checksums(self) -> None:
-        self.make_file("main_file.py", """\
+        self.make_file(
+            "main_file.py",
+            """\
             def cuboid_volume(l):
                 return (l*l*l)
 
             def IsItTrue():
                 return True
-            """)
+            """,
+        )
         self.make_file(".coveragerc", "[lcov]\nline_checksums = true\n")
         self.assert_doesnt_exist(".coverage")
         cov = coverage.Coverage(source=["."])
@@ -161,13 +173,16 @@ class LcovTest(CoverageTest):
 
     def test_branch_coverage_one_file(self) -> None:
         # Test that the reporter produces valid branch coverage.
-        self.make_file("main_file.py", """\
+        self.make_file(
+            "main_file.py",
+            """\
             def is_it_x(x):
                 if x == 3:
                     return x
                 else:
                     return False
-            """)
+            """,
+        )
         self.assert_doesnt_exist(".coverage")
         cov = coverage.Coverage(branch=True, source=".")
         self.start_import_stop(cov, "main_file")
@@ -198,15 +213,20 @@ class LcovTest(CoverageTest):
     def test_branch_coverage_two_files(self) -> None:
         # Test that valid branch coverage is generated
         # in the case of two files.
-        self.make_file("main_file.py", """\
+        self.make_file(
+            "main_file.py",
+            """\
             def is_it_x(x):
                 if x == 3:
                     return x
                 else:
                     return False
-            """)
+            """,
+        )
 
-        self.make_file("test_file.py", """\
+        self.make_file(
+            "test_file.py",
+            """\
             from main_file import *
             import unittest
 
@@ -214,7 +234,8 @@ class LcovTest(CoverageTest):
                 def test_is_it_x(self):
                     self.assertEqual(is_it_x(3), 3)
                     self.assertEqual(is_it_x(4), False)
-            """)
+            """,
+        )
         self.assert_doesnt_exist(".coverage")
         cov = coverage.Coverage(branch=True, source=".")
         self.start_import_stop(cov, "test_file")
@@ -259,14 +280,17 @@ class LcovTest(CoverageTest):
     def test_half_covered_branch(self) -> None:
         # Test that for a given branch that is only half covered,
         # the block numbers remain the same, and produces valid lcov.
-        self.make_file("main_file.py", """\
+        self.make_file(
+            "main_file.py",
+            """\
             something = True
 
             if something:
                 print("Yes, something")
             else:
                 print("No, nothing")
-            """)
+            """,
+        )
         self.assert_doesnt_exist(".coverage")
         cov = coverage.Coverage(branch=True, source=".")
         self.start_import_stop(cov, "main_file")
@@ -324,11 +348,16 @@ class LcovTest(CoverageTest):
         assert expected_result == actual_result
 
     def test_excluded_lines(self) -> None:
-        self.make_file(".coveragerc", """\
+        self.make_file(
+            ".coveragerc",
+            """\
             [report]
             exclude_lines = foo
-            """)
-        self.make_file("runme.py", """\
+            """,
+        )
+        self.make_file(
+            "runme.py",
+            """\
             s = "Hello 1"
             t = "foo is ignored 2"
             if s.upper() == "BYE 3":
@@ -337,7 +366,8 @@ class LcovTest(CoverageTest):
             print("Done 6")
             # foo 7
             # line 8
-            """)
+            """,
+        )
         cov = coverage.Coverage(source=".", branch=True)
         self.start_import_stop(cov, "runme")
         cov.lcov_report()
@@ -359,7 +389,9 @@ class LcovTest(CoverageTest):
         assert expected_result == actual_result
 
     def test_exit_branches(self) -> None:
-        self.make_file("runme.py", """\
+        self.make_file(
+            "runme.py",
+            """\
             def foo(a):
                 if a:
                     print(f"{a!r} is truthy")
@@ -367,7 +399,8 @@ class LcovTest(CoverageTest):
             foo(False)
             foo([])
             foo([0])
-        """)
+        """,
+        )
         cov = coverage.Coverage(source=".", branch=True)
         self.start_import_stop(cov, "runme")
         cov.lcov_report()
@@ -396,7 +429,9 @@ class LcovTest(CoverageTest):
         assert expected_result == actual_result
 
     def test_genexpr_exit_arcs_pruned_full_coverage(self) -> None:
-        self.make_file("runme.py", """\
+        self.make_file(
+            "runme.py",
+            """\
             def foo(a):
                 if any(x > 0 for x in a):
                     print(f"{a!r} has positives")
@@ -404,7 +439,8 @@ class LcovTest(CoverageTest):
             foo([0])
             foo([0,1])
             foo([0,-1])
-        """)
+        """,
+        )
         cov = coverage.Coverage(source=".", branch=True)
         self.start_import_stop(cov, "runme")
         cov.lcov_report()
@@ -433,13 +469,16 @@ class LcovTest(CoverageTest):
         assert expected_result == actual_result
 
     def test_genexpr_exit_arcs_pruned_never_true(self) -> None:
-        self.make_file("runme.py", """\
+        self.make_file(
+            "runme.py",
+            """\
             def foo(a):
                 if any(x > 0 for x in a):
                     print(f"{a!r} has positives")
             foo([])
             foo([0])
-        """)
+        """,
+        )
         cov = coverage.Coverage(source=".", branch=True)
         self.start_import_stop(cov, "runme")
         cov.lcov_report()
@@ -466,13 +505,16 @@ class LcovTest(CoverageTest):
         assert expected_result == actual_result
 
     def test_genexpr_exit_arcs_pruned_always_true(self) -> None:
-        self.make_file("runme.py", """\
+        self.make_file(
+            "runme.py",
+            """\
             def foo(a):
                 if any(x > 0 for x in a):
                     print(f"{a!r} has positives")
             foo([1])
             foo([1,2])
-        """)
+        """,
+        )
         cov = coverage.Coverage(source=".", branch=True)
         self.start_import_stop(cov, "runme")
         cov.lcov_report()
@@ -499,11 +541,14 @@ class LcovTest(CoverageTest):
         assert expected_result == actual_result
 
     def test_genexpr_exit_arcs_pruned_not_reached(self) -> None:
-        self.make_file("runme.py", """\
+        self.make_file(
+            "runme.py",
+            """\
             def foo(a):
                 if any(x > 0 for x in a):
                     print(f"{a!r} has positives")
-        """)
+        """,
+        )
         cov = coverage.Coverage(source=".", branch=True)
         self.start_import_stop(cov, "runme")
         cov.lcov_report()
@@ -528,7 +573,9 @@ class LcovTest(CoverageTest):
         assert expected_result == actual_result
 
     def test_always_raise(self) -> None:
-        self.make_file("always_raise.py", """\
+        self.make_file(
+            "always_raise.py",
+            """\
             try:
                 if not_defined:
                     print("Yes")
@@ -536,7 +583,8 @@ class LcovTest(CoverageTest):
                     print("No")
             except Exception:
                 pass
-        """)
+        """,
+        )
         cov = coverage.Coverage(source=".", branch=True)
         self.start_import_stop(cov, "always_raise")
         cov.lcov_report()
@@ -560,13 +608,16 @@ class LcovTest(CoverageTest):
         assert expected_result == actual_result
 
     def test_multiline_conditions(self) -> None:
-        self.make_file("multi.py", """\
+        self.make_file(
+            "multi.py",
+            """\
             def fun(x):
                 if (
                     x
                 ):
                     print("got here")
-            """)
+            """,
+        )
         cov = coverage.Coverage(source=".", branch=True)
         self.start_import_stop(cov, "multi")
         cov.lcov_report()
@@ -574,14 +625,17 @@ class LcovTest(CoverageTest):
         assert "BRDA:2,0,return from function 'fun',-" in lcov
 
     def test_module_exit(self) -> None:
-        self.make_file("modexit.py", """\
+        self.make_file(
+            "modexit.py",
+            """\
             #! /usr/bin/env python
             def foo():
                 return bar(
                 )
             if "x" == "y":  # line 5
                 foo()
-            """)
+            """,
+        )
         cov = coverage.Coverage(source=".", branch=True)
         self.start_import_stop(cov, "modexit")
         cov.lcov_report()

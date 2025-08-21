@@ -79,7 +79,7 @@ class FileReporterTest(UsingModulesMixin, CoverageTest):
         acu2 = FileReporter("aa/afile.py")
         zcu = FileReporter("aa/zfile.py")
         bcu = FileReporter("aa/bb/bfile.py")
-        assert acu == acu2 and acu <= acu2 and acu >= acu2      # pylint: disable=chained-comparison
+        assert acu == acu2 and acu <= acu2 and acu >= acu2  # pylint: disable=chained-comparison
         assert acu < zcu and acu <= zcu and acu != zcu
         assert zcu > acu and zcu >= acu and zcu != acu
         assert acu < bcu and acu <= bcu and acu != bcu

@@ -21,16 +21,18 @@ PATCHED_MARKER = "_coverage$patched"
 
 
 OriginalProcess = multiprocessing.process.BaseProcess
-original_bootstrap = OriginalProcess._bootstrap     # type: ignore[attr-defined]
+original_bootstrap = OriginalProcess._bootstrap  # type: ignore[attr-defined]
 
-class ProcessWithCoverage(OriginalProcess):         # pylint: disable=abstract-method
+
+class ProcessWithCoverage(OriginalProcess):  # pylint: disable=abstract-method
     """A replacement for multiprocess.Process that starts coverage."""
 
-    def _bootstrap(self, *args, **kwargs):          # type: ignore[no-untyped-def]
+    def _bootstrap(self, *args, **kwargs):  # type: ignore[no-untyped-def]
         """Wrapper around _bootstrap to start coverage."""
         debug: DebugControl | None = None
         try:
             from coverage import Coverage  # avoid circular import
+
             cov = Coverage(data_suffix=True, auto_data=True)
             cov._warn_preimported_source = False
             cov.start()
@@ -60,8 +62,10 @@ class ProcessWithCoverage(OriginalProcess):         # pylint: disable=abstract-m
             if debug:
                 debug.write("Saved multiprocessing data")
 
+
 class Stowaway:
     """An object to pickle, so when it is unpickled, it can apply the monkey-patch."""
+
     def __init__(self, rcfile: str) -> None:
         self.rcfile = rcfile
 
@@ -85,7 +89,7 @@ def patch_multiprocessing(rcfile: str) -> None:
     if hasattr(multiprocessing, PATCHED_MARKER):
         return
 
-    OriginalProcess._bootstrap = ProcessWithCoverage._bootstrap     # type: ignore[attr-defined]
+    OriginalProcess._bootstrap = ProcessWithCoverage._bootstrap  # type: ignore[attr-defined]
 
     # Set the value in ProcessWithCoverage that will be pickled into the child
     # process.
@@ -99,10 +103,12 @@ def patch_multiprocessing(rcfile: str) -> None:
     # Windows only spawns, so this is needed to keep Windows working.
     try:
         from multiprocessing import spawn
+
         original_get_preparation_data = spawn.get_preparation_data
     except (ImportError, AttributeError):
         pass
     else:
+
         def get_preparation_data_with_stowaway(name: str) -> dict[str, Any]:
             """Get the original preparation data, and also insert our stowaway."""
             d = original_get_preparation_data(name)

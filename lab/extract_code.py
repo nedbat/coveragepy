@@ -61,12 +61,12 @@ for start in range(lineno, 0, -1):
     if "'''" in line or '"""' in line:
         break
 
-for end in range(lineno+1, len(lines)):
+for end in range(lineno + 1, len(lines)):
     line = lines[end]
     if "'''" in line or '"""' in line:
         break
 
-code = "".join(lines[start+1: end])
+code = "".join(lines[start + 1 : end])
 code = textwrap.dedent(code)
 
 print(code, end="")

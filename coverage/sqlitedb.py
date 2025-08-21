@@ -28,6 +28,7 @@ class SqliteDb:
                     etc(a, b)
 
     """
+
     def __init__(self, filename: str, debug: TDebugCtl, no_disk: bool = False) -> None:
         self.debug = debug
         self.filename = filename
@@ -68,8 +69,9 @@ class SqliteDb:
         # In Python 3.12+, we can change the config to allow journal_mode=off.
         if hasattr(sqlite3, "SQLITE_DBCONFIG_DEFENSIVE"):
             # Turn off defensive mode, so that journal_mode=off can succeed.
-            self.con.setconfig(                     # type: ignore[attr-defined, unused-ignore]
-                sqlite3.SQLITE_DBCONFIG_DEFENSIVE, False,
+            self.con.setconfig(  # type: ignore[attr-defined, unused-ignore]
+                sqlite3.SQLITE_DBCONFIG_DEFENSIVE,
+                False,
             )
 
         # This pragma makes writing faster. It disables rollbacks, but we never need them.
@@ -97,7 +99,7 @@ class SqliteDb:
         self.nest += 1
         return self
 
-    def __exit__(self, exc_type, exc_value, traceback) -> None:     # type: ignore[no-untyped-def]
+    def __exit__(self, exc_type, exc_value, traceback) -> None:  # type: ignore[no-untyped-def]
         self.nest -= 1
         if self.nest == 0:
             try:
@@ -117,12 +119,12 @@ class SqliteDb:
         try:
             assert self.con is not None
             try:
-                return self.con.execute(sql, parameters)    # type: ignore[arg-type]
+                return self.con.execute(sql, parameters)  # type: ignore[arg-type]
             except Exception:
                 # In some cases, an error might happen that isn't really an
                 # error.  Try again immediately.
                 # https://github.com/nedbat/coveragepy/issues/1010
-                return self.con.execute(sql, parameters)    # type: ignore[arg-type]
+                return self.con.execute(sql, parameters)  # type: ignore[arg-type]
         except sqlite3.Error as exc:
             msg = str(exc)
             if not self.no_disk:
@@ -133,8 +135,8 @@ class SqliteDb:
                         cov4_sig = b"!coverage.py: This is a private format"
                         if bad_file.read(len(cov4_sig)) == cov4_sig:
                             msg = (
-                                "Looks like a coverage 4.x data file. " +
-                                "Are you mixing versions of coverage?"
+                                "Looks like a coverage 4.x data file. "
+                                + "Are you mixing versions of coverage?"
                             )
                 except Exception:
                     pass
@@ -222,9 +224,12 @@ class SqliteDb:
     def executescript(self, script: str) -> None:
         """Same as :meth:`python:sqlite3.Connection.executescript`."""
         if self.debug.should("sql"):
-            self.debug.write("Executing script with {} chars: {}".format(
-                len(script), clipped_repr(script, 100),
-            ))
+            self.debug.write(
+                "Executing script with {} chars: {}".format(
+                    len(script),
+                    clipped_repr(script, 100),
+                )
+            )
         assert self.con is not None
         self.con.executescript(script).close()
 

@@ -51,7 +51,7 @@ def subprocess_popen(cmd: str) -> subprocess.Popen[bytes]:
     # Subprocesses are expensive, but convenient, and so may be over-used in
     # the test suite.  Use these lines to get a list of the tests using them:
     if 0:  # pragma: debugging
-        pth = "/tmp/processes.txt"                      # type: ignore[unreachable]
+        pth = "/tmp/processes.txt"  # type: ignore[unreachable]
         with open(pth, "a", encoding="utf-8") as proctxt:
             print(os.getenv("PYTEST_CURRENT_TEST", "unknown"), file=proctxt, flush=True)
 
@@ -90,6 +90,7 @@ def run_command(cmd: str) -> tuple[int, str]:
 # $set_env.py: COVERAGE_DIS - Disassemble test code to /tmp/dis
 SHOW_DIS = bool(int(os.getenv("COVERAGE_DIS", "0")))
 
+
 def make_file(
     filename: str,
     text: str = "",
@@ -126,10 +127,10 @@ def make_file(
         os.makedirs(dirs, exist_ok=True)
 
     # Create the file.
-    with open(filename, 'wb') as f:
+    with open(filename, "wb") as f:
         f.write(data)
 
-    if text and basename.endswith(".py") and SHOW_DIS:      # pragma: debugging
+    if text and basename.endswith(".py") and SHOW_DIS:  # pragma: debugging
         os.makedirs("/tmp/dis", exist_ok=True)
         with open(f"/tmp/dis/{basename}.dis", "w", encoding="utf-8") as fdis:
             print(f"# {os.path.abspath(filename)}", file=fdis)
@@ -237,9 +238,9 @@ def remove_tree(dirname: str) -> None:
 
 
 # Map chars to numbers for arcz_to_arcs
-_arcz_map = {'.': -1}
-_arcz_map.update({c: ord(c) - ord('0') for c in '123456789'})
-_arcz_map.update({c: 10 + ord(c) - ord('A') for c in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'})
+_arcz_map = {".": -1}
+_arcz_map.update({c: ord(c) - ord("0") for c in "123456789"})
+_arcz_map.update({c: 10 + ord(c) - ord("A") for c in "ABCDEFGHIJKLMNOPQRSTUVWXYZ"})
 
 
 def arcz_to_arcs(arcz: str) -> list[TArc]:
@@ -264,15 +265,15 @@ def arcz_to_arcs(arcz: str) -> list[TArc]:
     for pair in arcz.split():
         asgn = bsgn = 1
         if len(pair) == 2:
-            a, b = pair                 # type: ignore[misc]
+            a, b = pair  # type: ignore[misc]
         else:
             assert len(pair) == 3
             if pair[0] == "-":
-                _, a, b = pair          # type: ignore[misc]
+                _, a, b = pair  # type: ignore[misc]
                 asgn = -1
             else:
                 assert pair[1] == "-"
-                a, _, b = pair          # type: ignore[misc]
+                a, _, b = pair  # type: ignore[misc]
                 bsgn = -1
         arcs.append((asgn * _arcz_map[a], bsgn * _arcz_map[b]))
     return sorted(arcs)
@@ -293,7 +294,9 @@ def change_dir(new_dir: str | Path) -> Iterator[None]:
     finally:
         os.chdir(old_dir)
 
+
 T = TypeVar("T")
+
 
 def assert_count_equal(
     a: Iterable[T] | None,
@@ -320,7 +323,7 @@ def assert_coverage_warnings(
     Each msg can be a string compared for equality, or a compiled regex used to
     search the text.
     """
-    assert msgs     # don't call this without some messages.
+    assert msgs  # don't call this without some messages.
     warns = [w for w in warns if issubclass(w.category, CoverageWarning)]
     actuals = [cast(Warning, w.message).args[0] for w in warns]
     assert len(msgs) == len(actuals)
@@ -347,6 +350,7 @@ def swallow_warnings(
 
 class FailingProxy:
     """A proxy for another object, but one method will fail a few times before working."""
+
     def __init__(self, obj: Any, methname: str, fails: list[Exception]) -> None:
         """Create the failing proxy.
 
@@ -369,13 +373,16 @@ class FailingProxy:
 
     def _make_failing_method(self, exc: Exception) -> Callable[..., NoReturn]:
         """Return a function that will raise `exc`."""
+
         def _meth(*args: Any, **kwargs: Any) -> NoReturn:
             raise exc
+
         return _meth
 
 
 class DebugControlString(DebugControl):
     """A `DebugControl` that writes to a StringIO, for testing."""
+
     def __init__(self, options: Iterable[str]) -> None:
         self.io = io.StringIO()
         super().__init__(options, self.io)

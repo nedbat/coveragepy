@@ -35,7 +35,7 @@ PYVERSION = sys.version_info + (int(platform.python_version()[-1] == "+"),)
 
 if PYPY:
     # Minimum now is 7.3.16
-    PYPYVERSION = sys.pypy_version_info         # type: ignore[attr-defined]
+    PYPYVERSION = sys.pypy_version_info  # type: ignore[attr-defined]
 else:
     PYPYVERSION = (0,)
 
@@ -47,6 +47,7 @@ SHIPPING_WHEELS = CPYTHON and PYVERSION[:2] <= (3, 13)
 
 # Should we default to sys.monitoring?
 SYSMON_DEFAULT = CPYTHON and PYVERSION >= (3, 14)
+
 
 # Python behavior.
 class PYBEHAVIOR:
@@ -170,7 +171,7 @@ class PYBEHAVIOR:
     # Does sys.monitoring support BRANCH_RIGHT and BRANCH_LEFT?  The names
     # were added in early 3.14 alphas, but didn't work entirely correctly until
     # after 3.14.0a5.
-    branch_right_left = (pep669 and (PYVERSION > (3, 14, 0, "alpha", 5, 0)))
+    branch_right_left = pep669 and (PYVERSION > (3, 14, 0, "alpha", 5, 0))
 
 
 # Coverage.py specifics, about testing scenarios. See tests/testenv.py also.
@@ -187,11 +188,11 @@ TESTING = os.getenv("COVERAGE_TESTING") == "True"
 def debug_info() -> Iterable[tuple[str, Any]]:
     """Return a list of (name, value) pairs for printing debug information."""
     info = [
-        (name, value) for name, value in globals().items()
+        (name, value)
+        for name, value in globals().items()
         if not name.startswith("_") and name not in _UNINTERESTING_GLOBALS
     ]
     info += [
-        (name, value) for name, value in PYBEHAVIOR.__dict__.items()
-        if not name.startswith("_")
+        (name, value) for name, value in PYBEHAVIOR.__dict__.items() if not name.startswith("_")
     ]
     return sorted(info)

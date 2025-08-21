@@ -36,14 +36,17 @@ MY_EVENTS = (
     | events.JUMP
 )
 
+
 def show_off(label, code, instruction_offset):
     if code.co_filename == the_program:
         b2l = bytes_to_lines(code)
         print(f"{label}: {code.co_filename}@{instruction_offset} #{b2l[instruction_offset]}")
 
+
 def show_line(label, code, line_number):
     if code.co_filename == the_program:
         print(f"{label}: {code.co_filename} #{line_number}")
+
 
 def show_off_off(label, code, instruction_offset, destination_offset):
     if code.co_filename == the_program:
@@ -52,6 +55,7 @@ def show_off_off(label, code, instruction_offset, destination_offset):
             f"{label}: {code.co_filename}@{instruction_offset}->{destination_offset} "
             + f"#{b2l[instruction_offset]}->{b2l[destination_offset]}"
         )
+
 
 def sysmon_py_start(code, instruction_offset):
     show_off("PY_START", code, instruction_offset)

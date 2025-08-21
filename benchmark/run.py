@@ -9,7 +9,7 @@ parser.add_option(
     action="store_true",
     dest="clean",
     default=False,
-    help="Delete the results.json file before running benchmarks"
+    help="Delete the results.json file before running benchmarks",
 )
 options, args = parser.parse_args()
 
@@ -52,13 +52,9 @@ if 0:
         ],
         cov_versions=[
             Coverage("701", "coverage==7.0.1"),
-            Coverage(
-                "701.dynctx", "coverage==7.0.1", [("dynamic_context", "test_function")]
-            ),
+            Coverage("701.dynctx", "coverage==7.0.1", [("dynamic_context", "test_function")]),
             Coverage("702", "coverage==7.0.2"),
-            Coverage(
-                "702.dynctx", "coverage==7.0.2", [("dynamic_context", "test_function")]
-            ),
+            Coverage("702.dynctx", "coverage==7.0.2", [("dynamic_context", "test_function")]),
         ],
         projects=[
             ProjectAttrs(),
@@ -88,8 +84,7 @@ if 0:
         rows=["cov", "proj"],
         column="pyver",
         ratios=[
-            (f"3.{b} vs 3.{a}", f"python3.{b}", f"python3.{a}")
-            for a, b in zip(vers, vers[1:])
+            (f"3.{b} vs 3.{a}", f"python3.{b}", f"python3.{a}") for a, b in zip(vers, vers[1:])
         ],
     )
 
@@ -107,8 +102,8 @@ if 1:
             CoverageSource(slug="sysmon", env_vars={"COVERAGE_CORE": "sysmon"}),
         ],
         projects=[
-            ProjectPillow(), #"-k test_pickle"),
-            ProjectPillowBranch(), #"-k test_pickle"),
+            ProjectPillow(),  # "-k test_pickle"),
+            ProjectPillowBranch(),  # "-k test_pickle"),
             # ProjectSphinx(),  # Works, slow
             # ProjectPygments(),  # Doesn't work on 3.14
             # ProjectRich(),  # Doesn't work
@@ -165,8 +160,8 @@ if 0:
             ),
         ],
         projects=[
-            ProjectMashumaro(),     # small: "-k ck"
-            ProjectOperator(),      # small: "-k irk"
+            ProjectMashumaro(),  # small: "-k ck"
+            ProjectOperator(),  # small: "-k irk"
         ],
         rows=["pyver", "proj"],
         column="cov",

@@ -74,10 +74,7 @@ class SummaryReporter:
             Cover="{:>{n}}",
             Missing="{:>10}",
         )
-        header_items = [
-            formats[item].format(item, name_len=max_name, n=max_n)
-            for item in header
-        ]
+        header_items = [formats[item].format(item, name_len=max_name, n=max_n) for item in header]
         header_str = "".join(header_items)
         rule = "-" * len(header_str)
 
@@ -89,8 +86,8 @@ class SummaryReporter:
         for values in lines_values:
             # build string with line values
             line_items = [
-                formats[item].format(str(value),
-                name_len=max_name, n=max_n-1) for item, value in zip(header, values)
+                formats[item].format(str(value), name_len=max_name, n=max_n - 1)
+                for item, value in zip(header, values)
             ]
             self.write_items(line_items)
 
@@ -99,8 +96,8 @@ class SummaryReporter:
             self.write(rule)
 
         line_items = [
-            formats[item].format(str(value),
-            name_len=max_name, n=max_n-1) for item, value in zip(header, total_line)
+            formats[item].format(str(value), name_len=max_name, n=max_n - 1)
+            for item, value in zip(header, total_line)
         ]
         self.write_items(line_items)
 
@@ -137,8 +134,9 @@ class SummaryReporter:
         max_n = max(len(total_line[header.index("Cover")]) + 6, len(" Cover "))
         header_items = [formats[item].format(item, name_len=max_name, n=max_n) for item in header]
         header_str = "".join(header_items)
-        rule_str = "|" + " ".join(["- |".rjust(len(header_items[0])-1, "-")] +
-            ["-: |".rjust(len(item)-1, "-") for item in header_items[1:]],
+        rule_str = "|" + " ".join(
+            ["- |".rjust(len(header_items[0]) - 1, "-")]
+            + ["-: |".rjust(len(item) - 1, "-") for item in header_items[1:]],
         )
 
         # Write the header
@@ -149,7 +147,7 @@ class SummaryReporter:
             # build string with line values
             formats.update(dict(Cover="{:>{n}}% |"))
             line_items = [
-                formats[item].format(str(value).replace("_", "\\_"), name_len=max_name, n=max_n-1)
+                formats[item].format(str(value).replace("_", "\\_"), name_len=max_name, n=max_n - 1)
                 for item, value in zip(header, values)
             ]
             self.write_items(line_items)
@@ -208,7 +206,7 @@ class SummaryReporter:
         # `lines_values` is list of lists of sortable values.
         lines_values = []
 
-        for (fr, analysis) in self.fr_analysis:
+        for fr, analysis in self.fr_analysis:
             nums = analysis.numbers
 
             args = [fr.relative_filename(), nums.n_statements, nums.n_missing]
@@ -250,7 +248,7 @@ class SummaryReporter:
         # Create other final lines.
         end_lines = []
         if self.config.skip_covered and self.skipped_count:
-            file_suffix = "s" if self.skipped_count>1 else ""
+            file_suffix = "s" if self.skipped_count > 1 else ""
             end_lines.append(
                 f"\n{self.skipped_count} file{file_suffix} skipped due to complete coverage.",
             )

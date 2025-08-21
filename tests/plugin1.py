@@ -14,6 +14,7 @@ from coverage import CoveragePlugin, FileReporter, FileTracer
 from coverage.plugin_support import Plugins
 from coverage.types import TLineNo
 
+
 class Plugin(CoveragePlugin):
     """A file tracer plugin to import, so that it isn't in the test's current directory."""
 
@@ -44,18 +45,19 @@ class MyFileTracer(FileTracer):
     def line_number_range(self, frame: FrameType) -> tuple[TLineNo, TLineNo]:
         """Map the line number X to X05,X06,X07."""
         lineno = frame.f_lineno
-        return lineno*100+5, lineno*100+7
+        return lineno * 100 + 5, lineno * 100 + 7
 
 
 class MyFileReporter(FileReporter):
     """Dead-simple FileReporter."""
+
     def lines(self) -> set[TLineNo]:
         return {105, 106, 107, 205, 206, 207}
 
 
 def coverage_init(
     reg: Plugins,
-    options: Any,       # pylint: disable=unused-argument
+    options: Any,  # pylint: disable=unused-argument
 ) -> None:
     """Called by coverage to initialize the plugins here."""
     reg.add_file_tracer(Plugin())

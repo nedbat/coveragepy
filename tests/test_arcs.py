@@ -20,20 +20,23 @@ class SimpleArcTest(CoverageTest):
     """Tests for coverage.py's arc measurement."""
 
     def test_simple_sequence(self) -> None:
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             a = 1
             b = 2
             """,
             branchz="",
         )
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             a = 1
 
             b = 3
             """,
             branchz="",
         )
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
 
             a = 2
             b = 3
@@ -44,7 +47,8 @@ class SimpleArcTest(CoverageTest):
         )
 
     def test_function_def(self) -> None:
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             def foo():
                 a = 2
 
@@ -54,7 +58,8 @@ class SimpleArcTest(CoverageTest):
         )
 
     def test_if(self) -> None:
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             a = 1
             if len([]) == 0:
                 a = 3
@@ -63,7 +68,8 @@ class SimpleArcTest(CoverageTest):
             branchz="23 24",
             branchz_missing="24",
         )
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             a = 1
             if len([]) == 1:
                 a = 3
@@ -74,7 +80,8 @@ class SimpleArcTest(CoverageTest):
         )
 
     def test_if_else(self) -> None:
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             if len([]) == 0:
                 a = 2
             else:
@@ -84,7 +91,8 @@ class SimpleArcTest(CoverageTest):
             branchz="12 14",
             branchz_missing="14",
         )
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             if len([]) == 1:
                 a = 2
             else:
@@ -96,25 +104,30 @@ class SimpleArcTest(CoverageTest):
         )
 
     def test_compact_if(self) -> None:
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             a = 1
             if len([]) == 0: a = 2
             assert a == 2
             """,
-            branchz="", branchz_missing="",
+            branchz="",
+            branchz_missing="",
         )
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             def fn(x):
                 if x % 2: return True
                 return False
             a = fn(1)
             assert a is True
             """,
-            branchz="2. 23", branchz_missing="23",
+            branchz="2. 23",
+            branchz_missing="23",
         )
 
     def test_multiline(self) -> None:
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             a = (
                 2 +
                 3
@@ -126,7 +139,8 @@ class SimpleArcTest(CoverageTest):
         )
 
     def test_if_return(self) -> None:
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             def if_ret(a):
                 if a:
                     return 3
@@ -140,7 +154,8 @@ class SimpleArcTest(CoverageTest):
         )
 
     def test_dont_confuse_exit_and_else(self) -> None:
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             def foo():
                 if foo:
                     a = 3
@@ -152,7 +167,8 @@ class SimpleArcTest(CoverageTest):
             branchz="23 25",
             branchz_missing="25",
         )
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             def foo():
                 if foo:
                     a = 3
@@ -165,7 +181,8 @@ class SimpleArcTest(CoverageTest):
         )
 
     def test_bug_1184(self) -> None:
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             def foo(x):
                 if x:
                     try:
@@ -183,7 +200,8 @@ class SimpleArcTest(CoverageTest):
 
     def test_bug_1991(self) -> None:
         # A bytecode was missing a line number, causing a KeyError in sysmon.py.
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             def func(x, y):
                 for size in (x or ()) if y else ():
                     print(size)
@@ -203,7 +221,8 @@ class SimpleArcTest(CoverageTest):
             branchz = "34 38 89 8D"
             branchz_missing = "38 8D"
 
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             foo = True
 
             if foo == True:
@@ -228,7 +247,8 @@ class WithTest(CoverageTest):
     """Arc-measuring tests involving context managers."""
 
     def test_with(self) -> None:
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             def example():
                 with open("test", "w", encoding="utf-8") as f:
                     f.write("3")
@@ -241,7 +261,8 @@ class WithTest(CoverageTest):
         )
 
     def test_with_return(self) -> None:
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             def example():
                 with open("test", "w", encoding="utf-8") as f:
                     f.write("3")
@@ -255,7 +276,8 @@ class WithTest(CoverageTest):
 
     def test_bug_146(self) -> None:
         # https://github.com/nedbat/coveragepy/issues/146
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             for i in range(2):
                 with open("test", "w", encoding="utf-8") as f:
                     print(3)
@@ -268,7 +290,8 @@ class WithTest(CoverageTest):
         assert self.stdout() == "3\n4\n3\n4\n5\n"
 
     def test_nested_with_return(self) -> None:
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             def example(x):
                 with open("test", "w", encoding="utf-8") as f2:
                     a = 3
@@ -283,7 +306,8 @@ class WithTest(CoverageTest):
         )
 
     def test_break_through_with(self) -> None:
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             for i in range(1+1):
                 with open("test", "w", encoding="utf-8") as f:
                     print(3)
@@ -295,7 +319,8 @@ class WithTest(CoverageTest):
         )
 
     def test_continue_through_with(self) -> None:
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             for i in range(1+1):
                 with open("test", "w", encoding="utf-8") as f:
                     print(3)
@@ -308,7 +333,8 @@ class WithTest(CoverageTest):
 
     # https://github.com/nedbat/coveragepy/issues/1270
     def test_raise_through_with(self) -> None:
-        cov = self.check_coverage("""\
+        cov = self.check_coverage(
+            """\
             from contextlib import nullcontext
             def f(x):
                 with nullcontext():
@@ -327,7 +353,8 @@ class WithTest(CoverageTest):
         assert self.get_missing_arc_description(cov, 3, -2) == expected
 
     def test_untaken_if_through_with(self) -> None:
-        cov = self.check_coverage("""\
+        cov = self.check_coverage(
+            """\
             from contextlib import nullcontext
             def f(x):
                 with nullcontext():
@@ -345,7 +372,8 @@ class WithTest(CoverageTest):
         assert self.get_missing_arc_description(cov, 3, -2) == expected
 
     def test_untaken_raise_through_with(self) -> None:
-        cov = self.check_coverage("""\
+        cov = self.check_coverage(
+            """\
             from contextlib import nullcontext
             def f(x):
                 with nullcontext():
@@ -366,7 +394,8 @@ class WithTest(CoverageTest):
         assert self.get_missing_arc_description(cov, 3, -2) == expected
 
     def test_leaving_module(self) -> None:
-        cov = self.check_coverage("""\
+        cov = self.check_coverage(
+            """\
             print(a := 1)
             if a == 1:
                 print(3)
@@ -379,7 +408,8 @@ class WithTest(CoverageTest):
         assert self.get_missing_arc_description(cov, 2, -1) == expected
 
     def test_with_with_lambda(self) -> None:
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             from contextlib import nullcontext
             with nullcontext(lambda x: 2):
                 print(3)
@@ -391,7 +421,8 @@ class WithTest(CoverageTest):
 
     def test_multiline_with(self) -> None:
         # https://github.com/nedbat/coveragepy/issues/1880
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             import contextlib, itertools
             nums = itertools.count()
             with (
@@ -407,7 +438,8 @@ class WithTest(CoverageTest):
 
     def test_multi_multiline_with(self) -> None:
         # https://github.com/nedbat/coveragepy/issues/1880
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             import contextlib, itertools
             nums = itertools.count()
             with (
@@ -425,7 +457,8 @@ class WithTest(CoverageTest):
 
     def test_multi_multiline_with_backslash(self) -> None:
         # https://github.com/nedbat/coveragepy/issues/1880
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             import contextlib, itertools
             nums = itertools.count()
             with contextlib.nullcontext() as x, \\
@@ -444,7 +477,8 @@ class LoopArcTest(CoverageTest):
     """Arc-measuring tests involving loops."""
 
     def test_loop(self) -> None:
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             for i in range(10):
                 a = i
             assert a == 9
@@ -452,7 +486,8 @@ class LoopArcTest(CoverageTest):
             branchz="12 13",
             branchz_missing="",
         )
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             a = -1
             for i in range(0):
                 a = i
@@ -463,7 +498,8 @@ class LoopArcTest(CoverageTest):
         )
 
     def test_nested_loop(self) -> None:
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             for i in range(3):
                 for j in range(3):
                     a = i + j
@@ -474,7 +510,8 @@ class LoopArcTest(CoverageTest):
         )
 
     def test_break(self) -> None:
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             for i in range(10):
                 a = i
                 break       # 3
@@ -486,7 +523,8 @@ class LoopArcTest(CoverageTest):
         )
 
     def test_continue(self) -> None:
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             for i in range(10):
                 a = i
                 continue    # 3
@@ -498,7 +536,8 @@ class LoopArcTest(CoverageTest):
         )
 
     def test_nested_breaks(self) -> None:
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             for i in range(3):
                 for j in range(3):
                     a = i + j
@@ -515,7 +554,8 @@ class LoopArcTest(CoverageTest):
         lines = [1, 3, 6]
         if env.PYBEHAVIOR.keep_constant_test:
             lines.append(2)
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             a = 1
             if not not 1:
                 a = 3
@@ -530,7 +570,8 @@ class LoopArcTest(CoverageTest):
 
     def test_while_1(self) -> None:
         # With "while 1", the loop knows it's constant.
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             a, i = 1, 0
             while 1:
                 if i >= 3:
@@ -547,7 +588,8 @@ class LoopArcTest(CoverageTest):
         lines = [1, 3, 4, 5, 6, 7]
         if env.PYBEHAVIOR.keep_constant_test:
             lines.append(2)
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             a, i = 1, 0
             while True:
                 if i >= 3:
@@ -565,7 +607,8 @@ class LoopArcTest(CoverageTest):
         lines = [1, 4]
         if env.PYBEHAVIOR.keep_constant_test:
             lines.append(2)
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             a, i = 1, 0
             while False:
                 1/0
@@ -577,7 +620,8 @@ class LoopArcTest(CoverageTest):
         )
 
     def test_while_not_false(self) -> None:
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             a, i = 1, 0
             while not False:
                 if i >= 3:
@@ -593,14 +637,17 @@ class LoopArcTest(CoverageTest):
     def test_zero_coverage_while_loop(self) -> None:
         # https://github.com/nedbat/coveragepy/issues/502
         self.make_file("main.py", "print('done')")
-        self.make_file("zero.py", """\
+        self.make_file(
+            "zero.py",
+            """\
             def method(self):
                 while True:
                     return 1
-            """)
+            """,
+        )
         cov = coverage.Coverage(source=["."], branch=True)
         self.start_import_stop(cov, "main")
-        assert self.stdout() == 'done\n'
+        assert self.stdout() == "done\n"
         if env.PYBEHAVIOR.keep_constant_test:
             num_stmts = 3
         else:
@@ -612,7 +659,8 @@ class LoopArcTest(CoverageTest):
 
     def test_bug_496_continue_in_constant_while(self) -> None:
         # https://github.com/nedbat/coveragepy/issues/496
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             up = iter('ta')
             while True:
                 char = next(up)
@@ -626,7 +674,8 @@ class LoopArcTest(CoverageTest):
         )
 
     def test_missing_while_body(self) -> None:
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             a = 3; b = 0
             if 0:
                 while a > 0:
@@ -638,7 +687,8 @@ class LoopArcTest(CoverageTest):
         )
 
     def test_for_if_else_for(self) -> None:
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             def branches_2(l):
                 if l:
                     for e in l:
@@ -662,7 +712,8 @@ class LoopArcTest(CoverageTest):
         )
 
     def test_for_else(self) -> None:
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             def forelse(seq):
                 for n in seq:
                     if n > 5:
@@ -675,7 +726,8 @@ class LoopArcTest(CoverageTest):
             branchz="23 26 34 32",
             branchz_missing="34",
         )
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             def forelse(seq):
                 for n in seq:
                     if n > 5:
@@ -690,7 +742,8 @@ class LoopArcTest(CoverageTest):
         )
 
     def test_while_else(self) -> None:
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             def whileelse(seq):
                 while seq:
                     n = seq.pop()
@@ -704,7 +757,8 @@ class LoopArcTest(CoverageTest):
             branchz="23 27 45 42",
             branchz_missing="45",
         )
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             def whileelse(seq):
                 while seq:
                     n = seq.pop()
@@ -720,7 +774,8 @@ class LoopArcTest(CoverageTest):
         )
 
     def test_confusing_for_loop_bug_175(self) -> None:
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             o = [(1,2), (3,4)]
             o = [a for a in o]
             for tup in o:
@@ -730,7 +785,8 @@ class LoopArcTest(CoverageTest):
             branchz="34 3.",
             branchz_missing="",
         )
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             o = [(1,2), (3,4)]
             for tup in [a for a in o]:
                 x = tup[0]
@@ -743,7 +799,8 @@ class LoopArcTest(CoverageTest):
     # https://bugs.python.org/issue44672
     @pytest.mark.xfail(env.PYVERSION < (3, 10), reason="<3.10 traced final pass incorrectly")
     def test_incorrect_loop_exit_bug_1175(self) -> None:
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             def wrong_loop(x):
                 if x:
                     for i in [3, 33]:
@@ -759,7 +816,8 @@ class LoopArcTest(CoverageTest):
 
     # https://bugs.python.org/issue44672
     def test_incorrect_if_bug_1175(self) -> None:
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             def wrong_loop(x):
                 if x:
                     if x:
@@ -775,7 +833,8 @@ class LoopArcTest(CoverageTest):
 
     def test_generator_expression(self) -> None:
         # Generator expression:
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             o = ((1,2), (3,4))
             o = (a for a in o)
             for tup in o:
@@ -789,7 +848,8 @@ class LoopArcTest(CoverageTest):
     def test_generator_expression_another_way(self) -> None:
         # https://bugs.python.org/issue44450
         # Generator expression:
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             o = ((1,2), (3,4))
             o = (a for
                  a in
@@ -804,7 +864,8 @@ class LoopArcTest(CoverageTest):
 
     def test_other_comprehensions(self) -> None:
         # Set comprehension:
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             o = ((1,2), (3,4))
             o = {a for a in o}
             for tup in o:
@@ -815,7 +876,8 @@ class LoopArcTest(CoverageTest):
             branchz_missing="",
         )
         # Dict comprehension:
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             o = ((1,2), (3,4))
             o = {a:1 for a in o}
             for tup in o:
@@ -828,7 +890,8 @@ class LoopArcTest(CoverageTest):
 
     def test_multiline_dict_comp(self) -> None:
         # Multiline dict comp:
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             # comment
             d = \\
                 {
@@ -841,10 +904,12 @@ class LoopArcTest(CoverageTest):
             }
             x = 11
             """,
-            branchz="", branchz_missing="",
+            branchz="",
+            branchz_missing="",
         )
         # Multi dict comp:
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             # comment
             d = \\
                 {
@@ -861,7 +926,8 @@ class LoopArcTest(CoverageTest):
             }
             x = 15
             """,
-            branchz="", branchz_missing="",
+            branchz="",
+            branchz_missing="",
         )
 
 
@@ -869,7 +935,8 @@ class ExceptionArcTest(CoverageTest):
     """Arc-measuring tests involving exception handling."""
 
     def test_try_except(self) -> None:
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             a, b = 1, 1
             try:
                 a = 3
@@ -877,11 +944,13 @@ class ExceptionArcTest(CoverageTest):
                 b = 5
             assert a == 3 and b == 1
             """,
-            branchz="", branchz_missing="",
+            branchz="",
+            branchz_missing="",
         )
 
     def test_raise_followed_by_statement(self) -> None:
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             a, b = 1, 1
             try:
                 a = 3
@@ -891,11 +960,13 @@ class ExceptionArcTest(CoverageTest):
                 b = 7
             assert a == 3 and b == 7
             """,
-            branchz="", branchz_missing="",
+            branchz="",
+            branchz_missing="",
         )
 
     def test_hidden_raise(self) -> None:
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             a, b = 1, 1
             def oops(x):
                 if x % 2:
@@ -913,7 +984,8 @@ class ExceptionArcTest(CoverageTest):
         )
 
     def test_except_with_type(self) -> None:
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             a, b = 1, 1
             def oops(x):
                 if x % 2:
@@ -934,7 +1006,8 @@ class ExceptionArcTest(CoverageTest):
         )
 
     def test_try_finally(self) -> None:
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             a, c = 1, 1
             try:
                 a = 3
@@ -944,7 +1017,8 @@ class ExceptionArcTest(CoverageTest):
             """,
             branchz="",
         )
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             a, c, d = 1, 1, 1
             try:
                 try:
@@ -957,7 +1031,8 @@ class ExceptionArcTest(CoverageTest):
             """,
             branchz="",
         )
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             a, c, d = 1, 1, 1
             try:
                 try:
@@ -974,7 +1049,8 @@ class ExceptionArcTest(CoverageTest):
         )
 
     def test_finally_in_loop(self) -> None:
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             a, c, d, i = 1, 1, 1, 99
             try:
                 for i in range(5):
@@ -992,7 +1068,8 @@ class ExceptionArcTest(CoverageTest):
             branchz="34 3D 67 68",
             branchz_missing="3D",
         )
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             a, c, d, i = 1, 1, 1, 99
             try:
                 for i in range(5):
@@ -1011,9 +1088,9 @@ class ExceptionArcTest(CoverageTest):
             branchz_missing="67",
         )
 
-
     def test_break_through_finally(self) -> None:
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             a, c, d, i = 1, 1, 1, 99
             try:
                 for i in range(3):
@@ -1033,7 +1110,8 @@ class ExceptionArcTest(CoverageTest):
         )
 
     def test_break_continue_without_finally(self) -> None:
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             a, c, d, i = 1, 1, 1, 99
             try:
                 for i in range(3):
@@ -1053,7 +1131,8 @@ class ExceptionArcTest(CoverageTest):
         )
 
     def test_continue_through_finally(self) -> None:
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             a, b, c, d, i = 1, 1, 1, 1, 99
             try:
                 for i in range(3):
@@ -1073,7 +1152,8 @@ class ExceptionArcTest(CoverageTest):
         )
 
     def test_finally_in_loop_bug_92(self) -> None:
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             for i in range(5):
                 try:
                     j = 3
@@ -1090,7 +1170,8 @@ class ExceptionArcTest(CoverageTest):
         # "except Exception as e" is crucial here.
         # Bug 212 said that the "if exc" line was incorrectly marked as only
         # partially covered.
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             def b(exc):
                 try:
                     while "no peephole".upper():
@@ -1111,7 +1192,8 @@ class ExceptionArcTest(CoverageTest):
         )
 
     def test_except_finally(self) -> None:
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             a, b, c = 1, 1, 1
             try:
                 a = 3
@@ -1123,7 +1205,8 @@ class ExceptionArcTest(CoverageTest):
             """,
             branchz="",
         )
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             a, b, c = 1, 1, 1
             def oops(x):
                 if x % 2: raise Exception("odd")
@@ -1141,7 +1224,8 @@ class ExceptionArcTest(CoverageTest):
         )
 
     def test_multiple_except_clauses(self) -> None:
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             a, b, c = 1, 1, 1
             try:
                 a = 3
@@ -1155,7 +1239,8 @@ class ExceptionArcTest(CoverageTest):
             """,
             branchz="",
         )
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             a, b, c = 1, 1, 1
             try:
                 a = int("xyz")  # ValueError
@@ -1169,7 +1254,8 @@ class ExceptionArcTest(CoverageTest):
             """,
             branchz="",
         )
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             a, b, c = 1, 1, 1
             try:
                 a = [1][3]      # IndexError
@@ -1183,7 +1269,8 @@ class ExceptionArcTest(CoverageTest):
             """,
             branchz="",
         )
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             a, b, c = 1, 1, 1
             try:
                 try:
@@ -1202,7 +1289,8 @@ class ExceptionArcTest(CoverageTest):
         )
 
     def test_return_finally(self) -> None:
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             a = [1]
             def check_token(data):
                 if data:
@@ -1221,7 +1309,8 @@ class ExceptionArcTest(CoverageTest):
         )
 
     def test_except_jump_finally(self) -> None:
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             def func(x):
                 a = f = g = 2
                 try:
@@ -1258,7 +1347,8 @@ class ExceptionArcTest(CoverageTest):
         )
 
     def test_else_jump_finally(self) -> None:
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             def func(x):
                 a = f = g = 2
                 try:
@@ -1293,7 +1383,7 @@ class ExceptionArcTest(CoverageTest):
             assert func('other') == (2, 23, 2, 3)           # W 32
             """,
             branchz="45 4Q AB AD DE DG GH GJ JK JN",
-            branchz_missing=""
+            branchz_missing="",
         )
 
 
@@ -1301,7 +1391,8 @@ class YieldTest(CoverageTest):
     """Arc tests for generators."""
 
     def test_yield_in_loop(self) -> None:
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             def gen(inp):
                 for n in inp:
                     yield n
@@ -1313,7 +1404,8 @@ class YieldTest(CoverageTest):
         )
 
     def test_padded_yield_in_loop(self) -> None:
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             def gen(inp):
                 i = 2
                 for n in inp:
@@ -1329,7 +1421,8 @@ class YieldTest(CoverageTest):
         )
 
     def test_bug_308(self) -> None:
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             def run():
                 for i in range(10):
                     yield lambda: i
@@ -1340,7 +1433,8 @@ class YieldTest(CoverageTest):
             branchz="23 2. 56 5.",
             branchz_missing="",
         )
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             def run():
                 yield lambda: 100
                 for i in range(10):
@@ -1352,7 +1446,8 @@ class YieldTest(CoverageTest):
             branchz="34 3. 67 6.",
             branchz_missing="",
         )
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             def run():
                 yield lambda: 100  # no branch miss
 
@@ -1367,7 +1462,8 @@ class YieldTest(CoverageTest):
         # This code is tricky: the list() call pulls all the values from gen(),
         # but each of them is a generator itself that is never iterated.  As a
         # result, the generator expression on line 3 is never entered or run.
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             def gen(inp):
                 for n in inp:
                     yield (i * 2 for i in range(n))
@@ -1379,7 +1475,8 @@ class YieldTest(CoverageTest):
         )
 
     def test_coroutines(self) -> None:
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             def double_inputs():
                 while len([1]):     # avoid compiler differences
                     x = yield
@@ -1398,7 +1495,8 @@ class YieldTest(CoverageTest):
         assert self.stdout() == "20\n12\n"
 
     def test_yield_from(self) -> None:
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             def gen(inp):
                 i = 2
                 for n in inp:
@@ -1415,7 +1513,8 @@ class YieldTest(CoverageTest):
 
     def test_abandoned_yield(self) -> None:
         # https://github.com/nedbat/coveragepy/issues/440
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             def gen():
                 print(2)
                 yield 3
@@ -1434,8 +1533,10 @@ class YieldTest(CoverageTest):
 @pytest.mark.skipif(not env.PYBEHAVIOR.match_case, reason="Match-case is new in 3.10")
 class MatchCaseTest(CoverageTest):
     """Tests of match-case."""
+
     def test_match_case_with_default(self) -> None:
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             for command in ["huh", "go home", "go n"]:
                 match command.split():
                     case ["go", direction] if direction in "nesw":
@@ -1452,7 +1553,8 @@ class MatchCaseTest(CoverageTest):
         assert self.stdout() == "default\nno go\ngo: n\n"
 
     def test_match_case_with_named_default(self) -> None:
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             for command in ["huh", "go home", "go n"]:
                 match command.split():
                     case ["go", direction] if direction in "nesw":
@@ -1469,7 +1571,8 @@ class MatchCaseTest(CoverageTest):
         assert self.stdout() == "default\nno go\ngo: n\n"
 
     def test_match_case_with_wildcard(self) -> None:
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             for command in ["huh", "go home", "go n"]:
                 match command.split():
                     case ["go", direction] if direction in "nesw":
@@ -1486,7 +1589,8 @@ class MatchCaseTest(CoverageTest):
         assert self.stdout() == "default: ['huh']\nno go\ngo: n\n"
 
     def test_match_case_without_wildcard(self) -> None:
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             match = None
             for command in ["huh", "go home", "go n"]:
                 match command.split():
@@ -1503,7 +1607,8 @@ class MatchCaseTest(CoverageTest):
 
     def test_absurd_wildcards(self) -> None:
         # https://github.com/nedbat/coveragepy/issues/1421
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             def absurd(x):
                 match x:
                     case (3 | 99 | (999 | _)):
@@ -1515,7 +1620,8 @@ class MatchCaseTest(CoverageTest):
             branchz_missing="",
         )
         assert self.stdout() == "default\n"
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             def absurd(x):
                 match x:
                     case (3 | 99 | 999 as y):
@@ -1526,7 +1632,8 @@ class MatchCaseTest(CoverageTest):
             branchz_missing="34",
         )
         assert self.stdout() == ""
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             def absurd(x):
                 match x:
                     case (3 | 17 as y):
@@ -1539,7 +1646,8 @@ class MatchCaseTest(CoverageTest):
             branchz_missing="34 5-1",
         )
         assert self.stdout() == "also not default\n"
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             def absurd(x):
                 match x:
                     case 3:
@@ -1567,7 +1675,8 @@ class OptimizedIfTest(CoverageTest):
             branchz = "23 28"
             branchz_missing = "28"
 
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             a = 1
             if len([2]):
                 c = 3
@@ -1593,7 +1702,8 @@ class OptimizedIfTest(CoverageTest):
             branchz = "23 25 56 59"
             branchz_missing = "25 59"
 
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             a = 1
             if len([2]):
                 c = 3
@@ -1614,7 +1724,8 @@ class OptimizedIfTest(CoverageTest):
             lines = [1, 2, 3, 4, 5]
         else:
             lines = [1, 3, 4, 5]
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             a = 1
             if 1:
                 b = 3
@@ -1632,7 +1743,8 @@ class OptimizedIfTest(CoverageTest):
         else:
             lines = [1, 12, 14, 15]
 
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             a = 1
             if 0:
                 if 0:
@@ -1659,13 +1771,15 @@ class OptimizedIfTest(CoverageTest):
         # we expect
         assert __debug__
         # Check that executed code has __debug__
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             assert __debug__, "assert __debug__"
             """,
         )
         # Check that if it didn't have debug, it would let us know.
         with pytest.raises(AssertionError):
-            self.check_coverage("""\
+            self.check_coverage(
+                """\
                 assert not __debug__, "assert not __debug__"
                 """,
             )
@@ -1675,7 +1789,8 @@ class OptimizedIfTest(CoverageTest):
             branchz = "12 1. 24 26"
         else:
             branchz = "12 1. 23 26"
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             for value in [True, False]:
                 if value:
                     if __debug__:
@@ -1694,7 +1809,8 @@ class OptimizedIfTest(CoverageTest):
             assert env.PYBEHAVIOR.optimize_if_not_debug == 2
             branchz = "23 28 35 37"
 
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             lines = set()
             for value in [True, False]:
                 if value:
@@ -1712,7 +1828,8 @@ class MiscArcTest(CoverageTest):
     """Miscellaneous arc-measuring tests."""
 
     def test_dict_literal(self) -> None:
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             d = {
                 'a': 2,
                 'b': 3,
@@ -1723,9 +1840,11 @@ class MiscArcTest(CoverageTest):
                 }
             assert d
             """,
-            branchz="", branchz_missing="",
+            branchz="",
+            branchz_missing="",
         )
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             d = \\
                 { 'a': 2,
                 'b': 3,
@@ -1736,11 +1855,13 @@ class MiscArcTest(CoverageTest):
                 }
             assert d
             """,
-            branchz="", branchz_missing="",
+            branchz="",
+            branchz_missing="",
         )
 
     def test_unpacked_literals(self) -> None:
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             d = {
                 'a': 2,
                 'b': 3,
@@ -1752,9 +1873,11 @@ class MiscArcTest(CoverageTest):
             }
             assert weird['b'] == 3
             """,
-            branchz="", branchz_missing="",
+            branchz="",
+            branchz_missing="",
         )
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             l = [
                 2,
                 3,
@@ -1766,7 +1889,8 @@ class MiscArcTest(CoverageTest):
             ]
             assert weird[1] == 3
             """,
-            branchz="", branchz_missing="",
+            branchz="",
+            branchz_missing="",
         )
 
     @pytest.mark.parametrize("n", [10, 50, 100, 500, 1000, 2000, 10000])
@@ -1775,17 +1899,23 @@ class MiscArcTest(CoverageTest):
         # Long code objects sometimes cause problems. Originally, it was
         # due to EXTENDED_ARG bytes codes.  Then it showed a mistake in
         # line-number packing.
-        code = """\
+        code = (
+            """\
             data = [
-            """ + "".join(f"""\
+            """
+            + "".join(
+                f"""\
                 [
                     {i}, {i}, {i}, {i}, {i}, {i}, {i}, {i}, {i}, {i}],
-            """ for i in range(n)
-            ) + """\
+            """
+                for i in range(n)
+            )
+            + """\
             ]
 
             print(len(data))
             """
+        )
         self.check_coverage(code, branchz="")
         assert self.stdout() == f"{n}\n"
 
@@ -1794,7 +1924,8 @@ class MiscArcTest(CoverageTest):
         # Line 2 is executed completely.
         # Line 3 is started but not finished, because zip ends before it finishes.
         # Line 4 is never started.
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             def f(a, b):
                 c = (i for i in a)          # 2
                 d = (j for j in b)          # 3
@@ -1812,7 +1943,8 @@ class DecoratorArcTest(CoverageTest):
     """Tests of arcs with decorators."""
 
     def test_function_decorator(self) -> None:
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             def decorator(arg):
                 def _dec(f):
                     return f
@@ -1829,11 +1961,13 @@ class DecoratorArcTest(CoverageTest):
             a = 14
             my_function()
             """,
-            branchz="", branchz_missing="",
+            branchz="",
+            branchz_missing="",
         )
 
     def test_class_decorator(self) -> None:
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             def decorator(arg):
                 def _dec(c):
                     return c
@@ -1849,14 +1983,16 @@ class DecoratorArcTest(CoverageTest):
                 X = 13
             a = 14
             """,
-            branchz="", branchz_missing="",
+            branchz="",
+            branchz_missing="",
         )
 
     def test_bug_466a(self) -> None:
         # A bad interaction between decorators and multi-line list assignments,
         # believe it or not...!
         # This example makes more sense when considered in tandem with 466b below.
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             class Parser(object):
 
                 @classmethod
@@ -1868,13 +2004,15 @@ class DecoratorArcTest(CoverageTest):
 
             Parser.parse()
             """,
-            branchz="", branchz_missing="",
+            branchz="",
+            branchz_missing="",
         )
 
     def test_bug_466b(self) -> None:
         # A bad interaction between decorators and multi-line list assignments,
         # believe it or not...!
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             class Parser(object):
 
                 @classmethod
@@ -1886,7 +2024,8 @@ class DecoratorArcTest(CoverageTest):
 
             Parser.parse()
             """,
-            branchz="", branchz_missing="",
+            branchz="",
+            branchz_missing="",
         )
 
 
@@ -1894,7 +2033,8 @@ class LambdaArcTest(CoverageTest):
     """Tests of lambdas"""
 
     def test_multiline_lambda(self) -> None:
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             fn = (lambda x:
                     x + 2
             )
@@ -1903,7 +2043,8 @@ class LambdaArcTest(CoverageTest):
             branchz="",
             branchz_missing="",
         )
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
 
             fn = \\
                 (
@@ -1920,16 +2061,19 @@ class LambdaArcTest(CoverageTest):
         )
 
     def test_unused_lambdas_are_confusing_bug_90(self) -> None:
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             a = 1
             fn = lambda x: x
             b = 3
             """,
-            branchz="", branchz_missing="",
+            branchz="",
+            branchz_missing="",
         )
 
     def test_raise_with_lambda_looks_like_partial_branch(self) -> None:
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             def ouch(fn):
                 2/0
             a = b = c = d = 3
@@ -1949,7 +2093,8 @@ class LambdaArcTest(CoverageTest):
         )
 
     def test_lambda_in_dict(self) -> None:
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             x = 1
             x = 2
             d = {
@@ -1984,7 +2129,8 @@ class AsyncTest(CoverageTest):
 
     @skip_eventlet_670
     def test_async(self) -> None:
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             import asyncio
 
             async def compute(x, y):                        # 3
@@ -2002,13 +2148,15 @@ class AsyncTest(CoverageTest):
             loop.run_until_complete(print_sum(1, 2))
             loop.close()                                    # G
             """,
-            branchz="", branchz_missing="",
+            branchz="",
+            branchz_missing="",
         )
         assert self.stdout() == "Compute 1 + 2 ...\n1 + 2 = 3\n"
 
     @skip_eventlet_670
     def test_async_for(self) -> None:
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             import asyncio
 
             class AsyncIteratorWrapper:                 # 3
@@ -2039,7 +2187,8 @@ class AsyncTest(CoverageTest):
         assert self.stdout() == "a\nb\nc\n.\n"
 
     def test_async_with(self) -> None:
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             async def go():
                 async with x:
                     pass
@@ -2049,7 +2198,8 @@ class AsyncTest(CoverageTest):
         )
 
     def test_async_decorator(self) -> None:
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             def wrap(f):        # 1
                 return f
 
@@ -2065,7 +2215,8 @@ class AsyncTest(CoverageTest):
     # https://bugs.python.org/issue44621
     @pytest.mark.skipif(env.PYVERSION[:2] == (3, 9), reason="avoid a 3.9 bug: 44621")
     def test_bug_1158(self) -> None:
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             import asyncio
 
             async def async_gen():
@@ -2091,7 +2242,8 @@ class AsyncTest(CoverageTest):
     # https://bugs.python.org/issue44622
     @skip_eventlet_670
     def test_bug_1176(self) -> None:
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             import asyncio
 
             async def async_gen():
@@ -2110,7 +2262,8 @@ class AsyncTest(CoverageTest):
 
     # https://github.com/nedbat/coveragepy/issues/1205
     def test_bug_1205(self) -> None:
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             def func():
                 if T(2):
                     if T(3):
@@ -2134,7 +2287,8 @@ class AsyncTest(CoverageTest):
         reason="CPython fix not backported to 3.9: https://github.com/python/cpython/issues/93061",
     )
     def test_bug_1999(self) -> None:
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             import asyncio
 
             async def async_range(number):
@@ -2160,13 +2314,15 @@ class AnnotationTest(CoverageTest):
     """Tests using type annotations."""
 
     def test_annotations(self) -> None:
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             def f(x:str, y:int) -> str:
                 a:int = 2
                 return f"{x}, {y}, {a}, 3"
             print(f("x", 4))
             """,
-            branchz="", branchz_missing="",
+            branchz="",
+            branchz_missing="",
         )
         assert self.stdout() == "x, 4, 2, 3\n"
 
@@ -2176,7 +2332,8 @@ class ExcludeTest(CoverageTest):
 
     def test_default(self) -> None:
         # A number of forms of pragma comment are accepted.
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             a = 1
             if a:   #pragma: no branch
                 b = 3
@@ -2192,23 +2349,25 @@ class ExcludeTest(CoverageTest):
             else:
                 h = 14
             """,
-            lines=[1,2,3,4,5,6,7,8,9,10,14],
+            lines=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 14],
             missing="",
             branchz="23 24 56 57 89 8A BC BE",
             branchz_missing="",
         )
 
     def test_custom_pragmas(self) -> None:
-        self.check_coverage("""\
+        self.check_coverage(
+            """\
             a = 1
             while a:    # [only some]
                 c = 3
                 break
             assert c == 5-2
             """,
-            lines=[1,2,3,4,5],
+            lines=[1, 2, 3, 4, 5],
             partials=["only some"],
-            branchz="23 25", branchz_missing="",
+            branchz="23 25",
+            branchz_missing="",
         )
 
 
@@ -2218,13 +2377,16 @@ class LineDataTest(CoverageTest):
     def test_branch(self) -> None:
         cov = coverage.Coverage(branch=True)
 
-        self.make_file("fun1.py", """\
+        self.make_file(
+            "fun1.py",
+            """\
             def fun1(x):
                 if x == 1:
                     return
 
             fun1(3)
-            """)
+            """,
+        )
 
         self.start_import_stop(cov, "fun1")
 

@@ -45,15 +45,22 @@ class Opts:
     # appears on the command line.
 
     append = optparse.make_option(
-        "-a", "--append", action="store_true",
+        "-a",
+        "--append",
+        action="store_true",
         help="Append data to the data file. Otherwise it starts clean each time.",
     )
     branch = optparse.make_option(
-        "", "--branch", action="store_true",
+        "",
+        "--branch",
+        action="store_true",
         help="Measure branch coverage in addition to statement coverage.",
     )
     concurrency = optparse.make_option(
-        "", "--concurrency", action="store", metavar="LIBS",
+        "",
+        "--concurrency",
+        action="store",
+        metavar="LIBS",
         help=oneline(
             """
             Properly measure code using a concurrency library.
@@ -62,11 +69,17 @@ class Opts:
         ).format(", ".join(sorted(CoverageConfig.CONCURRENCY_CHOICES))),
     )
     context = optparse.make_option(
-        "", "--context", action="store", metavar="LABEL",
+        "",
+        "--context",
+        action="store",
+        metavar="LABEL",
         help="The context label to record for this coverage run.",
     )
     contexts = optparse.make_option(
-        "", "--contexts", action="store", metavar="REGEX1,REGEX2,...",
+        "",
+        "--contexts",
+        action="store",
+        metavar="REGEX1,REGEX2,...",
         help=oneline(
             """
             Only display data from lines covered in the given contexts.
@@ -75,7 +88,10 @@ class Opts:
         ),
     )
     datafile = optparse.make_option(
-        "", "--data-file", action="store", metavar="DATAFILE",
+        "",
+        "--data-file",
+        action="store",
+        metavar="DATAFILE",
         help=oneline(
             """
             Base name of the data files to operate on.
@@ -84,7 +100,10 @@ class Opts:
         ),
     )
     datafle_input = optparse.make_option(
-        "", "--data-file", action="store", metavar="INFILE",
+        "",
+        "--data-file",
+        action="store",
+        metavar="INFILE",
         help=oneline(
             """
             Read coverage data for report generation from this file.
@@ -93,7 +112,10 @@ class Opts:
         ),
     )
     datafile_output = optparse.make_option(
-        "", "--data-file", action="store", metavar="OUTFILE",
+        "",
+        "--data-file",
+        action="store",
+        metavar="OUTFILE",
         help=oneline(
             """
             Write the recorded coverage data to this file.
@@ -102,31 +124,51 @@ class Opts:
         ),
     )
     debug = optparse.make_option(
-        "", "--debug", action="store", metavar="OPTS",
+        "",
+        "--debug",
+        action="store",
+        metavar="OPTS",
         help="Debug options, separated by commas. [env: COVERAGE_DEBUG]",
     )
     directory = optparse.make_option(
-        "-d", "--directory", action="store", metavar="DIR",
+        "-d",
+        "--directory",
+        action="store",
+        metavar="DIR",
         help="Write the output files to DIR.",
     )
     fail_under = optparse.make_option(
-        "", "--fail-under", action="store", metavar="MIN", type="float",
+        "",
+        "--fail-under",
+        action="store",
+        metavar="MIN",
+        type="float",
         help="Exit with a status of 2 if the total coverage is less than MIN.",
     )
     format = optparse.make_option(
-        "", "--format", action="store", metavar="FORMAT",
+        "",
+        "--format",
+        action="store",
+        metavar="FORMAT",
         help="Output format, either text (default), markdown, or total.",
     )
     help = optparse.make_option(
-        "-h", "--help", action="store_true",
+        "-h",
+        "--help",
+        action="store_true",
         help="Get help on this command.",
     )
     ignore_errors = optparse.make_option(
-        "-i", "--ignore-errors", action="store_true",
+        "-i",
+        "--ignore-errors",
+        action="store_true",
         help="Ignore errors while reading source files.",
     )
     include = optparse.make_option(
-        "", "--include", action="store", metavar="PAT1,PAT2,...",
+        "",
+        "--include",
+        action="store",
+        metavar="PAT1,PAT2,...",
         help=oneline(
             """
             Include only files whose paths match one of these patterns.
@@ -135,11 +177,15 @@ class Opts:
         ),
     )
     keep = optparse.make_option(
-        "", "--keep", action="store_true",
+        "",
+        "--keep",
+        action="store_true",
         help="Keep original coverage files, otherwise they are deleted.",
     )
     pylib = optparse.make_option(
-        "-L", "--pylib", action="store_true",
+        "-L",
+        "--pylib",
+        action="store_true",
         help=oneline(
             """
             Measure coverage even inside the Python installed library,
@@ -148,11 +194,15 @@ class Opts:
         ),
     )
     show_missing = optparse.make_option(
-        "-m", "--show-missing", action="store_true",
+        "-m",
+        "--show-missing",
+        action="store_true",
         help="Show line numbers of statements in each module that weren't executed.",
     )
     module = optparse.make_option(
-        "-m", "--module", action="store_true",
+        "-m",
+        "--module",
+        action="store_true",
         help=oneline(
             """
             <pyfile> is an importable Python module, not a script path,
@@ -161,7 +211,10 @@ class Opts:
         ),
     )
     omit = optparse.make_option(
-        "", "--omit", action="store", metavar="PAT1,PAT2,...",
+        "",
+        "--omit",
+        action="store",
+        metavar="PAT1,PAT2,...",
         help=oneline(
             """
             Omit files whose paths match one of these patterns.
@@ -170,23 +223,39 @@ class Opts:
         ),
     )
     output_xml = optparse.make_option(
-        "-o", "", action="store", dest="outfile", metavar="OUTFILE",
+        "-o",
+        "",
+        action="store",
+        dest="outfile",
+        metavar="OUTFILE",
         help="Write the XML report to this file. Defaults to 'coverage.xml'",
     )
     output_json = optparse.make_option(
-        "-o", "", action="store", dest="outfile", metavar="OUTFILE",
+        "-o",
+        "",
+        action="store",
+        dest="outfile",
+        metavar="OUTFILE",
         help="Write the JSON report to this file. Defaults to 'coverage.json'",
     )
     output_lcov = optparse.make_option(
-        "-o", "", action="store", dest="outfile", metavar="OUTFILE",
+        "-o",
+        "",
+        action="store",
+        dest="outfile",
+        metavar="OUTFILE",
         help="Write the LCOV report to this file. Defaults to 'coverage.lcov'",
     )
     json_pretty_print = optparse.make_option(
-        "", "--pretty-print", action="store_true",
+        "",
+        "--pretty-print",
+        action="store_true",
         help="Format the JSON for human readers.",
     )
     parallel_mode = optparse.make_option(
-        "-p", "--parallel-mode", action="store_true",
+        "-p",
+        "--parallel-mode",
+        action="store_true",
         help=oneline(
             """
             Append a unique suffix to the data file name to collect separate
@@ -195,7 +264,11 @@ class Opts:
         ),
     )
     precision = optparse.make_option(
-        "", "--precision", action="store", metavar="N", type=int,
+        "",
+        "--precision",
+        action="store",
+        metavar="N",
+        type=int,
         help=oneline(
             """
             Number of digits after the decimal point to display for
@@ -204,11 +277,15 @@ class Opts:
         ),
     )
     quiet = optparse.make_option(
-        "-q", "--quiet", action="store_true",
+        "-q",
+        "--quiet",
+        action="store_true",
         help="Don't print messages about what is happening.",
     )
     rcfile = optparse.make_option(
-        "", "--rcfile", action="store",
+        "",
+        "--rcfile",
+        action="store",
         help=oneline(
             """
             Specify configuration file.
@@ -218,8 +295,11 @@ class Opts:
         ),
     )
     save_signal = optparse.make_option(
-        "", "--save-signal", action="store", metavar="SIGNAL",
-        choices = ["USR1", "USR2"],
+        "",
+        "--save-signal",
+        action="store",
+        metavar="SIGNAL",
+        choices=["USR1", "USR2"],
         help=oneline(
             """
             Specify a signal that will trigger coverage to write its collected data.
@@ -228,23 +308,30 @@ class Opts:
         ),
     )
     show_contexts = optparse.make_option(
-        "--show-contexts", action="store_true",
+        "--show-contexts",
+        action="store_true",
         help="Show contexts for covered lines.",
     )
     skip_covered = optparse.make_option(
-        "--skip-covered", action="store_true",
+        "--skip-covered",
+        action="store_true",
         help="Skip files with 100% coverage.",
     )
     no_skip_covered = optparse.make_option(
-        "--no-skip-covered", action="store_false", dest="skip_covered",
+        "--no-skip-covered",
+        action="store_false",
+        dest="skip_covered",
         help="Disable --skip-covered.",
     )
     skip_empty = optparse.make_option(
-        "--skip-empty", action="store_true",
+        "--skip-empty",
+        action="store_true",
         help="Skip files with no code.",
     )
     sort = optparse.make_option(
-        "--sort", action="store", metavar="COLUMN",
+        "--sort",
+        action="store",
+        metavar="COLUMN",
         help=oneline(
             """
             Sort the report by the named column: name, stmts, miss, branch, brpart, or cover.
@@ -253,21 +340,32 @@ class Opts:
         ),
     )
     source = optparse.make_option(
-        "", "--source", action="store", metavar="SRC1,SRC2,...",
+        "",
+        "--source",
+        action="store",
+        metavar="SRC1,SRC2,...",
         help="A list of directories or importable names of code to measure.",
     )
     timid = optparse.make_option(
-        "", "--timid", action="store_true",
+        "",
+        "--timid",
+        action="store_true",
         help="Use the slower Python trace function core.",
     )
     title = optparse.make_option(
-        "", "--title", action="store", metavar="TITLE",
+        "",
+        "--title",
+        action="store",
+        metavar="TITLE",
         help="A text string to use as the title on the HTML.",
     )
     version = optparse.make_option(
-        "", "--version", action="store_true",
+        "",
+        "--version",
+        action="store_true",
         help="Display version information and exit.",
     )
+
 
 class CoverageOptionParser(optparse.OptionParser):
     """Base OptionParser for coverage.py.
@@ -320,6 +418,7 @@ class CoverageOptionParser(optparse.OptionParser):
 
     class OptionParserError(Exception):
         """Used to stop the optparse error handler ending the process."""
+
         pass
 
     def parse_args_ok(self, args: list[str]) -> tuple[bool, optparse.Values | None, list[str]]:
@@ -346,10 +445,12 @@ class GlobalOptionParser(CoverageOptionParser):
     def __init__(self) -> None:
         super().__init__()
 
-        self.add_options([
-            Opts.help,
-            Opts.version,
-        ])
+        self.add_options(
+            [
+                Opts.help,
+                Opts.version,
+            ]
+        )
 
 
 class CmdOptionParser(CoverageOptionParser):
@@ -380,12 +481,12 @@ class CmdOptionParser(CoverageOptionParser):
         self.add_options(options)
         self.cmd = action
 
-    def __eq__(self, other: str) -> bool:       # type: ignore[override]
+    def __eq__(self, other: str) -> bool:  # type: ignore[override]
         # A convenience equality, so that I can put strings in unit test
         # results, and they will compare equal to objects.
-        return (other == f"<CmdOptionParser:{self.cmd}>")
+        return other == f"<CmdOptionParser:{self.cmd}>"
 
-    __hash__ = None         # type: ignore[assignment]
+    __hash__ = None  # type: ignore[assignment]
 
     def get_prog_name(self) -> str:
         """Override of an undocumented function in optparse.OptionParser."""
@@ -393,6 +494,7 @@ class CmdOptionParser(CoverageOptionParser):
 
         # Include the sub-command for this parser as part of the command.
         return f"{program_name} {self.cmd}"
+
 
 # In lists of Opts, keep them alphabetized by the option names as they appear
 # on the command line, since these lists determine the order of the options in
@@ -415,7 +517,8 @@ COMMANDS = {
             Opts.ignore_errors,
             Opts.include,
             Opts.omit,
-            ] + GLOBAL_ARGS,
+        ]
+        + GLOBAL_ARGS,
         usage="[options] [modules]",
         description=oneline(
             """
@@ -424,7 +527,6 @@ COMMANDS = {
             """
         ),
     ),
-
     "combine": CmdOptionParser(
         "combine",
         [
@@ -432,7 +534,8 @@ COMMANDS = {
             Opts.datafile,
             Opts.keep,
             Opts.quiet,
-            ] + GLOBAL_ARGS,
+        ]
+        + GLOBAL_ARGS,
         usage="[options] <path1> <path2> ... <pathN>",
         description=oneline(
             """
@@ -446,7 +549,8 @@ COMMANDS = {
         ),
     ),
     "debug": CmdOptionParser(
-        "debug", GLOBAL_ARGS,
+        "debug",
+        GLOBAL_ARGS,
         usage="<topic>",
         description=oneline(
             """
@@ -461,21 +565,20 @@ COMMANDS = {
             """
         ),
     ),
-
     "erase": CmdOptionParser(
         "erase",
         [
             Opts.datafile,
-            ] + GLOBAL_ARGS,
+        ]
+        + GLOBAL_ARGS,
         description="Erase previously collected coverage data.",
     ),
-
     "help": CmdOptionParser(
-        "help", GLOBAL_ARGS,
+        "help",
+        GLOBAL_ARGS,
         usage="[command]",
         description="Describe how to use coverage.py",
     ),
-
     "html": CmdOptionParser(
         "html",
         [
@@ -493,7 +596,8 @@ COMMANDS = {
             Opts.no_skip_covered,
             Opts.skip_empty,
             Opts.title,
-            ] + GLOBAL_ARGS,
+        ]
+        + GLOBAL_ARGS,
         usage="[options] [modules]",
         description=oneline(
             """
@@ -503,7 +607,6 @@ COMMANDS = {
             """
         ),
     ),
-
     "json": CmdOptionParser(
         "json",
         [
@@ -517,11 +620,11 @@ COMMANDS = {
             Opts.json_pretty_print,
             Opts.quiet,
             Opts.show_contexts,
-            ] + GLOBAL_ARGS,
+        ]
+        + GLOBAL_ARGS,
         usage="[options] [modules]",
         description="Generate a JSON report of coverage results.",
     ),
-
     "lcov": CmdOptionParser(
         "lcov",
         [
@@ -532,11 +635,11 @@ COMMANDS = {
             Opts.output_lcov,
             Opts.omit,
             Opts.quiet,
-            ] + GLOBAL_ARGS,
+        ]
+        + GLOBAL_ARGS,
         usage="[options] [modules]",
         description="Generate an LCOV report of coverage results.",
     ),
-
     "report": CmdOptionParser(
         "report",
         [
@@ -553,11 +656,11 @@ COMMANDS = {
             Opts.skip_covered,
             Opts.no_skip_covered,
             Opts.skip_empty,
-            ] + GLOBAL_ARGS,
+        ]
+        + GLOBAL_ARGS,
         usage="[options] [modules]",
         description="Report coverage statistics on modules.",
     ),
-
     "run": CmdOptionParser(
         "run",
         [
@@ -574,11 +677,11 @@ COMMANDS = {
             Opts.save_signal,
             Opts.source,
             Opts.timid,
-            ] + GLOBAL_ARGS,
+        ]
+        + GLOBAL_ARGS,
         usage="[options] <pyfile> [program options]",
         description="Run a Python program, measuring code execution.",
     ),
-
     "xml": CmdOptionParser(
         "xml",
         [
@@ -590,7 +693,8 @@ COMMANDS = {
             Opts.output_xml,
             Opts.quiet,
             Opts.skip_empty,
-            ] + GLOBAL_ARGS,
+        ]
+        + GLOBAL_ARGS,
         usage="[options] [modules]",
         description="Generate an XML report of coverage results.",
     ),
@@ -618,7 +722,7 @@ def show_help(
         # get back to the original form.
         auto_suffix = "-script.py"
         if program_name.endswith(auto_suffix):
-            program_name = program_name[:-len(auto_suffix)]
+            program_name = program_name[: -len(auto_suffix)]
 
     help_params = dict(coverage.__dict__)
     help_params["__url__"] = __url__
@@ -857,7 +961,7 @@ class CoverageScript:
         return False
 
     def do_signal_save(self, _signum: int, _frame: types.FrameType | None) -> None:
-        """ Signal handler to save coverage report """
+        """Signal handler to save coverage report"""
         print("Saving coverage data...", flush=True)
         self.coverage.save()
 
@@ -891,9 +995,9 @@ class CoverageScript:
                 # they will be None if they have not been specified.
                 if getattr(options, opt_name) is not None:
                     show_help(
-                        "Options affecting multiprocessing must only be specified " +
-                        "in a configuration file.\n" +
-                        f"Remove --{opt_name} from the command line.",
+                        "Options affecting multiprocessing must only be specified "
+                        + "in a configuration file.\n"
+                        + f"Remove --{opt_name} from the command line.",
                     )
                     return ERR
 
@@ -1015,7 +1119,6 @@ HELP_TOPICS = {
         Use '{program_name} help' for help.
         """
     ),
-
     "version": "Coverage.py, version {__version__} {extension_modifier}",
 }
 
@@ -1034,7 +1137,7 @@ def main(argv: list[str] | None = None) -> int | None:
         # An exception was caught while running the product code.  The
         # sys.exc_info() return tuple is packed into an _ExceptionDuringRun
         # exception.
-        traceback.print_exception(*err.args)    # pylint: disable=no-value-for-parameter
+        traceback.print_exception(*err.args)  # pylint: disable=no-value-for-parameter
         status = ERR
     except _BaseCoverageException as err:
         # A controlled error inside coverage.py: print the message to the user.
@@ -1049,16 +1152,18 @@ def main(argv: list[str] | None = None) -> int | None:
             status = None
     return status
 
+
 # Profiling using ox_profile.  Install it from GitHub:
 #   pip install git+https://github.com/emin63/ox_profile.git
 #
 # $set_env.py: COVERAGE_PROFILE - Set to use ox_profile.
 _profile = os.getenv("COVERAGE_PROFILE")
-if _profile:                                                # pragma: debugging
+if _profile:  # pragma: debugging
     from ox_profile.core.launchers import SimpleLauncher  # pylint: disable=import-error
+
     original_main = main
 
-    def main(                                               # pylint: disable=function-redefined
+    def main(  # pylint: disable=function-redefined
         argv: list[str] | None = None,
     ) -> int | None:
         """A wrapper around main that profiles."""

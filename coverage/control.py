@@ -71,6 +71,7 @@ from coverage.xmlreport import XmlReporter
 
 os = isolate_module(os)
 
+
 @contextlib.contextmanager
 def override_config(cov: Coverage, **kwargs: TConfigValueIn) -> Iterator[None]:
     """Temporarily tweak the configuration of `cov`.
@@ -90,6 +91,7 @@ def override_config(cov: Coverage, **kwargs: TConfigValueIn) -> Iterator[None]:
 DEFAULT_DATAFILE = DefaultValue("MISSING")
 _DEFAULT_DATAFILE = DEFAULT_DATAFILE  # Just in case, for backwards compatibility
 CONFIG_DATA_PREFIX = ":data:"
+
 
 class Coverage(TConfigurable):
     """Programmatic access to coverage.py.
@@ -136,7 +138,7 @@ class Coverage(TConfigurable):
         else:
             return None
 
-    def __init__(                       # pylint: disable=too-many-arguments
+    def __init__(  # pylint: disable=too-many-arguments
         self,
         data_file: FilePath | DefaultValue | None = DEFAULT_DATAFILE,
         data_suffix: str | bool | None = None,
@@ -318,7 +320,7 @@ class Coverage(TConfigurable):
 
         # Build our configuration from a number of sources.
         if isinstance(config_file, str) and config_file.startswith(CONFIG_DATA_PREFIX):
-            self.config = deserialize_config(config_file[len(CONFIG_DATA_PREFIX):])
+            self.config = deserialize_config(config_file[len(CONFIG_DATA_PREFIX) :])
         else:
             if not isinstance(config_file, bool):
                 config_file = os.fspath(config_file)
@@ -617,8 +619,7 @@ class Coverage(TConfigurable):
             self._warn(
                 "Plugin file tracers ({}) aren't supported with {}".format(
                     ", ".join(
-                        plugin._coverage_plugin_name
-                            for plugin in self._plugins.file_tracers
+                        plugin._coverage_plugin_name for plugin in self._plugins.file_tracers
                     ),
                     self._collector.tracer_name(),
                 ),
@@ -647,8 +648,9 @@ class Coverage(TConfigurable):
                 # The Python docs seem to imply that SIGTERM works uniformly even
                 # on Windows, but that's not my experience, and this agrees:
                 # https://stackoverflow.com/questions/35772001/x/35792192#35792192
-                self._old_sigterm = signal.signal(      # type: ignore[assignment]
-                    signal.SIGTERM, self._on_sigterm,
+                self._old_sigterm = signal.signal(  # type: ignore[assignment]
+                    signal.SIGTERM,
+                    self._on_sigterm,
                 )
 
     def _init_data(self, suffix: str | bool | None) -> None:
@@ -728,7 +730,7 @@ class Coverage(TConfigurable):
         try:
             yield
         finally:
-            self.stop()     # pragma: nested
+            self.stop()  # pragma: nested
 
     def _atexit(self, event: str = "atexit") -> None:
         """Clean up on process shutdown."""
@@ -746,8 +748,8 @@ class Coverage(TConfigurable):
         self._atexit("sigterm")
         # Statements after here won't be seen by metacov because we just wrote
         # the data, and are about to kill the process.
-        signal.signal(signal.SIGTERM, self._old_sigterm)    # pragma: not covered
-        os.kill(os.getpid(), signal.SIGTERM)                # pragma: not covered
+        signal.signal(signal.SIGTERM, self._old_sigterm)  # pragma: not covered
+        os.kill(os.getpid(), signal.SIGTERM)  # pragma: not covered
 
     def erase(self) -> None:
         """Erase previously collected coverage data.
@@ -779,7 +781,7 @@ class Coverage(TConfigurable):
         .. versionadded:: 5.0
 
         """
-        if not self._started:                           # pragma: part started
+        if not self._started:  # pragma: part started
             raise CoverageException("Cannot switch context, coverage is not started")
 
         assert self._collector is not None
@@ -1029,7 +1031,8 @@ class Coverage(TConfigurable):
                     if file_reporter is None:
                         raise PluginError(
                             "Plugin {!r} did not provide a file reporter for {!r}.".format(
-                                plugin._coverage_plugin_name, morf,
+                                plugin._coverage_plugin_name,
+                                morf,
                             ),
                         )
 
@@ -1059,7 +1062,7 @@ class Coverage(TConfigurable):
 
         # Be sure we have a collection.
         if not isinstance(morfs, (list, tuple, set)):
-            morfs = [morfs]     # type: ignore[list-item]
+            morfs = [morfs]  # type: ignore[list-item]
 
         return [(self._get_file_reporter(morf), morf) for morf in morfs]
 
@@ -1372,7 +1375,8 @@ class Coverage(TConfigurable):
             ("configs_attempted", self.config.config_files_attempted),
             ("configs_read", self.config.config_files_read),
             ("config_file", self.config.config_file),
-            ("config_contents",
+            (
+                "config_contents",
                 repr(self.config._config_contents) if self.config._config_contents else "-none-",
             ),
             ("data_file", self._data.data_filename() if self._data is not None else "-none-"),
@@ -1401,10 +1405,10 @@ class Coverage(TConfigurable):
 
 # Mega debugging...
 # $set_env.py: COVERAGE_DEBUG_CALLS - Lots and lots of output about calls to Coverage.
-if int(os.getenv("COVERAGE_DEBUG_CALLS", 0)):               # pragma: debugging
+if int(os.getenv("COVERAGE_DEBUG_CALLS", 0)):  # pragma: debugging
     from coverage.debug import decorate_methods, show_calls
 
-    Coverage = decorate_methods(        # type: ignore[misc]
+    Coverage = decorate_methods(  # type: ignore[misc]
         show_calls(show_args=True),
         butnot=["get_data"],
     )(Coverage)
@@ -1448,7 +1452,7 @@ def process_startup(*, force: bool = False) -> Coverage | None:
         return None
 
     cov = Coverage(config_file=config_file)
-    process_startup.coverage = cov      # type: ignore[attr-defined]
+    process_startup.coverage = cov  # type: ignore[attr-defined]
     cov._warn_no_data = False
     cov._warn_unimported_source = False
     cov._warn_preimported_source = False

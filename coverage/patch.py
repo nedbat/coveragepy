@@ -107,6 +107,7 @@ def _patch_execv(cov: Coverage, config: CoverageConfig, debug: TDebugCtl) -> Non
 def _patch_fork(debug: TDebugCtl) -> None:
     """Ensure Coverage is properly reset after a fork."""
     from coverage.control import _after_fork_in_child
+
     if env.WINDOWS:
         raise CoverageException("patch=fork isn't supported yet on Windows.")
 
@@ -120,10 +121,12 @@ def _patch_subprocess(config: CoverageConfig, debug: TDebugCtl, make_pth_file: b
 
     if make_pth_file:
         pth_files = create_pth_files(debug)
+
         def delete_pth_files() -> None:
             for p in pth_files:
                 debug.write(f"Deleting subprocess .pth file: {str(p)!r}")
                 p.unlink(missing_ok=True)
+
         atexit.register(delete_pth_files)
     assert config.config_file is not None
     os.environ["COVERAGE_PROCESS_CONFIG"] = config.serialize()
@@ -144,6 +147,7 @@ else:
 """
 
 PTH_TEXT = f"import sys; exec({PTH_CODE!r})\n"
+
 
 def create_pth_files(debug: TDebugCtl = NoDebugging()) -> list[Path]:
     """Create .pth files for measuring subprocesses."""

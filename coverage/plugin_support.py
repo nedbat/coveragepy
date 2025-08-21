@@ -151,7 +151,7 @@ class LabelledDebug:
     def message_prefix(self) -> str:
         """The prefix to use on messages, combining the labels."""
         prefixes = self.labels + [""]
-        return ":\n".join("  "*i+label for i, label in enumerate(prefixes))
+        return ":\n".join("  " * i + label for i, label in enumerate(prefixes))
 
     def write(self, message: str) -> None:
         """Write `message`, but with the labels prepended."""
@@ -227,9 +227,13 @@ class DebugFileTracerWrapper(FileTracer):
 
     def dynamic_source_filename(self, filename: str, frame: FrameType) -> str | None:
         dyn = self.tracer.dynamic_source_filename(filename, frame)
-        self.debug.write("dynamic_source_filename({!r}, {}) --> {!r}".format(
-            filename, self._show_frame(frame), dyn,
-        ))
+        self.debug.write(
+            "dynamic_source_filename({!r}, {}) --> {!r}".format(
+                filename,
+                self._show_frame(frame),
+                dyn,
+            )
+        )
         return dyn
 
     def line_number_range(self, frame: FrameType) -> tuple[TLineNo, TLineNo]:

@@ -40,9 +40,8 @@ def _make_url(
     dev: int = 0,
 ) -> str:
     """Make the URL people should start at for this version of coverage.py."""
-    return (
-        "https://coverage.readthedocs.io/en/"
-        + _make_version(major, minor, micro, releaselevel, serial, dev)
+    return "https://coverage.readthedocs.io/en/" + _make_version(
+        major, minor, micro, releaselevel, serial, dev
     )
 
 

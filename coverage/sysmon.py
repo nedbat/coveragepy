@@ -294,9 +294,7 @@ class SysMonitor(Tracer):
         return self.stats
 
     @panopticon("code", "@")
-    def sysmon_py_start(
-        self, code: CodeType, instruction_offset: TOffset
-    ) -> MonitorReturn:
+    def sysmon_py_start(self, code: CodeType, instruction_offset: TOffset) -> MonitorReturn:
         """Handle sys.monitoring.events.PY_START events."""
         # Entering a new frame.  Decide if we should trace in this file.
         self._activity = True

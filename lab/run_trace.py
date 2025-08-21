@@ -7,6 +7,7 @@ import os, sys
 
 nest = 0
 
+
 def trace(frame, event, arg):
     global nest
 
@@ -15,20 +16,24 @@ def trace(frame, event, arg):
         return None
 
     if the_program in frame.f_code.co_filename:
-        print("%s%s %s %d @%d" % (
-            "    " * nest,
-            event,
-            os.path.basename(frame.f_code.co_filename),
-            frame.f_lineno,
-            frame.f_lasti,
-        ))
+        print(
+            "%s%s %s %d @%d"
+            % (
+                "    " * nest,
+                event,
+                os.path.basename(frame.f_code.co_filename),
+                frame.f_lineno,
+                frame.f_lasti,
+            )
+        )
 
-    if event == 'call':
+    if event == "call":
         nest += 1
-    if event == 'return':
+    if event == "return":
         nest -= 1
 
     return trace
+
 
 print(sys.version)
 the_program = sys.argv[1]

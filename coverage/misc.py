@@ -50,11 +50,13 @@ def isolate_module(mod: ModuleType) -> ModuleType:
             setattr(new_mod, name, value)
     return ISOLATED_MODULES[mod]
 
+
 os = isolate_module(os)
 
 
 class SysModuleSaver:
     """Saves the contents of sys.modules, and removes new modules later."""
+
     def __init__(self) -> None:
         self.old_modules = set(sys.modules)
 
@@ -154,6 +156,7 @@ def ensure_dir_for_file(path: str) -> None:
 
 class Hasher:
     """Hashes Python data for fingerprinting."""
+
     def __init__(self) -> None:
         self.hash = hashlib.new("sha3_256", usedforsecurity=False)
 
@@ -214,6 +217,7 @@ class DefaultValue:
     and Sphinx output.
 
     """
+
     def __init__(self, display_as: str) -> None:
         self.display_as = display_as
 
@@ -257,7 +261,7 @@ def substitute_variables(text: str, variables: Mapping[str, str]) -> str:
     def dollar_replace(match: re.Match[str]) -> str:
         """Called for each $replacement."""
         # Only one of the dollar_groups will have matched, just get its text.
-        word = next(g for g in match.group(*dollar_groups) if g)    # pragma: always breaks
+        word = next(g for g in match.group(*dollar_groups) if g)  # pragma: always breaks
         if word == "$":
             return "$"
         elif word in variables:
@@ -273,8 +277,7 @@ def substitute_variables(text: str, variables: Mapping[str, str]) -> str:
 
 
 def format_local_datetime(dt: datetime.datetime) -> str:
-    """Return a string with local timezone representing the date.
-    """
+    """Return a string with local timezone representing the date."""
     return dt.astimezone().strftime("%Y-%m-%d %H:%M %z")
 
 
@@ -307,6 +310,7 @@ def _human_key(s: str) -> tuple[list[str | int], str]:
     The original string is appended as a last value to ensure the
     key is unique enough so that "x1y" and "x001y" can be distinguished.
     """
+
     def tryint(s: str) -> str | int:
         """If `s` is a number, return an int, else `s` unchanged."""
         try:
@@ -315,6 +319,7 @@ def _human_key(s: str) -> tuple[list[str | int], str]:
             return s
 
     return ([tryint(c) for c in re.split(r"(\d+)", s)], s)
+
 
 def human_sorted(strings: Iterable[str]) -> list[str]:
     """Sort the given iterable of strings the way that humans expect.
@@ -326,7 +331,9 @@ def human_sorted(strings: Iterable[str]) -> list[str]:
     """
     return sorted(strings, key=_human_key)
 
+
 SortableItem = TypeVar("SortableItem", bound=Sequence[Any])
+
 
 def human_sorted_items(
     items: Iterable[SortableItem],

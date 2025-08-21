@@ -36,6 +36,7 @@ class PythonParser:
     involved.
 
     """
+
     def __init__(
         self,
         text: str | None = None,
@@ -54,6 +55,7 @@ class PythonParser:
             self.text: str = text
         else:
             from coverage.python import get_python_source
+
             try:
                 self.text = get_python_source(self.filename)
             except OSError as err:
@@ -146,20 +148,23 @@ class PythonParser:
         assert self.text is not None
         tokgen = generate_tokens(self.text)
         for toktype, ttext, (slineno, _), (elineno, _), ltext in tokgen:
-            if self.show_tokens:                # pragma: debugging
-                print("%10s %5s %-20r %r" % (
-                    tokenize.tok_name.get(toktype, toktype),
-                    nice_pair((slineno, elineno)), ttext, ltext,
-                ))
+            if self.show_tokens:  # pragma: debugging
+                print(
+                    "%10s %5s %-20r %r"
+                    % (
+                        tokenize.tok_name.get(toktype, toktype),
+                        nice_pair((slineno, elineno)),
+                        ttext,
+                        ltext,
+                    )
+                )
             if toktype == token.INDENT:
                 indent += 1
             elif toktype == token.DEDENT:
                 indent -= 1
             elif toktype == token.OP:
                 if ttext == ":" and nesting == 0:
-                    should_exclude = (
-                        self.excluded.intersection(range(first_line, elineno + 1))
-                    )
+                    should_exclude = self.excluded.intersection(range(first_line, elineno + 1))
                     if not excluding and should_exclude:
                         # Start excluding a suite.  We trigger off of the colon
                         # token so that the #pragma comment will be recognized on
@@ -176,7 +181,7 @@ class PythonParser:
                     # We're at the end of a line, and we've ended on a
                     # different line than the first line of the statement,
                     # so record a multi-line range.
-                    for l in range(first_line, elineno+1):
+                    for l in range(first_line, elineno + 1):
                         self._multiline[l] = first_line
                 first_line = 0
 
@@ -260,12 +265,12 @@ class PythonParser:
             self._raw_parse()
         except (tokenize.TokenError, IndentationError, SyntaxError) as err:
             if hasattr(err, "lineno"):
-                lineno = err.lineno         # IndentationError
+                lineno = err.lineno  # IndentationError
             else:
-                lineno = err.args[1][0]     # TokenError
+                lineno = err.args[1][0]  # TokenError
             raise NotPython(
-                f"Couldn't parse '{self.filename}' as Python source: " +
-                f"{err.args[0]!r} at line {lineno}",
+                f"Couldn't parse '{self.filename}' as Python source: "
+                + f"{err.args[0]!r} at line {lineno}",
             ) from err
 
         ignore = self.excluded | self.raw_docstrings
@@ -490,6 +495,7 @@ class ByteParser:
 # AST analysis
 #
 
+
 @dataclass(frozen=True, order=True)
 class ArcStart:
     """The information needed to start an arc.
@@ -520,12 +526,14 @@ class ArcStart:
     "line 1 didn't jump to line 2 because the condition on line 1 was never true."
 
     """
+
     lineno: TLineNo
     cause: str = ""
 
 
 class TAddArcFn(Protocol):
     """The type for AstArcAnalyzer.add_arc()."""
+
     def __call__(
         self,
         start: TLineNo,
@@ -548,6 +556,7 @@ class TAddArcFn(Protocol):
 
 TArcFragments = dict[TArc, list[tuple[Optional[str], Optional[str]]]]
 
+
 class Block:
     """
     Blocks need to handle various exiting statements in their own ways.
@@ -557,6 +566,7 @@ class Block:
     exits are handled, or False if the search should continue up the block
     stack.
     """
+
     # pylint: disable=unused-argument
     def process_break_exits(self, exits: set[ArcStart], add_arc: TAddArcFn) -> bool:
         """Process break exits."""
@@ -577,6 +587,7 @@ class Block:
 
 class LoopBlock(Block):
     """A block on the block stack representing a `for` or `while` loop."""
+
     def __init__(self, start: TLineNo) -> None:
         # The line number where the loop starts.
         self.start = start
@@ -595,6 +606,7 @@ class LoopBlock(Block):
 
 class FunctionBlock(Block):
     """A block on the block stack representing a function definition."""
+
     def __init__(self, start: TLineNo, name: str) -> None:
         # The line number where the function starts.
         self.start = start
@@ -604,7 +616,9 @@ class FunctionBlock(Block):
     def process_raise_exits(self, exits: set[ArcStart], add_arc: TAddArcFn) -> bool:
         for xit in exits:
             add_arc(
-                xit.lineno, -self.start, xit.cause,
+                xit.lineno,
+                -self.start,
+                xit.cause,
                 f"except from function {self.name!r}",
             )
         return True
@@ -612,7 +626,9 @@ class FunctionBlock(Block):
     def process_return_exits(self, exits: set[ArcStart], add_arc: TAddArcFn) -> bool:
         for xit in exits:
             add_arc(
-                xit.lineno, -self.start, xit.cause,
+                xit.lineno,
+                -self.start,
+                xit.cause,
                 f"return from function {self.name!r}",
             )
         return True
@@ -620,6 +636,7 @@ class FunctionBlock(Block):
 
 class TryBlock(Block):
     """A block on the block stack representing a `try` block."""
+
     def __init__(self, handler_start: TLineNo | None, final_start: TLineNo | None) -> None:
         # The line number of the first "except" handler, if any.
         self.handler_start = handler_start
@@ -640,9 +657,11 @@ class NodeList(ast.AST):
     unconditional execution of one of the clauses.
 
     """
+
     def __init__(self, body: Sequence[ast.AST]) -> None:
         self.body = body
-        self.lineno = body[0].lineno    # type: ignore[attr-defined]
+        self.lineno = body[0].lineno  # type: ignore[attr-defined]
+
 
 # TODO: Shouldn't the cause messages join with "and" instead of "or"?
 
@@ -708,7 +727,7 @@ class AstArcAnalyzer:
         # $set_env.py: COVERAGE_AST_DUMP - Dump the AST nodes when parsing code.
         dump_ast = bool(int(os.getenv("COVERAGE_AST_DUMP", "0")))
 
-        if dump_ast:                                # pragma: debugging
+        if dump_ast:  # pragma: debugging
             # Dump the AST so that failing tests have helpful output.
             print(f"Statements: {self.statements}")
             print(f"Multiline map: {self.multiline}")
@@ -802,7 +821,7 @@ class AstArcAnalyzer:
         action_msg: str | None = None,
     ) -> None:
         """Add an arc, including message fragments to use if it is missing."""
-        if self.debug:                      # pragma: debugging
+        if self.debug:  # pragma: debugging
             print(f"Adding possible arc: ({start}, {end}): {missing_cause_msg!r}, {action_msg!r}")
             print(short_stack(), end="\n\n")
         self.arcs.add((start, end))
@@ -830,7 +849,7 @@ class AstArcAnalyzer:
         if handler is not None:
             line = handler(node)
         else:
-            line = node.lineno      # type: ignore[attr-defined]
+            line = node.lineno  # type: ignore[attr-defined]
         return self.multiline.get(line, line)
 
     # First lines: _line__*
@@ -882,8 +901,17 @@ class AstArcAnalyzer:
 
     # The node types that just flow to the next node with no complications.
     OK_TO_DEFAULT = {
-        "AnnAssign", "Assign", "Assert", "AugAssign", "Delete", "Expr", "Global",
-        "Import", "ImportFrom", "Nonlocal", "Pass",
+        "AnnAssign",
+        "Assign",
+        "Assert",
+        "AugAssign",
+        "Delete",
+        "Expr",
+        "Global",
+        "Import",
+        "ImportFrom",
+        "Nonlocal",
+        "Pass",
     }
 
     def node_exits(self, node: ast.AST) -> set[ArcStart]:
@@ -915,7 +943,7 @@ class AstArcAnalyzer:
             # statement), or it's something we overlooked.
             if env.TESTING:
                 if node_name not in self.OK_TO_DEFAULT:
-                    raise RuntimeError(f"*** Unhandled: {node}")        # pragma: only failure
+                    raise RuntimeError(f"*** Unhandled: {node}")  # pragma: only failure
 
             # Default for simple statements: one exit from this node.
             arc_starts = {ArcStart(self.line_for_node(node))}
@@ -1029,10 +1057,10 @@ class AstArcAnalyzer:
         if not body_nodes:
             return None
         # Make a synthetic While-true node.
-        new_while = ast.While()                     # type: ignore[call-arg]
-        new_while.lineno = body_nodes.lineno        # type: ignore[attr-defined]
-        new_while.test = ast.Name()                 # type: ignore[call-arg]
-        new_while.test.lineno = body_nodes.lineno   # type: ignore[attr-defined]
+        new_while = ast.While()  # type: ignore[call-arg]
+        new_while.lineno = body_nodes.lineno  # type: ignore[attr-defined]
+        new_while.test = ast.Name()  # type: ignore[call-arg]
+        new_while.test.lineno = body_nodes.lineno  # type: ignore[attr-defined]
         new_while.test.id = "True"
         assert hasattr(body_nodes, "body")
         new_while.body = body_nodes.body
@@ -1056,13 +1084,13 @@ class AstArcAnalyzer:
 
     def process_break_exits(self, exits: set[ArcStart]) -> None:
         """Add arcs due to jumps from `exits` being breaks."""
-        for block in self.nearest_blocks():                         # pragma: always breaks
+        for block in self.nearest_blocks():  # pragma: always breaks
             if block.process_break_exits(exits, self.add_arc):
                 break
 
     def process_continue_exits(self, exits: set[ArcStart]) -> None:
         """Add arcs due to jumps from `exits` being continues."""
-        for block in self.nearest_blocks():                         # pragma: always breaks
+        for block in self.nearest_blocks():  # pragma: always breaks
             if block.process_continue_exits(exits, self.add_arc):
                 break
 
@@ -1074,7 +1102,7 @@ class AstArcAnalyzer:
 
     def process_return_exits(self, exits: set[ArcStart]) -> None:
         """Add arcs due to jumps from `exits` being returns."""
-        for block in self.nearest_blocks():                         # pragma: always breaks
+        for block in self.nearest_blocks():  # pragma: always breaks
             if block.process_return_exits(exits, self.add_arc):
                 break
 
@@ -1165,6 +1193,7 @@ class AstArcAnalyzer:
         return exits
 
     if sys.version_info >= (3, 10):
+
         def _handle__Match(self, node: ast.Match) -> set[ArcStart]:
             start = self.line_for_node(node)
             last_start = start
@@ -1180,15 +1209,13 @@ class AstArcAnalyzer:
                 last_start = case_start
 
             # case is now the last case, check for wildcard match.
-            pattern = case.pattern      # pylint: disable=undefined-loop-variable
+            pattern = case.pattern  # pylint: disable=undefined-loop-variable
             while isinstance(pattern, ast.MatchOr):
                 pattern = pattern.patterns[-1]
             while isinstance(pattern, ast.MatchAs) and pattern.pattern is not None:
                 pattern = pattern.pattern
             had_wildcard = (
-                isinstance(pattern, ast.MatchAs)
-                and pattern.pattern is None
-                and case.guard is None  # pylint: disable=undefined-loop-variable
+                isinstance(pattern, ast.MatchAs) and pattern.pattern is None and case.guard is None  # pylint: disable=undefined-loop-variable
             )
 
             if not had_wildcard:

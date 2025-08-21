@@ -49,16 +49,16 @@ class HasherTest(CoverageTest):
 
     def test_dict_hashing(self) -> None:
         h1 = Hasher()
-        h1.update({'a': 17, 'b': 23})
+        h1.update({"a": 17, "b": 23})
         h2 = Hasher()
-        h2.update({'b': 23, 'a': 17})
+        h2.update({"b": 23, "a": 17})
         assert h1.hexdigest() == h2.hexdigest()
 
     def test_dict_collision(self) -> None:
         h1 = Hasher()
-        h1.update({'a': 17, 'b': {'c': 1, 'd': 2}})
+        h1.update({"a": 17, "b": {"c": 1, "d": 2}})
         h2 = Hasher()
-        h2.update({'a': 17, 'b': {'c': 1}, 'd': 2})
+        h2.update({"a": 17, "b": {"c": 1}, "d": 2})
         assert h1.hexdigest() != h2.hexdigest()
 
 
@@ -83,28 +83,36 @@ class RemoveFileTest(CoverageTest):
 
 
 VARS = {
-    'FOO': 'fooey',
-    'BAR': 'xyzzy',
+    "FOO": "fooey",
+    "BAR": "xyzzy",
 }
 
-@pytest.mark.parametrize("before, after", [
-    ("Nothing to do", "Nothing to do"),
-    ("Dollar: $$", "Dollar: $"),
-    ("Simple: $FOO is fooey", "Simple: fooey is fooey"),
-    ("Braced: X${FOO}X.", "Braced: XfooeyX."),
-    ("Missing: x${NOTHING}y is xy", "Missing: xy is xy"),
-    ("Multiple: $$ $FOO $BAR ${FOO}", "Multiple: $ fooey xyzzy fooey"),
-    ("Ill-formed: ${%5} ${{HI}} ${", "Ill-formed: ${%5} ${{HI}} ${"),
-    ("Strict: ${FOO?} is there", "Strict: fooey is there"),
-    ("Defaulted: ${WUT-missing}!", "Defaulted: missing!"),
-    ("Defaulted empty: ${WUT-}!", "Defaulted empty: !"),
-])
+
+@pytest.mark.parametrize(
+    "before, after",
+    [
+        ("Nothing to do", "Nothing to do"),
+        ("Dollar: $$", "Dollar: $"),
+        ("Simple: $FOO is fooey", "Simple: fooey is fooey"),
+        ("Braced: X${FOO}X.", "Braced: XfooeyX."),
+        ("Missing: x${NOTHING}y is xy", "Missing: xy is xy"),
+        ("Multiple: $$ $FOO $BAR ${FOO}", "Multiple: $ fooey xyzzy fooey"),
+        ("Ill-formed: ${%5} ${{HI}} ${", "Ill-formed: ${%5} ${{HI}} ${"),
+        ("Strict: ${FOO?} is there", "Strict: fooey is there"),
+        ("Defaulted: ${WUT-missing}!", "Defaulted: missing!"),
+        ("Defaulted empty: ${WUT-}!", "Defaulted empty: !"),
+    ],
+)
 def test_substitute_variables(before: str, after: str) -> None:
     assert substitute_variables(before, VARS) == after
 
-@pytest.mark.parametrize("text", [
-    "Strict: ${NOTHING?} is an error",
-])
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "Strict: ${NOTHING?} is an error",
+    ],
+)
 def test_substitute_variables_errors(text: str) -> None:
     with pytest.raises(CoverageException) as exc_info:
         substitute_variables(text, VARS)
@@ -142,9 +150,11 @@ HUMAN_DATA = [
     ("4.0 3.10-win 3.10-mac 3.9-mac 3.9-win", "3.9-mac 3.9-win 3.10-mac 3.10-win 4.0"),
 ]
 
+
 @pytest.mark.parametrize("words, ordered", HUMAN_DATA)
 def test_human_sorted(words: str, ordered: str) -> None:
     assert " ".join(human_sorted(words.split())) == ordered
+
 
 @pytest.mark.parametrize("words, ordered", HUMAN_DATA)
 def test_human_sorted_items(words: str, ordered: str) -> None:
@@ -159,7 +169,7 @@ def test_human_sorted_items(words: str, ordered: str) -> None:
 
 
 def test_stdout_link_tty() -> None:
-    with mock.patch.object(sys.stdout, "isatty", lambda:True):
+    with mock.patch.object(sys.stdout, "isatty", lambda: True):
         link = stdout_link("some text", "some url")
     assert link == "\033]8;;some url\asome text\033]8;;\a"
 

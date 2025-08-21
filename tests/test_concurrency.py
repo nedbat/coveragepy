@@ -57,9 +57,9 @@ def measurable_line(l: str) -> bool:
     l = l.strip()
     if not l:
         return False
-    if l.startswith('#'):
+    if l.startswith("#"):
         return False
-    if l.startswith('else:'):
+    if l.startswith("else:"):
         return False
     return True
 
@@ -248,7 +248,7 @@ class ConcurrencyTest(CoverageTest):
             print_simple_annotation(code, linenos)
 
             lines = line_count(code)
-            assert line_counts(data)['try_it.py'] == lines
+            assert line_counts(data)["try_it.py"] == lines
 
     def test_threads(self) -> None:
         code = (THREAD + SUM_RANGE_Q + PRINT_SUM_RANGE).format(QLIMIT=self.QLIMIT)
@@ -319,7 +319,9 @@ class ConcurrencyTest(CoverageTest):
     # Sometimes a test fails due to inherent randomness. Try more times.
     @pytest.mark.flaky(max_runs=3)
     def test_threads_with_gevent(self) -> None:
-        self.make_file("both.py", """\
+        self.make_file(
+            "both.py",
+            """\
             import queue
             import threading
 
@@ -340,12 +342,11 @@ class ConcurrencyTest(CoverageTest):
 
             answer = q.get()
             assert answer == 1
-            """)
+            """,
+        )
         _, out = self.run_command_status("coverage run --concurrency=thread,gevent both.py")
         if gevent is None:
-            assert out == (
-                "Couldn't trace with concurrency=gevent, the module isn't installed.\n"
-            )
+            assert out == ("Couldn't trace with concurrency=gevent, the module isn't installed.\n")
             pytest.skip("Can't run test without gevent installed.")
         if not testenv.C_TRACER:
             assert out == (
@@ -388,7 +389,7 @@ class WithoutConcurrencyModuleTest(CoverageTest):
     @pytest.mark.parametrize("module", ["eventlet", "gevent", "greenlet"])
     def test_missing_module(self, module: str) -> None:
         self.make_file("prog.py", "a = 1")
-        sys.modules[module] = None      # type: ignore[assignment]
+        sys.modules[module] = None  # type: ignore[assignment]
         msg = f"Couldn't trace with concurrency={module}, the module isn't installed."
         with pytest.raises(ConfigError, match=msg):
             self.command_line(f"run --concurrency={module} prog.py")
@@ -452,7 +453,7 @@ def start_method_fixture(request: pytest.FixtureRequest) -> str:
 
 
 # Sometimes a test fails due to inherent randomness. Try more times.
-#@pytest.mark.flaky(max_runs=30)
+# @pytest.mark.flaky(max_runs=30)
 class MultiprocessingTest(CoverageTest):
     """Test support of the multiprocessing module."""
 
@@ -468,11 +469,14 @@ class MultiprocessingTest(CoverageTest):
     ) -> None:
         """Run code using multiprocessing, it should produce `expected_out`."""
         self.make_file("multi.py", code)
-        self.make_file(".coveragerc", f"""\
+        self.make_file(
+            ".coveragerc",
+            f"""\
             [run]
             concurrency = {concurrency}
             source = .
-            """)
+            """,
+        )
 
         cmd = f"coverage run {args} multi.py {start_method}"
         _, out = self.run_command_status(cmd)
@@ -506,7 +510,7 @@ class MultiprocessingTest(CoverageTest):
         nprocs = 3
         upto = 30
         code = (SQUARE_OR_CUBE_WORK + MULTI_CODE).format(NPROCS=nprocs, UPTO=upto)
-        total = sum(x*x if x%2 else x*x*x for x in range(upto))
+        total = sum(x * x if x % 2 else x * x * x for x in range(upto))
         expected_out = f"{nprocs} pids, {total = }"
         self.try_multiprocessing_code(
             code,
@@ -520,7 +524,7 @@ class MultiprocessingTest(CoverageTest):
         nprocs = 3
         upto = 30
         code = (SQUARE_OR_CUBE_WORK + MULTI_CODE).format(NPROCS=nprocs, UPTO=upto)
-        total = sum(x*x if x%2 else x*x*x for x in range(upto))
+        total = sum(x * x if x % 2 else x * x * x for x in range(upto))
         expected_out = f"{nprocs} pids, total = {total}"
         self.try_multiprocessing_code(
             code,
@@ -534,9 +538,9 @@ class MultiprocessingTest(CoverageTest):
     def test_multiprocessing_and_gevent(self, start_method: str) -> None:
         nprocs = 3
         upto = 30
-        code = (
-            SUM_RANGE_WORK + EVENTLET + SUM_RANGE_Q + MULTI_CODE
-        ).format(NPROCS=nprocs, UPTO=upto)
+        code = (SUM_RANGE_WORK + EVENTLET + SUM_RANGE_Q + MULTI_CODE).format(
+            NPROCS=nprocs, UPTO=upto
+        )
         total = sum(sum(range((x + 1) * 100)) for x in range(upto))
         expected_out = f"{nprocs} pids, total = {total}"
         self.try_multiprocessing_code(
@@ -552,26 +556,27 @@ class MultiprocessingTest(CoverageTest):
         nprocs = 3
         upto = 30
         code = (SQUARE_OR_CUBE_WORK + MULTI_CODE).format(NPROCS=nprocs, UPTO=upto)
-        total = sum(x*x if x%2 else x*x*x for x in range(upto))
+        total = sum(x * x if x % 2 else x * x * x for x in range(upto))
         expected_out = f"{nprocs} pids, total = {total}"
         expect_warn = (
-            env.PYBEHAVIOR.pep669
-            and (not env.PYBEHAVIOR.branch_right_left)
-            and testenv.SYS_MON
+            env.PYBEHAVIOR.pep669 and (not env.PYBEHAVIOR.branch_right_left) and testenv.SYS_MON
         )
         self.make_file("multi.py", code)
-        self.make_file("multi.rc", """\
+        self.make_file(
+            "multi.rc",
+            """\
             [run]
             concurrency = multiprocessing
             branch = True
             omit = */site-packages/*
-            """ + ("disable_warnings = no-sysmon" if expect_warn else "")
-            )
+            """
+            + ("disable_warnings = no-sysmon" if expect_warn else ""),
+        )
 
         out = self.run_command(f"coverage run --rcfile=multi.rc multi.py {start_method}")
         assert out.rstrip() == expected_out
 
-        out = self.run_command("coverage combine -q")   # sneak in a test of -q
+        out = self.run_command("coverage combine -q")  # sneak in a test of -q
         assert out == ""
         out = self.run_command("coverage report -m")
 
@@ -580,17 +585,23 @@ class MultiprocessingTest(CoverageTest):
 
     def test_multiprocessing_bootstrap_error_handling(self) -> None:
         # An exception during bootstrapping will be reported.
-        self.make_file("multi.py", """\
+        self.make_file(
+            "multi.py",
+            """\
             import multiprocessing
             if __name__ == "__main__":
                 with multiprocessing.Manager():
                     pass
-            """)
-        self.make_file(".coveragerc", """\
+            """,
+        )
+        self.make_file(
+            ".coveragerc",
+            """\
             [run]
             concurrency = multiprocessing
             _crash = _bootstrap
-            """)
+            """,
+        )
         out = self.run_command("coverage run multi.py", status=1)
         assert "Exception during multiprocessing bootstrap init" in out
         assert "RuntimeError: Crashing because called by _bootstrap" in out
@@ -598,7 +609,9 @@ class MultiprocessingTest(CoverageTest):
     def test_bug_890(self) -> None:
         # chdir in multiprocessing shouldn't keep us from finding the
         # .coveragerc file.
-        self.make_file("multi.py", """\
+        self.make_file(
+            "multi.py",
+            """\
             import multiprocessing, os, os.path
             if __name__ == "__main__":
                 if not os.path.exists("./tmp"): os.mkdir("./tmp")
@@ -606,11 +619,15 @@ class MultiprocessingTest(CoverageTest):
                 with multiprocessing.Manager():
                     pass
                 print("ok")
-            """)
-        self.make_file(".coveragerc", """\
+            """,
+        )
+        self.make_file(
+            ".coveragerc",
+            """\
             [run]
             concurrency = multiprocessing
-            """)
+            """,
+        )
         out = self.run_command("coverage run multi.py")
         assert out.splitlines()[-1] == "ok"
 
@@ -620,7 +637,7 @@ def test_coverage_stop_in_threads() -> None:
     has_started_coverage = []
     has_stopped_coverage = []
 
-    def run_thread() -> None:           # pragma: nested
+    def run_thread() -> None:  # pragma: nested
         """Check that coverage is stopping properly in threads."""
         deadline = time.time() + 5
         ident = threading.current_thread().ident
@@ -666,7 +683,7 @@ def test_thread_safe_save_data(tmp_path: pathlib.Path) -> None:
         for module_name in module_names:
             import_local_file(module_name)
 
-        def random_load() -> None:                      # pragma: nested
+        def random_load() -> None:  # pragma: nested
             """Import modules randomly to stress coverage."""
             while should_run[0]:
                 module_name = random.choice(module_names)
@@ -696,7 +713,7 @@ def test_thread_safe_save_data(tmp_path: pathlib.Path) -> None:
             for t in threads:
                 t.join()
 
-            if (not imported) and duration < 10:    # pragma: only failure
+            if (not imported) and duration < 10:  # pragma: only failure
                 duration *= 2
 
     finally:
@@ -712,7 +729,9 @@ class SigtermTest(CoverageTest):
     @pytest.mark.parametrize("sigterm", [False, True])
     def test_sigterm_multiprocessing_saves_data(self, sigterm: bool) -> None:
         # A terminated process should save its coverage data.
-        self.make_file("clobbered.py", """\
+        self.make_file(
+            "clobbered.py",
+            """\
             import multiprocessing
             import time
 
@@ -733,13 +752,17 @@ class SigtermTest(CoverageTest):
                     time.sleep(.05)
                 proc.terminate()
                 print("END", flush=True)
-            """)
-        self.make_file(".coveragerc", """\
+            """,
+        )
+        self.make_file(
+            ".coveragerc",
+            """\
             [run]
             parallel = True
             concurrency = multiprocessing
-            """ + ("sigterm = true" if sigterm else ""),
-            )
+            """
+            + ("sigterm = true" if sigterm else ""),
+        )
         out = self.run_command("coverage run clobbered.py")
         # Under Linux, things go wrong. Does that matter?
         if env.LINUX and "assert self._collectors" in out:
@@ -756,20 +779,26 @@ class SigtermTest(CoverageTest):
 
     def test_sigterm_threading_saves_data(self) -> None:
         # A terminated process should save its coverage data.
-        self.make_file("handler.py", """\
+        self.make_file(
+            "handler.py",
+            """\
             import os, signal
 
             print("START", flush=True)
             print("SIGTERM", flush=True)
             os.kill(os.getpid(), signal.SIGTERM)
             print("NOT HERE", flush=True)
-            """)
-        self.make_file(".coveragerc", """\
+            """,
+        )
+        self.make_file(
+            ".coveragerc",
+            """\
             [run]
             # The default concurrency option.
             concurrency = thread
             sigterm = true
-            """)
+            """,
+        )
         status, out = self.run_command_status("coverage run handler.py")
         assert status != 0
         out_lines = out.splitlines()
@@ -783,7 +812,9 @@ class SigtermTest(CoverageTest):
 
     def test_sigterm_still_runs(self) -> None:
         # A terminated process still runs its own SIGTERM handler.
-        self.make_file("handler.py", """\
+        self.make_file(
+            "handler.py",
+            """\
             import multiprocessing
             import signal
             import time
@@ -808,12 +839,16 @@ class SigtermTest(CoverageTest):
                 while x.value != 0:
                     time.sleep(.02)
                 proc.terminate()
-            """)
-        self.make_file(".coveragerc", """\
+            """,
+        )
+        self.make_file(
+            ".coveragerc",
+            """\
             [run]
             parallel = True
             concurrency = multiprocessing
             sigterm = True
-            """)
+            """,
+        )
         out = self.run_command("coverage run handler.py")
         assert out == "START\nSIGTERM\nEND\n"

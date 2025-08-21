@@ -12,6 +12,7 @@ Functions for use with cog in the documentation.
 
 # pylint: disable=wrong-import-position
 import os
+
 os.environ["COLUMNS"] = "80"
 
 import contextlib
@@ -19,7 +20,7 @@ import io
 import re
 import textwrap
 
-import cog              # pylint: disable=import-error
+import cog  # pylint: disable=import-error
 
 from coverage.cmdline import CoverageScript
 from coverage.config import read_coverage_config
