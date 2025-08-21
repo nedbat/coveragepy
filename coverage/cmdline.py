@@ -32,6 +32,12 @@ from coverage.version import __url__
 # When adding to this file, alphabetization is important.  Look for
 # "alphabetize" comments throughout.
 
+
+def oneline(text: str) -> str:
+    """Turn a multi-line string into one line for help to reformat nicely."""
+    return " ".join(text.split())
+
+
 class Opts:
     """A namespace class for individual options we'll build parsers from."""
 
@@ -48,9 +54,11 @@ class Opts:
     )
     concurrency = optparse.make_option(
         "", "--concurrency", action="store", metavar="LIBS",
-        help=(
-            "Properly measure code using a concurrency library. " +
-            "Valid values are: {}, or a comma-list of them."
+        help=oneline(
+            """
+            Properly measure code using a concurrency library.
+            Valid values are: {}, or a comma-list of them.
+            """
         ).format(", ".join(sorted(CoverageConfig.CONCURRENCY_CHOICES))),
     )
     context = optparse.make_option(
@@ -59,30 +67,38 @@ class Opts:
     )
     contexts = optparse.make_option(
         "", "--contexts", action="store", metavar="REGEX1,REGEX2,...",
-        help=(
-            "Only display data from lines covered in the given contexts. " +
-            "Accepts Python regexes, which must be quoted."
+        help=oneline(
+            """
+            Only display data from lines covered in the given contexts.
+            Accepts Python regexes, which must be quoted.
+            """
         ),
     )
     datafile = optparse.make_option(
         "", "--data-file", action="store", metavar="DATAFILE",
-        help=(
-            "Base name of the data files to operate on. " +
-            "Defaults to '.coverage'. [env: COVERAGE_FILE]"
+        help=oneline(
+            """
+            Base name of the data files to operate on.
+            Defaults to '.coverage'. [env: COVERAGE_FILE]
+            """
         ),
     )
     datafle_input = optparse.make_option(
         "", "--data-file", action="store", metavar="INFILE",
-        help=(
-            "Read coverage data for report generation from this file. " +
-            "Defaults to '.coverage'. [env: COVERAGE_FILE]"
+        help=oneline(
+            """
+            Read coverage data for report generation from this file.
+            Defaults to '.coverage'. [env: COVERAGE_FILE]
+            """
         ),
     )
     datafile_output = optparse.make_option(
         "", "--data-file", action="store", metavar="OUTFILE",
-        help=(
-            "Write the recorded coverage data to this file. " +
-            "Defaults to '.coverage'. [env: COVERAGE_FILE]"
+        help=oneline(
+            """
+            Write the recorded coverage data to this file.
+            Defaults to '.coverage'. [env: COVERAGE_FILE]
+            """
         ),
     )
     debug = optparse.make_option(
@@ -111,9 +127,11 @@ class Opts:
     )
     include = optparse.make_option(
         "", "--include", action="store", metavar="PAT1,PAT2,...",
-        help=(
-            "Include only files whose paths match one of these patterns. " +
-            "Accepts shell-style wildcards, which must be quoted."
+        help=oneline(
+            """
+            Include only files whose paths match one of these patterns.
+            Accepts shell-style wildcards, which must be quoted.
+            """
         ),
     )
     keep = optparse.make_option(
@@ -122,9 +140,11 @@ class Opts:
     )
     pylib = optparse.make_option(
         "-L", "--pylib", action="store_true",
-        help=(
-            "Measure coverage even inside the Python installed library, " +
-            "which isn't done by default."
+        help=oneline(
+            """
+            Measure coverage even inside the Python installed library,
+            which isn't done by default.
+            """
         ),
     )
     show_missing = optparse.make_option(
@@ -133,16 +153,20 @@ class Opts:
     )
     module = optparse.make_option(
         "-m", "--module", action="store_true",
-        help=(
-            "<pyfile> is an importable Python module, not a script path, " +
-            "to be run as 'python -m' would run it."
+        help=oneline(
+            """
+            <pyfile> is an importable Python module, not a script path,
+            to be run as 'python -m' would run it.
+            """
         ),
     )
     omit = optparse.make_option(
         "", "--omit", action="store", metavar="PAT1,PAT2,...",
-        help=(
-            "Omit files whose paths match one of these patterns. " +
-            "Accepts shell-style wildcards, which must be quoted."
+        help=oneline(
+            """
+            Omit files whose paths match one of these patterns.
+            Accepts shell-style wildcards, which must be quoted.
+            """
         ),
     )
     output_xml = optparse.make_option(
@@ -163,16 +187,20 @@ class Opts:
     )
     parallel_mode = optparse.make_option(
         "-p", "--parallel-mode", action="store_true",
-        help=(
-            "Append a unique suffix to the data file name to collect separate " +
-            "data from multiple processes."
+        help=oneline(
+            """
+            Append a unique suffix to the data file name to collect separate
+            data from multiple processes.
+            """
         ),
     )
     precision = optparse.make_option(
         "", "--precision", action="store", metavar="N", type=int,
-        help=(
-            "Number of digits after the decimal point to display for " +
-            "reported coverage percentages."
+        help=oneline(
+            """
+            Number of digits after the decimal point to display for
+            reported coverage percentages.
+            """
         ),
     )
     quiet = optparse.make_option(
@@ -181,18 +209,22 @@ class Opts:
     )
     rcfile = optparse.make_option(
         "", "--rcfile", action="store",
-        help=(
-            "Specify configuration file. " +
-            "By default '.coveragerc', 'setup.cfg', 'tox.ini', and " +
-            "'pyproject.toml' are tried. [env: COVERAGE_RCFILE]"
+        help=oneline(
+            """
+            Specify configuration file.
+            By default '.coveragerc', 'setup.cfg', 'tox.ini', and
+            'pyproject.toml' are tried. [env: COVERAGE_RCFILE]
+            """
         ),
     )
     save_signal = optparse.make_option(
         "", "--save-signal", action="store", metavar="SIGNAL",
         choices = ["USR1", "USR2"],
-        help=(
-            "Specify a signal that will trigger coverage to write its collected data. " +
-            "Supported values are: USR1, USR2. Not available on Windows."
+        help=oneline(
+            """
+            Specify a signal that will trigger coverage to write its collected data.
+            Supported values are: USR1, USR2. Not available on Windows.
+            """
         ),
     )
     show_contexts = optparse.make_option(
@@ -213,9 +245,11 @@ class Opts:
     )
     sort = optparse.make_option(
         "--sort", action="store", metavar="COLUMN",
-        help=(
-            "Sort the report by the named column: name, stmts, miss, branch, brpart, or cover. " +
-             "Default is name."
+        help=oneline(
+            """
+            Sort the report by the named column: name, stmts, miss, branch, brpart, or cover.
+            Default is name.
+            """
         ),
     )
     source = optparse.make_option(
@@ -383,9 +417,11 @@ COMMANDS = {
             Opts.omit,
             ] + GLOBAL_ARGS,
         usage="[options] [modules]",
-        description=(
-            "Make annotated copies of the given files, marking statements that are executed " +
-            "with > and statements that are missed with !."
+        description=oneline(
+            """
+            Make annotated copies of the given files, marking statements that are executed
+            with > and statements that are missed with !.
+            """
         ),
     ),
 
@@ -398,28 +434,31 @@ COMMANDS = {
             Opts.quiet,
             ] + GLOBAL_ARGS,
         usage="[options] <path1> <path2> ... <pathN>",
-        description=(
-            "Combine data from multiple coverage files. " +
-            "The combined results are written to a single " +
-            "file representing the union of the data. The positional " +
-            "arguments are data files or directories containing data files. " +
-            "If no paths are provided, data files in the default data file's " +
-            "directory are combined."
+        description=oneline(
+            """
+            Combine data from multiple coverage files.
+            The combined results are written to a single
+            file representing the union of the data. The positional
+            arguments are data files or directories containing data files.
+            If no paths are provided, data files in the default data file's
+            directory are combined.
+            """
         ),
     ),
-
     "debug": CmdOptionParser(
         "debug", GLOBAL_ARGS,
         usage="<topic>",
-        description=(
-            "Display information about the internals of coverage.py, " +
-            "for diagnosing problems. " +
-            "Topics are: " +
-                "'data' to show a summary of the collected data; " +
-                "'sys' to show installation information; " +
-                "'config' to show the configuration; " +
-                "'premain' to show what is calling coverage; " +
-                "'pybehave' to show internal flags describing Python behavior."
+        description=oneline(
+            """
+            Display information about the internals of coverage.py,
+            for diagnosing problems.
+            Topics are:
+                'data' to show a summary of the collected data;
+                'sys' to show installation information;
+                'config' to show the configuration;
+                'premain' to show what is calling coverage;
+                'pybehave' to show internal flags describing Python behavior.
+            """
         ),
     ),
 
@@ -456,10 +495,12 @@ COMMANDS = {
             Opts.title,
             ] + GLOBAL_ARGS,
         usage="[options] [modules]",
-        description=(
-            "Create an HTML report of the coverage of the files.  " +
-            "Each file gets its own page, with the source decorated to show " +
-            "executed, excluded, and missed lines."
+        description=oneline(
+            """
+            Create an HTML report of the coverage of the files.
+            Each file gets its own page, with the source decorated to show
+            executed, excluded, and missed lines.
+            """
         ),
     ),
 
@@ -968,10 +1009,11 @@ HELP_TOPICS = {
 
         Use "{program_name} help <command>" for detailed help on any command.
     """,
-
-    "minimum_help": (
-        "Code coverage for Python, version {__version__} {extension_modifier}.  " +
-        "Use '{program_name} help' for help."
+    "minimum_help": oneline(
+        """
+        Code coverage for Python, version {__version__} {extension_modifier}.
+        Use '{program_name} help' for help.
+        """
     ),
 
     "version": "Coverage.py, version {__version__} {extension_modifier}",
