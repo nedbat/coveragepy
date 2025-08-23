@@ -114,7 +114,7 @@ KITBIN = .tox/$(KITVER)/bin
 $(KITBIN):
 	tox -q -e $(KITVER) --notest
 
-PIP_COMPILE = uv pip compile -q ${COMPILE_OPTS}
+PIP_COMPILE = uv pip compile -q --universal ${COMPILE_OPTS}
 upgrade: 				## Update the *.pip files with the latest packages satisfying *.in files.
 	$(MAKE) _upgrade COMPILE_OPTS="--upgrade"
 
