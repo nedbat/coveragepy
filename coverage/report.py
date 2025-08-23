@@ -10,7 +10,7 @@ from collections.abc import Iterable
 from typing import IO, TYPE_CHECKING, Any
 
 from coverage.exceptions import ConfigError, NoDataError
-from coverage.misc import human_sorted_items
+from coverage.misc import human_sorted_items, plural
 from coverage.plugin import FileReporter
 from coverage.report_core import get_analysis_to_report
 from coverage.results import Analysis, Numbers
@@ -31,7 +31,7 @@ class SummaryReporter:
         self.output_format = self.config.format or "text"
         if self.output_format not in {"text", "markdown", "total"}:
             raise ConfigError(f"Unknown report format choice: {self.output_format!r}")
-        self.fr_analysis: list[tuple[FileReporter, Analysis]] = []
+        self.fr_analyses: list[tuple[FileReporter, Analysis]] = []
         self.skipped_count = 0
         self.empty_count = 0
         self.total = Numbers(precision=self.config.precision)
@@ -46,7 +46,7 @@ class SummaryReporter:
         """Write a list of strings, joined together."""
         self.write("".join(items))
 
-    def _report_text(
+    def report_text(
         self,
         header: list[str],
         lines_values: list[list[Any]],
@@ -82,29 +82,36 @@ class SummaryReporter:
         self.write(header_str)
         self.write(rule)
 
-        formats.update(dict(Cover="{:>{n}}%"), Missing="   {:9}")
+        # Write the data lines
+        formats.update(
+            dict(
+                Cover="{:>{n}}%",
+                Missing="   {:9}",
+            )
+        )
         for values in lines_values:
-            # build string with line values
-            line_items = [
-                formats[item].format(str(value), name_len=max_name, n=max_n - 1)
-                for item, value in zip(header, values)
-            ]
-            self.write_items(line_items)
+            self.write_items(
+                (
+                    formats[item].format(str(value), name_len=max_name, n=max_n - 1)
+                    for item, value in zip(header, values)
+                )
+            )
 
         # Write a TOTAL line
         if lines_values:
             self.write(rule)
 
-        line_items = [
-            formats[item].format(str(value), name_len=max_name, n=max_n - 1)
-            for item, value in zip(header, total_line)
-        ]
-        self.write_items(line_items)
+        self.write_items(
+            (
+                formats[item].format(str(value), name_len=max_name, n=max_n - 1)
+                for item, value in zip(header, total_line)
+            )
+        )
 
         for end_line in end_lines:
             self.write(end_line)
 
-    def _report_markdown(
+    def report_markdown(
         self,
         header: list[str],
         lines_values: list[list[Any]],
@@ -143,17 +150,29 @@ class SummaryReporter:
         self.write(header_str)
         self.write(rule_str)
 
+        # Write the data lines
         for values in lines_values:
-            # build string with line values
-            formats.update(dict(Cover="{:>{n}}% |"))
-            line_items = [
-                formats[item].format(str(value).replace("_", "\\_"), name_len=max_name, n=max_n - 1)
-                for item, value in zip(header, values)
-            ]
-            self.write_items(line_items)
+            formats.update(
+                dict(
+                    Cover="{:>{n}}% |",
+                )
+            )
+            self.write_items(
+                (
+                    formats[item].format(
+                        str(value).replace("_", "\\_"), name_len=max_name, n=max_n - 1
+                    )
+                    for item, value in zip(header, values)
+                )
+            )
 
         # Write the TOTAL line
-        formats.update(dict(Name="|{:>{name_len}} |", Cover="{:>{n}} |"))
+        formats.update(
+            dict(
+                Name="|{:>{name_len}} |",
+                Cover="{:>{n}} |",
+            ),
+        )
         total_line_items: list[str] = []
         for item, value in zip(header, total_line):
             if value == "":
@@ -164,6 +183,7 @@ class SummaryReporter:
                 insert = f" **{value}**"
             total_line_items += formats[item].format(insert, name_len=max_name, n=max_n)
         self.write_items(total_line_items)
+
         for end_line in end_lines:
             self.write(end_line)
 
@@ -206,9 +226,8 @@ class SummaryReporter:
         # `lines_values` is list of lists of sortable values.
         lines_values = []
 
-        for fr, analysis in self.fr_analysis:
+        for fr, analysis in self.fr_analyses:
             nums = analysis.numbers
-
             args = [fr.relative_filename(), nums.n_statements, nums.n_missing]
             if self.branches:
                 args += [nums.n_branches, nums.n_partial_branches]
@@ -248,18 +267,18 @@ class SummaryReporter:
         # Create other final lines.
         end_lines = []
         if self.config.skip_covered and self.skipped_count:
-            file_suffix = "s" if self.skipped_count > 1 else ""
+            files = plural(self.skipped_count, "file")
             end_lines.append(
-                f"\n{self.skipped_count} file{file_suffix} skipped due to complete coverage.",
+                f"\n{self.skipped_count} {files} skipped due to complete coverage.",
             )
         if self.config.skip_empty and self.empty_count:
-            file_suffix = "s" if self.empty_count > 1 else ""
-            end_lines.append(f"\n{self.empty_count} empty file{file_suffix} skipped.")
+            files = plural(self.empty_count, "file")
+            end_lines.append(f"\n{self.empty_count} empty {files} skipped.")
 
         if self.output_format == "markdown":
-            formatter = self._report_markdown
+            formatter = self.report_markdown
         else:
-            formatter = self._report_text
+            formatter = self.report_text
         formatter(header, lines_values, total_line, end_lines)
 
     def report_one_file(self, fr: FileReporter, analysis: Analysis) -> None:
@@ -276,4 +295,4 @@ class SummaryReporter:
             # Don't report on empty files.
             self.empty_count += 1
         else:
-            self.fr_analysis.append((fr, analysis))
+            self.fr_analyses.append((fr, analysis))
