@@ -3,8 +3,10 @@
 attrs==25.3.0
     # via hypothesis
 colorama==0.4.6
-    # via -r requirements/pytest.in
-exceptiongroup==1.3.0
+    # via
+    #   -r requirements/pytest.in
+    #   pytest
+exceptiongroup==1.3.0 ; python_full_version < '3.11'
     # via
     #   hypothesis
     #   pytest
@@ -32,7 +34,7 @@ pytest-xdist==3.8.0
     # via -r requirements/pytest.in
 sortedcontainers==2.4.0
     # via hypothesis
-tomli==2.2.1
+tomli==2.2.1 ; python_full_version < '3.11'
     # via pytest
-typing-extensions==4.14.1
+typing-extensions==4.14.1 ; python_full_version < '3.11'
     # via exceptiongroup

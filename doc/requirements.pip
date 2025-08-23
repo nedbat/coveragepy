@@ -24,7 +24,10 @@ click-log==0.4.0
 cogapp==3.5.1
     # via -r doc/requirements.in
 colorama==0.4.6
-    # via sphinx-autobuild
+    # via
+    #   click
+    #   sphinx
+    #   sphinx-autobuild
 doc8==2.0.0
     # via -r doc/requirements.in
 docutils==0.21.2
@@ -123,7 +126,7 @@ starlette==0.47.2
     # via sphinx-autobuild
 stevedore==5.4.1
     # via doc8
-typing-extensions==4.14.1
+typing-extensions==4.14.1 ; python_full_version < '3.13'
     # via
     #   anyio
     #   starlette
