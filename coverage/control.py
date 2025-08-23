@@ -793,7 +793,7 @@ class Coverage(TConfigurable):
     def clear_exclude(self, which: str = "exclude") -> None:
         """Clear the exclude list."""
         self._init()
-        setattr(self.config, which + "_list", [])
+        setattr(self.config, f"{which}_list", [])
         self._exclude_regex_stale()
 
     def exclude(self, regex: str, which: str = "exclude") -> None:
@@ -812,7 +812,7 @@ class Coverage(TConfigurable):
 
         """
         self._init()
-        excl_list = getattr(self.config, which + "_list")
+        excl_list = getattr(self.config, f"{which}_list")
         excl_list.append(regex)
         self._exclude_regex_stale()
 
@@ -823,7 +823,7 @@ class Coverage(TConfigurable):
     def _exclude_regex(self, which: str) -> str:
         """Return a regex string for the given exclusion list."""
         if which not in self._exclude_re:
-            excl_list = getattr(self.config, which + "_list")
+            excl_list = getattr(self.config, f"{which}_list")
             self._exclude_re[which] = join_regex(excl_list)
         return self._exclude_re[which]
 
@@ -835,7 +835,7 @@ class Coverage(TConfigurable):
 
         """
         self._init()
-        return cast(list[str], getattr(self.config, which + "_list"))
+        return cast(list[str], getattr(self.config, f"{which}_list"))
 
     def save(self) -> None:
         """Save the collected coverage data to the data file."""

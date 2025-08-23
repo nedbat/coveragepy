@@ -614,7 +614,7 @@ class CoverageData:
 
         """
         if self._debug.should("dataop"):
-            self._debug.write("Adding file tracers: %d files" % (len(file_tracers),))
+            self._debug.write(f"Adding file tracers: {len(file_tracers)} files")
         if not file_tracers:
             return
         self._start_using()

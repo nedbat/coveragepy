@@ -210,10 +210,8 @@ class DebugFileTracerWrapper(FileTracer):
 
     def _show_frame(self, frame: FrameType) -> str:
         """A short string identifying a frame, for debug messages."""
-        return "%s@%d" % (
-            os.path.basename(frame.f_code.co_filename),
-            frame.f_lineno,
-        )
+        filename = os.path.basename(frame.f_code.co_filename)
+        return f"{filename}@{frame.f_lineno}"
 
     def source_filename(self) -> str:
         sfilename = self.tracer.source_filename()
@@ -292,10 +290,10 @@ class DebugFileReporterWrapper(FileReporter):
 
     def source(self) -> str:
         ret = self.reporter.source()
-        self.debug.write("source() --> %d chars" % (len(ret),))
+        self.debug.write(f"source() --> {len(ret)} chars")
         return ret
 
     def source_token_lines(self) -> TSourceTokenLines:
         ret = list(self.reporter.source_token_lines())
-        self.debug.write("source_token_lines() --> %d tokens" % (len(ret),))
+        self.debug.write(f"source_token_lines() --> {len(ret)} tokens")
         return ret

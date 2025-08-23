@@ -149,21 +149,20 @@ def info_formatter(info: Iterable[tuple[str, Any]]) -> Iterator[str]:
     info = list(info)
     if not info:
         return
-    label_len = 30
-    assert all(len(l) < label_len for l, _ in info)
+    LABEL_LEN = 30
+    assert all(len(l) < LABEL_LEN for l, _ in info)
     for label, data in info:
         if data == []:
             data = "-none-"
-        if isinstance(data, tuple) and len(repr(tuple(data))) < 30:
-            # Convert to tuple to scrub namedtuples.
-            yield "%*s: %r" % (label_len, label, tuple(data))
+        prefix = f"{label:>{LABEL_LEN}}: "
+        if isinstance(data, tuple) and len(str(data)) < 30:
+            yield f"{prefix}{data}"
         elif isinstance(data, (list, set, tuple)):
-            prefix = "%*s:" % (label_len, label)
             for e in data:
-                yield "%*s %s" % (label_len + 1, prefix, e)
-                prefix = ""
+                yield f"{prefix}{e}"
+                prefix = " " * (LABEL_LEN + 2)
         else:
-            yield "%*s: %s" % (label_len, label, data)
+            yield f"{prefix}{data}"
 
 
 def write_formatted_info(

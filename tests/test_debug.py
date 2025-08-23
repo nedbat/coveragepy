@@ -50,6 +50,7 @@ class InfoFormatterTest(CoverageTest):
                 [
                     ("x", "hello there"),
                     ("very long label", ["one element"]),
+                    ("fits on 1", (17, 23, 42, 76, 99)),
                     ("regular", ["abc", "def", "ghi", "jkl"]),
                     ("nothing", []),
                 ]
@@ -58,6 +59,7 @@ class InfoFormatterTest(CoverageTest):
         expected = [
             "                             x: hello there",
             "               very long label: one element",
+            "                     fits on 1: (17, 23, 42, 76, 99)",
             "                       regular: abc",
             "                                def",
             "                                ghi",

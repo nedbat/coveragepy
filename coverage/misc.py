@@ -109,9 +109,9 @@ def nice_pair(pair: TArc) -> str:
     """
     start, end = pair
     if start == end:
-        return "%d" % start
+        return f"{start}"
     else:
-        return "%d-%d" % (start, end)
+        return f"{start}-{end}"
 
 
 def bool_or_none(b: Any) -> bool | None:

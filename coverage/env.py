@@ -35,7 +35,7 @@ PYVERSION = sys.version_info + (int(platform.python_version()[-1] == "+"),)
 
 if PYPY:
     # Minimum now is 7.3.16
-    PYPYVERSION = sys.pypy_version_info  # type: ignore[attr-defined]
+    PYPYVERSION = tuple(sys.pypy_version_info)  # type: ignore[attr-defined]
 else:
     PYPYVERSION = (0,)
 

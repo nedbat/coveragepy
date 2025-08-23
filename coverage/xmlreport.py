@@ -36,7 +36,7 @@ def rate(hit: int, num: int) -> str:
     if num == 0:
         return "1"
     else:
-        return "%.4g" % (hit / num)
+        return f"{hit / num:.4g}"
 
 
 @dataclass
@@ -226,7 +226,7 @@ class XmlReporter:
                     xline.setAttribute("branch", "true")
                     xline.setAttribute(
                         "condition-coverage",
-                        "%d%% (%d/%d)" % (100 * taken // total, taken, total),
+                        f"{100 * taken // total}% ({taken}/{total})",
                     )
                 if line in missing_branch_arcs:
                     annlines = ["exit" if b < 0 else str(b) for b in missing_branch_arcs[line]]

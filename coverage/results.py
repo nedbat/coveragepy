@@ -325,7 +325,7 @@ def display_covered(pc: float, precision: int) -> str:
         pc = 100.0 - near0
     else:
         pc = round(pc, precision)
-    return "%.*f" % (precision, pc)
+    return f"{pc:.{precision}f}"
 
 
 def _line_ranges(
