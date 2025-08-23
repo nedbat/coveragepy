@@ -406,7 +406,7 @@ def do_edit_for_release():
     new_conf = textwrap.dedent(
         f"""\
         # @@@ editable
-        copyright = "2009\N{EN DASH}{facts.now:%Y}, Ned Batchelder" # pylint: disable=redefined-builtin
+        copyright = "2009\N{EN DASH}{facts.now:%Y}, Ned Batchelder"  # pylint: disable=redefined-builtin
         # The short X.Y.Z version.
         version = "{facts.shortver}"
         # The full version, including alpha/beta/rc tags.
