@@ -1242,8 +1242,7 @@ class Coverage(TConfigurable):
             precision=precision,
         ):
             reporter = HtmlReporter(self)
-            ret = reporter.report(morfs)
-            return ret
+            return reporter.report(morfs)
 
     def xml_report(
         self,
