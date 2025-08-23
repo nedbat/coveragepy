@@ -20,19 +20,21 @@ upgrading your version of coverage.py.
     ..  Version 9.8.1 — 2027-07-27
     ..  --------------------------
 
-Unreleased
-----------
+.. start-releases
 
-- Big speed improvements for ``coverage combine``: it now takes about half the
-  time it used to!  Huge thanks to Alex Gaynor for pull requests `2032
-  <pull 2032_>`_, `2033 <pull 2033_>`_, and `2034 <pull 2034_>`_.
+.. _changes_7-10-5:
+
+Version 7.10.5 — 2025-08-23
+---------------------------
+
+- Big speed improvements for ``coverage combine``: it's now about twice as
+  fast! Huge thanks to Alex Gaynor for pull requests `2032 <pull 2032_>`_,
+  `2033 <pull 2033_>`_, and `2034 <pull 2034_>`_.
 
 .. _pull 2032: https://github.com/nedbat/coveragepy/pull/2032
 .. _pull 2033: https://github.com/nedbat/coveragepy/pull/2033
 .. _pull 2034: https://github.com/nedbat/coveragepy/pull/2034
 
-
-.. start-releases
 
 .. _changes_7-10-4:
 
