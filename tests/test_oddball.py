@@ -145,7 +145,7 @@ class RecursionTest(CoverageTest):
         assert cov._collector is not None
         pytrace = (cov._collector.tracer_name() == "PyTracer")  # fmt: skip
         expected_missing = [4]
-        if pytrace:  # pragma: no metacov
+        if pytrace:  # pragma: partial metacov
             expected_missing += [10, 11, 12]
 
         _, statements, missing, _ = cov.analysis("recur.py")
@@ -153,7 +153,7 @@ class RecursionTest(CoverageTest):
         assert expected_missing == missing
 
         # Get a warning about the stackoverflow effect on the tracing function.
-        if pytrace and not env.METACOV:  # pragma: no metacov
+        if pytrace and not env.METACOV:  # pragma: partial metacov
             assert len(cov._warnings) == 1
             assert re.fullmatch(
                 r"Trace function changed, data is likely wrong: None != "
