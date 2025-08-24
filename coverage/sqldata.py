@@ -793,18 +793,28 @@ class CoverageData:
             # Handle arcs if present in other_db
             if has_arcs:
                 self._choose_lines_or_arcs(arcs=True)
+
+                # Create context mapping table for faster lookups
+                con.execute_void("""
+                    CREATE TEMP TABLE context_mapping AS
+                    SELECT
+                        other_context.id as other_id,
+                        main_context.id as main_id
+                    FROM other_db.context AS other_context
+                    INNER JOIN main.context AS main_context ON other_context.context = main_context.context
+                """)
+
                 con.execute_void("""
                     INSERT OR IGNORE INTO main.arc (file_id, context_id, fromno, tono)
                     SELECT
                         main_file.id,
-                        main_context.id,
+                        context_mapping.main_id,
                         other_arc.fromno,
                         other_arc.tono
                     FROM other_db.arc AS other_arc
                     INNER JOIN other_file_mapped ON other_arc.file_id = other_file_mapped.other_file_id
-                    INNER JOIN other_db.context AS other_context ON other_arc.context_id = other_context.id
+                    INNER JOIN context_mapping ON other_arc.context_id = context_mapping.other_id
                     INNER JOIN main.file AS main_file ON other_file_mapped.mapped_path = main_file.path
-                    INNER JOIN main.context AS main_context ON other_context.context = main_context.context
                 """)
 
             # Handle line_bits if present in other_db
