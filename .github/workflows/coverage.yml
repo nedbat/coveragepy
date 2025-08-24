@@ -54,6 +54,7 @@ jobs:
               - "**.c"
               - ".github/workflows/coverage.yml"
               - "tox.ini"
+              - "metacov.ini"
               - "requirements/*.pip"
               - "tests/gold/**"
 
