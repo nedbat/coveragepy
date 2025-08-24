@@ -1064,6 +1064,7 @@ class Coverage(TConfigurable):
         if not isinstance(morfs, (list, tuple, set)):
             morfs = [morfs]  # type: ignore[list-item]
 
+        morfs = sorted(morfs, key=lambda m: m if isinstance(m, str) else m.__name__)
         return [(self._get_file_reporter(morf), morf) for morf in morfs]
 
     def _prepare_data_for_reporting(self) -> None:
