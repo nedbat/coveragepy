@@ -8,7 +8,6 @@ of in shell scripts, batch files, or Makefiles.
 
 """
 
-import contextlib
 import datetime
 import glob
 import inspect
@@ -22,7 +21,6 @@ import subprocess
 import sys
 import sysconfig
 import textwrap
-import time
 import types
 import zipfile
 
@@ -45,16 +43,6 @@ VERBOSITY = int(os.getenv("COVERAGE_IGOR_VERBOSE", "1"))
 
 # Functions named do_* are executable from the command line: do_blah is run
 # by "python igor.py blah".
-
-
-@contextlib.contextmanager
-def time_message(msg: str):
-    """Print a message about how long something took."""
-    start = time.monotonic()
-    try:
-        yield
-    finally:
-        print(f"Time for {msg}: {time.monotonic() - start:.2f}s")
 
 
 def do_show_env():
@@ -243,8 +231,7 @@ def do_combine_html():
     os.environ["COVERAGE_HOME"] = os.getcwd()
     cov = coverage.Coverage(config_file="metacov.ini")
     cov.load()
-    with time_message("combine"):
-        cov.combine()
+    cov.combine()
     cov.save()
     # A new Coverage to turn on messages. Better would be to have tighter
     # control over message verbosity...
@@ -253,8 +240,7 @@ def do_combine_html():
     show_contexts = bool(
         os.getenv("COVERAGE_DYNCTX") or os.getenv("COVERAGE_CONTEXT"),
     )
-    with time_message("html"):
-        total = cov.html_report(show_contexts=show_contexts)
+    total = cov.html_report(show_contexts=show_contexts)
     print(f"Total: {total:.3f}%")
 
 
