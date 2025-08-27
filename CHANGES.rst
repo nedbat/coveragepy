@@ -27,7 +27,11 @@ Unreleased
   that ran in different directories, as reported in `issue 1499`_.  This is now
   fixed.
 
+- Performance: `Alex Gaynor continues fine-tuning <pull 2038_>`_ the speed of
+  combination, especially with many contexts.
+
 .. _issue 1499: https://github.com/nedbat/coveragepy/issues/1499
+.. _pull 2038: https://github.com/nedbat/coveragepy/pull/2038
 
 
 .. start-releases
