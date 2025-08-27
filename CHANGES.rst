@@ -23,7 +23,11 @@ upgrading your version of coverage.py.
 Unreleased
 ----------
 
-Nothing yet.
+- Fix: ``source`` directories were not properly communicated to subprocesses
+  that ran in different directories, as reported in `issue 1499`_.  This is now
+  fixed.
+
+.. _issue 1499: https://github.com/nedbat/coveragepy/issues/1499
 
 
 .. start-releases

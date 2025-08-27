@@ -30,7 +30,7 @@ from coverage.files import abs_file, python_reported_file
 
 from tests import testenv
 from tests.coveragetest import CoverageTest, TESTS_DIR
-from tests.helpers import re_line, re_lines, re_lines_text
+from tests.helpers import change_dir, re_line, re_lines, re_lines_text
 
 
 class ProcessTest(CoverageTest):
@@ -1626,6 +1626,45 @@ class ProcessStartupTest(CoverageTest):
         data = coverage.CoverageData()
         data.read()
         assert line_counts(data)["subfunctions.py"] == 11
+
+    def test_subprocess_dir_with_source(self) -> None:
+        # https://github.com/nedbat/coveragepy/issues/1499
+        self.make_file("main/d/README", "A sub-directory")
+        self.make_file(
+            "main/main.py",
+            """\
+            import os, subprocess, sys
+            orig = os.getcwd()
+            os.chdir("./d")
+            subprocess.run([sys.executable, f"{orig}/sub.py"])
+            os.chdir(orig)
+            """,
+        )
+        self.make_file("lib/other.py", "print('Other', flush=True)")
+        self.make_file(
+            "main/sub.py",
+            """
+            import other
+            print("Hello, world!", flush=True)
+            """,
+        )
+        self.make_file(
+            "main/pyproject.toml",
+            """\
+            [tool.coverage.run]
+            patch = ["subprocess"]
+            source = [".", "other"]
+            disable_warnings = ["module-not-imported"]
+            """,
+        )
+        self.set_environ("PYTHONPATH", os.path.abspath("lib"))
+        with change_dir("main"):
+            out = self.run_command("coverage run main.py")
+            assert out == "Other\nHello, world!\n"
+            self.run_command("coverage combine")
+            data = coverage.CoverageData()
+            data.read()
+            assert line_counts(data) == {"main.py": 5, "sub.py": 2, "other.py": 1}
 
 
 @pytest.fixture

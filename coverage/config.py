@@ -274,10 +274,15 @@ class CoverageConfig(TConfigurable, TPluginConfig):
         "patch",
     }
 
+    # File paths to make absolute during serialization.
+    # The pairs are (config_key, must_exist).
     SERIALIZE_ABSPATH = {
-        "data_file",
-        "debug_file",
-        "source_dirs",
+        ("data_file", False),
+        ("debug_file", False),
+        # `source` can be directories or modules, so don't abspath it if it
+        # doesn't exist.
+        ("source", True),
+        ("source_dirs", False),
     }
 
     def from_args(self, **kwargs: TConfigValueIn) -> None:
@@ -569,12 +574,13 @@ class CoverageConfig(TConfigurable, TPluginConfig):
         deserialized config will refer to the same files.
         """
         data = {k: v for k, v in self.__dict__.items() if not k.startswith("_")}
-        for k in self.SERIALIZE_ABSPATH:
+        for k, must_exist in self.SERIALIZE_ABSPATH:
+            abs_fn = abs_path_if_exists if must_exist else os.path.abspath
             v = data[k]
             if isinstance(v, list):
-                v = list(map(os.path.abspath, v))
+                v = list(map(abs_fn, v))
             elif isinstance(v, str):
-                v = os.path.abspath(v)
+                v = abs_fn(v)
             data[k] = v
         return base64.b64encode(json.dumps(data).encode()).decode()
 
@@ -582,6 +588,14 @@ class CoverageConfig(TConfigurable, TPluginConfig):
 def process_file_value(path: str) -> str:
     """Make adjustments to a file path to make it usable."""
     return os.path.expanduser(path)
+
+
+def abs_path_if_exists(path: str) -> str:
+    """os.path.abspath, but only if the path exists."""
+    if os.path.exists(path):
+        return os.path.abspath(path)
+    else:
+        return path
 
 
 def process_regexlist(name: str, option: str, values: list[str]) -> list[str]:
