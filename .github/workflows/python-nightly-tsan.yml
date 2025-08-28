@@ -1,0 +1,76 @@
+# Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
+# For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
+
+name: "Python Nightly TSAN Tests"
+
+on:
+  pull_request:
+  push:
+    branches:
+      - "**/*nightly*"
+  schedule:
+    # Run at 2:22am early every morning Eastern time (6/7:22 UTC)
+    # so that we get tips of CPython development tested.
+    # https://crontab.guru/#22_7_%2a_%2a_%2a
+    - cron: "22 7 * * *"
+  workflow_dispatch:
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  PIP_DISABLE_PIP_VERSION_CHECK: 1
+  COVERAGE_IGOR_VERBOSE: 1
+
+permissions:
+  contents: read
+
+concurrency:
+  group: "${{ github.workflow }}-${{ github.ref }}"
+  cancel-in-progress: true
+
+jobs:
+  tsan:
+    name: "${{ matrix.python-version }} TSAN"
+    container:
+      image: ghcr.io/nascheme/cpython-tsan:${{ matrix.python-version }}
+    runs-on: "ubuntu-latest"
+    # If it doesn't finish in an hour, it's not going to. Don't spin for six
+    # hours needlessly.
+    timeout-minutes: 60
+
+    strategy:
+      matrix:
+        python-version:
+          - "3.14t"
+          - "3.15t-dev"
+
+      fail-fast: false
+
+    steps:
+      - name: "Check out the repo"
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+
+      - name: "Show diagnostic info"
+        run: |
+          set -xe
+          python -VV
+          python -m site
+          python -m sysconfig
+          python -c "import sys; print('GIL:', getattr(sys, '_is_gil_enabled', lambda: True)())"
+          python -m coverage debug sys
+          python -m coverage debug pybehave
+          env | sort
+
+      - name: "Install dependencies"
+        run: |
+          python -m pip install pytest pytest-run-parallel hypothesis
+
+      - name: "Run tests"
+        run: |
+          python -m pip install -e. -v
+          python igor.py zip_mods
+          python igor.py test_with_core ctrace -sv --parallel-threads=4
