@@ -34,7 +34,7 @@ docutils==0.22
     # via readme-renderer
 filelock==3.19.1
     # via cibuildwheel
-humanize==4.12.3
+humanize==4.13.0
     # via cibuildwheel
 id==1.5.0
     # via twine
@@ -73,7 +73,7 @@ packaging==25.0
     #   twine
 patchelf==0.17.2.4 ; (platform_machine == 'aarch64' and sys_platform == 'darwin') or (platform_machine == 'arm64' and sys_platform == 'darwin') or (platform_machine == 'x86_64' and sys_platform == 'darwin') or (platform_machine == 'aarch64' and sys_platform == 'linux') or (platform_machine == 'arm64' and sys_platform == 'linux') or (platform_machine == 'x86_64' and sys_platform == 'linux')
     # via cibuildwheel
-platformdirs==4.3.8
+platformdirs==4.4.0
     # via cibuildwheel
 pycparser==2.22 ; platform_machine != 'ppc64le' and platform_machine != 's390x' and platform_python_implementation != 'PyPy' and sys_platform == 'linux'
     # via cffi

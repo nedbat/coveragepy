@@ -10,7 +10,7 @@ backports-tarfile==1.2.0 ; python_full_version < '3.12' and platform_machine != 
     # via jaraco-context
 build==1.3.0
     # via check-manifest
-cachetools==6.1.0
+cachetools==6.2.0
     # via tox
 certifi==2025.8.3
     # via requests
@@ -65,7 +65,7 @@ flaky==3.8.1
     # via -r requirements/pytest.in
 greenlet==3.2.4
     # via -r requirements/dev.in
-hypothesis==6.138.2
+hypothesis==6.138.7
     # via -r requirements/pytest.in
 id==1.5.0
     # via twine
@@ -126,11 +126,11 @@ packaging==25.0
     #   pytest
     #   tox
     #   twine
-parso==0.8.4
+parso==0.8.5
     # via jedi
 pip==25.2
     # via -r requirements/pip.in
-platformdirs==4.3.8
+platformdirs==4.4.0
     # via
     #   pylint
     #   tox
@@ -181,7 +181,7 @@ rfc3986==2.0.0
     # via twine
 rich==14.1.0
     # via twine
-ruff==0.12.10
+ruff==0.12.11
     # via -r requirements/dev.in
 scriv==1.7.0
     # via -r requirements/dev.in
@@ -213,7 +213,7 @@ tox-gh==1.5.0
     # via -r requirements/tox.in
 twine==6.1.0
     # via -r requirements/dev.in
-typing-extensions==4.14.1 ; python_full_version < '3.11'
+typing-extensions==4.15.0 ; python_full_version < '3.11'
     # via
     #   astroid
     #   exceptiongroup
