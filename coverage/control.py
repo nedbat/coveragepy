@@ -24,7 +24,7 @@ from typing import IO, Any, Callable, Union, cast
 from coverage import env
 from coverage.annotate import AnnotateReporter
 from coverage.collector import Collector
-from coverage.config import CoverageConfig, deserialize_config, read_coverage_config
+from coverage.config import CoverageConfig, read_coverage_config
 from coverage.context import combine_context_switchers, should_start_context_test_function
 from coverage.core import CTRACER_FILE, Core
 from coverage.data import CoverageData, combine_parallel_data
@@ -320,7 +320,7 @@ class Coverage(TConfigurable):
 
         # Build our configuration from a number of sources.
         if isinstance(config_file, str) and config_file.startswith(CONFIG_DATA_PREFIX):
-            self.config = deserialize_config(config_file[len(CONFIG_DATA_PREFIX) :])
+            self.config = CoverageConfig.deserialize(config_file[len(CONFIG_DATA_PREFIX) :])
         else:
             if not isinstance(config_file, bool):
                 config_file = os.fspath(config_file)

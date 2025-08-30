@@ -568,7 +568,7 @@ class CoverageConfig(TConfigurable, TPluginConfig):
         return human_sorted_items((k, v) for k, v in self.__dict__.items() if not k.startswith("_"))
 
     def serialize(self) -> str:
-        """Convert to a string that can be ingested with `deserialize_config`.
+        """Convert to a string that can be ingested with `deserialize`.
 
         File paths used by `coverage run` are made absolute to ensure the
         deserialized config will refer to the same files.
@@ -583,6 +583,14 @@ class CoverageConfig(TConfigurable, TPluginConfig):
                 v = abs_fn(v)
             data[k] = v
         return base64.b64encode(json.dumps(data).encode()).decode()
+
+    @classmethod
+    def deserialize(cls, config_str: str) -> CoverageConfig:
+        """Take a string from `serialize`, and make a CoverageConfig."""
+        data = json.loads(base64.b64decode(config_str.encode()).decode())
+        config = cls()
+        config.__dict__.update(data)
+        return config
 
 
 def process_file_value(path: str) -> str:
@@ -706,12 +714,4 @@ def read_coverage_config(
     # to do.
     config.post_process()
 
-    return config
-
-
-def deserialize_config(config_str: str) -> CoverageConfig:
-    """Take a string from CoverageConfig.serialize, and make a CoverageConfig."""
-    data = json.loads(base64.b64decode(config_str.encode()).decode())
-    config = CoverageConfig()
-    config.__dict__.update(data)
     return config
