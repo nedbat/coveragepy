@@ -39,10 +39,12 @@ environment variable.
 
 If ``.coveragerc`` doesn't exist and another file hasn't been specified, then
 coverage.py will look for settings in other common configuration files, in this
-order: .coveragerc.toml, setup.cfg, tox.ini, or pyproject.toml.  The first file found with
+order: .coveragerc.toml, setup.cfg, tox.ini, or pyproject.toml.  The first file
+found with
 coverage.py settings will be used and other files won't be consulted.
 
-Coverage.py will read from ".coveragerc.toml" and "pyproject.toml" if TOML support is available,
+Coverage.py will read from ".coveragerc.toml" and "pyproject.toml" if TOML
+support is available,
 either because you are running on Python 3.11 or later, or because you
 installed with the ``toml`` extra (``pip install coverage[toml]``). Both files
 use the same ``[tool.coverage]`` section structure.
