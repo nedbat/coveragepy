@@ -202,6 +202,16 @@ Version 7.10.0 — 2025-07-24
 .. _issue 2001: https://github.com/nedbat/coveragepy/issues/2001
 .. _issue 2005: https://github.com/nedbat/coveragepy/issues/2005
 
+- Feature: Added support for ``.coveragerc.toml`` configuration files. This
+  provides a more flexible approach to manage coverage settings as many
+  projects have switched to TOML configurations. Closes `issue 1643`_.
+
+.. _issue 1643: https://github.com/nedbat/coveragepy/issues/1643
+.. _pull 1952: https://github.com/nedbat/coveragepy/pull/1952
+
+
+.. start-releases
+
 .. _changes_7-9-2:
 
 Version 7.9.2 — 2025-07-03

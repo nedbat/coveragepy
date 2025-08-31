@@ -76,7 +76,7 @@ def show_configs(ini, toml):
     The equivalence is checked for accuracy, and the process fails if there's
     a mismatch.
 
-    A three-tabbed box will be produced.
+    A four-tabbed box will be produced.
     """
     ini, ini_vals = _read_config(ini, "covrc")
     toml, toml_vals = _read_config(toml, "covrc.toml")
@@ -89,6 +89,7 @@ def show_configs(ini, toml):
     print(".. tabs::\n")
     for name, syntax, text in [
         (".coveragerc", "ini", ini),
+        (".coveragerc.toml", "toml", toml),
         ("pyproject.toml", "toml", toml),
         ("setup.cfg or tox.ini", "ini", ini2),
     ]:
