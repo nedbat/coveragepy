@@ -6,14 +6,16 @@
 from __future__ import annotations
 
 import os
+import tempfile
 
+from pathlib import Path
 from unittest import mock
 
 import pytest
 
 import coverage
 from coverage import Coverage, env
-from coverage.config import HandyConfigParser
+from coverage.config import CoverageConfig, HandyConfigParser
 from coverage.exceptions import ConfigError, CoverageWarning
 from coverage.tomlconfig import TomlConfigParser
 from coverage.types import FilePathClasses, FilePathType
@@ -1021,3 +1023,39 @@ class ConfigFileTest(UsingModulesMixin, CoverageTest):
             config.get("xyzzy", "foo")
         with pytest.raises(ConfigError, match="No option 'foo' in section: 'tool.coverage.run'"):
             config.get("run", "foo")
+
+
+class SerializeConfigTest(CoverageTest):
+    """Tests of serializing the configuration for subprocesses."""
+
+    def test_them(self) -> None:
+        tmpsrc = str(Path(tempfile.gettempdir()) / "more_source")
+        self.make_file(
+            ".coveragerc",
+            f"""\
+            [run]
+            timid = True
+            data_file = somewhere/the_data.db
+            debug_file = somewhere/debug.out
+            source = my_src, their_src
+            source_dirs = my_src, their_src, {tmpsrc}
+            debug = this_thing, that_thing
+            """,
+        )
+        self.make_file("my_src/__init__.py")
+        self.make_file("that_thing/__init__.py")
+        cov = coverage.Coverage()
+        config2 = CoverageConfig.deserialize(cov.config.serialize())
+        assert config2.timid
+        assert config2.data_file == os.path.abspath("somewhere/the_data.db")
+        assert config2.debug_file == os.path.abspath("somewhere/debug.out")
+        assert config2.source == [
+            os.path.abspath("my_src"),
+            "their_src",
+        ]
+        assert config2.source_dirs == [
+            os.path.abspath("my_src"),
+            os.path.abspath("their_src"),
+            tmpsrc,
+        ]
+        assert config2.debug == ["this_thing", "that_thing"]
