@@ -6,21 +6,27 @@ attrs==25.3.0
     # via
     #   hypothesis
     #   scriv
-backports-tarfile==1.2.0
+backports-tarfile==1.2.0 ; python_full_version < '3.12' and platform_machine != 'ppc64le' and platform_machine != 's390x'
     # via jaraco-context
 build==1.3.0
     # via check-manifest
-cachetools==6.1.0
+cachetools==6.2.0
     # via tox
 certifi==2025.8.3
     # via requests
+cffi==1.17.1 ; platform_machine != 'ppc64le' and platform_machine != 's390x' and platform_python_implementation != 'PyPy' and sys_platform == 'linux'
+    # via cryptography
 chardet==5.2.0
     # via tox
-charset-normalizer==3.4.2
+charset-normalizer==3.4.3
     # via requests
 check-manifest==0.50
     # via -r requirements/dev.in
-click==8.1.8
+click==8.1.8 ; python_full_version < '3.10'
+    # via
+    #   click-log
+    #   scriv
+click==8.2.1 ; python_full_version >= '3.10'
     # via
     #   click-log
     #   scriv
@@ -32,20 +38,26 @@ colorama==0.4.6
     # via
     #   -r requirements/pytest.in
     #   -r requirements/tox.in
+    #   build
+    #   click
+    #   pylint
+    #   pytest
     #   tox
+cryptography==45.0.6 ; platform_machine != 'ppc64le' and platform_machine != 's390x' and sys_platform == 'linux'
+    # via secretstorage
 dill==0.4.0
     # via pylint
 distlib==0.4.0
     # via virtualenv
 docutils==0.22
     # via readme-renderer
-exceptiongroup==1.3.0
+exceptiongroup==1.3.0 ; python_full_version < '3.11'
     # via
     #   hypothesis
     #   pytest
 execnet==2.1.1
     # via pytest-xdist
-filelock==3.18.0
+filelock==3.19.1
     # via
     #   tox
     #   virtualenv
@@ -53,13 +65,13 @@ flaky==3.8.1
     # via -r requirements/pytest.in
 greenlet==3.2.4
     # via -r requirements/dev.in
-hypothesis==6.137.1
+hypothesis==6.138.7
     # via -r requirements/pytest.in
 id==1.5.0
     # via twine
 idna==3.10
     # via requests
-importlib-metadata==8.7.0
+importlib-metadata==8.7.0 ; (python_full_version < '3.10.2' and platform_machine == 'ppc64le') or (python_full_version < '3.10.2' and platform_machine == 's390x') or (python_full_version < '3.12' and platform_machine != 'ppc64le' and platform_machine != 's390x')
     # via
     #   build
     #   keyring
@@ -68,21 +80,29 @@ iniconfig==2.1.0
     # via pytest
 isort==6.0.1
     # via pylint
-jaraco-classes==3.4.0
+jaraco-classes==3.4.0 ; platform_machine != 'ppc64le' and platform_machine != 's390x'
     # via keyring
-jaraco-context==6.0.1
+jaraco-context==6.0.1 ; platform_machine != 'ppc64le' and platform_machine != 's390x'
     # via keyring
-jaraco-functools==4.2.1
+jaraco-functools==4.3.0 ; platform_machine != 'ppc64le' and platform_machine != 's390x'
     # via keyring
 jedi==0.19.2
     # via pudb
+jeepney==0.9.0 ; platform_machine != 'ppc64le' and platform_machine != 's390x' and sys_platform == 'linux'
+    # via
+    #   keyring
+    #   secretstorage
 jinja2==3.1.6
     # via scriv
-keyring==25.6.0
+keyring==25.6.0 ; platform_machine != 'ppc64le' and platform_machine != 's390x'
     # via twine
 libsass==0.23.0
     # via -r requirements/dev.in
-markdown-it-py==3.0.0
+markdown-it-py==3.0.0 ; python_full_version < '3.10'
+    # via
+    #   rich
+    #   scriv
+markdown-it-py==4.0.0 ; python_full_version >= '3.10'
     # via
     #   rich
     #   scriv
@@ -92,7 +112,7 @@ mccabe==0.7.0
     # via pylint
 mdurl==0.1.2
     # via markdown-it-py
-more-itertools==10.7.0
+more-itertools==10.7.0 ; platform_machine != 'ppc64le' and platform_machine != 's390x'
     # via
     #   jaraco-classes
     #   jaraco-functools
@@ -106,11 +126,11 @@ packaging==25.0
     #   pytest
     #   tox
     #   twine
-parso==0.8.4
+parso==0.8.5
     # via jedi
 pip==25.2
     # via -r requirements/pip.in
-platformdirs==4.3.8
+platformdirs==4.4.0
     # via
     #   pylint
     #   tox
@@ -121,6 +141,8 @@ pluggy==1.6.0
     #   tox
 pudb==2025.1
     # via -r requirements/dev.in
+pycparser==2.22 ; platform_machine != 'ppc64le' and platform_machine != 's390x' and platform_python_implementation != 'PyPy' and sys_platform == 'linux'
+    # via cffi
 pygments==2.19.2
     # via
     #   -r requirements/pytest.in
@@ -128,7 +150,7 @@ pygments==2.19.2
     #   pytest
     #   readme-renderer
     #   rich
-pylint==3.3.7
+pylint==3.3.8
     # via -r requirements/dev.in
 pyproject-api==1.9.1
     # via tox
@@ -140,11 +162,13 @@ pytest==8.4.1
     #   pytest-xdist
 pytest-xdist==3.8.0
     # via -r requirements/pytest.in
+pywin32-ctypes==0.2.3 ; platform_machine != 'ppc64le' and platform_machine != 's390x' and sys_platform == 'win32'
+    # via keyring
 readme-renderer==44.0
     # via
     #   -r requirements/dev.in
     #   twine
-requests==2.32.4
+requests==2.32.5
     # via
     #   -r requirements/dev.in
     #   id
@@ -157,8 +181,12 @@ rfc3986==2.0.0
     # via twine
 rich==14.1.0
     # via twine
+ruff==0.12.11
+    # via -r requirements/dev.in
 scriv==1.7.0
     # via -r requirements/dev.in
+secretstorage==3.3.3 ; platform_machine != 'ppc64le' and platform_machine != 's390x' and sys_platform == 'linux'
+    # via keyring
 setuptools==80.9.0
     # via
     #   -r requirements/pip.in
@@ -167,7 +195,7 @@ sortedcontainers==2.4.0
     # via hypothesis
 tabulate==0.9.0
     # via -r requirements/dev.in
-tomli==2.2.1
+tomli==2.2.1 ; python_full_version < '3.11'
     # via
     #   build
     #   check-manifest
@@ -185,12 +213,13 @@ tox-gh==1.5.0
     # via -r requirements/tox.in
 twine==6.1.0
     # via -r requirements/dev.in
-typing-extensions==4.14.1
+typing-extensions==4.15.0 ; python_full_version < '3.11'
     # via
     #   astroid
     #   exceptiongroup
     #   pylint
     #   tox
+    #   virtualenv
 urllib3==2.5.0
     # via
     #   requests
@@ -201,11 +230,11 @@ urwid==3.0.2
     #   urwid-readline
 urwid-readline==0.15.1
     # via pudb
-virtualenv==20.33.1
+virtualenv==20.34.0
     # via
     #   -r requirements/pip.in
     #   tox
 wcwidth==0.2.13
     # via urwid
-zipp==3.23.0
+zipp==3.23.0 ; (python_full_version < '3.10.2' and platform_machine == 'ppc64le') or (python_full_version < '3.10.2' and platform_machine == 's390x') or (python_full_version < '3.12' and platform_machine != 'ppc64le' and platform_machine != 's390x')
     # via importlib-metadata

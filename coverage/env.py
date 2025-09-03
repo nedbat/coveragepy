@@ -24,8 +24,8 @@ LINUX = sys.platform.startswith("linux")
 MACOS = sys.platform == "darwin"
 
 # Python implementations.
-CPYTHON = (platform.python_implementation() == "CPython")
-PYPY = (platform.python_implementation() == "PyPy")
+CPYTHON = (platform.python_implementation() == "CPython")  # fmt: skip
+PYPY = (platform.python_implementation() == "PyPy")  # fmt: skip
 
 # Python versions. We amend version_info with one more value, a zero if an
 # official version, or 1 if built from source beyond an official version.
@@ -35,7 +35,7 @@ PYVERSION = sys.version_info + (int(platform.python_version()[-1] == "+"),)
 
 if PYPY:
     # Minimum now is 7.3.16
-    PYPYVERSION = sys.pypy_version_info         # type: ignore[attr-defined]
+    PYPYVERSION = tuple(sys.pypy_version_info)  # type: ignore[attr-defined]
 else:
     PYPYVERSION = (0,)
 
@@ -48,13 +48,14 @@ SHIPPING_WHEELS = CPYTHON and PYVERSION[:2] <= (3, 13)
 # Should we default to sys.monitoring?
 SYSMON_DEFAULT = CPYTHON and PYVERSION >= (3, 14)
 
+
 # Python behavior.
 class PYBEHAVIOR:
     """Flags indicating this Python's behavior."""
 
     # Does Python conform to PEP626, Precise line numbers for debugging and other tools.
     # https://www.python.org/dev/peps/pep-0626
-    pep626 = (PYVERSION > (3, 10, 0, "alpha", 4))
+    pep626 = (PYVERSION > (3, 10, 0, "alpha", 4))  # fmt: skip
 
     # Is "if __debug__" optimized away?
     optimize_if_debug = not pep626
@@ -107,7 +108,7 @@ class PYBEHAVIOR:
     # wwith.py(3):     with open("/tmp/test2", "w") as f3:
     # wwith.py(1): with open("/tmp/test", "w") as f1:
     #
-    exit_through_with = (PYVERSION >= (3, 10, 0, "beta"))
+    exit_through_with = (PYVERSION >= (3, 10, 0, "beta"))  # fmt: skip
 
     # When leaving a with-block, do we visit the with-line exactly,
     # or the context managers in inner-out order?
@@ -144,16 +145,16 @@ class PYBEHAVIOR:
     # mwith.py(3):      open("/tmp/two", "w") as f3,
     # mwith.py(2):      open("/tmp/one", "w") as f2,
 
-    exit_with_through_ctxmgr = (PYVERSION >= (3, 12, 6))
+    exit_with_through_ctxmgr = (PYVERSION >= (3, 12, 6))  # fmt: skip
 
     # Match-case construct.
-    match_case = (PYVERSION >= (3, 10))
+    match_case = (PYVERSION >= (3, 10))  # fmt: skip
 
     # Some words are keywords in some places, identifiers in other places.
-    soft_keywords = (PYVERSION >= (3, 10))
+    soft_keywords = (PYVERSION >= (3, 10))  # fmt: skip
 
     # f-strings are parsed as code, pep 701
-    fstring_syntax = (PYVERSION >= (3, 12))
+    fstring_syntax = (PYVERSION >= (3, 12))  # fmt: skip
 
     # PEP669 Low Impact Monitoring: https://peps.python.org/pep-0669/
     pep669: Final[bool] = bool(getattr(sys, "monitoring", None))
@@ -162,15 +163,15 @@ class PYBEHAVIOR:
     # It used to point at the YIELD, in 3.13 it points at the RESUME,
     # then it went back to the YIELD.
     # https://github.com/python/cpython/issues/113728
-    lasti_is_yield = (PYVERSION[:2] != (3, 13))
+    lasti_is_yield = (PYVERSION[:2] != (3, 13))  # fmt: skip
 
     # PEP649 and PEP749: Deferred annotations
-    deferred_annotations = (PYVERSION >= (3, 14))
+    deferred_annotations = (PYVERSION >= (3, 14))  # fmt: skip
 
     # Does sys.monitoring support BRANCH_RIGHT and BRANCH_LEFT?  The names
     # were added in early 3.14 alphas, but didn't work entirely correctly until
     # after 3.14.0a5.
-    branch_right_left = (pep669 and (PYVERSION > (3, 14, 0, "alpha", 5, 0)))
+    branch_right_left = pep669 and (PYVERSION > (3, 14, 0, "alpha", 5, 0))
 
 
 # Coverage.py specifics, about testing scenarios. See tests/testenv.py also.
@@ -187,11 +188,11 @@ TESTING = os.getenv("COVERAGE_TESTING") == "True"
 def debug_info() -> Iterable[tuple[str, Any]]:
     """Return a list of (name, value) pairs for printing debug information."""
     info = [
-        (name, value) for name, value in globals().items()
+        (name, value)
+        for name, value in globals().items()
         if not name.startswith("_") and name not in _UNINTERESTING_GLOBALS
     ]
     info += [
-        (name, value) for name, value in PYBEHAVIOR.__dict__.items()
-        if not name.startswith("_")
+        (name, value) for name, value in PYBEHAVIOR.__dict__.items() if not name.startswith("_")
     ]
     return sorted(info)

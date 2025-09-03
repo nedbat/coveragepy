@@ -11,10 +11,8 @@ import os
 import os.path
 import posixpath
 import re
-import site
 import sys
 from collections.abc import Iterable
-from pathlib import Path
 from typing import Callable
 
 from coverage import env
@@ -26,6 +24,7 @@ os = isolate_module(os)
 
 RELATIVE_DIR: str = ""
 CANONICAL_FILENAME_CACHE: dict[str, str] = {}
+
 
 def set_relative_directory() -> None:
     """Set the directory that `relative_filename` will be relative to."""
@@ -59,7 +58,7 @@ def relative_filename(filename: str) -> str:
     """
     fnorm = os.path.normcase(filename)
     if fnorm.startswith(RELATIVE_DIR):
-        filename = filename[len(RELATIVE_DIR):]
+        filename = filename[len(RELATIVE_DIR) :]
     return filename
 
 
@@ -74,7 +73,7 @@ def canonical_filename(filename: str) -> str:
         if not os.path.isabs(filename):
             for path in [os.curdir] + sys.path:
                 if path is None:
-                    continue # type: ignore[unreachable]
+                    continue  # type: ignore[unreachable]
                 f = os.path.join(path, filename)
                 try:
                     exists = os.path.exists(f)
@@ -112,7 +111,6 @@ def flat_rootname(filename: str) -> str:
 
 
 if env.WINDOWS:
-
     _ACTUAL_PATH_CACHE: dict[str, str] = {}
     _ACTUAL_PATH_LIST_CACHE: dict[str, list[str]] = {}
 
@@ -149,6 +147,7 @@ if env.WINDOWS:
         return actpath
 
 else:
+
     def actual_path(path: str) -> str:
         """The actual path for non-Windows platforms."""
         return path
@@ -216,19 +215,6 @@ def prep_patterns(patterns: Iterable[str]) -> list[str]:
     return prepped
 
 
-def create_pth_file() -> Path | None:
-    """Create .pth file for measuring subprocesses."""
-    for pth_dir in site.getsitepackages():  # pragma: part covered
-        pth_file = Path(pth_dir) / f"subcover_{os.getpid()}.pth"
-        try:
-            pth_file.write_text("import coverage; coverage.process_startup()\n", encoding="utf-8")
-        except OSError:  # pragma: cant happen
-            continue
-        else:
-            return pth_file
-    return None  # pragma: cant happen
-
-
 class TreeMatcher:
     """A matcher for files in a tree.
 
@@ -237,6 +223,7 @@ class TreeMatcher:
     somewhere in a subtree rooted at one of the directories.
 
     """
+
     def __init__(self, paths: Iterable[str], name: str = "unknown") -> None:
         self.original_paths: list[str] = human_sorted(paths)
         self.paths = [os.path.normcase(p) for p in paths]
@@ -265,7 +252,8 @@ class TreeMatcher:
 
 class ModuleMatcher:
     """A matcher for modules in a tree."""
-    def __init__(self, module_names: Iterable[str], name:str = "unknown") -> None:
+
+    def __init__(self, module_names: Iterable[str], name: str = "unknown") -> None:
         self.modules = list(module_names)
         self.name = name
 
@@ -294,6 +282,7 @@ class ModuleMatcher:
 
 class GlobMatcher:
     """A matcher for files by file name pattern."""
+
     def __init__(self, pats: Iterable[str], name: str = "unknown") -> None:
         self.pats = list(pats)
         self.re = globs_to_regex(self.pats, case_insensitive=env.WINDOWS)
@@ -322,6 +311,7 @@ def sep(s: str) -> str:
 
 # Tokenizer for _glob_to_regex.
 # None as a sub means disallowed.
+# fmt: off
 G2RX_TOKENS = [(re.compile(rx), sub) for rx, sub in [
     (r"\*\*\*+", None),             # Can't have ***
     (r"[^/]+\*\*+", None),          # Can't have x**
@@ -338,6 +328,8 @@ G2RX_TOKENS = [(re.compile(rx), sub) for rx, sub in [
     (r"[\[\]]", None),              # Can't have single square brackets
     (r".", r"\\\g<0>"),             # Anything else is escaped to be safe
 ]]
+# fmt: on
+
 
 def _glob_to_regex(pattern: str) -> str:
     """Convert a file-path glob pattern into a regex."""
@@ -348,7 +340,7 @@ def _glob_to_regex(pattern: str) -> str:
     path_rx = []
     pos = 0
     while pos < len(pattern):
-        for rx, sub in G2RX_TOKENS:                     # pragma: always breaks
+        for rx, sub in G2RX_TOKENS:  # pragma: always breaks
             if m := rx.match(pattern, pos=pos):
                 if sub is None:
                     raise ConfigError(f"File pattern can't include {m[0]!r}")
@@ -384,7 +376,7 @@ def globs_to_regex(
         flags |= re.IGNORECASE
     rx = join_regex(map(_glob_to_regex, patterns))
     if not partial:
-        rx = fr"(?:{rx})\Z"
+        rx = rf"(?:{rx})\Z"
     compiled = re.compile(rx, flags=flags)
     return compiled
 
@@ -400,6 +392,7 @@ class PathAliases:
     map a path through those aliases to produce a unified path.
 
     """
+
     def __init__(
         self,
         debugfn: Callable[[str], None] | None = None,
@@ -456,7 +449,7 @@ class PathAliases:
         result = result.rstrip(r"\/") + result_sep
         self.aliases.append((original_pattern, regex, result))
 
-    def map(self, path: str, exists:Callable[[str], bool] = source_exists) -> str:
+    def map(self, path: str, exists: Callable[[str], bool] = source_exists) -> str:
         """Map `path` through the aliases.
 
         `path` is checked against all of the patterns.  The first pattern to
@@ -490,13 +483,13 @@ class PathAliases:
                     new = new[2:]
                 if not exists(new):
                     self.debugfn(
-                        f"Rule {original_pattern!r} changed {path!r} to {new!r} " +
-                        "which doesn't exist, continuing",
+                        f"Rule {original_pattern!r} changed {path!r} to {new!r} "
+                        + "which doesn't exist, continuing",
                     )
                     continue
                 self.debugfn(
-                    f"Matched path {path!r} to rule {original_pattern!r} -> {result!r}, " +
-                    f"producing {new!r}",
+                    f"Matched path {path!r} to rule {original_pattern!r} -> {result!r}, "
+                    + f"producing {new!r}",
                 )
                 return new
 
@@ -511,7 +504,7 @@ class PathAliases:
             if len(parts) > 1:
                 dir1 = parts[0]
                 pattern = f"*/{dir1}"
-                regex_pat = fr"^(.*[\\/])?{re.escape(dir1)}[\\/]"
+                regex_pat = rf"^(.*[\\/])?{re.escape(dir1)}[\\/]"
                 result = f"{dir1}{os.sep}"
                 # Only add a new pattern if we don't already have this pattern.
                 if not any(p == pattern for p, _, _ in self.aliases):

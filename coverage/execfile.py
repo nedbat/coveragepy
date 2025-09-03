@@ -26,11 +26,13 @@ os = isolate_module(os)
 
 PYC_MAGIC_NUMBER = importlib.util.MAGIC_NUMBER
 
+
 class DummyLoader:
     """A shim for the pep302 __loader__, emulating pkgutil.ImpLoader.
 
     Currently only implements the .fullname attribute
     """
+
     def __init__(self, fullname: str, *_args: Any) -> None:
         self.fullname = fullname
 
@@ -56,8 +58,8 @@ def find_module(
         spec = importlib.util.find_spec(mod_main)
         if not spec:
             raise NoSource(
-                f"No module named {mod_main}; " +
-                f"{modulename!r} is a package and cannot be directly executed",
+                f"No module named {mod_main}; "
+                + f"{modulename!r} is a package and cannot be directly executed",
             )
         pathname = spec.origin
         packagename = spec.name
@@ -71,6 +73,7 @@ class PyRunner:
     This is meant to emulate real Python execution as closely as possible.
 
     """
+
     def __init__(self, args: list[str], as_module: bool = False) -> None:
         self.args = args
         self.as_module = as_module
@@ -179,11 +182,11 @@ class PyRunner:
             main_mod.__file__ = main_mod.__file__[:-1]
         if self.package is not None:
             main_mod.__package__ = self.package
-        main_mod.__loader__ = self.loader   # type: ignore[assignment]
+        main_mod.__loader__ = self.loader  # type: ignore[assignment]
         if self.spec is not None:
             main_mod.__spec__ = self.spec
 
-        main_mod.__builtins__ = sys.modules["builtins"]     # type: ignore[attr-defined]
+        main_mod.__builtins__ = sys.modules["builtins"]  # type: ignore[attr-defined]
 
         sys.modules["__main__"] = main_mod
 
@@ -208,7 +211,7 @@ class PyRunner:
         cwd = os.getcwd()
         try:
             exec(code, main_mod.__dict__)
-        except SystemExit:                          # pylint: disable=try-except-raise
+        except SystemExit:  # pylint: disable=try-except-raise
             # The user called sys.exit().  Just pass it along to the upper
             # layers, where it will be handled.
             raise
@@ -234,7 +237,7 @@ class PyRunner:
                 assert err.__traceback__ is not None
                 err.__traceback__ = err.__traceback__.tb_next
                 sys.excepthook(typ, err, tb.tb_next)
-            except SystemExit:                      # pylint: disable=try-except-raise
+            except SystemExit:  # pylint: disable=try-except-raise
                 raise
             except Exception as exc:
                 # Getting the output right in the case of excepthook
@@ -313,11 +316,11 @@ def make_code_from_pyc(filename: str) -> CodeType:
         flags = struct.unpack("<L", fpyc.read(4))[0]
         hash_based = flags & 0x01
         if hash_based:
-            fpyc.read(8)    # Skip the hash.
+            fpyc.read(8)  # Skip the hash.
         else:
             # Skip the junk in the header that we don't need.
-            fpyc.read(4)    # Skip the moddate.
-            fpyc.read(4)    # Skip the size.
+            fpyc.read(4)  # Skip the moddate.
+            fpyc.read(4)  # Skip the size.
 
         # The rest of the file is the code object we want.
         code = marshal.load(fpyc)

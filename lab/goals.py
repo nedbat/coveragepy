@@ -19,15 +19,16 @@ import argparse
 import json
 import sys
 
-from wcmatch import fnmatch as wcfnmatch    # python -m pip install wcmatch
+from wcmatch import fnmatch as wcfnmatch  # python -m pip install wcmatch
 
-from coverage.results import Numbers        # Note: an internal class!
+from coverage.results import Numbers  # Note: an internal class!
 
 
 def select_files(files, pat):
     flags = wcfnmatch.NEGATE | wcfnmatch.NEGATEALL
     selected = [f for f in files if wcfnmatch.fnmatch(f, pat, flags=flags)]
     return selected
+
 
 def total_for_files(data, files):
     total = Numbers(precision=3)
@@ -44,11 +45,14 @@ def total_for_files(data, files):
 
     return total
 
+
 def main(argv):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--file", "-f", action="store_true", help="Check each file individually")
     parser.add_argument("--group", "-g", action="store_true", help="Check a group of files")
-    parser.add_argument("--verbose", "-v", action="store_true", help="Be chatty about what's happening")
+    parser.add_argument(
+        "--verbose", "-v", action="store_true", help="Be chatty about what's happening"
+    )
     parser.add_argument("goal", type=float, help="Coverage goal")
     parser.add_argument("pattern", type=str, nargs="+", help="Patterns to check")
     args = parser.parse_args(argv)
@@ -90,6 +94,7 @@ def main(argv):
                 print(result)
 
     return 0 if ok else 2
+
 
 if __name__ == "__main__":
     sys.exit(main(sys.argv[1:]))

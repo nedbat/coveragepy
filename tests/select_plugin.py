@@ -25,13 +25,11 @@ def pytest_addoption(parser):
     )
 
 
-def pytest_collection_modifyitems(config, items):   # pragma: debugging
+def pytest_collection_modifyitems(config, items):  # pragma: debugging
     """Run an external command to get a list of tests to run."""
     select_cmd = config.getoption("--select-cmd")
     if select_cmd:
         output = subprocess.check_output(select_cmd, shell="True").decode("utf-8")
-        test_nodeids = {
-            nodeid: seq for seq, nodeid in enumerate(output.splitlines())
-        }
+        test_nodeids = {nodeid: seq for seq, nodeid in enumerate(output.splitlines())}
         new_items = [item for item in items if item.nodeid in test_nodeids]
         items[:] = sorted(new_items, key=lambda item: test_nodeids[item.nodeid])

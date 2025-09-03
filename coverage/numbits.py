@@ -38,7 +38,7 @@ def nums_to_numbits(nums: Iterable[int]) -> bytes:
         return b""
     b = bytearray(nbytes)
     for num in nums:
-        b[num//8] |= 1 << num % 8
+        b[num // 8] |= 1 << num % 8
     return bytes(b)
 
 
@@ -58,7 +58,7 @@ def numbits_to_nums(numbits: bytes) -> list[int]:
     nums = []
     for byte_i, byte in enumerate(numbits):
         for bit_i in range(8):
-            if (byte & (1 << bit_i)):
+            if byte & (1 << bit_i):
                 nums.append(byte_i * 8 + bit_i)
     return nums
 

@@ -7,12 +7,7 @@ from __future__ import annotations
 
 import sys
 from collections.abc import Iterable, Iterator
-from typing import (
-    IO,
-    TYPE_CHECKING,
-    Callable,
-    Protocol,
-)
+from typing import IO, TYPE_CHECKING, Callable, Protocol
 
 from coverage.exceptions import NoDataError, NotPython
 from coverage.files import GlobMatcher, prep_patterns
@@ -70,7 +65,7 @@ def render_report(
         if file_to_close is not None:
             file_to_close.close()
             if delete_file:
-                file_be_gone(output_path)           # pragma: part covered (doesn't return)
+                file_be_gone(output_path)  # pragma: part covered (doesn't return)
 
 
 def get_analysis_to_report(
@@ -106,7 +101,7 @@ def get_analysis_to_report(
             # explicitly suppress those errors.
             # NotPython is only raised by PythonFileReporter, which has a
             # should_be_python() method.
-            if fr.should_be_python():       # type: ignore[attr-defined]
+            if fr.should_be_python():  # type: ignore[attr-defined]
                 if config.ignore_errors:
                     msg = f"Couldn't parse Python file '{fr.filename}'"
                     coverage._warn(msg, slug="couldnt-parse")

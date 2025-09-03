@@ -116,9 +116,7 @@ def branch_trails(code: CodeType) -> TBranchTrails:
     arc from the original instruction's line to the new source line.
 
     """
-    the_trails: TBranchTrails = collections.defaultdict(
-        lambda: collections.defaultdict(set)
-    )
+    the_trails: TBranchTrails = collections.defaultdict(lambda: collections.defaultdict(set))
     iwalker = InstructionWalker(code)
     for inst in iwalker.walk(follow_jumps=False):
         if not inst.jump_target:

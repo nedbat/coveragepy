@@ -42,7 +42,7 @@ def lcov_lines(
     hash_suffix = ""
     for line in lines:
         if source_lines:
-            hash_suffix = "," + line_hash(source_lines[line-1])
+            hash_suffix = "," + line_hash(source_lines[line - 1])
         # Q: can we get info about the number of times a statement is
         # executed?  If so, that should be recorded here.
         hit = int(line not in analysis.missing)
@@ -70,9 +70,11 @@ def lcov_functions(
 
     # suppressions because of https://github.com/pylint-dev/pylint/issues/9923
     functions = [
-        (min(region.start, min(region.lines)), #pylint: disable=nested-min-max
-         max(region.start, max(region.lines)), #pylint: disable=nested-min-max
-         region)
+        (
+            min(region.start, min(region.lines)),  # pylint: disable=nested-min-max
+            max(region.start, max(region.lines)),  # pylint: disable=nested-min-max
+            region,
+        )
         for region in fr.code_regions()
         if region.kind == "function" and region.lines
     ]
@@ -119,19 +121,13 @@ def lcov_arcs(
             # When _none_ of the out arcs from 'line' were executed,
             # it can mean the line always raised an exception.
             assert len(executed_arcs[line]) == 0
-            destinations = [
-                (dst, "-") for dst in missing_arcs[line]
-            ]
+            destinations = [(dst, "-") for dst in missing_arcs[line]]
         else:
             # Q: can we get counts of the number of times each arc was executed?
             # branch_stats has "total" and "taken" counts for each branch,
             # but it doesn't have "taken" broken down by destination.
-            destinations = [
-                (dst, "1") for dst in executed_arcs[line]
-            ]
-            destinations.extend(
-                (dst, "0") for dst in missing_arcs[line]
-            )
+            destinations = [(dst, "1") for dst in executed_arcs[line]]
+            destinations.extend((dst, "0") for dst in missing_arcs[line])
 
         # Sort exit arcs after normal arcs.  Exit arcs typically come from
         # an if statement, at the end of a function, with no else clause.

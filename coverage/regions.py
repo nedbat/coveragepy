@@ -15,6 +15,7 @@ from coverage.plugin import CodeRegion
 @dataclasses.dataclass
 class Context:
     """The nested named context of a function or class."""
+
     name: str
     kind: str
     lines: set[int]
@@ -27,6 +28,7 @@ class RegionFinder:
     attribute.
 
     """
+
     def __init__(self) -> None:
         self.regions: list[CodeRegion] = []
         self.context: list[Context] = []

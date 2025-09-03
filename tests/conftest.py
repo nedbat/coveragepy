@@ -17,7 +17,9 @@ from collections.abc import Iterator
 
 import pytest
 
-from coverage.files import set_relative_directory, create_pth_file
+from coverage.files import set_relative_directory
+from coverage.patch import create_pth_files
+
 
 # Pytest will rewrite assertions in test modules, but not elsewhere.
 # This tells pytest to also rewrite assertions in these files:
@@ -83,6 +85,7 @@ def reset_filesdotpy_globals() -> None:
     """coverage/files.py has some unfortunate globals. Reset them every test."""
     set_relative_directory()
 
+
 @pytest.fixture(autouse=True)
 def force_local_pyc_files() -> None:
     """Ensure that .pyc files are written next to source files."""
@@ -95,9 +98,9 @@ def force_local_pyc_files() -> None:
 @pytest.fixture(name="_create_pth_file")
 def create_pth_file_fixture() -> Iterator[None]:
     """Create and clean up a .pth file for tests that need it for subprocesses."""
-    pth_file = create_pth_file()
-    assert pth_file is not None
+    pth_files = create_pth_files()
     try:
         yield
     finally:
-        pth_file.unlink()
+        for p in pth_files:
+            p.unlink()

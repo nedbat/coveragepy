@@ -3,4 +3,5 @@
 
 # Used in the tests for PyRunner
 import sys
+
 print("runmod1: passed %s" % sys.argv[1])

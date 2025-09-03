@@ -240,8 +240,8 @@ def do_combine_html():
     show_contexts = bool(
         os.getenv("COVERAGE_DYNCTX") or os.getenv("COVERAGE_CONTEXT"),
     )
-    cov.html_report(show_contexts=show_contexts)
-    cov.json_report(show_contexts=show_contexts, pretty_print=True)
+    total = cov.html_report(show_contexts=show_contexts)
+    print(f"Total: {total:.3f}%")
 
 
 def do_test_with_core(core, *runner_args):
@@ -301,35 +301,26 @@ def do_zip_mods():
 
 def print_banner(label):
     """Print the version of Python."""
-    try:
-        impl = platform.python_implementation()
-    except AttributeError:
-        impl = "Python"
-
+    impl = platform.python_implementation()
     version = platform.python_version()
-
+    has_gil = getattr(sys, "_is_gil_enabled", lambda: True)()
+    if not has_gil:
+        version += "t"
     if PYPY:
         version += " (pypy %s)" % ".".join(str(v) for v in sys.pypy_version_info)
-
     version += f" ({' '.join(platform.python_build())})"
+    version += " (gil)" if has_gil else " (nogil)"
 
-    gil = "gil" if getattr(sys, '_is_gil_enabled', lambda: True)() else "nogil"
-    version += f" ({gil})"
-
-    try:
-        which_python = os.path.relpath(sys.executable)
-    except ValueError:
-        # On Windows having a python executable on a different drive
-        # than the sources cannot be relative.
-        which_python = sys.executable
-    print(f"=== {impl} {version} {label} ({which_python}) ===")
-    sys.stdout.flush()
+    print(f"=== {impl} {version} {label} ({sys.base_prefix}) ===", flush=True)
 
 
 def do_quietly(command):
     """Run a command in a shell, and suppress all output."""
     proc = subprocess.run(
-        command, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+        command,
+        shell=True,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
     )
     return proc.returncode
 
@@ -384,7 +375,9 @@ def do_edit_for_release():
 
     # NOTICE.txt
     update_file(
-        "NOTICE.txt", r"Copyright 2004.*? Ned", f"Copyright 2004-{facts.now:%Y} Ned",
+        "NOTICE.txt",
+        r"Copyright 2004.*? Ned",
+        f"Copyright 2004-{facts.now:%Y} Ned",
     )
 
     # CHANGES.rst
@@ -399,7 +392,7 @@ def do_edit_for_release():
     new_conf = textwrap.dedent(
         f"""\
         # @@@ editable
-        copyright = "2009\N{EN DASH}{facts.now:%Y}, Ned Batchelder" # pylint: disable=redefined-builtin
+        copyright = "2009\N{EN DASH}{facts.now:%Y}, Ned Batchelder"  # pylint: disable=redefined-builtin
         # The short X.Y.Z version.
         version = "{facts.shortver}"
         # The full version, including alpha/beta/rc tags.
@@ -411,13 +404,16 @@ def do_edit_for_release():
     )
     update_file("doc/conf.py", r"(?s)# @@@ editable\n.*# @@@ end\n", new_conf)
 
+
 def do_release_version():
     """Set the version to 'final' for a release."""
     facts = get_release_facts()
     rel_vi = facts.vi[:3] + ("final", 0)
     rel_version = f"version_info = {rel_vi}\n_dev = 0".replace("'", '"')
     update_file(
-        "coverage/version.py", r"(?m)^version_info = .*\n_dev = \d+$", rel_version,
+        "coverage/version.py",
+        r"(?m)^version_info = .*\n_dev = \d+$",
+        rel_version,
     )
 
 
@@ -435,7 +431,9 @@ def do_bump_version():
     # coverage/version.py
     next_version = f"version_info = {facts.next_vi}\n_dev = 1".replace("'", '"')
     update_file(
-        "coverage/version.py", r"(?m)^version_info = .*\n_dev = \d+$", next_version,
+        "coverage/version.py",
+        r"(?m)^version_info = .*\n_dev = \d+$",
+        next_version,
     )
 
 
@@ -482,6 +480,7 @@ def do_cheats():
 def do_copy_with_hash(*args):
     """Copy files with a cache-busting hash.  Used in tests/gold/html/Makefile."""
     from coverage.html import copy_with_cache_bust
+
     *srcs, dest_dir = args
     for src in srcs:
         copy_with_cache_bust(src, dest_dir)

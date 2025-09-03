@@ -10,6 +10,7 @@ import requests
 
 _SESSIONS = {}
 
+
 def get_session(env="GITHUB_TOKEN"):
     """Get a properly authenticated requests Session.
 

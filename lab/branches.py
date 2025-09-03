@@ -3,6 +3,7 @@
 
 # Demonstrate some issues with coverage.py branch testing.
 
+
 def my_function(x):
     """This isn't real code, just snippets..."""
 
@@ -41,7 +42,7 @@ def my_function(x):
     if x < 1000:
         # This branch is always taken
         print("x is reasonable")
-    else:   # pragma: nocover
+    else:  # pragma: nocover
         print("this never happens")
 
     # try-except structures are complex branches.  An except clause with a

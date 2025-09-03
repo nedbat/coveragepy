@@ -21,10 +21,15 @@ from coverage.types import TArc
 
 from tests.coveragetest import CoverageTest
 from tests.helpers import (
-    CheckUniqueFilenames, FailingProxy,
+    CheckUniqueFilenames,
+    FailingProxy,
     all_our_source_files,
-    arcz_to_arcs, assert_count_equal, assert_coverage_warnings,
-    re_lines, re_lines_text, re_line,
+    arcz_to_arcs,
+    assert_count_equal,
+    assert_coverage_warnings,
+    re_lines,
+    re_lines_text,
+    re_line,
 )
 
 
@@ -32,9 +37,9 @@ def test_assert_count_equal() -> None:
     assert_count_equal(set(), set())
     assert_count_equal({"a": 1, "b": 2}, ["b", "a"])
     with pytest.raises(AssertionError):
-        assert_count_equal({1,2,3}, set())
+        assert_count_equal({1, 2, 3}, set())
     with pytest.raises(AssertionError):
-        assert_count_equal({1,2,3}, {4,5,6})
+        assert_count_equal({1, 2, 3}, {4, 5, 6})
 
 
 class CoverageTestTest(CoverageTest):
@@ -60,14 +65,14 @@ class CoverageTestTest(CoverageTest):
         self.assert_file_count("afile.*", 1)
         self.assert_file_count("*.q", 0)
         msg = re.escape(
-            "There should be 13 files matching 'a*.txt', but there are these: " +
-            "['abcde.txt', 'afile.txt', 'axczz.txt']",
+            "There should be 13 files matching 'a*.txt', but there are these: "
+            + "['abcde.txt', 'afile.txt', 'axczz.txt']",
         )
         with pytest.raises(AssertionError, match=msg):
             self.assert_file_count("a*.txt", 13)
         msg = re.escape(
-            "There should be 12 files matching '*c*.txt', but there are these: " +
-            "['abcde.txt', 'axczz.txt']",
+            "There should be 12 files matching '*c*.txt', but there are these: "
+            + "['abcde.txt', 'axczz.txt']",
         )
         with pytest.raises(AssertionError, match=msg):
             self.assert_file_count("*c*.txt", 12)
@@ -167,17 +172,20 @@ class CoverageTestTest(CoverageTest):
 
     def test_sub_python_is_this_python(self) -> None:
         # Try it with a Python command.
-        self.set_environ('COV_FOOBAR', 'XYZZY')
-        self.make_file("showme.py", """\
+        self.set_environ("COV_FOOBAR", "XYZZY")
+        self.make_file(
+            "showme.py",
+            """\
             import os, sys
             print(sys.executable)
             print(os.__file__)
             print(os.environ['COV_FOOBAR'])
-            """)
+            """,
+        )
         out_lines = self.run_command("python showme.py").splitlines()
         assert actual_path(out_lines[0]) == actual_path(sys.executable)
         assert out_lines[1] == os.__file__
-        assert out_lines[2] == 'XYZZY'
+        assert out_lines[2] == "XYZZY"
 
         # Try it with a "coverage debug sys" command.
         out = self.run_command("coverage debug sys")
@@ -193,11 +201,14 @@ class CoverageTestTest(CoverageTest):
 
     def test_run_command_stdout_stderr(self) -> None:
         # run_command should give us both stdout and stderr.
-        self.make_file("outputs.py", """\
+        self.make_file(
+            "outputs.py",
+            """\
             import sys
             sys.stderr.write("StdErr\\n")
             print("StdOut")
-            """)
+            """,
+        )
         out = self.run_command("python outputs.py")
         assert "StdOut\n" in out
         assert "StdErr\n" in out
@@ -219,6 +230,7 @@ class CheckUniqueFilenamesTest(CoverageTest):
 
     class Stub:
         """A stand-in for the class we're checking."""
+
         def __init__(self, x: int) -> None:
             self.x = x
 
@@ -296,34 +308,46 @@ class ReLinesTest(CoverageTest):
 
     run_in_temp_dir = False
 
-    @pytest.mark.parametrize("pat, text, result", [
-        ("line", "line1\nline2\nline3\n", "line1\nline2\nline3\n"),
-        ("[13]", "line1\nline2\nline3\n", "line1\nline3\n"),
-        ("X", "line1\nline2\nline3\n", ""),
-    ])
+    @pytest.mark.parametrize(
+        "pat, text, result",
+        [
+            ("line", "line1\nline2\nline3\n", "line1\nline2\nline3\n"),
+            ("[13]", "line1\nline2\nline3\n", "line1\nline3\n"),
+            ("X", "line1\nline2\nline3\n", ""),
+        ],
+    )
     def test_re_lines(self, pat: str, text: str, result: str) -> None:
         assert re_lines_text(pat, text) == result
         assert re_lines(pat, text) == result.splitlines()
 
-    @pytest.mark.parametrize("pat, text, result", [
-        ("line", "line1\nline2\nline3\n", ""),
-        ("[13]", "line1\nline2\nline3\n", "line2\n"),
-        ("X", "line1\nline2\nline3\n", "line1\nline2\nline3\n"),
-    ])
+    @pytest.mark.parametrize(
+        "pat, text, result",
+        [
+            ("line", "line1\nline2\nline3\n", ""),
+            ("[13]", "line1\nline2\nline3\n", "line2\n"),
+            ("X", "line1\nline2\nline3\n", "line1\nline2\nline3\n"),
+        ],
+    )
     def test_re_lines_inverted(self, pat: str, text: str, result: str) -> None:
         assert re_lines_text(pat, text, match=False) == result
         assert re_lines(pat, text, match=False) == result.splitlines()
 
-    @pytest.mark.parametrize("pat, text, result", [
-        ("2", "line1\nline2\nline3\n", "line2"),
-    ])
+    @pytest.mark.parametrize(
+        "pat, text, result",
+        [
+            ("2", "line1\nline2\nline3\n", "line2"),
+        ],
+    )
     def test_re_line(self, pat: str, text: str, result: str) -> None:
         assert re_line(pat, text) == result
 
-    @pytest.mark.parametrize("pat, text", [
-        ("line", "line1\nline2\nline3\n"),      # too many matches
-        ("X", "line1\nline2\nline3\n"),         # no matches
-    ])
+    @pytest.mark.parametrize(
+        "pat, text",
+        [
+            ("line", "line1\nline2\nline3\n"),  # too many matches
+            ("X", "line1\nline2\nline3\n"),  # no matches
+        ],
+    )
     def test_re_line_bad(self, pat: str, text: str) -> None:
         with pytest.raises(AssertionError):
             re_line(pat, text)
@@ -341,7 +365,7 @@ def _same_python_executable(e1: str, e2: str) -> bool:
     e2 = os.path.abspath(os.path.realpath(e2))
 
     if os.path.dirname(e1) != os.path.dirname(e2):
-        return False                                    # pragma: only failure
+        return False  # pragma: only failure
 
     e1 = os.path.basename(e1)
     e2 = os.path.basename(e2)
@@ -353,7 +377,7 @@ def _same_python_executable(e1: str, e2: str) -> bool:
         # Python2.3 and Python2.3: OK
         return True
 
-    return False                                        # pragma: only failure
+    return False  # pragma: only failure
 
 
 class ArczTest(CoverageTest):
@@ -361,11 +385,14 @@ class ArczTest(CoverageTest):
 
     run_in_temp_dir = False
 
-    @pytest.mark.parametrize("arcz, arcs", [
-        (".1 12 2.", [(-1, 1), (1, 2), (2, -1)]),
-        ("-11 12 2-5", [(-1, 1), (1, 2), (2, -5)]),
-        ("-QA CB IT Z-A", [(-26, 10), (12, 11), (18, 29), (35, -10)]),
-    ])
+    @pytest.mark.parametrize(
+        "arcz, arcs",
+        [
+            (".1 12 2.", [(-1, 1), (1, 2), (2, -1)]),
+            ("-11 12 2-5", [(-1, 1), (1, 2), (2, -5)]),
+            ("-QA CB IT Z-A", [(-26, 10), (12, 11), (18, 29), (35, -10)]),
+        ],
+    )
     def test_arcz_to_arcs(self, arcz: str, arcs: list[TArc]) -> None:
         assert arcz_to_arcs(arcz) == arcs
 
@@ -427,11 +454,12 @@ class AssertCoverageWarningsTest(CoverageTest):
 def test_failing_proxy() -> None:
     class Arithmetic:
         """Sample class to test FailingProxy."""
+
         # pylint: disable=missing-function-docstring
-        def add(self, a, b):                    # type: ignore[no-untyped-def]
+        def add(self, a, b):  # type: ignore[no-untyped-def]
             return a + b
 
-        def subtract(self, a, b):               # type: ignore[no-untyped-def]
+        def subtract(self, a, b):  # type: ignore[no-untyped-def]
             return a - b
 
     proxy = FailingProxy(Arithmetic(), "add", [RuntimeError("First"), RuntimeError("Second")])
@@ -451,7 +479,7 @@ def test_all_our_source_files() -> None:
     # Twas brillig and the slithy toves
     i = 0
     for i, (source_file, source) in enumerate(all_our_source_files(), start=1):
-        has_toves = (source_file.name == "test_testing.py")
+        has_toves = (source_file.name == "test_testing.py")  # fmt: skip
         assert (("# Twas brillig " + "and the slithy toves") in source) == has_toves
-        assert len(source) > 190    # tests/__init__.py is shortest at 196
-    assert 120 < i < 200            # currently 125 files
+        assert len(source) > 190  # tests/__init__.py is shortest at 196
+    assert 100 < i < 140  # currently 120 files

@@ -56,7 +56,7 @@ class XmlTestHelpers(CoverageTest):
 
         for i in range(width):
             next_dir = here(f"d{i}")
-            self.make_tree(width, depth-1, next_dir)
+            self.make_tree(width, depth - 1, next_dir)
         if curdir != ".":
             self.make_file(here("__init__.py"), "")
             for i in range(width):
@@ -80,7 +80,8 @@ class XmlTestHelpersTest(XmlTestHelpers, CoverageTest):
     run_in_temp_dir = False
 
     def test_assert_source(self) -> None:
-        dom = ElementTree.fromstring("""\
+        dom = ElementTree.fromstring(
+            """\
             <doc>
                 <src>foo</src>
                 <sources>
@@ -88,7 +89,8 @@ class XmlTestHelpersTest(XmlTestHelpers, CoverageTest):
                     <source>{cwd}another</source>
                 </sources>
             </doc>
-            """.format(cwd=abs_file(".")+os.sep))
+            """.format(cwd=abs_file(".") + os.sep)
+        )
 
         self.assert_source(dom, "something")
         self.assert_source(dom, "another")
@@ -172,7 +174,7 @@ class XmlReportTest(XmlTestHelpers, CoverageTest):
         dom = ElementTree.parse("coverage.xml")
         elts = dom.findall(".//class[@name='doit.py']")
         assert len(elts) == 1
-        assert elts[0].get('filename') == "sub/doit.py"
+        assert elts[0].get("filename") == "sub/doit.py"
 
     def test_filename_format_including_filename(self) -> None:
         cov = self.run_doit()
@@ -180,16 +182,17 @@ class XmlReportTest(XmlTestHelpers, CoverageTest):
         dom = ElementTree.parse("coverage.xml")
         elts = dom.findall(".//class[@name='doit.py']")
         assert len(elts) == 1
-        assert elts[0].get('filename') == "sub/doit.py"
+        assert elts[0].get("filename") == "sub/doit.py"
 
     def test_filename_format_including_module(self) -> None:
         cov = self.run_doit()
-        import sub.doit                         # pylint: disable=import-error
+        import sub.doit  # pylint: disable=import-error
+
         cov.xml_report([sub.doit])
         dom = ElementTree.parse("coverage.xml")
         elts = dom.findall(".//class[@name='doit.py']")
         assert len(elts) == 1
-        assert elts[0].get('filename') == "sub/doit.py"
+        assert elts[0].get("filename") == "sub/doit.py"
 
     def test_reporting_on_nothing(self) -> None:
         # Used to raise a zero division error:
@@ -201,8 +204,8 @@ class XmlReportTest(XmlTestHelpers, CoverageTest):
         dom = ElementTree.parse("coverage.xml")
         elts = dom.findall(".//class[@name='empty.py']")
         assert len(elts) == 1
-        assert elts[0].get('filename') == "empty.py"
-        assert elts[0].get('line-rate') == '1'
+        assert elts[0].get("filename") == "empty.py"
+        assert elts[0].get("line-rate") == "1"
 
     def test_empty_file_is_100_not_0(self) -> None:
         # https://github.com/nedbat/coveragepy/issues/345
@@ -211,7 +214,7 @@ class XmlReportTest(XmlTestHelpers, CoverageTest):
         dom = ElementTree.parse("coverage.xml")
         elts = dom.findall(".//class[@name='__init__.py']")
         assert len(elts) == 1
-        assert elts[0].get('line-rate') == '1'
+        assert elts[0].get("line-rate") == "1"
 
     def test_empty_file_is_skipped(self) -> None:
         cov = self.run_doit()
@@ -250,7 +253,7 @@ class XmlReportTest(XmlTestHelpers, CoverageTest):
         )
         dom = ElementTree.parse("coverage.xml")
 
-        self.assert_source(dom, "src/main")         # type: ignore[arg-type]
+        self.assert_source(dom, "src/main")  # type: ignore[arg-type]
         self.assert_source(dom, "also/over/there")  # type: ignore[arg-type]
         sources = dom.findall(".//source")
         assert len(sources) == 2
@@ -258,21 +261,21 @@ class XmlReportTest(XmlTestHelpers, CoverageTest):
         foo_class = dom.findall(".//class[@name='foo.py']")
         assert len(foo_class) == 1
         assert foo_class[0].attrib == {
-            'branch-rate': '0',
-            'complexity': '0',
-            'filename': 'foo.py',
-            'line-rate': '1',
-            'name': 'foo.py',
+            "branch-rate": "0",
+            "complexity": "0",
+            "filename": "foo.py",
+            "line-rate": "1",
+            "name": "foo.py",
         }
 
         bar_class = dom.findall(".//class[@name='bar.py']")
         assert len(bar_class) == 1
         assert bar_class[0].attrib == {
-            'branch-rate': '0',
-            'complexity': '0',
-            'filename': 'bar.py',
-            'line-rate': '1',
-            'name': 'bar.py',
+            "branch-rate": "0",
+            "complexity": "0",
+            "filename": "bar.py",
+            "line-rate": "1",
+            "name": "bar.py",
         }
 
     def test_nonascii_directory(self) -> None:
@@ -385,8 +388,8 @@ class XmlPackageStructureTest(XmlTestHelpers, CoverageTest):
         cov.xml_report()
         dom = ElementTree.parse("coverage.xml")
         for node in dom.iter():
-            if node.tag in ('package', 'class'):
-                yield (node.tag, {a:v for a,v in node.items() if a in ('name', 'filename')})
+            if node.tag in ["package", "class"]:
+                yield (node.tag, {a: v for a, v in node.items() if a in ["name", "filename"]})
 
     def assert_package_and_class_tags(self, cov: Coverage, result: Any) -> None:
         """Check the XML package and class tags from `cov` match `result`."""
@@ -394,87 +397,111 @@ class XmlPackageStructureTest(XmlTestHelpers, CoverageTest):
 
     def test_package_names(self) -> None:
         self.make_tree(width=1, depth=3)
-        self.make_file("main.py", """\
+        self.make_file(
+            "main.py",
+            """\
             from d0.d0 import f0
-            """)
+            """,
+        )
         cov = coverage.Coverage(source=["."])
         self.start_import_stop(cov, "main")
-        self.assert_package_and_class_tags(cov, [
-            ('package', {'name': "."}),
-            ('class', {'filename': "main.py", 'name': "main.py"}),
-            ('package', {'name': "d0"}),
-            ('class', {'filename': "d0/__init__.py", 'name': "__init__.py"}),
-            ('class', {'filename': "d0/f0.py", 'name': "f0.py"}),
-            ('package', {'name': "d0.d0"}),
-            ('class', {'filename': "d0/d0/__init__.py", 'name': "__init__.py"}),
-            ('class', {'filename': "d0/d0/f0.py", 'name': "f0.py"}),
-        ])
+        self.assert_package_and_class_tags(
+            cov,
+            [
+                ("package", {"name": "."}),
+                ("class", {"filename": "main.py", "name": "main.py"}),
+                ("package", {"name": "d0"}),
+                ("class", {"filename": "d0/__init__.py", "name": "__init__.py"}),
+                ("class", {"filename": "d0/f0.py", "name": "f0.py"}),
+                ("package", {"name": "d0.d0"}),
+                ("class", {"filename": "d0/d0/__init__.py", "name": "__init__.py"}),
+                ("class", {"filename": "d0/d0/f0.py", "name": "f0.py"}),
+            ],
+        )
 
     def test_package_depth_1(self) -> None:
         self.make_tree(width=1, depth=4)
-        self.make_file("main.py", """\
+        self.make_file(
+            "main.py",
+            """\
             from d0.d0 import f0
-            """)
+            """,
+        )
         cov = coverage.Coverage(source=["."])
         self.start_import_stop(cov, "main")
 
         cov.set_option("xml:package_depth", 1)
-        self.assert_package_and_class_tags(cov, [
-            ('package', {'name': "."}),
-            ('class', {'filename': "main.py", 'name': "main.py"}),
-            ('package', {'name': "d0"}),
-            ('class', {'filename': "d0/__init__.py", 'name': "__init__.py"}),
-            ('class', {'filename': "d0/d0/__init__.py", 'name': "d0/__init__.py"}),
-            ('class', {'filename': "d0/d0/d0/__init__.py", 'name': "d0/d0/__init__.py"}),
-            ('class', {'filename': "d0/d0/d0/f0.py", 'name': "d0/d0/f0.py"}),
-            ('class', {'filename': "d0/d0/f0.py", 'name': "d0/f0.py"}),
-            ('class', {'filename': "d0/f0.py", 'name': "f0.py"}),
-        ])
+        self.assert_package_and_class_tags(
+            cov,
+            [
+                ("package", {"name": "."}),
+                ("class", {"filename": "main.py", "name": "main.py"}),
+                ("package", {"name": "d0"}),
+                ("class", {"filename": "d0/__init__.py", "name": "__init__.py"}),
+                ("class", {"filename": "d0/d0/__init__.py", "name": "d0/__init__.py"}),
+                ("class", {"filename": "d0/d0/d0/__init__.py", "name": "d0/d0/__init__.py"}),
+                ("class", {"filename": "d0/d0/d0/f0.py", "name": "d0/d0/f0.py"}),
+                ("class", {"filename": "d0/d0/f0.py", "name": "d0/f0.py"}),
+                ("class", {"filename": "d0/f0.py", "name": "f0.py"}),
+            ],
+        )
 
     def test_package_depth_2(self) -> None:
         self.make_tree(width=1, depth=4)
-        self.make_file("main.py", """\
+        self.make_file(
+            "main.py",
+            """\
             from d0.d0 import f0
-            """)
+            """,
+        )
         cov = coverage.Coverage(source=["."])
         self.start_import_stop(cov, "main")
 
         cov.set_option("xml:package_depth", 2)
-        self.assert_package_and_class_tags(cov, [
-            ('package', {'name': "."}),
-            ('class', {'filename': "main.py", 'name': "main.py"}),
-            ('package', {'name': "d0"}),
-            ('class', {'filename': "d0/__init__.py", 'name': "__init__.py"}),
-            ('class', {'filename': "d0/f0.py", 'name': "f0.py"}),
-            ('package', {'name': "d0.d0"}),
-            ('class', {'filename': "d0/d0/__init__.py", 'name': "__init__.py"}),
-            ('class', {'filename': "d0/d0/d0/__init__.py", 'name': "d0/__init__.py"}),
-            ('class', {'filename': "d0/d0/d0/f0.py", 'name': "d0/f0.py"}),
-            ('class', {'filename': "d0/d0/f0.py", 'name': "f0.py"}),
-        ])
+        self.assert_package_and_class_tags(
+            cov,
+            [
+                ("package", {"name": "."}),
+                ("class", {"filename": "main.py", "name": "main.py"}),
+                ("package", {"name": "d0"}),
+                ("class", {"filename": "d0/__init__.py", "name": "__init__.py"}),
+                ("class", {"filename": "d0/f0.py", "name": "f0.py"}),
+                ("package", {"name": "d0.d0"}),
+                ("class", {"filename": "d0/d0/__init__.py", "name": "__init__.py"}),
+                ("class", {"filename": "d0/d0/d0/__init__.py", "name": "d0/__init__.py"}),
+                ("class", {"filename": "d0/d0/d0/f0.py", "name": "d0/f0.py"}),
+                ("class", {"filename": "d0/d0/f0.py", "name": "f0.py"}),
+            ],
+        )
 
     def test_package_depth_3(self) -> None:
         self.make_tree(width=1, depth=4)
-        self.make_file("main.py", """\
+        self.make_file(
+            "main.py",
+            """\
             from d0.d0 import f0
-            """)
+            """,
+        )
         cov = coverage.Coverage(source=["."])
         self.start_import_stop(cov, "main")
 
         cov.set_option("xml:package_depth", 3)
-        self.assert_package_and_class_tags(cov, [
-            ('package', {'name': "."}),
-            ('class', {'filename': "main.py", 'name': "main.py"}),
-            ('package', {'name': "d0"}),
-            ('class', {'filename': "d0/__init__.py", 'name': "__init__.py"}),
-            ('class', {'filename': "d0/f0.py", 'name': "f0.py"}),
-            ('package', {'name': "d0.d0"}),
-            ('class', {'filename': "d0/d0/__init__.py", 'name': "__init__.py"}),
-            ('class', {'filename': "d0/d0/f0.py", 'name': "f0.py"}),
-            ('package', {'name': "d0.d0.d0"}),
-            ('class', {'filename': "d0/d0/d0/__init__.py", 'name': "__init__.py"}),
-            ('class', {'filename': "d0/d0/d0/f0.py", 'name': "f0.py"}),
-        ])
+        self.assert_package_and_class_tags(
+            cov,
+            [
+                ("package", {"name": "."}),
+                ("class", {"filename": "main.py", "name": "main.py"}),
+                ("package", {"name": "d0"}),
+                ("class", {"filename": "d0/__init__.py", "name": "__init__.py"}),
+                ("class", {"filename": "d0/f0.py", "name": "f0.py"}),
+                ("package", {"name": "d0.d0"}),
+                ("class", {"filename": "d0/d0/__init__.py", "name": "__init__.py"}),
+                ("class", {"filename": "d0/d0/f0.py", "name": "f0.py"}),
+                ("package", {"name": "d0.d0.d0"}),
+                ("class", {"filename": "d0/d0/d0/__init__.py", "name": "__init__.py"}),
+                ("class", {"filename": "d0/d0/d0/f0.py", "name": "f0.py"}),
+            ],
+        )
 
     def test_source_prefix(self) -> None:
         # https://github.com/nedbat/coveragepy/issues/465
@@ -483,12 +510,15 @@ class XmlPackageStructureTest(XmlTestHelpers, CoverageTest):
         cov = coverage.Coverage(source=["src"])
         self.start_import_stop(cov, "mod", modfile="src/mod.py")
 
-        self.assert_package_and_class_tags(cov, [
-            ('package', {'name': "."}),
-            ('class', {'filename': "mod.py", 'name': "mod.py"}),
-        ])
+        self.assert_package_and_class_tags(
+            cov,
+            [
+                ("package", {"name": "."}),
+                ("class", {"filename": "mod.py", "name": "mod.py"}),
+            ],
+        )
         dom = ElementTree.parse("coverage.xml")
-        self.assert_source(dom, "src")      # type: ignore[arg-type]
+        self.assert_source(dom, "src")  # type: ignore[arg-type]
 
     @pytest.mark.parametrize("trail", ["", "/", "\\"])
     def test_relative_source(self, trail: str) -> None:
@@ -509,11 +539,11 @@ def compare_xml(expected: str, actual: str, actual_extra: bool = False) -> None:
     """Specialized compare function for our XML files."""
     source_path = coverage.files.relative_directory().rstrip(r"\/")
 
-    scrubs=[
+    scrubs = [
         (r' timestamp="\d+"', ' timestamp="TIMESTAMP"'),
         (r' version="[-.\w]+"', ' version="VERSION"'),
-        (r'<source>\s*.*?\s*</source>', '<source>%s</source>' % re.escape(source_path)),
-        (r'/coverage\.readthedocs\.io/?[-.\w/]*', '/coverage.readthedocs.io/VER'),
+        (r"<source>\s*.*?\s*</source>", "<source>%s</source>" % re.escape(source_path)),
+        (r"/coverage\.readthedocs\.io/?[-.\w/]*", "/coverage.readthedocs.io/VER"),
     ]
     compare(expected, actual, scrubs=scrubs, actual_extra=actual_extra)
 
@@ -522,13 +552,16 @@ class XmlGoldTest(CoverageTest):
     """Tests of XML reporting that use gold files."""
 
     def test_a_xml_1(self) -> None:
-        self.make_file("a.py", """\
+        self.make_file(
+            "a.py",
+            """\
             if 1 < 2:
                 # Needed a < to look at HTML entities.
                 a = 3
             else:
                 a = 4
-            """)
+            """,
+        )
 
         cov = coverage.Coverage()
         a = self.start_import_stop(cov, "a")
@@ -536,19 +569,25 @@ class XmlGoldTest(CoverageTest):
         compare_xml(gold_path("xml/x_xml"), ".", actual_extra=True)
 
     def test_a_xml_2(self) -> None:
-        self.make_file("a.py", """\
+        self.make_file(
+            "a.py",
+            """\
             if 1 < 2:
                 # Needed a < to look at HTML entities.
                 a = 3
             else:
                 a = 4
-            """)
+            """,
+        )
 
-        self.make_file("run_a_xml_2.ini", """\
+        self.make_file(
+            "run_a_xml_2.ini",
+            """\
             # Put all the XML output in xml_2
             [xml]
             output = xml_2/coverage.xml
-            """)
+            """,
+        )
 
         cov = coverage.Coverage(config_file="run_a_xml_2.ini")
         a = self.start_import_stop(cov, "a")
@@ -556,7 +595,9 @@ class XmlGoldTest(CoverageTest):
         compare_xml(gold_path("xml/x_xml"), "xml_2")
 
     def test_y_xml_branch(self) -> None:
-        self.make_file("y.py", """\
+        self.make_file(
+            "y.py",
+            """\
             def choice(x):
                 if x < 2:
                     return 3
@@ -564,7 +605,8 @@ class XmlGoldTest(CoverageTest):
                     return 4
 
             assert choice(1) == 3
-            """)
+            """,
+        )
 
         cov = coverage.Coverage(branch=True)
         y = self.start_import_stop(cov, "y")

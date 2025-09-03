@@ -46,8 +46,7 @@ os = isolate_module(os)
 
 
 def data_filename(fname: str) -> str:
-    """Return the path to an "htmlfiles" data file of ours.
-    """
+    """Return the path to an "htmlfiles" data file of ours."""
     static_dir = os.path.join(os.path.dirname(__file__), "htmlfiles")
     static_filename = os.path.join(static_dir, fname)
     return static_filename
@@ -69,6 +68,7 @@ def write_html(fname: str, html: str) -> None:
 @dataclass
 class LineData:
     """The data for each source line of HTML output."""
+
     tokens: list[tuple[str, str]]
     number: TLineNo
     category: str
@@ -87,6 +87,7 @@ class LineData:
 @dataclass
 class FileData:
     """The data for each source file of HTML output."""
+
     relative_filename: str
     nums: Numbers
     lines: list[LineData]
@@ -95,6 +96,7 @@ class FileData:
 @dataclass
 class IndexItem:
     """Information for each index entry, to render an index page."""
+
     url: str = ""
     file: str = ""
     description: str = ""
@@ -104,6 +106,7 @@ class IndexItem:
 @dataclass
 class IndexPage:
     """Data for each index page."""
+
     noun: str
     plural: str
     filename: str
@@ -186,7 +189,7 @@ class HtmlDataGeneration:
                 # I don't understand why this last condition is marked as
                 # partial.  If I add an else with an exception, the exception
                 # is raised.
-                elif first_line in analysis.statements:     # pragma: part covered
+                elif first_line in analysis.statements:  # pragma: part covered
                     category2 = "run2"
 
             contexts = []
@@ -200,16 +203,18 @@ class HtmlDataGeneration:
                     contexts_label = f"{len(contexts)} ctx"
                     context_list = contexts
 
-            lines.append(LineData(
-                tokens=tokens,
-                number=lineno,
-                category=category or category2,
-                contexts=contexts,
-                contexts_label=contexts_label,
-                context_list=context_list,
-                short_annotations=short_annotations,
-                long_annotations=long_annotations,
-            ))
+            lines.append(
+                LineData(
+                    tokens=tokens,
+                    number=lineno,
+                    category=category or category2,
+                    contexts=contexts,
+                    contexts_label=contexts_label,
+                    context_list=context_list,
+                    short_annotations=short_annotations,
+                    long_annotations=long_annotations,
+                )
+            )
 
         file_data = FileData(
             relative_filename=fr.relative_filename(),
@@ -222,6 +227,7 @@ class HtmlDataGeneration:
 
 class FileToReport:
     """A file we're considering reporting."""
+
     def __init__(self, fr: FileReporter, analysis: Analysis) -> None:
         self.fr = fr
         self.analysis = analysis
@@ -231,6 +237,7 @@ class FileToReport:
 
 
 HTML_SAFE = string.ascii_letters + string.digits + "!#$%'()*+,-./:;=?@[]^_`{|}~"
+
 
 @functools.cache
 def encode_int(n: int) -> str:
@@ -307,7 +314,6 @@ class HtmlReporter:
             "escape": escape,
             "pair": pair,
             "len": len,
-
             # Constants for this report.
             "__url__": __url__,
             "__version__": coverage.__version__,
@@ -317,7 +323,6 @@ class HtmlReporter:
             "has_arcs": self.has_arcs,
             "show_contexts": self.config.show_contexts,
             "statics": {},
-
             # Constants for all reports.
             # These css classes determine which lines are highlighted by default.
             "category": {
@@ -417,7 +422,7 @@ class HtmlReporter:
         dest = copy_with_cache_bust(src, self.directory)
         if not slug:
             slug = os.path.basename(src).replace(".", "_")
-        self.template_globals["statics"][slug] = dest # type: ignore
+        self.template_globals["statics"][slug] = dest  # type: ignore
 
     def make_local_static_report_files(self) -> None:
         """Make local instances of static files for HTML report."""
@@ -446,8 +451,8 @@ class HtmlReporter:
 
         if self.skip_covered:
             # Don't report on 100% files.
-            no_missing_lines = (nums.n_missing == 0)
-            no_missing_branches = (nums.n_partial_branches == 0)
+            no_missing_lines = (nums.n_missing == 0)  # fmt: skip
+            no_missing_branches = (nums.n_partial_branches == 0)  # fmt: skip
             if no_missing_lines and no_missing_branches:
                 index_page.skipped_covered_count += 1
                 return False
@@ -501,9 +506,8 @@ class HtmlReporter:
                     encode_int(context_codes[c_context]) for c_context in ldata.context_list
                 ]
                 code_width = max(len(ec) for ec in encoded_contexts)
-                ldata.context_str = (
-                    str(code_width)
-                    + "".join(ec.ljust(code_width) for ec in encoded_contexts)
+                ldata.context_str = str(code_width) + "".join(
+                    ec.ljust(code_width) for ec in encoded_contexts
                 )
             else:
                 ldata.context_str = ""
@@ -512,8 +516,7 @@ class HtmlReporter:
                 # 202F is NARROW NO-BREAK SPACE.
                 # 219B is RIGHTWARDS ARROW WITH STROKE.
                 ldata.annotate = ",&nbsp;&nbsp; ".join(
-                    f"{ldata.number}&#x202F;&#x219B;&#x202F;{d}"
-                    for d in ldata.short_annotations
+                    f"{ldata.number}&#x202F;&#x219B;&#x202F;{d}" for d in ldata.short_annotations
                 )
             else:
                 ldata.annotate = None
@@ -532,24 +535,26 @@ class HtmlReporter:
             css_classes = []
             if ldata.category:
                 css_classes.append(
-                    self.template_globals["category"][ldata.category],   # type: ignore[index]
+                    self.template_globals["category"][ldata.category],  # type: ignore[index]
                 )
             ldata.css_class = " ".join(css_classes) or "pln"
 
         html_path = os.path.join(self.directory, ftr.html_filename)
-        html = self.source_tmpl.render({
-            **file_data.__dict__,
-            "contexts_json": contexts_json,
-            "prev_html": ftr.prev_html,
-            "next_html": ftr.next_html,
-        })
+        html = self.source_tmpl.render(
+            {
+                **file_data.__dict__,
+                "contexts_json": contexts_json,
+                "prev_html": ftr.prev_html,
+                "next_html": ftr.next_html,
+            }
+        )
         write_html(html_path, html)
 
         # Save this file's information for the index page.
         index_info = IndexItem(
-            url = ftr.html_filename,
-            file = escape(ftr.fr.relative_filename()),
-            nums = ftr.analysis.numbers,
+            url=ftr.html_filename,
+            file=escape(ftr.fr.relative_filename()),
+            nums=ftr.analysis.numbers,
         )
         self.index_pages["file"].summaries.append(index_info)
         self.incr.set_index_info(ftr.rootname, index_info)
@@ -587,29 +592,33 @@ class HtmlReporter:
                     if not self.should_report(analysis, page_data):
                         continue
                     sorting_name = region.name.rpartition(".")[-1].lstrip("_")
-                    page_data.summaries.append(IndexItem(
-                        url=f"{ftr.html_filename}#t{region.start}",
-                        file=escape(ftr.fr.relative_filename()),
-                        description=(
-                            f"<data value='{escape(sorting_name)}'>"
-                            + escape(region.name)
-                            + "</data>"
-                        ),
-                        nums=analysis.numbers,
-                    ))
+                    page_data.summaries.append(
+                        IndexItem(
+                            url=f"{ftr.html_filename}#t{region.start}",
+                            file=escape(ftr.fr.relative_filename()),
+                            description=(
+                                f"<data value='{escape(sorting_name)}'>"
+                                + escape(region.name)
+                                + "</data>"
+                            ),
+                            nums=analysis.numbers,
+                        )
+                    )
 
                 analysis = ftr.analysis.narrow(outside_lines)
                 if self.should_report(analysis, page_data):
-                    page_data.summaries.append(IndexItem(
-                        url=ftr.html_filename,
-                        file=escape(ftr.fr.relative_filename()),
-                        description=(
-                            "<data value=''>"
-                            + f"<span class='no-noun'>(no {escape(noun)})</span>"
-                            + "</data>"
-                        ),
-                        nums=analysis.numbers,
-                    ))
+                    page_data.summaries.append(
+                        IndexItem(
+                            url=ftr.html_filename,
+                            file=escape(ftr.fr.relative_filename()),
+                            description=(
+                                "<data value=''>"
+                                + f"<span class='no-noun'>(no {escape(noun)})</span>"
+                                + "</data>"
+                            ),
+                            nums=analysis.numbers,
+                        )
+                    )
 
         for noun, index_page in self.index_pages.items():
             if noun != "file":
@@ -659,6 +668,7 @@ class HtmlReporter:
 @dataclass
 class FileInfo:
     """Summary of the information from last rendering, to avoid duplicate work."""
+
     hash: str = ""
     index: IndexItem = field(default_factory=IndexItem)
 
@@ -765,10 +775,7 @@ class IncrementalChecker:
             "format": self.STATUS_FORMAT,
             "version": coverage.__version__,
             "globals": self.globals,
-            "files": {
-                fname: dataclasses.asdict(finfo)
-                for fname, finfo in self.files.items()
-            },
+            "files": {fname: dataclasses.asdict(finfo) for fname, finfo in self.files.items()},
         }
         with open(status_file, "w", encoding="utf-8") as fout:
             json.dump(status_data, fout, separators=(",", ":"))
@@ -824,6 +831,7 @@ class IncrementalChecker:
 
 
 # Helpers for templates and generating HTML
+
 
 def escape(t: str) -> str:
     """HTML-escape the text in `t`.

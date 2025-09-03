@@ -31,7 +31,7 @@ class BytecodeTest(CoverageTest):
                     return x+1
                 """),
             "<string>",
-            "exec"
+            "exec",
         )
 
         objs = list(code_objects(code))

@@ -71,6 +71,7 @@ from coverage.xmlreport import XmlReporter
 
 os = isolate_module(os)
 
+
 @contextlib.contextmanager
 def override_config(cov: Coverage, **kwargs: TConfigValueIn) -> Iterator[None]:
     """Temporarily tweak the configuration of `cov`.
@@ -89,6 +90,8 @@ def override_config(cov: Coverage, **kwargs: TConfigValueIn) -> Iterator[None]:
 
 DEFAULT_DATAFILE = DefaultValue("MISSING")
 _DEFAULT_DATAFILE = DEFAULT_DATAFILE  # Just in case, for backwards compatibility
+CONFIG_DATA_PREFIX = ":data:"
+
 
 class Coverage(TConfigurable):
     """Programmatic access to coverage.py.
@@ -135,7 +138,7 @@ class Coverage(TConfigurable):
         else:
             return None
 
-    def __init__(                       # pylint: disable=too-many-arguments
+    def __init__(  # pylint: disable=too-many-arguments
         self,
         data_file: FilePath | DefaultValue | None = DEFAULT_DATAFILE,
         data_suffix: str | bool | None = None,
@@ -316,27 +319,30 @@ class Coverage(TConfigurable):
         self._should_write_debug = True
 
         # Build our configuration from a number of sources.
-        if not isinstance(config_file, bool):
-            config_file = os.fspath(config_file)
-        self.config = read_coverage_config(
-            config_file=config_file,
-            warn=self._warn,
-            data_file=data_file,
-            cover_pylib=cover_pylib,
-            timid=timid,
-            branch=branch,
-            parallel=bool_or_none(data_suffix),
-            source=source,
-            source_pkgs=source_pkgs,
-            source_dirs=source_dirs,
-            run_omit=omit,
-            run_include=include,
-            debug=debug,
-            report_omit=omit,
-            report_include=include,
-            concurrency=concurrency,
-            context=context,
-        )
+        if isinstance(config_file, str) and config_file.startswith(CONFIG_DATA_PREFIX):
+            self.config = CoverageConfig.deserialize(config_file[len(CONFIG_DATA_PREFIX) :])
+        else:
+            if not isinstance(config_file, bool):
+                config_file = os.fspath(config_file)
+            self.config = read_coverage_config(
+                config_file=config_file,
+                warn=self._warn,
+                data_file=data_file,
+                cover_pylib=cover_pylib,
+                timid=timid,
+                branch=branch,
+                parallel=bool_or_none(data_suffix),
+                source=source,
+                source_pkgs=source_pkgs,
+                source_dirs=source_dirs,
+                run_omit=omit,
+                run_include=include,
+                debug=debug,
+                report_omit=omit,
+                report_include=include,
+                concurrency=concurrency,
+                context=context,
+            )
 
         # If we have subprocess measurement happening automatically, then we
         # want any explicit creation of a Coverage object to mean, this process
@@ -613,8 +619,7 @@ class Coverage(TConfigurable):
             self._warn(
                 "Plugin file tracers ({}) aren't supported with {}".format(
                     ", ".join(
-                        plugin._coverage_plugin_name
-                            for plugin in self._plugins.file_tracers
+                        plugin._coverage_plugin_name for plugin in self._plugins.file_tracers
                     ),
                     self._collector.tracer_name(),
                 ),
@@ -638,13 +643,14 @@ class Coverage(TConfigurable):
         # Register our clean-up handlers.
         atexit.register(self._atexit)
         if self.config.sigterm:
-            is_main = (threading.current_thread() == threading.main_thread())
+            is_main = (threading.current_thread() == threading.main_thread())  # fmt: skip
             if is_main and not env.WINDOWS:
                 # The Python docs seem to imply that SIGTERM works uniformly even
                 # on Windows, but that's not my experience, and this agrees:
                 # https://stackoverflow.com/questions/35772001/x/35792192#35792192
-                self._old_sigterm = signal.signal(      # type: ignore[assignment]
-                    signal.SIGTERM, self._on_sigterm,
+                self._old_sigterm = signal.signal(  # type: ignore[assignment]
+                    signal.SIGTERM,
+                    self._on_sigterm,
                 )
 
     def _init_data(self, suffix: str | bool | None) -> None:
@@ -697,7 +703,7 @@ class Coverage(TConfigurable):
         if self._auto_load:
             self.load()
 
-        apply_patches(self, self.config, make_pth_file=self._make_pth_file)
+        apply_patches(self, self.config, self._debug, make_pth_file=self._make_pth_file)
 
         self._collector.start()
         self._started = True
@@ -724,7 +730,7 @@ class Coverage(TConfigurable):
         try:
             yield
         finally:
-            self.stop()     # pragma: nested
+            self.stop()  # pragma: nested
 
     def _atexit(self, event: str = "atexit") -> None:
         """Clean up on process shutdown."""
@@ -742,8 +748,8 @@ class Coverage(TConfigurable):
         self._atexit("sigterm")
         # Statements after here won't be seen by metacov because we just wrote
         # the data, and are about to kill the process.
-        signal.signal(signal.SIGTERM, self._old_sigterm)    # pragma: not covered
-        os.kill(os.getpid(), signal.SIGTERM)                # pragma: not covered
+        signal.signal(signal.SIGTERM, self._old_sigterm)  # pragma: not covered
+        os.kill(os.getpid(), signal.SIGTERM)  # pragma: not covered
 
     def erase(self) -> None:
         """Erase previously collected coverage data.
@@ -775,7 +781,7 @@ class Coverage(TConfigurable):
         .. versionadded:: 5.0
 
         """
-        if not self._started:                           # pragma: part started
+        if not self._started:  # pragma: part started
             raise CoverageException("Cannot switch context, coverage is not started")
 
         assert self._collector is not None
@@ -787,7 +793,7 @@ class Coverage(TConfigurable):
     def clear_exclude(self, which: str = "exclude") -> None:
         """Clear the exclude list."""
         self._init()
-        setattr(self.config, which + "_list", [])
+        setattr(self.config, f"{which}_list", [])
         self._exclude_regex_stale()
 
     def exclude(self, regex: str, which: str = "exclude") -> None:
@@ -806,7 +812,7 @@ class Coverage(TConfigurable):
 
         """
         self._init()
-        excl_list = getattr(self.config, which + "_list")
+        excl_list = getattr(self.config, f"{which}_list")
         excl_list.append(regex)
         self._exclude_regex_stale()
 
@@ -817,7 +823,7 @@ class Coverage(TConfigurable):
     def _exclude_regex(self, which: str) -> str:
         """Return a regex string for the given exclusion list."""
         if which not in self._exclude_re:
-            excl_list = getattr(self.config, which + "_list")
+            excl_list = getattr(self.config, f"{which}_list")
             self._exclude_re[which] = join_regex(excl_list)
         return self._exclude_re[which]
 
@@ -829,7 +835,7 @@ class Coverage(TConfigurable):
 
         """
         self._init()
-        return cast(list[str], getattr(self.config, which + "_list"))
+        return cast(list[str], getattr(self.config, f"{which}_list"))
 
     def save(self) -> None:
         """Save the collected coverage data to the data file."""
@@ -1025,7 +1031,8 @@ class Coverage(TConfigurable):
                     if file_reporter is None:
                         raise PluginError(
                             "Plugin {!r} did not provide a file reporter for {!r}.".format(
-                                plugin._coverage_plugin_name, morf,
+                                plugin._coverage_plugin_name,
+                                morf,
                             ),
                         )
 
@@ -1055,8 +1062,9 @@ class Coverage(TConfigurable):
 
         # Be sure we have a collection.
         if not isinstance(morfs, (list, tuple, set)):
-            morfs = [morfs]     # type: ignore[list-item]
+            morfs = [morfs]  # type: ignore[list-item]
 
+        morfs = sorted(morfs, key=lambda m: m if isinstance(m, str) else m.__name__)
         return [(self._get_file_reporter(morf), morf) for morf in morfs]
 
     def _prepare_data_for_reporting(self) -> None:
@@ -1235,8 +1243,7 @@ class Coverage(TConfigurable):
             precision=precision,
         ):
             reporter = HtmlReporter(self)
-            ret = reporter.report(morfs)
-            return ret
+            return reporter.report(morfs)
 
     def xml_report(
         self,
@@ -1368,7 +1375,8 @@ class Coverage(TConfigurable):
             ("configs_attempted", self.config.config_files_attempted),
             ("configs_read", self.config.config_files_read),
             ("config_file", self.config.config_file),
-            ("config_contents",
+            (
+                "config_contents",
                 repr(self.config._config_contents) if self.config._config_contents else "-none-",
             ),
             ("data_file", self._data.data_filename() if self._data is not None else "-none-"),
@@ -1397,40 +1405,35 @@ class Coverage(TConfigurable):
 
 # Mega debugging...
 # $set_env.py: COVERAGE_DEBUG_CALLS - Lots and lots of output about calls to Coverage.
-if int(os.getenv("COVERAGE_DEBUG_CALLS", 0)):               # pragma: debugging
+if int(os.getenv("COVERAGE_DEBUG_CALLS", 0)):  # pragma: debugging
     from coverage.debug import decorate_methods, show_calls
 
-    Coverage = decorate_methods(        # type: ignore[misc]
+    Coverage = decorate_methods(  # type: ignore[misc]
         show_calls(show_args=True),
         butnot=["get_data"],
     )(Coverage)
 
 
-def process_startup() -> Coverage | None:
+def process_startup(*, force: bool = False) -> Coverage | None:
     """Call this at Python start-up to perhaps measure coverage.
 
     If the environment variable COVERAGE_PROCESS_START is defined, coverage
     measurement is started.  The value of the variable is the config file
     to use.
 
-    There are two ways to configure your Python installation to invoke this
-    function when Python starts:
-
-    #. Create or append to sitecustomize.py to add these lines::
-
-        import coverage
-        coverage.process_startup()
-
-    #. Create a .pth file in your Python installation containing::
-
-        import coverage; coverage.process_startup()
+    For details, see https://coverage.readthedocs.io/en/latest/subprocess.html.
 
     Returns the :class:`Coverage` instance that was started, or None if it was
     not started by this call.
 
     """
+    config_data = os.getenv("COVERAGE_PROCESS_CONFIG")
     cps = os.getenv("COVERAGE_PROCESS_START")
-    if not cps:
+    if config_data is not None:
+        config_file = CONFIG_DATA_PREFIX + config_data
+    elif cps is not None:
+        config_file = cps
+    else:
         # No request for coverage, nothing to do.
         return None
 
@@ -1443,13 +1446,13 @@ def process_startup() -> Coverage | None:
     #
     # https://github.com/nedbat/coveragepy/issues/340 has more details.
 
-    if hasattr(process_startup, "coverage"):
+    if not force and hasattr(process_startup, "coverage"):
         # We've annotated this function before, so we must have already
-        # started coverage.py in this process.  Nothing to do.
+        # auto-started coverage.py in this process.  Nothing to do.
         return None
 
-    cov = Coverage(config_file=cps)
-    process_startup.coverage = cov      # type: ignore[attr-defined]
+    cov = Coverage(config_file=config_file)
+    process_startup.coverage = cov  # type: ignore[attr-defined]
     cov._warn_no_data = False
     cov._warn_unimported_source = False
     cov._warn_preimported_source = False
@@ -1458,6 +1461,13 @@ def process_startup() -> Coverage | None:
     cov.start()
 
     return cov
+
+
+def _after_fork_in_child() -> None:
+    """Used by patch=fork in the child process to restart coverage."""
+    if cov := Coverage.current():
+        cov.stop()
+    process_startup(force=True)
 
 
 def _prevent_sub_process_measurement() -> None:

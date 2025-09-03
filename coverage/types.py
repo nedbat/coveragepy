@@ -11,14 +11,7 @@ import os
 import pathlib
 from collections.abc import Iterable, Mapping
 from types import FrameType, ModuleType
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Callable,
-    Optional,
-    Protocol,
-    Union,
-)
+from typing import TYPE_CHECKING, Any, Callable, Optional, Protocol, Union
 
 if TYPE_CHECKING:
     from coverage.plugin import FileTracer
@@ -40,16 +33,18 @@ FilePathType = Union[type[str], type[pathlib.Path]]
 
 ## Python tracing
 
+
 class TTraceFn(Protocol):
     """A Python trace function."""
+
     def __call__(
         self,
         frame: FrameType,
         event: str,
         arg: Any,
         lineno: TLineNo | None = None,  # Our own twist, see collector.py
-    ) -> TTraceFn | None:
-        ...
+    ) -> TTraceFn | None: ...
+
 
 ## Coverage.py tracing
 
@@ -60,6 +55,7 @@ TLineNo = int
 TOffset = int
 
 TArc = tuple[TLineNo, TLineNo]
+
 
 class TFileDisposition(Protocol):
     """A simple value type for recording what to do with a file."""
@@ -90,6 +86,7 @@ TShouldTraceFn = Callable[[str, FrameType], TFileDisposition]
 TCheckIncludeFn = Callable[[str, FrameType], bool]
 TShouldStartContextFn = Callable[[FrameType], Union[str, None]]
 
+
 class Tracer(Protocol):
     """Anything that can report on Python execution."""
 
@@ -103,8 +100,7 @@ class Tracer(Protocol):
     unlock_data: Callable[[], None]
     warn: TWarnFn
 
-    def __init__(self) -> None:
-        ...
+    def __init__(self) -> None: ...
 
     def start(self) -> TTraceFn | None:
         """Start this tracer, return a trace function if based on sys.settrace."""
@@ -137,6 +133,7 @@ TConfigValueOut = Optional[Union[bool, int, float, str, list[str], dict[str, lis
 TConfigSectionIn = Mapping[str, TConfigValueIn]
 TConfigSectionOut = Mapping[str, TConfigValueOut]
 
+
 class TConfigurable(Protocol):
     """Something that can proxy to the coverage configuration settings."""
 
@@ -162,6 +159,7 @@ class TConfigurable(Protocol):
 
         """
 
+
 class TPluginConfig(Protocol):
     """Something that can provide options to a plugin."""
 
@@ -178,18 +176,21 @@ TSourceTokenLines = Iterable[list[tuple[str, str]]]
 
 ## Plugins
 
+
 class TPlugin(Protocol):
     """What all plugins have in common."""
+
     _coverage_plugin_name: str
     _coverage_enabled: bool
 
 
 ## Debugging
 
+
 class TWarnFn(Protocol):
     """A callable warn() function."""
-    def __call__(self, msg: str, slug: str | None = None, once: bool = False) -> None:
-        ...
+
+    def __call__(self, msg: str, slug: str | None = None, once: bool = False) -> None: ...
 
 
 class TDebugCtl(Protocol):

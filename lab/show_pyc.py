@@ -19,13 +19,12 @@ import types
 import warnings
 
 
-
 def show_pyc_file(fname):
     f = open(fname, "rb")
     magic = f.read(4)
     print("magic %s" % (binascii.hexlify(magic)))
     read_date_and_size = True
-    flags = struct.unpack('<L', f.read(4))[0]
+    flags = struct.unpack("<L", f.read(4))[0]
     hash_based = bool(flags & 0x01)
     check_source = bool(flags & 0x02)
     print(f"flags {flags:#08x}")
@@ -36,21 +35,25 @@ def show_pyc_file(fname):
         print(f"check_source {check_source}")
     if read_date_and_size:
         moddate = f.read(4)
-        modtime = time.asctime(time.localtime(struct.unpack('<L', moddate)[0]))
+        modtime = time.asctime(time.localtime(struct.unpack("<L", moddate)[0]))
         print(f"moddate {binascii.hexlify(moddate)} ({modtime})")
         size = f.read(4)
-        print("pysize %s (%d)" % (binascii.hexlify(size), struct.unpack('<L', size)[0]))
+        print("pysize %s (%d)" % (binascii.hexlify(size), struct.unpack("<L", size)[0]))
     code = marshal.load(f)
     show_code(code)
 
+
 def show_py_file(fname):
-    text = open(fname, encoding="utf-8").read().replace('\r\n', '\n')
+    text = open(fname, encoding="utf-8").read().replace("\r\n", "\n")
     show_py_text(text, fname=fname)
+
 
 def show_py_text(text, fname="<string>"):
     code = compile(text, fname, "exec", dont_inherit=True)
     show_code(code)
 
+
+# fmt:off
 CO_FLAGS = [
     ('CO_OPTIMIZED',                0x00001),
     ('CO_NEWLOCALS',                0x00002),
@@ -91,8 +94,10 @@ if sys.version_info >= (3, 14):
     CO_FLAGS += [
         ('CO_NO_MONITORING_EVENTS',     0x2000000),
     ]
+# fmt: on
 
-def show_code(code, indent='', number=None):
+
+def show_code(code, indent="", number=None):
     label = ""
     if number is not None:
         label = "%d: " % number
@@ -113,7 +118,7 @@ def show_code(code, indent='', number=None):
     print("%sconsts" % indent)
     for i, const in enumerate(code.co_consts):
         if type(const) == types.CodeType:
-            show_code(const, indent+"    ", number=i)
+            show_code(const, indent + "    ", number=i)
         else:
             print("    %s%d: %r" % (indent, i, const))
     print(f"{indent}names {code.co_names!r}")
@@ -123,28 +128,40 @@ def show_code(code, indent='', number=None):
     print(f"{indent}filename {code.co_filename!r}")
     print("%sfirstlineno %d" % (indent, code.co_firstlineno))
     show_hex("lnotab", code.co_lnotab, indent=indent)
-    print("    {}{}".format(indent, ", ".join(f"{line!r}:{byte!r}" for byte, line in lnotab_interpreted(code))))
+    print(
+        "    {}{}".format(
+            indent, ", ".join(f"{line!r}:{byte!r}" for byte, line in lnotab_interpreted(code))
+        )
+    )
     if hasattr(code, "co_linetable"):
         show_hex("linetable", code.co_linetable, indent=indent)
     if hasattr(code, "co_lines"):
-        print("    {}co_lines {}".format(
-            indent,
-            ", ".join(f"{line!r}:{start!r}-{end!r}" for start, end, line in code.co_lines())
-        ))
+        print(
+            "    {}co_lines {}".format(
+                indent,
+                ", ".join(f"{line!r}:{start!r}-{end!r}" for start, end, line in code.co_lines()),
+            )
+        )
     if hasattr(code, "co_branches"):
-        print("    {}co_branches {}".format(
-            indent,
-            ", ".join(f"{start!r}:{taken!r}/{nottaken!r}" for start, taken, nottaken in code.co_branches())
-        ))
+        print(
+            "    {}co_branches {}".format(
+                indent,
+                ", ".join(
+                    f"{start!r}:{taken!r}/{nottaken!r}"
+                    for start, taken, nottaken in code.co_branches()
+                ),
+            )
+        )
+
 
 def show_hex(label, h, indent):
     h = binascii.hexlify(h)
     if len(h) < 60:
-        print("{}{} {}".format(indent, label, h.decode('ascii')))
+        print("{}{} {}".format(indent, label, h.decode("ascii")))
     else:
         print(f"{indent}{label}")
         for i in range(0, len(h), 60):
-            print("{}   {}".format(indent, h[i:i+60].decode('ascii')))
+            print("{}   {}".format(indent, h[i : i + 60].decode("ascii")))
 
 
 def lnotab_interpreted(code):
@@ -167,6 +184,7 @@ def lnotab_interpreted(code):
     if line_num != last_line_num:
         yield (byte_num, line_num)
 
+
 def flag_words(flags, flag_defs):
     words = []
     for word, flag in flag_defs:
@@ -174,25 +192,26 @@ def flag_words(flags, flag_defs):
             words.append(word)
     return ", ".join(words)
 
+
 def show_file(fname):
-    if fname.endswith('pyc'):
+    if fname.endswith("pyc"):
         show_pyc_file(fname)
-    elif fname.endswith('py'):
+    elif fname.endswith("py"):
         show_py_file(fname)
     else:
         print("Odd file:", fname)
 
+
 def main(args):
     warnings.filterwarnings(
-        "ignore",
-        "co_lnotab is deprecated, use co_lines instead",
-        category=DeprecationWarning
+        "ignore", "co_lnotab is deprecated, use co_lines instead", category=DeprecationWarning
     )
-    if args[0] == '-c':
+    if args[0] == "-c":
         show_py_text(" ".join(args[1:]).replace(";", "\n"))
     else:
         for a in args:
             show_file(a)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main(sys.argv[1:])

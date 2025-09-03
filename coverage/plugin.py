@@ -131,7 +131,7 @@ class CoveragePlugin:
     _coverage_plugin_name: str
     _coverage_enabled: bool
 
-    def file_tracer(self, filename: str) -> FileTracer | None: # pylint: disable=unused-argument
+    def file_tracer(self, filename: str) -> FileTracer | None:  # pylint: disable=unused-argument
         """Get a :class:`FileTracer` object for a file.
 
         Plug-in type: file tracer.
@@ -173,8 +173,8 @@ class CoveragePlugin:
 
     def file_reporter(
         self,
-        filename: str,                  # pylint: disable=unused-argument
-    ) -> FileReporter | str:      # str should be Literal["python"]
+        filename: str,  # pylint: disable=unused-argument
+    ) -> FileReporter | str:  # str should be Literal["python"]
         """Get the :class:`FileReporter` class to use for a file.
 
         Plug-in type: file tracer.
@@ -190,7 +190,7 @@ class CoveragePlugin:
 
     def dynamic_context(
         self,
-        frame: FrameType,               # pylint: disable=unused-argument
+        frame: FrameType,  # pylint: disable=unused-argument
     ) -> str | None:
         """Get the dynamically computed context label for `frame`.
 
@@ -209,7 +209,7 @@ class CoveragePlugin:
 
     def find_executable_files(
         self,
-        src_dir: str,                   # pylint: disable=unused-argument
+        src_dir: str,  # pylint: disable=unused-argument
     ) -> Iterable[str]:
         """Yield all of the executable files in `src_dir`, recursively.
 
@@ -255,6 +255,7 @@ class CoveragePlugin:
 
 class CoveragePluginBase:
     """Plugins produce specialized objects, which point back to the original plugin."""
+
     _coverage_plugin: CoveragePlugin
 
 
@@ -310,8 +311,8 @@ class FileTracer(CoveragePluginBase):
 
     def dynamic_source_filename(
         self,
-        filename: str,                  # pylint: disable=unused-argument
-        frame: FrameType,               # pylint: disable=unused-argument
+        filename: str,  # pylint: disable=unused-argument
+        frame: FrameType,  # pylint: disable=unused-argument
     ) -> str | None:
         """Get a dynamically computed source file name.
 
@@ -526,7 +527,7 @@ class FileReporter(CoveragePluginBase):
         self,
         start: TLineNo,
         end: TLineNo,
-        executed_arcs: Iterable[TArc] | None = None,     # pylint: disable=unused-argument
+        executed_arcs: Iterable[TArc] | None = None,  # pylint: disable=unused-argument
     ) -> str:
         """Provide an English sentence describing a missing arc.
 
@@ -544,8 +545,8 @@ class FileReporter(CoveragePluginBase):
 
     def arc_description(
         self,
-        start: TLineNo,     # pylint: disable=unused-argument
-        end: TLineNo
+        start: TLineNo,  # pylint: disable=unused-argument
+        end: TLineNo,
     ) -> str:
         """Provide an English description of an arc's effect."""
         return f"jump to line {end}"
@@ -613,4 +614,4 @@ class FileReporter(CoveragePluginBase):
         return isinstance(other, FileReporter) and self.filename < other.filename
 
     # This object doesn't need to be hashed.
-    __hash__ = None         # type: ignore[assignment]
+    __hash__ = None  # type: ignore[assignment]

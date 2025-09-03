@@ -18,7 +18,7 @@ class TempDirMixinTest(TempDirMixin):
     def file_text(self, fname: str) -> str:
         """Return the text read from a file."""
         with open(fname, "rb") as f:
-            return f.read().decode('ascii')
+            return f.read().decode("ascii")
 
     def test_make_file(self) -> None:
         # A simple file.
@@ -34,10 +34,13 @@ class TempDirMixinTest(TempDirMixin):
         self.make_file("sub/deeper/evenmore/third.txt")
         assert self.file_text("sub/deeper/evenmore/third.txt") == ""
         # Dedenting
-        self.make_file("dedented.txt", """\
+        self.make_file(
+            "dedented.txt",
+            """\
             Hello
             Bye
-            """)
+            """,
+        )
         assert self.file_text("dedented.txt") == "Hello\nBye\n"
 
     def test_make_file_newline(self) -> None:
@@ -67,7 +70,8 @@ class RestoreModulessMixinTest(TempDirMixin, RestoreModulesMixin):
     @pytest.mark.parametrize("val", [17, 42])
     def test_module_independence(self, val: int) -> None:
         self.make_file("xyzzy.py", f"A = {val}")
-        import xyzzy            # pylint: disable=import-error
+        import xyzzy  # pylint: disable=import-error
+
         assert xyzzy.A == val
 
     def test_cleanup_and_reimport(self) -> None:

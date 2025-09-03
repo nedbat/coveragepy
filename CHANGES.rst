@@ -23,23 +23,87 @@ upgrading your version of coverage.py.
 Unreleased
 ----------
 
-- Fix: ``patch = subprocess`` didn't fully account for subprocesses spawning
-  yet more subprocesses simultaneously, and some coveage could be missed.  This
-  is now fixed, closing `issue 2024`_.
+Nothing yet.
+
+
+.. start-releases
+
+.. _changes_7-10-6:
+
+Version 7.10.6 — 2025-08-29
+---------------------------
+
+- Fix: ``source`` directories were not properly communicated to subprocesses
+  that ran in different directories, as reported in `issue 1499`_.  This is now
+  fixed.
+
+- Performance: `Alex Gaynor continues fine-tuning <pull 2038_>`_ the speed of
+  combination, especially with many contexts.
+
+.. _issue 1499: https://github.com/nedbat/coveragepy/issues/1499
+.. _pull 2038: https://github.com/nedbat/coveragepy/pull/2038
+
+
+.. _changes_7-10-5:
+
+Version 7.10.5 — 2025-08-23
+---------------------------
+
+- Big speed improvements for ``coverage combine``: it's now about twice as
+  fast! Huge thanks to Alex Gaynor for pull requests `2032 <pull 2032_>`_,
+  `2033 <pull 2033_>`_, and `2034 <pull 2034_>`_.
+
+.. _pull 2032: https://github.com/nedbat/coveragepy/pull/2032
+.. _pull 2033: https://github.com/nedbat/coveragepy/pull/2033
+.. _pull 2034: https://github.com/nedbat/coveragepy/pull/2034
+
+
+.. _changes_7-10-4:
+
+Version 7.10.4 — 2025-08-16
+---------------------------
+
+- Added ``patch = fork`` for times when the built-in forking support is
+  insufficient.
+
+- Fix: ``patch = execv`` also inherits the entire coverage configuration now.
+
+
+.. _changes_7-10-3:
+
+Version 7.10.3 — 2025-08-10
+---------------------------
+
+- Fixes for ``patch = subprocess``:
+
+  - If subprocesses spawned yet more subprocesses simultaneously, some coverage
+    could be missed.  This is now fixed, closing `issue 2024`_.
+
+  - If subprocesses were created in other directories, their data files were
+    stranded there and not combined into the totals, as described in `issue
+    2025`_.  This is now fixed.
+
+  - On Windows (or maybe only some Windows?) the patch would fail with a
+    ``ModuleNotFound`` error trying to import coverage.  This is now fixed,
+    closing `issue 2022`_.
+
+  - Originally only options set in the coverage configuration file would apply
+    to subprocesses.  Options set on the ``coverage run`` command line (such as
+    ``--branch``) wouldn't be communicated to the subprocesses.  This could
+    lead to combining failures, as described in `issue 2021`_. Now the entire
+    configuration is used in subprocesses, regardless of its origin.
+
+  - Added ``debug=patch`` to help diagnose problems.
 
 - Fix: really close all SQLite databases, even in-memory ones. Closes `issue
   2017`_.
 
-- Fix some thread safety issues reported in `issue 2007`_.  Thanks, `Kumar
-  Aditya <pull 2018_>`_.
-
-.. _issue 2007: https://github.com/nedbat/coveragepy/issues/2007
 .. _issue 2017: https://github.com/nedbat/coveragepy/issues/2017
-.. _pull 2018: https://github.com/nedbat/coveragepy/pull/2018
+.. _issue 2021: https://github.com/nedbat/coveragepy/issues/2021
+.. _issue 2022: https://github.com/nedbat/coveragepy/issues/2022
 .. _issue 2024: https://github.com/nedbat/coveragepy/issues/2024
+.. _issue 2025: https://github.com/nedbat/coveragepy/issues/2025
 
-
-.. start-releases
 
 .. _changes_7-10-2:
 

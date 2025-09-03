@@ -30,24 +30,24 @@ class GetZipBytesTest(CoverageTest):
     def test_get_encoded_zip_files(self, encoding: str) -> None:
         # See igor.py, do_zipmods, for the text of these files.
         zip_file = "tests/zipmods.zip"
-        sys.path.append(zip_file)       # So we can import the files.
+        sys.path.append(zip_file)  # So we can import the files.
         filename = zip_file + "/encoded_" + encoding + ".py"
         filename = os_sep(filename)
         zip_data = get_zip_bytes(filename)
         assert zip_data is not None
         zip_text = zip_data.decode(encoding)
-        assert 'All OK' in zip_text
+        assert "All OK" in zip_text
         # Run the code to see that we really got it encoded properly.
-        mod = __import__("encoded_"+encoding)
+        mod = __import__("encoded_" + encoding)
         assert mod.encoding == encoding
 
 
 def test_source_for_file(tmp_path: pathlib.Path) -> None:
     src = str(tmp_path / "a.py")
     assert source_for_file(src) == src
-    assert source_for_file(src + 'c') == src
-    assert source_for_file(src + 'o') == src
-    unknown = src + 'FOO'
+    assert source_for_file(src + "c") == src
+    assert source_for_file(src + "o") == src
+    unknown = src + "FOO"
     assert source_for_file(unknown) == unknown
 
 
@@ -59,11 +59,11 @@ def test_source_for_file_windows(tmp_path: pathlib.Path) -> None:
     # On windows if a pyw exists, it is an acceptable source
     path_windows = tmp_path / "a.pyw"
     path_windows.write_text("", encoding="utf-8")
-    assert str(path_windows) == source_for_file(src + 'c')
+    assert str(path_windows) == source_for_file(src + "c")
 
     # If both pyw and py exist, py is preferred
     a_py.write_text("", encoding="utf-8")
-    assert source_for_file(src + 'c') == src
+    assert source_for_file(src + "c") == src
 
 
 class RunpyTest(CoverageTest):

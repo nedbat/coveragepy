@@ -17,11 +17,7 @@ import sysconfig
 import traceback
 from collections.abc import Iterable
 from types import FrameType, ModuleType
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    cast,
-)
+from typing import TYPE_CHECKING, Any, cast
 
 from coverage import env
 from coverage.disposition import FileDisposition, disposition_init
@@ -44,7 +40,13 @@ if TYPE_CHECKING:
 
 
 modules_we_happen_to_have: list[ModuleType] = [
-    inspect, itertools, os, platform, re, sysconfig, traceback,
+    inspect,
+    itertools,
+    os,
+    platform,
+    re,
+    sysconfig,
+    traceback,
 ]
 
 if env.PYPY:
@@ -54,10 +56,12 @@ if env.PYPY:
     # find those directories.
     import _pypy_irc_topic  # pylint: disable=import-error
     import _structseq  # pylint: disable=import-error
+
     modules_we_happen_to_have.extend([_structseq, _pypy_irc_topic])
 
 
 os = isolate_module(os)
+
 
 def canonical_path(morf: TMorf, directory: bool = False) -> str:
     """Return the canonical path of the module or file `morf`.
@@ -496,7 +500,8 @@ class InOrOut:
                 elif self.debug and self.debug.should("trace"):
                     self.debug.write(
                         "Didn't trace already imported file {!r}: {}".format(
-                            disp.original_filename, disp.reason,
+                            disp.original_filename,
+                            disp.reason,
                         ),
                     )
 
@@ -537,8 +542,7 @@ class InOrOut:
         Yields pairs: file path, and responsible plug-in name.
         """
         for pkg in self.source_pkgs:
-            if (pkg not in sys.modules or
-                not module_has_file(sys.modules[pkg])):
+            if pkg not in sys.modules or not module_has_file(sys.modules[pkg]):
                 continue
             pkg_file = source_for_file(cast(str, sys.modules[pkg].__file__))
             yield from self._find_executable_files(canonical_path(pkg_file))
@@ -563,8 +567,8 @@ class InOrOut:
 
         """
         py_files = (
-            (py_file, None) for py_file in
-            find_python_files(src_dir, self.include_namespace_packages)
+            (py_file, None)
+            for py_file in find_python_files(src_dir, self.include_namespace_packages)
         )
         plugin_files = self._find_plugin_files(src_dir)
 
@@ -589,9 +593,14 @@ class InOrOut:
         ]
 
         matcher_names = [
-            "source_match", "source_pkgs_match",
-            "include_match", "omit_match",
-            "cover_match", "pylib_match", "third_match", "source_in_third_match",
+            "source_match",
+            "source_pkgs_match",
+            "include_match",
+            "omit_match",
+            "cover_match",
+            "pylib_match",
+            "third_match",
+            "source_in_third_match",
         ]
 
         for matcher_name in matcher_names:

@@ -51,6 +51,7 @@ else:
 
 THIS_FILE = __file__.rstrip("co")
 
+
 class PyTracer(Tracer):
     """Python implementation of the raw data tracer."""
 
@@ -126,17 +127,18 @@ class PyTracer(Tracer):
         """For hard-core logging of what this tracer is doing."""
         with open("/tmp/debug_trace.txt", "a", encoding="utf-8") as f:
             f.write(f"{marker} {self.id}[{len(self.data_stack)}]")
-            if 0:   # if you want thread ids..
-                f.write(".{:x}.{:x}".format(                    # type: ignore[unreachable]
-                    self.thread.ident,
-                    self.threading.current_thread().ident,
-                ))
+            if 0:  # if you want thread ids..
+                f.write(  # type: ignore[unreachable]
+                    ".{:x}.{:x}".format(
+                        self.thread.ident,
+                        self.threading.current_thread().ident,
+                    )
+                )
             f.write(" {}".format(" ".join(map(str, args))))
-            if 0:   # if you want callers..
-                f.write(" | ")                                  # type: ignore[unreachable]
+            if 0:  # if you want callers..
+                f.write(" | ")  # type: ignore[unreachable]
                 stack = " / ".join(
-                    (fname or "???").rpartition("/")[-1]
-                    for _, fname, _, _ in self.data_stack
+                    (fname or "???").rpartition("/")[-1] for _, fname, _, _ in self.data_stack
                 )
                 f.write(stack)
             f.write("\n")
@@ -145,8 +147,8 @@ class PyTracer(Tracer):
         self,
         frame: FrameType,
         event: str,
-        arg: Any,                           # pylint: disable=unused-argument
-        lineno: TLineNo | None = None,      # pylint: disable=unused-argument
+        arg: Any,  # pylint: disable=unused-argument
+        lineno: TLineNo | None = None,  # pylint: disable=unused-argument
     ) -> TTraceFn | None:
         """The trace function passed to sys.settrace."""
 
@@ -156,11 +158,11 @@ class PyTracer(Tracer):
         # f = frame; code = f.f_code
         # self.log(":", f"{code.co_filename} {f.f_lineno} {code.co_name}()", event)
 
-        if (self.stopped and sys.gettrace() == self._cached_bound_method_trace):    # pylint: disable=comparison-with-callable
+        if self.stopped and sys.gettrace() == self._cached_bound_method_trace:  # pylint: disable=comparison-with-callable
             # The PyTrace.stop() method has been called, possibly by another
             # thread, let's deactivate ourselves now.
             if 0:
-                f = frame                   # type: ignore[unreachable]
+                f = frame  # type: ignore[unreachable]
                 self.log("---\nX", f.f_code.co_filename, f.f_lineno)
                 while f:
                     self.log(">", f.f_code.co_filename, f.f_lineno, f.f_code.co_name, f.f_trace)
@@ -185,12 +187,12 @@ class PyTracer(Tracer):
         if event == "call":
             # Should we start a new context?
             if self.should_start_context and self.context is None:
-                context_maybe = self.should_start_context(frame)    # pylint: disable=not-callable
+                context_maybe = self.should_start_context(frame)  # pylint: disable=not-callable
                 if context_maybe is not None:
                     self.context = context_maybe
                     started_context = True
                     assert self.switch_context is not None
-                    self.switch_context(self.context)   # pylint: disable=not-callable
+                    self.switch_context(self.context)  # pylint: disable=not-callable
                 else:
                     started_context = False
             else:
@@ -246,9 +248,9 @@ class PyTracer(Tracer):
                 # The current opcode is guaranteed to be RESUME. The argument
                 # determines what kind of resume it is.
                 oparg = frame.f_code.co_code[frame.f_lasti + 1]
-                real_call = (oparg == 0)
+                real_call = (oparg == 0)  # fmt: skip
             else:
-                real_call = (getattr(frame, "f_lasti", -1) < 0)
+                real_call = (getattr(frame, "f_lasti", -1) < 0)  # fmt: skip
             if real_call:
                 self.last_line = -frame.f_code.co_firstlineno
             else:
@@ -279,7 +281,7 @@ class PyTracer(Tracer):
                         # It is a real return if we aren't going to resume next.
                         if env.PYBEHAVIOR.lasti_is_yield:
                             lasti += 2
-                        real_return = (code[lasti] != RESUME)
+                        real_return = code[lasti] != RESUME
                 else:
                     if code[lasti] == RETURN_VALUE:
                         real_return = True
@@ -303,7 +305,7 @@ class PyTracer(Tracer):
             if self.started_context:
                 assert self.switch_context is not None
                 self.context = None
-                self.switch_context(None)   # pylint: disable=not-callable
+                self.switch_context(None)  # pylint: disable=not-callable
 
         return self._cached_bound_method_trace
 
@@ -338,22 +340,19 @@ class PyTracer(Tracer):
                 # Called on a different thread than started us: we can't unhook
                 # ourselves, but we've set the flag that we should stop, so we
                 # won't do any more tracing.
-                #self.log("~", "stopping on different threads")
+                # self.log("~", "stopping on different threads")
                 return
 
         # PyPy clears the trace function before running atexit functions,
         # so don't warn if we are in atexit on PyPy and the trace function
         # has changed to None.  Metacoverage also messes this up, so don't
         # warn if we are measuring ourselves.
-        suppress_warning = (
-            (env.PYPY and self.in_atexit and tf is None)
-            or env.METACOV
-        )
+        suppress_warning = (env.PYPY and self.in_atexit and tf is None) or env.METACOV
         if self.warn and not suppress_warning:
-            if tf != self._cached_bound_method_trace:   # pylint: disable=comparison-with-callable
+            if tf != self._cached_bound_method_trace:  # pylint: disable=comparison-with-callable
                 self.warn(
-                    "Trace function changed, data is likely wrong: " +
-                    f"{tf!r} != {self._cached_bound_method_trace!r}",
+                    "Trace function changed, data is likely wrong: "
+                    + f"{tf!r} != {self._cached_bound_method_trace!r}",
                     slug="trace-changed",
                 )
 

@@ -13,21 +13,18 @@ http://aosabook.org/en/500L/a-template-engine.html
 from __future__ import annotations
 
 import re
-from typing import (
-    Any,
-    Callable,
-    NoReturn,
-    cast,
-)
+from typing import Any, Callable, NoReturn, cast
 
 
 class TempliteSyntaxError(ValueError):
     """Raised when a template has a syntax error."""
+
     pass
 
 
 class TempliteValueError(ValueError):
     """Raised when an expression won't evaluate in a template."""
+
     pass
 
 
@@ -55,7 +52,7 @@ class CodeBuilder:
         self.code.append(section)
         return section
 
-    INDENT_STEP = 4      # PEP8 says so!
+    INDENT_STEP = 4  # PEP8 says so!
 
     def indent(self) -> None:
         """Increase the current indent for following lines."""
@@ -119,6 +116,7 @@ class Templite:
         })
 
     """
+
     def __init__(self, text: str, *contexts: dict[str, Any]) -> None:
         """Construct a Templite with the given `text`.
 
@@ -165,7 +163,7 @@ class Templite:
         for token in tokens:
             if token.startswith("{"):
                 start, end = 2, -2
-                squash = (token[-3] == "-")
+                squash = (token[-3] == "-")  # fmt: skip
                 if squash:
                     end = -3
 

@@ -28,11 +28,19 @@ def foo():
 """
 
 SIMPLE_TOKENS = [
-    [('com', "# yay!")],
-    [('key', 'def'), ('ws', ' '), ('nam', 'foo'), ('op', '('), ('op', ')'), ('op', ':')],
-    [('ws', '  '), ('nam', 'say'), ('op', '('),
-        ('str', "'two = %d'"), ('ws', ' '), ('op', '%'),
-        ('ws', ' '), ('num', '2'), ('op', ')')],
+    [("com", "# yay!")],
+    [("key", "def"), ("ws", " "), ("nam", "foo"), ("op", "("), ("op", ")"), ("op", ":")],
+    [
+        ("ws", "  "),
+        ("nam", "say"),
+        ("op", "("),
+        ("str", "'two = %d'"),
+        ("ws", " "),
+        ("op", "%"),
+        ("ws", " "),
+        ("num", "2"),
+        ("op", ")"),
+    ],
 ]
 
 # Mixed-white-space program, and its token stream.
@@ -43,9 +51,9 @@ def hello():
 """
 
 MIXED_WS_TOKENS = [
-    [('key', 'def'), ('ws', ' '), ('nam', 'hello'), ('op', '('), ('op', ')'), ('op', ':')],
-    [('ws', '        '), ('nam', 'a'), ('op', '='), ('str', '"Hello world!"')],
-    [('ws', '        '), ('nam', 'b'), ('op', '='), ('str', '"indented"')],
+    [("key", "def"), ("ws", " "), ("nam", "hello"), ("op", "("), ("op", ")"), ("op", ":")],
+    [("ws", "        "), ("nam", "a"), ("op", "="), ("str", '"Hello world!"')],
+    [("ws", "        "), ("nam", "b"), ("op", "="), ("str", '"indented"')],
 ]
 
 # https://github.com/nedbat/coveragepy/issues/822
@@ -55,6 +63,7 @@ array = [ 1,2,3,4,       # 4 numbers \\
           5,6,7 ]        # 3 numbers
 print( "Message 2" )
 """
+
 
 class PhysTokensTest(CoverageTest):
     """Tests for coverage.py's improved tokenizer."""
@@ -69,7 +78,7 @@ class PhysTokensTest(CoverageTest):
             tokenized += text + "\n"
         # source_token_lines doesn't preserve trailing spaces, so trim all that
         # before comparing.
-        source = source.replace('\r\n', '\n')
+        source = source.replace("\r\n", "\n")
         source = re.sub(r"(?m)[ \t]+$", "", source)
         tokenized = re.sub(r"(?m)[ \t]+$", "", tokenized)
         assert source == tokenized
@@ -100,26 +109,41 @@ class PhysTokensTest(CoverageTest):
 
     def test_1828(self) -> None:
         # https://github.com/nedbat/coveragepy/pull/1828
-        tokens = list(source_token_lines(textwrap.dedent("""
+        tokens = list(
+            source_token_lines(
+                textwrap.dedent("""
             x = \
                 1
             a = ["aaa",\\
                  "bbb \\
                  ccc"]
-            """)))
+            """)
+            )
+        )
         assert tokens == [
             [],
-            [('nam', 'x'), ('ws', ' '), ('op', '='), ('ws', '                 '), ('num', '1')],
-            [('nam', 'a'), ('ws', ' '), ('op', '='), ('ws', ' '),
-                ('op', '['), ('str', '"aaa"'), ('op', ','), ('xx', '\\')],
-            [('ws', '     '), ('str', '"bbb \\')],
-            [('str', '     ccc"'), ('op', ']')],
+            [("nam", "x"), ("ws", " "), ("op", "="), ("ws", "                 "), ("num", "1")],
+            [
+                ("nam", "a"),
+                ("ws", " "),
+                ("op", "="),
+                ("ws", " "),
+                ("op", "["),
+                ("str", '"aaa"'),
+                ("op", ","),
+                ("xx", "\\"),
+            ],
+            [("ws", "     "), ("str", '"bbb \\')],
+            [("str", '     ccc"'), ("op", "]")],
         ]
 
-    @pytest.mark.parametrize("fname", [
-        "stress_phystoken.tok",
-        "stress_phystoken_dos.tok",
-    ])
+    @pytest.mark.parametrize(
+        "fname",
+        [
+            "stress_phystoken.tok",
+            "stress_phystoken_dos.tok",
+        ],
+    )
     def test_stress(self, fname: str) -> None:
         # Check the tokenization of the stress-test files.
         # And check that those files haven't been incorrectly "fixed".
@@ -132,9 +156,13 @@ class PhysTokensTest(CoverageTest):
                 assert re.search(r"(?m) $", fstress.read()), f"{stress} needs a trailing space."
 
     def test_fstring_middle(self) -> None:
-        tokens = list(source_token_lines(textwrap.dedent("""\
+        tokens = list(
+            source_token_lines(
+                textwrap.dedent("""\
             f'Look: {x} {{x}}!'
-            """)))
+            """)
+            )
+        )
         if env.PYBEHAVIOR.fstring_syntax:
             assert tokens == [
                 [
@@ -216,6 +244,7 @@ ENCODING_DECLARATION_SOURCES = [
     (2, b"# -*-  coding:cp850 -*-\n# vim: fileencoding=cp850\n", "cp850"),
 ]
 
+
 class SourceEncodingTest(CoverageTest):
     """Tests of source_encoding() for detecting encodings."""
 
@@ -227,7 +256,7 @@ class SourceEncodingTest(CoverageTest):
 
     def test_detect_source_encoding_not_in_comment(self) -> None:
         # Should not detect anything here
-        source = b'def parse(src, encoding=None):\n    pass'
+        source = b"def parse(src, encoding=None):\n    pass"
         assert source_encoding(source) == DEF_ENCODING
 
     def test_dont_detect_source_encoding_on_third_line(self) -> None:
@@ -241,16 +270,16 @@ class SourceEncodingTest(CoverageTest):
 
     def test_bom(self) -> None:
         # A BOM means utf-8.
-        source = b"\xEF\xBB\xBFtext = 'hello'\n"
-        assert source_encoding(source) == 'utf-8-sig'
+        source = b"\xef\xbb\xbftext = 'hello'\n"
+        assert source_encoding(source) == "utf-8-sig"
 
     def test_bom_with_encoding(self) -> None:
-        source = b"\xEF\xBB\xBF# coding: utf-8\ntext = 'hello'\n"
-        assert source_encoding(source) == 'utf-8-sig'
+        source = b"\xef\xbb\xbf# coding: utf-8\ntext = 'hello'\n"
+        assert source_encoding(source) == "utf-8-sig"
 
     def test_bom_is_wrong(self) -> None:
         # A BOM with an explicit non-utf8 encoding is an error.
-        source = b"\xEF\xBB\xBF# coding: cp850\n"
+        source = b"\xef\xbb\xbf# coding: cp850\n"
         with pytest.raises(SyntaxError, match="encoding problem: utf-8"):
             source_encoding(source)
 

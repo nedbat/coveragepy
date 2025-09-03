@@ -30,6 +30,7 @@ JsonObj = dict[str, Any]
 # 3: add region information (functions, classes)
 FORMAT_VERSION = 3
 
+
 class JsonReporter:
     """A reporter for writing JSON coverage results."""
 

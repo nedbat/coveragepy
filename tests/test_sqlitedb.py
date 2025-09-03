@@ -22,6 +22,7 @@ create table name (first text, last text);
 insert into name (first, last) values ("pablo", "picasso");
 """
 
+
 class SqliteDbTest(CoverageTest):
     """Tests of tricky parts of SqliteDb."""
 
@@ -31,7 +32,7 @@ class SqliteDbTest(CoverageTest):
             with pytest.raises(DataError, match=msg):
                 with db.execute("select foo from bar"):
                     # Entering the context manager raises the error, this line doesn't run:
-                    pass    # pragma: not covered
+                    pass  # pragma: not covered
 
     def test_retry_execute(self) -> None:
         with SqliteDb("test.db", DebugControlString(options=["sql"])) as db:
@@ -49,7 +50,7 @@ class SqliteDbTest(CoverageTest):
                 with pytest.raises(RuntimeError, match="Fake"):
                     with db.execute("select first from name order by 1"):
                         # Entering the context manager raises the error, this line doesn't run:
-                        pass    # pragma: not covered
+                        pass  # pragma: not covered
 
     def test_retry_executemany_void(self) -> None:
         with SqliteDb("test.db", DebugControlString(options=["sql"])) as db:
@@ -76,14 +77,16 @@ class SqliteDbTest(CoverageTest):
 
     def test_open_fails_on_bad_db(self) -> None:
         self.make_file("bad.db", "boogers")
+
         def fake_failing_open(filename: str, mode: str) -> NoReturn:
             assert (filename, mode) == ("bad.db", "rb")
             raise RuntimeError("No you can't!")
+
         with mock.patch.object(coverage.sqlitedb, "open", fake_failing_open):
             msg = "Couldn't use data file 'bad.db': file is not a database"
             with pytest.raises(DataError, match=msg):
                 with SqliteDb("bad.db", DebugControlString(options=["sql"])):
-                    pass    # pragma: not covered
+                    pass  # pragma: not covered
 
     def test_execute_void_can_allow_failure(self) -> None:
         with SqliteDb("fail.db", DebugControlString(options=["sql"])) as db:

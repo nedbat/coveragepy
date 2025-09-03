@@ -50,7 +50,13 @@ class PythonParserTest(PythonParserTestBase):
                 pass
             """)
         assert parser.exit_counts() == {
-            2:1, 3:1, 4:2, 5:1, 7:1, 9:1, 10:1,
+            2: 1,
+            3: 1,
+            4: 2,
+            5: 1,
+            7: 1,
+            9: 1,
+            10: 1,
         }
 
     def test_try_except(self) -> None:
@@ -66,7 +72,15 @@ class PythonParserTest(PythonParserTestBase):
             b = 9
             """)
         assert parser.exit_counts() == {
-            1: 1, 2:1, 3:1, 4:1, 5:1, 6:1, 7:1, 8:1, 9:1,
+            1: 1,
+            2: 1,
+            3: 1,
+            4: 1,
+            5: 1,
+            6: 1,
+            7: 1,
+            8: 1,
+            9: 1,
         }
 
     def test_excluded_classes(self) -> None:
@@ -79,7 +93,7 @@ class PythonParserTest(PythonParserTestBase):
                 class Bar:
                     pass
             """)
-        assert parser.exit_counts() == { 2:1, 3:1 }
+        assert parser.exit_counts() == {2: 1, 3: 1}
 
     def test_missing_branch_to_excluded_code(self) -> None:
         parser = self.parse_text("""\
@@ -89,7 +103,7 @@ class PythonParserTest(PythonParserTestBase):
                 a = 4
             b = 5
             """)
-        assert parser.exit_counts() == { 1:1, 2:1, 5:1 }
+        assert parser.exit_counts() == {1: 1, 2: 1, 5: 1}
         parser = self.parse_text("""\
             def foo():
                 if fooey:
@@ -98,7 +112,7 @@ class PythonParserTest(PythonParserTestBase):
                     a = 5
             b = 6
             """)
-        assert parser.exit_counts() == { 1:1, 2:2, 3:1, 5:1, 6:1 }
+        assert parser.exit_counts() == {1: 1, 2: 2, 3: 1, 5: 1, 6: 1}
         parser = self.parse_text("""\
             def foo():
                 if fooey:
@@ -107,21 +121,24 @@ class PythonParserTest(PythonParserTestBase):
                     a = 5
             b = 6
             """)
-        assert parser.exit_counts() == { 1:1, 2:1, 3:1, 6:1 }
+        assert parser.exit_counts() == {1: 1, 2: 1, 3: 1, 6: 1}
 
-    @pytest.mark.parametrize("text", [
-        pytest.param("0 spaces\n  2\n 1", id="bad_indent"),
-        pytest.param("'''", id="string_eof"),
-        pytest.param("$hello", id="dollar"),
-        # on 3.10 this passes ast.parse but fails on tokenize.generate_tokens
-        pytest.param(
-            "\r'\\\n'''",
-            id="leading_newline_eof",
-            marks=[
-                pytest.mark.skipif(env.PYVERSION >= (3, 12), reason="parses fine in 3.12"),
-            ]
-        )
-    ])
+    @pytest.mark.parametrize(
+        "text",
+        [
+            pytest.param("0 spaces\n  2\n 1", id="bad_indent"),
+            pytest.param("'''", id="string_eof"),
+            pytest.param("$hello", id="dollar"),
+            # on 3.10 this passes ast.parse but fails on tokenize.generate_tokens
+            pytest.param(
+                "\r'\\\n'''",
+                id="leading_newline_eof",
+                marks=[
+                    pytest.mark.skipif(env.PYVERSION >= (3, 12), reason="parses fine in 3.12"),
+                ],
+            ),
+        ],
+    )
     def test_not_python(self, text: str) -> None:
         msg = r"Couldn't parse '<code>' as Python source: ['\"].*['\"] at line \d+"
         with pytest.raises(NotPython, match=msg):
@@ -190,8 +207,8 @@ class PythonParserTest(PythonParserTestBase):
         # https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=50381
         # The second parse used to raise `TypeError: 'NoneType' object is not iterable`
         msg = (
-            r"(EOF in multi-line statement)"        # before 3.12.0b1
-            + r"|(unmatched ']')"                   # after 3.12.0b1
+            r"(EOF in multi-line statement)"  # before 3.12.0b1
+            + r"|(unmatched ']')"  # after 3.12.0b1
         )
         with pytest.raises(NotPython, match=msg):
             self.parse_text("]")
@@ -227,17 +244,19 @@ class ExclusionParserTest(PythonParserTestBase):
     """Tests for the exclusion code in PythonParser."""
 
     def test_simple(self) -> None:
-        parser = self.parse_text("""\
+        parser = self.parse_text(
+            """\
             a = 1; b = 2
 
             if len([]):
                 a = 4   # nocover
             """,
         )
-        assert parser.statements == {1,3}
+        assert parser.statements == {1, 3}
 
     def test_excluding_if_suite(self) -> None:
-        parser = self.parse_text("""\
+        parser = self.parse_text(
+            """\
             a = 1; b = 2
 
             if len([]):     # nocover
@@ -247,10 +266,11 @@ class ExclusionParserTest(PythonParserTestBase):
             assert a == 1 and b == 2
             """,
         )
-        assert parser.statements == {1,7}
+        assert parser.statements == {1, 7}
 
     def test_excluding_if_but_not_else_suite(self) -> None:
-        parser = self.parse_text("""\
+        parser = self.parse_text(
+            """\
             a = 1; b = 2
 
             if len([]):     # nocover
@@ -263,10 +283,11 @@ class ExclusionParserTest(PythonParserTestBase):
             assert a == 8 and b == 9
             """,
         )
-        assert parser.statements == {1,8,9,10}
+        assert parser.statements == {1, 8, 9, 10}
 
     def test_excluding_else_suite(self) -> None:
-        parser = self.parse_text("""\
+        parser = self.parse_text(
+            """\
             a = 1; b = 2
 
             if 1==1:
@@ -279,8 +300,9 @@ class ExclusionParserTest(PythonParserTestBase):
             assert a == 4 and b == 5 and c == 6
             """,
         )
-        assert parser.statements == {1,3,4,5,6,10}
-        parser = self.parse_text("""\
+        assert parser.statements == {1, 3, 4, 5, 6, 10}
+        parser = self.parse_text(
+            """\
             a = 1; b = 2
 
             if 1==1:
@@ -300,10 +322,11 @@ class ExclusionParserTest(PythonParserTestBase):
             assert a == 4 and b == 5 and c == 6
             """,
         )
-        assert parser.statements == {1,3,4,5,6,17}
+        assert parser.statements == {1, 3, 4, 5, 6, 17}
 
     def test_excluding_oneline_if(self) -> None:
-        parser = self.parse_text("""\
+        parser = self.parse_text(
+            """\
             def foo():
                 a = 2
                 if len([]): x = 3       # nocover
@@ -312,10 +335,11 @@ class ExclusionParserTest(PythonParserTestBase):
             foo()
             """,
         )
-        assert parser.statements == {1,2,4,6}
+        assert parser.statements == {1, 2, 4, 6}
 
     def test_excluding_a_colon_not_a_suite(self) -> None:
-        parser = self.parse_text("""\
+        parser = self.parse_text(
+            """\
             def foo():
                 l = list(range(10))
                 a = l[:3]   # nocover
@@ -324,18 +348,20 @@ class ExclusionParserTest(PythonParserTestBase):
             foo()
             """,
         )
-        assert parser.statements == {1,2,4,6}
+        assert parser.statements == {1, 2, 4, 6}
 
     def test_excluding_for_suite(self) -> None:
-        parser = self.parse_text("""\
+        parser = self.parse_text(
+            """\
             a = 0
             for i in [1,2,3,4,5]:     # nocover
                 a += i
             assert a == 15
             """,
         )
-        assert parser.statements == {1,4}
-        parser = self.parse_text("""\
+        assert parser.statements == {1, 4}
+        parser = self.parse_text(
+            """\
             a = 0
             for i in [1,
                 2,3,4,
@@ -344,8 +370,9 @@ class ExclusionParserTest(PythonParserTestBase):
             assert a == 15
             """,
         )
-        assert parser.statements == {1,6}
-        parser = self.parse_text("""\
+        assert parser.statements == {1, 6}
+        parser = self.parse_text(
+            """\
             a = 0
             for i in [1,2,3,4,5
                 ]:                        # nocover
@@ -355,10 +382,11 @@ class ExclusionParserTest(PythonParserTestBase):
             assert a == 1
             """,
         )
-        assert parser.statements == {1,7}
+        assert parser.statements == {1, 7}
 
     def test_excluding_for_else(self) -> None:
-        parser = self.parse_text("""\
+        parser = self.parse_text(
+            """\
             a = 0
             for i in range(5):
                 a += i+1
@@ -368,10 +396,11 @@ class ExclusionParserTest(PythonParserTestBase):
             assert a == 1
             """,
         )
-        assert parser.statements == {1,2,3,4,7}
+        assert parser.statements == {1, 2, 3, 4, 7}
 
     def test_excluding_while(self) -> None:
-        parser = self.parse_text("""\
+        parser = self.parse_text(
+            """\
             a = 3; b = 0
             while a*b:           # nocover
                 b += 1
@@ -379,8 +408,9 @@ class ExclusionParserTest(PythonParserTestBase):
             assert a == 3 and b == 0
             """,
         )
-        assert parser.statements == {1,5}
-        parser = self.parse_text("""\
+        assert parser.statements == {1, 5}
+        parser = self.parse_text(
+            """\
             a = 3; b = 0
             while (
                 a*b
@@ -390,10 +420,11 @@ class ExclusionParserTest(PythonParserTestBase):
             assert a == 3 and b == 0
             """,
         )
-        assert parser.statements == {1,7}
+        assert parser.statements == {1, 7}
 
     def test_excluding_while_else(self) -> None:
-        parser = self.parse_text("""\
+        parser = self.parse_text(
+            """\
             a = 3; b = 0
             while a:
                 b += 1
@@ -403,10 +434,11 @@ class ExclusionParserTest(PythonParserTestBase):
             assert a == 3 and b == 1
             """,
         )
-        assert parser.statements == {1,2,3,4,7}
+        assert parser.statements == {1, 2, 3, 4, 7}
 
     def test_excluding_try_except(self) -> None:
-        parser = self.parse_text("""\
+        parser = self.parse_text(
+            """\
             a = 0
             try:
                 a = 1
@@ -415,8 +447,9 @@ class ExclusionParserTest(PythonParserTestBase):
             assert a == 1
             """,
         )
-        assert parser.statements == {1,2,3,6}
-        parser = self.parse_text("""\
+        assert parser.statements == {1, 2, 3, 6}
+        parser = self.parse_text(
+            """\
             a = 0
             try:
                 a = 1
@@ -426,8 +459,9 @@ class ExclusionParserTest(PythonParserTestBase):
             assert a == 99
             """,
         )
-        assert parser.statements == {1,2,3,4,5,6,7}
-        parser = self.parse_text("""\
+        assert parser.statements == {1, 2, 3, 4, 5, 6, 7}
+        parser = self.parse_text(
+            """\
             a = 0
             try:
                 a = 1
@@ -439,11 +473,12 @@ class ExclusionParserTest(PythonParserTestBase):
             assert a == 123
             """,
         )
-        assert parser.statements == {1,2,3,4,7,8,9}
+        assert parser.statements == {1, 2, 3, 4, 7, 8, 9}
 
     def test_excluding_if_pass(self) -> None:
         # From a comment on the coverage.py page by Michael McNeil Forbes:
-        parser = self.parse_text("""\
+        parser = self.parse_text(
+            """\
             def f():
                 if False:    # pragma: nocover
                     pass     # This line still reported as missing
@@ -453,17 +488,19 @@ class ExclusionParserTest(PythonParserTestBase):
             f()
             """,
         )
-        assert parser.statements == {1,7}
+        assert parser.statements == {1, 7}
 
     def test_multiline_if_no_branch(self) -> None:
         # From https://github.com/nedbat/coveragepy/issues/754
-        parser = self.parse_text("""\
+        parser = self.parse_text(
+            """\
             if (this_is_a_verylong_boolean_expression == True   # pragma: no branch
                 and another_long_expression and here_another_expression):
                 do_something()
             """,
         )
-        parser2 = self.parse_text("""\
+        parser2 = self.parse_text(
+            """\
             if this_is_a_verylong_boolean_expression == True and another_long_expression \\
                 and here_another_expression:  # pragma: no branch
                 do_something()
@@ -474,7 +511,8 @@ class ExclusionParserTest(PythonParserTestBase):
         assert parser.lines_matching(pragma_re) == parser2.lines_matching(pragma_re)
 
     def test_excluding_function(self) -> None:
-        parser = self.parse_text("""\
+        parser = self.parse_text(
+            """\
             def fn(foo):      # nocover
                 a = 1
                 b = 2
@@ -484,8 +522,9 @@ class ExclusionParserTest(PythonParserTestBase):
             assert x == 1
             """,
         )
-        assert parser.statements == {6,7}
-        parser = self.parse_text("""\
+        assert parser.statements == {6, 7}
+        parser = self.parse_text(
+            """\
             a = 0
             def very_long_function_to_exclude_name(very_long_argument1,
             very_long_argument2):
@@ -494,8 +533,9 @@ class ExclusionParserTest(PythonParserTestBase):
             """,
             exclude="function_to_exclude",
         )
-        assert parser.statements == {1,5}
-        parser = self.parse_text("""\
+        assert parser.statements == {1, 5}
+        parser = self.parse_text(
+            """\
             a = 0
             def very_long_function_to_exclude_name(
                 very_long_argument1,
@@ -506,82 +546,91 @@ class ExclusionParserTest(PythonParserTestBase):
             """,
             exclude="function_to_exclude",
         )
-        assert parser.statements == {1,7}
-        parser = self.parse_text("""\
+        assert parser.statements == {1, 7}
+        # linters and formatters can't agree about whether strings are too
+        # long, so format in the long variable names that make them too long.
+        long_arg = "super_long_input_argument"
+        parser = self.parse_text(
+            f"""\
             def my_func(
-                super_long_input_argument_0=0,
-                super_long_input_argument_1=1,
-                super_long_input_argument_2=2):
+                {long_arg}_0=0,
+                {long_arg}_1=1,
+                {long_arg}_2=2):
                 pass
 
-            def my_func_2(super_long_input_argument_0=0, super_long_input_argument_1=1, super_long_input_argument_2=2):
+            def my_func_2({long_arg}_0=0, {long_arg}_1=1, {long_arg}_2=2):
                 pass
             """,
             exclude="my_func",
         )
         assert parser.statements == set()
-        parser = self.parse_text("""\
+        parser = self.parse_text(
+            f"""\
             def my_func(
-                super_long_input_argument_0=0,
-                super_long_input_argument_1=1,
-                super_long_input_argument_2=2):
+                {long_arg}_0=0,
+                {long_arg}_1=1,
+                {long_arg}_2=2):
                 pass
 
-            def my_func_2(super_long_input_argument_0=0, super_long_input_argument_1=1, super_long_input_argument_2=2):
+            def my_func_2({long_arg}_0=0, {long_arg}_1=1, {long_arg}_2=2):
                 pass
             """,
             exclude="my_func_2",
         )
-        assert parser.statements == {1,5}
-        parser = self.parse_text("""\
+        assert parser.statements == {1, 5}
+        parser = self.parse_text(
+            f"""\
             def my_func       (
-                super_long_input_argument_0=0,
-                super_long_input_argument_1=1,
-                super_long_input_argument_2=2):
+                {long_arg}_0=0,
+                {long_arg}_1=1,
+                {long_arg}_2=2):
                 pass
 
-            def my_func_2    (super_long_input_argument_0=0, super_long_input_argument_1=1, super_long_input_argument_2=2):
+            def my_func_2    ({long_arg}_0=0, {long_arg}_1=1, {long_arg}_2=2):
                 pass
             """,
             exclude="my_func_2",
         )
-        assert parser.statements == {1,5}
-        parser = self.parse_text("""\
+        assert parser.statements == {1, 5}
+        parser = self.parse_text(
+            f"""\
             def my_func       (
-                super_long_input_argument_0=0,
-                super_long_input_argument_1=1,
-                super_long_input_argument_2=2):
+                {long_arg}_0=0,
+                {long_arg}_1=1,
+                {long_arg}_2=2):
                 pass
 
-            def my_func_2    (super_long_input_argument_0=0, super_long_input_argument_1=1, super_long_input_argument_2=2):
+            def my_func_2    ({long_arg}_0=0, {long_arg}_1=1, {long_arg}_2=2):
                 pass
             """,
             exclude="my_func",
         )
         assert parser.statements == set()
-        parser = self.parse_text("""\
+        parser = self.parse_text(
+            f"""\
             def my_func \
                 (
-                super_long_input_argument_0=0,
-                super_long_input_argument_1=1
+                {long_arg}_0=0,
+                {long_arg}_1=1
                 ):
                 pass
 
-            def my_func_2(super_long_input_argument_0=0, super_long_input_argument_1=1, super_long_input_argument_2=2):
+            def my_func_2({long_arg}_0=0, {long_arg}_1=1, {long_arg}_2=2):
                 pass
             """,
             exclude="my_func_2",
         )
-        assert parser.statements == {1,5}
-        parser = self.parse_text("""\
+        assert parser.statements == {1, 5}
+        parser = self.parse_text(
+            f"""\
             def my_func \
                 (
-                super_long_input_argument_0=0,
-                super_long_input_argument_1=1
+                {long_arg}_0=0,
+                {long_arg}_1=1
                 ):
                 pass
 
-            def my_func_2(super_long_input_argument_0=0, super_long_input_argument_1=1, super_long_input_argument_2=2):
+            def my_func_2({long_arg}_0=0, {long_arg}_1=1, {long_arg}_2=2):
                 pass
             """,
             exclude="my_func",
@@ -590,7 +639,8 @@ class ExclusionParserTest(PythonParserTestBase):
 
     def test_excluding_bug1713(self) -> None:
         if env.PYVERSION >= (3, 10):
-            parser = self.parse_text("""\
+            parser = self.parse_text(
+                """\
                 print("1")
 
                 def hello_3(a):  # pragma: nocover
@@ -605,7 +655,8 @@ class ExclusionParserTest(PythonParserTestBase):
                 """,
             )
             assert parser.statements == {1, 11}
-        parser = self.parse_text("""\
+        parser = self.parse_text(
+            """\
             print("1")
 
             def hello_3(a):  # nocover
@@ -619,7 +670,8 @@ class ExclusionParserTest(PythonParserTestBase):
             """,
         )
         assert parser.statements == {1, 10}
-        parser = self.parse_text("""\
+        parser = self.parse_text(
+            """\
             print(1)
 
             def func(a, b):
@@ -633,7 +685,8 @@ class ExclusionParserTest(PythonParserTestBase):
             """,
         )
         assert parser.statements == {1, 3, 10}
-        parser = self.parse_text("""\
+        parser = self.parse_text(
+            """\
             class Foo:  # pragma: nocover
                 def greet(self):
                     print("hello world")
@@ -642,7 +695,8 @@ class ExclusionParserTest(PythonParserTestBase):
         assert parser.statements == set()
 
     def test_excluding_method(self) -> None:
-        parser = self.parse_text("""\
+        parser = self.parse_text(
+            """\
             class Fooey:
                 def __init__(self):
                     self.a = 1
@@ -654,8 +708,9 @@ class ExclusionParserTest(PythonParserTestBase):
             assert x.a == 1
             """,
         )
-        assert parser.statements == {1,2,3,8,9}
-        parser = self.parse_text("""\
+        assert parser.statements == {1, 2, 3, 8, 9}
+        parser = self.parse_text(
+            """\
             class Fooey:
                 def __init__(self):
                     self.a = 1
@@ -671,10 +726,11 @@ class ExclusionParserTest(PythonParserTestBase):
             """,
             exclude="method_to_exclude",
         )
-        assert parser.statements == {1,2,3,11,12}
+        assert parser.statements == {1, 2, 3, 11, 12}
 
     def test_excluding_class(self) -> None:
-        parser = self.parse_text("""\
+        parser = self.parse_text(
+            """\
             class Fooey:            # nocover
                 def __init__(self):
                     self.a = 1
@@ -686,10 +742,11 @@ class ExclusionParserTest(PythonParserTestBase):
             assert x == 1
             """,
         )
-        assert parser.statements == {8,9}
+        assert parser.statements == {8, 9}
 
     def test_excludes_non_ascii(self) -> None:
-        parser = self.parse_text("""\
+        parser = self.parse_text(
+            """\
             # coding: utf-8
             a = 1; b = 2
 
@@ -701,7 +758,8 @@ class ExclusionParserTest(PythonParserTestBase):
         assert parser.statements == {2, 4}
 
     def test_no_exclude_at_all(self) -> None:
-        parser = self.parse_text("""\
+        parser = self.parse_text(
+            """\
             def foo():
                 if fooey:
                     a = 3
@@ -711,11 +769,12 @@ class ExclusionParserTest(PythonParserTestBase):
             """,
             exclude="",
         )
-        assert parser.exit_counts() == { 1:1, 2:2, 3:1, 5:1, 6:1 }
+        assert parser.exit_counts() == {1: 1, 2: 2, 3: 1, 5: 1, 6: 1}
 
     def test_formfeed(self) -> None:
         # https://github.com/nedbat/coveragepy/issues/461
-        parser = self.parse_text("""\
+        parser = self.parse_text(
+            """\
             x = 1
             assert len([]) == 0, (
                 "This won't happen %s" % ("hello",)
@@ -813,10 +872,13 @@ class ExclusionParserTest(PythonParserTestBase):
 
     def test_multiline_exclusion_single_line(self) -> None:
         regex = r"print\('.*'\)"
-        parser = self.parse_text("""\
+        parser = self.parse_text(
+            """\
             def foo():
                 print('Hello, world!')
-            """, regex)
+            """,
+            regex,
+        )
         assert parser.lines_matching(regex) == {2}
         assert parser.raw_statements == {1, 2}
         assert parser.statements == {1}
@@ -824,23 +886,29 @@ class ExclusionParserTest(PythonParserTestBase):
     def test_multiline_exclusion_suite(self) -> None:
         # A multi-line exclusion that matches a colon line still excludes the entire block.
         regex = r"if T:\n\s+print\('Hello, world!'\)"
-        parser = self.parse_text("""\
+        parser = self.parse_text(
+            """\
             def foo():
                 if T:
                     print('Hello, world!')
                     print('This is a multiline regex test.')
             a = 5
-            """, regex)
+            """,
+            regex,
+        )
         assert parser.lines_matching(regex) == {2, 3}
         assert parser.raw_statements == {1, 2, 3, 4, 5}
         assert parser.statements == {1, 5}
 
     def test_multiline_exclusion_no_match(self) -> None:
         regex = r"nonexistent"
-        parser = self.parse_text("""\
+        parser = self.parse_text(
+            """\
             def foo():
                 print('Hello, world!')
-            """, regex)
+            """,
+            regex,
+        )
         assert parser.lines_matching(regex) == set()
         assert parser.raw_statements == {1, 2}
         assert parser.statements == {1, 2}
@@ -855,7 +923,8 @@ class ExclusionParserTest(PythonParserTestBase):
     def test_multiline_exclusion_all_lines_must_match(self) -> None:
         # https://github.com/nedbat/coveragepy/issues/996
         regex = r"except ValueError:\n\s*print\('false'\)"
-        parser = self.parse_text("""\
+        parser = self.parse_text(
+            """\
             try:
                 a = 2
                 print('false')
@@ -865,33 +934,41 @@ class ExclusionParserTest(PythonParserTestBase):
                 print('something else')
             except IndexError:
                 print('false')
-            """, regex)
+            """,
+            regex,
+        )
         assert parser.lines_matching(regex) == {4, 5}
         assert parser.raw_statements == {1, 2, 3, 4, 5, 6, 7, 8, 9}
         assert parser.statements == {1, 2, 3, 6, 7, 8, 9}
 
     def test_multiline_exclusion_multiple_matches(self) -> None:
         regex = r"print\('.*'\)\n\s+. = \d"
-        parser = self.parse_text("""\
+        parser = self.parse_text(
+            """\
             def foo():
                 print('Hello, world!')
                 a = 5
             def bar():
                 print('Hello again!')
                 b = 6
-            """, regex)
+            """,
+            regex,
+        )
         assert parser.lines_matching(regex) == {2, 3, 5, 6}
         assert parser.raw_statements == {1, 2, 3, 4, 5, 6}
         assert parser.statements == {1, 4}
 
     def test_multiline_exclusion_suite2(self) -> None:
         regex = r"print\('Hello, world!'\)\n\s+if T:"
-        parser = self.parse_text("""\
+        parser = self.parse_text(
+            """\
             def foo():
                 print('Hello, world!')
                 if T:
                     print('This is a test.')
-            """, regex)
+            """,
+            regex,
+        )
         assert parser.lines_matching(regex) == {2, 3}
         assert parser.raw_statements == {1, 2, 3, 4}
         assert parser.statements == {1}
@@ -901,12 +978,15 @@ class ExclusionParserTest(PythonParserTestBase):
             r"def foo\(\):\n\s+print\('Hello, world!'\)\n"
             + r"\s+if T:\n\s+print\('This is a test\.'\)"
         )
-        parser = self.parse_text("""\
+        parser = self.parse_text(
+            """\
             def foo():
                 print('Hello, world!')
                 if T:
                     print('This is a test.')
-            """, regex)
+            """,
+            regex,
+        )
         assert parser.lines_matching(regex) == {1, 2, 3, 4}
         assert parser.raw_statements == {1, 2, 3, 4}
         assert parser.statements == set()
@@ -914,7 +994,8 @@ class ExclusionParserTest(PythonParserTestBase):
     def test_multiline_exclusion_block(self) -> None:
         # https://github.com/nedbat/coveragepy/issues/1803
         regex = "# no cover: start(?s:.)*?# no cover: stop"
-        parser = self.parse_text("""\
+        parser = self.parse_text(
+            """\
             a = my_function1()
             if debug:
                 msg = "blah blah"
@@ -926,7 +1007,9 @@ class ExclusionParserTest(PythonParserTestBase):
                 # no cover: start
                 but_not_this()
                 # no cover: stop
-            """, regex)
+            """,
+            regex,
+        )
         assert parser.lines_matching(regex) == {4, 5, 6, 7, 9, 10, 11}
         assert parser.raw_statements == {1, 2, 3, 5, 6, 8, 10}
         assert parser.statements == {1, 2, 3, 8}
@@ -935,7 +1018,8 @@ class ExclusionParserTest(PythonParserTestBase):
     def test_multiline_exclusion_block2(self) -> None:
         # https://github.com/nedbat/coveragepy/issues/1797
         regex = r"case _:\n\s+assert_never\("
-        parser = self.parse_text("""\
+        parser = self.parse_text(
+            """\
             match something:
                 case type_1():
                     logic_1()
@@ -950,7 +1034,9 @@ class ExclusionParserTest(PythonParserTestBase):
                     logic_2()
                 case _:
                     print("Default case")
-            """, regex)
+            """,
+            regex,
+        )
         assert parser.lines_matching(regex) == {6, 7}
         assert parser.raw_statements == {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14}
         assert parser.statements == {1, 2, 3, 4, 5, 8, 9, 10, 11, 12, 13, 14}
@@ -959,7 +1045,8 @@ class ExclusionParserTest(PythonParserTestBase):
         # https://github.com/nedbat/coveragepy/issues/1741
         # This will only work if there's exactly one return statement in the rest of the function
         regex = r"# no cover: to return(?s:.)*?return"
-        parser = self.parse_text("""\
+        parser = self.parse_text(
+            """\
             def my_function(args, j):
                 if args.command == Commands.CMD.value:
                     return cmd_handler(j, args)
@@ -969,7 +1056,9 @@ class ExclusionParserTest(PythonParserTestBase):
 
                 return os.EX_USAGE
             print("not excluded")
-            """, regex)
+            """,
+            regex,
+        )
         assert parser.lines_matching(regex) == {4, 5, 6, 7, 8}
         assert parser.raw_statements == {1, 2, 3, 5, 6, 8, 9}
         assert parser.statements == {1, 2, 3, 9}
@@ -977,7 +1066,8 @@ class ExclusionParserTest(PythonParserTestBase):
     def test_multiline_exclusion_whole_source(self) -> None:
         # https://github.com/nedbat/coveragepy/issues/118
         regex = r"\A(?s:.*# pragma: exclude file.*)\Z"
-        parser = self.parse_text("""\
+        parser = self.parse_text(
+            """\
             import coverage
             # pragma: exclude file
             def the_void() -> None:
@@ -987,7 +1077,9 @@ class ExclusionParserTest(PythonParserTestBase):
 
                 return
             print("Excluded too")
-            """, regex)
+            """,
+            regex,
+        )
         assert parser.lines_matching(regex) == {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
         assert parser.raw_statements == {1, 3, 4, 5, 6, 8, 9}
         assert parser.statements == set()
@@ -995,7 +1087,8 @@ class ExclusionParserTest(PythonParserTestBase):
     def test_multiline_exclusion_from_marker(self) -> None:
         # https://github.com/nedbat/coveragepy/issues/118
         regex = r"# pragma: rest of file(?s:.)*\Z"
-        parser = self.parse_text("""\
+        parser = self.parse_text(
+            """\
             import coverage
             # pragma: rest of file
             def the_void() -> None:
@@ -1005,7 +1098,9 @@ class ExclusionParserTest(PythonParserTestBase):
 
                 return
             print("Excluded too")
-            """, regex)
+            """,
+            regex,
+        )
         assert parser.lines_matching(regex) == {2, 3, 4, 5, 6, 7, 8, 9, 10}
         assert parser.raw_statements == {1, 3, 4, 5, 6, 8, 9}
         assert parser.statements == {1}
@@ -1036,8 +1131,8 @@ class ParserMissingArcDescriptionTest(PythonParserTestBase):
         expected = "line 1 didn't jump to line 3 because the condition on line 1 was always true"
         assert expected == parser.missing_arc_description(1, 3)
         expected = (
-            "line 6 didn't return from function 'func5' " +
-            "because the loop on line 6 didn't complete"
+            "line 6 didn't return from function 'func5' "
+            + "because the loop on line 6 didn't complete"
         )
         assert expected == parser.missing_arc_description(6, -5)
         expected = "line 6 didn't jump to line 7 because the loop on line 6 never started"
@@ -1045,8 +1140,7 @@ class ParserMissingArcDescriptionTest(PythonParserTestBase):
         expected = "line 11 didn't jump to line 12 because the condition on line 11 was never true"
         assert expected == parser.missing_arc_description(11, 12)
         expected = (
-            "line 11 didn't jump to line 13 " +
-            "because the condition on line 11 was always true"
+            "line 11 didn't jump to line 13 " + "because the condition on line 11 was always true"
         )
         assert expected == parser.missing_arc_description(11, 13)
 
@@ -1060,13 +1154,11 @@ class ParserMissingArcDescriptionTest(PythonParserTestBase):
                 print("yikes")
             """)
         expected = (
-            "line 3 didn't jump to line 4 " +
-            "because the exception caught by line 3 didn't happen"
+            "line 3 didn't jump to line 4 " + "because the exception caught by line 3 didn't happen"
         )
         assert expected == parser.missing_arc_description(3, 4)
         expected = (
-            "line 5 didn't jump to line 6 " +
-            "because the exception caught by line 5 didn't happen"
+            "line 5 didn't jump to line 6 " + "because the exception caught by line 5 didn't happen"
         )
         assert expected == parser.missing_arc_description(5, 6)
 
@@ -1140,9 +1232,14 @@ class ParserFileTest(CoverageTest):
         parser.parse_source()
         return parser
 
-    @pytest.mark.parametrize("slug, newline", [
-        ("unix", "\n"), ("dos", "\r\n"), ("mac", "\r"),
-    ])
+    @pytest.mark.parametrize(
+        "slug, newline",
+        [
+            ("unix", "\n"),
+            ("dos", "\r\n"),
+            ("mac", "\r"),
+        ],
+    )
     def test_line_endings(self, slug: str, newline: str) -> None:
         text = """\
             # check some basic branch counting
@@ -1156,16 +1253,19 @@ class ParserFileTest(CoverageTest):
             class Bar:
                 pass
             """
-        counts = { 2:1, 3:1, 4:2, 5:1, 7:1, 9:1, 10:1 }
+        counts = {2: 1, 3: 1, 4: 2, 5: 1, 7: 1, 9: 1, 10: 1}
         fname = slug + ".py"
         self.make_file(fname, text, newline=newline)
         parser = self.parse_file(fname)
         assert parser.exit_counts() == counts, f"Wrong for {fname!r}"
 
     def test_encoding(self) -> None:
-        self.make_file("encoded.py", """\
+        self.make_file(
+            "encoded.py",
+            """\
             coverage = "\xe7\xf6v\xear\xe3g\xe9"
-            """)
+            """,
+        )
         parser = self.parse_file("encoded.py")
         assert parser.exit_counts() == {1: 1}
 
@@ -1174,21 +1274,27 @@ class ParserFileTest(CoverageTest):
         # multi-line statement has no final newline.
         # https://github.com/nedbat/coveragepy/issues/293
 
-        self.make_file("normal.py", """\
+        self.make_file(
+            "normal.py",
+            """\
             out, err = some_module.some_function(
                 ["my data", "-c", "pass"],
                 arg1=some_module.NAME,
                 arg2=some_module.OTHER_NAME).function()
-            """)
+            """,
+        )
 
         parser = self.parse_file("normal.py")
         assert parser.statements == {1}
 
-        self.make_file("abrupt.py", """\
+        self.make_file(
+            "abrupt.py",
+            """\
             out, err = some_module.some_function(
                 ["my data", "-c", "pass"],
                 arg1=some_module.NAME,
-                arg2=some_module.OTHER_NAME).function()""")   # no final newline.
+                arg2=some_module.OTHER_NAME).function()""",
+        )  # no final newline.
 
         # Double-check that some test helper wasn't being helpful.
         with open("abrupt.py", encoding="utf-8") as f:
@@ -1220,7 +1326,7 @@ class ParserFileTest(CoverageTest):
         ("__debug__ + True", (False, False)),
         ("x", (False, False)),
         ("__debug__ or debug", (False, False)),
-    ]
+    ],
 )
 def test_is_constant_test_expr(expr: str, ret: tuple[bool, bool]) -> None:
     node = ast.parse(expr, mode="eval").body

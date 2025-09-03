@@ -17,6 +17,7 @@ cogapp
 greenlet
 pylint
 readme_renderer
+ruff
 
 # for kitting.
 libsass

@@ -677,7 +677,7 @@ Click the keyboard icon in the upper right to see the complete list.
     $ coverage html --help
     Usage: coverage html [options] [modules]
 
-    Create an HTML report of the coverage of the files.  Each file gets its own
+    Create an HTML report of the coverage of the files. Each file gets its own
     page, with the source decorated to show executed, excluded, and missed lines.
 
     Options:
@@ -712,7 +712,7 @@ Click the keyboard icon in the upper right to see the complete list.
       --rcfile=RCFILE       Specify configuration file. By default '.coveragerc',
                             'setup.cfg', 'tox.ini', and 'pyproject.toml' are
                             tried. [env: COVERAGE_RCFILE]
-.. [[[end]]] (sum: 46Gm4krZsw)
+.. [[[end]]] (sum: DwG6DxRZIf)
 
 The title of the report can be set with the ``title`` setting in the
 ``[html]`` section of the configuration file, or the ``--title`` switch on
@@ -1063,6 +1063,9 @@ of operation to log:
 * ``lock``: log operations acquiring locks in the data layer.
 
 * ``multiproc``: log the start and stop of multiprocessing processes.
+
+* ``patch``: log when patches are applied and when they are executed. See
+  :ref:`config_run_patch`.
 
 * ``pathmap``: log the remapping of paths that happens during ``coverage
   combine``. See :ref:`config_paths`.

@@ -109,9 +109,7 @@ class ShellSession:
 
         if proc.returncode != 0:
             self.print(f"ERROR: command returned {proc.returncode}")
-            raise Exception(
-                f"Command failed ({proc.returncode}): {cmd!r}, output was:\n{output}"
-            )
+            raise Exception(f"Command failed ({proc.returncode}): {cmd!r}, output was:\n{output}")
 
         return output.strip()
 
@@ -318,9 +316,7 @@ class ToxProject(ProjectToTest):
         with self.tweak_coverage_settings(cov_ver.tweaks):
             self.pre_check(env)  # NOTE: Not properly factored, and only used from here.
             duration = self.run_tox(env, env.pyver.toxenv, "--skip-pkg-install")
-            self.post_check(
-                env
-            )  # NOTE: Not properly factored, and only used from here.
+            self.post_check(env)  # NOTE: Not properly factored, and only used from here.
         return duration
 
 
@@ -333,9 +329,7 @@ class ProjectPytestHtml(ToxProject):
         raise Exception("This doesn't work because options changed to tweaks")
         covenv = env.pyver.toxenv + "-cov"  # type: ignore[unreachable]
         self.run_tox(env, covenv, "--notest")
-        env.shell.run_command(
-            f".tox/{covenv}/bin/python -m pip install {cov_ver.pip_args}"
-        )
+        env.shell.run_command(f".tox/{covenv}/bin/python -m pip install {cov_ver.pip_args}")
         if cov_ver.tweaks:
             replace = ("# reference: https", f"[run]\n{cov_ver.tweaks}\n#")
         else:
@@ -499,9 +493,7 @@ class ProjectPygments(ToxProject):
         )
         with self.tweak_coverage_settings(cov_ver.tweaks):
             self.pre_check(env)  # NOTE: Not properly factored, and only used here.
-            duration = self.run_tox(
-                env, env.pyver.toxenv, "--skip-pkg-install -- --cov"
-            )
+            duration = self.run_tox(env, env.pyver.toxenv, "--skip-pkg-install -- --cov")
             self.post_check(env)  # NOTE: Not properly factored, and only used here.
         return duration
 
@@ -542,9 +534,7 @@ class ProjectDulwich(ToxProject):
 
     def run_with_coverage(self, env: Env, cov_ver: Coverage) -> float:
         env.shell.run_command(f"{env.python} -m pip install {cov_ver.pip_args}")
-        env.shell.run_command(
-            f"{env.python} -m coverage run -m unittest tests.test_suite"
-        )
+        env.shell.run_command(f"{env.python} -m coverage run -m unittest tests.test_suite")
         duration = env.shell.last_duration
         report = env.shell.run_command(f"{env.python} -m coverage report --precision=6")
         print("Results:", report.splitlines()[-1])
@@ -598,19 +588,21 @@ class ProjectMpmath(ProjectToTest):
 class ProjectMypy(ToxProject):
     git_url = "https://github.com/python/mypy"
 
-    SLOW_TESTS = " or ".join([
-        "PythonCmdline",
-        "PEP561Suite",
-        "PythonEvaluation",
-        "testdaemon",
-        "StubgenCmdLine",
-        "StubgenPythonSuite",
-        "TestRun",
-        "TestRunMultiFile",
-        "TestExternal",
-        "TestCommandLine",
-        "ErrorStreamSuite",
-    ])
+    SLOW_TESTS = " or ".join(
+        [
+            "PythonCmdline",
+            "PEP561Suite",
+            "PythonEvaluation",
+            "testdaemon",
+            "StubgenCmdLine",
+            "StubgenPythonSuite",
+            "TestRun",
+            "TestRunMultiFile",
+            "TestExternal",
+            "TestCommandLine",
+            "ErrorStreamSuite",
+        ]
+    )
 
     FAST = f"-k 'not ({SLOW_TESTS})'"
 
@@ -713,9 +705,7 @@ def tweak_toml_coverage_settings(toml_file: str, tweaks: TweaksType) -> Iterator
 class AdHocProject(ProjectToTest):
     """A standalone program to run locally."""
 
-    def __init__(
-        self, python_file: str, cur_dir: str | None = None, pip_args: str = ""
-    ):
+    def __init__(self, python_file: str, cur_dir: str | None = None, pip_args: str = ""):
         super().__init__()
         self.python_file = Path(python_file)
         if not self.python_file.exists():
@@ -821,9 +811,7 @@ class NoCoverage(Coverage):
 class CoveragePR(Coverage):
     """A version of coverage.py from a pull request."""
 
-    def __init__(
-        self, number: int, tweaks: TweaksType = None, env_vars: Env_VarsType = None
-    ):
+    def __init__(self, number: int, tweaks: TweaksType = None, env_vars: Env_VarsType = None):
         url = f"https://github.com/nedbat/coveragepy.git@refs/pull/{number}/merge"
         url_must_exist(url)
         super().__init__(
@@ -837,9 +825,7 @@ class CoveragePR(Coverage):
 class CoverageCommit(Coverage):
     """A version of coverage.py from a specific commit."""
 
-    def __init__(
-        self, sha: str, tweaks: TweaksType = None, env_vars: Env_VarsType = None
-    ):
+    def __init__(self, sha: str, tweaks: TweaksType = None, env_vars: Env_VarsType = None):
         url = f"https://github.com/nedbat/coveragepy.git@{sha}"
         url_must_exist(url)
         super().__init__(
@@ -915,18 +901,11 @@ class Experiment:
         if self.results_file.exists():
             with self.results_file.open("r", encoding="utf-8") as f:
                 data: dict[str, list[float]] = json.load(f)
-            return {
-                (k.split()[0], k.split()[1], k.split()[2]): v for k, v in data.items()
-            }
+            return {(k.split()[0], k.split()[1], k.split()[2]): v for k, v in data.items()}
         return {}
 
     def run(self, num_runs: int = 3) -> None:
-        total_runs = (
-            len(self.projects)
-            * len(self.py_versions)
-            * len(self.cov_versions)
-            * num_runs
-        )
+        total_runs = len(self.projects) * len(self.py_versions) * len(self.cov_versions) * num_runs
         total_run_nums = iter(itertools.count(start=1))
 
         all_runs = []
@@ -962,10 +941,7 @@ class Experiment:
         for proj, pyver, cov_ver, env in all_runs:
             result_key = (proj.slug, pyver.slug, cov_ver.slug)
             total_run_num = next(total_run_nums)
-            if (
-                result_key in self.result_data
-                and len(self.result_data[result_key]) >= num_runs
-            ):
+            if result_key in self.result_data and len(self.result_data[result_key]) >= num_runs:
                 print(f"Skipping {result_key} as results already exist.")
                 continue
 
@@ -1100,9 +1076,7 @@ def run_experiment(
     if any(rslug not in slugs for rslug in ratio_slugs):
         raise Exception(f"Ratio slug doesn't match a slug: {ratio_slugs}, {slugs}")
     if set(rows + [column]) != set(DIMENSION_NAMES):
-        raise Exception(
-            f"All of these must be in rows or column: {', '.join(DIMENSION_NAMES)}"
-        )
+        raise Exception(f"All of these must be in rows or column: {', '.join(DIMENSION_NAMES)}")
 
     print(f"Removing and re-making {PERF_DIR}")
     remake(PERF_DIR)

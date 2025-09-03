@@ -18,15 +18,12 @@ import string
 import sys
 import textwrap
 import threading
+import uuid
 import zlib
 from collections.abc import Collection, Mapping, Sequence
-from typing import (
-    Any,
-    Callable,
-    cast,
-)
+from typing import Any, Callable, cast
 
-from coverage.debug import NoDebugging, auto_repr
+from coverage.debug import NoDebugging, auto_repr, file_summary
 from coverage.exceptions import CoverageException, DataError
 from coverage.misc import file_be_gone, isolate_module
 from coverage.numbits import numbits_to_nums, numbits_union, nums_to_numbits
@@ -112,17 +109,35 @@ CREATE TABLE tracer (
 );
 """
 
+
 def _locked(method: AnyCallable) -> AnyCallable:
     """A decorator for methods that should hold self._lock."""
+
     @functools.wraps(method)
     def _wrapped(self: CoverageData, *args: Any, **kwargs: Any) -> Any:
         if self._debug.should("lock"):
             self._debug.write(f"Locking {self._lock!r} for {method.__name__}")
         with self._lock:
             if self._debug.should("lock"):
-                self._debug.write(f"Locked  {self._lock!r} for {method.__name__}")
+                self._debug.write(f"Locked {self._lock!r} for {method.__name__}")
             return method(self, *args, **kwargs)
+
     return _wrapped
+
+
+class NumbitsUnionAgg:
+    """SQLite aggregate function for computing union of numbits."""
+
+    def __init__(self) -> None:
+        self.result = b""
+
+    def step(self, value: bytes) -> None:
+        """Process one value in the aggregation."""
+        self.result = numbits_union(self.result, value)
+
+    def finalize(self) -> bytes:
+        """Return the final aggregated result."""
+        return self.result
 
 
 class CoverageData:
@@ -259,10 +274,15 @@ class CoverageData:
 
     __repr__ = auto_repr
 
+    def _debug_dataio(self, msg: str, filename: str) -> None:
+        """A helper for debug messages which are all similar."""
+        if self._debug.should("dataio"):
+            self._debug.write(f"{msg} {filename!r} ({file_summary(filename)})")
+
     def _choose_filename(self) -> None:
         """Set self._filename based on inited attributes."""
         if self._no_disk:
-            self._filename = ":memory:"
+            self._filename = f"file:coverage-{uuid.uuid4()}?mode=memory&cache=shared"
         else:
             self._filename = self._basename
             suffix = filename_suffix(self._suffix)
@@ -287,9 +307,8 @@ class CoverageData:
 
     def _open_db(self) -> None:
         """Open an existing db file, and read its metadata."""
-        if self._debug.should("dataio"):
-            self._debug.write(f"Opening data file {self._filename!r}")
-        self._dbs[threading.get_ident()] = SqliteDb(self._filename, self._debug)
+        self._debug_dataio("Opening data file", self._filename)
+        self._dbs[threading.get_ident()] = SqliteDb(self._filename, self._debug, self._no_disk)
         self._read_db()
 
     def _read_db(self) -> None:
@@ -304,7 +323,8 @@ class CoverageData:
                 else:
                     raise DataError(
                         "Data file {!r} doesn't seem to be a coverage data file: {}".format(
-                            self._filename, exc,
+                            self._filename,
+                            exc,
                         ),
                     ) from exc
             else:
@@ -312,7 +332,9 @@ class CoverageData:
                 if schema_version != SCHEMA_VERSION:
                     raise DataError(
                         "Couldn't use data file {!r}: wrong schema: {} instead of {}".format(
-                            self._filename, schema_version, SCHEMA_VERSION,
+                            self._filename,
+                            schema_version,
+                            SCHEMA_VERSION,
                         ),
                     )
 
@@ -327,10 +349,9 @@ class CoverageData:
 
     def _init_db(self, db: SqliteDb) -> None:
         """Write the initial contents of the database."""
-        if self._debug.should("dataio"):
-            self._debug.write(f"Initing data file {self._filename!r}")
+        self._debug_dataio("Initing data file", self._filename)
         db.executescript(SCHEMA)
-        db.execute_void("insert into coverage_schema (version) values (?)", (SCHEMA_VERSION,))
+        db.execute_void("INSERT INTO coverage_schema (version) VALUES (?)", (SCHEMA_VERSION,))
 
         # When writing metadata, avoid information that will needlessly change
         # the hash of the data file, unless we're debugging processes.
@@ -338,11 +359,13 @@ class CoverageData:
             ("version", __version__),
         ]
         if self._debug.should("process"):
-            meta_data.extend([
-                ("sys_argv", str(getattr(sys, "argv", None))),
-                ("when", datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")),
-            ])
-        db.executemany_void("insert or ignore into meta (key, value) values (?, ?)", meta_data)
+            meta_data.extend(
+                [
+                    ("sys_argv", str(getattr(sys, "argv", None))),
+                    ("when", datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")),
+                ]
+            )
+        db.executemany_void("INSERT OR IGNORE INTO meta (key, value) VALUES (?, ?)", meta_data)
 
     def _connect(self) -> SqliteDb:
         """Get the SqliteDb object to use."""
@@ -351,11 +374,11 @@ class CoverageData:
         return self._dbs[threading.get_ident()]
 
     def __bool__(self) -> bool:
-        if (threading.get_ident() not in self._dbs and not os.path.exists(self._filename)):
+        if threading.get_ident() not in self._dbs and not os.path.exists(self._filename):
             return False
         try:
             with self._connect() as con:
-                with con.execute("select * from file limit 1") as cur:
+                with con.execute("SELECT * FROM file LIMIT 1") as cur:
                     return bool(list(cur))
         except CoverageException:
             return False
@@ -377,8 +400,7 @@ class CoverageData:
         .. versionadded:: 5.0
 
         """
-        if self._debug.should("dataio"):
-            self._debug.write(f"Dumping data from data file {self._filename!r}")
+        self._debug_dataio("Dumping data from data file", self._filename)
         with self._connect() as con:
             script = con.dump()
             return b"z" + zlib.compress(script.encode("utf-8"))
@@ -398,14 +420,13 @@ class CoverageData:
         .. versionadded:: 5.0
 
         """
-        if self._debug.should("dataio"):
-            self._debug.write(f"Loading data into data file {self._filename!r}")
+        self._debug_dataio("Loading data into data file", self._filename)
         if data[:1] != b"z":
             raise DataError(
                 f"Unrecognized serialization: {data[:40]!r} (head of {len(data)} bytes)",
             )
         script = zlib.decompress(data[1:]).decode("utf-8")
-        self._dbs[threading.get_ident()] = db = SqliteDb(self._filename, self._debug)
+        self._dbs[threading.get_ident()] = db = SqliteDb(self._filename, self._debug, self._no_disk)
         with db:
             db.executescript(script)
         self._read_db()
@@ -421,7 +442,7 @@ class CoverageData:
             if add:
                 with self._connect() as con:
                     self._file_map[filename] = con.execute_for_rowid(
-                        "insert or replace into file (path) values (?)",
+                        "INSERT OR REPLACE INTO file (path) VALUES (?)",
                         (filename,),
                     )
         return self._file_map.get(filename)
@@ -431,7 +452,7 @@ class CoverageData:
         assert context is not None
         self._start_using()
         with self._connect() as con:
-            row = con.execute_one("select id from context where context = ?", (context,))
+            row = con.execute_one("SELECT id FROM context WHERE context = ?", (context,))
             if row is not None:
                 return cast(int, row[0])
             else:
@@ -461,7 +482,7 @@ class CoverageData:
         else:
             with self._connect() as con:
                 self._current_context_id = con.execute_for_rowid(
-                    "insert into context (context) values (?)",
+                    "INSERT INTO context (context) VALUES (?)",
                     (context,),
                 )
 
@@ -491,9 +512,13 @@ class CoverageData:
 
         """
         if self._debug.should("dataop"):
-            self._debug.write("Adding lines: %d files, %d lines total" % (
-                len(line_data), sum(len(lines) for lines in line_data.values()),
-            ))
+            self._debug.write(
+                "Adding lines: %d files, %d lines total"
+                % (
+                    len(line_data),
+                    sum(len(lines) for lines in line_data.values()),
+                )
+            )
             if self._debug.should("dataop2"):
                 for filename, linenos in sorted(line_data.items()):
                     self._debug.write(f"  {filename}: {linenos}")
@@ -506,15 +531,17 @@ class CoverageData:
             for filename, linenos in line_data.items():
                 line_bits = nums_to_numbits(linenos)
                 file_id = self._file_id(filename, add=True)
-                query = "select numbits from line_bits where file_id = ? and context_id = ?"
+                query = "SELECT numbits FROM line_bits WHERE file_id = ? AND context_id = ?"
                 with con.execute(query, (file_id, self._current_context_id)) as cur:
                     existing = list(cur)
                 if existing:
                     line_bits = numbits_union(line_bits, existing[0][0])
 
                 con.execute_void(
-                    "insert or replace into line_bits " +
-                    " (file_id, context_id, numbits) values (?, ?, ?)",
+                    """
+                    INSERT OR REPLACE INTO line_bits
+                    (file_id, context_id, numbits) VALUES (?, ?, ?)
+                    """,
                     (file_id, self._current_context_id, line_bits),
                 )
 
@@ -529,9 +556,13 @@ class CoverageData:
 
         """
         if self._debug.should("dataop"):
-            self._debug.write("Adding arcs: %d files, %d arcs total" % (
-                len(arc_data), sum(len(arcs) for arcs in arc_data.values()),
-            ))
+            self._debug.write(
+                "Adding arcs: %d files, %d arcs total"
+                % (
+                    len(arc_data),
+                    sum(len(arcs) for arcs in arc_data.values()),
+                )
+            )
             if self._debug.should("dataop2"):
                 for filename, arcs in sorted(arc_data.items()):
                     self._debug.write(f"  {filename}: {arcs}")
@@ -547,8 +578,10 @@ class CoverageData:
                 file_id = self._file_id(filename, add=True)
                 data = [(file_id, self._current_context_id, fromno, tono) for fromno, tono in arcs]
                 con.executemany_void(
-                    "insert or ignore into arc " +
-                    "(file_id, context_id, fromno, tono) values (?, ?, ?, ?)",
+                    """
+                    INSERT OR IGNORE INTO arc
+                    (file_id, context_id, fromno, tono) VALUES (?, ?, ?, ?)
+                    """,
                     data,
                 )
 
@@ -569,7 +602,7 @@ class CoverageData:
             self._has_arcs = arcs
             with self._connect() as con:
                 con.execute_void(
-                    "insert or ignore into meta (key, value) values (?, ?)",
+                    "INSERT OR IGNORE INTO meta (key, value) VALUES (?, ?)",
                     ("has_arcs", str(int(arcs))),
                 )
 
@@ -581,7 +614,7 @@ class CoverageData:
 
         """
         if self._debug.should("dataop"):
-            self._debug.write("Adding file tracers: %d files" % (len(file_tracers),))
+            self._debug.write(f"Adding file tracers: {len(file_tracers)} files")
         if not file_tracers:
             return
         self._start_using()
@@ -593,12 +626,14 @@ class CoverageData:
                     if existing_plugin != plugin_name:
                         raise DataError(
                             "Conflicting file tracer name for '{}': {!r} vs {!r}".format(
-                                filename, existing_plugin, plugin_name,
+                                filename,
+                                existing_plugin,
+                                plugin_name,
                             ),
                         )
                 elif plugin_name:
                     con.execute_void(
-                        "insert into tracer (file_id, tracer) values (?, ?)",
+                        "INSERT INTO TRACER (file_id, tracer) VALUES (?, ?)",
                         (file_id, plugin_name),
                     )
 
@@ -619,7 +654,7 @@ class CoverageData:
         if self._debug.should("dataop"):
             self._debug.write(f"Touching {filenames!r}")
         self._start_using()
-        with self._connect(): # Use this to get one transaction.
+        with self._connect():  # Use this to get one transaction.
             if not self._has_arcs and not self._has_lines:
                 raise DataError("Can't touch files in an empty CoverageData")
 
@@ -639,11 +674,10 @@ class CoverageData:
             self._debug.write(f"Purging data for {filenames!r}")
         self._start_using()
         with self._connect() as con:
-
             if self._has_lines:
-                sql = "delete from line_bits where file_id=?"
+                sql = "DELETE FROM line_bits WHERE file_id=?"
             elif self._has_arcs:
-                sql = "delete from arc where file_id=?"
+                sql = "DELETE FROM arc WHERE file_id=?"
             else:
                 raise DataError("Can't purge files in an empty CoverageData")
 
@@ -666,9 +700,11 @@ class CoverageData:
 
         """
         if self._debug.should("dataop"):
-            self._debug.write("Updating with data from {!r}".format(
-                getattr(other_data, "_filename", "???"),
-            ))
+            self._debug.write(
+                "Updating with data from {!r}".format(
+                    getattr(other_data, "_filename", "???"),
+                )
+            )
         if self._has_lines and other_data._has_arcs:
             raise DataError("Can't combine branch coverage data with statement data")
         if self._has_arcs and other_data._has_lines:
@@ -678,146 +714,151 @@ class CoverageData:
 
         # Force the database we're writing to to exist before we start nesting contexts.
         self._start_using()
-
-        # Collector for all arcs, lines and tracers
         other_data.read()
-        with other_data._connect() as con:
-            # Get files data.
-            with con.execute("select path from file") as cur:
-                files = {path: map_path(path) for (path,) in cur}
 
-            # Get contexts data.
-            with con.execute("select context from context") as cur:
-                contexts = [context for (context,) in cur]
-
-            # Get arc data.
-            with con.execute(
-                "select file.path, context.context, arc.fromno, arc.tono " +
-                "from arc " +
-                "inner join file on file.id = arc.file_id " +
-                "inner join context on context.id = arc.context_id",
-            ) as cur:
-                arcs = [
-                    (files[path], context, fromno, tono)
-                    for (path, context, fromno, tono) in cur
-                ]
-
-            # Get line data.
-            with con.execute(
-                "select file.path, context.context, line_bits.numbits " +
-                "from line_bits " +
-                "inner join file on file.id = line_bits.file_id " +
-                "inner join context on context.id = line_bits.context_id",
-            ) as cur:
-                lines: dict[tuple[str, str], bytes] = {}
-                for path, context, numbits in cur:
-                    key = (files[path], context)
-                    if key in lines:
-                        numbits = numbits_union(lines[key], numbits)
-                    lines[key] = numbits
-
-            # Get tracer data.
-            with con.execute(
-                "select file.path, tracer " +
-                "from tracer " +
-                "inner join file on file.id = tracer.file_id",
-            ) as cur:
-                tracers = {files[path]: tracer for (path, tracer) in cur}
+        # Ensure other_data has a properly initialized database
+        with other_data._connect():
+            pass
 
         with self._connect() as con:
             assert con.con is not None
             con.con.isolation_level = "IMMEDIATE"
 
-            # Get all tracers in the DB. Files not in the tracers are assumed
-            # to have an empty string tracer. Since Sqlite does not support
-            # full outer joins, we have to make two queries to fill the
-            # dictionary.
-            with con.execute("select path from file") as cur:
-                this_tracers = {path: "" for path, in cur}
-            with con.execute(
-                "select file.path, tracer from tracer " +
-                "inner join file on file.id = tracer.file_id",
-            ) as cur:
-                this_tracers.update({
-                    map_path(path): tracer
-                    for path, tracer in cur
-                })
-
-            # Create all file and context rows in the DB.
-            con.executemany_void(
-                "insert or ignore into file (path) values (?)",
-                ((file,) for file in files.values()),
+            # Register functions for SQLite
+            con.con.create_function("numbits_union", 2, numbits_union)
+            con.con.create_function("map_path", 1, map_path)
+            con.con.create_aggregate(
+                "numbits_union_agg",
+                1,
+                NumbitsUnionAgg,  # type: ignore[arg-type]
             )
-            with con.execute("select id, path from file") as cur:
-                file_ids = {path: id for id, path in cur}
-            self._file_map.update(file_ids)
-            con.executemany_void(
-                "insert or ignore into context (context) values (?)",
-                ((context,) for context in contexts),
-            )
-            with con.execute("select id, context from context") as cur:
-                context_ids = {context: id for id, context in cur}
 
-            # Prepare tracers and fail, if a conflict is found.
-            # tracer_paths is used to ensure consistency over the tracer data
-            # and tracer_map tracks the tracers to be inserted.
-            tracer_map = {}
-            for path in files.values():
-                this_tracer = this_tracers.get(path)
-                other_tracer = tracers.get(path, "")
-                # If there is no tracer, there is always the None tracer.
-                if this_tracer is not None and this_tracer != other_tracer:
+            # Attach the other database
+            con.execute_void("ATTACH DATABASE ? AS other_db", (other_data.data_filename(),))
+
+            # Create temporary table with mapped file paths to avoid repeated map_path() calls
+            con.execute_void("""
+                CREATE TEMP TABLE other_file_mapped AS
+                SELECT
+                    other_file.id as other_file_id,
+                    map_path(other_file.path) as mapped_path
+                FROM other_db.file AS other_file
+            """)
+
+            # Check for tracer conflicts before proceeding
+            with con.execute("""
+                SELECT other_file_mapped.mapped_path,
+                       COALESCE(main.tracer.tracer, ''),
+                       COALESCE(other_db.tracer.tracer, '')
+                FROM main.file
+                LEFT JOIN main.tracer ON main.file.id = main.tracer.file_id
+                INNER JOIN other_file_mapped ON main.file.path = other_file_mapped.mapped_path
+                LEFT JOIN other_db.tracer ON other_file_mapped.other_file_id = other_db.tracer.file_id
+                WHERE COALESCE(main.tracer.tracer, '') != COALESCE(other_db.tracer.tracer, '')
+            """) as cur:
+                conflicts = list(cur)
+                if conflicts:
+                    path, this_tracer, other_tracer = conflicts[0]
                     raise DataError(
                         "Conflicting file tracer name for '{}': {!r} vs {!r}".format(
-                            path, this_tracer, other_tracer,
+                            path,
+                            this_tracer,
+                            other_tracer,
                         ),
                     )
-                tracer_map[path] = other_tracer
 
-            # Prepare arc and line rows to be inserted by converting the file
-            # and context strings with integer ids. Then use the efficient
-            # `executemany()` to insert all rows at once.
+            # Insert missing files from other_db (with map_path applied)
+            con.execute_void("""
+                INSERT OR IGNORE INTO main.file (path)
+                SELECT DISTINCT mapped_path FROM other_file_mapped
+            """)
 
-            if arcs:
+            # Insert missing contexts from other_db
+            con.execute_void("""
+                INSERT OR IGNORE INTO main.context (context)
+                SELECT context FROM other_db.context
+            """)
+
+            # Update file_map with any new files
+            with con.execute("SELECT id, path FROM file") as cur:
+                self._file_map.update({path: id for id, path in cur})
+
+            with con.execute("""
+                SELECT
+                    EXISTS(SELECT 1 FROM other_db.arc),
+                    EXISTS(SELECT 1 FROM other_db.line_bits)
+            """) as cur:
+                has_arcs, has_lines = cur.fetchone()
+
+            # Handle arcs if present in other_db
+            if has_arcs:
                 self._choose_lines_or_arcs(arcs=True)
 
-                arc_rows = (
-                    (file_ids[file], context_ids[context], fromno, tono)
-                    for file, context, fromno, tono in arcs
-                )
+                # Create context mapping table for faster lookups
+                con.execute_void("""
+                    CREATE TEMP TABLE context_mapping AS
+                    SELECT
+                        other_context.id as other_id,
+                        main_context.id as main_id
+                    FROM other_db.context AS other_context
+                    INNER JOIN main.context AS main_context ON other_context.context = main_context.context
+                """)
 
-                # Write the combined data.
-                con.executemany_void(
-                    "insert or ignore into arc " +
-                    "(file_id, context_id, fromno, tono) values (?, ?, ?, ?)",
-                    arc_rows,
-                )
+                con.execute_void("""
+                    INSERT OR IGNORE INTO main.arc (file_id, context_id, fromno, tono)
+                    SELECT
+                        main_file.id,
+                        context_mapping.main_id,
+                        other_arc.fromno,
+                        other_arc.tono
+                    FROM other_db.arc AS other_arc
+                    INNER JOIN other_file_mapped ON other_arc.file_id = other_file_mapped.other_file_id
+                    INNER JOIN context_mapping ON other_arc.context_id = context_mapping.other_id
+                    INNER JOIN main.file AS main_file ON other_file_mapped.mapped_path = main_file.path
+                """)
 
-            if lines:
+            # Handle line_bits if present in other_db
+            if has_lines:
                 self._choose_lines_or_arcs(lines=True)
 
-                for (file, context), numbits in lines.items():
-                    with con.execute(
-                        "select numbits from line_bits where file_id = ? and context_id = ?",
-                        (file_ids[file], context_ids[context]),
-                    ) as cur:
-                        existing = list(cur)
-                    if existing:
-                        lines[(file, context)] = numbits_union(numbits, existing[0][0])
+                # Handle line_bits by aggregating other_db data by mapped target,
+                # then inserting/updating
+                con.execute_void("""
+                    INSERT OR REPLACE INTO main.line_bits (file_id, context_id, numbits)
+                    SELECT
+                        main_file.id,
+                        main_context.id,
+                        numbits_union(
+                            COALESCE((
+                                SELECT numbits FROM main.line_bits
+                                WHERE file_id = main_file.id AND context_id = main_context.id
+                            ), X''),
+                            aggregated.combined_numbits
+                        )
+                    FROM (
+                        SELECT
+                            other_file_mapped.mapped_path,
+                            other_context.context,
+                            numbits_union_agg(other_line_bits.numbits) as combined_numbits
+                        FROM other_db.line_bits AS other_line_bits
+                        INNER JOIN other_file_mapped ON other_line_bits.file_id = other_file_mapped.other_file_id
+                        INNER JOIN other_db.context AS other_context ON other_line_bits.context_id = other_context.id
+                        GROUP BY other_file_mapped.mapped_path, other_context.context
+                    ) AS aggregated
+                    INNER JOIN main.file AS main_file ON aggregated.mapped_path = main_file.path
+                    INNER JOIN main.context AS main_context ON aggregated.context = main_context.context
+                """)
 
-                con.executemany_void(
-                    "insert or replace into line_bits " +
-                    "(file_id, context_id, numbits) values (?, ?, ?)",
-                    [
-                        (file_ids[file], context_ids[context], numbits)
-                        for (file, context), numbits in lines.items()
-                    ],
-                )
-
-            con.executemany_void(
-                "insert or ignore into tracer (file_id, tracer) values (?, ?)",
-                ((file_ids[filename], tracer) for filename, tracer in tracer_map.items()),
-            )
+            # Insert tracers from other_db (avoiding conflicts we already checked)
+            con.execute_void("""
+                INSERT OR IGNORE INTO main.tracer (file_id, tracer)
+                SELECT
+                    main_file.id,
+                    other_tracer.tracer
+                FROM other_db.tracer AS other_tracer
+                INNER JOIN other_file_mapped ON other_tracer.file_id = other_file_mapped.other_file_id
+                INNER JOIN main.file AS main_file ON other_file_mapped.mapped_path = main_file.path
+            """)
 
         if not self._no_disk:
             # Update all internal cache data.
@@ -834,16 +875,14 @@ class CoverageData:
         self._reset()
         if self._no_disk:
             return
-        if self._debug.should("dataio"):
-            self._debug.write(f"Erasing data file {self._filename!r}")
+        self._debug_dataio("Erasing data file", self._filename)
         file_be_gone(self._filename)
         if parallel:
             data_dir, local = os.path.split(self._filename)
             local_abs_path = os.path.join(os.path.abspath(data_dir), local)
             pattern = glob.escape(local_abs_path) + ".*"
             for filename in glob.glob(pattern):
-                if self._debug.should("dataio"):
-                    self._debug.write(f"Erasing parallel data file {filename!r}")
+                self._debug_dataio("Erasing parallel data file", filename)
                 file_be_gone(filename)
 
     def read(self) -> None:
@@ -854,7 +893,7 @@ class CoverageData:
 
     def write(self) -> None:
         """Ensure the data is written to the data file."""
-        pass
+        self._debug_dataio("Writing (no-op) data file", self._filename)
 
     def _start_using(self) -> None:
         """Call this before using the database at all."""
@@ -888,7 +927,7 @@ class CoverageData:
         """
         self._start_using()
         with self._connect() as con:
-            with con.execute("select distinct(context) from context") as cur:
+            with con.execute("SELECT DISTINCT(context) FROM context") as cur:
                 contexts = {row[0] for row in cur}
         return contexts
 
@@ -905,10 +944,10 @@ class CoverageData:
             file_id = self._file_id(filename)
             if file_id is None:
                 return None
-            row = con.execute_one("select tracer from tracer where file_id = ?", (file_id,))
+            row = con.execute_one("SELECT tracer FROM tracer WHERE file_id = ?", (file_id,))
             if row is not None:
                 return row[0] or ""
-            return ""   # File was measured, but no tracer associated.
+            return ""  # File was measured, but no tracer associated.
 
     def set_query_context(self, context: str) -> None:
         """Set a context for subsequent querying.
@@ -923,7 +962,7 @@ class CoverageData:
         """
         self._start_using()
         with self._connect() as con:
-            with con.execute("select id from context where context = ?", (context,)) as cur:
+            with con.execute("SELECT id FROM context WHERE context = ?", (context,)) as cur:
                 self._query_context_ids = [row[0] for row in cur.fetchall()]
 
     def set_query_contexts(self, contexts: Sequence[str] | None) -> None:
@@ -941,8 +980,8 @@ class CoverageData:
         self._start_using()
         if contexts:
             with self._connect() as con:
-                context_clause = " or ".join(["context regexp ?"] * len(contexts))
-                with con.execute("select id from context where " + context_clause, contexts) as cur:
+                context_clause = " or ".join(["context REGEXP ?"] * len(contexts))
+                with con.execute("SELECT id FROM context WHERE " + context_clause, contexts) as cur:
                     self._query_context_ids = [row[0] for row in cur.fetchall()]
         else:
             self._query_context_ids = None
@@ -969,11 +1008,11 @@ class CoverageData:
             if file_id is None:
                 return None
             else:
-                query = "select numbits from line_bits where file_id = ?"
+                query = "SELECT numbits FROM line_bits WHERE file_id = ?"
                 data = [file_id]
                 if self._query_context_ids is not None:
                     ids_array = ", ".join("?" * len(self._query_context_ids))
-                    query += " and context_id in (" + ids_array + ")"
+                    query += " AND context_id IN (" + ids_array + ")"
                     data += self._query_context_ids
                 with con.execute(query, data) as cur:
                     bitmaps = list(cur)
@@ -1005,11 +1044,11 @@ class CoverageData:
             if file_id is None:
                 return None
             else:
-                query = "select distinct fromno, tono from arc where file_id = ?"
+                query = "SELECT DISTINCT fromno, tono FROM arc WHERE file_id = ?"
                 data = [file_id]
                 if self._query_context_ids is not None:
                     ids_array = ", ".join("?" * len(self._query_context_ids))
-                    query += " and context_id in (" + ids_array + ")"
+                    query += " AND context_id IN (" + ids_array + ")"
                     data += self._query_context_ids
                 with con.execute(query, data) as cur:
                     return list(cur)
@@ -1031,15 +1070,15 @@ class CoverageData:
 
             lineno_contexts_map = collections.defaultdict(set)
             if self.has_arcs():
-                query = (
-                    "select arc.fromno, arc.tono, context.context " +
-                    "from arc, context " +
-                    "where arc.file_id = ? and arc.context_id = context.id"
-                )
+                query = """
+                    SELECT arc.fromno, arc.tono, context.context
+                    FROM arc, context
+                    WHERE arc.file_id = ? AND arc.context_id = context.id
+                """
                 data = [file_id]
                 if self._query_context_ids is not None:
                     ids_array = ", ".join("?" * len(self._query_context_ids))
-                    query += " and arc.context_id in (" + ids_array + ")"
+                    query += " AND arc.context_id IN (" + ids_array + ")"
                     data += self._query_context_ids
                 with con.execute(query, data) as cur:
                     for fromno, tono, context in cur:
@@ -1048,15 +1087,15 @@ class CoverageData:
                         if tono > 0:
                             lineno_contexts_map[tono].add(context)
             else:
-                query = (
-                    "select l.numbits, c.context from line_bits l, context c " +
-                    "where l.context_id = c.id " +
-                    "and file_id = ?"
-                )
+                query = """
+                    SELECT l.numbits, c.context FROM line_bits l, context c
+                    WHERE l.context_id = c.id
+                    AND file_id = ?
+                """
                 data = [file_id]
                 if self._query_context_ids is not None:
                     ids_array = ", ".join("?" * len(self._query_context_ids))
-                    query += " and l.context_id in (" + ids_array + ")"
+                    query += " AND l.context_id IN (" + ids_array + ")"
                     data += self._query_context_ids
                 with con.execute(query, data) as cur:
                     for numbits, context in cur:
@@ -1073,9 +1112,9 @@ class CoverageData:
 
         """
         with SqliteDb(":memory:", debug=NoDebugging()) as db:
-            with db.execute("pragma temp_store") as cur:
+            with db.execute("PRAGMA temp_store") as cur:
                 temp_store = [row[0] for row in cur]
-            with db.execute("pragma compile_options") as cur:
+            with db.execute("PRAGMA compile_options") as cur:
                 copts = [row[0] for row in cur]
             copts = textwrap.wrap(", ".join(copts), width=75)
 

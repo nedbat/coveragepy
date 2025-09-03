@@ -44,7 +44,7 @@ def compare(
     alongside the "/gold/" directory, and an assertion will be raised.
 
     """
-    __tracebackhide__ = True    # pytest, please don't show me this function.
+    __tracebackhide__ = True  # pytest, please don't show me this function.
     assert os_sep("/gold/") in expected_dir
     assert os.path.exists(actual_dir)
     os.makedirs(expected_dir, exist_ok=True)
@@ -85,7 +85,7 @@ def compare(
             expected = scrub(expected, scrubs)
             actual = scrub(actual, scrubs)
         if expected != actual:
-            text_diff.append(f'{expected_file} != {actual_file}')
+            text_diff.append(f"{expected_file} != {actual_file}")
             expected_lines = expected.splitlines()
             actual_lines = actual.splitlines()
             print(f":::: diff '{expected_file}' and '{actual_file}'")
@@ -113,7 +113,7 @@ def contains(filename: str, *strlist: str) -> None:
     missing in `filename`.
 
     """
-    __tracebackhide__ = True    # pytest, please don't show me this function.
+    __tracebackhide__ = True  # pytest, please don't show me this function.
     with open(filename, encoding="utf-8") as fobj:
         text = fobj.read()
     for s in strlist:
@@ -127,13 +127,11 @@ def contains_rx(filename: str, *rxlist: str) -> None:
     any lines in `filename`.
 
     """
-    __tracebackhide__ = True    # pytest, please don't show me this function.
+    __tracebackhide__ = True  # pytest, please don't show me this function.
     with open(filename, encoding="utf-8") as fobj:
         lines = fobj.readlines()
     for rx in rxlist:
-        assert any(re.search(rx, line) for line in lines), (
-            f"Missing regex in {filename}: r{rx!r}"
-        )
+        assert any(re.search(rx, line) for line in lines), f"Missing regex in {filename}: r{rx!r}"
 
 
 def contains_any(filename: str, *strlist: str) -> None:
@@ -143,7 +141,7 @@ def contains_any(filename: str, *strlist: str) -> None:
     `filename`.
 
     """
-    __tracebackhide__ = True    # pytest, please don't show me this function.
+    __tracebackhide__ = True  # pytest, please don't show me this function.
     with open(filename, encoding="utf-8") as fobj:
         text = fobj.read()
     for s in strlist:
@@ -160,7 +158,7 @@ def doesnt_contain(filename: str, *strlist: str) -> None:
     `filename`.
 
     """
-    __tracebackhide__ = True    # pytest, please don't show me this function.
+    __tracebackhide__ = True  # pytest, please don't show me this function.
     with open(filename, encoding="utf-8") as fobj:
         text = fobj.read()
     for s in strlist:
@@ -168,6 +166,7 @@ def doesnt_contain(filename: str, *strlist: str) -> None:
 
 
 # Helpers
+
 
 def canonicalize_xml(xtext: str) -> str:
     """Canonicalize some XML text."""

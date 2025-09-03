@@ -72,23 +72,23 @@ class StaticContextTest(CoverageTest):
             for data in datas:
                 combined.update(data)
 
-            assert combined.measured_contexts() == {'red', 'blue'}
+            assert combined.measured_contexts() == {"red", "blue"}
 
             full_names = {os.path.basename(f): f for f in combined.measured_files()}
-            assert_count_equal(full_names, ['red.py', 'blue.py'])
+            assert_count_equal(full_names, ["red.py", "blue.py"])
 
-            fred = full_names['red.py']
-            fblue = full_names['blue.py']
+            fred = full_names["red.py"]
+            fblue = full_names["blue.py"]
 
             def assert_combined_lines(filename: str, context: str, lines: list[TLineNo]) -> None:
                 # pylint: disable=cell-var-from-loop
                 combined.set_query_context(context)
                 assert combined.lines(filename) == lines
 
-            assert_combined_lines(fred, 'red', self.LINES)
-            assert_combined_lines(fred, 'blue', [])
-            assert_combined_lines(fblue, 'red', [])
-            assert_combined_lines(fblue, 'blue', self.LINES)
+            assert_combined_lines(fred, "red", self.LINES)
+            assert_combined_lines(fred, "blue", [])
+            assert_combined_lines(fblue, "red", [])
+            assert_combined_lines(fblue, "blue", self.LINES)
 
     def test_combining_arc_contexts(self) -> None:
         red_data, blue_data = self.run_red_blue(branch=True)
@@ -105,33 +105,33 @@ class StaticContextTest(CoverageTest):
             for data in datas:
                 combined.update(data)
 
-            assert combined.measured_contexts() == {'red', 'blue'}
+            assert combined.measured_contexts() == {"red", "blue"}
 
             full_names = {os.path.basename(f): f for f in combined.measured_files()}
-            assert_count_equal(full_names, ['red.py', 'blue.py'])
+            assert_count_equal(full_names, ["red.py", "blue.py"])
 
-            fred = full_names['red.py']
-            fblue = full_names['blue.py']
+            fred = full_names["red.py"]
+            fblue = full_names["blue.py"]
 
             def assert_combined_lines(filename: str, context: str, lines: list[TLineNo]) -> None:
                 # pylint: disable=cell-var-from-loop
                 combined.set_query_context(context)
                 assert combined.lines(filename) == lines
 
-            assert_combined_lines(fred, 'red', self.LINES)
-            assert_combined_lines(fred, 'blue', [])
-            assert_combined_lines(fblue, 'red', [])
-            assert_combined_lines(fblue, 'blue', self.LINES)
+            assert_combined_lines(fred, "red", self.LINES)
+            assert_combined_lines(fred, "blue", [])
+            assert_combined_lines(fblue, "red", [])
+            assert_combined_lines(fblue, "blue", self.LINES)
 
             def assert_combined_arcs(filename: str, context: str, lines: list[TArc]) -> None:
                 # pylint: disable=cell-var-from-loop
                 combined.set_query_context(context)
                 assert combined.arcs(filename) == lines
 
-            assert_combined_arcs(fred, 'red', arc_data)
-            assert_combined_arcs(fred, 'blue', [])
-            assert_combined_arcs(fblue, 'red', [])
-            assert_combined_arcs(fblue, 'blue', arc_data)
+            assert_combined_arcs(fred, "red", arc_data)
+            assert_combined_arcs(fred, "blue", [])
+            assert_combined_arcs(fblue, "red", [])
+            assert_combined_arcs(fblue, "blue", arc_data)
 
 
 @pytest.mark.skipif(not testenv.DYN_CONTEXTS, reason="No dynamic contexts with this core")
@@ -216,11 +216,13 @@ def get_qualname() -> str | None:
     if any(sinfo[0].f_code.co_name == "get_qualname" for sinfo in stack):
         # We're calling ourselves recursively, maybe because we're testing
         # properties. Return an int to try to get back on track.
-        return 17       # type: ignore[return-value]
+        return 17  # type: ignore[return-value]
     caller_frame = stack[0][0]
     return qualname_from_frame(caller_frame)
 
+
 # pylint: disable=missing-class-docstring, missing-function-docstring, unused-argument
+
 
 class Parent:
     def meth(self) -> str | None:
@@ -230,26 +232,34 @@ class Parent:
     def a_property(self) -> str | None:
         return get_qualname()
 
+
 class Child(Parent):
     pass
+
 
 class SomethingElse:
     pass
 
+
 class MultiChild(SomethingElse, Child):
     pass
+
 
 def no_arguments() -> str | None:
     return get_qualname()
 
+
 def plain_old_function(a: Any, b: Any) -> str | None:
     return get_qualname()
+
 
 def fake_out(self: Any) -> str | None:
     return get_qualname()
 
+
 def patch_meth(self: Any) -> str | None:
     return get_qualname()
+
 
 # pylint: enable=missing-class-docstring, missing-function-docstring, unused-argument
 
@@ -285,12 +295,12 @@ class QualnameTest(CoverageTest):
 
     def test_changeling(self) -> None:
         c = Child()
-        c.meth = patch_meth                                     # type: ignore[assignment]
-        assert c.meth(c) == "tests.test_context.patch_meth"     # type: ignore[call-arg]
+        c.meth = patch_meth  # type: ignore[assignment]
+        assert c.meth(c) == "tests.test_context.patch_meth"  # type: ignore[call-arg]
 
     def test_bug_829(self) -> None:
         # A class with a name like a function shouldn't confuse qualname_from_frame.
-        class test_something:               # pylint: disable=unused-variable
+        class test_something:  # pylint: disable=unused-variable
             assert get_qualname() is None
 
     def test_bug_1210(self) -> None:

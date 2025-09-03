@@ -114,7 +114,7 @@ KITBIN = .tox/$(KITVER)/bin
 $(KITBIN):
 	tox -q -e $(KITVER) --notest
 
-PIP_COMPILE = uv pip compile -q ${COMPILE_OPTS}
+PIP_COMPILE = uv pip compile -q --universal ${COMPILE_OPTS}
 upgrade: 				## Update the *.pip files with the latest packages satisfying *.in files.
 	$(MAKE) _upgrade COMPILE_OPTS="--upgrade"
 
@@ -132,7 +132,7 @@ _upgrade: $(DOCBIN) $(KITBIN)
 	$(PIP_COMPILE) -o requirements/light-threads.pip requirements/light-threads.in
 	$(PIP_COMPILE) -o requirements/mypy.pip requirements/mypy.in
 	$(PIP_COMPILE) -p $(DOCBIN)/python3 -o doc/requirements.pip doc/requirements.in
-	pre-commit autoupdate
+	PYTHONWARNDEFAULTENCODING= pre-commit autoupdate
 
 diff_upgrade:				## Summarize the last `make upgrade`.
 	@# The sort flags sort by the package name first, then by the -/+, and

@@ -8,7 +8,7 @@ from __future__ import annotations
 
 # version_info: same semantics as sys.version_info.
 # _dev: the .devN suffix if any.
-version_info = (7, 10, 3, "alpha", 0)
+version_info = (7, 10, 7, "alpha", 0)
 _dev = 1
 
 
@@ -22,7 +22,7 @@ def _make_version(
 ) -> str:
     """Create a readable version string from version_info tuple components."""
     assert releaselevel in ["alpha", "beta", "candidate", "final"]
-    version = "%d.%d.%d" % (major, minor, micro)
+    version = f"{major}.{minor}.{micro}"
     if releaselevel != "final":
         short = {"alpha": "a", "beta": "b", "candidate": "rc"}[releaselevel]
         version += f"{short}{serial}"
@@ -40,9 +40,8 @@ def _make_url(
     dev: int = 0,
 ) -> str:
     """Make the URL people should start at for this version of coverage.py."""
-    return (
-        "https://coverage.readthedocs.io/en/"
-        + _make_version(major, minor, micro, releaselevel, serial, dev)
+    return "https://coverage.readthedocs.io/en/" + _make_version(
+        major, minor, micro, releaselevel, serial, dev
     )
 
 

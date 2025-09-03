@@ -7,13 +7,9 @@ run_experiment(
     ],
     cov_versions=[
         Coverage("701", "coverage==7.0.1"),
-        Coverage(
-            "701.dynctx", "coverage==7.0.1", [("dynamic_context", "test_function")]
-        ),
+        Coverage("701.dynctx", "coverage==7.0.1", [("dynamic_context", "test_function")]),
         Coverage("702", "coverage==7.0.2"),
-        Coverage(
-            "702.dynctx", "coverage==7.0.2", [("dynamic_context", "test_function")]
-        ),
+        Coverage("702.dynctx", "coverage==7.0.2", [("dynamic_context", "test_function")]),
     ],
     projects=[
         EmptyProject("empty", [1.2, 3.4]),

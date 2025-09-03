@@ -15,8 +15,13 @@ from hypothesis.strategies import sets, integers
 
 from coverage import env
 from coverage.numbits import (
-    nums_to_numbits, numbits_to_nums, numbits_union, numbits_intersection,
-    numbits_any_intersection, num_in_numbits, register_sqlite_functions,
+    nums_to_numbits,
+    numbits_to_nums,
+    numbits_union,
+    numbits_intersection,
+    numbits_any_intersection,
+    num_in_numbits,
+    register_sqlite_functions,
 )
 
 from tests.coveragetest import CoverageTest
@@ -28,7 +33,7 @@ line_number_sets = sets(line_numbers)
 # When coverage-testing ourselves, hypothesis complains about a test being
 # flaky because the first run exceeds the deadline (and fails), and the second
 # run succeeds.  Disable the deadline if we are coverage-testing.
-default_settings = settings(deadline=400)   # milliseconds
+default_settings = settings(deadline=400)  # milliseconds
 if env.METACOV:
     default_settings = settings(default_settings, deadline=None)
 
@@ -110,33 +115,52 @@ class NumbitsSqliteFunctionTest(CoverageTest):
         self.cursor.execute("create table data (id int, numbits blob)")
         self.cursor.executemany(
             "insert into data (id, numbits) values (?, ?)",
-            [
-                (i, nums_to_numbits(range(i, 100, i)))
-                for i in range(1, 11)
-            ],
+            [(i, nums_to_numbits(range(i, 100, i))) for i in range(1, 11)],
         )
         self.addCleanup(self.cursor.close)
 
     def test_numbits_union(self) -> None:
         res = self.cursor.execute(
-            "select numbits_union(" +
-                "(select numbits from data where id = 7)," +
-                "(select numbits from data where id = 9)" +
-                ")",
+            "select numbits_union("
+            + "(select numbits from data where id = 7),"
+            + "(select numbits from data where id = 9)"
+            + ")",
         )
         expected = [
-            7, 9, 14, 18, 21, 27, 28, 35, 36, 42, 45, 49,
-            54, 56, 63, 70, 72, 77, 81, 84, 90, 91, 98, 99,
+            7,
+            9,
+            14,
+            18,
+            21,
+            27,
+            28,
+            35,
+            36,
+            42,
+            45,
+            49,
+            54,
+            56,
+            63,
+            70,
+            72,
+            77,
+            81,
+            84,
+            90,
+            91,
+            98,
+            99,
         ]
         answer = numbits_to_nums(list(res)[0][0])
         assert expected == answer
 
     def test_numbits_intersection(self) -> None:
         res = self.cursor.execute(
-            "select numbits_intersection(" +
-                "(select numbits from data where id = 7)," +
-                "(select numbits from data where id = 9)" +
-                ")",
+            "select numbits_intersection("
+            + "(select numbits from data where id = 7),"
+            + "(select numbits from data where id = 9)"
+            + ")",
         )
         answer = numbits_to_nums(list(res)[0][0])
         assert [63] == answer

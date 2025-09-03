@@ -32,6 +32,7 @@ class FileDisposition:
 # be implemented in either C or Python.  Acting on them is done with these
 # functions.
 
+
 def disposition_init(cls: type[TFileDisposition], original_filename: str) -> TFileDisposition:
     """Construct and initialize a new FileDisposition object."""
     disp = cls()

@@ -42,32 +42,35 @@ class RunFileTest(CoverageTest):
         mod_globs = json.loads(self.stdout())
 
         # The file should think it is __main__
-        assert mod_globs['__name__'] == "__main__"
+        assert mod_globs["__name__"] == "__main__"
 
         # It should seem to come from a file named try_execfile.py
-        dunder_file = os.path.basename(mod_globs['__file__'])
+        dunder_file = os.path.basename(mod_globs["__file__"])
         assert dunder_file == "try_execfile.py"
 
         # It should have its correct module data.
-        assert mod_globs['__doc__'].splitlines()[0] == "Test file for run_python_file."
-        assert mod_globs['DATA'] == "xyzzy"
-        assert mod_globs['FN_VAL'] == "my_fn('fooey')"
+        assert mod_globs["__doc__"].splitlines()[0] == "Test file for run_python_file."
+        assert mod_globs["DATA"] == "xyzzy"
+        assert mod_globs["FN_VAL"] == "my_fn('fooey')"
 
         # It must be self-importable as __main__.
-        assert mod_globs['__main__.DATA'] == "xyzzy"
+        assert mod_globs["__main__.DATA"] == "xyzzy"
 
         # Argv should have the proper values.
-        assert mod_globs['argv0'] == TRY_EXECFILE
-        assert mod_globs['argv1-n'] == ["arg1", "arg2"]
+        assert mod_globs["argv0"] == TRY_EXECFILE
+        assert mod_globs["argv1-n"] == ["arg1", "arg2"]
 
         # __builtins__ should have the right values, like open().
-        assert mod_globs['__builtins__.has_open'] is True
+        assert mod_globs["__builtins__.has_open"] is True
 
     def test_no_extra_file(self) -> None:
         # Make sure that running a file doesn't create an extra compiled file.
-        self.make_file("xxx", """\
+        self.make_file(
+            "xxx",
+            """\
             desc = "a non-.py file!"
-            """)
+            """,
+        )
 
         assert os.listdir(".") == ["xxx"]
         run_python_file(["xxx"])
@@ -75,36 +78,42 @@ class RunFileTest(CoverageTest):
 
     def test_universal_newlines(self) -> None:
         # Make sure we can read any sort of line ending.
-        pylines = """# try newlines|print('Hello, world!')|""".split('|')
-        for nl in ('\n', '\r\n', '\r'):
-            with open('nl.py', 'wb') as fpy:
-                fpy.write(nl.join(pylines).encode('utf-8'))
-            run_python_file(['nl.py'])
-        assert self.stdout() == "Hello, world!\n"*3
+        pylines = """# try newlines|print('Hello, world!')|""".split("|")
+        for nl in ["\n", "\r\n", "\r"]:
+            with open("nl.py", "wb") as fpy:
+                fpy.write(nl.join(pylines).encode("utf-8"))
+            run_python_file(["nl.py"])
+        assert self.stdout() == "Hello, world!\n" * 3
 
     def test_missing_final_newline(self) -> None:
         # Make sure we can deal with a Python file with no final newline.
-        self.make_file("abrupt.py", """\
+        self.make_file(
+            "abrupt.py",
+            """\
             if 1:
                 a = 1
                 print(f"a is {a!r}")
-                #""")
+                #""",
+        )
         with open("abrupt.py", encoding="utf-8") as f:
             abrupt = f.read()
-        assert abrupt[-1] == '#'
+        assert abrupt[-1] == "#"
         run_python_file(["abrupt.py"])
         assert self.stdout() == "a is 1\n"
 
     def test_no_such_file(self) -> None:
-        path = python_reported_file('xyzzy.py')
+        path = python_reported_file("xyzzy.py")
         msg = re.escape(f"No file to run: '{path}'")
         with pytest.raises(NoSource, match=msg):
             run_python_file(["xyzzy.py"])
 
     def test_directory_with_main(self) -> None:
-        self.make_file("with_main/__main__.py", """\
+        self.make_file(
+            "with_main/__main__.py",
+            """\
             print("I am __main__")
-            """)
+            """,
+        )
         run_python_file(["with_main"])
         assert self.stdout() == "I am __main__\n"
 
@@ -114,7 +123,9 @@ class RunFileTest(CoverageTest):
             run_python_file(["without_main"])
 
     def test_code_throws(self) -> None:
-        self.make_file("throw.py", """\
+        self.make_file(
+            "throw.py",
+            """\
             class MyException(Exception):
                 pass
 
@@ -126,7 +137,8 @@ class RunFileTest(CoverageTest):
                 f1()
 
             f2()
-            """)
+            """,
+        )
 
         with pytest.raises(SystemExit) as exc_info:
             run_python_file(["throw.py"])
@@ -135,7 +147,9 @@ class RunFileTest(CoverageTest):
         assert self.stderr() == ""
 
     def test_code_exits(self) -> None:
-        self.make_file("exit.py", """\
+        self.make_file(
+            "exit.py",
+            """\
             import sys
             def f1():
                 print("about to exit..")
@@ -145,7 +159,8 @@ class RunFileTest(CoverageTest):
                 f1()
 
             f2()
-            """)
+            """,
+        )
 
         with pytest.raises(SystemExit) as exc_info:
             run_python_file(["exit.py"])
@@ -154,7 +169,9 @@ class RunFileTest(CoverageTest):
         assert self.stderr() == ""
 
     def test_excepthook_exit(self) -> None:
-        self.make_file("excepthook_exit.py", """\
+        self.make_file(
+            "excepthook_exit.py",
+            """\
             import sys
 
             def excepthook(*args):
@@ -164,14 +181,17 @@ class RunFileTest(CoverageTest):
             sys.excepthook = excepthook
 
             raise RuntimeError('Error Outside')
-            """)
+            """,
+        )
         with pytest.raises(SystemExit):
             run_python_file(["excepthook_exit.py"])
         cov_out = self.stdout()
         assert cov_out == "in excepthook\n"
 
     def test_excepthook_throw(self) -> None:
-        self.make_file("excepthook_throw.py", """\
+        self.make_file(
+            "excepthook_throw.py",
+            """\
             import sys
 
             def excepthook(*args):
@@ -184,7 +204,8 @@ class RunFileTest(CoverageTest):
             sys.excepthook = excepthook
 
             raise RuntimeError('Error Outside')
-            """)
+            """,
+        )
         with pytest.raises(_ExceptionDuringRun) as exc_info:
             run_python_file(["excepthook_throw.py"])
         # The _ExceptionDuringRun exception has the RuntimeError as its argument.
@@ -200,12 +221,15 @@ class RunPycFileTest(CoverageTest):
 
     def make_pyc(self, **kwargs: Any) -> str:
         """Create a .pyc file, and return the path to it."""
-        self.make_file("compiled.py", """\
+        self.make_file(
+            "compiled.py",
+            """\
             def doit():
                 print("I am here!")
 
             doit()
-            """)
+            """,
+        )
         compileall.compile_dir(".", quiet=True, **kwargs)
         os.remove("compiled.py")
 
@@ -231,7 +255,7 @@ class RunPycFileTest(CoverageTest):
         # Jam Python 2.1 magic number into the .pyc file.
         with open(pycfile, "r+b") as fpyc:
             fpyc.seek(0)
-            fpyc.write(bytes([0x2a, 0xeb, 0x0d, 0x0a]))
+            fpyc.write(bytes([0x2A, 0xEB, 0x0D, 0x0A]))
 
         with pytest.raises(NoCode, match="Bad magic number in .pyc file"):
             run_python_file([pycfile])
@@ -245,7 +269,7 @@ class RunPycFileTest(CoverageTest):
         assert self.stdout() == "I am here!\n"
 
     def test_no_such_pyc_file(self) -> None:
-        path = python_reported_file('xyzzy.pyc')
+        path = python_reported_file("xyzzy.pyc")
         msg = re.escape(f"No file to run: '{path}'")
         with pytest.raises(NoCode, match=msg):
             run_python_file(["xyzzy.pyc"])
@@ -255,12 +279,12 @@ class RunPycFileTest(CoverageTest):
         # be able to write binary files.
         bf = self.make_file("binary")
         with open(bf, "wb") as f:
-            f.write(b'\x7fELF\x02\x01\x01\x00\x00\x00')
+            f.write(b"\x7fELF\x02\x01\x01\x00\x00\x00")
 
-        path = python_reported_file('binary')
+        path = python_reported_file("binary")
         msg = (
-            re.escape(f"Couldn't run '{path}' as Python code: ") +
-            r"(ValueError|SyntaxError): source code string cannot contain null bytes"
+            re.escape(f"Couldn't run '{path}' as Python code: ")
+            + r"(ValueError|SyntaxError): source code string cannot contain null bytes"
         )
         with pytest.raises(Exception, match=msg):
             run_python_file([bf])

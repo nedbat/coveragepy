@@ -28,9 +28,11 @@ class SqliteDb:
                     etc(a, b)
 
     """
-    def __init__(self, filename: str, debug: TDebugCtl) -> None:
+
+    def __init__(self, filename: str, debug: TDebugCtl, no_disk: bool = False) -> None:
         self.debug = debug
         self.filename = filename
+        self.no_disk = no_disk
         self.nest = 0
         self.con: sqlite3.Connection | None = None
 
@@ -49,7 +51,11 @@ class SqliteDb:
         if self.debug.should("sql"):
             self.debug.write(f"Connecting to {self.filename!r}")
         try:
-            self.con = sqlite3.connect(self.filename, check_same_thread=False)
+            # Use uri=True when connecting to memory URIs
+            if self.filename.startswith("file:"):
+                self.con = sqlite3.connect(self.filename, check_same_thread=False, uri=True)
+            else:
+                self.con = sqlite3.connect(self.filename, check_same_thread=False)
         except sqlite3.Error as exc:
             raise DataError(f"Couldn't use data file {self.filename!r}: {exc}") from exc
 
@@ -63,8 +69,9 @@ class SqliteDb:
         # In Python 3.12+, we can change the config to allow journal_mode=off.
         if hasattr(sqlite3, "SQLITE_DBCONFIG_DEFENSIVE"):
             # Turn off defensive mode, so that journal_mode=off can succeed.
-            self.con.setconfig(                     # type: ignore[attr-defined, unused-ignore]
-                sqlite3.SQLITE_DBCONFIG_DEFENSIVE, False,
+            self.con.setconfig(  # type: ignore[attr-defined, unused-ignore]
+                sqlite3.SQLITE_DBCONFIG_DEFENSIVE,
+                False,
             )
 
         # This pragma makes writing faster. It disables rollbacks, but we never need them.
@@ -78,7 +85,7 @@ class SqliteDb:
     def close(self, force: bool = False) -> None:
         """If needed, close the connection."""
         if self.con is not None:
-            if force or self.filename != ":memory:":
+            if force or not self.no_disk:
                 if self.debug.should("sql"):
                     self.debug.write(f"Closing {self.con!r} on {self.filename!r}")
                 self.con.close()
@@ -92,7 +99,7 @@ class SqliteDb:
         self.nest += 1
         return self
 
-    def __exit__(self, exc_type, exc_value, traceback) -> None:     # type: ignore[no-untyped-def]
+    def __exit__(self, exc_type, exc_value, traceback) -> None:  # type: ignore[no-untyped-def]
         self.nest -= 1
         if self.nest == 0:
             try:
@@ -112,15 +119,15 @@ class SqliteDb:
         try:
             assert self.con is not None
             try:
-                return self.con.execute(sql, parameters)    # type: ignore[arg-type]
+                return self.con.execute(sql, parameters)  # type: ignore[arg-type]
             except Exception:
                 # In some cases, an error might happen that isn't really an
                 # error.  Try again immediately.
                 # https://github.com/nedbat/coveragepy/issues/1010
-                return self.con.execute(sql, parameters)    # type: ignore[arg-type]
+                return self.con.execute(sql, parameters)  # type: ignore[arg-type]
         except sqlite3.Error as exc:
             msg = str(exc)
-            if self.filename != ":memory:":
+            if not self.no_disk:
                 try:
                     # `execute` is the first thing we do with the database, so try
                     # hard to provide useful hints if something goes wrong now.
@@ -128,8 +135,8 @@ class SqliteDb:
                         cov4_sig = b"!coverage.py: This is a private format"
                         if bad_file.read(len(cov4_sig)) == cov4_sig:
                             msg = (
-                                "Looks like a coverage 4.x data file. " +
-                                "Are you mixing versions of coverage?"
+                                "Looks like a coverage 4.x data file. "
+                                + "Are you mixing versions of coverage?"
                             )
                 except Exception:
                     pass
@@ -210,18 +217,19 @@ class SqliteDb:
             # https://github.com/nedbat/coveragepy/issues/1010
             return self.con.executemany(sql, data)
 
-    def executemany_void(self, sql: str, data: Iterable[Any]) -> None:
+    def executemany_void(self, sql: str, data: list[Any]) -> None:
         """Same as :meth:`python:sqlite3.Connection.executemany` when you don't need the cursor."""
-        data = list(data)
-        if data:
-            self._executemany(sql, data).close()
+        self._executemany(sql, data).close()
 
     def executescript(self, script: str) -> None:
         """Same as :meth:`python:sqlite3.Connection.executescript`."""
         if self.debug.should("sql"):
-            self.debug.write("Executing script with {} chars: {}".format(
-                len(script), clipped_repr(script, 100),
-            ))
+            self.debug.write(
+                "Executing script with {} chars: {}".format(
+                    len(script),
+                    clipped_repr(script, 100),
+                )
+            )
         assert self.con is not None
         self.con.executescript(script).close()
 

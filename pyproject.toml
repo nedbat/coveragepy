@@ -155,13 +155,12 @@ ghrel_template = """
 """
 
 ## RUFF
-# We aren't using ruff for real yet...
+# We are using ruff for formatting, but not for linting.
 
 [tool.ruff]
 # PYVERSION
 target-version = "py39"     # Can't use [project]
 line-length = 100
-src = ["coverage", "tests"]
 
 [tool.ruff.lint]
 select = ["ALL"]
@@ -176,7 +175,6 @@ ignore = [
     "ERA001",       # Found commented-out code
     "PLR0913",      # Too many arguments in function definition
     "S101",         # Use of `assert` detected
-    "SIM105",       # Use `contextlib.suppress(Exception)` instead of `try`-`except`-`pass`
     "TRY003",       # Avoid specifying long messages outside the exception class
 ]
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?)|[a-zA-Z0-9_]+_unused)$"

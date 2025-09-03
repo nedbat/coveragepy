@@ -9,6 +9,7 @@ from coverage.types import TFileDisposition, TTraceData, TTraceFn, Tracer
 
 class CFileDisposition(TFileDisposition):
     """CFileDisposition is in ctracer/filedisp.c"""
+
     canonical_filename: Any
     file_tracer: Any
     has_dynamic_filename: Any
@@ -20,6 +21,7 @@ class CFileDisposition(TFileDisposition):
 
 class CTracer(Tracer):
     """CTracer is in ctracer/tracer.c"""
+
     check_include: Any
     concur_id_func: Any
     data: TTraceData

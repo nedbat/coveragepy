@@ -132,6 +132,7 @@ class StdStreamCapturingMixin:
     invocation will only return the delta.
 
     """
+
     @pytest.fixture(autouse=True)
     def _capcapsys(self, capsys: pytest.CaptureFixture[str]) -> None:
         """Grab the fixture so our methods can use it."""

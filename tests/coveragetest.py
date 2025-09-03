@@ -17,11 +17,9 @@ import re
 import shlex
 import sys
 
-from types import ModuleType
-from typing import (
-    Any,
-)
 from collections.abc import Collection, Iterable, Iterator, Mapping, Sequence
+from types import ModuleType
+from typing import Any
 
 import coverage
 from coverage import Coverage
@@ -119,10 +117,10 @@ class CoverageTest(
         # understand the difference.
 
         cov.start()
-        try:                                    # pragma: nested
+        try:  # pragma: nested
             # Import the Python file, executing it.
             mod = import_local_file(modname, modfile)
-        finally:                                # pragma: nested
+        finally:  # pragma: nested
             # Stop coverage.py.
             cov.stop()
         return mod
@@ -132,15 +130,15 @@ class CoverageTest(
         repout = io.StringIO()
         kwargs.setdefault("show_missing", False)
         cov.report(file=repout, **kwargs)
-        report = repout.getvalue().replace('\\', '/')
-        print(report)   # When tests fail, it's helpful to see the output
+        report = repout.getvalue().replace("\\", "/")
+        print(report)  # When tests fail, it's helpful to see the output
         if squeeze:
             report = re.sub(r" +", " ", report)
         return report
 
     def get_module_name(self) -> str:
         """Return a random module name to use for this test run."""
-        self.last_module_name = 'coverage_test_' + str(random.random())[2:]
+        self.last_module_name = "coverage_test_" + str(random.random())[2:]
         return self.last_module_name
 
     def check_coverage(
@@ -171,7 +169,7 @@ class CoverageTest(
         Returns the Coverage object, in case you want to poke at it some more.
 
         """
-        __tracebackhide__ = True    # pytest, please don't show me this function.
+        __tracebackhide__ = True  # pytest, please don't show me this function.
 
         # We write the code into a file so that we can import it.
         # Coverage.py wants to deal with things as modules with file names.
@@ -191,7 +189,7 @@ class CoverageTest(
         for exc in excludes or []:
             cov.exclude(exc)
         for par in partials or []:
-            cov.exclude(par, which='partial')
+            cov.exclude(par, which="partial")
 
         mod = self.start_import_stop(cov, modname)
 
@@ -209,7 +207,7 @@ class CoverageTest(
             else:
                 # lines is a list of possible line number lists, one of them
                 # must match.
-                for i, line_list in enumerate(lines):   # pylint: disable=unused-variable
+                for i, line_list in enumerate(lines):  # pylint: disable=unused-variable
                     if statements == line_list:
                         # PYVERSIONS: we might be able to trim down multiple
                         # lines passed into this function.
@@ -309,10 +307,11 @@ class CoverageTest(
         """
         __tracebackhide__ = True
         saved_warnings = []
+
         def capture_warning(
             msg: str,
             slug: str | None = None,
-            once: bool = False,                 # pylint: disable=unused-argument
+            once: bool = False,  # pylint: disable=unused-argument
         ) -> None:
             """A fake implementation of Coverage._warn, to capture warnings."""
             # NOTE: we don't implement `once`.
@@ -321,11 +320,11 @@ class CoverageTest(
             saved_warnings.append(msg)
 
         original_warn = cov._warn
-        cov._warn = capture_warning             # type: ignore[method-assign]
+        cov._warn = capture_warning  # type: ignore[method-assign]
 
         try:
             yield
-        except:                     # pylint: disable=try-except-raise
+        except:  # pylint: disable=try-except-raise
             raise
         else:
             if warnings:
@@ -346,7 +345,7 @@ class CoverageTest(
                 if saved_warnings:
                     assert False, f"Unexpected warnings: {saved_warnings!r}"
         finally:
-            cov._warn = original_warn           # type: ignore[method-assign]
+            cov._warn = original_warn  # type: ignore[method-assign]
 
     def assert_same_files(self, flist1: Iterable[str], flist2: Iterable[str]) -> None:
         """Assert that `flist1` and `flist2` are the same set of file names."""
@@ -487,13 +486,13 @@ class CoverageTest(
 
     def report_from_command(self, cmd: str) -> str:
         """Return the report from the `cmd`, with some convenience added."""
-        report = self.run_command(cmd).replace('\\', '/')
+        report = self.run_command(cmd).replace("\\", "/")
         assert "error" not in report.lower()
         return report
 
     def report_lines(self, report: str) -> list[str]:
         """Return the lines of the report, as a list."""
-        lines = report.split('\n')
+        lines = report.split("\n")
         assert lines[-1] == ""
         return lines[:-1]
 
@@ -516,8 +515,7 @@ class CoverageTest(
         Returns a dict of {filename: absolute path to file}
         for given CoverageData.
         """
-        return {os.path.basename(filename): filename
-                for filename in coverage_data.measured_files()}
+        return {os.path.basename(filename): filename for filename in coverage_data.measured_files()}
 
     def get_missing_arc_description(self, cov: Coverage, start: TLineNo, end: TLineNo) -> str:
         """Get the missing-arc description for a line arc in a coverage run."""
@@ -533,7 +531,7 @@ class UsingModulesMixin:
     """A mixin for importing modules from tests/modules and tests/moremodules."""
 
     def setUp(self) -> None:
-        super().setUp()             # type: ignore[misc]
+        super().setUp()  # type: ignore[misc]
 
         # Parent class saves and restores sys.path, we can just modify it.
         sys.path.append(nice_file(TESTS_DIR, "modules"))

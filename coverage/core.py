@@ -16,11 +16,7 @@ from coverage.exceptions import ConfigError
 from coverage.misc import isolate_module
 from coverage.pytracer import PyTracer
 from coverage.sysmon import SysMonitor
-from coverage.types import (
-    TFileDisposition,
-    Tracer,
-    TWarnFn,
-)
+from coverage.types import TFileDisposition, Tracer, TWarnFn
 
 os = isolate_module(os)
 
@@ -29,12 +25,13 @@ IMPORT_ERROR: str = ""
 try:
     # Use the C extension code when we can, for speed.
     import coverage.tracer
+
     CTRACER_FILE: str | None = getattr(coverage.tracer, "__file__", "unknown")
 except ImportError as imp_err:
     # Couldn't import the C extension, maybe it isn't built.
     # We still need to check the environment variable directly here,
     # as this code runs before configuration is loaded.
-    if os.getenv("COVERAGE_CORE") == "ctrace":      # pragma: part covered
+    if os.getenv("COVERAGE_CORE") == "ctrace":  # pragma: part covered
         # During testing, we use the COVERAGE_CORE environment variable
         # to indicate that we've fiddled with the environment to test this
         # fallback code.  If we thought we had a C tracer, but couldn't import

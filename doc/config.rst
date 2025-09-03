@@ -443,9 +443,18 @@ side-effects.
 
 Available patches:
 
+- ``execv``: The :func:`execv <python:os.execl>` family of functions end the
+  current program without giving coverage a chance to write collected data.
+  This patch adjusts those functions to save the data before starting the next
+  executable. Not available on Windows.
+
 - ``_exit``: The :func:`os._exit() <python:os._exit>` function exits the
   process immediately without calling cleanup handlers.  This patch saves
   coverage data before exiting.
+
+- ``fork``: Forking a process normally continues measuring coverage properly.
+  This patch stops the previous coverage and starts a new one in the child
+  process for those times when the default handling isn't enough.
 
 - ``subprocess``: Python sub-processes normally won't get coverage measurement.
   This patch configures Python to start coverage automatically, and will apply
@@ -458,15 +467,6 @@ Available patches:
   The ``subprocess`` patch sets :ref:`parallel = True <config_run_parallel>`
   and will require combining data files before reporting.  See
   :ref:`cmd_combine` for more details.
-
-  .. note:: When using ``patch = subprocess``, all configuration options must
-      be specified in a configuration file.  Options on the ``coverage``
-      command line will not be available to subprocesses.
-
-- ``execv``: The :func:`execv <python:os.execl>` family of functions end the
-  current program without giving coverage a chance to write collected data.
-  This patch adjusts those functions to save the data before starting the next
-  executable. Not available on Windows.
 
 .. versionadded:: 7.10
 

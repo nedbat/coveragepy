@@ -13,12 +13,13 @@ import os.path
 import platform
 import re
 import signal
+import site
 import stat
 import sys
 import textwrap
 
 from pathlib import Path
-from typing import Any
+from typing import Any, Iterable
 
 import pytest
 
@@ -29,17 +30,20 @@ from coverage.files import abs_file, python_reported_file
 
 from tests import testenv
 from tests.coveragetest import CoverageTest, TESTS_DIR
-from tests.helpers import re_line, re_lines, re_lines_text
+from tests.helpers import change_dir, re_line, re_lines, re_lines_text
 
 
 class ProcessTest(CoverageTest):
     """Tests of the per-process behavior of coverage.py."""
 
     def test_save_on_exit(self) -> None:
-        self.make_file("mycode.py", """\
+        self.make_file(
+            "mycode.py",
+            """\
             h = "Hello"
             w = "world"
-            """)
+            """,
+        )
 
         self.assert_doesnt_exist(".coverage")
         self.run_command("coverage run mycode.py")
@@ -47,25 +51,31 @@ class ProcessTest(CoverageTest):
 
     def test_tests_dir_is_importable(self) -> None:
         # Checks that we can import modules from the tests directory at all!
-        self.make_file("mycode.py", """\
+        self.make_file(
+            "mycode.py",
+            """\
             import covmod1
             import covmodzip1
             a = 1
             print('done')
-            """)
+            """,
+        )
 
         self.assert_doesnt_exist(".coverage")
         self.add_test_modules_to_pythonpath()
         out = self.run_command("coverage run mycode.py")
         self.assert_exists(".coverage")
-        assert out == 'done\n'
+        assert out == "done\n"
 
     def test_coverage_run_envvar_is_in_coveragerun(self) -> None:
         # Test that we are setting COVERAGE_RUN when we run.
-        self.make_file("envornot.py", """\
+        self.make_file(
+            "envornot.py",
+            """\
             import os
             print(os.getenv("COVERAGE_RUN", "nope"))
-            """)
+            """,
+        )
         self.del_environ("COVERAGE_RUN")
         # Regular Python doesn't have the environment variable.
         out = self.run_command("python envornot.py")
@@ -80,7 +90,9 @@ class ProcessTest(CoverageTest):
         # "b_or_c.py b" will run 6 lines.
         # "b_or_c.py c" will run 7 lines.
         # Together, they run 8 lines.
-        self.make_file("b_or_c.py", """\
+        self.make_file(
+            "b_or_c.py",
+            """\
             import sys
             a = 2
             if sys.argv[1] == 'b':
@@ -90,18 +102,19 @@ class ProcessTest(CoverageTest):
                 c2 = 7
             d = 8
             print('done')
-            """)
+            """,
+        )
 
     def test_append_data(self) -> None:
         self.make_b_or_c_py()
 
         out = self.run_command("coverage run b_or_c.py b")
-        assert out == 'done\n'
+        assert out == "done\n"
         self.assert_exists(".coverage")
         self.assert_file_count(".coverage.*", 0)
 
         out = self.run_command("coverage run --append b_or_c.py c")
-        assert out == 'done\n'
+        assert out == "done\n"
         self.assert_exists(".coverage")
         self.assert_file_count(".coverage.*", 0)
 
@@ -109,23 +122,26 @@ class ProcessTest(CoverageTest):
         # executed.
         data = coverage.CoverageData()
         data.read()
-        assert line_counts(data)['b_or_c.py'] == 8
+        assert line_counts(data)["b_or_c.py"] == 8
 
     def test_append_data_with_different_file(self) -> None:
         self.make_b_or_c_py()
 
-        self.make_file(".coveragerc", """\
+        self.make_file(
+            ".coveragerc",
+            """\
             [run]
             data_file = .mycovdata
-            """)
+            """,
+        )
 
         out = self.run_command("coverage run b_or_c.py b")
-        assert out == 'done\n'
+        assert out == "done\n"
         self.assert_doesnt_exist(".coverage")
         self.assert_exists(".mycovdata")
 
         out = self.run_command("coverage run --append b_or_c.py c")
-        assert out == 'done\n'
+        assert out == "done\n"
         self.assert_doesnt_exist(".coverage")
         self.assert_exists(".mycovdata")
 
@@ -133,13 +149,13 @@ class ProcessTest(CoverageTest):
         # executed.
         data = coverage.CoverageData(".mycovdata")
         data.read()
-        assert line_counts(data)['b_or_c.py'] == 8
+        assert line_counts(data)["b_or_c.py"] == 8
 
     def test_append_can_create_a_data_file(self) -> None:
         self.make_b_or_c_py()
 
         out = self.run_command("coverage run --append b_or_c.py b")
-        assert out == 'done\n'
+        assert out == "done\n"
         self.assert_exists(".coverage")
         self.assert_file_count(".coverage.*", 0)
 
@@ -147,23 +163,26 @@ class ProcessTest(CoverageTest):
         # executed.
         data = coverage.CoverageData()
         data.read()
-        assert line_counts(data)['b_or_c.py'] == 6
+        assert line_counts(data)["b_or_c.py"] == 6
 
     def test_combine_with_rc(self) -> None:
         self.make_b_or_c_py()
 
-        self.make_file(".coveragerc", """\
+        self.make_file(
+            ".coveragerc",
+            """\
             [run]
             source = .
             parallel = true
-            """)
+            """,
+        )
 
         out = self.run_command("coverage run b_or_c.py b")
-        assert out == 'done\n'
+        assert out == "done\n"
         self.assert_doesnt_exist(".coverage")
 
         out = self.run_command("coverage run b_or_c.py c")
-        assert out == 'done\n'
+        assert out == "done\n"
         self.assert_doesnt_exist(".coverage")
 
         # After two runs, there should be two .coverage.machine.123 files.
@@ -181,7 +200,7 @@ class ProcessTest(CoverageTest):
         # executed.
         data = coverage.CoverageData()
         data.read()
-        assert line_counts(data)['b_or_c.py'] == 8
+        assert line_counts(data)["b_or_c.py"] == 8
 
         # Reporting should still work even with the .rc file
         out = self.run_command("coverage report")
@@ -194,22 +213,30 @@ class ProcessTest(CoverageTest):
             """)
 
     def test_combine_with_aliases(self) -> None:
-        self.make_file("d1/x.py", """\
+        self.make_file(
+            "d1/x.py",
+            """\
             a = 1
             b = 2
             print(f"{a} {b}")
-            """)
+            """,
+        )
 
-        self.make_file("d2/x.py", """\
+        self.make_file(
+            "d2/x.py",
+            """\
             # 1
             # 2
             # 3
             c = 4
             d = 5
             print(f"{c} {d}")
-            """)
+            """,
+        )
 
-        self.make_file(".coveragerc", """\
+        self.make_file(
+            ".coveragerc",
+            """\
             [run]
             source = .
             parallel = True
@@ -219,12 +246,13 @@ class ProcessTest(CoverageTest):
                 src
                 */d1
                 */d2
-            """)
+            """,
+        )
 
         out = self.run_command("coverage run " + os.path.normpath("d1/x.py"))
-        assert out == '1 2\n'
+        assert out == "1 2\n"
         out = self.run_command("coverage run " + os.path.normpath("d2/x.py"))
-        assert out == '4 5\n'
+        assert out == "4 5\n"
 
         self.assert_file_count(".coverage.*", 2)
 
@@ -243,16 +271,19 @@ class ProcessTest(CoverageTest):
         summary = line_counts(data, fullpath=True)
         assert len(summary) == 1
         actual = abs_file(list(summary.keys())[0])
-        expected = abs_file('src/x.py')
+        expected = abs_file("src/x.py")
         assert expected == actual
         assert list(summary.values())[0] == 6
 
     def test_erase_parallel(self) -> None:
-        self.make_file(".coveragerc", """\
+        self.make_file(
+            ".coveragerc",
+            """\
             [run]
             data_file = data.dat
             parallel = True
-            """)
+            """,
+        )
         self.make_file("data.dat")
         self.make_file("data.dat.fooey")
         self.make_file("data.dat.gooey")
@@ -266,9 +297,12 @@ class ProcessTest(CoverageTest):
 
     def test_missing_source_file(self) -> None:
         # Check what happens if the source is missing when reporting happens.
-        self.make_file("fleeting.py", """\
+        self.make_file(
+            "fleeting.py",
+            """\
             s = 'goodbye, cruel world!'
-            """)
+            """,
+        )
 
         self.run_command("coverage run fleeting.py")
         os.remove("fleeting.py")
@@ -278,9 +312,12 @@ class ProcessTest(CoverageTest):
 
         # It happens that the code paths are different for *.py and other
         # files, so try again with no extension.
-        self.make_file("fleeting", """\
+        self.make_file(
+            "fleeting",
+            """\
             s = 'goodbye, cruel world!'
-            """)
+            """,
+        )
 
         self.run_command("coverage run fleeting")
         os.remove("fleeting")
@@ -296,7 +333,9 @@ class ProcessTest(CoverageTest):
         assert status == 1
 
     def test_code_throws(self) -> None:
-        self.make_file("throw.py", """\
+        self.make_file(
+            "throw.py",
+            """\
             class MyException(Exception):
                 pass
 
@@ -307,7 +346,8 @@ class ProcessTest(CoverageTest):
                 f1()
 
             f2()
-            """)
+            """,
+        )
 
         # The important thing is for "coverage run" and "python" to report the
         # same traceback.
@@ -319,13 +359,15 @@ class ProcessTest(CoverageTest):
         assert out == out2
 
         # But also make sure that the output is what we expect.
-        path = python_reported_file('throw.py')
+        path = python_reported_file("throw.py")
         msg = f'File "{re.escape(path)}", line 8, in f2'
         assert re.search(msg, out)
         assert 'raise MyException("hey!")' in out
 
     def test_code_exits(self) -> None:
-        self.make_file("exit.py", """\
+        self.make_file(
+            "exit.py",
+            """\
             import sys
             def f1():
                 print("about to exit..")
@@ -335,7 +377,8 @@ class ProcessTest(CoverageTest):
                 f1()
 
             f2()
-            """)
+            """,
+        )
 
         # The important thing is for "coverage run" and "python" to have the
         # same output.  No traceback.
@@ -347,14 +390,17 @@ class ProcessTest(CoverageTest):
         assert status == 17
 
     def test_code_exits_no_arg(self) -> None:
-        self.make_file("exit_none.py", """\
+        self.make_file(
+            "exit_none.py",
+            """\
             import sys
             def f1():
                 print("about to exit quietly..")
                 sys.exit()
 
             f1()
-            """)
+            """,
+        )
         status, out = self.run_command_status("coverage run exit_none.py")
         status2, out2 = self.run_command_status("python exit_none.py")
         assert out == out2
@@ -364,7 +410,9 @@ class ProcessTest(CoverageTest):
 
     @pytest.mark.skipif(not hasattr(os, "fork"), reason="Can't test os.fork, it doesn't exist.")
     def test_fork(self) -> None:
-        self.make_file("fork.py", """\
+        self.make_file(
+            "fork.py",
+            """\
             import os
 
             print(f"parent,{os.getpid()}", flush=True)
@@ -374,12 +422,13 @@ class ProcessTest(CoverageTest):
                 print(f"child,{os.getpid()}", flush=True)
             else:
                 os.waitpid(ret, 0)
-            """)
+            """,
+        )
         total_lines = 6
 
         self.set_environ("COVERAGE_DEBUG_FILE", "debug.out")
         out = self.run_command("coverage run --debug=pid,process,trace -p fork.py")
-        pids = {key:int(pid) for key, pid in csv.reader(out.splitlines())}
+        pids = {key: int(pid) for key, pid in csv.reader(out.splitlines())}
         assert set(pids) == {"parent", "child"}
         self.assert_doesnt_exist(".coverage")
 
@@ -414,9 +463,9 @@ class ProcessTest(CoverageTest):
         ppid = pids["parent"]
         cpid = pids["child"]
         assert ppid != cpid
-        plines = re_lines(fr"{ppid}\.[0-9a-f]+: New process: pid={ppid}, executable", debug_text)
+        plines = re_lines(rf"{ppid}\.[0-9a-f]+: New process: pid={ppid}, executable", debug_text)
         assert len(plines) == 1
-        clines = re_lines(fr"{cpid}\.[0-9a-f]+: New process: forked {ppid} -> {cpid}", debug_text)
+        clines = re_lines(rf"{cpid}\.[0-9a-f]+: New process: forked {ppid} -> {cpid}", debug_text)
         assert len(clines) == 1
         reported_pids = {line.split(".")[0] for line in debug_text.splitlines()}
         assert len(reported_pids) == 2
@@ -424,7 +473,9 @@ class ProcessTest(CoverageTest):
     @pytest.mark.skipif(not hasattr(os, "fork"), reason="Can't test os.fork, it doesn't exist.")
     @pytest.mark.parametrize("patch", [False, True])
     def test_os_exit(self, patch: bool) -> None:
-        self.make_file("forky.py", """\
+        self.make_file(
+            "forky.py",
+            """\
             import os
             import tempfile
             import time
@@ -446,8 +497,9 @@ class ProcessTest(CoverageTest):
                 os._exit(0)
                 # if this exists, then we broke os._exit completely
                 open("impossible.txt", mode="w")
-            """)
-        total_lines = 17    # don't count the last impossible.txt line
+            """,
+        )
+        total_lines = 17  # don't count the last impossible.txt line
         if patch:
             self.make_file(".coveragerc", "[run]\npatch = _exit\n")
         self.run_command("coverage run -p forky.py")
@@ -464,19 +516,28 @@ class ProcessTest(CoverageTest):
     def test_warnings_during_reporting(self) -> None:
         # While fixing issue #224, the warnings were being printed far too
         # often.  Make sure they're not any more.
-        self.make_file("hello.py", """\
+        self.make_file(
+            "hello.py",
+            """\
             import sys, os, the_other
             print("Hello")
-            """)
-        self.make_file("the_other.py", """\
+            """,
+        )
+        self.make_file(
+            "the_other.py",
+            """\
             print("What?")
-            """)
-        self.make_file(".coveragerc", """\
+            """,
+        )
+        self.make_file(
+            ".coveragerc",
+            """\
             [run]
             source =
                 .
                 xyzzy
-            """)
+            """,
+        )
 
         self.run_command("coverage run hello.py")
         out = self.run_command("coverage html")
@@ -487,15 +548,14 @@ class ProcessTest(CoverageTest):
         # absolute path of the file will have "warning" in it, and an assertion
         # will fail.
         out = self.run_command("coverage run i_dont_exist.py", status=1)
-        path = python_reported_file('i_dont_exist.py')
+        path = python_reported_file("i_dont_exist.py")
         assert f"No file to run: '{path}'" in out
         assert "warning" not in out
         assert "Exception" not in out
 
         out = self.run_command("coverage run -m no_such_module", status=1)
-        assert (
-            ("No module named no_such_module" in out) or
-            ("No module named 'no_such_module'" in out)
+        assert ("No module named no_such_module" in out) or (
+            "No module named 'no_such_module'" in out
         )
         assert "warning" not in out
         assert "Exception" not in out
@@ -504,7 +564,9 @@ class ProcessTest(CoverageTest):
     def test_warnings_trace_function_changed_with_threads(self) -> None:
         # https://github.com/nedbat/coveragepy/issues/164
 
-        self.make_file("bug164.py", """\
+        self.make_file(
+            "bug164.py",
+            """\
             import threading
             import time
 
@@ -515,7 +577,8 @@ class ProcessTest(CoverageTest):
             thr = MyThread()
             thr.start()
             thr.join()
-            """)
+            """,
+        )
         out = self.run_command("coverage run --timid bug164.py")
 
         assert "Hello\n" in out
@@ -523,12 +586,15 @@ class ProcessTest(CoverageTest):
 
     @pytest.mark.skipif(env.METACOV, reason="Can't test tracers changing during metacoverage")
     def test_warning_trace_function_changed(self) -> None:
-        self.make_file("settrace.py", """\
+        self.make_file(
+            "settrace.py",
+            """\
             import sys
             print("Hello")
             sys.settrace(None)
             print("Goodbye")
-            """)
+            """,
+        )
         out = self.run_command("coverage run --timid settrace.py")
         assert "Hello\n" in out
         assert "Goodbye\n" in out
@@ -548,7 +614,9 @@ class ProcessTest(CoverageTest):
         # an environment variable set in igor.py to know whether to expect to see
         # the C trace function or not.
 
-        self.make_file("showtrace.py", """\
+        self.make_file(
+            "showtrace.py",
+            """\
             # Show the current frame's trace function, so that we can test what the
             # command-line options do to the trace function used.
 
@@ -569,7 +637,8 @@ class ProcessTest(CoverageTest):
                     trace_name = trace_fn.__class__.__name__
 
             print(trace_name)
-            """)
+            """,
+        )
 
         # When running without coverage, no trace function
         py_out = self.run_command("python showtrace.py")
@@ -592,26 +661,32 @@ class ProcessTest(CoverageTest):
         assert timid_out == "PyTracer\n"
 
     def test_warn_preimported(self) -> None:
-        self.make_file("hello.py", """\
+        self.make_file(
+            "hello.py",
+            """\
             import goodbye
             import coverage
             cov = coverage.Coverage(include=["good*"], check_preimported=True)
             cov.start()
             print(goodbye.f())
             cov.stop()
-            """)
-        self.make_file("goodbye.py", """\
+            """,
+        )
+        self.make_file(
+            "goodbye.py",
+            """\
             def f():
                 return "Goodbye!"
-            """)
+            """,
+        )
         goodbye_path = os.path.abspath("goodbye.py")
 
         out = self.run_command("python hello.py")
         assert "Goodbye!" in out
 
         msg = (
-            f"CoverageWarning: Already imported a file that will be measured: {goodbye_path} " +
-            "(already-imported)"
+            f"CoverageWarning: Already imported a file that will be measured: {goodbye_path} "
+            + "(already-imported)"
         )
         assert msg in out
 
@@ -624,13 +699,16 @@ class ProcessTest(CoverageTest):
         # with strange characters, though, because that gets the test runners
         # tangled up.  This will isolate the concerns to the coverage.py code.
         # https://github.com/nedbat/coveragepy/issues/533
-        self.make_file("weird_file.py", r"""
+        self.make_file(
+            "weird_file.py",
+            r"""
             globs = {}
             code = "a = 1\nb = 2\n"
             exec(compile(code, "wut\xe9\xea\xeb\xec\x01\x02.py", 'exec'), globs)
             print(globs['a'])
             print(globs['b'])
-            """)
+            """,
+        )
         self.set_environ("LANG", "C")
         out = self.run_command("coverage run weird_file.py")
         assert out == "1\n2\n"
@@ -638,12 +716,15 @@ class ProcessTest(CoverageTest):
     def test_deprecation_warnings(self) -> None:
         # Test that coverage doesn't trigger deprecation warnings.
         # https://github.com/nedbat/coveragepy/issues/305
-        self.make_file("allok.py", """\
+        self.make_file(
+            "allok.py",
+            """\
             import warnings
             warnings.simplefilter('default')
             import coverage
             print("No warnings!")
-            """)
+            """,
+        )
 
         # Some of our testing infrastructure can issue warnings.
         # Turn it all off for the subprocess.
@@ -654,11 +735,16 @@ class ProcessTest(CoverageTest):
 
     def test_run_twice(self) -> None:
         # https://github.com/nedbat/coveragepy/issues/353
-        self.make_file("foo.py", """\
+        self.make_file(
+            "foo.py",
+            """\
             def foo():
                 pass
-            """)
-        self.make_file("run_twice.py", """\
+            """,
+        )
+        self.make_file(
+            "run_twice.py",
+            """\
             import sys
             import coverage
 
@@ -670,16 +756,17 @@ class ProcessTest(CoverageTest):
                 import foo
                 inst.stop()
                 inst.save()
-            """)
+            """,
+        )
         out = self.run_command("python run_twice.py")
         # Remove the file location and source line from the warning.
         out = re.sub(r"(?m)^[\\/\w.:~_-]+:\d+: CoverageWarning: ", "f:d: CoverageWarning: ", out)
         out = re.sub(r"(?m)^\s+self.warn.*$\n", "", out)
         expected = (
-            "Run 1\n" +
-            "Run 2\n" +
-            "f:d: CoverageWarning: Module foo was previously imported, but not measured " +
-            "(module-not-measured)\n"
+            "Run 1\n"
+            + "Run 2\n"
+            + "f:d: CoverageWarning: Module foo was previously imported, but not measured "
+            + "(module-not-measured)\n"
         )
         assert expected == out
 
@@ -695,7 +782,9 @@ class ProcessTest(CoverageTest):
     @pytest.mark.skipif(env.WINDOWS, reason="This test is not for Windows")
     def test_save_signal_usr1(self) -> None:
         self.assert_doesnt_exist(".coverage")
-        self.make_file("dummy_hello.py", """\
+        self.make_file(
+            "dummy_hello.py",
+            """\
             import os
             import signal
 
@@ -704,7 +793,8 @@ class ProcessTest(CoverageTest):
             os.kill(os.getpid(), signal.SIGKILL)
 
             print("Done and goodbye")
-            """)
+            """,
+        )
         out = self.run_command(
             "coverage run --save-signal=USR1 dummy_hello.py",
             status=-signal.SIGKILL,
@@ -723,6 +813,7 @@ class ProcessTest(CoverageTest):
 
 
 TRY_EXECFILE = os.path.join(os.path.dirname(__file__), "modules/process_test/try_execfile.py")
+
 
 class EnvironmentTest(CoverageTest):
     """Tests using try_execfile.py to test the execution environment."""
@@ -813,10 +904,13 @@ class EnvironmentTest(CoverageTest):
         # This is because process_test/__init__.py is imported while looking
         # for process_test.try_execfile.  That import happens while setting
         # sys.path before start() is called.
-        self.make_file(".coveragerc", """\
+        self.make_file(
+            ".coveragerc",
+            """\
             [run]
             disable_warnings = module-not-measured
-            """)
+            """,
+        )
         self.add_test_modules_to_pythonpath()
         expected = self.run_command("python -m process_test.try_execfile")
         actual = self.run_command(
@@ -834,10 +928,13 @@ class EnvironmentTest(CoverageTest):
         # have __file__ == "try_execfile.pyc", which throws off the comparison.
         # Setting dont_write_bytecode True stops the compilation to .pyc and
         # keeps the test working.
-        self.make_file("myscript", """\
+        self.make_file(
+            "myscript",
+            """\
             import sys; sys.dont_write_bytecode = True
             import process_test.try_execfile
-            """)
+            """,
+        )
 
         self.add_test_modules_to_pythonpath()
         expected = self.run_command("python myscript")
@@ -914,11 +1011,16 @@ class EnvironmentTest(CoverageTest):
         # https://github.com/nedbat/coveragepy/issues/678
         # If sys.path[0] isn't the Python default, then coverage.py won't
         # fiddle with it.
-        self.make_file("a/b/c/thing.py", """\
+        self.make_file(
+            "a/b/c/thing.py",
+            """\
             SOMETHING = "hello-xyzzy"
-            """)
+            """,
+        )
         abc = os.path.abspath("a/b/c")
-        self.make_file("run_coverage.py", f"""\
+        self.make_file(
+            "run_coverage.py",
+            f"""\
             import sys
             sys.path[0:0] = [
                 r'{abc}',
@@ -929,13 +1031,17 @@ class EnvironmentTest(CoverageTest):
 
             if __name__ == '__main__':
                 sys.exit(coverage.cmdline.main())
-            """)
-        self.make_file("how_is_it.py", """\
+            """,
+        )
+        self.make_file(
+            "how_is_it.py",
+            """\
             import pprint, sys
             pprint.pprint(sys.path)
             import thing
             print(thing.SOMETHING)
-            """)
+            """,
+        )
         # If this test fails, it will be with "can't import thing".
         out = self.run_command("python run_coverage.py run how_is_it.py")
         assert "hello-xyzzy" in out
@@ -952,7 +1058,9 @@ class EnvironmentTest(CoverageTest):
     def test_bug_862(self) -> None:
         # This used to simulate how pyenv and pyenv-virtualenv create the
         # coverage executable.  Now the code shows how venv does it.
-        self.make_file("elsewhere/bin/fake-coverage", f"""\
+        self.make_file(
+            "elsewhere/bin/fake-coverage",
+            f"""\
             #!{sys.executable}
             import re
             import sys
@@ -960,7 +1068,8 @@ class EnvironmentTest(CoverageTest):
             if __name__ == '__main__':
                 sys.argv[0] = re.sub(r'(-script\\.pyw|\\.exe)?$', '', sys.argv[0])
                 sys.exit(main())
-            """)
+            """,
+        )
         os.chmod("elsewhere/bin/fake-coverage", stat.S_IREAD | stat.S_IEXEC)
         os.symlink("elsewhere", "somewhere")
         self.make_file("foo.py", "print('inside foo')")
@@ -1003,7 +1112,9 @@ class ExcepthookTest(CoverageTest):
     # TODO: do we need these as process tests if we have test_execfile.py:RunFileTest?
 
     def test_excepthook(self) -> None:
-        self.make_file("excepthook.py", """\
+        self.make_file(
+            "excepthook.py",
+            """\
             import sys
 
             def excepthook(*args):
@@ -1015,7 +1126,8 @@ class ExcepthookTest(CoverageTest):
 
             maybe = 1
             raise RuntimeError('Error Outside')
-            """)
+            """,
+        )
         cov_st, cov_out = self.run_command_status("coverage run excepthook.py")
         py_st, py_out = self.run_command_status("python excepthook.py")
         assert cov_st == py_st
@@ -1029,14 +1141,17 @@ class ExcepthookTest(CoverageTest):
         data.read()
         print(f"{line_counts(data) = }")
         print(f"{data = }")
-        print("data.lines excepthook.py:", data.lines(os.path.abspath('excepthook.py')))
-        assert line_counts(data)['excepthook.py'] == 7
+        print("data.lines excepthook.py:", data.lines(os.path.abspath("excepthook.py")))
+        assert line_counts(data)["excepthook.py"] == 7
 
-    @pytest.mark.skipif(not env.CPYTHON,
+    @pytest.mark.skipif(
+        not env.CPYTHON,
         reason="non-CPython handles excepthook exits differently, punt for now.",
     )
     def test_excepthook_exit(self) -> None:
-        self.make_file("excepthook_exit.py", """\
+        self.make_file(
+            "excepthook_exit.py",
+            """\
             import sys
 
             def excepthook(*args):
@@ -1046,7 +1161,8 @@ class ExcepthookTest(CoverageTest):
             sys.excepthook = excepthook
 
             raise RuntimeError('Error Outside')
-            """)
+            """,
+        )
         cov_st, cov_out = self.run_command_status("coverage run excepthook_exit.py")
         py_st, py_out = self.run_command_status("python excepthook_exit.py")
         assert cov_st == py_st
@@ -1057,7 +1173,9 @@ class ExcepthookTest(CoverageTest):
 
     @pytest.mark.skipif(env.PYPY, reason="PyPy handles excepthook throws differently.")
     def test_excepthook_throw(self) -> None:
-        self.make_file("excepthook_throw.py", """\
+        self.make_file(
+            "excepthook_throw.py",
+            """\
             import sys
 
             def excepthook(*args):
@@ -1070,7 +1188,8 @@ class ExcepthookTest(CoverageTest):
             sys.excepthook = excepthook
 
             raise RuntimeError('Error Outside')
-            """)
+            """,
+        )
         cov_out = self.run_command("coverage run excepthook_throw.py", status=1)
         py_out = self.run_command("python excepthook_throw.py", status=1)
         assert "in excepthook" in py_out
@@ -1090,7 +1209,7 @@ class AliasedCommandTest(CoverageTest):
 
     def test_wrong_alias_doesnt_work(self) -> None:
         # "coverage2" doesn't work on py3
-        assert sys.version_info[0] == 3    # Let us know when Python 4 is out...
+        assert sys.version_info[0] == 3  # Let us know when Python 4 is out...
         badcmd = "coverage2"
         status, out = self.run_command_status(badcmd)
         assert "Code coverage for Python" not in out
@@ -1102,11 +1221,14 @@ class AliasedCommandTest(CoverageTest):
         out = self.run_command(cmd)
         assert "Code coverage for Python" in out
 
-    @pytest.mark.parametrize("cmd", [
-        "coverage",
-        "coverage%d" % sys.version_info[0],
-        "coverage-%d.%d" % sys.version_info[:2],
-    ])
+    @pytest.mark.parametrize(
+        "cmd",
+        [
+            "coverage",
+            "coverage%d" % sys.version_info[0],
+            "coverage-%d.%d" % sys.version_info[:2],
+        ],
+    )
     def test_aliases_used_in_messages(self, cmd: str) -> None:
         out = self.run_command(f"{cmd} foobar", status=1)
         assert "Unknown command: 'foobar'" in out
@@ -1142,7 +1264,9 @@ class FailUnderTest(CoverageTest):
 
     def setUp(self) -> None:
         super().setUp()
-        self.make_file("forty_two_plus.py", """\
+        self.make_file(
+            "forty_two_plus.py",
+            """\
             # I have 42.857% (3/7) coverage!
             a = 1
             b = 2
@@ -1151,7 +1275,8 @@ class FailUnderTest(CoverageTest):
                 c = 5
                 d = 6
                 e = 7
-            """)
+            """,
+        )
         self.make_data_file(lines={abs_file("forty_two_plus.py"): [2, 3, 4]})
 
     def test_report_43_is_ok(self) -> None:
@@ -1174,11 +1299,9 @@ class FailUnderTest(CoverageTest):
 
     def test_report_99p9_is_not_ok(self) -> None:
         # A file with 99.9% coverage:
-        self.make_file("ninety_nine_plus.py",
-            "a = 1\n" +
-            "b = 2\n" * 2000 +
-            "if a > 3:\n" +
-            "    c = 4\n",
+        self.make_file(
+            "ninety_nine_plus.py",
+            "a = 1\n" + "b = 2\n" * 2000 + "if a > 3:\n" + "    c = 4\n",
         )
         self.make_data_file(lines={abs_file("ninety_nine_plus.py"): range(1, 2002)})
         st, out = self.run_command_status("coverage report --fail-under=100")
@@ -1189,9 +1312,11 @@ class FailUnderTest(CoverageTest):
 
 class CoverageCoreTest(CoverageTest):
     """Test that cores are chosen correctly."""
+
     # This doesn't test failure modes, only successful requests.
     try:
         from coverage.tracer import CTracer
+
         has_ctracer = True
     except ImportError:
         has_ctracer = False
@@ -1266,15 +1391,17 @@ class CoverageCoreTest(CoverageTest):
 
 class FailUnderNoFilesTest(CoverageTest):
     """Test that nothing to report results in an error exit status."""
+
     def test_report(self) -> None:
         self.make_file(".coveragerc", "[report]\nfail_under = 99\n")
         st, out = self.run_command_status("coverage report")
-        assert 'No data to report.' in out
+        assert "No data to report." in out
         assert st == 1
 
 
 class FailUnderEmptyFilesTest(CoverageTest):
     """Test that empty files produce the proper fail_under exit status."""
+
     def test_report(self) -> None:
         self.make_file(".coveragerc", "[report]\nfail_under = 99\n")
         self.make_file("empty.py", "")
@@ -1308,7 +1435,7 @@ class YankedDirectoryTest(CoverageTest):
     def test_removing_directory_with_error(self) -> None:
         self.make_file("bug806.py", self.BUG_806)
         out = self.run_command("coverage run bug806.py", status=1)
-        path = python_reported_file('bug806.py')
+        path = python_reported_file("bug806.py")
         # Python 3.11 adds an extra line to the traceback.
         # Check that the lines we expect are there.
         lines = textwrap.dedent(f"""\
@@ -1325,27 +1452,36 @@ class YankedDirectoryTest(CoverageTest):
 class ProcessStartupTest(CoverageTest):
     """Test that we can measure coverage in subprocesses."""
 
-    def setUp(self) -> None:
-        super().setUp()
-
+    def make_main_and_sub(self) -> None:
+        """Create main.py and sub.py."""
         # Main will run sub.py
-        self.make_file("main.py", """\
+        self.make_file(
+            "main.py",
+            """\
             import os, os.path, sys
             ex = os.path.basename(sys.executable)
             os.system(ex + " sub.py")
-            """)
+            """,
+        )
         # sub.py will write a few lines.
-        self.make_file("sub.py", """\
+        self.make_file(
+            "sub.py",
+            """\
             f = open("out.txt", "w", encoding="utf-8")
             f.write("Hello, world!\\n")
             f.close()
-            """)
+            """,
+        )
 
     def test_patch_subprocess(self) -> None:
-        self.make_file(".coveragerc", """\
+        self.make_main_and_sub()
+        self.make_file(
+            ".coveragerc",
+            """\
             [run]
             patch = subprocess
-            """)
+            """,
+        )
         self.run_command("coverage run main.py")
         self.run_command("coverage combine")
         self.assert_exists(".coverage")
@@ -1358,16 +1494,20 @@ class ProcessStartupTest(CoverageTest):
         # An existing data file should not be read when a subprocess gets
         # measured automatically.  Create the data file here with bogus data in
         # it.
+        self.make_main_and_sub()
         data = coverage.CoverageData(".mycovdata")
-        data.add_lines({os.path.abspath('sub.py'): range(100)})
+        data.add_lines({os.path.abspath("sub.py"): range(100)})
         data.write()
 
-        self.make_file("coverage.ini", """\
+        self.make_file(
+            "coverage.ini",
+            """\
             [run]
             data_file = .mycovdata
-            """)
+            """,
+        )
         self.set_environ("COVERAGE_PROCESS_START", "coverage.ini")
-        import main             # pylint: disable=unused-import, import-error
+        import main  # pylint: disable=unused-import, import-error
 
         with open("out.txt", encoding="utf-8") as f:
             assert f.read() == "Hello, world!\n"
@@ -1376,14 +1516,18 @@ class ProcessStartupTest(CoverageTest):
         self.assert_exists(".mycovdata")
         data = coverage.CoverageData(".mycovdata")
         data.read()
-        assert line_counts(data)['sub.py'] == 3
+        assert line_counts(data)["sub.py"] == 3
 
     def test_subprocess_with_pth_files_and_parallel(self, _create_pth_file: None) -> None:
         # https://github.com/nedbat/coveragepy/issues/492
-        self.make_file("coverage.ini", """\
+        self.make_main_and_sub()
+        self.make_file(
+            "coverage.ini",
+            """\
             [run]
             parallel = true
-            """)
+            """,
+        )
 
         self.set_environ("COVERAGE_PROCESS_START", "coverage.ini")
         self.run_command("coverage run main.py")
@@ -1397,15 +1541,152 @@ class ProcessStartupTest(CoverageTest):
         self.assert_exists(".coverage")
         data = coverage.CoverageData()
         data.read()
-        assert line_counts(data)['sub.py'] == 3
+        assert line_counts(data)["sub.py"] == 3
 
         # assert that there are *no* extra data files left over after a combine
-        data_files = glob.glob(os.getcwd() + '/.coverage*')
+        data_files = glob.glob(os.getcwd() + "/.coverage*")
         msg = (
-            "Expected only .coverage after combine, looks like there are " +
-            f"extra data files that were not cleaned up: {data_files!r}"
+            "Expected only .coverage after combine, looks like there are "
+            + f"extra data files that were not cleaned up: {data_files!r}"
         )
         assert len(data_files) == 1, msg
+
+    def test_subprocess_in_directories(self) -> None:
+        # Bug 2025: patch=subprocess didn't find data files from subdirectory
+        # subprocesses.
+        self.make_file(
+            "main.py",
+            """\
+            import subprocess
+            import sys
+            print(subprocess.check_output(
+                [sys.executable, "subproc.py"],
+                cwd="subdir",
+                encoding="utf-8",
+            ))
+            """,
+        )
+        self.make_file(
+            "subdir/subproc.py",
+            """\
+            with open("readme.txt", encoding="utf-8") as f:
+                print(f.read(), end="")
+            """,
+        )
+        self.make_file(
+            ".coveragerc",
+            """\
+            [run]
+            patch = subprocess
+            data_file = .covdata
+            """,
+        )
+        self.make_file("subdir/readme.txt", "hello")
+        out = self.run_command("coverage run main.py")
+        assert out == "hello\n"
+        self.run_command("coverage combine")
+        data = coverage.CoverageData(".covdata")
+        data.read()
+        assert line_counts(data)["main.py"] == 6
+        assert line_counts(data)["subproc.py"] == 2
+
+    def test_subprocess_gets_nonfile_config(self) -> None:
+        # https://github.com/nedbat/coveragepy/issues/2021
+        self.make_file(
+            "subfunctions.py",
+            """\
+            import subprocess, sys
+
+            def f1():
+                print("function 1")
+            def f2():
+                print("function 2")
+
+            functions = [f1, f2]
+
+            cases = sys.argv[1:]
+            if len(cases) > 1:
+                for c in cases:
+                    subprocess.call([sys.executable, __file__, c])
+            else:
+                functions[int(cases[0])]()
+            """,
+        )
+        self.make_file(
+            ".coveragerc",
+            """\
+            [run]
+            disable_warnings = no-sysmon
+            patch = subprocess
+            """,
+        )
+        out = self.run_command("coverage run --branch subfunctions.py 0 1")
+        assert out.endswith("function 1\nfunction 2\n")
+        self.run_command("coverage combine")
+        data = coverage.CoverageData()
+        data.read()
+        assert line_counts(data)["subfunctions.py"] == 11
+
+    def test_subprocess_dir_with_source(self) -> None:
+        # https://github.com/nedbat/coveragepy/issues/1499
+        self.make_file("main/d/README", "A sub-directory")
+        self.make_file(
+            "main/main.py",
+            """\
+            import os, subprocess, sys
+            orig = os.getcwd()
+            os.chdir("./d")
+            subprocess.run([sys.executable, f"{orig}/sub.py"])
+            os.chdir(orig)
+            """,
+        )
+        self.make_file("lib/other.py", "print('Other', flush=True)")
+        self.make_file(
+            "main/sub.py",
+            """
+            import other
+            print("Hello, world!", flush=True)
+            """,
+        )
+        self.make_file(
+            "main/pyproject.toml",
+            """\
+            [tool.coverage.run]
+            patch = ["subprocess"]
+            source = [".", "other"]
+            disable_warnings = ["module-not-imported"]
+            """,
+        )
+        self.set_environ("PYTHONPATH", os.path.abspath("lib"))
+        with change_dir("main"):
+            out = self.run_command("coverage run main.py")
+            assert out == "Other\nHello, world!\n"
+            self.run_command("coverage combine")
+            data = coverage.CoverageData()
+            data.read()
+            assert line_counts(data) == {"main.py": 5, "sub.py": 2, "other.py": 1}
+
+
+@pytest.fixture
+def _clean_pth_files() -> Iterable[None]:
+    """A fixture to clean up any .pth files we created during the test."""
+    # The execv test needs to make .pth files so that subprocesses will get
+    # measured.  But there's no way for coverage to remove those files because
+    # they need to exist when the new program starts, and there's no
+    # information carried over to clean them automatically.
+    #
+    # So for these tests, we clean them as part of the test suite.
+    pth_files: set[Path] = set()
+    for d in site.getsitepackages():
+        pth_files.update(Path(d).glob("*.pth"))
+
+    try:
+        yield
+    finally:
+        for d in site.getsitepackages():
+            for pth in Path(d).glob("*.pth"):
+                if pth not in pth_files:
+                    pth.unlink()
 
 
 @pytest.mark.skipif(env.WINDOWS, reason="patch=execv isn't supported on Windows")
@@ -1413,18 +1694,27 @@ class ProcessStartupTest(CoverageTest):
 class ExecvTest(CoverageTest):
     """Test that we can measure coverage in subprocesses."""
 
-    @pytest.mark.parametrize("fname",
-        [base + suffix for base, suffix in itertools.product(
-            ["exec", "spawn"],
-            ["l", "le", "lp", "lpe", "v", "ve", "vp", "vpe"],
-        )]
+    @pytest.mark.parametrize(
+        "fname",
+        [
+            base + suffix
+            for base, suffix in itertools.product(
+                ["exec", "spawn"],
+                ["l", "le", "lp", "lpe", "v", "ve", "vp", "vpe"],
+            )
+        ],
     )
-    def test_execv_patch(self, fname: str) -> None:
-        self.make_file(".coveragerc", """\
+    def test_execv_patch(self, fname: str, _clean_pth_files: None) -> None:
+        self.make_file(
+            ".coveragerc",
+            """\
             [run]
             patch = subprocess, execv
-            """)
-        self.make_file("main.py", f"""\
+            """,
+        )
+        self.make_file(
+            "main.py",
+            f"""\
             import os, sys
             print("In main")
             args = []
@@ -1441,13 +1731,17 @@ class ExecvTest(CoverageTest):
             os.environ["MAINVAR"] = "the-main-var"
             sys.stdout.flush()
             os.{fname}(*args)
-            """)
-        self.make_file("other.py", """\
+            """,
+        )
+        self.make_file(
+            "other.py",
+            """\
             import os, sys
             print(f"MAINVAR = {os.getenv('MAINVAR', 'none')}")
             print(f"SUBVAR = {os.getenv('SUBVAR', 'none')}")
             print(f"{sys.argv[1:] = }")
-            """)
+            """,
+        )
 
         out = self.run_command("coverage run main.py")
         expected = "In main\n"
@@ -1513,10 +1807,11 @@ class ProcessStartupWithSourceTest(CoverageTest):
           ``--source`` argument.
 
         """
+
         def fullname(modname: str) -> str:
             """What is the full module name for `modname` for this test?"""
             if package and dashm:
-                return '.'.join((package, modname))
+                return ".".join((package, modname))
             else:
                 return modname
 
@@ -1525,30 +1820,41 @@ class ProcessStartupWithSourceTest(CoverageTest):
             return os.path.join(package, basename)
 
         # Main will run sub.py.
-        self.make_file(path("main.py"), """\
+        self.make_file(
+            path("main.py"),
+            """\
             import %s
             a = 2
             b = 3
-            """ % fullname('sub'))
+            """
+            % fullname("sub"),
+        )
         if package:
             self.make_file(path("__init__.py"), "")
         # sub.py will write a few lines.
-        self.make_file(path("sub.py"), """\
+        self.make_file(
+            path("sub.py"),
+            """\
             f = open("out.txt", "w", encoding="utf-8")
             f.write("Hello, world!")
             f.close()
-            """)
-        self.make_file("coverage.ini", """\
+            """,
+        )
+        self.make_file(
+            "coverage.ini",
+            """\
             [run]
             source = %s
-            """ % fullname(source))
+            """
+            % fullname(source),
+        )
 
         self.set_environ("COVERAGE_PROCESS_START", "coverage.ini")
 
         if dashm:
-            cmd = "python -m %s" % fullname('main')
+            cmd = "python -m %s" % fullname("main")
         else:
-            cmd = "python %s" % path('main.py')
+            cmd = "python %s" % path("main.py")
 
         self.run_command(cmd)
 
@@ -1560,5 +1866,5 @@ class ProcessStartupWithSourceTest(CoverageTest):
         data = coverage.CoverageData()
         data.read()
         summary = line_counts(data)
-        assert summary[source + '.py'] == 3
+        assert summary[source + ".py"] == 3
         assert len(summary) == 1

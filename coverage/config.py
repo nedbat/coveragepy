@@ -5,20 +5,16 @@
 
 from __future__ import annotations
 
+import base64
 import collections
 import configparser
 import copy
+import json
 import os
 import os.path
 import re
 from collections.abc import Iterable
-from typing import (
-    Any,
-    Callable,
-    Final,
-    Mapping,
-    Union,
-)
+from typing import Any, Callable, Final, Mapping, Union
 
 from coverage.exceptions import ConfigError
 from coverage.misc import human_sorted_items, isolate_module, substitute_variables
@@ -51,7 +47,7 @@ class HandyConfigParser(configparser.ConfigParser):
         if our_file:
             self.section_prefixes.append("")
 
-    def read( # type: ignore[override]
+    def read(  # type: ignore[override]
         self,
         filenames: Iterable[str],
         encoding_unused: str | None = None,
@@ -68,16 +64,16 @@ class HandyConfigParser(configparser.ConfigParser):
                 return real_section
         return None
 
-    def has_option(self, section: str, option: str) -> bool:    # type: ignore[override]
+    def has_option(self, section: str, option: str) -> bool:  # type: ignore[override]
         real_section = self.real_section(section)
         if real_section is not None:
             return super().has_option(real_section, option)
         return False
 
-    def has_section(self, section: str) -> bool:    # type: ignore[override]
+    def has_section(self, section: str) -> bool:  # type: ignore[override]
         return bool(self.real_section(section))
 
-    def options(self, section: str) -> list[str]:   # type: ignore[override]
+    def options(self, section: str) -> list[str]:  # type: ignore[override]
         real_section = self.real_section(section)
         if real_section is not None:
             return super().options(real_section)
@@ -90,7 +86,7 @@ class HandyConfigParser(configparser.ConfigParser):
             d[opt] = self.get(section, opt)
         return d
 
-    def get(self, section: str, option: str, *args: Any, **kwargs: Any) -> str: # type: ignore
+    def get(self, section: str, option: str, *args: Any, **kwargs: Any) -> str:  # type: ignore
         """Get a value, replacing environment variables also.
 
         The arguments are the same as `ConfigParser.get`, but in the found
@@ -178,6 +174,7 @@ class CoverageConfig(TConfigurable, TPluginConfig):
     operation of coverage.py.
 
     """
+
     # pylint: disable=too-many-instance-attributes
 
     def __init__(self) -> None:
@@ -267,10 +264,25 @@ class CoverageConfig(TConfigurable, TPluginConfig):
         self.plugin_options: dict[str, TConfigSectionOut] = {}
 
     MUST_BE_LIST = {
-        "debug", "concurrency", "plugins",
-        "report_omit", "report_include",
-        "run_omit", "run_include",
+        "debug",
+        "concurrency",
+        "plugins",
+        "report_omit",
+        "report_include",
+        "run_omit",
+        "run_include",
         "patch",
+    }
+
+    # File paths to make absolute during serialization.
+    # The pairs are (config_key, must_exist).
+    SERIALIZE_ABSPATH = {
+        ("data_file", False),
+        ("debug_file", False),
+        # `source` can be directories or modules, so don't abspath it if it
+        # doesn't exist.
+        ("source", True),
+        ("source_dirs", False),
     }
 
     def from_args(self, **kwargs: TConfigValueIn) -> None:
@@ -333,7 +345,9 @@ class CoverageConfig(TConfigurable, TPluginConfig):
                 for unknown in set(cp.options(section)) - options:
                     warn(
                         "Unrecognized option '[{}] {}=' in config file {}".format(
-                            real_section, unknown, filename,
+                            real_section,
+                            unknown,
+                            filename,
                         ),
                     )
 
@@ -369,7 +383,11 @@ class CoverageConfig(TConfigurable, TPluginConfig):
         return copy.deepcopy(self)
 
     CONCURRENCY_CHOICES: Final[set[str]] = {
-        "thread", "gevent", "greenlet", "eventlet", "multiprocessing"
+        "thread",
+        "gevent",
+        "greenlet",
+        "eventlet",
+        "multiprocessing",
     }
 
     CONFIG_FILE_OPTIONS = [
@@ -380,7 +398,7 @@ class CoverageConfig(TConfigurable, TPluginConfig):
         #   where is the section:name to read from the configuration file.
         #   type_ is the optional type to apply, by using .getTYPE to read the
         #       configuration value from the file.
-
+        #
         # [run]
         ("branch", "run:branch", "boolean"),
         ("command_line", "run:command_line"),
@@ -405,7 +423,7 @@ class CoverageConfig(TConfigurable, TPluginConfig):
         ("source_dirs", "run:source_dirs", "list"),
         ("timid", "run:timid", "boolean"),
         ("_crash", "run:_crash"),
-
+        #
         # [report]
         ("exclude_list", "report:exclude_lines", "regexlist"),
         ("exclude_also", "report:exclude_also", "regexlist"),
@@ -424,7 +442,7 @@ class CoverageConfig(TConfigurable, TPluginConfig):
         ("skip_covered", "report:skip_covered", "boolean"),
         ("skip_empty", "report:skip_empty", "boolean"),
         ("sort", "report:sort"),
-
+        #
         # [html]
         ("extra_css", "html:extra_css"),
         ("html_dir", "html:directory", "file"),
@@ -432,19 +450,19 @@ class CoverageConfig(TConfigurable, TPluginConfig):
         ("html_skip_empty", "html:skip_empty", "boolean"),
         ("html_title", "html:title"),
         ("show_contexts", "html:show_contexts", "boolean"),
-
+        #
         # [xml]
         ("xml_output", "xml:output", "file"),
         ("xml_package_depth", "xml:package_depth", "int"),
-
+        #
         # [json]
         ("json_output", "json:output", "file"),
         ("json_pretty_print", "json:pretty_print", "boolean"),
         ("json_show_contexts", "json:show_contexts", "boolean"),
-
+        #
         # [lcov]
         ("lcov_output", "lcov:output", "file"),
-        ("lcov_line_checksums", "lcov:line_checksums", "boolean")
+        ("lcov_line_checksums", "lcov:line_checksums", "boolean"),
     ]
 
     def _set_attr_from_config_option(
@@ -501,7 +519,7 @@ class CoverageConfig(TConfigurable, TPluginConfig):
         # See if it's a plugin option.
         plugin_name, _, key = option_name.partition(":")
         if key and plugin_name in self.plugins:
-            self.plugin_options.setdefault(plugin_name, {})[key] = value # type: ignore[index]
+            self.plugin_options.setdefault(plugin_name, {})[key] = value  # type: ignore[index]
             return
 
         # If we get here, we didn't find the option.
@@ -537,10 +555,7 @@ class CoverageConfig(TConfigurable, TPluginConfig):
 
     def post_process(self) -> None:
         """Make final adjustments to settings to make them usable."""
-        self.paths = {
-            k: [process_file_value(f) for f in v]
-            for k, v in self.paths.items()
-        }
+        self.paths = {k: [process_file_value(f) for f in v] for k, v in self.paths.items()}
 
         self.exclude_list += self.exclude_also
         self.partial_list += self.partial_also
@@ -550,14 +565,45 @@ class CoverageConfig(TConfigurable, TPluginConfig):
 
     def debug_info(self) -> list[tuple[str, Any]]:
         """Make a list of (name, value) pairs for writing debug info."""
-        return human_sorted_items(
-            (k, v) for k, v in self.__dict__.items() if not k.startswith("_")
-        )
+        return human_sorted_items((k, v) for k, v in self.__dict__.items() if not k.startswith("_"))
+
+    def serialize(self) -> str:
+        """Convert to a string that can be ingested with `deserialize`.
+
+        File paths used by `coverage run` are made absolute to ensure the
+        deserialized config will refer to the same files.
+        """
+        data = {k: v for k, v in self.__dict__.items() if not k.startswith("_")}
+        for k, must_exist in self.SERIALIZE_ABSPATH:
+            abs_fn = abs_path_if_exists if must_exist else os.path.abspath
+            v = data[k]
+            if isinstance(v, list):
+                v = list(map(abs_fn, v))
+            elif isinstance(v, str):
+                v = abs_fn(v)
+            data[k] = v
+        return base64.b64encode(json.dumps(data).encode()).decode()
+
+    @classmethod
+    def deserialize(cls, config_str: str) -> CoverageConfig:
+        """Take a string from `serialize`, and make a CoverageConfig."""
+        data = json.loads(base64.b64decode(config_str.encode()).decode())
+        config = cls()
+        config.__dict__.update(data)
+        return config
 
 
 def process_file_value(path: str) -> str:
     """Make adjustments to a file path to make it usable."""
     return os.path.expanduser(path)
+
+
+def abs_path_if_exists(path: str) -> str:
+    """os.path.abspath, but only if the path exists."""
+    if os.path.exists(path):
+        return os.path.abspath(path)
+    else:
+        return path
 
 
 def process_regexlist(name: str, option: str, values: list[str]) -> list[str]:
@@ -585,7 +631,7 @@ def config_files_to_try(config_file: bool | str) -> list[tuple[str, bool, bool]]
     # True, so make it so.
     if config_file == ".coveragerc":
         config_file = True
-    specified_file = (config_file is not True)
+    specified_file = config_file is not True
     if not specified_file:
         # No file was specified. Check COVERAGE_RCFILE.
         rcfile = os.getenv("COVERAGE_RCFILE")

@@ -55,8 +55,10 @@ def _phys_tokens(toks: TokenInfos) -> TokenInfos:
                 if last_ttext.endswith("\\"):
                     inject_backslash = False
                 elif ttype == token.STRING:
-                    if (last_line.endswith("\\\n") and  # pylint: disable=simplifiable-if-statement
-                        last_line.rstrip(" \\\n").endswith(last_ttext)):
+                    if (  # pylint: disable=simplifiable-if-statement
+                        last_line.endswith("\\\n")
+                        and last_line.rstrip(" \\\n").endswith(last_ttext)
+                    ):
                         # Deal with special cases like such code::
                         #
                         #   a = ["aaa",\ # there may be zero or more blanks between "," and "\".
@@ -75,8 +77,10 @@ def _phys_tokens(toks: TokenInfos) -> TokenInfos:
                     ccol = len(last_line.split("\n")[-2]) - 1
                     # Yield the token, with a fake token type.
                     yield tokenize.TokenInfo(
-                        99999, "\\\n",
-                        (slineno, ccol), (slineno, ccol+2),
+                        99999,
+                        "\\\n",
+                        (slineno, ccol),
+                        (slineno, ccol + 2),
                         last_line,
                     )
             last_line = ltext

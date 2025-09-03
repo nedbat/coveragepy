@@ -3,7 +3,6 @@
 
 """Parser.py: a main for invoking code in coverage/parser.py"""
 
-
 import collections
 import dis
 import glob
@@ -25,26 +24,13 @@ class ParserMain:
         """A main function for trying the code from the command line."""
 
         parser = optparse.OptionParser()
+        parser.add_option("-d", action="store_true", dest="dis", help="Disassemble")
         parser.add_option(
-            "-d", action="store_true", dest="dis",
-            help="Disassemble"
+            "-R", action="store_true", dest="recursive", help="Recurse to find source files"
         )
-        parser.add_option(
-            "-R", action="store_true", dest="recursive",
-            help="Recurse to find source files"
-        )
-        parser.add_option(
-            "-q", action="store_true", dest="quiet",
-            help="Suppress output"
-        )
-        parser.add_option(
-            "-s", action="store_true", dest="source",
-            help="Show analyzed source"
-        )
-        parser.add_option(
-            "-t", action="store_true", dest="tokens",
-            help="Show tokens"
-        )
+        parser.add_option("-q", action="store_true", dest="quiet", help="Suppress output")
+        parser.add_option("-s", action="store_true", dest="source", help="Show analyzed source")
+        parser.add_option("-t", action="store_true", dest="tokens", help="Show tokens")
 
         options, args = parser.parse_args()
         if options.recursive:
@@ -77,7 +63,7 @@ class ParserMain:
             text = get_python_source(filename)
             if start is not None:
                 lines = text.splitlines(True)
-                text = textwrap.dedent("".join(lines[start-1:end]).replace("\\\\", "\\"))
+                text = textwrap.dedent("".join(lines[start - 1 : end]).replace("\\\\", "\\"))
             pyparser = PythonParser(text, filename=filename, exclude=r"no\s*cover")
             pyparser.parse_source()
         except Exception as err:
@@ -102,25 +88,25 @@ class ParserMain:
                 exit_counts = pyparser.exit_counts()
 
                 for lineno, ltext in enumerate(pyparser.text.splitlines(), start=1):
-                    marks = [' '] * 6
-                    a = ' '
+                    marks = [" "] * 6
+                    a = " "
                     if lineno in pyparser.raw_statements:
-                        marks[0] = '-'
+                        marks[0] = "-"
                     if lineno in pyparser.statements:
-                        marks[1] = '='
+                        marks[1] = "="
                     exits = exit_counts.get(lineno, 0)
                     if exits > 1:
                         marks[2] = str(exits)
                     if lineno in pyparser.raw_docstrings:
                         marks[3] = '"'
                     if lineno in pyparser.raw_excluded:
-                        marks[4] = 'X'
+                        marks[4] = "X"
                     elif lineno in pyparser.excluded:
-                        marks[4] = '×'
+                        marks[4] = "×"
                     if lineno in pyparser._multiline.values():
-                        marks[5] = 'o'
+                        marks[5] = "o"
                     elif lineno in pyparser._multiline.keys():
-                        marks[5] = '.'
+                        marks[5] = "."
 
                     if arc_chars:
                         a = arc_chars[lineno].ljust(arc_width)
@@ -141,34 +127,31 @@ class ParserMain:
         arc_chars = collections.defaultdict(str)
         for lfrom, lto in sorted(arcs):
             if lfrom < 0:
-                arc_chars[lto] += 'v'
+                arc_chars[lto] += "v"
             elif lto < 0:
-                arc_chars[lfrom] += '^'
+                arc_chars[lfrom] += "^"
             else:
                 if lfrom == lto - 1:
                     plus_ones.add(lfrom)
-                    arc_chars[lfrom] += ""      # ensure this line is in arc_chars
+                    arc_chars[lfrom] += ""  # ensure this line is in arc_chars
                     continue
                 if lfrom < lto:
                     l1, l2 = lfrom, lto
                 else:
                     l1, l2 = lto, lfrom
-                w = first_all_blanks(arc_chars[l] for l in range(l1, l2+1))
-                for l in range(l1, l2+1):
+                w = first_all_blanks(arc_chars[l] for l in range(l1, l2 + 1))
+                for l in range(l1, l2 + 1):
                     if l == lfrom:
-                        ch = '<'
+                        ch = "<"
                     elif l == lto:
-                        ch = '>'
+                        ch = ">"
                     else:
-                        ch = '|'
+                        ch = "|"
                     arc_chars[l] = set_char(arc_chars[l], w, ch)
 
         # Add the plusses as the first character
         for lineno, arcs in arc_chars.items():
-            arc_chars[lineno] = (
-                ("+" if lineno in plus_ones else " ") +
-                arcs
-            )
+            arc_chars[lineno] = ("+" if lineno in plus_ones else " ") + arcs
 
         return arc_chars
 
@@ -213,7 +196,7 @@ def disassemble(text):
 def set_char(s, n, c):
     """Set the nth char of s to be c, extending s if needed."""
     s = s.ljust(n)
-    return s[:n] + c + s[n+1:]
+    return s[:n] + c + s[n + 1 :]
 
 
 def blanks(s):
@@ -233,5 +216,5 @@ def first_all_blanks(ss):
         return max(len(s) for s in ss)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     ParserMain().main(sys.argv[1:])

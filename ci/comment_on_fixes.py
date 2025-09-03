@@ -16,18 +16,18 @@ changelog.read()
 
 # Get the first entry in the changelog:
 for etitle, sections in changelog.entries().items():
-    version = etitle.split()[1]     # particular to our title format.
+    version = etitle.split()[1]  # particular to our title format.
     text = "\n".join(sections)
     break
 
 comment = (
-    f"This is now released as part of [coverage {version}]" +
-    f"(https://pypi.org/project/coverage/{version})."
+    f"This is now released as part of [coverage {version}]"
+    + f"(https://pypi.org/project/coverage/{version})."
 )
 print(f"Comment will be:\n\n{comment}\n")
 
 repo_owner = sys.argv[1]
-url_matches = re.finditer(fr"https://github.com/{repo_owner}/(issues|pull)/(\d+)", text)
+url_matches = re.finditer(rf"https://github.com/{repo_owner}/(issues|pull)/(\d+)", text)
 urls = set((m[0], m[1], m[2]) for m in url_matches)
 
 for url, kind, number in urls:

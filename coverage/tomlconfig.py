@@ -19,6 +19,7 @@ os = isolate_module(os)
 
 if env.PYVERSION >= (3, 11, 0, "alpha", 7):
     import tomllib  # pylint: disable=import-error
+
     has_tomllib = True
 else:
     # TOML support on Python 3.10 and below is an install-time extra option.
@@ -27,10 +28,12 @@ else:
 
 class TomlDecodeError(Exception):
     """An exception class that exists even when toml isn't installed."""
+
     pass
 
 
 TWant = TypeVar("TWant")
+
 
 class TomlConfigParser:
     """TOML file reading with the interface of HandyConfigParser."""

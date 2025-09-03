@@ -14,6 +14,7 @@ from coverage.types import TConfigurable
 
 class Plugin(coverage.CoveragePlugin):
     """A configuring plugin for testing."""
+
     def configure(self, config: TConfigurable) -> None:
         """Configure all the things!"""
         opt_name = "report:exclude_lines"
@@ -25,7 +26,7 @@ class Plugin(coverage.CoveragePlugin):
 
 def coverage_init(
     reg: Plugins,
-    options: Any,           # pylint: disable=unused-argument
+    options: Any,  # pylint: disable=unused-argument
 ) -> None:
     """Called by coverage to initialize the plugins here."""
     reg.add_configurer(Plugin())

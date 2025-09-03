@@ -19,10 +19,18 @@ import pytest
 import coverage
 from coverage import env
 from coverage.debug import (
-    DebugControl, DebugOutputFile,
-    auto_repr, clipped_repr, exc_one_line, filter_text,
-    info_formatter, info_header,
-    relevant_environment_display, short_id, short_filename, short_stack,
+    DebugControl,
+    DebugOutputFile,
+    auto_repr,
+    clipped_repr,
+    exc_one_line,
+    filter_text,
+    info_formatter,
+    info_header,
+    relevant_environment_display,
+    short_id,
+    short_filename,
+    short_stack,
 )
 from coverage.exceptions import DataError
 
@@ -37,70 +45,92 @@ class InfoFormatterTest(CoverageTest):
     run_in_temp_dir = False
 
     def test_info_formatter(self) -> None:
-        lines = list(info_formatter([
-            ('x', 'hello there'),
-            ('very long label', ['one element']),
-            ('regular', ['abc', 'def', 'ghi', 'jkl']),
-            ('nothing', []),
-        ]))
+        lines = list(
+            info_formatter(
+                [
+                    ("x", "hello there"),
+                    ("very long label", ["one element"]),
+                    ("fits on 1", (17, 23, 42, 76, 99)),
+                    ("regular", ["abc", "def", "ghi", "jkl"]),
+                    ("nothing", []),
+                ]
+            )
+        )
         expected = [
-            '                             x: hello there',
-            '               very long label: one element',
-            '                       regular: abc',
-            '                                def',
-            '                                ghi',
-            '                                jkl',
-            '                       nothing: -none-',
+            "                             x: hello there",
+            "               very long label: one element",
+            "                     fits on 1: (17, 23, 42, 76, 99)",
+            "                       regular: abc",
+            "                                def",
+            "                                ghi",
+            "                                jkl",
+            "                       nothing: -none-",
         ]
         assert expected == lines
 
     def test_info_formatter_with_generator(self) -> None:
-        lines = list(info_formatter(('info%d' % i, i) for i in range(3)))
+        lines = list(info_formatter(("info%d" % i, i) for i in range(3)))
         expected = [
-            '                         info0: 0',
-            '                         info1: 1',
-            '                         info2: 2',
+            "                         info0: 0",
+            "                         info1: 1",
+            "                         info2: 2",
         ]
         assert expected == lines
 
     def test_too_long_label(self) -> None:
         with pytest.raises(AssertionError):
-            list(info_formatter([('this label is way too long and will not fit', 23)]))
+            list(info_formatter([("this label is way too long and will not fit", 23)]))
 
 
-@pytest.mark.parametrize("label, header", [
-    ("x",               "-- x ---------------------------------------------------------"),
-    ("hello there",     "-- hello there -----------------------------------------------"),
-])
+@pytest.mark.parametrize(
+    "label, header",
+    [
+        ("x", "-- x ---------------------------------------------------------"),
+        ("hello there", "-- hello there -----------------------------------------------"),
+    ],
+)
 def test_info_header(label: str, header: str) -> None:
     assert header == info_header(label)
 
 
-@pytest.mark.parametrize("id64, id16", [
-    (0x1234, 0x1234),
-    (0x12340000, 0x1234),
-    (0xA5A55A5A, 0xFFFF),
-    (0x1234cba956780fed, 0x8008),
-])
+@pytest.mark.parametrize(
+    "id64, id16",
+    [
+        (0x1234, 0x1234),
+        (0x12340000, 0x1234),
+        (0xA5A55A5A, 0xFFFF),
+        (0x1234CBA956780FED, 0x8008),
+    ],
+)
 def test_short_id(id64: int, id16: int) -> None:
     assert id16 == short_id(id64)
 
 
-@pytest.mark.parametrize("text, numchars, result", [
-    ("hello", 10, "'hello'"),
-    ("0123456789abcdefghijklmnopqrstuvwxyz", 15, "'01234...vwxyz'"),
-])
+@pytest.mark.parametrize(
+    "text, numchars, result",
+    [
+        ("hello", 10, "'hello'"),
+        ("0123456789abcdefghijklmnopqrstuvwxyz", 15, "'01234...vwxyz'"),
+    ],
+)
 def test_clipped_repr(text: str, numchars: int, result: str) -> None:
     assert result == clipped_repr(text, numchars)
 
 
-@pytest.mark.parametrize("text, filters, result", [
-    ("hello", [], "hello"),
-    ("hello\n", [], "hello\n"),
-    ("hello\nhello\n", [], "hello\nhello\n"),
-    ("hello\nbye\n", [lambda x: "="+x], "=hello\n=bye\n"),
-    ("hello\nbye\n", [lambda x: "="+x, lambda x: x+"\ndone\n"], "=hello\ndone\n=bye\ndone\n"),
-])
+@pytest.mark.parametrize(
+    "text, filters, result",
+    [
+        ("hello", [], "hello"),
+        ("hello\n", [], "hello\n"),
+        ("hello\nhello\n", [], "hello\nhello\n"),
+        ("hello\nbye\n", [lambda x: "=" + x], "=hello\n=bye\n"),
+        (
+            "hello\nbye\n",
+            [lambda x: "=" + x, lambda x: x + "\ndone\n"],
+            "=hello\ndone\n=bye\ndone\n",
+        ),
+    ],
+)
 def test_filter_text(
     text: str,
     filters: Iterable[Callable[[str], str]],
@@ -115,13 +145,16 @@ class DebugTraceTest(CoverageTest):
     def f1_debug_output(self, debug: Iterable[str]) -> str:
         """Runs some code with `debug` option, returns the debug output."""
         # Make code to run.
-        self.make_file("f1.py", """\
+        self.make_file(
+            "f1.py",
+            """\
             def f1(x):
                 return x+1
 
             for i in range(5):
                 f1(i)
-            """)
+            """,
+        )
 
         debug_out = io.StringIO()
         cov = coverage.Coverage(debug=debug)
@@ -162,8 +195,8 @@ class DebugTraceTest(CoverageTest):
     def test_debug_callers(self) -> None:
         out_text = self.f1_debug_output(["pid", "dataop", "dataio", "callers", "lock"])
         # For every real message, there should be a stack trace with a line like
-        #       "f1_debug_output : /Users/ned/coverage/tests/test_debug.py @71"
-        real_messages = re_lines(r":\d+", out_text, match=False)
+        #       "f1_debug_output : /Users/ned/coverage/tests/test_debug.py:71"
+        real_messages = re_lines(r"\.py:\d+$", out_text, match=False)
         frame_pattern = r"\s+f1_debug_output : .*tests[/\\]test_debug.py:\d+$"
         frames = re_lines(frame_pattern, out_text)
         assert len(real_messages) == len(frames)
@@ -173,8 +206,8 @@ class DebugTraceTest(CoverageTest):
         # The details of what to expect on the stack are empirical, and can change
         # as the code changes. This test is here to ensure that the debug code
         # continues working. It's ok to adjust these details over time.
-        assert re_lines(r"^\s*\d+\.\w{4}: Adding file tracers: 0 files", real_messages[-1])
-        assert re_lines(r"\s+add_file_tracers : .*coverage[/\\]sqldata.py:\d+$", last_line)
+        assert re_lines(r"^\s*\d+\.\w{4}: Writing \(no-op\) data file", real_messages[-1])
+        assert re_lines(r"\s+_debug_dataio : .*coverage[/\\]sqldata.py:\d+$", last_line)
 
     def test_debug_config(self) -> None:
         out_text = self.f1_debug_output(["config"])
@@ -187,7 +220,7 @@ class DebugTraceTest(CoverageTest):
             report_include report_omit
             """.split()
         for label in labels:
-            label_pat = fr"^\s*{label}: "
+            label_pat = rf"^\s*{label}: "
             msg = f"Incorrect lines for {label!r}"
             assert 1 == len(re_lines(label_pat, out_text)), msg
 
@@ -230,7 +263,7 @@ def assert_good_debug_sys(out_text: str) -> None:
         pid cwd path environment command_line cover_match pylib_match
         """.split()
     for label in labels:
-        label_pat = fr"^\s*{label}: "
+        label_pat = rf"^\s*{label}: "
         msg = f"Incorrect lines for {label!r}"
         assert 1 == len(re_lines(label_pat, out_text)), msg
     tracer_line = re_line(" core:", out_text).strip()
@@ -301,18 +334,19 @@ class DebugControlTest(CoverageTest):
     def test_debug_write_exceptions(self) -> None:
         debug = DebugControlString(["yes"])
         try:
-            raise RuntimeError('Oops') # This is in the traceback
+            raise RuntimeError("Oops")  # This is in the traceback
         except Exception as exc:
             debug.write("Something happened", exc=exc)
         lines = debug.get_output().splitlines()
         assert "Something happened" == lines[0]
         assert "Traceback (most recent call last):" == lines[1]
-        assert "    raise RuntimeError('Oops') # This is in the traceback" in lines
+        assert '    raise RuntimeError("Oops")  # This is in the traceback' in lines
         assert "RuntimeError: Oops" == lines[-1]
 
     def test_debug_write_self(self) -> None:
         class DebugWritingClass:
             """A simple class to show 'self:' debug messages."""
+
             def __init__(self, debug: DebugControl) -> None:
                 # This line will have "self:" reported.
                 debug.write("Hello from me")
@@ -339,9 +373,11 @@ def f_one(*args: Any, **kwargs: Any) -> str:
     """First of the chain of functions for testing `short_stack`."""
     return f_two(*args, **kwargs)
 
+
 def f_two(*args: Any, **kwargs: Any) -> str:
     """Second of the chain of functions for testing `short_stack`."""
     return f_three(*args, **kwargs)
+
 
 def f_three(*args: Any, **kwargs: Any) -> str:
     """Third of the chain of functions for testing `short_stack`."""
@@ -377,9 +413,9 @@ class ShortStackTest(CoverageTest):
             py = "pypy" if env.PYPY else "python"
             majv, minv = sys.version_info[:2]
             pylib = f"lib{s}{py}{majv}.{minv}{sys.abiflags}"
-        assert len(re_lines(fr"{s}{pylib}{s}site-packages{s}_pytest", stack_text)) > 3
-        assert len(re_lines(fr"{s}{pylib}{s}site-packages{s}pluggy", stack_text)) > 3
-        assert not re_lines(r" 0x[0-9a-fA-F]+", stack_text) # No frame ids
+        assert len(re_lines(rf"{s}{pylib}{s}site-packages{s}_pytest", stack_text)) > 3
+        assert len(re_lines(rf"{s}{pylib}{s}site-packages{s}pluggy", stack_text)) > 3
+        assert not re_lines(r" 0x[0-9a-fA-F]+", stack_text)  # No frame ids
         stack = stack_text.splitlines()
         assert len(stack) > 25
         assert "test_short_stack" in stack[-4]
@@ -391,8 +427,8 @@ class ShortStackTest(CoverageTest):
         stack_text = f_one(full=True, short_filenames=True)
         s = re.escape(os.sep)
         assert not re_lines(r"site-packages", stack_text)
-        assert len(re_lines(fr"syspath:{s}_pytest", stack_text)) > 3
-        assert len(re_lines(fr"syspath:{s}pluggy", stack_text)) > 3
+        assert len(re_lines(rf"syspath:{s}_pytest", stack_text)) > 3
+        assert len(re_lines(rf"syspath:{s}pluggy", stack_text)) > 3
 
     def test_short_stack_frame_ids(self) -> None:
         stack = f_one(full=True, frame_ids=True).splitlines()
@@ -415,13 +451,14 @@ class ShortFilenameTest(CoverageTest):
         assert short_filename(env.__file__) == f"cov:{s}env.py"
         self.make_file("hello.txt", "hi")
         short_hello = short_filename(os.path.abspath("hello.txt"))
-        assert re.match(fr"tmp:{se}t\d+{se}hello.txt", short_hello)
+        assert re.match(rf"tmp:{se}t\d+{se}hello.txt", short_hello)
         oddball = f"{s}xyzzy{s}plugh{s}foo.txt"
         assert short_filename(oddball) == oddball
         assert short_filename(None) is None
 
 
-def test_relevant_environment_display() -> None:
+@pytest.mark.parametrize("long_len", [10, 100])
+def test_relevant_environment_display(long_len: int) -> None:
     env_vars = {
         "HOME": "my home",
         "HOME_DIR": "other place",
@@ -430,8 +467,14 @@ def test_relevant_environment_display() -> None:
         "COVERAGE_THING": "abcd",
         "MY_PYPI_TOKEN": "secret.something",
         "TMP": "temporary",
+        "COVERAGE_PROCESS_CONFIG": "abc" + "x" * (long_len - 3),
     }
+    long_val = {
+        10: "abcxxxxxxx",
+        100: "abc" + "x" * (60 - 3 - 3) + "...",
+    }[long_len]
     expected = [
+        ("COVERAGE_PROCESS_CONFIG", long_val),
         ("COVERAGE_THING", "abcd"),
         ("HOME", "my home"),
         ("MY_PYPI_TOKEN", "******.*********"),
@@ -451,10 +494,13 @@ def test_exc_one_line() -> None:
 def test_auto_repr() -> None:
     class MyStuff:
         """Random class to test auto_repr."""
+
         def __init__(self) -> None:
             self.x = 17
             self.y = "hello"
+
         __repr__ = auto_repr
+
     stuff = MyStuff()
     setattr(stuff, "$coverage.object_id", 123456)
     assert re.match(r"<MyStuff @0x[a-f\d]+ x=17 y='hello'>", repr(stuff))

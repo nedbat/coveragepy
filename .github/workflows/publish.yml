@@ -64,7 +64,7 @@ jobs:
 
     steps:
       - name: "Download dists"
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5.0.0
         with:
           repository: "nedbat/coveragepy"
           run-id: ${{ needs.find-run.outputs.run-id }}
@@ -81,7 +81,7 @@ jobs:
           files=$(ls dist 2>/dev/null | wc -l) && [ "$files" -eq $EXPECTED ] || exit 1
 
       - name: "Generate attestations"
-        uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be # v2.4.0
+        uses: actions/attest-build-provenance@977bb373ede98d70efdf65b84cb5f73e068dcc2a # v3.0.0
         with:
           subject-path: "dist/*"
 
@@ -104,7 +104,7 @@ jobs:
 
     steps:
       - name: "Download dists"
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5.0.0
         with:
           repository: "nedbat/coveragepy"
           run-id: ${{ needs.find-run.outputs.run-id }}
@@ -121,7 +121,7 @@ jobs:
           files=$(ls dist 2>/dev/null | wc -l) && [ "$files" -eq $EXPECTED ] || exit 1
 
       - name: "Generate attestations"
-        uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be # v2.4.0
+        uses: actions/attest-build-provenance@977bb373ede98d70efdf65b84cb5f73e068dcc2a # v3.0.0
         with:
           subject-path: "dist/*"
 

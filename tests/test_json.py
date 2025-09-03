@@ -29,7 +29,9 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
         """
         Helper that creates an example file for most tests.
         """
-        self.make_file("a.py", """\
+        self.make_file(
+            "a.py",
+            """\
             a = {'b': 1}
             if a.get('a'):
                 b = 3
@@ -39,7 +41,8 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
                 b = 7
             if not a:
                 b = 9
-            """)
+            """,
+        )
         self._compare_json_reports(cov, expected_result, "a")
 
     def _assert_expected_json_report_with_regions(
@@ -50,7 +53,9 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
         """
         Helper that creates an example file for regions tests.
         """
-        self.make_file("b.py", """\
+        self.make_file(
+            "b.py",
+            """\
             a = {"b": 1}
 
             def c():
@@ -66,7 +71,8 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
                     return 13
                 def f(self):
                     return 15
-            """)
+            """,
+        )
         self._compare_json_reports(cov, expected_result, "b")
 
     def _compare_json_reports(
@@ -86,106 +92,108 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
         with open(output_path, encoding="utf-8") as result_file:
             parsed_result = json.load(result_file)
         self.assert_recent_datetime(
-            datetime.strptime(parsed_result['meta']['timestamp'], "%Y-%m-%dT%H:%M:%S.%f"),
+            datetime.strptime(parsed_result["meta"]["timestamp"], "%Y-%m-%dT%H:%M:%S.%f"),
         )
-        del (parsed_result['meta']['timestamp'])
-        expected_result["meta"].update({
-            "version": coverage.__version__,
-        })
+        del parsed_result["meta"]["timestamp"]
+        expected_result["meta"].update(
+            {
+                "version": coverage.__version__,
+            }
+        )
         assert parsed_result == expected_result
 
     def test_branch_coverage(self) -> None:
         cov = coverage.Coverage(branch=True)
         a_py_result = {
-            'executed_lines': [1, 2, 4, 5, 8],
-            'missing_lines': [3, 7, 9],
-            'excluded_lines': [],
-            'executed_branches': [
+            "executed_lines": [1, 2, 4, 5, 8],
+            "missing_lines": [3, 7, 9],
+            "excluded_lines": [],
+            "executed_branches": [
                 [2, 4],
                 [4, 5],
                 [8, -1],
             ],
-            'missing_branches': [
+            "missing_branches": [
                 [2, 3],
                 [4, 7],
                 [8, 9],
             ],
-            'summary': {
-                'missing_lines': 3,
-                'covered_lines': 5,
-                'num_statements': 8,
-                'num_branches': 6,
-                'excluded_lines': 0,
-                'num_partial_branches': 3,
-                'covered_branches': 3,
-                'missing_branches': 3,
-                'percent_covered': 57.142857142857146,
-                'percent_covered_display': '57',
+            "summary": {
+                "missing_lines": 3,
+                "covered_lines": 5,
+                "num_statements": 8,
+                "num_branches": 6,
+                "excluded_lines": 0,
+                "num_partial_branches": 3,
+                "covered_branches": 3,
+                "missing_branches": 3,
+                "percent_covered": 57.142857142857146,
+                "percent_covered_display": "57",
             },
         }
         expected_result = {
-            'meta': {
+            "meta": {
                 "branch_coverage": True,
                 "format": 3,
                 "show_contexts": False,
             },
-            'files': {
-                'a.py': copy.deepcopy(a_py_result),
+            "files": {
+                "a.py": copy.deepcopy(a_py_result),
             },
-            'totals': {
-                'missing_lines': 3,
-                'covered_lines': 5,
-                'num_statements': 8,
-                'num_branches': 6,
-                'excluded_lines': 0,
-                'num_partial_branches': 3,
-                'percent_covered': 57.142857142857146,
-                'percent_covered_display': '57',
-                'covered_branches': 3,
-                'missing_branches': 3,
+            "totals": {
+                "missing_lines": 3,
+                "covered_lines": 5,
+                "num_statements": 8,
+                "num_branches": 6,
+                "excluded_lines": 0,
+                "num_partial_branches": 3,
+                "percent_covered": 57.142857142857146,
+                "percent_covered_display": "57",
+                "covered_branches": 3,
+                "missing_branches": 3,
             },
         }
         # With regions, a lot of data is duplicated.
-        expected_result["files"]["a.py"]["classes"] = {"": a_py_result}     # type: ignore[index]
-        expected_result["files"]["a.py"]["functions"] = {"": a_py_result}   # type: ignore[index]
+        expected_result["files"]["a.py"]["classes"] = {"": a_py_result}  # type: ignore[index]
+        expected_result["files"]["a.py"]["functions"] = {"": a_py_result}  # type: ignore[index]
         self._assert_expected_json_report(cov, expected_result)
 
     def test_simple_line_coverage(self) -> None:
         cov = coverage.Coverage()
         a_py_result = {
-            'executed_lines': [1, 2, 4, 5, 8],
-            'missing_lines': [3, 7, 9],
-            'excluded_lines': [],
-            'summary': {
-                'excluded_lines': 0,
-                'missing_lines': 3,
-                'covered_lines': 5,
-                'num_statements': 8,
-                'percent_covered': 62.5,
-                'percent_covered_display': '62',
+            "executed_lines": [1, 2, 4, 5, 8],
+            "missing_lines": [3, 7, 9],
+            "excluded_lines": [],
+            "summary": {
+                "excluded_lines": 0,
+                "missing_lines": 3,
+                "covered_lines": 5,
+                "num_statements": 8,
+                "percent_covered": 62.5,
+                "percent_covered_display": "62",
             },
         }
         expected_result = {
-            'meta': {
+            "meta": {
                 "branch_coverage": False,
                 "format": 3,
                 "show_contexts": False,
             },
-            'files': {
-                'a.py': copy.deepcopy(a_py_result),
+            "files": {
+                "a.py": copy.deepcopy(a_py_result),
             },
-            'totals': {
-                'excluded_lines': 0,
-                'missing_lines': 3,
-                'covered_lines': 5,
-                'num_statements': 8,
-                'percent_covered': 62.5,
-                'percent_covered_display': '62',
+            "totals": {
+                "excluded_lines": 0,
+                "missing_lines": 3,
+                "covered_lines": 5,
+                "num_statements": 8,
+                "percent_covered": 62.5,
+                "percent_covered_display": "62",
             },
         }
         # With regions, a lot of data is duplicated.
-        expected_result["files"]["a.py"]["classes"] = {"": a_py_result}     # type: ignore[index]
-        expected_result["files"]["a.py"]["functions"] = {"": a_py_result}   # type: ignore[index]
+        expected_result["files"]["a.py"]["classes"] = {"": a_py_result}  # type: ignore[index]
+        expected_result["files"]["a.py"]["functions"] = {"": a_py_result}  # type: ignore[index]
         self._assert_expected_json_report(cov, expected_result)
 
     def test_regions_coverage(self) -> None:
@@ -500,7 +508,9 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
 
     def run_context_test(self, relative_files: bool) -> None:
         """A helper for two tests below."""
-        self.make_file("config", f"""\
+        self.make_file(
+            "config",
+            f"""\
             [run]
             relative_files = {relative_files}
 
@@ -509,7 +519,8 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
 
             [json]
             show_contexts = True
-            """)
+            """,
+        )
         cov = coverage.Coverage(context="cool_test", config_file="config")
         a_py_result = {
             "executed_lines": [1, 2, 4, 5, 8],
@@ -550,8 +561,8 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
             },
         }
         # With regions, a lot of data is duplicated.
-        expected_result["files"]["a.py"]["classes"] = {"": a_py_result}     # type: ignore[index]
-        expected_result["files"]["a.py"]["functions"] = {"": a_py_result}   # type: ignore[index]
+        expected_result["files"]["a.py"]["classes"] = {"": a_py_result}  # type: ignore[index]
+        expected_result["files"]["a.py"]["functions"] = {"": a_py_result}  # type: ignore[index]
         self._assert_expected_json_report(cov, expected_result)
 
     def test_context_non_relative(self) -> None:
@@ -564,7 +575,9 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
         # In results.py, we had a line checking `if l1 == l2` that was never
         # true.  This test makes it true. The annotations are essential, I
         # don't know why.
-        self.make_file("wtf.py", """\
+        self.make_file(
+            "wtf.py",
+            """\
             def function(
                 x: int,
                 y: int,
@@ -572,7 +585,8 @@ class JsonReportTest(UsingModulesMixin, CoverageTest):
                 return x + y
 
             assert function(3, 5) == 8
-            """)
+            """,
+        )
         cov = coverage.Coverage(branch=True)
         mod = self.start_import_stop(cov, "wtf")
         cov.json_report(mod)
