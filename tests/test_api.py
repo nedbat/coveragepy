@@ -625,7 +625,7 @@ class ApiTest(CoverageTest):
 
         assert_coverage_warnings(warns, "Warning, warning 1! (bot)")
         # No "Warning, warning 2!" in warns
-        assert len(warns) == 1
+        assert len(get_coverage_warnings(warns)) == 1
 
     def test_warnings_with_urls(self) -> None:
         with pytest.warns(Warning) as warns:
