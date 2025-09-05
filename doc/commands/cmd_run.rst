@@ -6,7 +6,7 @@
     prebuild" will bring it up to date.
 
 .. [[[cog
-    from cog_helpers import show_configs, show_help
+    from cog_helpers import show_help
 .. ]]]
 .. [[[end]]] (sum: 1B2M2Y8Asg)
 
