@@ -233,6 +233,7 @@ More information
     For enterprise <https://tidelift.com/subscription/pkg/pypi-coverage?utm_source=pypi-coverage&utm_medium=referral&utm_campaign=enterprise>
     commands/index
     config
+    messages
     source
     excluding
     branch
