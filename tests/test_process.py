@@ -762,13 +762,14 @@ class ProcessTest(CoverageTest):
         # Remove the file location and source line from the warning.
         out = re.sub(r"(?m)^[\\/\w.:~_-]+:\d+: CoverageWarning: ", "f:d: CoverageWarning: ", out)
         out = re.sub(r"(?m)^\s+self.warn.*$\n", "", out)
+        out = re.sub(r"; see https://.*$", "", out)
         expected = (
             "Run 1\n"
             + "Run 2\n"
             + "f:d: CoverageWarning: Module foo was previously imported, but not measured "
             + "(module-not-measured)\n"
         )
-        assert expected == out
+        assert out == expected
 
     def test_module_name(self) -> None:
         # https://github.com/nedbat/coveragepy/issues/478

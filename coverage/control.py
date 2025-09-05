@@ -470,6 +470,8 @@ class Coverage(TConfigurable):
         slug.)
 
         """
+        import coverage as covmod
+
         if not self._no_warn_slugs:
             self._no_warn_slugs = set(self.config.disable_warnings)
 
@@ -479,7 +481,11 @@ class Coverage(TConfigurable):
 
         self._warnings.append(msg)
         if slug:
-            msg = f"{msg} ({slug})"
+            url = (
+                f"https://coverage.readthedocs.io/en/{covmod.__version__}"
+                + f"/messages.html#warning-{slug}"
+            )
+            msg = f"{msg} ({slug}); see {url}"
         if self._debug.should("pid"):
             msg = f"[{os.getpid()}] {msg}"
         warnings.warn(msg, category=CoverageWarning, stacklevel=2)

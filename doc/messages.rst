@@ -24,15 +24,19 @@ measurement or reporting.
 .. _warnings:
 
 Warnings
-........
+--------
 
 Warnings are issued for possible problems but don't stop the measurement or
 reporting.  See below for the details of each warning, and how to suppress
 warnings you don't need to see.
 
+.. _warning_couldnt_parse:
+
 Couldn't parse Python file XXX (couldnt-parse)
   During reporting, a file was thought to be Python, but it couldn't be parsed
   as Python.
+
+.. _warning_trace_changed:
 
 Trace function changed, data is likely wrong: XXX (trace-changed)
   Coverage measurement depends on a Python setting called the trace function.
@@ -41,14 +45,20 @@ Trace function changed, data is likely wrong: XXX (trace-changed)
   The XXX in the message is the new trace function value, which might provide
   a clue to the cause.
 
+.. _warning_module_not_python:
+
 Module XXX has no Python source (module-not-python)
   You asked coverage.py to measure module XXX, but once it was imported, it
   turned out not to have a corresponding .py file.  Without a .py file,
   coverage.py can't report on missing lines.
 
+.. _warning_module_not_imported:
+
 Module XXX was never imported (module-not-imported)
   You asked coverage.py to measure module XXX, but it was never imported by
   your program.
+
+.. _warning_no_data_collected:
 
 No data was collected (no-data-collected)
   Coverage.py ran your program, but didn't measure any lines as executed.
@@ -58,10 +68,14 @@ No data was collected (no-data-collected)
   To debug this problem, try using ``run --debug=trace`` to see the tracing
   decision made for each file.
 
+.. _warning_module_not_measured:
+
 Module XXX was previously imported, but not measured (module-not-measured)
   You asked coverage.py to measure module XXX, but it had already been imported
   when coverage started.  This meant coverage.py couldn't monitor its
   execution.
+
+.. _warning_already_imported:
 
 Already imported a file that will be measured: XXX (already-imported)
   File XXX had already been imported when coverage.py started measurement. Your
@@ -69,10 +83,14 @@ Already imported a file that will be measured: XXX (already-imported)
   measure that file.  Lines will be missing from the coverage report since the
   execution during import hadn't been measured.
 
+.. _warning_include_ignored:
+
 \-\-include is ignored because \-\-source is set (include-ignored)
   Both ``--include`` and ``--source`` were specified while running code.  Both
   are meant to focus measurement on a particular part of your source code, so
   ``--include`` is ignored in favor of ``--source``.
+
+.. _warning_dynamic_conflict:
 
 Conflicting dynamic contexts (dynamic-conflict)
   The ``[run] dynamic_context`` option is set in the configuration file, but
@@ -80,10 +98,14 @@ Conflicting dynamic contexts (dynamic-conflict)
   :meth:`.Coverage.switch_context` function to change the context. Only one of
   these mechanisms should be in use at a time.
 
+.. _warning_no_ctracer:
+
 Couldn't import C tracer (no-ctracer)
   The core tracer implemented in C should have been used, but couldn't be
   imported.  The reason is included in the warning message.  The Python tracer
   will be used instead.
+
+.. _warning_no_sysmon:
 
 sys.monitoring isn't available in this version, using default core (no-sysmon)
   You requested to use the sys.monitoring measurement core, but are running on
@@ -99,6 +121,10 @@ sys.monitoring doesn't yet support dynamic contexts, using default core (no-sysm
   You requested the sys.monitoring measurement core and also dynamic contexts.
   This isn't supported by coverage.py yet.  A default core will be used
   instead.
+
+
+Disabling warnings
+------------------
 
 Individual warnings can be disabled with the :ref:`disable_warnings
 <config_run_disable_warnings>` configuration setting.  It is a list of the

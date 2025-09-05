@@ -30,8 +30,14 @@ from coverage.types import FilePathClasses, FilePathType, TCovKwargs
 
 from tests import testenv
 from tests.coveragetest import CoverageTest, TESTS_DIR, UsingModulesMixin
-from tests.helpers import assert_count_equal, assert_coverage_warnings
-from tests.helpers import change_dir, nice_file, os_sep
+from tests.helpers import (
+    assert_count_equal,
+    assert_coverage_warnings,
+    change_dir,
+    get_coverage_warnings,
+    nice_file,
+    os_sep,
+)
 
 BAD_SQLITE_REGEX = r"file( is encrypted or)? is not a database"
 
@@ -619,6 +625,26 @@ class ApiTest(CoverageTest):
 
         assert_coverage_warnings(warns, "Warning, warning 1! (bot)")
         # No "Warning, warning 2!" in warns
+        assert len(warns) == 1
+
+    def test_warnings_with_urls(self) -> None:
+        with pytest.warns(Warning) as warns:
+            cov = coverage.Coverage()
+            cov.load()
+            cov._warn("Warning Will Robinson", slug="will-rob")
+            cov._warn("Warning, warning 2!", slug="second-one")
+        warnings = get_coverage_warnings(warns)
+
+        def url(slug: str) -> str:
+            return (
+                f"https://coverage.readthedocs.io/en/{coverage.__version__}"
+                + f"/messages.html#warning-{slug}"
+            )
+
+        assert warnings == [
+            f"Warning Will Robinson (will-rob); see {url('will-rob')}",
+            f"Warning, warning 2! (second-one); see {url('second-one')}",
+        ]
 
     def test_source_and_include_dont_conflict(self) -> None:
         # A bad fix made this case fail: https://github.com/nedbat/coveragepy/issues/541

@@ -313,6 +313,13 @@ def assert_count_equal(
     assert collections.Counter(list(a)) == collections.Counter(list(b))
 
 
+def get_coverage_warnings(warns: Iterable[warnings.WarningMessage]) -> list[str]:
+    """Extract the text of CoverageWarnings."""
+    warns = [w for w in warns if issubclass(w.category, CoverageWarning)]
+    texts = [cast(Warning, w.message).args[0] for w in warns]
+    return texts
+
+
 def assert_coverage_warnings(
     warns: Iterable[warnings.WarningMessage],
     *msgs: str | re.Pattern[str],
@@ -323,15 +330,15 @@ def assert_coverage_warnings(
     Each msg can be a string compared for equality, or a compiled regex used to
     search the text.
     """
+    actuals = get_coverage_warnings(warns)
     assert msgs  # don't call this without some messages.
-    warns = [w for w in warns if issubclass(w.category, CoverageWarning)]
-    actuals = [cast(Warning, w.message).args[0] for w in warns]
     assert len(msgs) == len(actuals)
-    for expected, actual in zip(msgs, actuals):
+    for actual, expected in zip(actuals, msgs):
         if hasattr(expected, "search"):
             assert expected.search(actual), f"{actual!r} didn't match {expected!r}"
         else:
-            assert expected == actual
+            actual = actual.partition("; see ")[0]
+            assert actual == expected
 
 
 @contextlib.contextmanager
