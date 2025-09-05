@@ -16,11 +16,16 @@
 Reporting
 ---------
 
-Coverage.py provides a few styles of reporting, with the **report**, **html**,
-**annotate**, **json**, **lcov**, and **xml** commands.  They share a number
-of common options.
+Coverage.py provides a few styles of reporting, with the
+:ref:`report <cmd_report>`,
+:ref:`html <cmd_html>`,
+:ref:`json <cmd_json>`,
+:ref:`lcov <cmd_lcov>`,
+:ref:`xml <cmd_xml>`,
+and :ref:`annotate <cmd_annotate>`
+commands.  They share a number of common options.
 
-The command-line arguments are module or file names to report on, if you'd like
+The command-line arguments are module or file names to report on if you'd like
 to report on a subset of the data collected.
 
 The ``--include`` and ``--omit`` flags specify lists of file name patterns.

@@ -67,6 +67,9 @@ control coverage.py since the configuration file can be checked into source
 control, and can provide options that other invocation techniques (like test
 runner plugins) may not offer. See :ref:`config` for more details.
 
+For diagnosing problems, commands accept a ``--debug`` option. See
+:ref:`cmd_run_debug`.
+
 
 Commands
 --------

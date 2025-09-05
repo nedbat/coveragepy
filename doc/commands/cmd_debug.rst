@@ -50,15 +50,16 @@ A few types of information are available:
                        [env: COVERAGE_RCFILE]
 .. [[[end]]] (sum: ybjftkTaNE)
 
+
 .. _cmd_run_debug:
 
-``--debug``
-...........
+``--debug`` option
+..................
 
-The ``--debug`` option is also available on all commands.  It instructs
-coverage.py to log internal details of its operation, to help with diagnosing
+The ``--debug`` option is available on all commands.  It instructs
+coverage.py to log internal details of its operation to help with diagnosing
 problems.  It takes a comma-separated list of options, each indicating a facet
-of operation to log:
+of activity to log:
 
 * ``callers``: annotate each debug message with a stack trace of the callers
   to that point.
