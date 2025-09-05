@@ -231,7 +231,7 @@ More information
 
     install
     For enterprise <https://tidelift.com/subscription/pkg/pypi-coverage?utm_source=pypi-coverage&utm_medium=referral&utm_campaign=enterprise>
-    cmd
+    commands/index
     config
     source
     excluding

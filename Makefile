@@ -262,7 +262,7 @@ $(DOCBIN):
 	tox -q -e doc --notest
 
 cogdoc: $(DOCBIN)			## Run docs through cog.
-	$(DOCBIN)/python -m cogapp -crP --verbosity=1 doc/*.rst
+	$(DOCBIN)/python -m cogapp -crP --verbosity=1 doc/*.rst doc/*/*.rst
 
 dochtml: cogdoc $(DOCBIN)		## Build the docs HTML output.
 	$(SPHINXBUILD) -b html doc doc/_build/html
