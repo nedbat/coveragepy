@@ -23,7 +23,11 @@ upgrading your version of coverage.py.
 Unreleased
 ----------
 
-Nothing yet.
+- Most warnings and one error now have a link to a page in the docs explaining
+  the specific message.  Closes `issue 1921`_.
+
+.. _issue 1921: https://github.com/nedbat/coveragepy/issues/1921
+
 
 
 .. start-releases

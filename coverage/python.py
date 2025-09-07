@@ -61,7 +61,7 @@ def get_python_source(filename: str) -> str:
             break
     else:
         # Couldn't find source.
-        raise NoSource(f"No source for code: '{filename}'.")
+        raise NoSource(f"No source for code: '{filename}'.", slug="no-source")
 
     # Replace \f because of http://bugs.python.org/issue19035
     source_bytes = source_bytes.replace(b"\f", b" ")

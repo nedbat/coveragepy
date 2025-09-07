@@ -5,11 +5,15 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 
 class _BaseCoverageException(Exception):
     """The base-base of all Coverage exceptions."""
 
-    pass
+    def __init__(self, *args: Any, slug: str | None = None) -> None:
+        super().__init__(*args)
+        self.slug = slug
 
 
 class CoverageException(_BaseCoverageException):

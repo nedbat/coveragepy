@@ -1142,6 +1142,8 @@ def main(argv: list[str] | None = None) -> int | None:
     except _BaseCoverageException as err:
         # A controlled error inside coverage.py: print the message to the user.
         msg = err.args[0]
+        if err.slug:
+            msg = f"{msg.rstrip('.')}; see {__url__}/messages.html#error-{err.slug}"
         print(msg)
         status = ERR
     except SystemExit as err:

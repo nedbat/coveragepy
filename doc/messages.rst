@@ -20,6 +20,31 @@ Coverage.py has a number of messages for conditions that could affect
 measurement or reporting.
 
 
+.. _errors:
+
+Errors
+------
+
+.. _error_no_source:
+
+No source for code: 'filename.py'
+  A source file was traced during execution, but was not found when trying to
+  produce a report.  Often this is due to libraries creating temporary source
+  files which are deleted after execution.
+
+  You can add :ref:`configuration settings <config>` to avoid the error:
+
+  - Use ":ref:`[run] source=. <config_run_source>`" to prevent measurement of
+    code outside of your project.
+
+  - Use ":ref:`[report] omit=$TMPDIR/* <config_report_omit>`" to explicitly
+    skip reporting the temporary directory where the files were created.  The
+    appropriate environment variable will depend on your system.
+
+  - Use ":ref:`[report] ignore_errors = true <config_report_ignore_errors>`"
+    to treat the error as a warning.
+
+
 .. _cmd_warnings:
 .. _warnings:
 

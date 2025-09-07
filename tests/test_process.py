@@ -322,7 +322,11 @@ class ProcessTest(CoverageTest):
         self.run_command("coverage run fleeting")
         os.remove("fleeting")
         out = self.run_command("coverage html -d htmlcov", status=1)
-        assert re.search("No source for code: '.*fleeting'", out)
+        assert re.search(r"No source for code: '.*fleeting'", out)
+        assert re.search(
+            r"; see https://coverage.readthedocs.io/en/[^/]+/messages.html#error-no-source",
+            out,
+        )
         assert "Traceback" not in out
 
     def test_running_missing_file(self) -> None:
