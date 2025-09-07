@@ -31,19 +31,5 @@ def _make_version(
     return version
 
 
-def _make_url(
-    major: int,
-    minor: int,
-    micro: int,
-    releaselevel: str,
-    serial: int = 0,
-    dev: int = 0,
-) -> str:
-    """Make the URL people should start at for this version of coverage.py."""
-    return "https://coverage.readthedocs.io/en/" + _make_version(
-        major, minor, micro, releaselevel, serial, dev
-    )
-
-
 __version__ = _make_version(*version_info, _dev)
-__url__ = _make_url(*version_info, _dev)
+__url__ = f"https://coverage.readthedocs.io/en/{__version__}"

@@ -6,7 +6,7 @@
 from __future__ import annotations
 
 import coverage
-from coverage.version import _make_url, _make_version
+from coverage.version import _make_version
 
 from tests.coveragetest import CoverageTest
 
@@ -31,13 +31,3 @@ class VersionTest(CoverageTest):
         assert _make_version(4, 1, 2) == "4.1.2"
         assert _make_version(5, 10, 2, "candidate", 7) == "5.10.2rc7"
         assert _make_version(5, 10, 2, "candidate", 7, 3) == "5.10.2rc7.dev3"
-
-    def test_make_url(self) -> None:
-        expected = "https://coverage.readthedocs.io/en/4.1.2"
-        assert _make_url(4, 1, 2, "final") == expected
-        expected = "https://coverage.readthedocs.io/en/4.1.2b3"
-        assert _make_url(4, 1, 2, "beta", 3) == expected
-        expected = "https://coverage.readthedocs.io/en/4.1.2b3.dev17"
-        assert _make_url(4, 1, 2, "beta", 3, 17) == expected
-        expected = "https://coverage.readthedocs.io/en/4.1.2.dev17"
-        assert _make_url(4, 1, 2, "final", 0, 17) == expected
