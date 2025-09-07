@@ -44,6 +44,14 @@ No source for code: 'filename.py'
   - Use ":ref:`[report] ignore_errors = true <config_report_ignore_errors>`"
     to treat the error as a warning.
 
+.. _error_cant_combine:
+
+Can't combine (branch or statement) coverage data with (statement or branch) data
+  You have some data files that measured branch coverage and some data files
+  that didn't.  They cannot be combined because the two types of data are
+  incompatible.  You'll need to ensure that all of your data files are
+  collected with the same settings.
+
 
 .. _cmd_warnings:
 .. _warnings:
