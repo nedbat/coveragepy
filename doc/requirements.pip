@@ -66,7 +66,7 @@ pygments==2.19.2
     # via
     #   doc8
     #   sphinx
-regex==2025.7.34
+regex==2025.9.1
     # via sphinx-lint
 requests==2.32.5
     # via
