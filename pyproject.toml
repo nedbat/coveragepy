@@ -111,7 +111,6 @@ ignored-argument-names = "_|unused|.*_unused"
 ## PYTEST
 
 [tool.pytest.ini_options]
-addopts = "-q -n auto --dist=loadgroup -p no:legacypath --strict-markers --no-flaky-report -rfEX --failed-first"
 python_classes = "*Test"
 
 ### pytest.mark.xdist_group() values, and why:
