@@ -30,7 +30,7 @@ jobs:
     name: "Check changed files"
     runs-on: ubuntu-latest
     permissions:
-      pull-requests: read
+      pull-requests: read   # Needed for this check to run on pull requests
     outputs:
       python: ${{ steps.filter.outputs.python }}
       docs: ${{ steps.filter.outputs.docs }}
@@ -161,7 +161,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      actions: read
 
     needs: changed
     if: ${{ needs.changed.outputs.actions == 'true' || needs.changed.outputs.workflow == 'true' }}

@@ -54,8 +54,8 @@ jobs:
     name: "Publish to Test PyPI"
     if: ${{ github.event.action == 'publish-testpypi' }}
     permissions:
-      id-token: write
-      attestations: write
+      id-token: write       # needed for actions/attest-build-provenance
+      attestations: write   # needed for actions/attest-build-provenance
     runs-on: "ubuntu-latest"
     environment:
       name: "testpypi"
@@ -94,8 +94,8 @@ jobs:
     name: "Publish to PyPI"
     if: ${{ github.event.action == 'publish-pypi' }}
     permissions:
-      id-token: write
-      attestations: write
+      id-token: write       # needed for actions/attest-build-provenance
+      attestations: write   # needed for actions/attest-build-provenance
     runs-on: "ubuntu-latest"
     environment:
       name: "pypi"

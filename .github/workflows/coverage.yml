@@ -33,7 +33,7 @@ jobs:
     name: "Check changed files"
     runs-on: ubuntu-latest
     permissions:
-      pull-requests: read
+      pull-requests: read   # Needed for this check to run on pull requests
     outputs:
       run_coverage: ${{ steps.filter.outputs.run_coverage }}
       workflow: ${{ steps.filter.outputs.workflow }}

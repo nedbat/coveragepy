@@ -30,9 +30,9 @@ jobs:
     name: Analyze
     runs-on: ubuntu-latest
     permissions:
-      actions: read
+      actions: read           # CodeQL wrote this action.
       contents: read
-      security-events: write
+      security-events: write  # CodeQL wrote this action.
 
     strategy:
       fail-fast: false
