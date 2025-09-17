@@ -36,7 +36,7 @@ env:
   PIP_DISABLE_PIP_VERSION_CHECK: 1
   # PYVERSIONS: changing the list of versions will change the number of
   # expected distributions. This must match the same number in publish.yml.
-  EXPECTED: 88
+  EXPECTED: 104
 
 permissions:
   contents: read
