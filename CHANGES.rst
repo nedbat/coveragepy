@@ -23,11 +23,16 @@ upgrading your version of coverage.py.
 Unreleased
 ----------
 
+- Performance: with branch coverage in large files, generating HTML, JSON, or
+  LCOV reports could take far too long due to some quadratic behavior.  This is
+  now fixed, closing `issue 2048`_.  Thanks to Daniel Diniz for help diagnosing
+  the problem.
+
 - Most warnings and a few errors now have links to a page in the docs
   explaining the specific message.  Closes `issue 1921`_.
 
 .. _issue 1921: https://github.com/nedbat/coveragepy/issues/1921
-
+.. _issue 2048: https://github.com/nedbat/coveragepy/issues/2048
 
 
 .. start-releases
