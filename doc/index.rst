@@ -199,10 +199,12 @@ Getting help
 ------------
 
 If the :ref:`FAQ <faq>` doesn't answer your question, you can discuss
-coverage.py or get help using it on the `Python discussion forums`_.  If you
-ping me (``@nedbat``), there's a higher chance I'll see the post.
+coverage.py or get help using it on the `Python discussion forums`_ or in the
+`Python Discord`_. If you ping me (``@nedbat``), there's a higher chance I'll
+see the post.
 
 .. _Python discussion forums: https://discuss.python.org/
+.. _Python Discord: https://discord.com/channels/267624335836053506/1253355750684753950
 
 Bug reports are gladly accepted at the `GitHub issue tracker`_.
 GitHub also hosts the `code repository`_.
