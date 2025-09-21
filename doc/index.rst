@@ -18,7 +18,7 @@ supported on:
 
 .. PYVERSIONS
 
-* Python 3.9 through 3.14 rc2, including free-threading.
+* Python 3.9 through 3.14 rc3, including free-threading.
 * PyPy3 versions 3.9, 3.10, and 3.11.
 
 .. ifconfig:: prerelease
