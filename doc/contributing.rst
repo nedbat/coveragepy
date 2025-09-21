@@ -242,6 +242,25 @@ Many people love auto-formatting with `black`_ or `ruff`_, but I would prefer
 not to on coverage.py.
 
 
+Cog
+---
+
+Parts of the documentation and GitHub actions are kept up-to-date with `cog`_.
+There are checks to make sure that files are correct and not being incorrectly
+edited.
+
+If a check fails, it will show you what command to run to update the files.
+If you edit parts of a file that should be generated, you will see a message
+like::
+
+    Output has been edited! Delete old checksum to unprotect.
+
+Probably you should revert the edits and run the command to generate the
+output.  The top of the file you edited will have instructions.
+
+.. _cog: https://cog.readthedocs.io
+
+
 Continuous integration
 ----------------------
 
