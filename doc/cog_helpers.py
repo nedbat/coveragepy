@@ -82,7 +82,11 @@ def show_configs(ini, toml):
     toml, toml_vals = _read_config(toml, "covrc.toml")
     for key, val in ini_vals.items():
         if val != toml_vals[key]:
-            cog.error(f"Mismatch! {key}:\nini:  {val!r}\ntoml: {toml_vals[key]!r}")
+            cog.error(
+                f"Mismatch between configuration tabs in docs for {key = }:\n"
+                + f"  ini:  {val!r}\n"
+                + f"  toml: {toml_vals[key]!r}"
+            )
 
     ini2 = re.sub(r"(?m)^\[", "[coverage:", ini)
     print()
