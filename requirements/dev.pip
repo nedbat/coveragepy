@@ -26,13 +26,13 @@ click==8.1.8 ; python_full_version < '3.10'
     # via
     #   click-log
     #   scriv
-click==8.2.1 ; python_full_version >= '3.10'
+click==8.3.0 ; python_full_version >= '3.10'
     # via
     #   click-log
     #   scriv
 click-log==0.4.0
     # via scriv
-cogapp==3.5.1
+cogapp==3.6.0
     # via -r requirements/dev.in
 colorama==0.4.6
     # via
@@ -43,13 +43,13 @@ colorama==0.4.6
     #   pylint
     #   pytest
     #   tox
-cryptography==45.0.7 ; platform_machine != 'ppc64le' and platform_machine != 's390x' and sys_platform == 'linux'
+cryptography==46.0.1 ; platform_machine != 'ppc64le' and platform_machine != 's390x' and sys_platform == 'linux'
     # via secretstorage
 dill==0.4.0
     # via pylint
 distlib==0.4.0
     # via virtualenv
-docutils==0.22
+docutils==0.22.2
     # via readme-renderer
 exceptiongroup==1.3.0 ; python_full_version < '3.11'
     # via
@@ -65,7 +65,7 @@ flaky==3.8.1
     # via -r requirements/pytest.in
 greenlet==3.2.4
     # via -r requirements/dev.in
-hypothesis==6.138.15
+hypothesis==6.139.2
     # via -r requirements/pytest.in
 id==1.5.0
     # via twine
@@ -141,7 +141,7 @@ pluggy==1.6.0
     #   tox
 pudb==2025.1
     # via -r requirements/dev.in
-pycparser==2.22 ; implementation_name != 'PyPy' and platform_machine != 'ppc64le' and platform_machine != 's390x' and platform_python_implementation != 'PyPy' and sys_platform == 'linux'
+pycparser==2.23 ; implementation_name != 'PyPy' and platform_machine != 'ppc64le' and platform_machine != 's390x' and platform_python_implementation != 'PyPy' and sys_platform == 'linux'
     # via cffi
 pygments==2.19.2
     # via
@@ -181,11 +181,13 @@ rfc3986==2.0.0
     # via twine
 rich==14.1.0
     # via twine
-ruff==0.12.12
+ruff==0.13.1
     # via -r requirements/dev.in
 scriv==1.7.0
     # via -r requirements/dev.in
-secretstorage==3.3.3 ; platform_machine != 'ppc64le' and platform_machine != 's390x' and sys_platform == 'linux'
+secretstorage==3.3.3 ; python_full_version < '3.10' and platform_machine != 'ppc64le' and platform_machine != 's390x' and sys_platform == 'linux'
+    # via keyring
+secretstorage==3.4.0 ; python_full_version >= '3.10' and platform_machine != 'ppc64le' and platform_machine != 's390x' and sys_platform == 'linux'
     # via keyring
 setuptools==80.9.0
     # via
@@ -216,6 +218,7 @@ twine==6.2.0
 typing-extensions==4.15.0 ; python_full_version < '3.11'
     # via
     #   astroid
+    #   cryptography
     #   exceptiongroup
     #   pylint
     #   tox
@@ -224,7 +227,7 @@ urllib3==2.5.0
     # via
     #   requests
     #   twine
-urwid==3.0.2
+urwid==3.0.3
     # via
     #   pudb
     #   urwid-readline

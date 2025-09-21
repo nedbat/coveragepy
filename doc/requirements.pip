@@ -14,14 +14,14 @@ certifi==2025.8.3
     # via requests
 charset-normalizer==3.4.3
     # via requests
-click==8.2.1
+click==8.3.0
     # via
     #   click-log
     #   scriv
     #   uvicorn
 click-log==0.4.0
     # via scriv
-cogapp==3.5.1
+cogapp==3.6.0
     # via -r doc/requirements.in
 colorama==0.4.6
     # via
@@ -58,7 +58,7 @@ packaging==25.0
     # via sphinx
 polib==1.2.0
     # via sphinx-lint
-pyenchant==3.2.2
+pyenchant==3.3.0
     # via
     #   -r doc/requirements.in
     #   sphinxcontrib-spelling
@@ -66,7 +66,7 @@ pygments==2.19.2
     # via
     #   doc8
     #   sphinx
-regex==2025.9.1
+regex==2025.9.18
     # via sphinx-lint
 requests==2.32.5
     # via
@@ -118,7 +118,7 @@ sphinxcontrib-serializinghtml==2.0.0
     # via sphinx
 sphinxcontrib-spelling==8.0.1
     # via -r doc/requirements.in
-starlette==0.47.3
+starlette==0.48.0
     # via sphinx-autobuild
 stevedore==5.5.0
     # via doc8
@@ -128,7 +128,7 @@ typing-extensions==4.15.0 ; python_full_version < '3.13'
     #   starlette
 urllib3==2.5.0
     # via requests
-uvicorn==0.35.0
+uvicorn==0.36.0
     # via sphinx-autobuild
 watchfiles==1.1.0
     # via sphinx-autobuild
