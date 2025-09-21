@@ -20,13 +20,17 @@ upgrading your version of coverage.py.
     ..  Version 9.8.1 — 2027-07-27
     ..  --------------------------
 
-Unreleased
-----------
+.. start-releases
+
+.. _changes_7-10-7:
+
+Version 7.10.7 — 2025-09-21
+---------------------------
 
 - Performance: with branch coverage in large files, generating HTML, JSON, or
-  LCOV reports could take far too long due to some quadratic behavior.  This is
-  now fixed, closing `issue 2048`_.  Thanks to Daniel Diniz for help diagnosing
-  the problem.
+  LCOV reports could take far too long due to some quadratic behavior when
+  creating the function and class index pages.  This is now fixed, closing
+  `issue 2048`_.  Thanks to Daniel Diniz for help diagnosing the problem.
 
 - Most warnings and a few errors now have links to a page in the docs
   explaining the specific message.  Closes `issue 1921`_.
@@ -34,8 +38,6 @@ Unreleased
 .. _issue 1921: https://github.com/nedbat/coveragepy/issues/1921
 .. _issue 2048: https://github.com/nedbat/coveragepy/issues/2048
 
-
-.. start-releases
 
 .. _changes_7-10-6:
 
