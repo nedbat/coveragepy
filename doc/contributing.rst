@@ -232,14 +232,14 @@ keep you from sending patches.  I can clean them up.
 
 Lines should be kept to a 100-character maximum length.  I recommend an
 `editorconfig.org`_ plugin for your editor of choice, which will also help with
-indentation, line endings and so on.
+indentation, line endings and so on.  Source files are formatted with `ruff`_.
+
+I use `pre-commit`_ to run checks and formatting when making commits, you
+should also.
 
 Other style questions are best answered by looking at the existing code.
 Formatting of docstrings, comments, long lines, and so on, should match the
 code that already exists.
-
-Many people love auto-formatting with `black`_ or `ruff`_, but I would prefer
-not to on coverage.py.
 
 
 Cog
@@ -319,8 +319,8 @@ fixes.  If you need help writing tests, please ask.
 .. _fork the repo: https://docs.github.com/en/get-started/quickstart/fork-a-repo
 .. _editorconfig.org: http://editorconfig.org
 .. _tox: https://tox.readthedocs.io/
-.. _black: https://pypi.org/project/black/
 .. _ruff: https://pypi.org/project/ruff/
+.. _pre-commit: https://pre-commit.com/
 .. _set_env.py: https://nedbatchelder.com/blog/201907/set_envpy.html
 .. _pytest test selectors: https://doc.pytest.org/en/stable/usage.html#specifying-which-tests-to-run
 .. _sys.monitoring: https://docs.python.org/3/library/sys.monitoring.html
