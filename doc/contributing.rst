@@ -55,7 +55,7 @@ these steps:
 
 #.  (Optional) Create a virtualenv to work in, and activate it.  There
     are a number of ways to do this.  Use the method you are comfortable with.
-    Ideally, use Python 3.9 (the lowest version coverage.py supports).
+    Ideally, use Python 3.10 (the lowest version coverage.py supports).
 
 #.  Clone the repository::
 

@@ -22,7 +22,6 @@ Intended Audience :: Developers
 Operating System :: OS Independent
 Programming Language :: Python
 Programming Language :: Python :: 3
-Programming Language :: Python :: 3.9
 Programming Language :: Python :: 3.10
 Programming Language :: Python :: 3.11
 Programming Language :: Python :: 3.12
@@ -119,7 +118,7 @@ setup_args = dict(
         "Mastodon": "https://hachyderm.io/@coveragepy",
         "Mastodon (nedbat)": "https://hachyderm.io/@nedbat",
     },
-    python_requires=">=3.9",  # minimum of PYVERSIONS
+    python_requires=">=3.10",  # minimum of PYVERSIONS
 )
 
 # A replacement for the build_ext command which raises a single exception

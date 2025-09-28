@@ -84,7 +84,6 @@ jobs:
           # tox.ini so that tox will run properly. PYVERSIONS
           # Available versions:
           # https://github.com/actions/python-versions/blob/main/versions-manifest.json
-          - "3.9"
           - "3.10"
           - "3.11"
           - "3.12"
@@ -92,19 +91,14 @@ jobs:
           - "3.13t"
           - "3.14"
           - "3.14t"
-          - "pypy-3.9"
           - "pypy-3.10"
         exclude:
           # Mac PyPy always takes the longest, and doesn't add anything.
           - os: macos
-            python-version: "pypy-3.9"
-          - os: macos
             python-version: "pypy-3.10"
-          # Windows pypy 3.9 and 3.10 get stuck with PyPy 7.3.15.  I hope to
+          # Windows pypy 3.10 gets stuck with PyPy 7.3.15.  I hope to
           # unstick them, but I don't want that to block all other progress, so
           # skip them for now.
-          - os: windows
-            python-version: "pypy-3.9"
           - os: windows
             python-version: "pypy-3.10"
           # Windows 3.14.0b1 seems confused somehow about t vs not-t:
@@ -193,7 +187,7 @@ jobs:
       - name: "Set up Python"
         uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c # v6.0.0
         with:
-          python-version: "3.9" # Minimum of PYVERSIONS
+          python-version: "3.10" # Minimum of PYVERSIONS
           # At a certain point, installing dependencies failed on pypy 3.9 and
           # 3.10 on Windows.  Commenting out the cache here fixed it.  Someday
           # try using the cache again.
