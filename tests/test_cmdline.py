@@ -415,7 +415,7 @@ class CmdLineTest(BaseCmdLineTest):
         out = self.stdout()
         assert " CPYTHON:" in out
         assert " PYVERSION:" in out
-        assert " pep626:" in out
+        assert " deferred_annotations:" in out
 
         # Some things that shouldn't appear..
         assert "typing." not in out  # import from typing

@@ -53,36 +53,12 @@ SYSMON_DEFAULT = CPYTHON and PYVERSION >= (3, 14)
 class PYBEHAVIOR:
     """Flags indicating this Python's behavior."""
 
-    # Does Python conform to PEP626, Precise line numbers for debugging and other tools.
-    # https://www.python.org/dev/peps/pep-0626
-    pep626 = (PYVERSION > (3, 10, 0, "alpha", 4))  # fmt: skip
-
-    # Is "if __debug__" optimized away?
-    optimize_if_debug = not pep626
-
-    # Is "if not __debug__" optimized away? The exact details have changed
-    # across versions.
-    optimize_if_not_debug = 1 if pep626 else 2
-
-    # 3.7 changed how functions with only docstrings are numbered.
-    docstring_only_function = (not PYPY) and (PYVERSION <= (3, 10))
-
     # Lines after break/continue/return/raise are no longer compiled into the
     # bytecode.  They used to be marked as missing, now they aren't executable.
-    omit_after_jump = pep626 or PYPY
+    omit_after_jump = True  # PYPY
 
     # PyPy has always omitted statements after return.
-    omit_after_return = omit_after_jump or PYPY
-
-    # Optimize away unreachable try-else clauses.
-    optimize_unreachable_try_else = pep626
-
-    # Modules used to have firstlineno equal to the line number of the first
-    # real line of code.  Now they always start at 1.
-    module_firstline_1 = pep626
-
-    # Are "if 0:" lines (and similar) kept in the compiled code?
-    keep_constant_test = pep626
+    omit_after_return = True  # TODO PYPY
 
     # When leaving a with-block, do we visit the with-line again for the exit?
     # For example, wwith.py:

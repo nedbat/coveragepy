@@ -1097,17 +1097,13 @@ class CompoundStatementTest(CoverageTest):
         )
 
     def test_constant_if(self) -> None:
-        if env.PYBEHAVIOR.keep_constant_test:
-            lines = [1, 2, 3]
-        else:
-            lines = [2, 3]
         self.check_coverage(
             """\
             if 1:
                 a = 2
             assert a == 2
             """,
-            lines=lines,
+            lines=[1, 2, 3],
             missing="",
         )
 
@@ -1357,13 +1353,6 @@ class CompoundStatementTest(CoverageTest):
         )
 
     def test_try_except_stranded_else(self) -> None:
-        if env.PYBEHAVIOR.optimize_unreachable_try_else:
-            # The else can't be reached because the try ends with a raise.
-            lines = [1, 2, 3, 4, 5, 6, 9]
-            missing = ""
-        else:
-            lines = [1, 2, 3, 4, 5, 6, 8, 9]
-            missing = "8"
         self.check_coverage(
             """\
             a = 0
@@ -1376,8 +1365,8 @@ class CompoundStatementTest(CoverageTest):
                 a = 123
             assert a == 99
             """,
-            lines=lines,
-            missing=missing,
+            lines=[1, 2, 3, 4, 5, 6, 9],
+            missing="",
             branchz="",
             branchz_missing="",
         )
@@ -1854,13 +1843,6 @@ class Py25Test(CoverageTest):
         )
 
     def test_try_except_finally_stranded_else(self) -> None:
-        if env.PYBEHAVIOR.optimize_unreachable_try_else:
-            # The else can't be reached because the try ends with a raise.
-            lines = [1, 2, 3, 4, 5, 6, 10, 11]
-            missing = ""
-        else:
-            lines = [1, 2, 3, 4, 5, 6, 8, 10, 11]
-            missing = "8"
         self.check_coverage(
             """\
             a = 0; b = 0
@@ -1875,8 +1857,9 @@ class Py25Test(CoverageTest):
                 b = 2
             assert a == 99 and b == 2
             """,
-            lines=lines,
-            missing=missing,
+            # The else can't be reached because the try ends with a raise.
+            lines=[1, 2, 3, 4, 5, 6, 10, 11],
+            missing="",
             branchz="",
             branchz_missing="",
         )

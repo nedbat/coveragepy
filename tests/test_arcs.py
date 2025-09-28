@@ -214,13 +214,6 @@ class SimpleArcTest(CoverageTest):
         assert self.stdout() == "5\n"
 
     def test_bug_576(self) -> None:
-        if env.PYBEHAVIOR.pep626:
-            branchz = "34 36 89 8B"
-            branchz_missing = ""
-        else:
-            branchz = "34 38 89 8D"
-            branchz_missing = "38 8D"
-
         self.check_coverage(
             """\
             foo = True
@@ -237,8 +230,8 @@ class SimpleArcTest(CoverageTest):
 
             print("Done")
             """,
-            branchz=branchz,
-            branchz_missing=branchz_missing,
+            branchz="34 36 89 8B",
+            branchz_missing="",
         )
         assert self.stdout() == "Done\n"
 
@@ -551,9 +544,6 @@ class LoopArcTest(CoverageTest):
         )
 
     def test_if_1(self) -> None:
-        lines = [1, 3, 6]
-        if env.PYBEHAVIOR.keep_constant_test:
-            lines.append(2)
         self.check_coverage(
             """\
             a = 1
@@ -563,7 +553,7 @@ class LoopArcTest(CoverageTest):
                 a = 5
             assert a == 3
             """,
-            lines=sorted(lines),
+            lines=[1, 2, 3, 6],
             branchz="",
             branchz_missing="",
         )
@@ -585,9 +575,6 @@ class LoopArcTest(CoverageTest):
         )
 
     def test_while_true(self) -> None:
-        lines = [1, 3, 4, 5, 6, 7]
-        if env.PYBEHAVIOR.keep_constant_test:
-            lines.append(2)
         self.check_coverage(
             """\
             a, i = 1, 0
@@ -598,15 +585,12 @@ class LoopArcTest(CoverageTest):
                 i += 1
             assert a == 4 and i == 3
             """,
-            lines=sorted(lines),
+            lines=[1, 2, 3, 4, 5, 6, 7],
             branchz="34 36",
             branchz_missing="",
         )
 
     def test_while_false(self) -> None:
-        lines = [1, 4]
-        if env.PYBEHAVIOR.keep_constant_test:
-            lines.append(2)
         self.check_coverage(
             """\
             a, i = 1, 0
@@ -614,7 +598,7 @@ class LoopArcTest(CoverageTest):
                 1/0
             assert a == 1 and i == 0
             """,
-            lines=sorted(lines),
+            lines=[1, 2, 4],
             branchz="",
             branchz_missing="",
         )
@@ -648,11 +632,7 @@ class LoopArcTest(CoverageTest):
         cov = coverage.Coverage(source=["."], branch=True)
         self.start_import_stop(cov, "main")
         assert self.stdout() == "done\n"
-        if env.PYBEHAVIOR.keep_constant_test:
-            num_stmts = 3
-        else:
-            num_stmts = 2
-        expected = f"zero.py {num_stmts} {num_stmts} 0 0 0% 1-3"
+        expected = "zero.py 3 3 0 0 0% 1-3"
         report = self.get_report(cov, show_missing=True)
         squeezed = self.squeezed_lines(report)
         assert expected in squeezed[3]
@@ -1666,15 +1646,6 @@ class OptimizedIfTest(CoverageTest):
     """Tests of if statements being optimized away."""
 
     def test_optimized_away_if_0(self) -> None:
-        if env.PYBEHAVIOR.keep_constant_test:
-            lines = [1, 2, 3, 4, 8, 9]
-            branchz = "23 24"
-            branchz_missing = "24"
-        else:
-            lines = [1, 2, 3, 8, 9]
-            branchz = "23 28"
-            branchz_missing = "28"
-
         self.check_coverage(
             """\
             a = 1
@@ -1687,21 +1658,12 @@ class OptimizedIfTest(CoverageTest):
                 e = 8
             f = 9
             """,
-            lines=lines,
-            branchz=branchz,
-            branchz_missing=branchz_missing,
+            lines=[1, 2, 3, 4, 8, 9],
+            branchz="23 24",
+            branchz_missing="24",
         )
 
     def test_optimized_away_if_1(self) -> None:
-        if env.PYBEHAVIOR.keep_constant_test:
-            lines = [1, 2, 3, 4, 5, 6, 9]
-            branchz = "23 24 56 59"
-            branchz_missing = "24 59"
-        else:
-            lines = [1, 2, 3, 5, 6, 9]
-            branchz = "23 25 56 59"
-            branchz_missing = "25 59"
-
         self.check_coverage(
             """\
             a = 1
@@ -1714,16 +1676,12 @@ class OptimizedIfTest(CoverageTest):
                 e = 8
             f = 9
             """,
-            lines=lines,
-            branchz=branchz,
-            branchz_missing=branchz_missing,
+            lines=[1, 2, 3, 4, 5, 6, 9],
+            branchz="23 24 56 59",
+            branchz_missing="24 59",
         )
 
     def test_optimized_away_if_1_no_else(self) -> None:
-        if env.PYBEHAVIOR.keep_constant_test:
-            lines = [1, 2, 3, 4, 5]
-        else:
-            lines = [1, 3, 4, 5]
         self.check_coverage(
             """\
             a = 1
@@ -1732,17 +1690,12 @@ class OptimizedIfTest(CoverageTest):
                 c = 4
             d = 5
             """,
-            lines=lines,
+            lines=[1, 2, 3, 4, 5],
             branchz="",
             branchz_missing="",
         )
 
     def test_optimized_if_nested(self) -> None:
-        if env.PYBEHAVIOR.keep_constant_test:
-            lines = [1, 2, 8, 11, 12, 13, 14, 15]
-        else:
-            lines = [1, 12, 14, 15]
-
         self.check_coverage(
             """\
             a = 1
@@ -1761,7 +1714,7 @@ class OptimizedIfTest(CoverageTest):
                     h = 14
             i = 15
             """,
-            lines=lines,
+            lines=[1, 2, 8, 11, 12, 13, 14, 15],
             branchz="",
             branchz_missing="",
         )
@@ -1785,10 +1738,6 @@ class OptimizedIfTest(CoverageTest):
             )
 
     def test_if_debug(self) -> None:
-        if env.PYBEHAVIOR.optimize_if_debug:
-            branchz = "12 1. 24 26"
-        else:
-            branchz = "12 1. 23 26"
         self.check_coverage(
             """\
             for value in [True, False]:
@@ -1798,17 +1747,11 @@ class OptimizedIfTest(CoverageTest):
                 else:
                     x = 6
             """,
-            branchz=branchz,
+            branchz="12 1. 23 26",
             branchz_missing="",
         )
 
     def test_if_not_debug(self) -> None:
-        if env.PYBEHAVIOR.optimize_if_not_debug == 1:
-            branchz = "23 28 34 37"
-        else:
-            assert env.PYBEHAVIOR.optimize_if_not_debug == 2
-            branchz = "23 28 35 37"
-
         self.check_coverage(
             """\
             lines = set()
@@ -1820,7 +1763,7 @@ class OptimizedIfTest(CoverageTest):
                     lines.add(7)
             assert lines == {7}
             """,
-            branchz=branchz,
+            branchz="23 28 34 37",
         )
 
 

@@ -890,14 +890,8 @@ class AstArcAnalyzer:
         else:
             return node.lineno
 
-    def _line__Module(self, node: ast.Module) -> TLineNo:
-        if env.PYBEHAVIOR.module_firstline_1:
-            return 1
-        elif node.body:
-            return self.line_for_node(node.body[0])
-        else:
-            # Empty modules have no line number, they always start at 1.
-            return 1
+    def _line__Module(self, node: ast.Module) -> TLineNo:  # pylint: disable=unused-argument
+        return 1
 
     # The node types that just flow to the next node with no complications.
     OK_TO_DEFAULT = {
@@ -1301,13 +1295,6 @@ class AstArcAnalyzer:
     def _handle__While(self, node: ast.While) -> set[ArcStart]:
         start = to_top = self.line_for_node(node.test)
         constant_test, _ = is_constant_test_expr(node.test)
-        top_is_body0 = False
-        if constant_test:
-            top_is_body0 = True
-        if env.PYBEHAVIOR.keep_constant_test:
-            top_is_body0 = False
-        if top_is_body0:
-            to_top = self.line_for_node(node.body[0])
         self.block_stack.append(LoopBlock(start=to_top))
         from_start = ArcStart(start, cause="the condition on line {lineno} was never true")
         exits = self.process_body(node.body, from_start=from_start)
