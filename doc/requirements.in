@@ -17,4 +17,4 @@ sphinx-code-tabs
 sphinx-lint
 sphinxcontrib-restbuilder
 sphinxcontrib-spelling
-git+https://github.com/nedbat/sphinxext-rediraffe@nedbat/bug-58
+sphinxext-rediraffe

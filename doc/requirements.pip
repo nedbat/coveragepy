@@ -119,7 +119,7 @@ sphinxcontrib-serializinghtml==2.0.0
     # via sphinx
 sphinxcontrib-spelling==8.0.1
     # via -r doc/requirements.in
-sphinxext-rediraffe @ git+https://github.com/nedbat/sphinxext-rediraffe@f54bc3ace6efcf9a59a79db851d6f1c5d710f381
+sphinxext-rediraffe==0.3.0
     # via -r doc/requirements.in
 starlette==0.48.0
     # via sphinx-autobuild
