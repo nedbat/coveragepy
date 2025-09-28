@@ -49,7 +49,9 @@ jobs:
         with:
           filters: |
             run_coverage:
-              - "**.py"
+              - "*.py"
+              - "coverage/**.py"
+              - "tests/**.py"
               - "**.h"
               - "**.c"
               - ".github/workflows/coverage.yml"

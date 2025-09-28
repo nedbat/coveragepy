@@ -47,7 +47,9 @@ jobs:
         with:
           filters: |
             run_tests:
-              - "**.py"
+              - "*.py"
+              - "coverage/**.py"
+              - "tests/**.py"
               - "**.h"
               - "**.c"
               - ".github/workflows/testsuite.yml"
