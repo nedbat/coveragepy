@@ -39,6 +39,7 @@ extensions = [
     "sphinx.ext.intersphinx",
     "sphinxcontrib.restbuilder",
     "sphinx.ext.napoleon",
+    "sphinxext.rediraffe",
     "sphinx_code_tabs",
     "sphinx_rtd_theme",
 ]
@@ -123,6 +124,11 @@ pygments_style = "sphinx"
 
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
+}
+
+rediraffe_branch = "origin/master"
+rediraffe_redirects = {
+    "cmd.rst": "commands/index.rst",
 }
 
 nitpick_ignore = [
