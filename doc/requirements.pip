@@ -2,7 +2,7 @@
 #    make upgrade
 alabaster==1.0.0
     # via sphinx
-anyio==4.10.0
+anyio==4.11.0
     # via
     #   starlette
     #   watchfiles
@@ -50,7 +50,7 @@ jinja2==3.1.6
     #   sphinx
 markdown-it-py==4.0.0
     # via scriv
-markupsafe==3.0.2
+markupsafe==3.0.3
     # via jinja2
 mdurl==0.1.2
     # via markdown-it-py
@@ -92,6 +92,7 @@ sphinx==8.2.3
     #   sphinxcontrib-jquery
     #   sphinxcontrib-restbuilder
     #   sphinxcontrib-spelling
+    #   sphinxext-rediraffe
 sphinx-autobuild==2025.8.25
     # via -r doc/requirements.in
 sphinx-code-tabs==0.5.5
@@ -118,6 +119,8 @@ sphinxcontrib-serializinghtml==2.0.0
     # via sphinx
 sphinxcontrib-spelling==8.0.1
     # via -r doc/requirements.in
+sphinxext-rediraffe @ git+https://github.com/nedbat/sphinxext-rediraffe@f54bc3ace6efcf9a59a79db851d6f1c5d710f381
+    # via -r doc/requirements.in
 starlette==0.48.0
     # via sphinx-autobuild
 stevedore==5.5.0
@@ -128,7 +131,7 @@ typing-extensions==4.15.0 ; python_full_version < '3.13'
     #   starlette
 urllib3==2.5.0
     # via requests
-uvicorn==0.36.0
+uvicorn==0.37.0
     # via sphinx-autobuild
 watchfiles==1.1.0
     # via sphinx-autobuild

@@ -20,10 +20,8 @@ greenlet==3.2.4
 pycparser==2.23 ; implementation_name != 'PyPy'
     # via cffi
 setuptools==80.9.0
-    # via
-    #   zope-event
-    #   zope-interface
+    # via zope-event
 zope-event==6.0
     # via gevent
-zope-interface==8.0
+zope-interface==8.0.1
     # via gevent
