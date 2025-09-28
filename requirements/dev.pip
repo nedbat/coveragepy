@@ -22,11 +22,7 @@ charset-normalizer==3.4.3
     # via requests
 check-manifest==0.50
     # via -r requirements/dev.in
-click==8.1.8 ; python_full_version < '3.10'
-    # via
-    #   click-log
-    #   scriv
-click==8.3.0 ; python_full_version >= '3.10'
+click==8.3.0
     # via
     #   click-log
     #   scriv
@@ -71,11 +67,8 @@ id==1.5.0
     # via twine
 idna==3.10
     # via requests
-importlib-metadata==8.7.0 ; (python_full_version < '3.10.2' and platform_machine == 'ppc64le') or (python_full_version < '3.10.2' and platform_machine == 's390x') or (python_full_version < '3.12' and platform_machine != 'ppc64le' and platform_machine != 's390x')
-    # via
-    #   build
-    #   keyring
-    #   twine
+importlib-metadata==8.7.0 ; python_full_version < '3.12' and platform_machine != 'ppc64le' and platform_machine != 's390x'
+    # via keyring
 iniconfig==2.1.0
     # via pytest
 isort==6.0.1
@@ -98,11 +91,7 @@ keyring==25.6.0 ; platform_machine != 'ppc64le' and platform_machine != 's390x'
     # via twine
 libsass==0.23.0
     # via -r requirements/dev.in
-markdown-it-py==3.0.0 ; python_full_version < '3.10'
-    # via
-    #   rich
-    #   scriv
-markdown-it-py==4.0.0 ; python_full_version >= '3.10'
+markdown-it-py==4.0.0
     # via
     #   rich
     #   scriv
@@ -185,9 +174,7 @@ ruff==0.13.2
     # via -r requirements/dev.in
 scriv==1.7.0
     # via -r requirements/dev.in
-secretstorage==3.3.3 ; python_full_version < '3.10' and platform_machine != 'ppc64le' and platform_machine != 's390x' and sys_platform == 'linux'
-    # via keyring
-secretstorage==3.4.0 ; python_full_version >= '3.10' and platform_machine != 'ppc64le' and platform_machine != 's390x' and sys_platform == 'linux'
+secretstorage==3.4.0 ; platform_machine != 'ppc64le' and platform_machine != 's390x' and sys_platform == 'linux'
     # via keyring
 setuptools==80.9.0
     # via
@@ -221,7 +208,6 @@ typing-extensions==4.15.0
     #   cryptography
     #   exceptiongroup
     #   pudb
-    #   pylint
     #   tox
     #   virtualenv
 urllib3==2.5.0
@@ -240,5 +226,5 @@ virtualenv==20.34.0
     #   tox
 wcwidth==0.2.14
     # via urwid
-zipp==3.23.0 ; (python_full_version < '3.10.2' and platform_machine == 'ppc64le') or (python_full_version < '3.10.2' and platform_machine == 's390x') or (python_full_version < '3.12' and platform_machine != 'ppc64le' and platform_machine != 's390x')
+zipp==3.23.0 ; python_full_version < '3.12' and platform_machine != 'ppc64le' and platform_machine != 's390x'
     # via importlib-metadata

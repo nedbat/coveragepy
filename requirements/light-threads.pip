@@ -4,9 +4,7 @@ cffi==2.0.0
     # via
     #   -r requirements/light-threads.in
     #   gevent
-dnspython==2.7.0 ; python_full_version < '3.10'
-    # via eventlet
-dnspython==2.8.0 ; python_full_version >= '3.10'
+dnspython==2.8.0
     # via eventlet
 eventlet==0.40.3
     # via -r requirements/light-threads.in
