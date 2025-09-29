@@ -24,6 +24,10 @@ OriginalProcess = multiprocessing.process.BaseProcess
 original_bootstrap = OriginalProcess._bootstrap  # type: ignore[attr-defined]
 
 
+def f(x):
+    return None
+
+
 class ProcessWithCoverage(OriginalProcess):  # pylint: disable=abstract-method
     """A replacement for multiprocess.Process that starts coverage."""
 
@@ -48,7 +52,10 @@ class ProcessWithCoverage(OriginalProcess):  # pylint: disable=abstract-method
             sys.stderr.flush()
             raise
         try:
-            return original_bootstrap(self, *args, **kwargs)
+            f(0)
+            val = original_bootstrap(self, *args, **kwargs)
+            f(1)
+            return val
         finally:
             if debug:
                 debug.write("Finished multiprocessing bootstrap")
