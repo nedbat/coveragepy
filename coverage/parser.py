@@ -10,7 +10,6 @@ import collections
 import functools
 import os
 import re
-import sys
 import token
 import tokenize
 from collections.abc import Iterable, Sequence
@@ -628,19 +627,6 @@ class TryBlock(Block):
         return True
 
 
-class NodeList(ast.AST):
-    """A synthetic fictitious node, containing a sequence of nodes.
-
-    This is used when collapsing optimized if-statements, to represent the
-    unconditional execution of one of the clauses.
-
-    """
-
-    def __init__(self, body: Sequence[ast.AST]) -> None:
-        self.body = body
-        self.lineno = body[0].lineno  # type: ignore[attr-defined]
-
-
 # TODO: Shouldn't the cause messages join with "and" instead of "or"?
 
 
@@ -954,97 +940,11 @@ class AstArcAnalyzer:
         for body_node in body:
             lineno = self.line_for_node(body_node)
             if lineno not in self.statements:
-                maybe_body_node = self.find_non_missing_node(body_node)
-                if maybe_body_node is None:
-                    continue
-                body_node = maybe_body_node
-                lineno = self.line_for_node(body_node)
+                continue
             for prev_start in prev_starts:
                 self.add_arc(prev_start.lineno, lineno, prev_start.cause)
             prev_starts = self.node_exits(body_node)
         return prev_starts
-
-    def find_non_missing_node(self, node: ast.AST) -> ast.AST | None:
-        """Search `node` looking for a child that has not been optimized away.
-
-        This might return the node you started with, or it will work recursively
-        to find a child node in self.statements.
-
-        Returns a node, or None if none of the node remains.
-
-        """
-        # This repeats work just done in process_body, but this duplication
-        # means we can avoid a function call in the 99.9999% case of not
-        # optimizing away statements.
-        lineno = self.line_for_node(node)
-        if lineno in self.statements:
-            return node
-
-        missing_fn = cast(
-            Optional[Callable[[ast.AST], Optional[ast.AST]]],
-            getattr(self, f"_missing__{node.__class__.__name__}", None),
-        )
-        if missing_fn is not None:
-            ret_node = missing_fn(node)
-        else:
-            ret_node = None
-        return ret_node
-
-    # Missing nodes: _missing__*
-    #
-    # Entire statements can be optimized away by Python. They will appear in
-    # the AST, but not the bytecode.  These functions are called (by
-    # find_non_missing_node) to find a node to use instead of the missing
-    # node.  They can return None if the node should truly be gone.
-
-    def _missing__If(self, node: ast.If) -> ast.AST | None:
-        # If the if-node is missing, then one of its children might still be
-        # here, but not both. So return the first of the two that isn't missing.
-        # Use a NodeList to hold the clauses as a single node.
-        non_missing = self.find_non_missing_node(NodeList(node.body))
-        if non_missing:
-            return non_missing
-        if node.orelse:
-            return self.find_non_missing_node(NodeList(node.orelse))
-        return None
-
-    def _missing__NodeList(self, node: NodeList) -> ast.AST | None:
-        # A NodeList might be a mixture of missing and present nodes. Find the
-        # ones that are present.
-        non_missing_children = []
-        for child in node.body:
-            maybe_child = self.find_non_missing_node(child)
-            if maybe_child is not None:
-                non_missing_children.append(maybe_child)
-
-        # Return the simplest representation of the present children.
-        if not non_missing_children:
-            return None
-        if len(non_missing_children) == 1:
-            return non_missing_children[0]
-        return NodeList(non_missing_children)
-
-    def _missing__While(self, node: ast.While) -> ast.AST | None:
-        body_nodes = self.find_non_missing_node(NodeList(node.body))
-        if not body_nodes:
-            return None
-        # Make a synthetic While-true node.
-        new_while = ast.While()  # type: ignore[call-arg]
-        new_while.lineno = body_nodes.lineno  # type: ignore[attr-defined]
-        new_while.test = ast.Name()  # type: ignore[call-arg]
-        new_while.test.lineno = body_nodes.lineno  # type: ignore[attr-defined]
-        new_while.test.id = "True"
-        assert hasattr(body_nodes, "body")
-        new_while.body = body_nodes.body
-        new_while.orelse = []
-        return new_while
-
-    # In the fullness of time, these might be good tests to write:
-    #   while EXPR:
-    #   while False:
-    #   listcomps hidden deep in other expressions
-    #   listcomps hidden in lists: x = [[i for i in range(10)]]
-    #   nested function definitions
 
     # Exit processing: process_*_exits
     #
@@ -1192,11 +1092,6 @@ class AstArcAnalyzer:
             exits.add(
                 ArcStart(case_start, cause="the pattern on line {lineno} always matched"),
             )
-        return exits
-
-    def _handle__NodeList(self, node: NodeList) -> set[ArcStart]:
-        start = self.line_for_node(node)
-        exits = self.process_body(node.body, from_start=ArcStart(start))
         return exits
 
     def _handle__Raise(self, node: ast.Raise) -> set[ArcStart]:
