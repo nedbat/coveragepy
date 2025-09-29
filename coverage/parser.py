@@ -1164,37 +1164,35 @@ class AstArcAnalyzer:
             exits |= self.process_body(node.orelse, from_start=from_start)
         return exits
 
-    if sys.version_info >= (3, 10):
-
-        def _handle__Match(self, node: ast.Match) -> set[ArcStart]:
-            start = self.line_for_node(node)
-            last_start = start
-            exits = set()
-            for case in node.cases:
-                case_start = self.line_for_node(case.pattern)
-                self.add_arc(last_start, case_start, "the pattern on line {lineno} always matched")
-                from_start = ArcStart(
-                    case_start,
-                    cause="the pattern on line {lineno} never matched",
-                )
-                exits |= self.process_body(case.body, from_start=from_start)
-                last_start = case_start
-
-            # case is now the last case, check for wildcard match.
-            pattern = case.pattern  # pylint: disable=undefined-loop-variable
-            while isinstance(pattern, ast.MatchOr):
-                pattern = pattern.patterns[-1]
-            while isinstance(pattern, ast.MatchAs) and pattern.pattern is not None:
-                pattern = pattern.pattern
-            had_wildcard = (
-                isinstance(pattern, ast.MatchAs) and pattern.pattern is None and case.guard is None  # pylint: disable=undefined-loop-variable
+    def _handle__Match(self, node: ast.Match) -> set[ArcStart]:
+        start = self.line_for_node(node)
+        last_start = start
+        exits = set()
+        for case in node.cases:
+            case_start = self.line_for_node(case.pattern)
+            self.add_arc(last_start, case_start, "the pattern on line {lineno} always matched")
+            from_start = ArcStart(
+                case_start,
+                cause="the pattern on line {lineno} never matched",
             )
+            exits |= self.process_body(case.body, from_start=from_start)
+            last_start = case_start
 
-            if not had_wildcard:
-                exits.add(
-                    ArcStart(case_start, cause="the pattern on line {lineno} always matched"),
-                )
-            return exits
+        # case is now the last case, check for wildcard match.
+        pattern = case.pattern  # pylint: disable=undefined-loop-variable
+        while isinstance(pattern, ast.MatchOr):
+            pattern = pattern.patterns[-1]
+        while isinstance(pattern, ast.MatchAs) and pattern.pattern is not None:
+            pattern = pattern.pattern
+        had_wildcard = (
+            isinstance(pattern, ast.MatchAs) and pattern.pattern is None and case.guard is None  # pylint: disable=undefined-loop-variable
+        )
+
+        if not had_wildcard:
+            exits.add(
+                ArcStart(case_start, cause="the pattern on line {lineno} always matched"),
+            )
+        return exits
 
     def _handle__NodeList(self, node: NodeList) -> set[ArcStart]:
         start = self.line_for_node(node)

@@ -95,7 +95,7 @@ def find_soft_key_lines(source: str) -> set[TLineNo]:
     soft_key_lines: set[TLineNo] = set()
 
     for node in ast.walk(ast.parse(source)):
-        if sys.version_info >= (3, 10) and isinstance(node, ast.Match):
+        if isinstance(node, ast.Match):
             soft_key_lines.add(node.lineno)
             for case in node.cases:
                 soft_key_lines.add(case.pattern.lineno)
