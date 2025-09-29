@@ -26,12 +26,10 @@
 #else
 #define MyFrame_GetLasti(f)     ((f)->f_frame->f_lasti * 2)
 #endif
-#elif PY_VERSION_HEX >= 0x030A00A7
+#else
 // The f_lasti field changed meaning in 3.10.0a7. It had been bytes, but
 // now is instructions, so we need to adjust it to use it as a byte index.
 #define MyFrame_GetLasti(f)     ((f)->f_lasti * 2)
-#else
-#define MyFrame_GetLasti(f)     ((f)->f_lasti)
 #endif
 
 #if PY_VERSION_HEX >= 0x030D0000

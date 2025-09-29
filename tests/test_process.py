@@ -487,7 +487,7 @@ class ProcessTest(CoverageTest):
             complete_file = tempfile.mkstemp()[1]
             pid = os.fork()
             if pid:
-                while pid: # 3.9 wouldn't count "while True": change this. PYVERSION
+                while True:
                     with open(complete_file, encoding="ascii") as f:
                         data = f.read()
                     if "Complete" in data:

@@ -11,7 +11,6 @@ from tests.coveragetest import CoverageTest
 from tests.helpers import assert_count_equal
 
 import coverage
-from coverage import env
 from coverage.data import sorted_lines
 from coverage.files import abs_file
 
@@ -776,8 +775,6 @@ class LoopArcTest(CoverageTest):
             branchz_missing="",
         )
 
-    # https://bugs.python.org/issue44672
-    @pytest.mark.xfail(env.PYVERSION < (3, 10), reason="<3.10 traced final pass incorrectly")
     def test_incorrect_loop_exit_bug_1175(self) -> None:
         self.check_coverage(
             """\
@@ -2055,21 +2052,9 @@ class LambdaArcTest(CoverageTest):
         )
 
 
-# This had been a failure on Mac 3.9, but it started passing on GitHub
-# actions (running macOS 12) but still failed on my laptop (macOS 14).
-# I don't understand why it failed, I don't understand why it passed,
-# so just skip the whole thing.
-skip_eventlet_670 = pytest.mark.skipif(
-    env.PYVERSION[:2] == (3, 9) and env.CPYTHON and env.MACOS,
-    reason="Avoid an eventlet bug on Mac 3.9: eventlet#670",
-    # https://github.com/eventlet/eventlet/issues/670
-)
-
-
 class AsyncTest(CoverageTest):
     """Tests of the new async and await keywords in Python 3.5"""
 
-    @skip_eventlet_670
     def test_async(self) -> None:
         self.check_coverage(
             """\
@@ -2095,7 +2080,6 @@ class AsyncTest(CoverageTest):
         )
         assert self.stdout() == "Compute 1 + 2 ...\n1 + 2 = 3\n"
 
-    @skip_eventlet_670
     def test_async_for(self) -> None:
         self.check_coverage(
             """\
@@ -2154,8 +2138,6 @@ class AsyncTest(CoverageTest):
         )
 
     # https://github.com/nedbat/coveragepy/issues/1158
-    # https://bugs.python.org/issue44621
-    @pytest.mark.skipif(env.PYVERSION[:2] == (3, 9), reason="avoid a 3.9 bug: 44621")
     def test_bug_1158(self) -> None:
         self.check_coverage(
             """\
@@ -2182,7 +2164,6 @@ class AsyncTest(CoverageTest):
 
     # https://github.com/nedbat/coveragepy/issues/1176
     # https://bugs.python.org/issue44622
-    @skip_eventlet_670
     def test_bug_1176(self) -> None:
         self.check_coverage(
             """\
@@ -2224,10 +2205,6 @@ class AsyncTest(CoverageTest):
             branchz_missing="29 38 45 56 5. 9A 9.",
         )
 
-    @pytest.mark.skipif(
-        env.PYVERSION[:2] == (3, 9),
-        reason="CPython fix not backported to 3.9: https://github.com/python/cpython/issues/93061",
-    )
     def test_bug_1999(self) -> None:
         self.check_coverage(
             """\

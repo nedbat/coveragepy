@@ -140,10 +140,7 @@ def venv_world_fixture(tmp_path_factory: pytest.TempPathFactory) -> Path:
             __path__ = __import__('pkgutil').extend_path(__path__, __name__)
             """,
         )
-        if env.PYVERSION < (3, 10):
-            get_plugins = "entry_points['plugins']"
-        else:
-            get_plugins = "entry_points.select(group='plugins')"
+        get_plugins = "entry_points.select(group='plugins')"
         make_file(
             "bug888/app/testcov/main.py",
             f"""\

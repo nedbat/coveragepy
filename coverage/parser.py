@@ -453,30 +453,9 @@ class ByteParser:
         Uses co_lnotab described in Python/compile.c to find the
         line numbers.  Produces a sequence: l0, l1, ...
         """
-        if hasattr(self.code, "co_lines"):
-            # PYVERSIONS: new in 3.10
-            for _, _, line in self.code.co_lines():
-                if line:
-                    yield line
-        else:
-            # Adapted from dis.py in the standard library.
-            byte_increments = self.code.co_lnotab[0::2]
-            line_increments = self.code.co_lnotab[1::2]
-
-            last_line_num: TLineNo | None = None
-            line_num = self.code.co_firstlineno
-            byte_num = 0
-            for byte_incr, line_incr in zip(byte_increments, line_increments):
-                if byte_incr:
-                    if line_num != last_line_num:
-                        yield line_num
-                        last_line_num = line_num
-                    byte_num += byte_incr
-                if line_incr >= 0x80:
-                    line_incr -= 0x100
-                line_num += line_incr
-            if line_num != last_line_num:
-                yield line_num
+        for _, _, line in self.code.co_lines():
+            if line:
+                yield line
 
     def _find_statements(self) -> Iterable[TLineNo]:
         """Find the statements in `self.code`.
