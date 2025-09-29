@@ -1005,7 +1005,6 @@ class ExclusionParserTest(PythonParserTestBase):
         assert parser.raw_statements == {1, 2, 3, 5, 6, 8, 10}
         assert parser.statements == {1, 2, 3, 8}
 
-    @pytest.mark.skipif(not env.PYBEHAVIOR.match_case, reason="Match-case is new in 3.10")
     def test_multiline_exclusion_block2(self) -> None:
         # https://github.com/nedbat/coveragepy/issues/1797
         regex = r"case _:\n\s+assert_never\("
@@ -1154,7 +1153,6 @@ class ParserMissingArcDescriptionTest(PythonParserTestBase):
         assert expected == parser.missing_arc_description(5, 6)
 
 
-@pytest.mark.skipif(not env.PYBEHAVIOR.match_case, reason="Match-case is new in 3.10")
 class MatchCaseMissingArcDescriptionTest(PythonParserTestBase):
     """Missing arc descriptions for match/case."""
 

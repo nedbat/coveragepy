@@ -1510,7 +1510,6 @@ class YieldTest(CoverageTest):
         assert self.stdout() == "2\n3\n"
 
 
-@pytest.mark.skipif(not env.PYBEHAVIOR.match_case, reason="Match-case is new in 3.10")
 class MatchCaseTest(CoverageTest):
     """Tests of match-case."""
 

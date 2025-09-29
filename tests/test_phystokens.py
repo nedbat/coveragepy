@@ -181,7 +181,6 @@ class PhysTokensTest(CoverageTest):
             assert tokens == [[("str", "f'Look: {x} {{x}}!'")]]
 
 
-@pytest.mark.skipif(not env.PYBEHAVIOR.soft_keywords, reason="Soft keywords are new in Python 3.10")
 class SoftKeywordTest(CoverageTest):
     """Tests the tokenizer handling soft keywords."""
 

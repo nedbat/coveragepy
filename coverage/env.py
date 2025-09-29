@@ -53,39 +53,6 @@ SYSMON_DEFAULT = CPYTHON and PYVERSION >= (3, 14)
 class PYBEHAVIOR:
     """Flags indicating this Python's behavior."""
 
-    # Lines after break/continue/return/raise are no longer compiled into the
-    # bytecode.  They used to be marked as missing, now they aren't executable.
-    omit_after_jump = True  # PYPY
-
-    # PyPy has always omitted statements after return.
-    omit_after_return = True  # TODO PYPY
-
-    # When leaving a with-block, do we visit the with-line again for the exit?
-    # For example, wwith.py:
-    #
-    #    with open("/tmp/test", "w") as f1:
-    #        a = 2
-    #        with open("/tmp/test2", "w") as f3:
-    #            print(4)
-    #
-    # % python3.9 -m trace -t wwith.py | grep wwith
-    #  --- modulename: wwith, funcname: <module>
-    # wwith.py(1): with open("/tmp/test", "w") as f1:
-    # wwith.py(2):     a = 2
-    # wwith.py(3):     with open("/tmp/test2", "w") as f3:
-    # wwith.py(4):         print(4)
-    #
-    # % python3.10 -m trace -t wwith.py | grep wwith
-    #  --- modulename: wwith, funcname: <module>
-    # wwith.py(1): with open("/tmp/test", "w") as f1:
-    # wwith.py(2):     a = 2
-    # wwith.py(3):     with open("/tmp/test2", "w") as f3:
-    # wwith.py(4):         print(4)
-    # wwith.py(3):     with open("/tmp/test2", "w") as f3:
-    # wwith.py(1): with open("/tmp/test", "w") as f1:
-    #
-    exit_through_with = (PYVERSION >= (3, 10, 0, "beta"))  # fmt: skip
-
     # When leaving a with-block, do we visit the with-line exactly,
     # or the context managers in inner-out order?
     #
@@ -122,12 +89,6 @@ class PYBEHAVIOR:
     # mwith.py(2):      open("/tmp/one", "w") as f2,
 
     exit_with_through_ctxmgr = (PYVERSION >= (3, 12, 6))  # fmt: skip
-
-    # Match-case construct.
-    match_case = (PYVERSION >= (3, 10))  # fmt: skip
-
-    # Some words are keywords in some places, identifiers in other places.
-    soft_keywords = (PYVERSION >= (3, 10))  # fmt: skip
 
     # f-strings are parsed as code, pep 701
     fstring_syntax = (PYVERSION >= (3, 12))  # fmt: skip

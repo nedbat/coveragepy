@@ -299,10 +299,9 @@ class PythonParser:
         aaa = AstArcAnalyzer(self.filename, self._ast_root, self.raw_statements, self._multiline)
         aaa.analyze()
         arcs = aaa.arcs
-        if env.PYBEHAVIOR.exit_through_with:
-            self._with_jump_fixers = aaa.with_jump_fixers()
-            if self._with_jump_fixers:
-                arcs = self.fix_with_jumps(arcs)
+        self._with_jump_fixers = aaa.with_jump_fixers()
+        if self._with_jump_fixers:
+            arcs = self.fix_with_jumps(arcs)
 
         self._all_arcs = set()
         for l1, l2 in arcs:
@@ -1319,22 +1318,20 @@ class AstArcAnalyzer:
             starts = [self.line_for_node(item.context_expr) for item in node.items]
         else:
             starts = [self.line_for_node(node)]
-        if env.PYBEHAVIOR.exit_through_with:
-            for start in starts:
-                self.current_with_starts.add(start)
-                self.all_with_starts.add(start)
+        for start in starts:
+            self.current_with_starts.add(start)
+            self.all_with_starts.add(start)
 
         exits = self.process_body(node.body, from_start=ArcStart(starts[-1]))
 
-        if env.PYBEHAVIOR.exit_through_with:
-            start = starts[-1]
-            self.current_with_starts.remove(start)
-            with_exit = {ArcStart(start)}
-            if exits:
-                for xit in exits:
-                    self.add_arc(xit.lineno, start)
-                    self.with_exits.add((xit.lineno, start))
-                exits = with_exit
+        start = starts[-1]
+        self.current_with_starts.remove(start)
+        with_exit = {ArcStart(start)}
+        if exits:
+            for xit in exits:
+                self.add_arc(xit.lineno, start)
+                self.with_exits.add((xit.lineno, start))
+            exits = with_exit
 
         return exits
 

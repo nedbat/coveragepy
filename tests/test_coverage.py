@@ -413,12 +413,6 @@ class SimpleStatementTest(CoverageTest):
         )
 
     def test_raise_followed_by_statement(self) -> None:
-        if env.PYBEHAVIOR.omit_after_jump:
-            lines = [1, 2, 4, 5]
-            missing = ""
-        else:
-            lines = [1, 2, 3, 4, 5]
-            missing = "3"
         self.check_coverage(
             """\
             try:
@@ -427,8 +421,8 @@ class SimpleStatementTest(CoverageTest):
             except:
                 pass
             """,
-            lines=lines,
-            missing=missing,
+            lines=[1, 2, 4, 5],
+            missing="",
         )
 
     def test_return(self) -> None:
@@ -474,12 +468,6 @@ class SimpleStatementTest(CoverageTest):
         )
 
     def test_return_followed_by_statement(self) -> None:
-        if env.PYBEHAVIOR.omit_after_return:
-            lines = [1, 2, 3, 6, 7]
-            missing = ""
-        else:
-            lines = [1, 2, 3, 4, 6, 7]
-            missing = "4"
         self.check_coverage(
             """\
             def fn():
@@ -490,8 +478,8 @@ class SimpleStatementTest(CoverageTest):
             x = fn()
             assert(x == 2)
             """,
-            lines=lines,
-            missing=missing,
+            lines=[1, 2, 3, 6, 7],
+            missing="",
         )
 
     def test_yield(self) -> None:
@@ -512,13 +500,6 @@ class SimpleStatementTest(CoverageTest):
         )
 
     def test_break(self) -> None:
-        if env.PYBEHAVIOR.omit_after_jump:
-            lines = [1, 2, 3, 5]
-            missing = ""
-        else:
-            lines = [1, 2, 3, 4, 5]
-            missing = "4"
-
         self.check_coverage(
             """\
             for x in range(10):
@@ -527,18 +508,11 @@ class SimpleStatementTest(CoverageTest):
                 a = 4
             assert a == 2
             """,
-            lines=lines,
-            missing=missing,
+            lines=[1, 2, 3, 5],
+            missing="",
         )
 
     def test_continue(self) -> None:
-        if env.PYBEHAVIOR.omit_after_jump:
-            lines = [1, 2, 3, 5]
-            missing = ""
-        else:
-            lines = [1, 2, 3, 4, 5]
-            missing = "4"
-
         self.check_coverage(
             """\
             for x in range(10):
@@ -547,8 +521,8 @@ class SimpleStatementTest(CoverageTest):
                 a = 4
             assert a == 11
             """,
-            lines=lines,
-            missing=missing,
+            lines=[1, 2, 3, 5],
+            missing="",
         )
 
     def test_strange_unexecuted_continue(self) -> None:
