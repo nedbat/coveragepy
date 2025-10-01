@@ -64,9 +64,7 @@ jobs:
     # Because pylint can report different things on different OS's (!)
     # (https://github.com/PyCQA/pylint/issues/3489), run this on Mac where local
     # pylint gets run.
-    # GitHub is rolling out macos 14, but it doesn't have Python 3.8 or 3.9.
-    # https://mastodon.social/@hugovk/112320493602782374
-    runs-on: macos-13
+    runs-on: macos-latest
 
     needs: changed
     if: ${{ needs.changed.outputs.python == 'true' || needs.changed.outputs.actions == 'true' || needs.changed.outputs.workflow == 'true' }}
