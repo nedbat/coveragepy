@@ -110,9 +110,9 @@ jobs:
         # If we need to tweak the os version we can do it with an include like
         # this:
         #  include:
-        #    - python-version: "3.8"
+        #    - python-version: "3.12"
         #      os: "macos"
-        #      os-version: "13"
+        #      os-version: "15"
 
       # If one job fails, stop the whole thing.
       fail-fast: true
