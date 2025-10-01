@@ -14,7 +14,7 @@ import os
 import os.path
 import re
 from collections.abc import Iterable
-from typing import Any, Callable, Final, Mapping, Union
+from typing import Any, Callable, Final, Mapping
 
 from coverage.exceptions import ConfigError
 from coverage.misc import human_sorted_items, isolate_module, substitute_variables
@@ -143,7 +143,7 @@ class HandyConfigParser(configparser.ConfigParser):
         return process_regexlist(section, option, line_list.splitlines())
 
 
-TConfigParser = Union[HandyConfigParser, TomlConfigParser]
+TConfigParser = HandyConfigParser | TomlConfigParser
 
 
 # The default line exclusion regexes.

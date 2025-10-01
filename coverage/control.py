@@ -19,7 +19,7 @@ import time
 import warnings
 from collections.abc import Iterable, Iterator
 from types import FrameType
-from typing import IO, Any, Callable, Union, cast
+from typing import IO, Any, Callable, cast
 
 from coverage import env
 from coverage.annotate import AnnotateReporter
@@ -298,7 +298,7 @@ class Coverage(TConfigurable):
         self._debug: DebugControl = NoDebugging()
         self._inorout: InOrOut | None = None
         self._plugins: Plugins = Plugins()
-        self._plugin_override = cast(Union[Iterable[TCoverageInit], None], plugins)
+        self._plugin_override = cast(Iterable[TCoverageInit] | None, plugins)
         self._data: CoverageData | None = None
         self._data_to_close: list[CoverageData] = []
         self._core: Core | None = None
