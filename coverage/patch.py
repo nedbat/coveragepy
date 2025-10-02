@@ -32,20 +32,21 @@ def apply_patches(
     """Apply invasive patches requested by `[run] patch=`."""
     debug = debug if debug.should("patch") else DevNullDebug()
     for patch in sorted(set(config.patch)):
-        if patch == "_exit":
-            _patch__exit(cov, debug)
+        match patch:
+            case "_exit":
+                _patch__exit(cov, debug)
 
-        elif patch == "execv":
-            _patch_execv(cov, config, debug)
+            case "execv":
+                _patch_execv(cov, config, debug)
 
-        elif patch == "fork":
-            _patch_fork(debug)
+            case "fork":
+                _patch_fork(debug)
 
-        elif patch == "subprocess":
-            _patch_subprocess(config, debug, make_pth_file)
+            case "subprocess":
+                _patch_subprocess(config, debug, make_pth_file)
 
-        else:
-            raise ConfigError(f"Unknown patch {patch!r}")
+            case _:
+                raise ConfigError(f"Unknown patch {patch!r}")
 
 
 def _patch__exit(cov: Coverage, debug: TDebugCtl) -> None:

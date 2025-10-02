@@ -637,20 +637,22 @@ def is_constant_test_expr(node: ast.AST) -> tuple[bool, bool]:
     handle the kinds of constant expressions people might actually use.
 
     """
-    if isinstance(node, ast.Constant):
-        return True, bool(node.value)
-    elif isinstance(node, ast.Name):
-        if node.id in ["True", "False", "None", "__debug__"]:
-            return True, eval(node.id)  # pylint: disable=eval-used
-    elif isinstance(node, ast.UnaryOp) and isinstance(node.op, ast.Not):
-        is_constant, val = is_constant_test_expr(node.operand)
-        return is_constant, not val
-    elif isinstance(node, ast.BoolOp):
-        rets = [is_constant_test_expr(v) for v in node.values]
-        is_constant = all(is_const for is_const, _ in rets)
-        if is_constant:
-            op = any if isinstance(node.op, ast.Or) else all
-            return True, op(v for _, v in rets)
+    match node:
+        case ast.Constant():
+            return True, bool(node.value)
+        case ast.Name():
+            if node.id in ["True", "False", "None", "__debug__"]:
+                return True, eval(node.id)  # pylint: disable=eval-used
+        case ast.UnaryOp():
+            if isinstance(node.op, ast.Not):
+                is_constant, val = is_constant_test_expr(node.operand)
+                return is_constant, not val
+        case ast.BoolOp():
+            rets = [is_constant_test_expr(v) for v in node.values]
+            is_constant = all(is_const for is_const, _ in rets)
+            if is_constant:
+                op = any if isinstance(node.op, ast.Or) else all
+                return True, op(v for _, v in rets)
     return False, False
 
 

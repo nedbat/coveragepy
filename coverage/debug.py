@@ -155,14 +155,15 @@ def info_formatter(info: Iterable[tuple[str, Any]]) -> Iterator[str]:
         if data == []:
             data = "-none-"
         prefix = f"{label:>{LABEL_LEN}}: "
-        if isinstance(data, tuple) and len(str(data)) < 30:
-            yield f"{prefix}{data}"
-        elif isinstance(data, (list, set, tuple)):
-            for e in data:
-                yield f"{prefix}{e}"
-                prefix = " " * (LABEL_LEN + 2)
-        else:
-            yield f"{prefix}{data}"
+        match data:
+            case tuple() if len(str(data)) < 30:
+                yield f"{prefix}{data}"
+            case tuple() | list() | set():
+                for e in data:
+                    yield f"{prefix}{e}"
+                    prefix = " " * (LABEL_LEN + 2)
+            case _:
+                yield f"{prefix}{data}"
 
 
 def write_formatted_info(
