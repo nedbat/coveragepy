@@ -146,7 +146,7 @@ Licensed under the `Apache 2.0 License`_.  For details, see `NOTICE.txt`_.
     :target: https://pypi.org/project/coverage/
     :alt: Python versions supported
 .. |license| image:: https://img.shields.io/pypi/l/coverage.svg
-    :target: https://pypi.org/project/coverage/
+    :target: https://github.com/nedbat/coveragepy/blob/master/LICENSE.txt
     :alt: License
 .. |metacov| image:: https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/nedbat/8c6980f77988a327348f9b02bbaf67f5/raw/metacov.json
     :target: https://nedbat.github.io/coverage-reports/latest.html
