@@ -8,4 +8,3 @@
 
 mypy
 types-requests
-types-tabulate

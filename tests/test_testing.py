@@ -482,4 +482,4 @@ def test_all_our_source_files() -> None:
         has_toves = (source_file.name == "test_testing.py")  # fmt: skip
         assert (("# Twas brillig " + "and the slithy toves") in source) == has_toves
         assert len(source) > 190  # tests/__init__.py is shortest at 196
-    assert 100 < i < 140  # currently 120 files
+    assert 100 < i < 140  # currently 117 files

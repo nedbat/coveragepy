@@ -27,6 +27,3 @@ twine
 
 # Just so I have a debugger if I want it.
 pudb
-
-# For benchmark/
-tabulate
