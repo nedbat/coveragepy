@@ -96,22 +96,48 @@ and then use the ``--contexts`` option when generating an HTML report.
 Q: How is the total percentage calculated?
 ..........................................
 
-Coverage.py counts the total number of possible executions. This is the number
-of executable statements minus the number of excluded statements.  It then
-counts the number of those possibilities that were actually executed.  The
-total percentage is the actual executions divided by the possible executions.
+For line coverage, coverage.py counts the total number of possible executions.
+This is the number of executable statements minus the number of excluded
+statements.  It then counts the number of those possibilities that were
+actually executed.  The total percentage is the actual executions divided by
+the possible executions.
 
 As an example, a coverage report with 1514 statements and 901 missed
 statements would calculate a total percentage of (1514-901)/1514, or 40.49%.
 
 :ref:`Branch coverage <branch>` extends the calculation to include the total
 number of possible branch exits, and the number of those taken.  In this case
-the specific numbers shown in coverage reports don't calculate out to the
-percentage shown, because the number of missing branch exits isn't reported
+the specific numbers shown in the text or HTML reports don't calculate out to
+the percentage shown, because the number of missing branch exits isn't reported
 explicitly.  A branch line that wasn't executed at all is counted once as a
 missing statement in the report, instead of as two missing branches.  Reports
 show the number of partial branches, which is the lines that were executed but
 did not execute all of their exits.
+
+The :ref:`JSON report <cmd_json>` includes more data that can be used to
+re-calculate the total percentage. Individual files have a ``summary`` key,
+and the report as a whole has a ``totals`` key that include items like these:
+
+.. code-block:: json
+
+    {
+        "covered_branches": 5,
+        "covered_lines": 9,
+        "excluded_lines": 0,
+        "missing_branches": 11,
+        "missing_lines": 105,
+        "num_branches": 16,
+        "num_partial_branches": 5,
+        "num_statements": 114,
+        "percent_covered": 10.76923076923077,
+        "percent_covered_display": "11"
+    }
+
+The total percentage is calculated as::
+
+    percent_covered =
+        (covered_lines + covered_branches) /
+        (num_statements + num_branches)
 
 
 Q: Coverage.py is much slower than I remember, what's going on?
