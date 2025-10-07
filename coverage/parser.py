@@ -449,8 +449,7 @@ class ByteParser:
     def _line_numbers(self) -> Iterable[TLineNo]:
         """Yield the line numbers possible in this code object.
 
-        Uses co_lines described in Python/compile.c to find the
-        line numbers.  Produces a sequence: l0, l1, ...
+        Uses co_lines() to produce a sequence: l0, l1, ...
         """
         for _, _, line in self.code.co_lines():
             if line:
