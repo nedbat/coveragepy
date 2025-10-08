@@ -2,7 +2,7 @@
 #    make upgrade
 astroid==3.3.11
     # via pylint
-attrs==25.3.0
+attrs==25.4.0
     # via
     #   hypothesis
     #   scriv
@@ -12,7 +12,7 @@ build==1.3.0
     # via check-manifest
 cachetools==6.2.0
     # via tox
-certifi==2025.8.3
+certifi==2025.10.5
     # via requests
 cffi==2.0.0 ; platform_machine != 'ppc64le' and platform_machine != 's390x' and platform_python_implementation != 'PyPy' and sys_platform == 'linux'
     # via cryptography
@@ -39,7 +39,7 @@ colorama==0.4.6
     #   pylint
     #   pytest
     #   tox
-cryptography==46.0.1 ; platform_machine != 'ppc64le' and platform_machine != 's390x' and sys_platform == 'linux'
+cryptography==46.0.2 ; platform_machine != 'ppc64le' and platform_machine != 's390x' and sys_platform == 'linux'
     # via secretstorage
 dill==0.4.0
     # via pylint
@@ -61,7 +61,7 @@ flaky==3.8.1
     # via -r requirements/pytest.in
 greenlet==3.2.4
     # via -r requirements/dev.in
-hypothesis==6.140.2
+hypothesis==6.140.3
     # via -r requirements/pytest.in
 id==1.5.0
     # via twine
@@ -71,7 +71,7 @@ importlib-metadata==8.7.0 ; python_full_version < '3.12' and platform_machine !=
     # via keyring
 iniconfig==2.1.0
     # via pytest
-isort==6.0.1
+isort==6.1.0
     # via pylint
 jaraco-classes==3.4.0 ; platform_machine != 'ppc64le' and platform_machine != 's390x'
     # via keyring
@@ -105,7 +105,7 @@ more-itertools==10.8.0 ; platform_machine != 'ppc64le' and platform_machine != '
     # via
     #   jaraco-classes
     #   jaraco-functools
-nh3==0.3.0
+nh3==0.3.1
     # via readme-renderer
 packaging==25.0
     # via
@@ -139,7 +139,7 @@ pygments==2.19.2
     #   pytest
     #   readme-renderer
     #   rich
-pylint==3.3.8
+pylint==3.3.9
     # via -r requirements/dev.in
 pyproject-api==1.9.1
     # via tox
@@ -170,7 +170,7 @@ rfc3986==2.0.0
     # via twine
 rich==14.1.0
     # via twine
-ruff==0.13.2
+ruff==0.14.0
     # via -r requirements/dev.in
 scriv==1.7.0
     # via -r requirements/dev.in
@@ -192,7 +192,7 @@ tomli==2.2.1 ; python_full_version < '3.11'
     #   tox
 tomlkit==0.13.3
     # via pylint
-tox==4.30.2
+tox==4.30.3
     # via
     #   -r requirements/tox.in
     #   tox-gh
