@@ -146,12 +146,12 @@ class Collector:
                 self.concur_id_func = greenlet.getcurrent
             elif "eventlet" in concurrencies:
                 tried = "eventlet"
-                import eventlet.greenthread  # pylint: disable=import-error,useless-suppression
+                import eventlet.greenthread
 
                 self.concur_id_func = eventlet.greenthread.getcurrent
             elif "gevent" in concurrencies:
                 tried = "gevent"
-                import gevent  # pylint: disable=import-error,useless-suppression
+                import gevent
 
                 self.concur_id_func = gevent.getcurrent
 
