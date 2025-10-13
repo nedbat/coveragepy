@@ -26,6 +26,7 @@ import pytest
 import coverage
 from coverage import env
 from coverage.data import line_counts
+from coverage.exceptions import ConfigError
 from coverage.files import abs_file, python_reported_file
 
 from tests import testenv
@@ -1441,10 +1442,13 @@ class CoverageCoreTest(CoverageTest):
                 )
 
     def test_core_request_nosuchcore(self) -> None:
+        # Test the coverage misconfigurations in-process with pytest. Running a
+        # subprocess doesn't capture the metacov in the subprocess because
+        # coverage is misconfigured.
         self.set_environ("COVERAGE_CORE", "nosuchcore")
-        out = self.run_command("coverage run numbers.py", status=1)
-        assert "Unknown core value: 'nosuchcore'\n" in out
-        assert "123 456" not in out
+        cov = coverage.Coverage()
+        with pytest.raises(ConfigError, match=r"Unknown core value: 'nosuchcore'"):
+            self.start_import_stop(cov, "numbers")
 
 
 class FailUnderNoFilesTest(CoverageTest):
