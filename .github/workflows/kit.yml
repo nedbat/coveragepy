@@ -80,6 +80,7 @@ jobs:
           #   # PYVERSIONS. Available versions: https://pypi.org/project/cibuildwheel/
           #   # Note that cibuildwheel recommends not shipping wheels for pre-release versions
           #   # of Python: https://cibuildwheel.readthedocs.io/en/stable/options/#enable
+          #   # When changing this, also adjust SHIPPING_WHEELS in env.py.
           #
           #   pys = ["cp310", "cp311", "cp312", "cp313", "cp314"]
           #

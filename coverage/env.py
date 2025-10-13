@@ -43,7 +43,7 @@ else:
 GIL = getattr(sys, "_is_gil_enabled", lambda: True)()
 
 # Do we ship compiled coveragepy wheels for this version?
-SHIPPING_WHEELS = CPYTHON and PYVERSION[:2] <= (3, 13)
+SHIPPING_WHEELS = CPYTHON and PYVERSION[:2] <= (3, 14)
 
 # Should we default to sys.monitoring?
 SYSMON_DEFAULT = CPYTHON and PYVERSION >= (3, 14)
