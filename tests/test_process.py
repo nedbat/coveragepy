@@ -1326,9 +1326,14 @@ class CoverageCoreTest(CoverageTest):
     except ImportError:
         has_ctracer = False
 
-    def test_core_default(self) -> None:
+    def setUp(self) -> None:
+        super().setUp()
+        # Clean out the environment variable the test suite uses to control the
+        # core it cares about.
         self.del_environ("COVERAGE_CORE")
         self.make_file("numbers.py", "print(123, 456)")
+
+    def test_core_default(self) -> None:
         out = self.run_command("coverage run --debug=sys numbers.py")
         assert out.endswith("123 456\n")
         core = re_line(r" core:", out).strip()
@@ -1346,7 +1351,6 @@ class CoverageCoreTest(CoverageTest):
     @pytest.mark.skipif(not has_ctracer, reason="No CTracer to request")
     def test_core_request_ctrace(self) -> None:
         self.set_environ("COVERAGE_CORE", "ctrace")
-        self.make_file("numbers.py", "print(123, 456)")
         out = self.run_command("coverage run --debug=sys numbers.py")
         assert out.endswith("123 456\n")
         core = re_line(r" core:", out).strip()
@@ -1354,9 +1358,7 @@ class CoverageCoreTest(CoverageTest):
 
     @pytest.mark.skipif(has_ctracer, reason="CTracer needs to be missing")
     def test_core_request_ctrace_but_missing(self) -> None:
-        self.del_environ("COVERAGE_CORE")
         self.make_file(".coveragerc", "[run]\ncore = ctrace\n")
-        self.make_file("numbers.py", "print(123, 456)")
         out = self.run_command("coverage run --debug=sys,pybehave numbers.py")
         assert out.endswith("123 456\n")
         core = re_line(r" core:", out).strip()
@@ -1366,7 +1368,6 @@ class CoverageCoreTest(CoverageTest):
 
     def test_core_request_pytrace(self) -> None:
         self.set_environ("COVERAGE_CORE", "pytrace")
-        self.make_file("numbers.py", "print(123, 456)")
         out = self.run_command("coverage run --debug=sys numbers.py")
         assert out.endswith("123 456\n")
         core = re_line(r" core:", out).strip()
@@ -1374,7 +1375,6 @@ class CoverageCoreTest(CoverageTest):
 
     def test_core_request_sysmon(self) -> None:
         self.set_environ("COVERAGE_CORE", "sysmon")
-        self.make_file("numbers.py", "print(123, 456)")
         out = self.run_command("coverage run --debug=sys numbers.py")
         assert out.endswith("123 456\n")
         core = re_line(r" core:", out).strip()
@@ -1386,9 +1386,62 @@ class CoverageCoreTest(CoverageTest):
             assert core in ["core: CTracer", "core: PyTracer"]
             assert warns
 
+    def test_core_request_sysmon_no_dyncontext(self) -> None:
+        # Use config core= for this test just to be different.
+        self.make_file(
+            ".coveragerc",
+            """\
+            [run]
+            core = sysmon
+            dynamic_context = test_function
+            """,
+        )
+        out = self.run_command("coverage run --debug=sys numbers.py")
+        assert out.endswith("123 456\n")
+        core = re_line(r" core:", out).strip()
+        assert core in ["core: CTracer", "core: PyTracer"]
+        warns = re_lines(r"\(no-sysmon\)", out)
+        assert len(warns) == 1
+        if env.PYBEHAVIOR.pep669:
+            assert (
+                "sys.monitoring doesn't yet support dynamic contexts, using default core"
+                in warns[0]
+            )
+        else:
+            assert "sys.monitoring isn't available in this version, using default core" in warns[0]
+
+    def test_core_request_sysmon_no_branches(self) -> None:
+        # Use config core= for this test just to be different.
+        self.make_file(
+            ".coveragerc",
+            """\
+            [run]
+            core = sysmon
+            branch = True
+            """,
+        )
+        out = self.run_command("coverage run --debug=sys numbers.py")
+        assert out.endswith("123 456\n")
+        core = re_line(r" core:", out).strip()
+        warns = re_lines(r"\(no-sysmon\)", out)
+        if env.PYBEHAVIOR.branch_right_left:
+            assert core == "core: SysMonitor"
+            assert not warns
+        else:
+            assert core in ["core: CTracer", "core: PyTracer"]
+            assert len(warns) == 1
+            if env.PYBEHAVIOR.pep669:
+                assert (
+                    "sys.monitoring can't measure branches in this version, using default core"
+                    in warns[0]
+                )
+            else:
+                assert (
+                    "sys.monitoring isn't available in this version, using default core" in warns[0]
+                )
+
     def test_core_request_nosuchcore(self) -> None:
         self.set_environ("COVERAGE_CORE", "nosuchcore")
-        self.make_file("numbers.py", "print(123, 456)")
         out = self.run_command("coverage run numbers.py", status=1)
         assert "Unknown core value: 'nosuchcore'\n" in out
         assert "123 456" not in out
