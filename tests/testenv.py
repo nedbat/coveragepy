@@ -9,6 +9,12 @@ import os
 
 REQUESTED_CORE = os.getenv("COVERAGE_CORE", "ctrace")
 
+REQUESTED_TRACER_CLASS = {
+    "ctrace": "CTracer",
+    "pytrace": "PyTracer",
+    "sysmon": "SysMonitor",
+}[REQUESTED_CORE]
+
 # Are we testing the C-implemented trace function?
 C_TRACER = REQUESTED_CORE == "ctrace"
 

@@ -192,7 +192,8 @@ def cant_trace_msg(concurrency: str, the_module: ModuleType | None) -> str | Non
         expected_out = None
     else:
         expected_out = (
-            f"Can't support concurrency={concurrency} with PyTracer, only threads are supported.\n"
+            f"Can't support concurrency={concurrency} with {testenv.REQUESTED_TRACER_CLASS}, "
+            + "only threads are supported.\n"
         )
     return expected_out
 
@@ -350,9 +351,10 @@ class ConcurrencyTest(CoverageTest):
             pytest.skip("Can't run test without gevent installed.")
         if not testenv.C_TRACER:
             assert out == (
-                "Can't support concurrency=gevent with PyTracer, only threads are supported.\n"
+                f"Can't support concurrency=gevent with {testenv.REQUESTED_TRACER_CLASS}, "
+                + "only threads are supported.\n"
             )
-            pytest.skip("Can't run gevent with PyTracer")
+            pytest.skip(f"Can't run gevent with {testenv.REQUESTED_TRACER_CLASS}.")
 
         assert out == "done\n"
 
