@@ -8,21 +8,15 @@ from __future__ import annotations
 from typing import Any
 
 
-class _BaseCoverageException(Exception):
-    """The base-base of all Coverage exceptions."""
+class CoverageException(Exception):
+    """The base class of all exceptions raised by Coverage.py."""
 
     def __init__(self, *args: Any, slug: str | None = None) -> None:
         super().__init__(*args)
         self.slug = slug
 
 
-class CoverageException(_BaseCoverageException):
-    """The base class of all exceptions raised by Coverage.py."""
-
-    pass
-
-
-class ConfigError(_BaseCoverageException):
+class ConfigError(CoverageException):
     """A problem with a config file, or a value in one."""
 
     pass
