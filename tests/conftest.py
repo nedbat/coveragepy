@@ -104,3 +104,15 @@ def create_pth_file_fixture() -> Iterable[None]:
     finally:
         for p in pth_files:
             p.unlink()
+
+
+@pytest.hookimpl(wrapper=True)
+def pytest_runtest_call() -> Iterable[None]:
+    """Check the exception raised by the test, and skip the test if needed."""
+    try:
+        yield
+    except Exception as e:
+        if getattr(e, "skip_tests", False):
+            pytest.skip(f"Skipping for exception: {e}")
+        else:
+            raise

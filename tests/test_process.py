@@ -1516,6 +1516,9 @@ class ProcessStartupTest(CoverageTest):
         assert line_counts(data)["main.py"] == 6
         assert line_counts(data)["subproc.py"] == 2
 
+    @pytest.mark.skipif(
+        not testenv.CAN_MEASURE_BRANCHES, reason="Can't measure branches with this core"
+    )
     def test_subprocess_gets_nonfile_config(self) -> None:
         # https://github.com/nedbat/coveragepy/issues/2021
         self.make_file(
