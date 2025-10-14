@@ -390,6 +390,9 @@ class CoverageConfig(TConfigurable, TPluginConfig):
         "multiprocessing",
     }
 
+    # Mutually exclusive concurrency settings.
+    LIGHT_THREADS = {"greenlet", "eventlet", "gevent"}
+
     CONFIG_FILE_OPTIONS = [
         # These are *args for _set_attr_from_config_option:
         #   (attr, where, type_="")
@@ -562,6 +565,17 @@ class CoverageConfig(TConfigurable, TPluginConfig):
 
         if "subprocess" in self.patch:
             self.parallel = True
+
+        # We can handle a few concurrency options here, but only one at a time.
+        concurrencies = set(self.concurrency)
+        unknown = concurrencies - self.CONCURRENCY_CHOICES
+        if unknown:
+            show = ", ".join(sorted(unknown))
+            raise ConfigError(f"Unknown concurrency choices: {show}")
+        light_threads = concurrencies & self.LIGHT_THREADS
+        if len(light_threads) > 1:
+            show = ", ".join(sorted(light_threads))
+            raise ConfigError(f"Conflicting concurrency settings: {show}")
 
     def debug_info(self) -> list[tuple[str, Any]]:
         """Make a list of (name, value) pairs for writing debug info."""

@@ -7,6 +7,8 @@ from __future__ import annotations
 
 import os
 
+from coverage import env
+
 REQUESTED_CORE = os.getenv("COVERAGE_CORE", "ctrace")
 
 REQUESTED_TRACER_CLASS = {
@@ -32,3 +34,9 @@ PLUGINS = C_TRACER
 
 # Are dynamic contexts supported during these tests?
 DYN_CONTEXTS = C_TRACER or PY_TRACER
+
+# Can we measure threads?
+CAN_MEASURE_THREADS = not SYS_MON
+
+# Can we measure branches?
+CAN_MEASURE_BRANCHES = env.PYBEHAVIOR.branch_right_left

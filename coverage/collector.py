@@ -14,7 +14,6 @@ from types import FrameType
 from typing import Any, Callable, TypeVar, cast
 
 from coverage import env
-from coverage.config import CoverageConfig
 from coverage.core import Core
 from coverage.data import CoverageData
 from coverage.debug import short_stack
@@ -59,9 +58,6 @@ class Collector:
     # and popped when stopped.  Collectors on the stack are paused when not
     # the top, and resumed when they become the top again.
     _collectors: list[Collector] = []
-
-    # The concurrency settings we support here.
-    LIGHT_THREADS = {"greenlet", "eventlet", "gevent"}
 
     def __init__(
         self,
@@ -112,8 +108,7 @@ class Collector:
         self.file_mapper = file_mapper
         self.branch = branch
         self.warn = warn
-        self.concurrency = concurrency
-        assert isinstance(self.concurrency, list), f"Expected a list: {self.concurrency!r}"
+        assert isinstance(concurrency, list), f"Expected a list: {concurrency!r}"
 
         self.pid = os.getpid()
 
@@ -125,37 +120,27 @@ class Collector:
 
         self.concur_id_func = None
 
-        # We can handle a few concurrency options here, but only one at a time.
-        concurrencies = set(self.concurrency)
-        unknown = concurrencies - CoverageConfig.CONCURRENCY_CHOICES
-        if unknown:
-            show = ", ".join(sorted(unknown))
-            raise ConfigError(f"Unknown concurrency choices: {show}")
-        light_threads = concurrencies & self.LIGHT_THREADS
-        if len(light_threads) > 1:
-            show = ", ".join(sorted(light_threads))
-            raise ConfigError(f"Conflicting concurrency settings: {show}")
         do_threading = False
 
         tried = "nothing"  # to satisfy pylint
         try:
-            if "greenlet" in concurrencies:
+            if "greenlet" in concurrency:
                 tried = "greenlet"
                 import greenlet
 
                 self.concur_id_func = greenlet.getcurrent
-            elif "eventlet" in concurrencies:
+            elif "eventlet" in concurrency:
                 tried = "eventlet"
                 import eventlet.greenthread
 
                 self.concur_id_func = eventlet.greenthread.getcurrent
-            elif "gevent" in concurrencies:
+            elif "gevent" in concurrency:
                 tried = "gevent"
                 import gevent
 
                 self.concur_id_func = gevent.getcurrent
 
-            if "thread" in concurrencies:
+            if "thread" in concurrency:
                 do_threading = True
         except ImportError as ex:
             msg = f"Couldn't trace with concurrency={tried}, the module isn't installed."
@@ -169,7 +154,7 @@ class Collector:
                 ),
             )
 
-        if do_threading or not concurrencies:
+        if do_threading or not concurrency:
             # It's important to import threading only if we need it.  If
             # it's imported early, and the program being measured uses
             # gevent, then gevent's monkey-patching won't work properly.

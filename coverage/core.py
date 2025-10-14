@@ -69,17 +69,20 @@ class Core:
             reason_no_sysmon = "can't measure branches in this version"
         elif dynamic_contexts:
             reason_no_sysmon = "doesn't yet support dynamic contexts"
+        elif any((bad := c) in config.concurrency for c in ["greenlet", "eventlet", "gevent"]):
+            reason_no_sysmon = f"doesn't support concurrency={bad}"
 
         core_name: str | None = None
         if config.timid:
             core_name = "pytrace"
-
-        if core_name is None:
+        elif core_name is None:
+            # This could still leave core_name as None.
             core_name = config.core
 
         if core_name == "sysmon" and reason_no_sysmon:
-            warn(f"sys.monitoring {reason_no_sysmon}, using default core", slug="no-sysmon")
-            core_name = None
+            raise ConfigError(
+                f"Can't use core=sysmon: sys.monitoring {reason_no_sysmon}", skip_tests=True
+            )
 
         if core_name is None:
             if env.SYSMON_DEFAULT and not reason_no_sysmon:
