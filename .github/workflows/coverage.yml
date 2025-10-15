@@ -101,12 +101,6 @@ jobs:
           # skip them for now.
           - os: windows
             python-version: "pypy-3.10"
-          # Windows 3.14.0b1 seems confused somehow about t vs not-t:
-          # https://github.com/python/cpython/issues/133779
-          - os: windows
-            python-version: "3.14"
-          - os: windows
-            python-version: "3.14t"
         # If we need to tweak the os version we can do it with an include like
         # this:
         #  include:
