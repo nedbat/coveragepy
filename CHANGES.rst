@@ -20,13 +20,15 @@ upgrading your version of coverage.py.
     ..  Version 9.8.1 — 2027-07-27
     ..  --------------------------
 
-Unreleased
-----------
-
-- Dropped support for Python 3.9, added support for Python 3.15 alpha.
-
-
 .. start-releases
+
+.. _changes_7-11-0:
+
+Version 7.11.0 — 2025-10-15
+---------------------------
+
+- Dropped support for Python 3.9, declared support for Python 3.15 alpha.
+
 
 .. _changes_7-10-7:
 

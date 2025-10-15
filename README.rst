@@ -44,7 +44,7 @@ Documentation is on `Read the Docs`_.  Code repository and issue tracker are on
 multi-line exclusion patterns;
 function/class reporting;
 experimental support for sys.monitoring;
-dropped support for Python 3.7 and 3.8;
+dropped support for Python up to 3.9;
 added ``Coverage.collect()`` context manager;
 improved data combining;
 ``[run] exclude_also`` setting;
