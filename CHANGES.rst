@@ -23,7 +23,7 @@ upgrading your version of coverage.py.
 Unreleased
 ----------
 
-- Dropped support for Python 3.9.
+- Dropped support for Python 3.9, added support for Python 3.15 alpha.
 
 
 .. start-releases

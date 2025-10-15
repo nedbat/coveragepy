@@ -91,6 +91,8 @@ jobs:
           - "3.13t"
           - "3.14"
           - "3.14t"
+          - "3.15"
+          - "3.15t"
           - "pypy-3.10"
         exclude:
           # Mac PyPy always takes the longest, and doesn't add anything.
