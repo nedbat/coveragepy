@@ -399,7 +399,7 @@ class DebugControlString(DebugControl):
         return self.io.getvalue()
 
 
-def all_our_source_files() -> Iterator[tuple[Path, str]]:
+def all_our_source_files() -> Iterable[tuple[Path, str]]:
     """Iterate over all of our own source files.
 
     This is used in tests that need a bunch of Python code to analyze, so we

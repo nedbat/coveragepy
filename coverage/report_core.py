@@ -6,7 +6,7 @@
 from __future__ import annotations
 
 import sys
-from collections.abc import Iterable, Iterator
+from collections.abc import Iterable
 from typing import IO, TYPE_CHECKING, Callable, Protocol
 
 from coverage.exceptions import NoDataError, NotPython
@@ -71,7 +71,7 @@ def render_report(
 def get_analysis_to_report(
     coverage: Coverage,
     morfs: Iterable[TMorf] | None,
-) -> Iterator[tuple[FileReporter, Analysis]]:
+) -> Iterable[tuple[FileReporter, Analysis]]:
     """Get the files to report on.
 
     For each morf in `morfs`, if it should be reported on (based on the omit

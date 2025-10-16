@@ -11,7 +11,7 @@ import shutil
 
 from pathlib import Path
 from typing import cast
-from collections.abc import Iterator
+from collections.abc import Iterable
 
 import pytest
 
@@ -208,7 +208,7 @@ class VirtualenvTest(CoverageTest):
     expected_stdout = "33\n110\n198\n1.5\n"
 
     @pytest.fixture(autouse=True)
-    def in_venv_world_fixture(self, venv_world: Path) -> Iterator[None]:
+    def in_venv_world_fixture(self, venv_world: Path) -> Iterable[None]:
         """For running tests inside venv_world, and cleaning up made files."""
         with change_dir(venv_world):
             self.make_file(

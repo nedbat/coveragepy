@@ -139,7 +139,7 @@ def info_header(label: str) -> str:
     return "--{:-<60s}".format(" " + label + " ")
 
 
-def info_formatter(info: Iterable[tuple[str, Any]]) -> Iterator[str]:
+def info_formatter(info: Iterable[tuple[str, Any]]) -> Iterable[str]:
     """Produce a sequence of formatted lines from info.
 
     `info` is a sequence of pairs (label, data).  The produced lines are

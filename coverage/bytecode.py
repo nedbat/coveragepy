@@ -7,14 +7,13 @@ from __future__ import annotations
 
 import collections
 import dis
-from collections.abc import Iterator
 from types import CodeType
 from typing import Iterable, Optional
 
 from coverage.types import TArc, TOffset
 
 
-def code_objects(code: CodeType) -> Iterator[CodeType]:
+def code_objects(code: CodeType) -> Iterable[CodeType]:
     """Iterate over all the code objects in `code`."""
     stack = [code]
     while stack:

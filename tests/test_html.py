@@ -1442,7 +1442,7 @@ class HtmlWithContextsTest(HtmlTestHelpers, CoverageTest):
         """Get HTML report data from a `Coverage` object for a morf."""
         with self.assert_warnings(cov, []):
             datagen = coverage.html.HtmlDataGeneration(cov)
-            fr, analysis = next(get_analysis_to_report(cov, [morf]))
+            fr, analysis = next(iter(get_analysis_to_report(cov, [morf])))
             file_data = datagen.data_for_file(fr, analysis)
             return file_data
 
