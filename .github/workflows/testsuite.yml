@@ -120,11 +120,8 @@ jobs:
         with:
           python-version: "${{ matrix.python-version }}"
           allow-prereleases: true
-          # At a certain point, installing dependencies failed on pypy 3.9 and
-          # 3.10 on Windows.  Commenting out the cache here fixed it.  Someday
-          # try using the cache again.
-          #cache: pip
-          #cache-dependency-path: 'requirements/*.pip'
+          cache: pip
+          cache-dependency-path: 'requirements/*.pip'
 
       - name: "Show environment"
         run: |
