@@ -191,6 +191,7 @@ def run_tests_with_coverage(core, *runner_args):
     import coverage
 
     cov = coverage.Coverage(config_file="metacov.ini")
+    cov.set_option("run:core", "ctrace")
     cov._warn_unimported_source = False
     cov._warn_preimported_source = False
     cov._metacov = True
