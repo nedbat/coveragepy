@@ -257,7 +257,7 @@ Here's a sample configuration file, in each syntax:
         [coverage:html]
         directory = coverage_html_report
 
-.. [[[end]]] (sum: HU1Z62mvRK)
+.. [[[end]]] (sum: FvgoIIyfXR)
 
 
 The specific configuration settings are described below.  Many sections and
@@ -616,7 +616,7 @@ equivalent when combining data from different machines:
             /jenkins/build/*/src
             c:\myproj\src
 
-.. [[[end]]] (sum: oHSl8SGiMT)
+.. [[[end]]] (sum: bV+PjKu+HS)
 
 
 The names of the entries ("source" in this example) are ignored, you may choose
