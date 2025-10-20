@@ -2,15 +2,15 @@
 #    make upgrade
 distlib==0.4.0
     # via virtualenv
-filelock==3.19.1
+filelock==3.20.0
     # via virtualenv
 pip==25.2
     # via -r requirements/pip.in
-platformdirs==4.4.0
+platformdirs==4.5.0
     # via virtualenv
 setuptools==80.9.0
     # via -r requirements/pip.in
 typing-extensions==4.15.0 ; python_full_version < '3.11'
     # via virtualenv
-virtualenv==20.34.0
+virtualenv==20.35.3
     # via -r requirements/pip.in
