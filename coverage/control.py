@@ -559,12 +559,17 @@ class Coverage(TConfigurable):
 
     def _init_for_start(self) -> None:
         """Initialization for start()"""
+        self.orig_dir = None
         # Construct the collector.
         concurrency: list[str] = self.config.concurrency or []
+        coverpath_file = os.path.join(os.getcwd(), ".coverpath")
         if "multiprocessing" in concurrency:
             if self.config.config_file is None:
                 raise ConfigError("multiprocessing requires a configuration file")
             patch_multiprocessing(rcfile=self.config.config_file)
+            if os.path.exists(coverpath_file):
+                with open(coverpath_file, encoding="utf-8") as cf:
+                    self.orig_dir = cf.read().strip()
 
         dycon = self.config.dynamic_context
         if not dycon or dycon == "none":
@@ -656,6 +661,8 @@ class Coverage(TConfigurable):
 
     def _init_data(self, suffix: str | bool | None) -> None:
         """Create a data file if we don't have one yet."""
+        if not hasattr(self, "orig_dir"):
+            self.orig_dir = None
         if self._data is None:
             # Create the data file.  We do this at construction time so that the
             # data file will be written into the directory where the process
@@ -667,6 +674,7 @@ class Coverage(TConfigurable):
                 warn=self._warn,
                 debug=self._debug,
                 no_disk=self._no_disk,
+                orig_dir=self.orig_dir,
             )
             self._data_to_close.append(self._data)
 
