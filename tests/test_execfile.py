@@ -284,7 +284,7 @@ class RunPycFileTest(CoverageTest):
         path = python_reported_file("binary")
         msg = (
             re.escape(f"Couldn't run '{path}' as Python code: ")
-            + r"(ValueError|SyntaxError): source code string cannot contain null bytes"
+            + r"(ValueError|SyntaxError): source code (string )?cannot contain null bytes"
         )
         with pytest.raises(Exception, match=msg):
             run_python_file([bf])
