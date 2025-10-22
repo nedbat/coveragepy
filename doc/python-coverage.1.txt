@@ -154,7 +154,8 @@ COMMAND REFERENCE
         ``sys`` to show installation information;
         ``config`` to show the configuration;
         ``premain`` to show what is calling coverage;
-        ``pybehave`` to show internal flags describing Python behavior.
+        ``pybehave`` to show internal flags describing Python behavior;
+        ``sqlite`` to show SQLite compilation options.
 
 
 **erase**

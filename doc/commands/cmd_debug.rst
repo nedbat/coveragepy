@@ -29,6 +29,7 @@ A few types of information are available:
 * ``data``: show a summary of the collected coverage data
 * ``premain``: show the call stack invoking coverage
 * ``pybehave``: show internal flags describing Python behavior
+* ``sqlite``: show internal compilation options for SQLite
 
 .. [[[cog show_help("debug") ]]]
 .. code::
@@ -40,7 +41,7 @@ A few types of information are available:
     problems. Topics are: 'data' to show a summary of the collected data; 'sys' to
     show installation information; 'config' to show the configuration; 'premain'
     to show what is calling coverage; 'pybehave' to show internal flags describing
-    Python behavior.
+    Python behavior; 'sqlite' to show SQLite compilation options.
 
     Options:
       --debug=OPTS     Debug options, separated by commas. [env: COVERAGE_DEBUG]
@@ -48,7 +49,7 @@ A few types of information are available:
       --rcfile=RCFILE  Specify configuration file. By default '.coveragerc',
                        'setup.cfg', 'tox.ini', and 'pyproject.toml' are tried.
                        [env: COVERAGE_RCFILE]
-.. [[[end]]] (sum: ybjftkTaNE)
+.. [[[end]]] (sum: noWWXgVKcd)
 
 
 .. _cmd_run_debug:

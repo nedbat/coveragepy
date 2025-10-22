@@ -23,7 +23,9 @@ upgrading your version of coverage.py.
 Unreleased
 ----------
 
-Nothing yet.
+- Split ``sqlite`` debugging information out of the ``sys`` :ref:`coverage
+  debug <cmd_debug>` and :ref:`cmd_run_debug` options since it's bulky and not
+  very useful.
 
 
 .. start-releases

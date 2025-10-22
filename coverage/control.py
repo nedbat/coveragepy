@@ -414,20 +414,22 @@ class Coverage(TConfigurable):
         wrote_any = False
         with self._debug.without_callers():
             if self._debug.should("config"):
-                config_info = self.config.debug_info()
-                write_formatted_info(self._debug.write, "config", config_info)
+                write_formatted_info(self._debug.write, "config", self.config.debug_info())
                 wrote_any = True
 
             if self._debug.should("sys"):
                 write_formatted_info(self._debug.write, "sys", self.sys_info())
                 for plugin in self._plugins:
                     header = "sys: " + plugin._coverage_plugin_name
-                    info = plugin.sys_info()
-                    write_formatted_info(self._debug.write, header, info)
+                    write_formatted_info(self._debug.write, header, plugin.sys_info())
                 wrote_any = True
 
             if self._debug.should("pybehave"):
                 write_formatted_info(self._debug.write, "pybehave", env.debug_info())
+                wrote_any = True
+
+            if self._debug.should("sqlite"):
+                write_formatted_info(self._debug.write, "sqlite", CoverageData.sys_info())
                 wrote_any = True
 
         if wrote_any:
@@ -1398,8 +1400,6 @@ class Coverage(TConfigurable):
 
         if self._inorout is not None:
             info.extend(self._inorout.sys_info())
-
-        info.extend(CoverageData.sys_info())
 
         return info
 

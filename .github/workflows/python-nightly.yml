@@ -90,6 +90,7 @@ jobs:
           python -m sysconfig
           python -c "import sys; print('GIL:', getattr(sys, '_is_gil_enabled', lambda: True)())"
           python -m coverage debug sys
+          python -m coverage debug sqlite
           python -m coverage debug pybehave
           env | sort
 

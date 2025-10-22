@@ -29,7 +29,7 @@ from coverage.version import __url__
 
 from tests import testenv
 from tests.coveragetest import CoverageTest, OK, ERR, command_line
-from tests.helpers import os_sep, re_line
+from tests.helpers import os_sep, re_line, re_lines
 
 
 class BaseCmdLineTest(CoverageTest):
@@ -389,7 +389,10 @@ class CmdLineTest(BaseCmdLineTest):
     @pytest.mark.parametrize(
         "cmd, output",
         [
-            ("debug", "What information would you like: config, data, sys, premain, pybehave?"),
+            (
+                "debug",
+                "What information would you like: config, data, sys, premain, pybehave, sqlite?",
+            ),
             ("debug foo", "Don't know what you mean by 'foo'"),
             ("debug sys config", "Only one topic at a time, please"),
         ],
@@ -448,6 +451,15 @@ class CmdLineTest(BaseCmdLineTest):
         assert re.search(rf"(?m)^\s+command_line : .*{s}coverage{s}cmdline.py:\d+$", out)
         assert re.search(rf"(?m)^\s+do_debug : .*{s}coverage{s}cmdline.py:\d+$", out)
         assert "do_debug : " in lines[-1]
+
+    def test_debug_sqlite(self) -> None:
+        self.command_line("debug sqlite")
+        out = self.stdout()
+        assert "sqlite3_sqlite_version:" in out
+        assert "sqlite3_compile_options:" in out
+        assert len(out.splitlines()) > 15
+        # Lots of lines of indented SQLite compile-time options.
+        assert len(re_lines(r"^ {20,35}[A-Z]{3}", out)) > 12
 
     def test_erase(self) -> None:
         # coverage erase
