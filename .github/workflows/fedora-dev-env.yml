@@ -1,0 +1,66 @@
+# Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
+# For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
+---
+
+name: Fedora dev env
+
+on:
+  push:
+    branches:
+    - master
+    - nedbat/*
+  pull_request:
+  workflow_dispatch:
+
+env:
+  PIP_DISABLE_PIP_VERSION_CHECK: 1
+  FORCE_COLOR: 1    # Get colored pytest output
+
+permissions:
+  contents: read
+
+concurrency:
+  group: "${{ github.workflow }}-${{ github.ref }}"
+  cancel-in-progress: true
+
+jobs:
+  smoke:
+    name: Smoke test
+    container: fedora:43
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15  # takes under 10 min on a laptop
+
+    steps:
+    - name: Install dependencies
+      run: >-
+        dnf install -y
+        gcc git python3.13-freethreading python3.14-freethreading tox
+
+    - name: Check out the repo
+      uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      with:
+        persist-credentials: false
+
+    - name: Show environment
+      continue-on-error: true
+      run: |
+        set -xe
+        whoami
+        python -VV
+        python -m site
+        # For extreme debugging:
+        # python -c "import urllib.request as r; exec(r.urlopen('https://bit.ly/pydoctor').read())"
+        env | sort
+        # Ideally, the system Python wouldn't have writable sitepackages so
+        # try to make it not writable.  We can't always always change the
+        # permissions (Ubuntu & Windows yes, Mac no), so be ready for it to fail.
+        chmod u-w $(python -c "import site; print(site.getsitepackages()[0])") || echo "Couldn't lock down site-packages"
+        ls -ld $(python -c "import site; print(site.getsitepackages()[0])")
+
+    - name: Provision tox envs
+      run: tox run --notest
+
+    - name: Run tox
+      run: tox run
+
+...
