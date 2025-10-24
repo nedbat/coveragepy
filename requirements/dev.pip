@@ -61,7 +61,7 @@ flaky==3.8.1
     # via -r requirements/pytest.in
 greenlet==3.2.4
     # via -r requirements/dev.in
-hypothesis==6.142.1
+hypothesis==6.142.3
     # via -r requirements/pytest.in
 id==1.5.0
     # via twine
@@ -130,7 +130,7 @@ pluggy==1.6.0
     # via
     #   pytest
     #   tox
-pudb==2025.1.1
+pudb==2025.1.3
     # via -r requirements/dev.in
 pycparser==2.23 ; implementation_name != 'PyPy' and platform_machine != 'ppc64le' and platform_machine != 's390x' and platform_python_implementation != 'PyPy' and sys_platform == 'linux'
     # via cffi
@@ -172,7 +172,7 @@ rfc3986==2.0.0
     # via twine
 rich==14.2.0
     # via twine
-ruff==0.14.1
+ruff==0.14.2
     # via -r requirements/dev.in
 scriv==1.7.0
     # via -r requirements/dev.in
@@ -194,7 +194,7 @@ tomli==2.3.0 ; python_full_version < '3.11'
     #   tox
 tomlkit==0.13.3
     # via pylint
-tox==4.31.0
+tox==4.32.0
     # via
     #   -r requirements/tox.in
     #   tox-gh
