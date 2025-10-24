@@ -113,6 +113,8 @@ def patch_multiprocessing(rcfile: str) -> None:
             """Get the original preparation data, and also insert our stowaway."""
             d = original_get_preparation_data(name)
             d["stowaway"] = Stowaway(rcfile)
+            with open(".coverpath", "w", encoding="utf-8") as cpath:
+                cpath.write(d["orig_dir"])
             return d
 
         spawn.get_preparation_data = get_preparation_data_with_stowaway
