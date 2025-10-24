@@ -33,6 +33,9 @@ from coverage.types import (
     TWarnFn,
 )
 
+# Only needed for some of the commented-out logging:
+# from coverage.debug import ppformat
+
 os = isolate_module(os)
 
 # pylint: disable=unused-argument
@@ -427,7 +430,7 @@ class SysMonitor(Tracer):
                 self.stats["branch_trails"] += 1
             code_info.branch_trails = branch_trails(code)
             code_info.always_jumps = always_jumps(code)
-            # log(f"branch_trails for {code}:\n    {code_info.branch_trails}")
+            # log(f"branch_trails for {code}:\n{ppformat(code_info.branch_trails)}")
         added_arc = False
         dest_info = code_info.branch_trails.get(instruction_offset)
 
@@ -437,7 +440,7 @@ class SysMonitor(Tracer):
             destination_offset = dest
             dests.add(destination_offset)
 
-        # log(f"{dest_info = }")
+        # log(f"dest_info = {ppformat(dest_info)}")
         if dest_info is not None:
             for arc, offsets in dest_info.items():
                 if arc is None:

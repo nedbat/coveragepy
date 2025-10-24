@@ -352,10 +352,14 @@ def simplify(v: Any) -> Any:  # pragma: debugging
         return v
 
 
+def ppformat(v: Any) -> str:  # pragma: debugging
+    """Debug helper to pretty-print data, including SimpleNamespace objects."""
+    return pprint.pformat(simplify(v), indent=4, compact=True, sort_dicts=True, width=140)
+
+
 def pp(v: Any) -> None:  # pragma: debugging
     """Debug helper to pretty-print data, including SimpleNamespace objects."""
-    # Might not be needed in 3.9+
-    pprint.pprint(simplify(v))
+    print(ppformat(v))
 
 
 def filter_text(text: str, filters: Iterable[Callable[[str], str]]) -> str:
