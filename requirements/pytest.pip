@@ -14,7 +14,7 @@ execnet==2.1.1
     # via pytest-xdist
 flaky==3.8.1
     # via -r requirements/pytest.in
-hypothesis==6.142.3
+hypothesis==6.142.4
     # via -r requirements/pytest.in
 iniconfig==2.3.0
     # via pytest

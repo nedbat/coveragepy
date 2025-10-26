@@ -61,7 +61,7 @@ flaky==3.8.1
     # via -r requirements/pytest.in
 greenlet==3.2.4
     # via -r requirements/dev.in
-hypothesis==6.142.3
+hypothesis==6.142.4
     # via -r requirements/pytest.in
 id==1.5.0
     # via twine
@@ -119,7 +119,7 @@ packaging==25.0
     #   twine
 parso==0.8.5
     # via jedi
-pip==25.2
+pip==25.3
     # via -r requirements/pip.in
 platformdirs==4.5.0
     # via
