@@ -720,6 +720,19 @@ class LoopArcTest(CoverageTest):
             branchz_missing="26",
         )
 
+    def test_split_for(self) -> None:
+        self.check_coverage(
+            """\
+            a = 0
+            for (i
+                ) in [1,2,3,4,5]:
+                a += i
+            assert a == 15
+            """,
+            lines=[1, 2, 4, 5],
+            branchz="24 25",
+        )
+
     def test_while_else(self) -> None:
         self.check_coverage(
             """\
@@ -1636,6 +1649,30 @@ class MatchCaseTest(CoverageTest):
             branchz_missing="34 5-1",
         )
         assert self.stdout() == "also not default\n"
+
+    def test_split_match_case(self) -> None:
+        self.check_coverage(
+            """\
+            def foo(x):
+                match x:
+                    case (
+                        1
+                        | 2
+                    ):
+                        return "output: 1 or 2"
+                    case _:
+                        return "output: other"
+
+            print(foo(1))
+            print(foo(2))
+            print(foo(3))
+            """,
+            lines=[1, 2, 3, 7, 8, 9, 11, 12, 13],
+            missing="",
+            branchz="37 38",
+            branchz_missing="",
+        )
+        assert self.stdout() == "output: 1 or 2\noutput: 1 or 2\noutput: other\n"
 
 
 class OptimizedIfTest(CoverageTest):

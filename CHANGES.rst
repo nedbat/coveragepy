@@ -23,9 +23,15 @@ upgrading your version of coverage.py.
 Unreleased
 ----------
 
+- Fix: some multi-line case clauses or for loops (and probably other
+  constructs) could cause incorrect claims of missing branches with the
+  sys.monitoring core, as described in `issue 2070`_. This is now fixed.
+
 - Split ``sqlite`` debugging information out of the ``sys`` :ref:`coverage
   debug <cmd_debug>` and :ref:`cmd_run_debug` options since it's bulky and not
   very useful.
+
+.. _issue 2070: https://github.com/nedbat/coveragepy/issues/2070
 
 
 .. start-releases

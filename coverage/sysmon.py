@@ -20,6 +20,7 @@ from coverage import env
 from coverage.bytecode import TBranchTrails, always_jumps, branch_trails
 from coverage.debug import short_filename, short_stack
 from coverage.misc import isolate_module
+from coverage.parser import PythonParser
 from coverage.types import (
     AnyCallable,
     TFileDisposition,
@@ -428,7 +429,8 @@ class SysMonitor(Tracer):
         if not code_info.branch_trails:
             if self.stats is not None:
                 self.stats["branch_trails"] += 1
-            code_info.branch_trails = branch_trails(code)
+            multiline_map = get_multiline_map(code.co_filename)
+            code_info.branch_trails = branch_trails(code, multiline_map=multiline_map)
             code_info.always_jumps = always_jumps(code)
             # log(f"branch_trails for {code}:\n{ppformat(code_info.branch_trails)}")
         added_arc = False
@@ -462,3 +464,11 @@ class SysMonitor(Tracer):
                 # log(f"adding unforeseen {arc=}")
 
         return DISABLE
+
+
+@functools.lru_cache(maxsize=5)
+def get_multiline_map(filename: str) -> dict[TLineNo, TLineNo]:
+    """Get a PythonParser for the given filename, cached."""
+    parser = PythonParser(filename=filename)
+    parser.parse_source()
+    return parser.multiline_map
