@@ -103,9 +103,9 @@ class ParserMain:
                         marks[4] = "X"
                     elif lineno in pyparser.excluded:
                         marks[4] = "×"
-                    if lineno in pyparser._multiline.values():
+                    if lineno in pyparser.multiline_map.values():
                         marks[5] = "o"
-                    elif lineno in pyparser._multiline.keys():
+                    elif lineno in pyparser.multiline_map.keys():
                         marks[5] = "."
 
                     if arc_chars:

@@ -92,7 +92,7 @@ class PythonParser:
 
         # A dict mapping line numbers to lexical statement starts for
         # multi-line statements.
-        self._multiline: dict[TLineNo, TLineNo] = {}
+        self.multiline_map: dict[TLineNo, TLineNo] = {}
 
         # Lazily-created arc data, and missing arc descriptions.
         self._all_arcs: set[TArc] | None = None
@@ -115,7 +115,9 @@ class PythonParser:
             start, end = match.span()
             start_line = last_start_line + self.text.count("\n", last_start, start)
             end_line = last_start_line + self.text.count("\n", last_start, end)
-            matches.update(self._multiline.get(i, i) for i in range(start_line + 1, end_line + 2))
+            matches.update(
+                self.multiline_map.get(i, i) for i in range(start_line + 1, end_line + 2)
+            )
             last_start = start
             last_start_line = start_line
         return matches
@@ -181,7 +183,7 @@ class PythonParser:
                     # different line than the first line of the statement,
                     # so record a multi-line range.
                     for l in range(first_line, elineno + 1):
-                        self._multiline[l] = first_line
+                        self.multiline_map[l] = first_line
                 first_line = 0
 
             if ttext.strip() and toktype != tokenize.COMMENT:
@@ -230,9 +232,9 @@ class PythonParser:
     def first_line(self, lineno: TLineNo) -> TLineNo:
         """Return the first line number of the statement including `lineno`."""
         if lineno < 0:
-            lineno = -self._multiline.get(-lineno, -lineno)
+            lineno = -self.multiline_map.get(-lineno, -lineno)
         else:
-            lineno = self._multiline.get(lineno, lineno)
+            lineno = self.multiline_map.get(lineno, lineno)
         return lineno
 
     def first_lines(self, linenos: Iterable[TLineNo]) -> set[TLineNo]:
@@ -295,7 +297,7 @@ class PythonParser:
 
         """
         assert self._ast_root is not None
-        aaa = AstArcAnalyzer(self.filename, self._ast_root, self.raw_statements, self._multiline)
+        aaa = AstArcAnalyzer(self.filename, self._ast_root, self.raw_statements, self.multiline_map)
         aaa.analyze()
         arcs = aaa.arcs
         self._with_jump_fixers = aaa.with_jump_fixers()

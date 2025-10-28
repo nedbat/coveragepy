@@ -195,7 +195,7 @@ class PythonFileReporter(FileReporter):
 
     def multiline_map(self) -> dict[TLineNo, TLineNo]:
         """A map of line numbers to first-line in a multi-line statement."""
-        return self.parser._multiline
+        return self.parser.multiline_map
 
     def excluded_lines(self) -> set[TLineNo]:
         """Return the line numbers of statements in the file."""
