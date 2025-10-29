@@ -26,14 +26,6 @@ class TestCoverageTest(CoverageTest):
             """,
             lines=[1, 2],
         )
-        # You can provide a list of possible statement matches.
-        self.check_coverage(
-            """\
-            a = 1
-            b = 2
-            """,
-            lines=([100], [1, 2], [1723, 47]),
-        )
         # You can specify missing lines.
         self.check_coverage(
             """\
@@ -54,16 +46,6 @@ class TestCoverageTest(CoverageTest):
                 b = 2
                 """,
                 lines=[1],
-            )
-        # If the list of lines possibilities is wrong, the msg shows right.
-        msg = r"None of the lines choices matched \[1, 2]"
-        with pytest.raises(AssertionError, match=msg):
-            self.check_coverage(
-                """\
-                a = 1
-                b = 2
-                """,
-                lines=([1], [2]),
             )
         # If the missing lines are wrong, the message shows right and wrong.
         with pytest.raises(AssertionError, match=r"'3' != '37'"):
@@ -167,7 +149,7 @@ class SimpleStatementTest(CoverageTest):
             12
             23
             """,
-            lines=([1, 2], [2]),
+            lines=[1, 2],
             missing="",
         )
         self.check_coverage(
@@ -176,7 +158,7 @@ class SimpleStatementTest(CoverageTest):
             23
             a = 3
             """,
-            lines=([1, 2, 3], [3]),
+            lines=[1, 2, 3],
             missing="",
         )
         self.check_coverage(
@@ -185,7 +167,7 @@ class SimpleStatementTest(CoverageTest):
             1 + \\
                 2
             """,
-            lines=([1, 2], [2]),
+            lines=[1, 2],
             missing="",
         )
         self.check_coverage(
@@ -195,7 +177,7 @@ class SimpleStatementTest(CoverageTest):
                 2
             a = 4
             """,
-            lines=([1, 2, 4], [4]),
+            lines=[1, 2, 4],
             missing="",
         )
 
@@ -700,7 +682,7 @@ class SimpleStatementTest(CoverageTest):
             b = 3
             assert (a,b) == (1,3)
             """,
-            lines=([1, 3, 4], [1, 2, 3, 4]),
+            lines=[1, 2, 3, 4],
             missing="",
         )
         self.check_coverage(
@@ -713,7 +695,7 @@ class SimpleStatementTest(CoverageTest):
             c = 6
             assert (a,b,c) == (1,3,6)
             """,
-            lines=([1, 3, 6, 7], [1, 2, 3, 4, 5, 6, 7]),
+            lines=[1, 2, 3, 4, 5, 6, 7],
             missing="",
         )
 
