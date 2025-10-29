@@ -40,5 +40,5 @@ typing-extensions==4.15.0 ; python_full_version < '3.11'
     # via
     #   tox
     #   virtualenv
-virtualenv==20.35.3
+virtualenv==20.35.4
     # via tox

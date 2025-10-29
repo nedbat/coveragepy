@@ -97,7 +97,7 @@ sphinx-autobuild==2025.8.25
     # via -r doc/requirements.in
 sphinx-code-tabs==0.5.5
     # via -r doc/requirements.in
-sphinx-lint==1.0.0
+sphinx-lint==1.0.1
     # via -r doc/requirements.in
 sphinx-rtd-theme==3.0.2
     # via -r doc/requirements.in
@@ -121,7 +121,7 @@ sphinxcontrib-spelling==8.0.1
     # via -r doc/requirements.in
 sphinxext-rediraffe==0.3.0
     # via -r doc/requirements.in
-starlette==0.48.0
+starlette==0.49.1
     # via sphinx-autobuild
 stevedore==5.5.0
     # via doc8

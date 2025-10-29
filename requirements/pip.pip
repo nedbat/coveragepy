@@ -12,5 +12,5 @@ setuptools==80.9.0
     # via -r requirements/pip.in
 typing-extensions==4.15.0 ; python_full_version < '3.11'
     # via virtualenv
-virtualenv==20.35.3
+virtualenv==20.35.4
     # via -r requirements/pip.in

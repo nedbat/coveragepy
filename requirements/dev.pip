@@ -220,7 +220,7 @@ urwid==3.0.3
     #   urwid-readline
 urwid-readline==0.15.1
     # via pudb
-virtualenv==20.35.3
+virtualenv==20.35.4
     # via
     #   -r requirements/pip.in
     #   tox

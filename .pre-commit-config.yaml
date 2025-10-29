@@ -27,7 +27,7 @@ repos:
     - id: rst-inline-touching-normal
 
   - repo: https://github.com/sphinx-contrib/sphinx-lint
-    rev: v1.0.0
+    rev: v1.0.1
     hooks:
       - id: sphinx-lint
 
