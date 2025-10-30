@@ -27,10 +27,17 @@ Unreleased
   constructs) could cause incorrect claims of missing branches with the
   sys.monitoring core, as described in `issue 2070`_. This is now fixed.
 
+- Fix: when running in pytest under coverage, a ``breakpoint()`` would stop in
+  the wrong frame, one level down from where it should, as described in `issue
+  1420`_. This was due to a coverage change in v6.4.1 that seemed to give a
+  slight performance improvement, but I couldn't reproduce the performance
+  gain, so it's been reverted, fixing the debugger problem.
+
 - Split ``sqlite`` debugging information out of the ``sys`` :ref:`coverage
   debug <cmd_debug>` and :ref:`cmd_run_debug` options since it's bulky and not
   very useful.
 
+.. _issue 1420: https://github.com/nedbat/coveragepy/issues/1420
 .. _issue 2070: https://github.com/nedbat/coveragepy/issues/2070
 
 

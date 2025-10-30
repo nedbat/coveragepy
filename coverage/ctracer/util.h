@@ -33,10 +33,8 @@
 #endif
 
 #if PY_VERSION_HEX >= 0x030D0000
-#define MyFrame_NoTraceLines(f) (PyObject_SetAttrString((PyObject*)(f), "f_trace_lines", Py_False))
 #define MyFrame_SetTrace(f, obj)    (PyObject_SetAttrString((PyObject*)(f), "f_trace", (PyObject*)(obj)))
 #else
-#define MyFrame_NoTraceLines(f) ((f)->f_trace_lines = 0)
 #define MyFrame_SetTrace(f, obj)    {Py_INCREF(obj); Py_XSETREF((f)->f_trace, (PyObject*)(obj));}
 #endif
 

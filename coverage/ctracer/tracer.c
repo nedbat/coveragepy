@@ -545,7 +545,6 @@ CTracer_handle_call(CTracer *self, PyFrameObject *frame)
         Py_XDECREF(self->pcur_entry->file_data);
         self->pcur_entry->file_data = NULL;
         self->pcur_entry->file_tracer = Py_None;
-        MyFrame_NoTraceLines(frame);
         SHOWLOG(PyFrame_GetLineNumber(frame), filename, "skipped");
     }
 
