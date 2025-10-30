@@ -33,7 +33,7 @@ jobs:
     name: "Check changed files"
     runs-on: ubuntu-latest
     permissions:
-      pull-requests: read
+      pull-requests: read   # Needed for this check to run on pull requests
     outputs:
       run_coverage: ${{ steps.filter.outputs.run_coverage }}
       workflow: ${{ steps.filter.outputs.workflow }}
@@ -49,7 +49,9 @@ jobs:
         with:
           filters: |
             run_coverage:
-              - "**.py"
+              - "*.py"
+              - "coverage/**.py"
+              - "tests/**.py"
               - "**.h"
               - "**.c"
               - ".github/workflows/coverage.yml"
@@ -82,7 +84,6 @@ jobs:
           # tox.ini so that tox will run properly. PYVERSIONS
           # Available versions:
           # https://github.com/actions/python-versions/blob/main/versions-manifest.json
-          - "3.9"
           - "3.10"
           - "3.11"
           - "3.12"
@@ -90,33 +91,24 @@ jobs:
           - "3.13t"
           - "3.14"
           - "3.14t"
-          - "pypy-3.9"
+          - "3.15"
+          - "3.15t"
           - "pypy-3.10"
         exclude:
           # Mac PyPy always takes the longest, and doesn't add anything.
           - os: macos
-            python-version: "pypy-3.9"
-          - os: macos
             python-version: "pypy-3.10"
-          # Windows pypy 3.9 and 3.10 get stuck with PyPy 7.3.15.  I hope to
+          # Windows pypy 3.10 gets stuck with PyPy 7.3.15.  I hope to
           # unstick them, but I don't want that to block all other progress, so
           # skip them for now.
           - os: windows
-            python-version: "pypy-3.9"
-          - os: windows
             python-version: "pypy-3.10"
-          # Windows 3.14.0b1 seems confused somehow about t vs not-t:
-          # https://github.com/python/cpython/issues/133779
-          - os: windows
-            python-version: "3.14"
-          - os: windows
-            python-version: "3.14t"
         # If we need to tweak the os version we can do it with an include like
         # this:
         #  include:
-        #    - python-version: "3.8"
+        #    - python-version: "3.12"
         #      os: "macos"
-        #      os-version: "13"
+        #      os-version: "15"
 
       # If one job fails, stop the whole thing.
       fail-fast: true
@@ -128,7 +120,7 @@ jobs:
           persist-credentials: false
 
       - name: "Set up Python"
-        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c # v6.0.0
         with:
           python-version: "${{ matrix.python-version }}"
           allow-prereleases: true
@@ -167,7 +159,7 @@ jobs:
           mv .metacov .metacov.$MATRIX_ID
 
       - name: "Upload coverage data"
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
         with:
           name: metacov-${{ env.MATRIX_ID }}
           path: .metacov.*
@@ -189,9 +181,9 @@ jobs:
           persist-credentials: false
 
       - name: "Set up Python"
-        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c # v6.0.0
         with:
-          python-version: "3.9" # Minimum of PYVERSIONS
+          python-version: "3.10" # Minimum of PYVERSIONS
           # At a certain point, installing dependencies failed on pypy 3.9 and
           # 3.10 on Windows.  Commenting out the cache here fixed it.  Someday
           # try using the cache again.
@@ -212,7 +204,7 @@ jobs:
           python igor.py zip_mods
 
       - name: "Download coverage data"
-        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5.0.0
+        uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
         with:
           pattern: metacov-*
           merge-multiple: true
@@ -226,7 +218,7 @@ jobs:
           python igor.py combine_html
 
       - name: "Upload HTML report"
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
         with:
           name: html_report
           path: htmlcov
@@ -286,7 +278,7 @@ jobs:
 
       - name: "Download coverage HTML report"
         if: ${{ github.ref == 'refs/heads/master' }}
-        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5.0.0
+        uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
         with:
           name: html_report
           path: reports_repo/${{ env.report_dir }}

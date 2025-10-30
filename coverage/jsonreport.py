@@ -13,7 +13,7 @@ from typing import IO, TYPE_CHECKING, Any
 
 from coverage import __version__
 from coverage.report_core import get_analysis_to_report
-from coverage.results import Analysis, Numbers
+from coverage.results import Analysis, AnalysisNarrower, Numbers
 from coverage.types import TLineNo, TMorf
 
 if TYPE_CHECKING:
@@ -128,21 +128,30 @@ class JsonReporter:
             )
 
         num_lines = len(file_reporter.source().splitlines())
+        regions = file_reporter.code_regions()
         for noun, plural in file_reporter.code_region_kinds():
-            reported_file[plural] = region_data = {}
             outside_lines = set(range(1, num_lines + 1))
-            for region in file_reporter.code_regions():
+            for region in regions:
                 if region.kind != noun:
                     continue
                 outside_lines -= region.lines
+
+            narrower = AnalysisNarrower(analysis)
+            narrower.add_regions(r.lines for r in regions if r.kind == noun)
+            narrower.add_regions([outside_lines])
+
+            reported_file[plural] = region_data = {}
+            for region in regions:
+                if region.kind != noun:
+                    continue
                 region_data[region.name] = self.make_region_data(
                     coverage_data,
-                    analysis.narrow(region.lines),
+                    narrower.narrow(region.lines),
                 )
 
             region_data[""] = self.make_region_data(
                 coverage_data,
-                analysis.narrow(outside_lines),
+                narrower.narrow(outside_lines),
             )
         return reported_file
 

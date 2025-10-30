@@ -95,7 +95,7 @@ def find_soft_key_lines(source: str) -> set[TLineNo]:
     soft_key_lines: set[TLineNo] = set()
 
     for node in ast.walk(ast.parse(source)):
-        if sys.version_info >= (3, 10) and isinstance(node, ast.Match):
+        if isinstance(node, ast.Match):
             soft_key_lines.add(node.lineno)
             for case in node.cases:
                 soft_key_lines.add(case.pattern.lineno)
@@ -128,10 +128,7 @@ def source_token_lines(source: str) -> TSourceTokenLines:
     source = source.expandtabs(8).replace("\r\n", "\n")
     tokgen = generate_tokens(source)
 
-    if env.PYBEHAVIOR.soft_keywords:
-        soft_key_lines = find_soft_key_lines(source)
-    else:
-        soft_key_lines = set()
+    soft_key_lines = find_soft_key_lines(source)
 
     for ttype, ttext, (sline, scol), (_, ecol), _ in _phys_tokens(tokgen):
         mark_start = True
@@ -157,7 +154,7 @@ def source_token_lines(source: str) -> TSourceTokenLines:
                     if keyword.iskeyword(ttext):
                         # Hard keywords are always keywords.
                         tok_class = "key"
-                    elif env.PYBEHAVIOR.soft_keywords and keyword.issoftkeyword(ttext):
+                    elif keyword.issoftkeyword(ttext):
                         # Soft keywords appear at the start of their line.
                         if len(line) == 0:
                             is_start_of_line = True

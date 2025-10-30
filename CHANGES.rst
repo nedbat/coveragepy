@@ -23,10 +23,43 @@ upgrading your version of coverage.py.
 Unreleased
 ----------
 
-Nothing yet.
+- Fix: some multi-line case clauses or for loops (and probably other
+  constructs) could cause incorrect claims of missing branches with the
+  sys.monitoring core, as described in `issue 2070`_. This is now fixed.
+
+- Split ``sqlite`` debugging information out of the ``sys`` :ref:`coverage
+  debug <cmd_debug>` and :ref:`cmd_run_debug` options since it's bulky and not
+  very useful.
+
+.. _issue 2070: https://github.com/nedbat/coveragepy/issues/2070
 
 
 .. start-releases
+
+.. _changes_7-11-0:
+
+Version 7.11.0 — 2025-10-15
+---------------------------
+
+- Dropped support for Python 3.9, declared support for Python 3.15 alpha.
+
+
+.. _changes_7-10-7:
+
+Version 7.10.7 — 2025-09-21
+---------------------------
+
+- Performance: with branch coverage in large files, generating HTML, JSON, or
+  LCOV reports could take far too long due to some quadratic behavior when
+  creating the function and class index pages.  This is now fixed, closing
+  `issue 2048`_.  Thanks to Daniel Diniz for help diagnosing the problem.
+
+- Most warnings and a few errors now have links to a page in the docs
+  explaining the specific message.  Closes `issue 1921`_.
+
+.. _issue 1921: https://github.com/nedbat/coveragepy/issues/1921
+.. _issue 2048: https://github.com/nedbat/coveragepy/issues/2048
+
 
 .. _changes_7-10-6:
 
@@ -398,7 +431,7 @@ Version 7.6.10 — 2024-12-26
 .. _issue 1875: https://github.com/nedbat/coveragepy/issues/1875
 .. _issue 1902: https://github.com/nedbat/coveragepy/issues/1902
 .. _issue 1908: https://github.com/nedbat/coveragepy/issues/1908
-.. _pep649: https://docs.python.org/3.14/whatsnew/3.14.html#whatsnew314-pep649
+.. _pep649: https://docs.python.org/3.14/whatsnew/3.14.html#whatsnew314-deferred-annotations
 
 
 .. _changes_7-6-9:

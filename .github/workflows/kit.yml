@@ -36,7 +36,7 @@ env:
   PIP_DISABLE_PIP_VERSION_CHECK: 1
   # PYVERSIONS: changing the list of versions will change the number of
   # expected distributions. This must match the same number in publish.yml.
-  EXPECTED: 88
+  EXPECTED: 92
 
 permissions:
   contents: read
@@ -73,15 +73,16 @@ jobs:
           #
           #   # For each OS, what arch to use with cibuildwheel:
           #   os_archs = {
-          #       "ubuntu": ["x86_64", "i686", "aarch64"],
+          #       "ubuntu": ["x86_64", "i686", "aarch64", "riscv64"],
           #       "macos": ["arm64", "x86_64"],
           #       "windows": ["x86", "AMD64", "ARM64"],
           #   }
           #   # PYVERSIONS. Available versions: https://pypi.org/project/cibuildwheel/
           #   # Note that cibuildwheel recommends not shipping wheels for pre-release versions
           #   # of Python: https://cibuildwheel.readthedocs.io/en/stable/options/#enable
+          #   # When changing this, also adjust SHIPPING_WHEELS in env.py.
           #
-          #   pys = ["cp39", "cp310", "cp311", "cp312", "cp313", "cp314"]
+          #   pys = ["cp310", "cp311", "cp312", "cp313", "cp314"]
           #
           #   # Some OS/arch combinations need overrides for the Python versions:
           #   os_arch_pys = {
@@ -110,43 +111,41 @@ jobs:
           #                   them["os-version"] = "22.04-arm"
           #               print(f"- {json.dumps(them)}")
           # ]]]
-          - {"os": "ubuntu", "py": "cp39", "arch": "x86_64"}
           - {"os": "ubuntu", "py": "cp310", "arch": "x86_64"}
           - {"os": "ubuntu", "py": "cp311", "arch": "x86_64"}
           - {"os": "ubuntu", "py": "cp312", "arch": "x86_64"}
           - {"os": "ubuntu", "py": "cp313", "arch": "x86_64"}
           - {"os": "ubuntu", "py": "cp314", "arch": "x86_64"}
-          - {"os": "ubuntu", "py": "cp39", "arch": "i686"}
           - {"os": "ubuntu", "py": "cp310", "arch": "i686"}
           - {"os": "ubuntu", "py": "cp311", "arch": "i686"}
           - {"os": "ubuntu", "py": "cp312", "arch": "i686"}
           - {"os": "ubuntu", "py": "cp313", "arch": "i686"}
           - {"os": "ubuntu", "py": "cp314", "arch": "i686"}
-          - {"os": "ubuntu", "py": "cp39", "arch": "aarch64", "os-version": "22.04-arm"}
           - {"os": "ubuntu", "py": "cp310", "arch": "aarch64", "os-version": "22.04-arm"}
           - {"os": "ubuntu", "py": "cp311", "arch": "aarch64", "os-version": "22.04-arm"}
           - {"os": "ubuntu", "py": "cp312", "arch": "aarch64", "os-version": "22.04-arm"}
           - {"os": "ubuntu", "py": "cp313", "arch": "aarch64", "os-version": "22.04-arm"}
           - {"os": "ubuntu", "py": "cp314", "arch": "aarch64", "os-version": "22.04-arm"}
-          - {"os": "macos", "py": "cp39", "arch": "arm64", "os-version": "13"}
+          - {"os": "ubuntu", "py": "cp310", "arch": "riscv64"}
+          - {"os": "ubuntu", "py": "cp311", "arch": "riscv64"}
+          - {"os": "ubuntu", "py": "cp312", "arch": "riscv64"}
+          - {"os": "ubuntu", "py": "cp313", "arch": "riscv64"}
+          - {"os": "ubuntu", "py": "cp314", "arch": "riscv64"}
           - {"os": "macos", "py": "cp310", "arch": "arm64", "os-version": "13"}
           - {"os": "macos", "py": "cp311", "arch": "arm64", "os-version": "13"}
           - {"os": "macos", "py": "cp312", "arch": "arm64", "os-version": "13"}
           - {"os": "macos", "py": "cp313", "arch": "arm64", "os-version": "13"}
           - {"os": "macos", "py": "cp314", "arch": "arm64", "os-version": "13"}
-          - {"os": "macos", "py": "cp39", "arch": "x86_64", "os-version": "13"}
           - {"os": "macos", "py": "cp310", "arch": "x86_64", "os-version": "13"}
           - {"os": "macos", "py": "cp311", "arch": "x86_64", "os-version": "13"}
           - {"os": "macos", "py": "cp312", "arch": "x86_64", "os-version": "13"}
           - {"os": "macos", "py": "cp313", "arch": "x86_64", "os-version": "13"}
           - {"os": "macos", "py": "cp314", "arch": "x86_64", "os-version": "13"}
-          - {"os": "windows", "py": "cp39", "arch": "x86"}
           - {"os": "windows", "py": "cp310", "arch": "x86"}
           - {"os": "windows", "py": "cp311", "arch": "x86"}
           - {"os": "windows", "py": "cp312", "arch": "x86"}
           - {"os": "windows", "py": "cp313", "arch": "x86"}
           - {"os": "windows", "py": "cp314", "arch": "x86"}
-          - {"os": "windows", "py": "cp39", "arch": "AMD64"}
           - {"os": "windows", "py": "cp310", "arch": "AMD64"}
           - {"os": "windows", "py": "cp311", "arch": "AMD64"}
           - {"os": "windows", "py": "cp312", "arch": "AMD64"}
@@ -156,7 +155,7 @@ jobs:
           - {"os": "windows", "py": "cp312", "arch": "ARM64", "os-version": "11-arm"}
           - {"os": "windows", "py": "cp313", "arch": "ARM64", "os-version": "11-arm"}
           - {"os": "windows", "py": "cp314", "arch": "ARM64", "os-version": "11-arm"}
-        # [[[end]]] (sum: 7BoHzaIHKR)
+        # [[[end]]] (sum: 1z4k0aOD5S)
         #            ^^^^^^^^^^^^^^^
         # If a check fails and points to this checksum line, it means you edited
         # the matrix directly instead of editing the Python code in the comment
@@ -172,7 +171,7 @@ jobs:
           persist-credentials: false
 
       - name: "Install Python"
-        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c # v6.0.0
         with:
           python-version: "${{ matrix.minpy || '3.11' }}" # PYVERSIONS needed by cibuildwheel
           cache: pip
@@ -193,7 +192,9 @@ jobs:
       - name: "Install tools"
         run: |
           python -m pip install -r requirements/kit.pip
-
+      - name: Set up QEMU
+        if: ${{ matrix.arch == 'riscv64' }}
+        uses: docker/setup-qemu-action@29109295f81e9208d7d86ff1c6c12d2833863392 # v3.6.0
       - name: "Build binary wheels"
         env:
           CIBW_BUILD: ${{ matrix.py }}*-*
@@ -213,7 +214,7 @@ jobs:
           python -m twine check wheelhouse/*
 
       - name: "Upload binary wheels"
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
         with:
           name: dist-${{ env.MATRIX_ID }}
           path: wheelhouse/*.whl
@@ -229,7 +230,7 @@ jobs:
           persist-credentials: false
 
       - name: "Install Python"
-        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        uses: actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c # v6.0.0
         with:
           python-version: "3.11" # PYVERSIONS: the kit-building version
           cache: pip
@@ -254,7 +255,7 @@ jobs:
           python -m twine check dist/*
 
       - name: "Upload non-binary artifacts"
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
         with:
           name: dist-non-binary
           path: dist/*
@@ -269,10 +270,10 @@ jobs:
       - non-binary
     runs-on: ubuntu-latest
     permissions:
-      id-token: write
+      id-token: write   # Needed for signing artifacts
     steps:
       - name: "Download artifacts"
-        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5.0.0
+        uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
         with:
           pattern: dist-*
           merge-multiple: true
@@ -285,7 +286,7 @@ jobs:
           files=$(ls coverage-* 2>/dev/null | wc -l) && [ "$files" -eq $EXPECTED ] || exit 1
 
       - name: "Sign artifacts"
-        uses: sigstore/gh-action-sigstore-python@f7ad0af51a5648d09a20d00370f0a91c3bdf8f84 # v3.0.1
+        uses: sigstore/gh-action-sigstore-python@f832326173235dcb00dd5d92cd3f353de3188e6c # v3.1.0
         with:
           inputs: coverage-*.*
 
@@ -294,7 +295,7 @@ jobs:
           ls -alR
 
       - name: "Upload signatures"
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
         with:
           name: signatures
           path: "*.sigstore.json"

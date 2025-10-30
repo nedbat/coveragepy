@@ -39,6 +39,7 @@ extensions = [
     "sphinx.ext.intersphinx",
     "sphinxcontrib.restbuilder",
     "sphinx.ext.napoleon",
+    "sphinxext.rediraffe",
     "sphinx_code_tabs",
     "sphinx_rtd_theme",
 ]
@@ -67,11 +68,11 @@ project = "Coverage.py"
 # @@@ editable
 copyright = "2009–2025, Ned Batchelder"  # pylint: disable=redefined-builtin
 # The short X.Y.Z version.
-version = "7.10.6"
+version = "7.11.0"
 # The full version, including alpha/beta/rc tags.
-release = "7.10.6"
+release = "7.11.0"
 # The date of release, in "monthname day, year" format.
-release_date = "August 29, 2025"
+release_date = "October 15, 2025"
 # @@@ end
 
 rst_epilog = f"""
@@ -123,6 +124,11 @@ pygments_style = "sphinx"
 
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
+}
+
+rediraffe_branch = "origin/master"
+rediraffe_redirects = {
+    "cmd.rst": "commands/index.rst",
 }
 
 nitpick_ignore = [

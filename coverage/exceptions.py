@@ -5,20 +5,18 @@
 
 from __future__ import annotations
 
-
-class _BaseCoverageException(Exception):
-    """The base-base of all Coverage exceptions."""
-
-    pass
+from typing import Any
 
 
-class CoverageException(_BaseCoverageException):
+class CoverageException(Exception):
     """The base class of all exceptions raised by Coverage.py."""
 
-    pass
+    def __init__(self, *args: Any, slug: str | None = None) -> None:
+        super().__init__(*args)
+        self.slug = slug
 
 
-class ConfigError(_BaseCoverageException):
+class ConfigError(CoverageException):
     """A problem with a config file, or a value in one."""
 
     pass

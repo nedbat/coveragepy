@@ -11,7 +11,7 @@ import os.path
 import re
 
 from typing import Any, Protocol
-from collections.abc import Iterable, Iterator
+from collections.abc import Iterable
 from unittest import mock
 
 import pytest
@@ -149,7 +149,7 @@ def globs_to_regex_params(
     partial: bool = False,
     matches: Iterable[str] = (),
     nomatches: Iterable[str] = (),
-) -> Iterator[Any]:
+) -> Iterable[Any]:
     """Generate parameters for `test_globs_to_regex`.
 
     `patterns`, `case_insensitive`, and `partial` are arguments for

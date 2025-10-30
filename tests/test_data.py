@@ -13,7 +13,7 @@ import sqlite3
 import threading
 
 from collections.abc import Collection, Iterable, Mapping
-from typing import Any, Callable, TypeVar, Union
+from typing import Any, Callable, TypeVar
 from unittest import mock
 
 import pytest
@@ -121,7 +121,7 @@ def assert_arcs3_data(covdata: CoverageData) -> None:
     assert covdata.has_arcs()
 
 
-TData = TypeVar("TData", bound=Union[TLineNo, TArc])
+TData = TypeVar("TData", bound=TLineNo | TArc)
 
 
 def dicts_from_sets(file_data: dict[str, set[TData]]) -> dict[str, dict[TData, None]]:

@@ -43,7 +43,7 @@ else:
 GIL = getattr(sys, "_is_gil_enabled", lambda: True)()
 
 # Do we ship compiled coveragepy wheels for this version?
-SHIPPING_WHEELS = CPYTHON and PYVERSION[:2] <= (3, 13)
+SHIPPING_WHEELS = CPYTHON and PYVERSION[:2] <= (3, 14)
 
 # Should we default to sys.monitoring?
 SYSMON_DEFAULT = CPYTHON and PYVERSION >= (3, 14)
@@ -52,63 +52,6 @@ SYSMON_DEFAULT = CPYTHON and PYVERSION >= (3, 14)
 # Python behavior.
 class PYBEHAVIOR:
     """Flags indicating this Python's behavior."""
-
-    # Does Python conform to PEP626, Precise line numbers for debugging and other tools.
-    # https://www.python.org/dev/peps/pep-0626
-    pep626 = (PYVERSION > (3, 10, 0, "alpha", 4))  # fmt: skip
-
-    # Is "if __debug__" optimized away?
-    optimize_if_debug = not pep626
-
-    # Is "if not __debug__" optimized away? The exact details have changed
-    # across versions.
-    optimize_if_not_debug = 1 if pep626 else 2
-
-    # 3.7 changed how functions with only docstrings are numbered.
-    docstring_only_function = (not PYPY) and (PYVERSION <= (3, 10))
-
-    # Lines after break/continue/return/raise are no longer compiled into the
-    # bytecode.  They used to be marked as missing, now they aren't executable.
-    omit_after_jump = pep626 or PYPY
-
-    # PyPy has always omitted statements after return.
-    omit_after_return = omit_after_jump or PYPY
-
-    # Optimize away unreachable try-else clauses.
-    optimize_unreachable_try_else = pep626
-
-    # Modules used to have firstlineno equal to the line number of the first
-    # real line of code.  Now they always start at 1.
-    module_firstline_1 = pep626
-
-    # Are "if 0:" lines (and similar) kept in the compiled code?
-    keep_constant_test = pep626
-
-    # When leaving a with-block, do we visit the with-line again for the exit?
-    # For example, wwith.py:
-    #
-    #    with open("/tmp/test", "w") as f1:
-    #        a = 2
-    #        with open("/tmp/test2", "w") as f3:
-    #            print(4)
-    #
-    # % python3.9 -m trace -t wwith.py | grep wwith
-    #  --- modulename: wwith, funcname: <module>
-    # wwith.py(1): with open("/tmp/test", "w") as f1:
-    # wwith.py(2):     a = 2
-    # wwith.py(3):     with open("/tmp/test2", "w") as f3:
-    # wwith.py(4):         print(4)
-    #
-    # % python3.10 -m trace -t wwith.py | grep wwith
-    #  --- modulename: wwith, funcname: <module>
-    # wwith.py(1): with open("/tmp/test", "w") as f1:
-    # wwith.py(2):     a = 2
-    # wwith.py(3):     with open("/tmp/test2", "w") as f3:
-    # wwith.py(4):         print(4)
-    # wwith.py(3):     with open("/tmp/test2", "w") as f3:
-    # wwith.py(1): with open("/tmp/test", "w") as f1:
-    #
-    exit_through_with = (PYVERSION >= (3, 10, 0, "beta"))  # fmt: skip
 
     # When leaving a with-block, do we visit the with-line exactly,
     # or the context managers in inner-out order?
@@ -146,12 +89,6 @@ class PYBEHAVIOR:
     # mwith.py(2):      open("/tmp/one", "w") as f2,
 
     exit_with_through_ctxmgr = (PYVERSION >= (3, 12, 6))  # fmt: skip
-
-    # Match-case construct.
-    match_case = (PYVERSION >= (3, 10))  # fmt: skip
-
-    # Some words are keywords in some places, identifiers in other places.
-    soft_keywords = (PYVERSION >= (3, 10))  # fmt: skip
 
     # f-strings are parsed as code, pep 701
     fstring_syntax = (PYVERSION >= (3, 12))  # fmt: skip

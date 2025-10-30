@@ -75,26 +75,3 @@
 $ deopvars
 - Once CI passes, merge the bump-version branch to master and push it
     $ gshipit
-
-
-* Testing
-
-- Testing of Python code is handled by tox.
-    - Create and activate a virtualenv
-    - pip install -r requirements/dev.pip
-    - $ tox
-
-- For complete coverage testing:
-
-    $ make metacov
-
-    This will run coverage.py under its own measurement.  You can do this in
-    different environments (Linux vs. Windows, for example), then copy the data
-    files (.metacov.*) to one machine for combination and reporting.  To
-    combine and report:
-
-    $ make metahtml
-
-- To run the Javascript tests:
-
-    open tests/js/index.html in variety of browsers.

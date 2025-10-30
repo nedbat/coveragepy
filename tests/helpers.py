@@ -313,6 +313,13 @@ def assert_count_equal(
     assert collections.Counter(list(a)) == collections.Counter(list(b))
 
 
+def get_coverage_warnings(warns: Iterable[warnings.WarningMessage]) -> list[str]:
+    """Extract the text of CoverageWarnings."""
+    warns = [w for w in warns if issubclass(w.category, CoverageWarning)]
+    texts = [cast(Warning, w.message).args[0] for w in warns]
+    return texts
+
+
 def assert_coverage_warnings(
     warns: Iterable[warnings.WarningMessage],
     *msgs: str | re.Pattern[str],
@@ -323,15 +330,15 @@ def assert_coverage_warnings(
     Each msg can be a string compared for equality, or a compiled regex used to
     search the text.
     """
+    actuals = get_coverage_warnings(warns)
     assert msgs  # don't call this without some messages.
-    warns = [w for w in warns if issubclass(w.category, CoverageWarning)]
-    actuals = [cast(Warning, w.message).args[0] for w in warns]
     assert len(msgs) == len(actuals)
-    for expected, actual in zip(msgs, actuals):
+    for actual, expected in zip(actuals, msgs):
         if hasattr(expected, "search"):
             assert expected.search(actual), f"{actual!r} didn't match {expected!r}"
         else:
-            assert expected == actual
+            actual = actual.partition("; see ")[0]
+            assert actual == expected
 
 
 @contextlib.contextmanager
@@ -392,7 +399,7 @@ class DebugControlString(DebugControl):
         return self.io.getvalue()
 
 
-def all_our_source_files() -> Iterator[tuple[Path, str]]:
+def all_our_source_files() -> Iterable[tuple[Path, str]]:
     """Iterate over all of our own source files.
 
     This is used in tests that need a bunch of Python code to analyze, so we
@@ -403,7 +410,7 @@ def all_our_source_files() -> Iterator[tuple[Path, str]]:
     cov_dir = Path(__file__).parent.parent
     # To run against all the files in the tox venvs:
     #   for source_file in cov_dir.rglob("*.py"):
-    for sub in [".", "benchmark", "ci", "coverage", "lab", "tests"]:
+    for sub in [".", "ci", "coverage", "lab", "tests"]:
         assert (cov_dir / sub).is_dir()
         for source_file in (cov_dir / sub).glob("*.py"):
             yield (source_file, source_file.read_text(encoding="utf-8"))

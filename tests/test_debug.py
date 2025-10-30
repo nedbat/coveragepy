@@ -244,6 +244,11 @@ class DebugTraceTest(CoverageTest):
         vtuple = ast.literal_eval(pyversion.partition(":")[-1].strip())
         assert vtuple[:5] == sys.version_info
 
+    def test_debug_sqlite(self) -> None:
+        out_text = self.f1_debug_output(["sqlite"])
+        assert "sqlite3_compile_options:" in out_text
+        # The rest of the output is tested in test_cmdline.py:test_debug_sqlite
+
     def test_debug_process(self) -> None:
         out_text = self.f1_debug_output(["trace", "process"])
         assert f"New process: pid={os.getpid()}, executable:" in out_text

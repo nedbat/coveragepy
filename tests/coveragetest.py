@@ -145,7 +145,7 @@ class CoverageTest(
         self,
         text: str,
         *,
-        lines: Sequence[TLineNo] | Sequence[list[TLineNo]] | None = None,
+        lines: Sequence[TLineNo] | None = None,
         missing: str = "",
         report: str = "",
         excludes: Iterable[str] | None = None,
@@ -157,10 +157,9 @@ class CoverageTest(
         """Check the coverage measurement of `text`.
 
         The source `text` is run and measured.  `lines` are the line numbers
-        that are executable, or a list of possible line numbers, any of which
-        could match. `missing` are the lines not executed, `excludes` are
-        regexes to match against for excluding lines, and `report` is the text
-        of the measurement report.
+        that are executable, `missing` are the lines not executed, `excludes`
+        are regexes to match against for excluding lines, and `report` is the
+        text of the measurement report.
 
         For branch measurement, `branchz` is a string that can be decoded into
         arcs in the code (see `arcz_to_arcs` for the encoding scheme).
@@ -200,42 +199,9 @@ class CoverageTest(
         analysis = cov._analyze(mod)
         statements = sorted(analysis.statements)
         if lines:
-            if isinstance(lines[0], int):
-                # lines is just a list of numbers, it must match the statements
-                # found in the code.
-                assert statements == lines, f"lines: {statements!r} != {lines!r}"
-            else:
-                # lines is a list of possible line number lists, one of them
-                # must match.
-                for i, line_list in enumerate(lines):  # pylint: disable=unused-variable
-                    if statements == line_list:
-                        # PYVERSIONS: we might be able to trim down multiple
-                        # lines passed into this function.
-                        # Uncomment this code, run the whole test suite, then
-                        # sort /tmp/check_coverage_multi_line.out to group the
-                        # tests together and see if any of the `lines` elements
-                        # haven't been used.
-                        # One of the calls in test_successful_coverage passes
-                        # three `lines` elements, only one of which is right.
-                        # We need to keep that test until we can delete the
-                        # multi-lines option entirely.
-                        #
-                        # import inspect, platform
-                        # frinfo = inspect.getframeinfo(inspect.currentframe().f_back)
-                        # version = "{} {}.{}".format(
-                        #     platform.python_implementation(),
-                        #     *sys.version_info[:2],
-                        # )
-                        # with open("/tmp/check_coverage_multi_line.out", "a") as f:
-                        #     print(
-                        #         f"{frinfo.filename}@{frinfo.lineno}: "
-                        #         + f"lines {i + 1}/{len(lines)}: {version}",
-                        #         file=f,
-                        #     )
-                        break
-                else:
-                    assert False, f"None of the lines choices matched {statements!r}"
-
+            # lines is a list of numbers, it must match the statements
+            # found in the code.
+            assert statements == lines, f"lines: {statements!r} != {lines!r}"
             missing_formatted = analysis.missing_formatted()
             msg = f"missing: {missing_formatted!r} != {missing!r}"
             assert missing_formatted == missing, msg

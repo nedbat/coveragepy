@@ -55,7 +55,7 @@ these steps:
 
 #.  (Optional) Create a virtualenv to work in, and activate it.  There
     are a number of ways to do this.  Use the method you are comfortable with.
-    Ideally, use Python 3.9 (the lowest version coverage.py supports).
+    Ideally, use Python 3.10 (the lowest version coverage.py supports).
 
 #.  Clone the repository::
 
@@ -232,14 +232,33 @@ keep you from sending patches.  I can clean them up.
 
 Lines should be kept to a 100-character maximum length.  I recommend an
 `editorconfig.org`_ plugin for your editor of choice, which will also help with
-indentation, line endings and so on.
+indentation, line endings and so on.  Source files are formatted with `ruff`_.
+
+I use `pre-commit`_ to run checks and formatting when making commits, you
+should also.
 
 Other style questions are best answered by looking at the existing code.
 Formatting of docstrings, comments, long lines, and so on, should match the
 code that already exists.
 
-Many people love auto-formatting with `black`_ or `ruff`_, but I would prefer
-not to on coverage.py.
+
+Cog
+---
+
+Parts of the documentation and GitHub actions are kept up-to-date with `cog`_.
+There are checks to make sure that files are correct and not being incorrectly
+edited.
+
+If a check fails, it will show you what command to run to update the files.
+If you edit parts of a file that should be generated, you will see a message
+like::
+
+    Output has been edited! Delete old checksum to unprotect.
+
+Probably you should revert the edits and run the command to generate the
+output.  The top of the file you edited will have instructions.
+
+.. _cog: https://cog.readthedocs.io
 
 
 Continuous integration
@@ -264,7 +283,7 @@ files.  These are created by running ``make upgrade``.
 
 .. minimum of PYVERSIONS:
 
-It's important to use Python 3.9 to run ``make upgrade`` so that the pinned
+It's important to use Python 3.10 to run ``make upgrade`` so that the pinned
 versions will work on all of the Python versions currently supported by
 coverage.py.
 
@@ -300,8 +319,8 @@ fixes.  If you need help writing tests, please ask.
 .. _fork the repo: https://docs.github.com/en/get-started/quickstart/fork-a-repo
 .. _editorconfig.org: http://editorconfig.org
 .. _tox: https://tox.readthedocs.io/
-.. _black: https://pypi.org/project/black/
 .. _ruff: https://pypi.org/project/ruff/
+.. _pre-commit: https://pre-commit.com/
 .. _set_env.py: https://nedbatchelder.com/blog/201907/set_envpy.html
 .. _pytest test selectors: https://doc.pytest.org/en/stable/usage.html#specifying-which-tests-to-run
 .. _sys.monitoring: https://docs.python.org/3/library/sys.monitoring.html

@@ -139,7 +139,7 @@ def info_header(label: str) -> str:
     return "--{:-<60s}".format(" " + label + " ")
 
 
-def info_formatter(info: Iterable[tuple[str, Any]]) -> Iterator[str]:
+def info_formatter(info: Iterable[tuple[str, Any]]) -> Iterable[str]:
     """Produce a sequence of formatted lines from info.
 
     `info` is a sequence of pairs (label, data).  The produced lines are
@@ -155,14 +155,15 @@ def info_formatter(info: Iterable[tuple[str, Any]]) -> Iterator[str]:
         if data == []:
             data = "-none-"
         prefix = f"{label:>{LABEL_LEN}}: "
-        if isinstance(data, tuple) and len(str(data)) < 30:
-            yield f"{prefix}{data}"
-        elif isinstance(data, (list, set, tuple)):
-            for e in data:
-                yield f"{prefix}{e}"
-                prefix = " " * (LABEL_LEN + 2)
-        else:
-            yield f"{prefix}{data}"
+        match data:
+            case tuple() if len(str(data)) < 30:
+                yield f"{prefix}{data}"
+            case tuple() | list() | set():
+                for e in data:
+                    yield f"{prefix}{e}"
+                    prefix = " " * (LABEL_LEN + 2)
+            case _:
+                yield f"{prefix}{data}"
 
 
 def write_formatted_info(
@@ -351,10 +352,14 @@ def simplify(v: Any) -> Any:  # pragma: debugging
         return v
 
 
+def ppformat(v: Any) -> str:  # pragma: debugging
+    """Debug helper to pretty-print data, including SimpleNamespace objects."""
+    return pprint.pformat(simplify(v), indent=4, compact=True, sort_dicts=True, width=140)
+
+
 def pp(v: Any) -> None:  # pragma: debugging
     """Debug helper to pretty-print data, including SimpleNamespace objects."""
-    # Might not be needed in 3.9+
-    pprint.pprint(simplify(v))
+    print(ppformat(v))
 
 
 def filter_text(text: str, filters: Iterable[Callable[[str], str]]) -> str:

@@ -19,7 +19,7 @@ import time
 import warnings
 from collections.abc import Iterable, Iterator
 from types import FrameType
-from typing import IO, Any, Callable, Union, cast
+from typing import IO, Any, Callable, cast
 
 from coverage import env
 from coverage.annotate import AnnotateReporter
@@ -67,6 +67,7 @@ from coverage.types import (
     TLineNo,
     TMorf,
 )
+from coverage.version import __url__
 from coverage.xmlreport import XmlReporter
 
 os = isolate_module(os)
@@ -297,7 +298,7 @@ class Coverage(TConfigurable):
         self._debug: DebugControl = NoDebugging()
         self._inorout: InOrOut | None = None
         self._plugins: Plugins = Plugins()
-        self._plugin_override = cast(Union[Iterable[TCoverageInit], None], plugins)
+        self._plugin_override = cast(Iterable[TCoverageInit] | None, plugins)
         self._data: CoverageData | None = None
         self._data_to_close: list[CoverageData] = []
         self._core: Core | None = None
@@ -413,20 +414,22 @@ class Coverage(TConfigurable):
         wrote_any = False
         with self._debug.without_callers():
             if self._debug.should("config"):
-                config_info = self.config.debug_info()
-                write_formatted_info(self._debug.write, "config", config_info)
+                write_formatted_info(self._debug.write, "config", self.config.debug_info())
                 wrote_any = True
 
             if self._debug.should("sys"):
                 write_formatted_info(self._debug.write, "sys", self.sys_info())
                 for plugin in self._plugins:
                     header = "sys: " + plugin._coverage_plugin_name
-                    info = plugin.sys_info()
-                    write_formatted_info(self._debug.write, header, info)
+                    write_formatted_info(self._debug.write, header, plugin.sys_info())
                 wrote_any = True
 
             if self._debug.should("pybehave"):
                 write_formatted_info(self._debug.write, "pybehave", env.debug_info())
+                wrote_any = True
+
+            if self._debug.should("sqlite"):
+                write_formatted_info(self._debug.write, "sqlite", CoverageData.sys_info())
                 wrote_any = True
 
         if wrote_any:
@@ -479,7 +482,7 @@ class Coverage(TConfigurable):
 
         self._warnings.append(msg)
         if slug:
-            msg = f"{msg} ({slug})"
+            msg = f"{msg} ({slug}); see {__url__}/messages.html#warning-{slug}"
         if self._debug.should("pid"):
             msg = f"[{os.getpid()}] {msg}"
         warnings.warn(msg, category=CoverageWarning, stacklevel=2)
@@ -1397,8 +1400,6 @@ class Coverage(TConfigurable):
 
         if self._inorout is not None:
             info.extend(self._inorout.sys_info())
-
-        info.extend(CoverageData.sys_info())
 
         return info
 

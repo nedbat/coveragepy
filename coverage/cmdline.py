@@ -22,9 +22,9 @@ from coverage import Coverage, env
 from coverage.config import CoverageConfig
 from coverage.control import DEFAULT_DATAFILE
 from coverage.core import CTRACER_FILE
-from coverage.data import combinable_files, debug_data_file
+from coverage.data import CoverageData, combinable_files, debug_data_file
 from coverage.debug import info_header, short_stack, write_formatted_info
-from coverage.exceptions import NoSource, _BaseCoverageException, _ExceptionDuringRun
+from coverage.exceptions import NoSource, CoverageException, _ExceptionDuringRun
 from coverage.execfile import PyRunner
 from coverage.results import display_covered, should_fail_under
 from coverage.version import __url__
@@ -561,7 +561,8 @@ COMMANDS = {
                 'sys' to show installation information;
                 'config' to show the configuration;
                 'premain' to show what is calling coverage;
-                'pybehave' to show internal flags describing Python behavior.
+                'pybehave' to show internal flags describing Python behavior;
+                'sqlite' to show SQLite compilation options.
             """
         ),
     ),
@@ -1035,7 +1036,10 @@ class CoverageScript:
         """Implementation of 'coverage debug'."""
 
         if not args:
-            show_help("What information would you like: config, data, sys, premain, pybehave?")
+            show_help(
+                "What information would you like: "
+                + "config, data, sys, premain, pybehave, sqlite?"
+            )
             return ERR
         if args[1:]:
             show_help("Only one topic at a time, please")
@@ -1057,6 +1061,8 @@ class CoverageScript:
             print(short_stack(full=True))
         elif args[0] == "pybehave":
             write_formatted_info(print, "pybehave", env.debug_info())
+        elif args[0] == "sqlite":
+            write_formatted_info(print, "sqlite", CoverageData.sys_info())
         else:
             show_help(f"Don't know what you mean by {args[0]!r}")
             return ERR
@@ -1139,9 +1145,11 @@ def main(argv: list[str] | None = None) -> int | None:
         # exception.
         traceback.print_exception(*err.args)  # pylint: disable=no-value-for-parameter
         status = ERR
-    except _BaseCoverageException as err:
+    except CoverageException as err:
         # A controlled error inside coverage.py: print the message to the user.
         msg = err.args[0]
+        if err.slug:
+            msg = f"{msg.rstrip('.')}; see {__url__}/messages.html#error-{err.slug}"
         print(msg)
         status = ERR
     except SystemExit as err:

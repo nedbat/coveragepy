@@ -7,14 +7,13 @@ from __future__ import annotations
 
 import collections
 import dis
-from collections.abc import Iterator
 from types import CodeType
-from typing import Iterable, Optional
+from typing import Iterable, Mapping, Optional
 
-from coverage.types import TArc, TOffset
+from coverage.types import TArc, TLineNo, TOffset
 
 
-def code_objects(code: CodeType) -> Iterator[CodeType]:
+def code_objects(code: CodeType) -> Iterable[CodeType]:
     """Iterate over all the code objects in `code`."""
     stack = [code]
     while stack:
@@ -32,7 +31,9 @@ def op_set(*op_names: str) -> set[int]:
 
     The names might not exist in this version of Python, skip those if not.
     """
-    return {op for name in op_names if (op := dis.opmap.get(name))}
+    ops = {op for name in op_names if (op := dis.opmap.get(name))}
+    assert ops, f"At least one opcode must exist: {op_names}"
+    return ops
 
 
 # Opcodes that are unconditional jumps elsewhere.
@@ -100,9 +101,15 @@ TBranchTrailsOneSource = dict[Optional[TArc], set[TOffset]]
 TBranchTrails = dict[TOffset, TBranchTrailsOneSource]
 
 
-def branch_trails(code: CodeType) -> TBranchTrails:
+def branch_trails(
+    code: CodeType,
+    multiline_map: Mapping[TLineNo, TLineNo],
+) -> TBranchTrails:
     """
     Calculate branch trails for `code`.
+
+    `multiline_map` maps line numbers to the first line number of a
+    multi-line statement.
 
     Instructions can have a jump_target, where they might jump to next.  Some
     instructions with a jump_target are unconditional jumps (ALWAYS_JUMPS), so
@@ -129,6 +136,7 @@ def branch_trails(code: CodeType) -> TBranchTrails:
         from_line = inst.line_number
         if from_line is None:
             continue
+        from_line = multiline_map.get(from_line, from_line)
 
         def add_one_branch_trail(
             trails: TBranchTrailsOneSource,
@@ -139,8 +147,11 @@ def branch_trails(code: CodeType) -> TBranchTrails:
             to_line = None
             for inst2 in iwalker.walk(start_at=start_at, follow_jumps=True):
                 inst_offsets.add(inst2.offset)
-                if inst2.line_number and inst2.line_number != from_line:
-                    to_line = inst2.line_number
+                l2 = inst2.line_number
+                if l2 is not None:
+                    l2 = multiline_map.get(l2, l2)
+                if l2 and l2 != from_line:
+                    to_line = l2
                     break
                 elif inst2.jump_target and (inst2.opcode not in ALWAYS_JUMPS):
                     break

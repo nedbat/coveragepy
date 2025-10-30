@@ -26,8 +26,8 @@ Coverage.py runs on these versions of Python:
 
 .. PYVERSIONS
 
-* Python 3.9 through 3.14 rc2, including free-threading.
-* PyPy3 versions 3.9, 3.10, and 3.11.
+* Python 3.10 through 3.15 alpha, including free-threading.
+* PyPy3 versions 3.10 and 3.11.
 
 Documentation is on `Read the Docs`_.  Code repository and issue tracker are on
 `GitHub`_.
@@ -44,7 +44,7 @@ Documentation is on `Read the Docs`_.  Code repository and issue tracker are on
 multi-line exclusion patterns;
 function/class reporting;
 experimental support for sys.monitoring;
-dropped support for Python 3.7 and 3.8;
+dropped support for Python up to 3.9;
 added ``Coverage.collect()`` context manager;
 improved data combining;
 ``[run] exclude_also`` setting;
@@ -146,7 +146,7 @@ Licensed under the `Apache 2.0 License`_.  For details, see `NOTICE.txt`_.
     :target: https://pypi.org/project/coverage/
     :alt: Python versions supported
 .. |license| image:: https://img.shields.io/pypi/l/coverage.svg
-    :target: https://pypi.org/project/coverage/
+    :target: https://github.com/nedbat/coveragepy/blob/master/LICENSE.txt
     :alt: License
 .. |metacov| image:: https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/nedbat/8c6980f77988a327348f9b02bbaf67f5/raw/metacov.json
     :target: https://nedbat.github.io/coverage-reports/latest.html

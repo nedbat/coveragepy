@@ -26,14 +26,6 @@ class TestCoverageTest(CoverageTest):
             """,
             lines=[1, 2],
         )
-        # You can provide a list of possible statement matches.
-        self.check_coverage(
-            """\
-            a = 1
-            b = 2
-            """,
-            lines=([100], [1, 2], [1723, 47]),
-        )
         # You can specify missing lines.
         self.check_coverage(
             """\
@@ -54,16 +46,6 @@ class TestCoverageTest(CoverageTest):
                 b = 2
                 """,
                 lines=[1],
-            )
-        # If the list of lines possibilities is wrong, the msg shows right.
-        msg = r"None of the lines choices matched \[1, 2]"
-        with pytest.raises(AssertionError, match=msg):
-            self.check_coverage(
-                """\
-                a = 1
-                b = 2
-                """,
-                lines=([1], [2]),
             )
         # If the missing lines are wrong, the message shows right and wrong.
         with pytest.raises(AssertionError, match=r"'3' != '37'"):
@@ -167,7 +149,7 @@ class SimpleStatementTest(CoverageTest):
             12
             23
             """,
-            lines=([1, 2], [2]),
+            lines=[1, 2],
             missing="",
         )
         self.check_coverage(
@@ -176,7 +158,7 @@ class SimpleStatementTest(CoverageTest):
             23
             a = 3
             """,
-            lines=([1, 2, 3], [3]),
+            lines=[1, 2, 3],
             missing="",
         )
         self.check_coverage(
@@ -185,7 +167,7 @@ class SimpleStatementTest(CoverageTest):
             1 + \\
                 2
             """,
-            lines=([1, 2], [2]),
+            lines=[1, 2],
             missing="",
         )
         self.check_coverage(
@@ -195,7 +177,7 @@ class SimpleStatementTest(CoverageTest):
                 2
             a = 4
             """,
-            lines=([1, 2, 4], [4]),
+            lines=[1, 2, 4],
             missing="",
         )
 
@@ -413,12 +395,6 @@ class SimpleStatementTest(CoverageTest):
         )
 
     def test_raise_followed_by_statement(self) -> None:
-        if env.PYBEHAVIOR.omit_after_jump:
-            lines = [1, 2, 4, 5]
-            missing = ""
-        else:
-            lines = [1, 2, 3, 4, 5]
-            missing = "3"
         self.check_coverage(
             """\
             try:
@@ -427,8 +403,8 @@ class SimpleStatementTest(CoverageTest):
             except:
                 pass
             """,
-            lines=lines,
-            missing=missing,
+            lines=[1, 2, 4, 5],
+            missing="",
         )
 
     def test_return(self) -> None:
@@ -474,12 +450,6 @@ class SimpleStatementTest(CoverageTest):
         )
 
     def test_return_followed_by_statement(self) -> None:
-        if env.PYBEHAVIOR.omit_after_return:
-            lines = [1, 2, 3, 6, 7]
-            missing = ""
-        else:
-            lines = [1, 2, 3, 4, 6, 7]
-            missing = "4"
         self.check_coverage(
             """\
             def fn():
@@ -490,8 +460,8 @@ class SimpleStatementTest(CoverageTest):
             x = fn()
             assert(x == 2)
             """,
-            lines=lines,
-            missing=missing,
+            lines=[1, 2, 3, 6, 7],
+            missing="",
         )
 
     def test_yield(self) -> None:
@@ -512,13 +482,6 @@ class SimpleStatementTest(CoverageTest):
         )
 
     def test_break(self) -> None:
-        if env.PYBEHAVIOR.omit_after_jump:
-            lines = [1, 2, 3, 5]
-            missing = ""
-        else:
-            lines = [1, 2, 3, 4, 5]
-            missing = "4"
-
         self.check_coverage(
             """\
             for x in range(10):
@@ -527,18 +490,11 @@ class SimpleStatementTest(CoverageTest):
                 a = 4
             assert a == 2
             """,
-            lines=lines,
-            missing=missing,
+            lines=[1, 2, 3, 5],
+            missing="",
         )
 
     def test_continue(self) -> None:
-        if env.PYBEHAVIOR.omit_after_jump:
-            lines = [1, 2, 3, 5]
-            missing = ""
-        else:
-            lines = [1, 2, 3, 4, 5]
-            missing = "4"
-
         self.check_coverage(
             """\
             for x in range(10):
@@ -547,8 +503,8 @@ class SimpleStatementTest(CoverageTest):
                 a = 4
             assert a == 11
             """,
-            lines=lines,
-            missing=missing,
+            lines=[1, 2, 3, 5],
+            missing="",
         )
 
     def test_strange_unexecuted_continue(self) -> None:
@@ -726,7 +682,7 @@ class SimpleStatementTest(CoverageTest):
             b = 3
             assert (a,b) == (1,3)
             """,
-            lines=([1, 3, 4], [1, 2, 3, 4]),
+            lines=[1, 2, 3, 4],
             missing="",
         )
         self.check_coverage(
@@ -739,7 +695,7 @@ class SimpleStatementTest(CoverageTest):
             c = 6
             assert (a,b,c) == (1,3,6)
             """,
-            lines=([1, 3, 6, 7], [1, 2, 3, 4, 5, 6, 7]),
+            lines=[1, 2, 3, 4, 5, 6, 7],
             missing="",
         )
 
@@ -1097,17 +1053,13 @@ class CompoundStatementTest(CoverageTest):
         )
 
     def test_constant_if(self) -> None:
-        if env.PYBEHAVIOR.keep_constant_test:
-            lines = [1, 2, 3]
-        else:
-            lines = [2, 3]
         self.check_coverage(
             """\
             if 1:
                 a = 2
             assert a == 2
             """,
-            lines=lines,
+            lines=[1, 2, 3],
             missing="",
         )
 
@@ -1357,13 +1309,6 @@ class CompoundStatementTest(CoverageTest):
         )
 
     def test_try_except_stranded_else(self) -> None:
-        if env.PYBEHAVIOR.optimize_unreachable_try_else:
-            # The else can't be reached because the try ends with a raise.
-            lines = [1, 2, 3, 4, 5, 6, 9]
-            missing = ""
-        else:
-            lines = [1, 2, 3, 4, 5, 6, 8, 9]
-            missing = "8"
         self.check_coverage(
             """\
             a = 0
@@ -1376,8 +1321,8 @@ class CompoundStatementTest(CoverageTest):
                 a = 123
             assert a == 99
             """,
-            lines=lines,
-            missing=missing,
+            lines=[1, 2, 3, 4, 5, 6, 9],
+            missing="",
             branchz="",
             branchz_missing="",
         )
@@ -1854,13 +1799,6 @@ class Py25Test(CoverageTest):
         )
 
     def test_try_except_finally_stranded_else(self) -> None:
-        if env.PYBEHAVIOR.optimize_unreachable_try_else:
-            # The else can't be reached because the try ends with a raise.
-            lines = [1, 2, 3, 4, 5, 6, 10, 11]
-            missing = ""
-        else:
-            lines = [1, 2, 3, 4, 5, 6, 8, 10, 11]
-            missing = "8"
         self.check_coverage(
             """\
             a = 0; b = 0
@@ -1875,8 +1813,9 @@ class Py25Test(CoverageTest):
                 b = 2
             assert a == 99 and b == 2
             """,
-            lines=lines,
-            missing=missing,
+            # The else can't be reached because the try ends with a raise.
+            lines=[1, 2, 3, 4, 5, 6, 10, 11],
+            missing="",
             branchz="",
             branchz_missing="",
         )

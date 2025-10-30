@@ -11,7 +11,7 @@ import os
 import pathlib
 from collections.abc import Iterable, Mapping
 from types import FrameType, ModuleType
-from typing import TYPE_CHECKING, Any, Callable, Optional, Protocol, Union
+from typing import TYPE_CHECKING, Any, Callable, Optional, Protocol
 
 if TYPE_CHECKING:
     from coverage.plugin import FileTracer
@@ -22,14 +22,10 @@ AnyCallable = Callable[..., Any]
 ## File paths
 
 # For arguments that are file paths:
-if TYPE_CHECKING:
-    FilePath = Union[str, os.PathLike[str]]
-else:
-    # PathLike < python3.9 doesn't support subscription
-    FilePath = Union[str, os.PathLike]
+FilePath = str | os.PathLike[str]
 # For testing FilePath arguments
 FilePathClasses = [str, pathlib.Path]
-FilePathType = Union[type[str], type[pathlib.Path]]
+FilePathType = type[str] | type[pathlib.Path]
 
 ## Python tracing
 
@@ -77,14 +73,14 @@ class TFileDisposition(Protocol):
 # - If measuring arcs in the C tracer, the values are sets of packed arcs (two
 #   line numbers combined into one integer).
 
-TTraceFileData = Union[set[TLineNo], set[TArc], set[int]]
+TTraceFileData = set[TLineNo] | set[TArc] | set[int]
 
 TTraceData = dict[str, TTraceFileData]
 
 # Functions passed into collectors.
 TShouldTraceFn = Callable[[str, FrameType], TFileDisposition]
 TCheckIncludeFn = Callable[[str, FrameType], bool]
-TShouldStartContextFn = Callable[[FrameType], Union[str, None]]
+TShouldStartContextFn = Callable[[FrameType], str | None]
 
 
 class Tracer(Protocol):
@@ -127,8 +123,8 @@ TCovKwargs = Any
 ## Configuration
 
 # One value read from a config file.
-TConfigValueIn = Optional[Union[bool, int, float, str, Iterable[str], Mapping[str, Iterable[str]]]]
-TConfigValueOut = Optional[Union[bool, int, float, str, list[str], dict[str, list[str]]]]
+TConfigValueIn = Optional[bool | int | float | str | Iterable[str] | Mapping[str, Iterable[str]]]
+TConfigValueOut = Optional[bool | int | float | str | list[str] | dict[str, list[str]]]
 # An entire config section, mapping option names to values.
 TConfigSectionIn = Mapping[str, TConfigValueIn]
 TConfigSectionOut = Mapping[str, TConfigValueOut]
@@ -169,7 +165,7 @@ class TPluginConfig(Protocol):
 
 ## Parsing
 
-TMorf = Union[ModuleType, str]
+TMorf = ModuleType | str
 
 TSourceTokenLines = Iterable[list[tuple[str, str]]]
 

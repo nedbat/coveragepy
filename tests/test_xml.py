@@ -10,7 +10,7 @@ import os.path
 import re
 
 from typing import Any
-from collections.abc import Iterator
+from collections.abc import Iterable
 from xml.etree import ElementTree
 
 import pytest
@@ -383,7 +383,7 @@ def unbackslash(v: Any) -> Any:
 class XmlPackageStructureTest(XmlTestHelpers, CoverageTest):
     """Tests about the package structure reported in the coverage.xml file."""
 
-    def package_and_class_tags(self, cov: Coverage) -> Iterator[tuple[str, dict[str, Any]]]:
+    def package_and_class_tags(self, cov: Coverage) -> Iterable[tuple[str, dict[str, Any]]]:
         """Run an XML report on `cov`, and get the package and class tags."""
         cov.xml_report()
         dom = ElementTree.parse("coverage.xml")

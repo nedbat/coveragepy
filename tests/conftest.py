@@ -13,7 +13,7 @@ import os
 import sys
 import warnings
 
-from collections.abc import Iterator
+from collections.abc import Iterable
 
 import pytest
 
@@ -64,7 +64,7 @@ def set_warnings() -> None:
 
 
 @pytest.fixture(autouse=True)
-def reset_sys_path() -> Iterator[None]:
+def reset_sys_path() -> Iterable[None]:
     """Clean up sys.path changes around every test."""
     sys_path = list(sys.path)
     yield
@@ -72,7 +72,7 @@ def reset_sys_path() -> Iterator[None]:
 
 
 @pytest.fixture(autouse=True)
-def reset_environment() -> Iterator[None]:
+def reset_environment() -> Iterable[None]:
     """Make sure a test setting an envvar doesn't leak into another test."""
     old_environ = os.environ.copy()
     yield
@@ -96,7 +96,7 @@ def force_local_pyc_files() -> None:
 
 # Give this an underscored name so pylint won't complain when we use the fixture.
 @pytest.fixture(name="_create_pth_file")
-def create_pth_file_fixture() -> Iterator[None]:
+def create_pth_file_fixture() -> Iterable[None]:
     """Create and clean up a .pth file for tests that need it for subprocesses."""
     pth_files = create_pth_files()
     try:

@@ -17,7 +17,7 @@ defaults:
 env:
   # PYVERSIONS: changing the list of versions will change the number of
   # expected distributions. This must match the same number in kit.yml.
-  EXPECTED: 88
+  EXPECTED: 92
 
 permissions:
   contents: read
@@ -54,8 +54,8 @@ jobs:
     name: "Publish to Test PyPI"
     if: ${{ github.event.action == 'publish-testpypi' }}
     permissions:
-      id-token: write
-      attestations: write
+      id-token: write       # needed for actions/attest-build-provenance
+      attestations: write   # needed for actions/attest-build-provenance
     runs-on: "ubuntu-latest"
     environment:
       name: "testpypi"
@@ -64,7 +64,7 @@ jobs:
 
     steps:
       - name: "Download dists"
-        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5.0.0
+        uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
         with:
           repository: "nedbat/coveragepy"
           run-id: ${{ needs.find-run.outputs.run-id }}
@@ -86,7 +86,7 @@ jobs:
           subject-path: "dist/*"
 
       - name: "Publish dists to Test PyPI"
-        uses: pypa/gh-action-pypi-publish@76f52bc884231f62b9a034ebfe128415bbaabdfc # v1.12.4
+        uses: pypa/gh-action-pypi-publish@ed0c53931b1dc9bd32cbe73a98c7f6766f8a527e # v1.13.0
         with:
           repository-url: https://test.pypi.org/legacy/
 
@@ -94,8 +94,8 @@ jobs:
     name: "Publish to PyPI"
     if: ${{ github.event.action == 'publish-pypi' }}
     permissions:
-      id-token: write
-      attestations: write
+      id-token: write       # needed for actions/attest-build-provenance
+      attestations: write   # needed for actions/attest-build-provenance
     runs-on: "ubuntu-latest"
     environment:
       name: "pypi"
@@ -104,7 +104,7 @@ jobs:
 
     steps:
       - name: "Download dists"
-        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5.0.0
+        uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
         with:
           repository: "nedbat/coveragepy"
           run-id: ${{ needs.find-run.outputs.run-id }}
@@ -126,4 +126,4 @@ jobs:
           subject-path: "dist/*"
 
       - name: "Publish dists to PyPI"
-        uses: pypa/gh-action-pypi-publish@76f52bc884231f62b9a034ebfe128415bbaabdfc # v1.12.4
+        uses: pypa/gh-action-pypi-publish@ed0c53931b1dc9bd32cbe73a98c7f6766f8a527e # v1.13.0

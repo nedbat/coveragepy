@@ -11,7 +11,6 @@ from tests.coveragetest import CoverageTest
 from tests.helpers import assert_count_equal
 
 import coverage
-from coverage import env
 from coverage.data import sorted_lines
 from coverage.files import abs_file
 
@@ -214,13 +213,6 @@ class SimpleArcTest(CoverageTest):
         assert self.stdout() == "5\n"
 
     def test_bug_576(self) -> None:
-        if env.PYBEHAVIOR.pep626:
-            branchz = "34 36 89 8B"
-            branchz_missing = ""
-        else:
-            branchz = "34 38 89 8D"
-            branchz_missing = "38 8D"
-
         self.check_coverage(
             """\
             foo = True
@@ -237,8 +229,8 @@ class SimpleArcTest(CoverageTest):
 
             print("Done")
             """,
-            branchz=branchz,
-            branchz_missing=branchz_missing,
+            branchz="34 36 89 8B",
+            branchz_missing="",
         )
         assert self.stdout() == "Done\n"
 
@@ -551,9 +543,6 @@ class LoopArcTest(CoverageTest):
         )
 
     def test_if_1(self) -> None:
-        lines = [1, 3, 6]
-        if env.PYBEHAVIOR.keep_constant_test:
-            lines.append(2)
         self.check_coverage(
             """\
             a = 1
@@ -563,7 +552,7 @@ class LoopArcTest(CoverageTest):
                 a = 5
             assert a == 3
             """,
-            lines=sorted(lines),
+            lines=[1, 2, 3, 6],
             branchz="",
             branchz_missing="",
         )
@@ -585,9 +574,6 @@ class LoopArcTest(CoverageTest):
         )
 
     def test_while_true(self) -> None:
-        lines = [1, 3, 4, 5, 6, 7]
-        if env.PYBEHAVIOR.keep_constant_test:
-            lines.append(2)
         self.check_coverage(
             """\
             a, i = 1, 0
@@ -598,15 +584,12 @@ class LoopArcTest(CoverageTest):
                 i += 1
             assert a == 4 and i == 3
             """,
-            lines=sorted(lines),
+            lines=[1, 2, 3, 4, 5, 6, 7],
             branchz="34 36",
             branchz_missing="",
         )
 
     def test_while_false(self) -> None:
-        lines = [1, 4]
-        if env.PYBEHAVIOR.keep_constant_test:
-            lines.append(2)
         self.check_coverage(
             """\
             a, i = 1, 0
@@ -614,7 +597,7 @@ class LoopArcTest(CoverageTest):
                 1/0
             assert a == 1 and i == 0
             """,
-            lines=sorted(lines),
+            lines=[1, 2, 4],
             branchz="",
             branchz_missing="",
         )
@@ -648,11 +631,7 @@ class LoopArcTest(CoverageTest):
         cov = coverage.Coverage(source=["."], branch=True)
         self.start_import_stop(cov, "main")
         assert self.stdout() == "done\n"
-        if env.PYBEHAVIOR.keep_constant_test:
-            num_stmts = 3
-        else:
-            num_stmts = 2
-        expected = f"zero.py {num_stmts} {num_stmts} 0 0 0% 1-3"
+        expected = "zero.py 3 3 0 0 0% 1-3"
         report = self.get_report(cov, show_missing=True)
         squeezed = self.squeezed_lines(report)
         assert expected in squeezed[3]
@@ -741,6 +720,19 @@ class LoopArcTest(CoverageTest):
             branchz_missing="26",
         )
 
+    def test_split_for(self) -> None:
+        self.check_coverage(
+            """\
+            a = 0
+            for (i
+                ) in [1,2,3,4,5]:
+                a += i
+            assert a == 15
+            """,
+            lines=[1, 2, 4, 5],
+            branchz="24 25",
+        )
+
     def test_while_else(self) -> None:
         self.check_coverage(
             """\
@@ -796,8 +788,6 @@ class LoopArcTest(CoverageTest):
             branchz_missing="",
         )
 
-    # https://bugs.python.org/issue44672
-    @pytest.mark.xfail(env.PYVERSION < (3, 10), reason="<3.10 traced final pass incorrectly")
     def test_incorrect_loop_exit_bug_1175(self) -> None:
         self.check_coverage(
             """\
@@ -1530,7 +1520,6 @@ class YieldTest(CoverageTest):
         assert self.stdout() == "2\n3\n"
 
 
-@pytest.mark.skipif(not env.PYBEHAVIOR.match_case, reason="Match-case is new in 3.10")
 class MatchCaseTest(CoverageTest):
     """Tests of match-case."""
 
@@ -1661,20 +1650,35 @@ class MatchCaseTest(CoverageTest):
         )
         assert self.stdout() == "also not default\n"
 
+    def test_split_match_case(self) -> None:
+        self.check_coverage(
+            """\
+            def foo(x):
+                match x:
+                    case (
+                        1
+                        | 2
+                    ):
+                        return "output: 1 or 2"
+                    case _:
+                        return "output: other"
+
+            print(foo(1))
+            print(foo(2))
+            print(foo(3))
+            """,
+            lines=[1, 2, 3, 7, 8, 9, 11, 12, 13],
+            missing="",
+            branchz="37 38",
+            branchz_missing="",
+        )
+        assert self.stdout() == "output: 1 or 2\noutput: 1 or 2\noutput: other\n"
+
 
 class OptimizedIfTest(CoverageTest):
     """Tests of if statements being optimized away."""
 
     def test_optimized_away_if_0(self) -> None:
-        if env.PYBEHAVIOR.keep_constant_test:
-            lines = [1, 2, 3, 4, 8, 9]
-            branchz = "23 24"
-            branchz_missing = "24"
-        else:
-            lines = [1, 2, 3, 8, 9]
-            branchz = "23 28"
-            branchz_missing = "28"
-
         self.check_coverage(
             """\
             a = 1
@@ -1687,21 +1691,12 @@ class OptimizedIfTest(CoverageTest):
                 e = 8
             f = 9
             """,
-            lines=lines,
-            branchz=branchz,
-            branchz_missing=branchz_missing,
+            lines=[1, 2, 3, 4, 8, 9],
+            branchz="23 24",
+            branchz_missing="24",
         )
 
     def test_optimized_away_if_1(self) -> None:
-        if env.PYBEHAVIOR.keep_constant_test:
-            lines = [1, 2, 3, 4, 5, 6, 9]
-            branchz = "23 24 56 59"
-            branchz_missing = "24 59"
-        else:
-            lines = [1, 2, 3, 5, 6, 9]
-            branchz = "23 25 56 59"
-            branchz_missing = "25 59"
-
         self.check_coverage(
             """\
             a = 1
@@ -1714,16 +1709,12 @@ class OptimizedIfTest(CoverageTest):
                 e = 8
             f = 9
             """,
-            lines=lines,
-            branchz=branchz,
-            branchz_missing=branchz_missing,
+            lines=[1, 2, 3, 4, 5, 6, 9],
+            branchz="23 24 56 59",
+            branchz_missing="24 59",
         )
 
     def test_optimized_away_if_1_no_else(self) -> None:
-        if env.PYBEHAVIOR.keep_constant_test:
-            lines = [1, 2, 3, 4, 5]
-        else:
-            lines = [1, 3, 4, 5]
         self.check_coverage(
             """\
             a = 1
@@ -1732,17 +1723,12 @@ class OptimizedIfTest(CoverageTest):
                 c = 4
             d = 5
             """,
-            lines=lines,
+            lines=[1, 2, 3, 4, 5],
             branchz="",
             branchz_missing="",
         )
 
     def test_optimized_if_nested(self) -> None:
-        if env.PYBEHAVIOR.keep_constant_test:
-            lines = [1, 2, 8, 11, 12, 13, 14, 15]
-        else:
-            lines = [1, 12, 14, 15]
-
         self.check_coverage(
             """\
             a = 1
@@ -1761,7 +1747,7 @@ class OptimizedIfTest(CoverageTest):
                     h = 14
             i = 15
             """,
-            lines=lines,
+            lines=[1, 2, 8, 11, 12, 13, 14, 15],
             branchz="",
             branchz_missing="",
         )
@@ -1785,10 +1771,6 @@ class OptimizedIfTest(CoverageTest):
             )
 
     def test_if_debug(self) -> None:
-        if env.PYBEHAVIOR.optimize_if_debug:
-            branchz = "12 1. 24 26"
-        else:
-            branchz = "12 1. 23 26"
         self.check_coverage(
             """\
             for value in [True, False]:
@@ -1798,17 +1780,11 @@ class OptimizedIfTest(CoverageTest):
                 else:
                     x = 6
             """,
-            branchz=branchz,
+            branchz="12 1. 23 26",
             branchz_missing="",
         )
 
     def test_if_not_debug(self) -> None:
-        if env.PYBEHAVIOR.optimize_if_not_debug == 1:
-            branchz = "23 28 34 37"
-        else:
-            assert env.PYBEHAVIOR.optimize_if_not_debug == 2
-            branchz = "23 28 35 37"
-
         self.check_coverage(
             """\
             lines = set()
@@ -1820,7 +1796,7 @@ class OptimizedIfTest(CoverageTest):
                     lines.add(7)
             assert lines == {7}
             """,
-            branchz=branchz,
+            branchz="23 28 34 37",
         )
 
 
@@ -2113,21 +2089,9 @@ class LambdaArcTest(CoverageTest):
         )
 
 
-# This had been a failure on Mac 3.9, but it started passing on GitHub
-# actions (running macOS 12) but still failed on my laptop (macOS 14).
-# I don't understand why it failed, I don't understand why it passed,
-# so just skip the whole thing.
-skip_eventlet_670 = pytest.mark.skipif(
-    env.PYVERSION[:2] == (3, 9) and env.CPYTHON and env.MACOS,
-    reason="Avoid an eventlet bug on Mac 3.9: eventlet#670",
-    # https://github.com/eventlet/eventlet/issues/670
-)
-
-
 class AsyncTest(CoverageTest):
     """Tests of the new async and await keywords in Python 3.5"""
 
-    @skip_eventlet_670
     def test_async(self) -> None:
         self.check_coverage(
             """\
@@ -2153,7 +2117,6 @@ class AsyncTest(CoverageTest):
         )
         assert self.stdout() == "Compute 1 + 2 ...\n1 + 2 = 3\n"
 
-    @skip_eventlet_670
     def test_async_for(self) -> None:
         self.check_coverage(
             """\
@@ -2212,8 +2175,6 @@ class AsyncTest(CoverageTest):
         )
 
     # https://github.com/nedbat/coveragepy/issues/1158
-    # https://bugs.python.org/issue44621
-    @pytest.mark.skipif(env.PYVERSION[:2] == (3, 9), reason="avoid a 3.9 bug: 44621")
     def test_bug_1158(self) -> None:
         self.check_coverage(
             """\
@@ -2240,7 +2201,6 @@ class AsyncTest(CoverageTest):
 
     # https://github.com/nedbat/coveragepy/issues/1176
     # https://bugs.python.org/issue44622
-    @skip_eventlet_670
     def test_bug_1176(self) -> None:
         self.check_coverage(
             """\
@@ -2282,10 +2242,6 @@ class AsyncTest(CoverageTest):
             branchz_missing="29 38 45 56 5. 9A 9.",
         )
 
-    @pytest.mark.skipif(
-        env.PYVERSION[:2] == (3, 9),
-        reason="CPython fix not backported to 3.9: https://github.com/python/cpython/issues/93061",
-    )
     def test_bug_1999(self) -> None:
         self.check_coverage(
             """\

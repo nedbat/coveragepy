@@ -158,18 +158,9 @@ class PythonParserTest(PythonParserTestBase):
                 pass
             """)
 
-        expected_statements = {1, 2, 4, 5, 8, 9, 10}
-        expected_arcs = set(arcz_to_arcs("14 45 58 89 9.  2.  A-8"))
-        expected_exits = {1: 1, 2: 1, 4: 1, 5: 1, 8: 1, 9: 1, 10: 1}
-
-        if env.PYBEHAVIOR.docstring_only_function:
-            # 3.7 changed how functions with only docstrings are numbered.
-            expected_arcs.update(set(arcz_to_arcs("6-4")))
-            expected_exits.update({6: 1})
-
-        assert expected_statements == parser.statements
-        assert expected_arcs == parser.arcs()
-        assert expected_exits == parser.exit_counts()
+        assert parser.statements == {1, 2, 4, 5, 8, 9, 10}
+        assert parser.arcs() == set(arcz_to_arcs("14 45 58 89 9.  2.  A-8"))
+        assert parser.exit_counts() == {1: 1, 2: 1, 4: 1, 5: 1, 8: 1, 9: 1, 10: 1}
 
     def test_nested_context_managers(self) -> None:
         # https://github.com/nedbat/coveragepy/issues/1876
@@ -638,23 +629,22 @@ class ExclusionParserTest(PythonParserTestBase):
         assert parser.statements == set()
 
     def test_excluding_bug1713(self) -> None:
-        if env.PYVERSION >= (3, 10):
-            parser = self.parse_text(
-                """\
-                print("1")
+        parser = self.parse_text(
+            """\
+            print("1")
 
-                def hello_3(a):  # pragma: nocover
-                    match a:
-                        case ("5"
-                              | "6"):
-                            print("7")
-                        case "8":
-                            print("9")
+            def hello_3(a):  # pragma: nocover
+                match a:
+                    case ("5"
+                            | "6"):
+                        print("7")
+                    case "8":
+                        print("9")
 
-                print("11")
-                """,
-            )
-            assert parser.statements == {1, 11}
+            print("11")
+            """,
+        )
+        assert parser.statements == {1, 11}
         parser = self.parse_text(
             """\
             print("1")
@@ -1014,7 +1004,6 @@ class ExclusionParserTest(PythonParserTestBase):
         assert parser.raw_statements == {1, 2, 3, 5, 6, 8, 10}
         assert parser.statements == {1, 2, 3, 8}
 
-    @pytest.mark.skipif(not env.PYBEHAVIOR.match_case, reason="Match-case is new in 3.10")
     def test_multiline_exclusion_block2(self) -> None:
         # https://github.com/nedbat/coveragepy/issues/1797
         regex = r"case _:\n\s+assert_never\("
@@ -1163,7 +1152,6 @@ class ParserMissingArcDescriptionTest(PythonParserTestBase):
         assert expected == parser.missing_arc_description(5, 6)
 
 
-@pytest.mark.skipif(not env.PYBEHAVIOR.match_case, reason="Match-case is new in 3.10")
 class MatchCaseMissingArcDescriptionTest(PythonParserTestBase):
     """Missing arc descriptions for match/case."""
 

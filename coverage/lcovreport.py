@@ -13,7 +13,7 @@ from typing import IO, TYPE_CHECKING
 
 from coverage.plugin import FileReporter
 from coverage.report_core import get_analysis_to_report
-from coverage.results import Analysis, Numbers
+from coverage.results import Analysis, AnalysisNarrower, Numbers
 from coverage.types import TMorf
 
 if TYPE_CHECKING:
@@ -81,12 +81,15 @@ def lcov_functions(
     if not functions:
         return
 
+    narrower = AnalysisNarrower(file_analysis)
+    narrower.add_regions(r.lines for _, _, r in functions)
+
     functions.sort()
     functions_hit = 0
     for first_line, last_line, region in functions:
         # A function counts as having been executed if any of it has been
         # executed.
-        analysis = file_analysis.narrow(region.lines)
+        analysis = narrower.narrow(region.lines)
         hit = int(analysis.numbers.n_executed > 0)
         functions_hit += hit
 

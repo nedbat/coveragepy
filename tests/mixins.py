@@ -14,7 +14,7 @@ import os
 import os.path
 import sys
 
-from collections.abc import Iterable, Iterator
+from collections.abc import Iterable
 from typing import Any, Callable, cast
 
 import pytest
@@ -64,7 +64,7 @@ class TempDirMixin:
     run_in_temp_dir = True
 
     @pytest.fixture(autouse=True)
-    def _temp_dir(self, tmp_path_factory: pytest.TempPathFactory) -> Iterator[None]:
+    def _temp_dir(self, tmp_path_factory: pytest.TempPathFactory) -> Iterable[None]:
         """Create a temp dir for the tests, if they want it."""
         if self.run_in_temp_dir:
             tmpdir = tmp_path_factory.mktemp("t")

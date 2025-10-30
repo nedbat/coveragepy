@@ -11,7 +11,7 @@ import shutil
 
 from pathlib import Path
 from typing import cast
-from collections.abc import Iterator
+from collections.abc import Iterable
 
 import pytest
 
@@ -140,10 +140,7 @@ def venv_world_fixture(tmp_path_factory: pytest.TempPathFactory) -> Path:
             __path__ = __import__('pkgutil').extend_path(__path__, __name__)
             """,
         )
-        if env.PYVERSION < (3, 10):
-            get_plugins = "entry_points['plugins']"
-        else:
-            get_plugins = "entry_points.select(group='plugins')"
+        get_plugins = "entry_points.select(group='plugins')"
         make_file(
             "bug888/app/testcov/main.py",
             f"""\
@@ -211,7 +208,7 @@ class VirtualenvTest(CoverageTest):
     expected_stdout = "33\n110\n198\n1.5\n"
 
     @pytest.fixture(autouse=True)
-    def in_venv_world_fixture(self, venv_world: Path) -> Iterator[None]:
+    def in_venv_world_fixture(self, venv_world: Path) -> Iterable[None]:
         """For running tests inside venv_world, and cleaning up made files."""
         with change_dir(venv_world):
             self.make_file(

@@ -32,7 +32,7 @@ from coverage.misc import (
     stdout_link,
 )
 from coverage.report_core import get_analysis_to_report
-from coverage.results import Analysis, Numbers
+from coverage.results import Analysis, AnalysisNarrower, Numbers
 from coverage.templite import Templite
 from coverage.types import TLineNo, TMorf
 from coverage.version import __url__
@@ -582,13 +582,21 @@ class HtmlReporter:
 
             for noun in region_nouns:
                 page_data = self.index_pages[noun]
-                outside_lines = set(range(1, num_lines + 1))
 
+                outside_lines = set(range(1, num_lines + 1))
                 for region in regions:
                     if region.kind != noun:
                         continue
                     outside_lines -= region.lines
-                    analysis = ftr.analysis.narrow(region.lines)
+
+                narrower = AnalysisNarrower(ftr.analysis)
+                narrower.add_regions(r.lines for r in regions if r.kind == noun)
+                narrower.add_regions([outside_lines])
+
+                for region in regions:
+                    if region.kind != noun:
+                        continue
+                    analysis = narrower.narrow(region.lines)
                     if not self.should_report(analysis, page_data):
                         continue
                     sorting_name = region.name.rpartition(".")[-1].lstrip("_")
@@ -605,7 +613,7 @@ class HtmlReporter:
                         )
                     )
 
-                analysis = ftr.analysis.narrow(outside_lines)
+                analysis = narrower.narrow(outside_lines)
                 if self.should_report(analysis, page_data):
                     page_data.summaries.append(
                         IndexItem(

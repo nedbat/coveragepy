@@ -61,7 +61,7 @@ def get_python_source(filename: str) -> str:
             break
     else:
         # Couldn't find source.
-        raise NoSource(f"No source for code: '{filename}'.")
+        raise NoSource(f"No source for code: '{filename}'.", slug="no-source")
 
     # Replace \f because of http://bugs.python.org/issue19035
     source_bytes = source_bytes.replace(b"\f", b" ")
@@ -195,7 +195,7 @@ class PythonFileReporter(FileReporter):
 
     def multiline_map(self) -> dict[TLineNo, TLineNo]:
         """A map of line numbers to first-line in a multi-line statement."""
-        return self.parser._multiline
+        return self.parser.multiline_map
 
     def excluded_lines(self) -> set[TLineNo]:
         """Return the line numbers of statements in the file."""

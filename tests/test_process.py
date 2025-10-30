@@ -30,7 +30,7 @@ from coverage.files import abs_file, python_reported_file
 
 from tests import testenv
 from tests.coveragetest import CoverageTest, TESTS_DIR
-from tests.helpers import change_dir, re_line, re_lines, re_lines_text
+from tests.helpers import change_dir, re_lines, re_lines_text
 
 
 class ProcessTest(CoverageTest):
@@ -322,7 +322,11 @@ class ProcessTest(CoverageTest):
         self.run_command("coverage run fleeting")
         os.remove("fleeting")
         out = self.run_command("coverage html -d htmlcov", status=1)
-        assert re.search("No source for code: '.*fleeting'", out)
+        assert re.search(r"No source for code: '.*fleeting'", out)
+        assert re.search(
+            r"; see https://coverage.readthedocs.io/en/[^/]+/messages.html#error-no-source",
+            out,
+        )
         assert "Traceback" not in out
 
     def test_running_missing_file(self) -> None:
@@ -483,7 +487,7 @@ class ProcessTest(CoverageTest):
             complete_file = tempfile.mkstemp()[1]
             pid = os.fork()
             if pid:
-                while pid: # 3.9 wouldn't count "while True": change this. PYVERSION
+                while True:
                     with open(complete_file, encoding="ascii") as f:
                         data = f.read()
                     if "Complete" in data:
@@ -762,13 +766,14 @@ class ProcessTest(CoverageTest):
         # Remove the file location and source line from the warning.
         out = re.sub(r"(?m)^[\\/\w.:~_-]+:\d+: CoverageWarning: ", "f:d: CoverageWarning: ", out)
         out = re.sub(r"(?m)^\s+self.warn.*$\n", "", out)
+        out = re.sub(r"; see https://.*$", "", out)
         expected = (
             "Run 1\n"
             + "Run 2\n"
             + "f:d: CoverageWarning: Module foo was previously imported, but not measured "
             + "(module-not-measured)\n"
         )
-        assert expected == out
+        assert out == expected
 
     def test_module_name(self) -> None:
         # https://github.com/nedbat/coveragepy/issues/478
@@ -1308,85 +1313,6 @@ class FailUnderTest(CoverageTest):
         assert st == 2
         expected = "Coverage failure: total of 99 is less than fail-under=100"
         assert expected == self.last_line_squeezed(out)
-
-
-class CoverageCoreTest(CoverageTest):
-    """Test that cores are chosen correctly."""
-
-    # This doesn't test failure modes, only successful requests.
-    try:
-        from coverage.tracer import CTracer
-
-        has_ctracer = True
-    except ImportError:
-        has_ctracer = False
-
-    def test_core_default(self) -> None:
-        self.del_environ("COVERAGE_CORE")
-        self.make_file("numbers.py", "print(123, 456)")
-        out = self.run_command("coverage run --debug=sys numbers.py")
-        assert out.endswith("123 456\n")
-        core = re_line(r" core:", out).strip()
-        warns = re_lines(r"\(no-ctracer\)", out)
-        if env.SYSMON_DEFAULT:
-            assert core == "core: SysMonitor"
-            assert not warns
-        elif self.has_ctracer:
-            assert core == "core: CTracer"
-            assert not warns
-        else:
-            assert core == "core: PyTracer"
-            assert bool(warns) == env.CPYTHON
-
-    @pytest.mark.skipif(not has_ctracer, reason="No CTracer to request")
-    def test_core_request_ctrace(self) -> None:
-        self.set_environ("COVERAGE_CORE", "ctrace")
-        self.make_file("numbers.py", "print(123, 456)")
-        out = self.run_command("coverage run --debug=sys numbers.py")
-        assert out.endswith("123 456\n")
-        core = re_line(r" core:", out).strip()
-        assert core == "core: CTracer"
-
-    @pytest.mark.skipif(has_ctracer, reason="CTracer needs to be missing")
-    def test_core_request_ctrace_but_missing(self) -> None:
-        self.del_environ("COVERAGE_CORE")
-        self.make_file(".coveragerc", "[run]\ncore = ctrace\n")
-        self.make_file("numbers.py", "print(123, 456)")
-        out = self.run_command("coverage run --debug=sys,pybehave numbers.py")
-        assert out.endswith("123 456\n")
-        core = re_line(r" core:", out).strip()
-        assert core == "core: PyTracer"
-        warns = re_lines(r"\(no-ctracer\)", out)
-        assert bool(warns) == env.SHIPPING_WHEELS
-
-    def test_core_request_pytrace(self) -> None:
-        self.set_environ("COVERAGE_CORE", "pytrace")
-        self.make_file("numbers.py", "print(123, 456)")
-        out = self.run_command("coverage run --debug=sys numbers.py")
-        assert out.endswith("123 456\n")
-        core = re_line(r" core:", out).strip()
-        assert core == "core: PyTracer"
-
-    def test_core_request_sysmon(self) -> None:
-        self.set_environ("COVERAGE_CORE", "sysmon")
-        self.make_file("numbers.py", "print(123, 456)")
-        out = self.run_command("coverage run --debug=sys numbers.py")
-        assert out.endswith("123 456\n")
-        core = re_line(r" core:", out).strip()
-        warns = re_lines(r"\(no-sysmon\)", out)
-        if env.PYBEHAVIOR.pep669:
-            assert core == "core: SysMonitor"
-            assert not warns
-        else:
-            assert core in ["core: CTracer", "core: PyTracer"]
-            assert warns
-
-    def test_core_request_nosuchcore(self) -> None:
-        self.set_environ("COVERAGE_CORE", "nosuchcore")
-        self.make_file("numbers.py", "print(123, 456)")
-        out = self.run_command("coverage run numbers.py", status=1)
-        assert "Unknown core value: 'nosuchcore'\n" in out
-        assert "123 456" not in out
 
 
 class FailUnderNoFilesTest(CoverageTest):

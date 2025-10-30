@@ -706,9 +706,13 @@ class CoverageData:
                 )
             )
         if self._has_lines and other_data._has_arcs:
-            raise DataError("Can't combine branch coverage data with statement data")
+            raise DataError(
+                "Can't combine branch coverage data with statement data", slug="cant-combine"
+            )
         if self._has_arcs and other_data._has_lines:
-            raise DataError("Can't combine statement coverage data with branch data")
+            raise DataError(
+                "Can't combine statement coverage data with branch data", slug="cant-combine"
+            )
 
         map_path = map_path or (lambda p: p)
 

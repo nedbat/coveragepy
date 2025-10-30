@@ -1162,40 +1162,22 @@ assert len(math) == 18
         cov = coverage.Coverage(config_file="partial.ini")
         partial = self.start_import_stop(cov, "partial")
 
-        if env.PYBEHAVIOR.pep626:
-            cov.html_report(partial, directory="out/partial_626")
-            compare_html(gold_path("html/partial_626"), "out/partial_626")
-            contains_rx(
-                "out/partial_626/partial_py.html",
-                r'<p class="par run show_par">.* id="t4"',
-                r'<p class="run">.* id="t7"',
-                # The "if 0" and "if 1" statements are marked as run.
-                r'<p class="run">.* id="t10"',
-                # The "raise ZeroDivisionError" is excluded by regex in the .ini.
-                r'<p class="exc show_exc">.* id="t17"',
-            )
-            contains(
-                "out/partial_626/index.html",
-                '<a href="partial_py.html">partial.py</a>',
-                '<span class="pc_cov">92%</span>',
-            )
-        else:
-            cov.html_report(partial, directory="out/partial")
-            compare_html(gold_path("html/partial"), "out/partial")
-            contains_rx(
-                "out/partial/partial_py.html",
-                r'<p class="par run show_par">.* id="t4"',
-                r'<p class="run">.* id="t7"',
-                # The "if 0" and "if 1" statements are optimized away.
-                r'<p class="pln">.* id="t10"',
-                # The "raise ZeroDivisionError" is excluded by regex in the .ini.
-                r'<p class="exc show_exc">.* id="t17"',
-            )
-            contains(
-                "out/partial/index.html",
-                '<a href="partial_py.html">partial.py</a>',
-                '<span class="pc_cov">91%</span>',
-            )
+        cov.html_report(partial, directory="out/partial")
+        compare_html(gold_path("html/partial"), "out/partial")
+        contains_rx(
+            "out/partial/partial_py.html",
+            r'<p class="par run show_par">.* id="t4"',
+            r'<p class="run">.* id="t7"',
+            # The "if 0" and "if 1" statements are marked as run.
+            r'<p class="run">.* id="t10"',
+            # The "raise ZeroDivisionError" is excluded by regex in the .ini.
+            r'<p class="exc show_exc">.* id="t17"',
+        )
+        contains(
+            "out/partial/index.html",
+            '<a href="partial_py.html">partial.py</a>',
+            '<span class="pc_cov">92%</span>',
+        )
 
     def test_styled(self) -> None:
         self.make_file(
@@ -1460,7 +1442,7 @@ class HtmlWithContextsTest(HtmlTestHelpers, CoverageTest):
         """Get HTML report data from a `Coverage` object for a morf."""
         with self.assert_warnings(cov, []):
             datagen = coverage.html.HtmlDataGeneration(cov)
-            fr, analysis = next(get_analysis_to_report(cov, [morf]))
+            fr, analysis = next(iter(get_analysis_to_report(cov, [morf])))
             file_data = datagen.data_for_file(fr, analysis)
             return file_data
 

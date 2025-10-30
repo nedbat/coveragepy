@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import collections
 import dataclasses
-from collections.abc import Container, Iterable
+from collections.abc import Iterable
 from typing import TYPE_CHECKING
 
 from coverage.exceptions import ConfigError
@@ -113,45 +113,6 @@ class Analysis:
             n_missing_branches=n_missing_branches,
         )
 
-    def narrow(self, lines: Container[TLineNo]) -> Analysis:
-        """Create a narrowed Analysis.
-
-        The current analysis is copied to make a new one that only considers
-        the lines in `lines`.
-        """
-
-        statements = {lno for lno in self.statements if lno in lines}
-        excluded = {lno for lno in self.excluded if lno in lines}
-        executed = {lno for lno in self.executed if lno in lines}
-
-        if self.has_arcs:
-            arc_possibilities_set = {
-                (a, b) for a, b in self.arc_possibilities_set if a in lines or b in lines
-            }
-            arcs_executed_set = {
-                (a, b) for a, b in self.arcs_executed_set if a in lines or b in lines
-            }
-            exit_counts = {lno: num for lno, num in self.exit_counts.items() if lno in lines}
-            no_branch = {lno for lno in self.no_branch if lno in lines}
-        else:
-            arc_possibilities_set = set()
-            arcs_executed_set = set()
-            exit_counts = {}
-            no_branch = set()
-
-        return Analysis(
-            precision=self.precision,
-            filename=self.filename,
-            has_arcs=self.has_arcs,
-            statements=statements,
-            excluded=excluded,
-            executed=executed,
-            arc_possibilities_set=arc_possibilities_set,
-            arcs_executed_set=arcs_executed_set,
-            exit_counts=exit_counts,
-            no_branch=no_branch,
-        )
-
     def missing_formatted(self, branches: bool = False) -> str:
         """The missing line numbers, formatted nicely.
 
@@ -234,6 +195,104 @@ class Analysis:
             missing = len(missing_arcs[lnum])
             stats[lnum] = (exits, exits - missing)
         return stats
+
+
+TRegionLines = frozenset[TLineNo]
+
+
+class AnalysisNarrower:
+    """
+    For reducing an `Analysis` to a subset of its lines.
+
+    Originally this was a simpler method on Analysis, but that led to quadratic
+    behavior.  This class does the bulk of the work up-front to provide the
+    same results in linear time.
+
+    Create an AnalysisNarrower from an Analysis, bulk-add region lines to it
+    with `add_regions`, then individually request new narrowed Analysis objects
+    for each region with `narrow`.  Doing most of the work in limited calls to
+    `add_regions` lets us avoid poor performance.
+    """
+
+    # In this class, regions are represented by a frozenset of their lines.
+
+    def __init__(self, analysis: Analysis) -> None:
+        self.analysis = analysis
+        self.region2arc_possibilities: dict[TRegionLines, set[TArc]] = collections.defaultdict(set)
+        self.region2arc_executed: dict[TRegionLines, set[TArc]] = collections.defaultdict(set)
+        self.region2exit_counts: dict[TRegionLines, dict[TLineNo, int]] = collections.defaultdict(
+            dict
+        )
+
+    def add_regions(self, liness: Iterable[set[TLineNo]]) -> None:
+        """
+        Pre-process a number of sets of line numbers.  Later calls to `narrow`
+        with one of these sets will provide a narrowed Analysis.
+        """
+        if self.analysis.has_arcs:
+            line2region: dict[TLineNo, TRegionLines] = {}
+
+            for lines in liness:
+                fzlines = frozenset(lines)
+                for line in lines:
+                    line2region[line] = fzlines
+
+            def collect_arcs(
+                arc_set: set[TArc],
+                region2arcs: dict[TRegionLines, set[TArc]],
+            ) -> None:
+                for a, b in arc_set:
+                    if r := line2region.get(a):
+                        region2arcs[r].add((a, b))
+                    if r := line2region.get(b):
+                        region2arcs[r].add((a, b))
+
+            collect_arcs(self.analysis.arc_possibilities_set, self.region2arc_possibilities)
+            collect_arcs(self.analysis.arcs_executed_set, self.region2arc_executed)
+
+            for lno, num in self.analysis.exit_counts.items():
+                if r := line2region.get(lno):
+                    self.region2exit_counts[r][lno] = num
+
+    def narrow(self, lines: set[TLineNo]) -> Analysis:
+        """Create a narrowed Analysis.
+
+        The current analysis is copied to make a new one that only considers
+        the lines in `lines`.
+        """
+
+        # Technically, the set intersections in this method are still O(N**2)
+        # since this method is called N times, but they're very fast and moving
+        # them to `add_regions` won't avoid the quadratic time.
+
+        statements = self.analysis.statements & lines
+        excluded = self.analysis.excluded & lines
+        executed = self.analysis.executed & lines
+
+        if self.analysis.has_arcs:
+            fzlines = frozenset(lines)
+            arc_possibilities_set = self.region2arc_possibilities[fzlines]
+            arcs_executed_set = self.region2arc_executed[fzlines]
+            exit_counts = self.region2exit_counts[fzlines]
+            no_branch = self.analysis.no_branch & lines
+        else:
+            arc_possibilities_set = set()
+            arcs_executed_set = set()
+            exit_counts = {}
+            no_branch = set()
+
+        return Analysis(
+            precision=self.analysis.precision,
+            filename=self.analysis.filename,
+            has_arcs=self.analysis.has_arcs,
+            statements=statements,
+            excluded=excluded,
+            executed=executed,
+            arc_possibilities_set=arc_possibilities_set,
+            arcs_executed_set=arcs_executed_set,
+            exit_counts=exit_counts,
+            no_branch=no_branch,
+        )
 
 
 @dataclasses.dataclass

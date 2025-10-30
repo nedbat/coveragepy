@@ -10,7 +10,6 @@ import collections
 import functools
 import os
 import re
-import sys
 import token
 import tokenize
 from collections.abc import Iterable, Sequence
@@ -93,7 +92,7 @@ class PythonParser:
 
         # A dict mapping line numbers to lexical statement starts for
         # multi-line statements.
-        self._multiline: dict[TLineNo, TLineNo] = {}
+        self.multiline_map: dict[TLineNo, TLineNo] = {}
 
         # Lazily-created arc data, and missing arc descriptions.
         self._all_arcs: set[TArc] | None = None
@@ -116,7 +115,9 @@ class PythonParser:
             start, end = match.span()
             start_line = last_start_line + self.text.count("\n", last_start, start)
             end_line = last_start_line + self.text.count("\n", last_start, end)
-            matches.update(self._multiline.get(i, i) for i in range(start_line + 1, end_line + 2))
+            matches.update(
+                self.multiline_map.get(i, i) for i in range(start_line + 1, end_line + 2)
+            )
             last_start = start
             last_start_line = start_line
         return matches
@@ -182,7 +183,7 @@ class PythonParser:
                     # different line than the first line of the statement,
                     # so record a multi-line range.
                     for l in range(first_line, elineno + 1):
-                        self._multiline[l] = first_line
+                        self.multiline_map[l] = first_line
                 first_line = 0
 
             if ttext.strip() and toktype != tokenize.COMMENT:
@@ -231,9 +232,9 @@ class PythonParser:
     def first_line(self, lineno: TLineNo) -> TLineNo:
         """Return the first line number of the statement including `lineno`."""
         if lineno < 0:
-            lineno = -self._multiline.get(-lineno, -lineno)
+            lineno = -self.multiline_map.get(-lineno, -lineno)
         else:
-            lineno = self._multiline.get(lineno, lineno)
+            lineno = self.multiline_map.get(lineno, lineno)
         return lineno
 
     def first_lines(self, linenos: Iterable[TLineNo]) -> set[TLineNo]:
@@ -296,13 +297,12 @@ class PythonParser:
 
         """
         assert self._ast_root is not None
-        aaa = AstArcAnalyzer(self.filename, self._ast_root, self.raw_statements, self._multiline)
+        aaa = AstArcAnalyzer(self.filename, self._ast_root, self.raw_statements, self.multiline_map)
         aaa.analyze()
         arcs = aaa.arcs
-        if env.PYBEHAVIOR.exit_through_with:
-            self._with_jump_fixers = aaa.with_jump_fixers()
-            if self._with_jump_fixers:
-                arcs = self.fix_with_jumps(arcs)
+        self._with_jump_fixers = aaa.with_jump_fixers()
+        if self._with_jump_fixers:
+            arcs = self.fix_with_jumps(arcs)
 
         self._all_arcs = set()
         for l1, l2 in arcs:
@@ -451,33 +451,11 @@ class ByteParser:
     def _line_numbers(self) -> Iterable[TLineNo]:
         """Yield the line numbers possible in this code object.
 
-        Uses co_lnotab described in Python/compile.c to find the
-        line numbers.  Produces a sequence: l0, l1, ...
+        Uses co_lines() to produce a sequence: l0, l1, ...
         """
-        if hasattr(self.code, "co_lines"):
-            # PYVERSIONS: new in 3.10
-            for _, _, line in self.code.co_lines():
-                if line:
-                    yield line
-        else:
-            # Adapted from dis.py in the standard library.
-            byte_increments = self.code.co_lnotab[0::2]
-            line_increments = self.code.co_lnotab[1::2]
-
-            last_line_num: TLineNo | None = None
-            line_num = self.code.co_firstlineno
-            byte_num = 0
-            for byte_incr, line_incr in zip(byte_increments, line_increments):
-                if byte_incr:
-                    if line_num != last_line_num:
-                        yield line_num
-                        last_line_num = line_num
-                    byte_num += byte_incr
-                if line_incr >= 0x80:
-                    line_incr -= 0x100
-                line_num += line_incr
-            if line_num != last_line_num:
-                yield line_num
+        for _, _, line in self.code.co_lines():
+            if line:
+                yield line
 
     def _find_statements(self) -> Iterable[TLineNo]:
         """Find the statements in `self.code`.
@@ -650,19 +628,6 @@ class TryBlock(Block):
         return True
 
 
-class NodeList(ast.AST):
-    """A synthetic fictitious node, containing a sequence of nodes.
-
-    This is used when collapsing optimized if-statements, to represent the
-    unconditional execution of one of the clauses.
-
-    """
-
-    def __init__(self, body: Sequence[ast.AST]) -> None:
-        self.body = body
-        self.lineno = body[0].lineno  # type: ignore[attr-defined]
-
-
 # TODO: Shouldn't the cause messages join with "and" instead of "or"?
 
 
@@ -673,20 +638,22 @@ def is_constant_test_expr(node: ast.AST) -> tuple[bool, bool]:
     handle the kinds of constant expressions people might actually use.
 
     """
-    if isinstance(node, ast.Constant):
-        return True, bool(node.value)
-    elif isinstance(node, ast.Name):
-        if node.id in ["True", "False", "None", "__debug__"]:
-            return True, eval(node.id)  # pylint: disable=eval-used
-    elif isinstance(node, ast.UnaryOp) and isinstance(node.op, ast.Not):
-        is_constant, val = is_constant_test_expr(node.operand)
-        return is_constant, not val
-    elif isinstance(node, ast.BoolOp):
-        rets = [is_constant_test_expr(v) for v in node.values]
-        is_constant = all(is_const for is_const, _ in rets)
-        if is_constant:
-            op = any if isinstance(node.op, ast.Or) else all
-            return True, op(v for _, v in rets)
+    match node:
+        case ast.Constant():
+            return True, bool(node.value)
+        case ast.Name():
+            if node.id in ["True", "False", "None", "__debug__"]:
+                return True, eval(node.id)  # pylint: disable=eval-used
+        case ast.UnaryOp():
+            if isinstance(node.op, ast.Not):
+                is_constant, val = is_constant_test_expr(node.operand)
+                return is_constant, not val
+        case ast.BoolOp():
+            rets = [is_constant_test_expr(v) for v in node.values]
+            is_constant = all(is_const for is_const, _ in rets)
+            if is_constant:
+                op = any if isinstance(node.op, ast.Or) else all
+                return True, op(v for _, v in rets)
     return False, False
 
 
@@ -890,14 +857,8 @@ class AstArcAnalyzer:
         else:
             return node.lineno
 
-    def _line__Module(self, node: ast.Module) -> TLineNo:
-        if env.PYBEHAVIOR.module_firstline_1:
-            return 1
-        elif node.body:
-            return self.line_for_node(node.body[0])
-        else:
-            # Empty modules have no line number, they always start at 1.
-            return 1
+    def _line__Module(self, node: ast.Module) -> TLineNo:  # pylint: disable=unused-argument
+        return 1
 
     # The node types that just flow to the next node with no complications.
     OK_TO_DEFAULT = {
@@ -982,97 +943,11 @@ class AstArcAnalyzer:
         for body_node in body:
             lineno = self.line_for_node(body_node)
             if lineno not in self.statements:
-                maybe_body_node = self.find_non_missing_node(body_node)
-                if maybe_body_node is None:
-                    continue
-                body_node = maybe_body_node
-                lineno = self.line_for_node(body_node)
+                continue
             for prev_start in prev_starts:
                 self.add_arc(prev_start.lineno, lineno, prev_start.cause)
             prev_starts = self.node_exits(body_node)
         return prev_starts
-
-    def find_non_missing_node(self, node: ast.AST) -> ast.AST | None:
-        """Search `node` looking for a child that has not been optimized away.
-
-        This might return the node you started with, or it will work recursively
-        to find a child node in self.statements.
-
-        Returns a node, or None if none of the node remains.
-
-        """
-        # This repeats work just done in process_body, but this duplication
-        # means we can avoid a function call in the 99.9999% case of not
-        # optimizing away statements.
-        lineno = self.line_for_node(node)
-        if lineno in self.statements:
-            return node
-
-        missing_fn = cast(
-            Optional[Callable[[ast.AST], Optional[ast.AST]]],
-            getattr(self, f"_missing__{node.__class__.__name__}", None),
-        )
-        if missing_fn is not None:
-            ret_node = missing_fn(node)
-        else:
-            ret_node = None
-        return ret_node
-
-    # Missing nodes: _missing__*
-    #
-    # Entire statements can be optimized away by Python. They will appear in
-    # the AST, but not the bytecode.  These functions are called (by
-    # find_non_missing_node) to find a node to use instead of the missing
-    # node.  They can return None if the node should truly be gone.
-
-    def _missing__If(self, node: ast.If) -> ast.AST | None:
-        # If the if-node is missing, then one of its children might still be
-        # here, but not both. So return the first of the two that isn't missing.
-        # Use a NodeList to hold the clauses as a single node.
-        non_missing = self.find_non_missing_node(NodeList(node.body))
-        if non_missing:
-            return non_missing
-        if node.orelse:
-            return self.find_non_missing_node(NodeList(node.orelse))
-        return None
-
-    def _missing__NodeList(self, node: NodeList) -> ast.AST | None:
-        # A NodeList might be a mixture of missing and present nodes. Find the
-        # ones that are present.
-        non_missing_children = []
-        for child in node.body:
-            maybe_child = self.find_non_missing_node(child)
-            if maybe_child is not None:
-                non_missing_children.append(maybe_child)
-
-        # Return the simplest representation of the present children.
-        if not non_missing_children:
-            return None
-        if len(non_missing_children) == 1:
-            return non_missing_children[0]
-        return NodeList(non_missing_children)
-
-    def _missing__While(self, node: ast.While) -> ast.AST | None:
-        body_nodes = self.find_non_missing_node(NodeList(node.body))
-        if not body_nodes:
-            return None
-        # Make a synthetic While-true node.
-        new_while = ast.While()  # type: ignore[call-arg]
-        new_while.lineno = body_nodes.lineno  # type: ignore[attr-defined]
-        new_while.test = ast.Name()  # type: ignore[call-arg]
-        new_while.test.lineno = body_nodes.lineno  # type: ignore[attr-defined]
-        new_while.test.id = "True"
-        assert hasattr(body_nodes, "body")
-        new_while.body = body_nodes.body
-        new_while.orelse = []
-        return new_while
-
-    # In the fullness of time, these might be good tests to write:
-    #   while EXPR:
-    #   while False:
-    #   listcomps hidden deep in other expressions
-    #   listcomps hidden in lists: x = [[i for i in range(10)]]
-    #   nested function definitions
 
     # Exit processing: process_*_exits
     #
@@ -1192,41 +1067,34 @@ class AstArcAnalyzer:
             exits |= self.process_body(node.orelse, from_start=from_start)
         return exits
 
-    if sys.version_info >= (3, 10):
-
-        def _handle__Match(self, node: ast.Match) -> set[ArcStart]:
-            start = self.line_for_node(node)
-            last_start = start
-            exits = set()
-            for case in node.cases:
-                case_start = self.line_for_node(case.pattern)
-                self.add_arc(last_start, case_start, "the pattern on line {lineno} always matched")
-                from_start = ArcStart(
-                    case_start,
-                    cause="the pattern on line {lineno} never matched",
-                )
-                exits |= self.process_body(case.body, from_start=from_start)
-                last_start = case_start
-
-            # case is now the last case, check for wildcard match.
-            pattern = case.pattern  # pylint: disable=undefined-loop-variable
-            while isinstance(pattern, ast.MatchOr):
-                pattern = pattern.patterns[-1]
-            while isinstance(pattern, ast.MatchAs) and pattern.pattern is not None:
-                pattern = pattern.pattern
-            had_wildcard = (
-                isinstance(pattern, ast.MatchAs) and pattern.pattern is None and case.guard is None  # pylint: disable=undefined-loop-variable
-            )
-
-            if not had_wildcard:
-                exits.add(
-                    ArcStart(case_start, cause="the pattern on line {lineno} always matched"),
-                )
-            return exits
-
-    def _handle__NodeList(self, node: NodeList) -> set[ArcStart]:
+    def _handle__Match(self, node: ast.Match) -> set[ArcStart]:
         start = self.line_for_node(node)
-        exits = self.process_body(node.body, from_start=ArcStart(start))
+        last_start = start
+        exits = set()
+        for case in node.cases:
+            case_start = self.line_for_node(case.pattern)
+            self.add_arc(last_start, case_start, "the pattern on line {lineno} always matched")
+            from_start = ArcStart(
+                case_start,
+                cause="the pattern on line {lineno} never matched",
+            )
+            exits |= self.process_body(case.body, from_start=from_start)
+            last_start = case_start
+
+        # case is now the last case, check for wildcard match.
+        pattern = case.pattern  # pylint: disable=undefined-loop-variable
+        while isinstance(pattern, ast.MatchOr):
+            pattern = pattern.patterns[-1]
+        while isinstance(pattern, ast.MatchAs) and pattern.pattern is not None:
+            pattern = pattern.pattern
+        had_wildcard = (
+            isinstance(pattern, ast.MatchAs) and pattern.pattern is None and case.guard is None  # pylint: disable=undefined-loop-variable
+        )
+
+        if not had_wildcard:
+            exits.add(
+                ArcStart(case_start, cause="the pattern on line {lineno} always matched"),
+            )
         return exits
 
     def _handle__Raise(self, node: ast.Raise) -> set[ArcStart]:
@@ -1301,13 +1169,6 @@ class AstArcAnalyzer:
     def _handle__While(self, node: ast.While) -> set[ArcStart]:
         start = to_top = self.line_for_node(node.test)
         constant_test, _ = is_constant_test_expr(node.test)
-        top_is_body0 = False
-        if constant_test:
-            top_is_body0 = True
-        if env.PYBEHAVIOR.keep_constant_test:
-            top_is_body0 = False
-        if top_is_body0:
-            to_top = self.line_for_node(node.body[0])
         self.block_stack.append(LoopBlock(start=to_top))
         from_start = ArcStart(start, cause="the condition on line {lineno} was never true")
         exits = self.process_body(node.body, from_start=from_start)
@@ -1332,22 +1193,20 @@ class AstArcAnalyzer:
             starts = [self.line_for_node(item.context_expr) for item in node.items]
         else:
             starts = [self.line_for_node(node)]
-        if env.PYBEHAVIOR.exit_through_with:
-            for start in starts:
-                self.current_with_starts.add(start)
-                self.all_with_starts.add(start)
+        for start in starts:
+            self.current_with_starts.add(start)
+            self.all_with_starts.add(start)
 
         exits = self.process_body(node.body, from_start=ArcStart(starts[-1]))
 
-        if env.PYBEHAVIOR.exit_through_with:
-            start = starts[-1]
-            self.current_with_starts.remove(start)
-            with_exit = {ArcStart(start)}
-            if exits:
-                for xit in exits:
-                    self.add_arc(xit.lineno, start)
-                    self.with_exits.add((xit.lineno, start))
-                exits = with_exit
+        start = starts[-1]
+        self.current_with_starts.remove(start)
+        with_exit = {ArcStart(start)}
+        if exits:
+            for xit in exits:
+                self.add_arc(xit.lineno, start)
+                self.with_exits.add((xit.lineno, start))
+            exits = with_exit
 
         return exits
 
