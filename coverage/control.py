@@ -8,6 +8,7 @@ from __future__ import annotations
 import atexit
 import collections
 import contextlib
+import datetime
 import functools
 import os
 import os.path
@@ -1396,6 +1397,7 @@ class Coverage(TConfigurable):
             ("path", sys.path),
             ("environment", [f"{k} = {v}" for k, v in relevant_environment_display(os.environ)]),
             ("command_line", " ".join(getattr(sys, "argv", ["-none-"]))),
+            ("time", f"{datetime.datetime.now():%Y-%m-%d %H:%M:%S}"),
         ]
 
         if self._inorout is not None:
