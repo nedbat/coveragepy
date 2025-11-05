@@ -251,10 +251,16 @@ class ConcurrencyTest(CoverageTest):
             lines = line_count(code)
             assert line_counts(data)["try_it.py"] == lines
 
+    @pytest.mark.skipif(
+        not testenv.CAN_MEASURE_THREADS, reason="Can't measure threads with this core."
+    )
     def test_threads(self) -> None:
         code = (THREAD + SUM_RANGE_Q + PRINT_SUM_RANGE).format(QLIMIT=self.QLIMIT)
         self.try_some_code(code, "thread", threading)
 
+    @pytest.mark.skipif(
+        not testenv.CAN_MEASURE_THREADS, reason="Can't measure threads with this core."
+    )
     def test_threads_simple_code(self) -> None:
         code = SIMPLE.format(QLIMIT=self.QLIMIT)
         self.try_some_code(code, "thread", threading)
@@ -318,6 +324,9 @@ class ConcurrencyTest(CoverageTest):
         self.try_some_code(BUG_330, "eventlet", eventlet, "0\n")
 
     # Sometimes a test fails due to inherent randomness. Try more times.
+    @pytest.mark.skipif(
+        not testenv.CAN_MEASURE_THREADS, reason="Can't measure threads with this core."
+    )
     @pytest.mark.flaky(max_runs=3)
     def test_threads_with_gevent(self) -> None:
         self.make_file(
@@ -554,6 +563,9 @@ class MultiprocessingTest(CoverageTest):
             start_method=start_method,
         )
 
+    @pytest.mark.skipif(
+        not testenv.CAN_MEASURE_BRANCHES, reason="Can't measure branches with this core"
+    )
     def test_multiprocessing_with_branching(self, start_method: str) -> None:
         nprocs = 3
         upto = 30

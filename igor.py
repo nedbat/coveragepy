@@ -52,8 +52,11 @@ def do_show_env():
         print(f"  {env} = {os.environ[env]!r}")
 
 
-def do_remove_extension(*args):
+def remove_extension(core):
     """Remove the compiled C extension, no matter what its name."""
+
+    if core == "ctrace":
+        return
 
     so_patterns = """
         tracer.so
@@ -62,42 +65,37 @@ def do_remove_extension(*args):
         tracer.*.pyd
         """.split()
 
-    if "--from-install" in args:
-        # Get the install location using a subprocess to avoid
-        # locking the file we are about to delete
-        root = os.path.dirname(
-            subprocess.check_output(
-                [
-                    sys.executable,
-                    "-Xutf8",
-                    "-c",
-                    "import coverage; print(coverage.__file__)",
-                ],
-                encoding="utf-8",
-            ).strip(),
-        )
-        roots = [root]
-    else:
-        roots = [
-            "coverage",
-            "build/*/coverage",
-            ".tox/*/[Ll]ib/*/site-packages/coverage",
-            ".tox/*/[Ll]ib/site-packages/coverage",
-        ]
+    roots = [
+        "coverage",
+        "build/*/coverage",
+        ".tox/*/[Ll]ib/*/site-packages/coverage",
+        ".tox/*/[Ll]ib/site-packages/coverage",
+    ]
 
+    # On windows at least, we can't delete a loaded .pyd file. So move them
+    # out of the way into the tmp/ directory.
+    os.makedirs("tmp", exist_ok=True)
     for root, pattern in itertools.product(roots, so_patterns):
         pattern = os.path.join(root, pattern)
         if VERBOSITY > 1:
             print(f"Searching for {pattern} from {os.getcwd()}")
         for filename in glob.glob(pattern):
             if os.path.exists(filename):
+                hidden = f"tmp/{os.path.basename(filename)}"
                 if VERBOSITY > 1:
-                    print(f"Removing {os.path.abspath(filename)}")
+                    print(f"Moving {filename} to {hidden}")
                 try:
-                    os.remove(filename)
+                    if os.path.exists(hidden):
+                        os.remove(hidden)
                 except OSError as exc:
                     if VERBOSITY > 1:
-                        print(f"Couldn't remove {os.path.abspath(filename)}: {exc}")
+                        print(f"Couldn't remove {hidden}: {exc}")
+                else:
+                    try:
+                        os.rename(filename, hidden)
+                    except OSError as exc:
+                        if VERBOSITY > 1:
+                            print(f"Couldn't rename: {exc}")
 
 
 def label_for_core(core):
@@ -112,13 +110,16 @@ def label_for_core(core):
         raise ValueError(f"Bad core: {core!r}")
 
 
-def should_skip(core):
+def should_skip(core, metacov):
     """Is there a reason to skip these tests?
 
     Return empty string to run tests, or a message about why we are skipping
     the tests.
     """
     skipper = ""
+
+    if metacov and core == "sysmon" and ((3, 12) <= sys.version_info < (3, 14)):
+        skipper = "sysmon can't measure branches in Python 3.12-3.13"
 
     # $set_env.py: COVERAGE_TEST_CORES - List of cores to run: ctrace, pytrace, sysmon
     test_cores = os.getenv("COVERAGE_TEST_CORES")
@@ -140,7 +141,8 @@ def should_skip(core):
                     skipper = f"No C core for {platform.python_implementation()}"
 
     if skipper:
-        return f"Skipping tests {label_for_core(core)}: {skipper}"
+        what = "metacov" if metacov else "tests"
+        return f"Skipping {what} {label_for_core(core)}: {skipper}"
     else:
         return ""
 
@@ -157,10 +159,10 @@ def make_env_id(core):
 
 def run_tests(core, *runner_args):
     """The actual running of tests."""
+    remove_extension(core)
     if "COVERAGE_TESTING" not in os.environ:
         os.environ["COVERAGE_TESTING"] = "True"
     print_banner(label_for_core(core))
-
     return pytest.main(list(runner_args))
 
 
@@ -209,6 +211,8 @@ def run_tests_with_coverage(core, *runner_args):
                 if getattr(mod, "__file__", "??").startswith(covdir):
                     covmods[name] = mod
                     del sys.modules[name]
+        remove_extension(core)
+
         import coverage  # pylint: disable=reimported
 
         sys.modules.update(covmods)
@@ -246,15 +250,17 @@ def do_combine_html():
 
 def do_test_with_core(core, *runner_args):
     """Run tests with a particular core."""
+    metacov = os.getenv("COVERAGE_COVERAGE", "no") == "yes"
+
     # If we should skip these tests, skip them.
-    skip_msg = should_skip(core)
+    skip_msg = should_skip(core, metacov)
     if skip_msg:
         if VERBOSITY > 0:
             print(skip_msg)
         return None
 
     os.environ["COVERAGE_CORE"] = core
-    if os.getenv("COVERAGE_COVERAGE", "no") == "yes":
+    if metacov:
         return run_tests_with_coverage(core, *runner_args)
     else:
         return run_tests(core, *runner_args)
