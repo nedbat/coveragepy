@@ -24,7 +24,7 @@ _clean_platform:
 	@rm -f .DS_Store */.DS_Store */*/.DS_Store */*/*/.DS_Store */*/*/*/.DS_Store
 
 debug_clean:				## Delete various debugging artifacts.
-	@rm -rf /tmp/dis $$COVERAGE_DEBUG_FILE
+	@rm -rf /tmp/dis /tmp/foo.out $$COVERAGE_DEBUG_FILE
 
 clean: debug_clean _clean_platform	## Remove artifacts of test execution, installation, etc.
 	@echo "Cleaning..."
