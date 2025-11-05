@@ -13,6 +13,7 @@ import random
 import re
 import sys
 import threading
+import concurrent.futures
 import time
 
 from types import ModuleType
@@ -412,6 +413,32 @@ SUM_RANGE_WORK = """
         return sum_range((x+1)*100)
     """
 
+MULTI_CODE_DIR_CHANGE = """
+    import os
+    import tempfile
+    from concurrent.futures import ProcessPoolExecutor
+
+    def add(a, b):
+        return a + b
+
+    def probe_dispatcher():
+        orig_dir = os.getcwd()
+        with tempfile.TemporaryDirectory() as temp_dir:
+            os.chdir(temp_dir)
+            dispatcher()
+        os.chdir(orig_dir)
+
+    def dispatcher():
+        futures = []
+        with ProcessPoolExecutor({NPROCS}) as executor:
+            futures.append(executor.submit(add, 2, 2))
+        for future in futures:
+            future.result()
+
+    if __name__ == "__main__":
+        probe_dispatcher()
+    """
+
 MULTI_CODE = """
     # Above this will be a definition of work().
     import multiprocessing
@@ -518,6 +545,20 @@ class MultiprocessingTest(CoverageTest):
             code,
             expected_out,
             threading,
+            nprocs,
+            start_method=start_method,
+        )
+
+    def test_gh_2065(self, start_method: str) -> None:
+        nprocs = 1
+        upto = 30
+        code = (MULTI_CODE_DIR_CHANGE).format(NPROCS=nprocs, UPTO=upto)
+        total = 0
+        expected_out = f""
+        self.try_multiprocessing_code(
+            code,
+            expected_out,
+            concurrent.futures,
             nprocs,
             start_method=start_method,
         )

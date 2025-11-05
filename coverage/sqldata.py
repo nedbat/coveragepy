@@ -11,6 +11,7 @@ import functools
 import glob
 import itertools
 import os
+import shutil
 import random
 import socket
 import sqlite3
@@ -232,6 +233,8 @@ class CoverageData:
         no_disk: bool = False,
         warn: TWarnFn | None = None,
         debug: TDebugCtl | None = None,
+        *,
+        orig_dir = None,
     ) -> None:
         """Create a :class:`CoverageData` object to hold coverage-measured data.
 
@@ -271,6 +274,7 @@ class CoverageData:
         self._current_context: str | None = None
         self._current_context_id: int | None = None
         self._query_context_ids: list[int] | None = None
+        self.orig_dir = orig_dir
 
     __repr__ = auto_repr
 
@@ -898,6 +902,11 @@ class CoverageData:
     def write(self) -> None:
         """Ensure the data is written to the data file."""
         self._debug_dataio("Writing (no-op) data file", self._filename)
+        if self.orig_dir is not None:
+            for fname in os.listdir():
+                if fname.startswith(".coverage."):
+                    if not os.path.exists(os.path.join(self.orig_dir, fname)):
+                        shutil.copy(fname, self.orig_dir)
 
     def _start_using(self) -> None:
         """Call this before using the database at all."""
