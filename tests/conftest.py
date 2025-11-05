@@ -104,3 +104,19 @@ def create_pth_file_fixture() -> Iterable[None]:
     finally:
         for p in pth_files:
             p.unlink()
+
+
+@pytest.hookimpl(wrapper=True)
+def pytest_runtest_call() -> Iterable[None]:
+    """Check the exception raised by the test, and skip the test if needed."""
+    try:
+        yield
+    except Exception as e:  # pragma: never metacov
+        # This code is for dealing with the exception raised when we are
+        # measuring with a core that doesn't support branch measurement.
+        # During metacov, we skip those situations entirely by not running
+        # sysmon on 3.12 or 3.13, so this code is never needed during metacov.
+        if getattr(e, "skip_tests", False):
+            pytest.skip(f"Skipping for exception: {e}")
+        else:
+            raise

@@ -23,6 +23,14 @@ upgrading your version of coverage.py.
 Unreleased
 ----------
 
+- Fix: if the measurement core defaults to "sysmon" (the default for Python
+  3.14+ since v7.9.1), but sysmon can't support some aspect of your
+  configuration (concurrency settings, dynamic contexts, and so on), then the
+  ctrace core is used instead. Previously, this would result in an error.
+  Now a warning is issued instead, explaining the fallback. An explicit request
+  for sysmon with conflicting settings will still result in an error. Closes
+  `issue 2064`_.
+
 - Fix: some multi-line case clauses or for loops (and probably other
   constructs) could cause incorrect claims of missing branches with the
   sys.monitoring core, as described in `issue 2070`_. This is now fixed.
@@ -38,6 +46,7 @@ Unreleased
   very useful.
 
 .. _issue 1420: https://github.com/nedbat/coveragepy/issues/1420
+.. _issue 2064: https://github.com/nedbat/coveragepy/issues/2064
 .. _issue 2070: https://github.com/nedbat/coveragepy/issues/2070
 
 

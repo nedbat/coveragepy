@@ -182,7 +182,11 @@ def cant_trace_msg(concurrency: str, the_module: ModuleType | None) -> str | Non
         parts.remove("multiprocessing")
         concurrency = ",".join(parts)
 
-    if the_module is None:
+    if testenv.SYS_MON and concurrency:
+        expected_out = (
+            f"Can't use core=sysmon: sys.monitoring doesn't support concurrency={concurrency}\n"
+        )
+    elif the_module is None:
         # We don't even have the underlying module installed, we expect
         # coverage to alert us to this fact.
         expected_out = (
@@ -356,12 +360,12 @@ class ConcurrencyTest(CoverageTest):
         )
         _, out = self.run_command_status("coverage run --concurrency=thread,gevent both.py")
         if gevent is None:
-            assert out == ("Couldn't trace with concurrency=gevent, the module isn't installed.\n")
+            assert "Couldn't trace with concurrency=gevent, the module isn't installed.\n" in out
             pytest.skip("Can't run test without gevent installed.")
         if not testenv.C_TRACER:
+            assert testenv.PY_TRACER
             assert out == (
-                f"Can't support concurrency=gevent with {testenv.REQUESTED_TRACER_CLASS}, "
-                + "only threads are supported.\n"
+                "Can't support concurrency=gevent with PyTracer, only threads are supported.\n"
             )
             pytest.skip(f"Can't run gevent with {testenv.REQUESTED_TRACER_CLASS}.")
 
@@ -401,7 +405,10 @@ class WithoutConcurrencyModuleTest(CoverageTest):
     def test_missing_module(self, module: str) -> None:
         self.make_file("prog.py", "a = 1")
         sys.modules[module] = None  # type: ignore[assignment]
-        msg = f"Couldn't trace with concurrency={module}, the module isn't installed."
+        if testenv.SYS_MON:
+            msg = rf"Can't use core=sysmon: sys.monitoring doesn't support concurrency={module}"
+        else:
+            msg = rf"Couldn't trace with concurrency={module}, the module isn't installed."
         with pytest.raises(ConfigError, match=msg):
             self.command_line(f"run --concurrency={module} prog.py")
 
