@@ -1,7 +1,7 @@
 # Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
 # For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
 
-name: Fedora dev env
+name: Fedora dev env ned
 
 on:
   push:
@@ -33,7 +33,7 @@ jobs:
     - name: Install dependencies
       run: >-
         dnf install -y
-        gcc git python3.13-freethreading python3.14-freethreading
+        gcc git python3.13-freethreading python3.14-freethreading tox
 
     - name: Check out the repo
       uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
