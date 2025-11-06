@@ -336,7 +336,8 @@ Before version 4.2, this option only accepted a single string.
 (string) Specify which trace function implementation to use. Valid values are:
 "pytrace" for the pure Python implementation, "ctrace" for the C implementation
 (default until Python 3.13),
-or "sysmon" (Python 3.12+ only) for the :mod:`sys.monitoring <python:sys.monitoring>`
+or "sysmon" (Python 3.12+ only) for the
+:mod:`sys.monitoring <python:sys.monitoring>`
 implementation (default with Python 3.14+).
 
 This was previously only available as the COVERAGE_CORE environment variable.
