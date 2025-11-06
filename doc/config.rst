@@ -333,15 +333,21 @@ Before version 4.2, this option only accepted a single string.
 [run] core
 ..........
 
-(string) Specify which trace function implementation to use. Valid values are:
-"pytrace" for the pure Python implementation, "ctrace" for the C implementation
-(default until Python 3.13),
-or "sysmon" (Python 3.12+ only) for the
-:mod:`sys.monitoring <python:sys.monitoring>`
-implementation (default with Python 3.14+).
+(string, default depends on the Python version) Specify which measurement core
+to use. Valid values are:
 
-This was previously only available as the COVERAGE_CORE environment variable.
-Note that the "sysmon" core does not yet support plugins or dynamic contexts.
+- ``ctrace``: the C implementation of a sys.settrace function.  This was the
+  default until Python 3.13.
+
+- ``sysmon``: the :mod:`sys.monitoring <python:sys.monitoring>` implementation.
+  Only available in Python 3.12+, and the default in Python 3.14+.  The sysmon
+  core does not yet support plugins, dynamic contexts, or some concurrency
+  libraries. In Python 3.12 and 3.13, it does not support branch coverage.
+
+- ``pytrace``: the pure Python implementation of a sys.settrace function.
+
+This setting was previously only available as the COVERAGE_CORE environment
+variable.
 
 .. versionadded:: 7.9
 

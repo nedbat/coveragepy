@@ -83,13 +83,9 @@ class CoverageCoreTest(CoverageTest):
         if status == 0:
             assert out.endswith("123 456\n")
             core = re_line(r" core:", out).strip()
-            warns = re_lines(r"\(no-sysmon\)", out)
             assert core == "core: SysMonitor"
-            assert not warns
         else:
-            assert out.endswith(
-                "Can't use core=sysmon: sys.monitoring isn't available in this version\n"
-            )
+            assert "Can't use core=sysmon: sys.monitoring isn't available in this version;" in out
 
     def test_core_request_sysmon_no_dyncontext(self) -> None:
         # Use config core= for this test just to be different.
@@ -103,12 +99,9 @@ class CoverageCoreTest(CoverageTest):
         )
         out = self.run_command("coverage run --debug=sys numbers.py", status=1)
         if env.PYBEHAVIOR.pep669:
-            assert (
-                "Can't use core=sysmon: sys.monitoring doesn't yet support dynamic contexts\n"
-                in out
-            )
+            assert "Can't use core=sysmon: it doesn't yet support dynamic contexts;" in out
         else:
-            assert "Can't use core=sysmon: sys.monitoring isn't available in this version\n" in out
+            assert "Can't use core=sysmon: sys.monitoring isn't available in this version;" in out
 
     def test_core_request_sysmon_no_branches(self) -> None:
         # Use config core= for this test just to be different.
@@ -124,19 +117,17 @@ class CoverageCoreTest(CoverageTest):
             status = 0
         elif env.PYBEHAVIOR.pep669:
             status = 1
-            msg = "Can't use core=sysmon: sys.monitoring can't measure branches in this version\n"
+            msg = "Can't use core=sysmon: sys.monitoring can't measure branches in this version;"
         else:
             status = 1
-            msg = "Can't use core=sysmon: sys.monitoring isn't available in this version\n"
+            msg = "Can't use core=sysmon: sys.monitoring isn't available in this version;"
         out = self.run_command("coverage run --debug=sys numbers.py", status=status)
         if status == 0:
             assert out.endswith("123 456\n")
             core = re_line(r" core:", out).strip()
-            warns = re_lines(r"\(no-sysmon\)", out)
             assert core == "core: SysMonitor"
-            assert not warns
         else:
-            assert out.endswith(msg)  # pylint: disable=possibly-used-before-assignment
+            assert msg in out  # pylint: disable=possibly-used-before-assignment
 
     def test_core_request_nosuchcore(self) -> None:
         # Test the coverage misconfigurations in-process with pytest. Running a

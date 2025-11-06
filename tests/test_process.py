@@ -1545,7 +1545,6 @@ class ProcessStartupTest(CoverageTest):
             ".coveragerc",
             """\
             [run]
-            disable_warnings = no-sysmon
             patch = subprocess
             """,
         )

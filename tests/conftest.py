@@ -57,8 +57,6 @@ def set_warnings() -> None:
     # https://github.com/python/cpython/issues/105539
     warnings.filterwarnings("ignore", r"unclosed database", category=ResourceWarning)
 
-    warnings.filterwarnings("ignore", r".*no-sysmon")
-
     # We have a test that has a return in a finally: test_bug_1891.
     warnings.filterwarnings("ignore", "'return' in a 'finally' block", category=SyntaxWarning)
 

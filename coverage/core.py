@@ -72,13 +72,13 @@ class Core:
         # Check the conditions that preclude us from using sys.monitoring.
         reason_no_sysmon = ""
         if not env.PYBEHAVIOR.pep669:
-            reason_no_sysmon = "isn't available in this version"
+            reason_no_sysmon = "sys.monitoring isn't available in this version"
         elif config.branch and not env.PYBEHAVIOR.branch_right_left:
-            reason_no_sysmon = "can't measure branches in this version"
+            reason_no_sysmon = "sys.monitoring can't measure branches in this version"
         elif dynamic_contexts:
-            reason_no_sysmon = "doesn't yet support dynamic contexts"
+            reason_no_sysmon = "it doesn't yet support dynamic contexts"
         elif any((bad := c) in config.concurrency for c in ["greenlet", "eventlet", "gevent"]):
-            reason_no_sysmon = f"doesn't support concurrency={bad}"
+            reason_no_sysmon = f"it doesn't support concurrency={bad}"
 
         core_name: str | None = None
         if config.timid:
@@ -92,7 +92,9 @@ class Core:
         if core_name == "sysmon" and reason_no_sysmon:
             _debug(f"core.py: raising ConfigError because sysmon not usable: {reason_no_sysmon}")
             raise ConfigError(
-                f"Can't use core=sysmon: sys.monitoring {reason_no_sysmon}", skip_tests=True
+                f"Can't use core=sysmon: {reason_no_sysmon}",
+                skip_tests=True,
+                slug="no-sysmon",
             )
 
         if core_name is None:

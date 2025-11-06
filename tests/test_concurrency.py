@@ -183,21 +183,17 @@ def cant_trace_msg(concurrency: str, the_module: ModuleType | None) -> str | Non
         concurrency = ",".join(parts)
 
     if testenv.SYS_MON and concurrency:
-        expected_out = (
-            f"Can't use core=sysmon: sys.monitoring doesn't support concurrency={concurrency}\n"
-        )
+        expected_out = f"Can't use core=sysmon: it doesn't support concurrency={concurrency};"
     elif the_module is None:
         # We don't even have the underlying module installed, we expect
         # coverage to alert us to this fact.
-        expected_out = (
-            f"Couldn't trace with concurrency={concurrency}, the module isn't installed.\n"
-        )
+        expected_out = f"Couldn't trace with concurrency={concurrency}, the module isn't installed."
     elif testenv.C_TRACER or concurrency == "thread" or concurrency == "":
         expected_out = None
     else:
         expected_out = (
             f"Can't support concurrency={concurrency} with {testenv.REQUESTED_TRACER_CLASS}, "
-            + "only threads are supported.\n"
+            + "only threads are supported."
         )
     return expected_out
 
@@ -230,7 +226,7 @@ class ConcurrencyTest(CoverageTest):
         expected_cant_trace = cant_trace_msg(concurrency, the_module)
 
         if expected_cant_trace is not None:
-            assert out == expected_cant_trace
+            assert expected_cant_trace in out
             pytest.skip(f"Can't test: {expected_cant_trace}")
         else:
             # We can fully measure the code if we are using the C tracer, which
@@ -406,7 +402,7 @@ class WithoutConcurrencyModuleTest(CoverageTest):
         self.make_file("prog.py", "a = 1")
         sys.modules[module] = None  # type: ignore[assignment]
         if testenv.SYS_MON:
-            msg = rf"Can't use core=sysmon: sys.monitoring doesn't support concurrency={module}"
+            msg = rf"Can't use core=sysmon: it doesn't support concurrency={module}"
         else:
             msg = rf"Couldn't trace with concurrency={module}, the module isn't installed."
         with pytest.raises(ConfigError, match=msg):
@@ -501,8 +497,7 @@ class MultiprocessingTest(CoverageTest):
         expected_cant_trace = cant_trace_msg(concurrency, the_module)
 
         if expected_cant_trace is not None:
-            print(out)
-            assert out == expected_cant_trace
+            assert expected_cant_trace in out
             pytest.skip(f"Can't test: {expected_cant_trace}")
         else:
             assert out.rstrip() == expected_out
@@ -579,9 +574,6 @@ class MultiprocessingTest(CoverageTest):
         code = (SQUARE_OR_CUBE_WORK + MULTI_CODE).format(NPROCS=nprocs, UPTO=upto)
         total = sum(x * x if x % 2 else x * x * x for x in range(upto))
         expected_out = f"{nprocs} pids, total = {total}"
-        expect_warn = (
-            env.PYBEHAVIOR.pep669 and (not env.PYBEHAVIOR.branch_right_left) and testenv.SYS_MON
-        )
         self.make_file("multi.py", code)
         self.make_file(
             "multi.rc",
@@ -590,8 +582,7 @@ class MultiprocessingTest(CoverageTest):
             concurrency = multiprocessing
             branch = True
             omit = */site-packages/*
-            """
-            + ("disable_warnings = no-sysmon" if expect_warn else ""),
+            """,
         )
 
         out = self.run_command(f"coverage run --rcfile=multi.rc multi.py {start_method}")
