@@ -585,6 +585,7 @@ class Coverage(TConfigurable):
 
         self._core = Core(
             warn=self._warn,
+            debug=(self._debug if self._debug.should("core") else None),
             config=self.config,
             dynamic_contexts=(should_start_context is not None),
             metacov=self._metacov,

@@ -41,6 +41,8 @@ Unreleased
   slight performance improvement, but I couldn't reproduce the performance
   gain, so it's been reverted, fixing the debugger problem.
 
+- A new debug option ``--debug=core`` shows which core is in use and why.
+
 - Split ``sqlite`` debugging information out of the ``sys`` :ref:`coverage
   debug <cmd_debug>` and :ref:`cmd_run_debug` options since it's bulky and not
   very useful.

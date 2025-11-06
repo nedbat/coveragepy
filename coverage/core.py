@@ -16,7 +16,7 @@ from coverage.exceptions import ConfigError
 from coverage.misc import isolate_module
 from coverage.pytracer import PyTracer
 from coverage.sysmon import SysMonitor
-from coverage.types import TFileDisposition, Tracer, TWarnFn
+from coverage.types import TDebugCtl, TFileDisposition, Tracer, TWarnFn
 
 os = isolate_module(os)
 
@@ -56,11 +56,19 @@ class Core:
 
     def __init__(
         self,
+        *,
         warn: TWarnFn,
+        debug: TDebugCtl | None,
         config: CoverageConfig,
         dynamic_contexts: bool,
         metacov: bool,
     ) -> None:
+        def _debug(msg: str) -> None:
+            if debug:
+                debug.write(msg)
+
+        _debug("in core.py")
+
         # Check the conditions that preclude us from using sys.monitoring.
         reason_no_sysmon = ""
         if not env.PYBEHAVIOR.pep669:
@@ -75,11 +83,14 @@ class Core:
         core_name: str | None = None
         if config.timid:
             core_name = "pytrace"
+            _debug("core.py: Using pytrace because timid=True")
         elif core_name is None:
             # This could still leave core_name as None.
             core_name = config.core
+            _debug(f"core.py: core from config is {core_name!r}")
 
         if core_name == "sysmon" and reason_no_sysmon:
+            _debug(f"core.py: raising ConfigError because sysmon not usable: {reason_no_sysmon}")
             raise ConfigError(
                 f"Can't use core=sysmon: sys.monitoring {reason_no_sysmon}", skip_tests=True
             )
@@ -87,14 +98,19 @@ class Core:
         if core_name is None:
             if env.SYSMON_DEFAULT and not reason_no_sysmon:
                 core_name = "sysmon"
+                _debug("core.py: Using sysmon because SYSMON_DEFAULT is set")
             else:
                 core_name = "ctrace"
+                _debug("core.py: Defaulting to ctrace core")
 
         if core_name == "ctrace":
             if not CTRACER_FILE:
                 if IMPORT_ERROR and env.SHIPPING_WHEELS:
                     warn(f"Couldn't import C tracer: {IMPORT_ERROR}", slug="no-ctracer", once=True)
                 core_name = "pytrace"
+                _debug("core.py: Falling back to pytrace because C tracer not available")
+
+        _debug(f"core.py: Using core={core_name}")
 
         self.tracer_kwargs = {}
 

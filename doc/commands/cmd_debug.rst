@@ -68,6 +68,8 @@ of activity to log:
 * ``config``: before starting, dump all the :ref:`configuration <config>`
   values.
 
+* ``core``: log decision about choosing the measurement core to use.
+
 * ``dataio``: log when reading or writing any data file.
 
 * ``dataop``: log a summary of data being added to CoverageData objects.
