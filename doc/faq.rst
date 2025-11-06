@@ -143,15 +143,23 @@ The total percentage is calculated as::
 Q: Coverage.py is much slower than I remember, what's going on?
 ...............................................................
 
-Make sure you are using the C trace function.  Coverage.py provides two
-implementations of the trace function.  The C implementation runs much faster.
-To see what you are running, use ``coverage debug sys``.  The output contains
-details of the environment, including a line that says either
-``CTracer: available`` or ``CTracer: unavailable``.  If it says unavailable,
-then you are using the slow Python implementation.
+Make sure you are using the ``ctrace`` or ``sysmon`` core for measurement.
+Coverage.py provides three different measurement cores. ``ctrace`` is the
+default in Python versions up to 3.13, but might not be installed properly, in
+which case the slower ``pytrace`` core is used.
 
-Try re-installing coverage.py to see what happened and if you get the CTracer
-as you should.
+``sysmon`` is the default in Python 3.14 and later, and is the fastest of the
+three.
+
+To see what you are running, add ``--debug=sys`` to your ``coverage run``
+command line.  The ``core=`` line will indicate which core is being used.  The
+output also includes a line that says either ``CTracer: available`` or
+``CTracer: unavailable`` showing whether the ``ctrace`` core is installed and
+usable.  If it's not, try re-installing coverage.py to see what happened and if
+you get the CTracer as you should.
+
+If needed, you can request a specific core with the ``core=`` setting.  See the
+:ref:`core configuration <config_run_core>` documentation for details.
 
 
 Q: Isn't coverage testing the best thing ever?

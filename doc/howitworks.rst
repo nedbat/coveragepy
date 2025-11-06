@@ -19,13 +19,13 @@ Coverage.py works in three phases:
   have run.
 
 * **Reporting**: Coverage.py combines the results of execution and analysis to
-  produce a coverage number and an indication of missing execution.
+  produce coverage statistics and a report of missing execution.
 
 The execution phase is handled by the ``coverage run`` command.  The analysis
 and reporting phases are handled by the reporting commands like ``coverage
 report`` or ``coverage html``.
 
-As a short-hand, I say that coverage.py measures what lines were executed. But
+As a short-hand, I say that coverage.py measures what lines were executed, but
 it collects more information than that.  It can measure what branches were
 taken, and if you have contexts enabled, for each line or branch, it will also
 measure what contexts they were executed in.
@@ -36,30 +36,46 @@ Let's look at each phase in more detail.
 Execution
 ---------
 
-At the heart of the execution phase is a trace function.  This is a function
-that the Python interpreter invokes for each line executed in a program.
-Coverage.py implements a trace function that records each file and line number
-as it is executed.
+At the heart of the execution phase is a measurement core. It listens for
+execution events from the Python interpreter, and captures raw data about what
+has executed.
 
-For more details of trace functions, see the Python docs for `sys.settrace`_,
-or if you are really brave, `How C trace functions really work`_.
+Coverage.py has three cores: ``ctrace`` and ``pytrace`` use trace functions
+with `sys.settrace`_, and ``sysmon`` uses `sys.monitoring`_ for events.
 
-Executing a function for every line in your program can make execution very
-slow.  Coverage.py's trace function is implemented in C to reduce that
-overhead. It also takes care to not trace code that you aren't interested in.
+- A **trace function** is a function that the Python interpreter invokes for
+  each line executed in a program.  Coverage.py uses trace functions that
+  record each file and line number as it is executed. The ``ctrace`` trace
+  function is implemented in C for speed, while ``pytrace`` is implemented in
+  Python for portability.
 
-When measuring branch coverage, the same trace function is used, but instead of
-recording line numbers, coverage.py records pairs of line numbers.  Each
-invocation of the trace function remembers the line number, then the next
-invocation records the pair `(prev, this)` to indicate that execution
-transitioned from the previous line to this line.  Internally, these are called
-arcs.
+  For more details of trace functions, see the Python docs for `sys.settrace`_,
+  or if you are really brave, `How C trace functions really work`_.
+
+  Executing a function for every line in your program can make execution very
+  slow.  Coverage.py's trace function is implemented in C to reduce that
+  overhead. It also takes care to not trace code that you aren't interested in.
+
+- The **sys.monitoring** API is available on Python 3.12 and later.  The
+  ``sysmon`` core uses it to get execution events from the interpreter with
+  much lower overhead than trace functions.
+
+  It does this by disabling events once they have been seen. This means that
+  complex features like dynamic contexts are not supported yet, but for simple
+  line and branch coverage, it is much faster than trace functions.
+
+When measuring branch coverage, the same event collectors are used, but instead
+of recording line numbers, coverage.py records pairs of line numbers.  Each
+line event records the line number, then the next event records the pair
+`(prev, this)` to indicate that execution transitioned from the previous line
+to this line.  Internally, these are called arcs.
 
 As the data is being collected, coverage.py writes the data to a file, usually
 named ``.coverage``.  This is a :ref:`SQLite database <dbschema>` containing
 all of the measured data.
 
 .. _sys.settrace: https://docs.python.org/3/library/sys.html#sys.settrace
+.. _sys.monitoring: https://docs.python.org/3/library/sys.monitoring.html
 .. _How C trace functions really work: https://nedbatchelder.com/text/trace-function.html
 
 
