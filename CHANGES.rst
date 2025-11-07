@@ -20,8 +20,12 @@ upgrading your version of coverage.py.
     ..  Version 9.8.1 — 2027-07-27
     ..  --------------------------
 
-Unreleased
-----------
+.. start-releases
+
+.. _changes_7-11-1:
+
+Version 7.11.1 — 2025-11-07
+---------------------------
 
 - Fix: if the measurement core defaults to "sysmon" (the default for Python
   3.14+ since v7.9.1), but sysmon can't support some aspect of your
@@ -47,12 +51,13 @@ Unreleased
   debug <cmd_debug>` and :ref:`cmd_run_debug` options since it's bulky and not
   very useful.
 
+- Updated the :ref:`howitworks` page to better describe the three different
+  measurement cores.
+
 .. _issue 1420: https://github.com/nedbat/coveragepy/issues/1420
 .. _issue 2064: https://github.com/nedbat/coveragepy/issues/2064
 .. _issue 2070: https://github.com/nedbat/coveragepy/issues/2070
 
-
-.. start-releases
 
 .. _changes_7-11-0:
 
