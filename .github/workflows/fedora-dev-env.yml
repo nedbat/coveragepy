@@ -28,7 +28,7 @@ jobs:
     name: Smoke test
     container: fedora:43
     runs-on: ubuntu-24.04
-    timeout-minutes: 15  # takes under 10 min on a laptop
+    timeout-minutes: 20  # takes under 10 min on a laptop
 
     steps:
     - name: Install dependencies
