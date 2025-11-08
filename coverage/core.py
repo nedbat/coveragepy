@@ -137,3 +137,6 @@ class Core:
             self.systrace = True
         else:
             raise ConfigError(f"Unknown core value: {core_name!r}")
+
+    def __repr__(self) -> str:
+        return f"<Core tracer_class={self.tracer_class.__name__}>"

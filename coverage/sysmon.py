@@ -19,6 +19,7 @@ from typing import Any, Callable, NewType, Optional, cast
 from coverage import env
 from coverage.bytecode import TBranchTrails, always_jumps, branch_trails
 from coverage.debug import short_filename, short_stack
+from coverage.exceptions import NotPython
 from coverage.misc import isolate_module
 from coverage.parser import PythonParser
 from coverage.types import (
@@ -470,5 +471,12 @@ class SysMonitor(Tracer):
 def get_multiline_map(filename: str) -> dict[TLineNo, TLineNo]:
     """Get a PythonParser for the given filename, cached."""
     parser = PythonParser(filename=filename)
-    parser.parse_source()
+    try:
+        parser.parse_source()
+    except NotPython:
+        # The file was not Python. This can happen when the code object refers
+        # to an original non-Python source file, like a Jinja template.
+        # In that case, just return an empty map, which might lead to slightly
+        # wrong branch coverage, but we don't have any better option.
+        return {}
     return parser.multiline_map

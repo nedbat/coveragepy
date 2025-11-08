@@ -23,7 +23,12 @@ upgrading your version of coverage.py.
 Unreleased
 ----------
 
-Nothing yet.
+- Fix: using the "sysmon" measurement core in 7.11.1, if Python code was
+  claimed to come from a non-Python file, a ``NotPython`` exception could be
+  raised. This could happen for example with Jinja templates compiled to
+  Python, as reported in `issue 2077`_. This is now fixed.
+
+.. _issue 2077: https://github.com/nedbat/coveragepy/issues/2077
 
 
 .. start-releases

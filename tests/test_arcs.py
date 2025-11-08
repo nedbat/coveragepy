@@ -5,6 +5,8 @@
 
 from __future__ import annotations
 
+import textwrap
+
 import pytest
 
 from tests.coveragetest import CoverageTest
@@ -2349,3 +2351,23 @@ class LineDataTest(CoverageTest):
         data = cov.get_data()
         fun1_lines = sorted_lines(data, abs_file("fun1.py"))
         assert_count_equal(fun1_lines, [1, 2, 5])
+
+
+class NonPythonFileTest(CoverageTest):
+    """Tools like Jinja run code credited to non-Python files."""
+
+    def test_non_python_file(self) -> None:
+        # Make a code object with branches, and claim it came from an HTML file.
+        # With sysmon, this used to fail trying to parse the source. #2077
+        self.make_file("hello.html", "<h1>Hello!</h1>")
+        code = textwrap.dedent("""\
+            a = 1
+            while a:
+                c = 3
+                break
+            assert c == 5 - 2
+            """)
+        code_obj = compile(code, filename="hello.html", mode="exec")
+        cov = coverage.Coverage(branch=True, debug=["trace"])
+        with cov.collect():
+            exec(code_obj)
