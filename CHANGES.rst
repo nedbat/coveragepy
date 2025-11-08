@@ -28,6 +28,8 @@ Unreleased
   raised. This could happen for example with Jinja templates compiled to
   Python, as reported in `issue 2077`_. This is now fixed.
 
+- Doc: corrected the first entry in the 7.11.1 changelog.
+
 .. _issue 2077: https://github.com/nedbat/coveragepy/issues/2077
 
 
@@ -38,11 +40,25 @@ Unreleased
 Version 7.11.1 — 2025-11-07
 ---------------------------
 
+- Fix: some chanages to details of how the measurement core is chosen, and how
+  conflicting settings are handled. The "sysmon" core cannot be used with some
+  conurrency settings, with dynamic context, and in Python 3.12/3.13, with
+  branch measurement.
+
+  - If the core is not specified and defaults to "sysmon" (Python 3.14+), but
+    other settings conflict with sysmon, then the "ctrace" core will be used
+    instead with no warning. For concurrency conflicts, this used to produce an
+    error, as described in `issue 2064`_.
+
+  - If the "sysmon" core is explicitly requested in your configuration, but
+    other settings conflict, an error is now raised. This used to produce a
+    warning.
+
 - Fix: if the measurement core defaults to "sysmon" (the default for Python
   3.14+ since v7.9.1), but sysmon can't support some aspect of your
   configuration (concurrency settings, dynamic contexts, and so on), then the
   ctrace core is used instead. Previously, this would result in an error.
-  Now a warning is issued instead, explaining the fallback. An explicit request
+  An explicit request
   for sysmon with conflicting settings will still result in an error. Closes
   `issue 2064`_.
 
