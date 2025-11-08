@@ -20,8 +20,12 @@ upgrading your version of coverage.py.
     ..  Version 9.8.1 — 2027-07-27
     ..  --------------------------
 
-Unreleased
-----------
+.. start-releases
+
+.. _changes_7-11-2:
+
+Version 7.11.2 — 2025-11-08
+---------------------------
 
 - Fix: using the "sysmon" measurement core in 7.11.1, if Python code was
   claimed to come from a non-Python file, a ``NotPython`` exception could be
@@ -32,8 +36,6 @@ Unreleased
 
 .. _issue 2077: https://github.com/nedbat/coveragepy/issues/2077
 
-
-.. start-releases
 
 .. _changes_7-11-1:
 
