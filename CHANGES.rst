@@ -23,7 +23,12 @@ upgrading your version of coverage.py.
 Unreleased
 ----------
 
-Nothing yet.
+- For contributors: the repo has moved from Ned's `nedbat GitHub account`_ to
+  the `coveragepy GitHub organization`_. The default branch has changed from
+  master to main.
+
+.. _nedbat GitHub account: https://github.com/nedbat
+.. _coveragepy GitHub organization: https://github.com/coveragepy
 
 
 .. start-releases

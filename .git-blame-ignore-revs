@@ -33,3 +33,7 @@ a32cd74bc0aaf0714acaf37beb21c84cbe2ee3ff
 
 # 2025-08-21 chore: `ruff format .`
 82467f72306efdb207af09ace27b6b3ed4c7ad6f
+
+# 2025-11-09 move to the coveragepy org GitHub account
+b33a5e889711d27610433ca0040cab67a9fb01f4
+776f313f5415bc95ea736f6486634c3f9d0b96f4
