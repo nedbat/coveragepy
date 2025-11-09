@@ -19,7 +19,7 @@ working properly.
 If your problem isn't discussed here, you can of course search the `coverage.py
 bug tracker`_ directly to see if there is some mention of it.
 
-.. _coverage.py bug tracker: https://github.com/nedbat/coveragepy/issues
+.. _coverage.py bug tracker: https://github.com/coveragepy/coveragepy/issues
 
 
 Things that don't work
@@ -51,7 +51,7 @@ properly:
 .. _sys.setprofile: https://docs.python.org/3/library/sys.html#sys.setprofile
 .. _thread: https://docs.python.org/3/library/_thread.html
 .. _threading: https://docs.python.org/3/library/threading.html
-.. _issue 43: https://github.com/nedbat/coveragepy/issues/43
+.. _issue 43: https://github.com/coveragepy/coveragepy/issues/43
 
 
 Still having trouble?

@@ -334,7 +334,7 @@ class VirtualenvTest(CoverageTest):
 
     @pytest.mark.skipif(not testenv.C_TRACER, reason="No plugins with this core.")
     def test_venv_with_dynamic_plugin(self, coverage_command: str) -> None:
-        # https://github.com/nedbat/coveragepy/issues/1150
+        # https://github.com/coveragepy/coveragepy/issues/1150
         # Django coverage plugin was incorrectly getting warnings:
         # "Already imported: ... django/template/blah.py"
         # It happened because coverage imported the plugin, which imported
@@ -353,7 +353,7 @@ class VirtualenvTest(CoverageTest):
         assert out == "HTML: hello.html@1723\n"
 
     def test_installed_namespace_packages(self, coverage_command: str) -> None:
-        # https://github.com/nedbat/coveragepy/issues/1231
+        # https://github.com/coveragepy/coveragepy/issues/1231
         # When namespace packages were installed, they were considered
         # third-party packages.  Test that isn't still happening.
         out = run_in_venv(coverage_command + " run --source=nspkg myproduct.py")

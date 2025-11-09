@@ -519,7 +519,7 @@ class HtmlWithUnparsableFilesTest(HtmlTestHelpers, CoverageTest):
         self.assert_exists("htmlcov/index.html")
 
     def test_decode_error(self) -> None:
-        # https://github.com/nedbat/coveragepy/issues/351
+        # https://github.com/coveragepy/coveragepy/issues/351
         # imp.load_module won't load a file with an undecodable character
         # in a comment, though Python will run them.  So we'll change the
         # file after running.
@@ -551,7 +551,7 @@ class HtmlWithUnparsableFilesTest(HtmlTestHelpers, CoverageTest):
         assert expected in html_report
 
     def test_formfeeds(self) -> None:
-        # https://github.com/nedbat/coveragepy/issues/360
+        # https://github.com/coveragepy/coveragepy/issues/360
         self.make_file("formfeed.py", "line_one = 1\n\f\nline_two = 2\n")
         cov = coverage.Coverage()
         self.start_import_stop(cov, "formfeed")
@@ -561,7 +561,7 @@ class HtmlWithUnparsableFilesTest(HtmlTestHelpers, CoverageTest):
         assert "line_two" in formfeed_html
 
     def test_splitlines_special_chars(self) -> None:
-        # https://github.com/nedbat/coveragepy/issues/1512
+        # https://github.com/coveragepy/coveragepy/issues/1512
         # See https://docs.python.org/3/library/stdtypes.html#str.splitlines for
         # the characters splitlines treats specially that readlines does not.
 
@@ -600,7 +600,7 @@ class HtmlTest(HtmlTestHelpers, CoverageTest):
     """Moar HTML tests."""
 
     def test_missing_source_file_incorrect_message(self) -> None:
-        # https://github.com/nedbat/coveragepy/issues/60
+        # https://github.com/coveragepy/coveragepy/issues/60
         self.make_file("thefile.py", "import sub.another\n")
         self.make_file("sub/__init__.py", "")
         self.make_file("sub/another.py", "print('another')\n")
@@ -617,7 +617,7 @@ class HtmlTest(HtmlTestHelpers, CoverageTest):
     def test_extensionless_file_collides_with_extension(self) -> None:
         # It used to be that "program" and "program.py" would both be reported
         # to "program.html".  Now they are not.
-        # https://github.com/nedbat/coveragepy/issues/69
+        # https://github.com/coveragepy/coveragepy/issues/69
         self.make_file("program", "import program\n")
         self.make_file("program.py", "a = 1\n")
         self.make_data_file(
@@ -644,7 +644,7 @@ class HtmlTest(HtmlTestHelpers, CoverageTest):
 
     def test_reporting_on_unmeasured_file(self) -> None:
         # It should be ok to ask for an HTML report on a file that wasn't even
-        # measured at all.  https://github.com/nedbat/coveragepy/issues/403
+        # measured at all.  https://github.com/coveragepy/coveragepy/issues/403
         self.create_initial_files()
         self.make_file("other.py", "a = 1\n")
         self.run_coverage(htmlargs=dict(morfs=["other.py"]))
@@ -1292,7 +1292,7 @@ assert len(math) == 18
         doesnt_contain("out/tabbed_py.html", "\t")
 
     def test_bug_1828(self) -> None:
-        # https://github.com/nedbat/coveragepy/pull/1828
+        # https://github.com/coveragepy/coveragepy/pull/1828
         self.make_file(
             "backslashes.py",
             """\
@@ -1328,7 +1328,7 @@ assert len(math) == 18
         ids=["string", "f-string", "raw_string", "f-raw_string", "raw_f-string"],
     )
     def test_bug_1836(self, leader: str) -> None:
-        # https://github.com/nedbat/coveragepy/issues/1836
+        # https://github.com/coveragepy/coveragepy/issues/1836
         self.make_file(
             "py312_fstrings.py",
             f"""\

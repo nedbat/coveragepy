@@ -269,7 +269,7 @@ class WithTest(CoverageTest):
         )
 
     def test_bug_146(self) -> None:
-        # https://github.com/nedbat/coveragepy/issues/146
+        # https://github.com/coveragepy/coveragepy/issues/146
         self.check_coverage(
             """\
             for i in range(2):
@@ -325,7 +325,7 @@ class WithTest(CoverageTest):
             branchz_missing="",
         )
 
-    # https://github.com/nedbat/coveragepy/issues/1270
+    # https://github.com/coveragepy/coveragepy/issues/1270
     def test_raise_through_with(self) -> None:
         cov = self.check_coverage(
             """\
@@ -414,7 +414,7 @@ class WithTest(CoverageTest):
         )
 
     def test_multiline_with(self) -> None:
-        # https://github.com/nedbat/coveragepy/issues/1880
+        # https://github.com/coveragepy/coveragepy/issues/1880
         self.check_coverage(
             """\
             import contextlib, itertools
@@ -431,7 +431,7 @@ class WithTest(CoverageTest):
         )
 
     def test_multi_multiline_with(self) -> None:
-        # https://github.com/nedbat/coveragepy/issues/1880
+        # https://github.com/coveragepy/coveragepy/issues/1880
         self.check_coverage(
             """\
             import contextlib, itertools
@@ -450,7 +450,7 @@ class WithTest(CoverageTest):
         )
 
     def test_multi_multiline_with_backslash(self) -> None:
-        # https://github.com/nedbat/coveragepy/issues/1880
+        # https://github.com/coveragepy/coveragepy/issues/1880
         self.check_coverage(
             """\
             import contextlib, itertools
@@ -620,7 +620,7 @@ class LoopArcTest(CoverageTest):
         )
 
     def test_zero_coverage_while_loop(self) -> None:
-        # https://github.com/nedbat/coveragepy/issues/502
+        # https://github.com/coveragepy/coveragepy/issues/502
         self.make_file("main.py", "print('done')")
         self.make_file(
             "zero.py",
@@ -639,7 +639,7 @@ class LoopArcTest(CoverageTest):
         assert expected in squeezed[3]
 
     def test_bug_496_continue_in_constant_while(self) -> None:
-        # https://github.com/nedbat/coveragepy/issues/496
+        # https://github.com/coveragepy/coveragepy/issues/496
         self.check_coverage(
             """\
             up = iter('ta')
@@ -1504,7 +1504,7 @@ class YieldTest(CoverageTest):
         )
 
     def test_abandoned_yield(self) -> None:
-        # https://github.com/nedbat/coveragepy/issues/440
+        # https://github.com/coveragepy/coveragepy/issues/440
         self.check_coverage(
             """\
             def gen():
@@ -1597,7 +1597,7 @@ class MatchCaseTest(CoverageTest):
         assert self.stdout() == "None\nno go\ngo: n\n"
 
     def test_absurd_wildcards(self) -> None:
-        # https://github.com/nedbat/coveragepy/issues/1421
+        # https://github.com/coveragepy/coveragepy/issues/1421
         self.check_coverage(
             """\
             def absurd(x):
@@ -1873,7 +1873,7 @@ class MiscArcTest(CoverageTest):
 
     @pytest.mark.parametrize("n", [10, 50, 100, 500, 1000, 2000, 10000])
     def test_pathologically_long_code_object(self, n: int) -> None:
-        # https://github.com/nedbat/coveragepy/issues/359
+        # https://github.com/coveragepy/coveragepy/issues/359
         # Long code objects sometimes cause problems. Originally, it was
         # due to EXTENDED_ARG bytes codes.  Then it showed a mistake in
         # line-number packing.
@@ -1898,7 +1898,7 @@ class MiscArcTest(CoverageTest):
         assert self.stdout() == f"{n}\n"
 
     def test_partial_generators(self) -> None:
-        # https://github.com/nedbat/coveragepy/issues/475
+        # https://github.com/coveragepy/coveragepy/issues/475
         # Line 2 is executed completely.
         # Line 3 is started but not finished, because zip ends before it finishes.
         # Line 4 is never started.
@@ -2176,7 +2176,7 @@ class AsyncTest(CoverageTest):
             branchz_missing="",
         )
 
-    # https://github.com/nedbat/coveragepy/issues/1158
+    # https://github.com/coveragepy/coveragepy/issues/1158
     def test_bug_1158(self) -> None:
         self.check_coverage(
             """\
@@ -2201,7 +2201,7 @@ class AsyncTest(CoverageTest):
         )
         assert self.stdout() == "14\n"
 
-    # https://github.com/nedbat/coveragepy/issues/1176
+    # https://github.com/coveragepy/coveragepy/issues/1176
     # https://bugs.python.org/issue44622
     def test_bug_1176(self) -> None:
         self.check_coverage(
@@ -2222,7 +2222,7 @@ class AsyncTest(CoverageTest):
         )
         assert self.stdout() == "12\n"
 
-    # https://github.com/nedbat/coveragepy/issues/1205
+    # https://github.com/coveragepy/coveragepy/issues/1205
     def test_bug_1205(self) -> None:
         self.check_coverage(
             """\

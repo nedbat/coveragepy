@@ -59,7 +59,7 @@ def main(argv):
 
     print("** Note: this is a proof-of-concept. Support is not promised. **")
     print("Read more: https://nedbatchelder.com/blog/202111/coverage_goals.html")
-    print("Feedback is appreciated: https://github.com/nedbat/coveragepy/issues/691")
+    print("Feedback is appreciated: https://github.com/coveragepy/coveragepy/issues/691")
 
     if args.file and args.group:
         print("Can't use --file and --group together")

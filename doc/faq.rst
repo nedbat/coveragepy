@@ -182,7 +182,7 @@ higher chance I'll see the post.
 
 Bug reports are gladly accepted at the `GitHub issue tracker`_.
 
-.. _GitHub issue tracker: https://github.com/nedbat/coveragepy/issues
+.. _GitHub issue tracker: https://github.com/coveragepy/coveragepy/issues
 
 `I can be reached`__ in a number of ways. I'm happy to answer questions about
 using coverage.py.

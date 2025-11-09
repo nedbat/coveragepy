@@ -40,7 +40,7 @@ Backward Incompatibilities
   versions, an explicit `data_file=None` argument would use the default of
   ".coverage". Fixes `issue 871`_.
 
-.. _issue 871: https://github.com/nedbat/coveragepy/issues/871
+.. _issue 871: https://github.com/coveragepy/coveragepy/issues/871
 
 - The ``[run] note`` setting has been deprecated. Using it will result in a
   warning, and the note will not be written to the data file.  The
@@ -140,13 +140,13 @@ Bugs Fixed
   directory. Fixes `issue 806`_.  Thanks, Dan Hemberger.
 
 .. _TOML: https://toml.io/
-.. _issue 650: https://github.com/nedbat/coveragepy/issues/650
-.. _issue 664: https://github.com/nedbat/coveragepy/issues/664
-.. _issue 695: https://github.com/nedbat/coveragepy/issues/695
-.. _issue 715: https://github.com/nedbat/coveragepy/issues/715
-.. _issue 720: https://github.com/nedbat/coveragepy/issues/720
-.. _issue 721: https://github.com/nedbat/coveragepy/issues/721
-.. _issue 745: https://github.com/nedbat/coveragepy/issues/745
-.. _issue 746: https://github.com/nedbat/coveragepy/issues/746
-.. _issue 806: https://github.com/nedbat/coveragepy/issues/806
-.. _issue 838: https://github.com/nedbat/coveragepy/issues/838
+.. _issue 650: https://github.com/coveragepy/coveragepy/issues/650
+.. _issue 664: https://github.com/coveragepy/coveragepy/issues/664
+.. _issue 695: https://github.com/coveragepy/coveragepy/issues/695
+.. _issue 715: https://github.com/coveragepy/coveragepy/issues/715
+.. _issue 720: https://github.com/coveragepy/coveragepy/issues/720
+.. _issue 721: https://github.com/coveragepy/coveragepy/issues/721
+.. _issue 745: https://github.com/coveragepy/coveragepy/issues/745
+.. _issue 746: https://github.com/coveragepy/coveragepy/issues/746
+.. _issue 806: https://github.com/coveragepy/coveragepy/issues/806
+.. _issue 838: https://github.com/coveragepy/coveragepy/issues/838

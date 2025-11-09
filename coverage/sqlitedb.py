@@ -78,7 +78,7 @@ class SqliteDb:
         self.execute_void("pragma journal_mode=off")
 
         # This pragma makes writing faster. It can fail in unusual situations
-        # (https://github.com/nedbat/coveragepy/issues/1646), so use fail_ok=True
+        # (https://github.com/coveragepy/coveragepy/issues/1646), so use fail_ok=True
         # to keep things going.
         self.execute_void("pragma synchronous=off", fail_ok=True)
 
@@ -123,7 +123,7 @@ class SqliteDb:
             except Exception:
                 # In some cases, an error might happen that isn't really an
                 # error.  Try again immediately.
-                # https://github.com/nedbat/coveragepy/issues/1010
+                # https://github.com/coveragepy/coveragepy/issues/1010
                 return self.con.execute(sql, parameters)  # type: ignore[arg-type]
         except sqlite3.Error as exc:
             msg = str(exc)
@@ -214,7 +214,7 @@ class SqliteDb:
         except Exception:
             # In some cases, an error might happen that isn't really an
             # error.  Try again immediately.
-            # https://github.com/nedbat/coveragepy/issues/1010
+            # https://github.com/coveragepy/coveragepy/issues/1010
             return self.con.executemany(sql, data)
 
     def executemany_void(self, sql: str, data: list[Any]) -> None:

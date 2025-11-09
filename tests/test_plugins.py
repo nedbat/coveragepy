@@ -840,7 +840,7 @@ class BadFileTracerTest(FileTracerTest):
 
     def test_file_tracer_fails_eventually(self) -> None:
         # Django coverage plugin can report on a few files and then fail.
-        # https://github.com/nedbat/coveragepy/issues/1011
+        # https://github.com/coveragepy/coveragepy/issues/1011
         self.make_file(
             "bad_plugin.py",
             """\

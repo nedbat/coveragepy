@@ -368,7 +368,7 @@ class CmdLineTest(BaseCmdLineTest):
         )
 
     def test_combine_doesnt_confuse_options_with_args(self) -> None:
-        # https://github.com/nedbat/coveragepy/issues/385
+        # https://github.com/coveragepy/coveragepy/issues/385
         self.cmd_executes(
             "combine --rcfile cov.ini",
             """\

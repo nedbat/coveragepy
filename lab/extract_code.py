@@ -12,7 +12,7 @@ contents of the string.
 If tests/test_arcs.py has this (partial) content::
 
     1630	    def test_partial_generators(self):
-    1631	        # https://github.com/nedbat/coveragepy/issues/475
+    1631	        # https://github.com/coveragepy/coveragepy/issues/475
     1632	        # Line 2 is executed completely.
     1633	        # Line 3 is started but not finished, because zip ends before it finishes.
     1634	        # Line 4 is never started.

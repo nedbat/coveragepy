@@ -116,7 +116,7 @@ setup_args = dict(
             "https://tidelift.com/subscription/pkg/pypi-coverage"
             + "?utm_source=pypi-coverage&utm_medium=referral&utm_campaign=pypi"
         ),
-        "Issues": "https://github.com/nedbat/coveragepy/issues",
+        "Issues": "https://github.com/coveragepy/coveragepy/issues",
         "Mastodon": "https://hachyderm.io/@coveragepy",
         "Mastodon (nedbat)": "https://hachyderm.io/@nedbat",
     },

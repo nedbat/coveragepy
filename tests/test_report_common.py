@@ -187,8 +187,8 @@ class ReportWithJinjaTest(CoverageTest):
     #1553), and that the current (incorrect) behavior remains stable.  Ideally,
     good.j2 wouldn't be listed at all, since we can't report on it accurately.
 
-    See https://github.com/nedbat/coveragepy/issues/1553 for more detail, and
-    https://github.com/nedbat/coveragepy/issues/1623 for an issue about this
+    See https://github.com/coveragepy/coveragepy/issues/1553 for more detail, and
+    https://github.com/coveragepy/coveragepy/issues/1623 for an issue about this
     behavior.
 
     """

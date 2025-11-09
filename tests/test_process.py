@@ -566,7 +566,7 @@ class ProcessTest(CoverageTest):
 
     @pytest.mark.skipif(env.METACOV, reason="Can't test tracers changing during metacoverage")
     def test_warnings_trace_function_changed_with_threads(self) -> None:
-        # https://github.com/nedbat/coveragepy/issues/164
+        # https://github.com/coveragepy/coveragepy/issues/164
 
         self.make_file(
             "bug164.py",
@@ -702,7 +702,7 @@ class ProcessTest(CoverageTest):
         # failures with non-ascii file names. We don't want to make a real file
         # with strange characters, though, because that gets the test runners
         # tangled up.  This will isolate the concerns to the coverage.py code.
-        # https://github.com/nedbat/coveragepy/issues/533
+        # https://github.com/coveragepy/coveragepy/issues/533
         self.make_file(
             "weird_file.py",
             r"""
@@ -719,7 +719,7 @@ class ProcessTest(CoverageTest):
 
     def test_deprecation_warnings(self) -> None:
         # Test that coverage doesn't trigger deprecation warnings.
-        # https://github.com/nedbat/coveragepy/issues/305
+        # https://github.com/coveragepy/coveragepy/issues/305
         self.make_file(
             "allok.py",
             """\
@@ -738,7 +738,7 @@ class ProcessTest(CoverageTest):
         assert out == "No warnings!\n"
 
     def test_run_twice(self) -> None:
-        # https://github.com/nedbat/coveragepy/issues/353
+        # https://github.com/coveragepy/coveragepy/issues/353
         self.make_file(
             "foo.py",
             """\
@@ -776,7 +776,7 @@ class ProcessTest(CoverageTest):
         assert out == expected
 
     def test_module_name(self) -> None:
-        # https://github.com/nedbat/coveragepy/issues/478
+        # https://github.com/coveragepy/coveragepy/issues/478
         # Make sure help doesn't show a silly command name when run as a
         # module, like it used to:
         #   $ python -m coverage
@@ -951,7 +951,7 @@ class EnvironmentTest(CoverageTest):
         assert self.line_count(out) == 6, out
 
     def test_coverage_run_dashm_is_like_python_dashm_off_path(self) -> None:
-        # https://github.com/nedbat/coveragepy/issues/242
+        # https://github.com/coveragepy/coveragepy/issues/242
         self.make_file("sub/__init__.py", "")
         with open(TRY_EXECFILE, encoding="utf-8") as f:
             self.make_file("sub/run_me.py", f.read())
@@ -961,7 +961,7 @@ class EnvironmentTest(CoverageTest):
         self.assert_tryexecfile_output(expected, actual)
 
     def test_coverage_run_dashm_is_like_python_dashm_with__main__207(self) -> None:
-        # https://github.com/nedbat/coveragepy/issues/207
+        # https://github.com/coveragepy/coveragepy/issues/207
         self.make_file("package/__init__.py", "print('init')")
         self.make_file("package/__main__.py", "print('main')")
         expected = self.run_command("python -m package")
@@ -1013,7 +1013,7 @@ class EnvironmentTest(CoverageTest):
         assert re.search("No module named '?with_main'?", expected)
 
     def test_coverage_custom_script(self) -> None:
-        # https://github.com/nedbat/coveragepy/issues/678
+        # https://github.com/coveragepy/coveragepy/issues/678
         # If sys.path[0] isn't the Python default, then coverage.py won't
         # fiddle with it.
         self.make_file(
@@ -1058,7 +1058,7 @@ class EnvironmentTest(CoverageTest):
     @pytest.mark.skipif(
         platform.python_version().endswith("+"),
         reason="setuptools barfs on dev versions: https://github.com/pypa/packaging/issues/678",
-        # https://github.com/nedbat/coveragepy/issues/1556
+        # https://github.com/coveragepy/coveragepy/issues/1556
     )
     def test_bug_862(self) -> None:
         # This used to simulate how pyenv and pyenv-virtualenv create the
@@ -1083,7 +1083,7 @@ class EnvironmentTest(CoverageTest):
         assert "inside foo\n" == out
 
     def test_bug_909(self) -> None:
-        # https://github.com/nedbat/coveragepy/issues/909
+        # https://github.com/coveragepy/coveragepy/issues/909
         # The __init__ files were being imported before measurement started,
         # so the line in __init__.py was being marked as missed, and there were
         # warnings about measured files being imported before start.
@@ -1445,7 +1445,7 @@ class ProcessStartupTest(CoverageTest):
         assert line_counts(data)["sub.py"] == 3
 
     def test_subprocess_with_pth_files_and_parallel(self, _create_pth_file: None) -> None:
-        # https://github.com/nedbat/coveragepy/issues/492
+        # https://github.com/coveragepy/coveragepy/issues/492
         self.make_main_and_sub()
         self.make_file(
             "coverage.ini",
@@ -1520,7 +1520,7 @@ class ProcessStartupTest(CoverageTest):
         not testenv.CAN_MEASURE_BRANCHES, reason="Can't measure branches with this core"
     )
     def test_subprocess_gets_nonfile_config(self) -> None:
-        # https://github.com/nedbat/coveragepy/issues/2021
+        # https://github.com/coveragepy/coveragepy/issues/2021
         self.make_file(
             "subfunctions.py",
             """\
@@ -1556,7 +1556,7 @@ class ProcessStartupTest(CoverageTest):
         assert line_counts(data)["subfunctions.py"] == 11
 
     def test_subprocess_dir_with_source(self) -> None:
-        # https://github.com/nedbat/coveragepy/issues/1499
+        # https://github.com/coveragepy/coveragepy/issues/1499
         self.make_file("main/d/README", "A sub-directory")
         self.make_file(
             "main/main.py",

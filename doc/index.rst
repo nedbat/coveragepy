@@ -209,7 +209,7 @@ see the post.
 Bug reports are gladly accepted at the `GitHub issue tracker`_.
 GitHub also hosts the `code repository`_.
 
-.. _GitHub issue tracker: https://github.com/nedbat/coveragepy/issues
+.. _GitHub issue tracker: https://github.com/coveragepy/coveragepy/issues
 .. _code repository: https://github.com/nedbat/coveragepy
 
 Professional support for coverage.py is available as part of the `Tidelift

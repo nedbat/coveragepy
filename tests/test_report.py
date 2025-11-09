@@ -150,7 +150,7 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         Test that when relative_files is True and a relative path to a module
         is included, coverage is reported for the module.
 
-        Ref: https://github.com/nedbat/coveragepy/issues/1604
+        Ref: https://github.com/coveragepy/coveragepy/issues/1604
         """
         self.make_mycode()
         self.make_file(
@@ -205,7 +205,7 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         ]
 
     def test_omit_files_here(self) -> None:
-        # https://github.com/nedbat/coveragepy/issues/1407
+        # https://github.com/coveragepy/coveragepy/issues/1407
         self.make_file("foo.py", "")
         self.make_file("bar/bar.py", "")
         self.make_file(
@@ -232,7 +232,7 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         assert self.last_line_squeezed(report) == "TOTAL 3 0 100%"
 
     def test_run_source_vs_report_include(self) -> None:
-        # https://github.com/nedbat/coveragepy/issues/621
+        # https://github.com/coveragepy/coveragepy/issues/621
         self.make_file(
             ".coveragerc",
             """\
@@ -250,7 +250,7 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
                 pass
 
     def test_run_omit_vs_report_omit(self) -> None:
-        # https://github.com/nedbat/coveragepy/issues/622
+        # https://github.com/coveragepy/coveragepy/issues/622
         # report:omit shouldn't clobber run:omit.
         self.make_mycode()
         self.make_file(
@@ -892,7 +892,7 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
         assert self.last_line_squeezed(report) == "| **TOTAL** | **5** | **0** | **100%** |"
 
     def test_bug_156_file_not_run_should_be_zero(self) -> None:
-        # https://github.com/nedbat/coveragepy/issues/156
+        # https://github.com/coveragepy/coveragepy/issues/156
         self.make_file(
             "mybranch.py",
             """\
@@ -938,7 +938,7 @@ class SummaryTest(UsingModulesMixin, CoverageTest):
 
     @pytest.mark.skipif(not env.WINDOWS, reason=".pyw files are only on Windows.")
     def test_pyw_files(self) -> None:
-        # https://github.com/nedbat/coveragepy/issues/261
+        # https://github.com/coveragepy/coveragepy/issues/261
         self.make_file(
             "start.pyw",
             """\

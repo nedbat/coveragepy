@@ -163,7 +163,7 @@ class PythonParserTest(PythonParserTestBase):
         assert parser.exit_counts() == {1: 1, 2: 1, 4: 1, 5: 1, 8: 1, 9: 1, 10: 1}
 
     def test_nested_context_managers(self) -> None:
-        # https://github.com/nedbat/coveragepy/issues/1876
+        # https://github.com/coveragepy/coveragepy/issues/1876
         parser = self.parse_text("""\
             a = 1
             with suppress(ValueError):
@@ -482,7 +482,7 @@ class ExclusionParserTest(PythonParserTestBase):
         assert parser.statements == {1, 7}
 
     def test_multiline_if_no_branch(self) -> None:
-        # From https://github.com/nedbat/coveragepy/issues/754
+        # From https://github.com/coveragepy/coveragepy/issues/754
         parser = self.parse_text(
             """\
             if (this_is_a_verylong_boolean_expression == True   # pragma: no branch
@@ -762,7 +762,7 @@ class ExclusionParserTest(PythonParserTestBase):
         assert parser.exit_counts() == {1: 1, 2: 2, 3: 1, 5: 1, 6: 1}
 
     def test_formfeed(self) -> None:
-        # https://github.com/nedbat/coveragepy/issues/461
+        # https://github.com/coveragepy/coveragepy/issues/461
         parser = self.parse_text(
             """\
             x = 1
@@ -845,7 +845,7 @@ class ExclusionParserTest(PythonParserTestBase):
         assert parser.statements == {1, 2, 3}
 
     def test_over_exclusion_bug1779(self) -> None:
-        # https://github.com/nedbat/coveragepy/issues/1779
+        # https://github.com/coveragepy/coveragepy/issues/1779
         parser = self.parse_text("""\
             import abc
 
@@ -911,7 +911,7 @@ class ExclusionParserTest(PythonParserTestBase):
         assert parser.statements == set()
 
     def test_multiline_exclusion_all_lines_must_match(self) -> None:
-        # https://github.com/nedbat/coveragepy/issues/996
+        # https://github.com/coveragepy/coveragepy/issues/996
         regex = r"except ValueError:\n\s*print\('false'\)"
         parser = self.parse_text(
             """\
@@ -982,7 +982,7 @@ class ExclusionParserTest(PythonParserTestBase):
         assert parser.statements == set()
 
     def test_multiline_exclusion_block(self) -> None:
-        # https://github.com/nedbat/coveragepy/issues/1803
+        # https://github.com/coveragepy/coveragepy/issues/1803
         regex = "# no cover: start(?s:.)*?# no cover: stop"
         parser = self.parse_text(
             """\
@@ -1005,7 +1005,7 @@ class ExclusionParserTest(PythonParserTestBase):
         assert parser.statements == {1, 2, 3, 8}
 
     def test_multiline_exclusion_block2(self) -> None:
-        # https://github.com/nedbat/coveragepy/issues/1797
+        # https://github.com/coveragepy/coveragepy/issues/1797
         regex = r"case _:\n\s+assert_never\("
         parser = self.parse_text(
             """\
@@ -1031,7 +1031,7 @@ class ExclusionParserTest(PythonParserTestBase):
         assert parser.statements == {1, 2, 3, 4, 5, 8, 9, 10, 11, 12, 13, 14}
 
     def test_multiline_exclusion_block3(self) -> None:
-        # https://github.com/nedbat/coveragepy/issues/1741
+        # https://github.com/coveragepy/coveragepy/issues/1741
         # This will only work if there's exactly one return statement in the rest of the function
         regex = r"# no cover: to return(?s:.)*?return"
         parser = self.parse_text(
@@ -1053,7 +1053,7 @@ class ExclusionParserTest(PythonParserTestBase):
         assert parser.statements == {1, 2, 3, 9}
 
     def test_multiline_exclusion_whole_source(self) -> None:
-        # https://github.com/nedbat/coveragepy/issues/118
+        # https://github.com/coveragepy/coveragepy/issues/118
         regex = r"\A(?s:.*# pragma: exclude file.*)\Z"
         parser = self.parse_text(
             """\
@@ -1074,7 +1074,7 @@ class ExclusionParserTest(PythonParserTestBase):
         assert parser.statements == set()
 
     def test_multiline_exclusion_from_marker(self) -> None:
-        # https://github.com/nedbat/coveragepy/issues/118
+        # https://github.com/coveragepy/coveragepy/issues/118
         regex = r"# pragma: rest of file(?s:.)*\Z"
         parser = self.parse_text(
             """\
@@ -1260,7 +1260,7 @@ class ParserFileTest(CoverageTest):
     def test_missing_line_ending(self) -> None:
         # Test that the set of statements is the same even if a final
         # multi-line statement has no final newline.
-        # https://github.com/nedbat/coveragepy/issues/293
+        # https://github.com/coveragepy/coveragepy/issues/293
 
         self.make_file(
             "normal.py",

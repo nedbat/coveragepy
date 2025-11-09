@@ -273,7 +273,7 @@ class ConcurrencyTest(CoverageTest):
         code = SIMPLE.format(QLIMIT=self.QLIMIT)
         self.try_some_code(code, "eventlet", eventlet)
 
-    # https://github.com/nedbat/coveragepy/issues/663
+    # https://github.com/coveragepy/coveragepy/issues/663
     @pytest.mark.skipif(env.WINDOWS, reason="gevent has problems on Windows: #663")
     def test_gevent(self) -> None:
         code = (GEVENT + SUM_RANGE_Q + PRINT_SUM_RANGE).format(QLIMIT=self.QLIMIT)
@@ -675,7 +675,7 @@ def test_coverage_stop_in_threads() -> None:
 
 
 def test_thread_safe_save_data(tmp_path: pathlib.Path) -> None:
-    # Non-regression test for: https://github.com/nedbat/coveragepy/issues/581
+    # Non-regression test for: https://github.com/coveragepy/coveragepy/issues/581
 
     # Create some Python modules and put them in the path
     modules_dir = tmp_path / "test_modules"

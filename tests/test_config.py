@@ -348,7 +348,7 @@ class ConfigTest(CoverageTest):
                 "huh$${X}what",
             ]
             [othersection]
-            # This reproduces the failure from https://github.com/nedbat/coveragepy/issues/1481
+            # This reproduces the failure from https://github.com/coveragepy/coveragepy/issues/1481
             # When OTHER has a backslash that isn't a valid escape, like \\z (see below).
             something = "if [ $OTHER ]; then printf '%s\\n' 'Hi'; fi"
             """,

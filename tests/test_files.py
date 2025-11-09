@@ -61,7 +61,7 @@ class FilesTest(CoverageTest):
         assert files.relative_filename(a2) == a2
 
     def test_filepath_contains_absolute_prefix_twice(self) -> None:
-        # https://github.com/nedbat/coveragepy/issues/194
+        # https://github.com/coveragepy/coveragepy/issues/194
         # Build a path that has two pieces matching the absolute path prefix.
         # Technically, this test doesn't do that on Windows, but drive
         # letters make that impractical to achieve.
@@ -606,7 +606,7 @@ class PathAliasesTest(CoverageTest):
 
     @pytest.mark.parametrize("paths", lin_win_paths)
     def test_windows_on_linux(self, paths: Iterable[str], rel_yn: bool) -> None:
-        # https://github.com/nedbat/coveragepy/issues/618
+        # https://github.com/coveragepy/coveragepy/issues/618
         aliases = PathAliases(relative=rel_yn)
         for path in paths:
             aliases.add(path, "project/module")
@@ -618,7 +618,7 @@ class PathAliasesTest(CoverageTest):
 
     @pytest.mark.parametrize("paths", lin_win_paths)
     def test_linux_on_windows(self, paths: Iterable[str], rel_yn: bool) -> None:
-        # https://github.com/nedbat/coveragepy/issues/618
+        # https://github.com/coveragepy/coveragepy/issues/618
         aliases = PathAliases(relative=rel_yn)
         for path in paths:
             aliases.add(path, "project\\module")
@@ -630,7 +630,7 @@ class PathAliasesTest(CoverageTest):
 
     @pytest.mark.parametrize("paths", lin_win_paths)
     def test_relative_windows_on_linux(self, paths: Iterable[str]) -> None:
-        # https://github.com/nedbat/coveragepy/issues/991
+        # https://github.com/coveragepy/coveragepy/issues/991
         aliases = PathAliases(relative=True)
         for path in paths:
             aliases.add(path, "project/module")
@@ -642,7 +642,7 @@ class PathAliasesTest(CoverageTest):
 
     @pytest.mark.parametrize("paths", lin_win_paths)
     def test_relative_linux_on_windows(self, paths: Iterable[str]) -> None:
-        # https://github.com/nedbat/coveragepy/issues/991
+        # https://github.com/coveragepy/coveragepy/issues/991
         aliases = PathAliases(relative=True)
         for path in paths:
             aliases.add(path, r"project\module")
@@ -654,7 +654,7 @@ class PathAliasesTest(CoverageTest):
 
     @pytest.mark.skipif(env.WINDOWS, reason="This test assumes Unix file system")
     def test_implicit_relative_windows_on_linux(self) -> None:
-        # https://github.com/nedbat/coveragepy/issues/991
+        # https://github.com/coveragepy/coveragepy/issues/991
         aliases = PathAliases(relative=True)
         self.assert_mapped(
             aliases,
@@ -664,7 +664,7 @@ class PathAliasesTest(CoverageTest):
 
     @pytest.mark.skipif(not env.WINDOWS, reason="This test assumes Windows file system")
     def test_implicit_relative_linux_on_windows(self) -> None:
-        # https://github.com/nedbat/coveragepy/issues/991
+        # https://github.com/coveragepy/coveragepy/issues/991
         aliases = PathAliases(relative=True)
         self.assert_mapped(
             aliases,

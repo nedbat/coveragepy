@@ -147,7 +147,7 @@ class XmlReportTest(XmlTestHelpers, CoverageTest):
         self.assert_exists("xml.out")
 
     def test_no_data(self) -> None:
-        # https://github.com/nedbat/coveragepy/issues/210
+        # https://github.com/coveragepy/coveragepy/issues/210
         with pytest.raises(NoDataError, match="No data to report."):
             self.run_xml_report()
         self.assert_doesnt_exist("coverage.xml")
@@ -155,7 +155,7 @@ class XmlReportTest(XmlTestHelpers, CoverageTest):
 
     def test_no_source(self) -> None:
         # Written while investigating a bug, might as well keep it.
-        # https://github.com/nedbat/coveragepy/issues/208
+        # https://github.com/coveragepy/coveragepy/issues/208
         self.make_file("innocuous.py", "a = 4")
         cov = coverage.Coverage()
         self.start_import_stop(cov, "innocuous")
@@ -196,7 +196,7 @@ class XmlReportTest(XmlTestHelpers, CoverageTest):
 
     def test_reporting_on_nothing(self) -> None:
         # Used to raise a zero division error:
-        # https://github.com/nedbat/coveragepy/issues/250
+        # https://github.com/coveragepy/coveragepy/issues/250
         self.make_file("empty.py", "")
         cov = coverage.Coverage()
         empty = self.start_import_stop(cov, "empty")
@@ -208,7 +208,7 @@ class XmlReportTest(XmlTestHelpers, CoverageTest):
         assert elts[0].get("line-rate") == "1"
 
     def test_empty_file_is_100_not_0(self) -> None:
-        # https://github.com/nedbat/coveragepy/issues/345
+        # https://github.com/coveragepy/coveragepy/issues/345
         cov = self.run_doit()
         cov.xml_report()
         dom = ElementTree.parse("coverage.xml")
@@ -236,7 +236,7 @@ class XmlReportTest(XmlTestHelpers, CoverageTest):
     def test_deep_source(self) -> None:
         # When using source=, the XML report needs to mention those directories
         # in the <source> elements.
-        # https://github.com/nedbat/coveragepy/issues/439
+        # https://github.com/coveragepy/coveragepy/issues/439
         self.make_file("src/main/foo.py", "a = 1")
         self.make_file("also/over/there/bar.py", "b = 2")
 
@@ -279,7 +279,7 @@ class XmlReportTest(XmlTestHelpers, CoverageTest):
         }
 
     def test_nonascii_directory(self) -> None:
-        # https://github.com/nedbat/coveragepy/issues/573
+        # https://github.com/coveragepy/coveragepy/issues/573
         self.make_file("테스트/program.py", "a = 1")
         with change_dir("테스트"):
             cov = coverage.Coverage()
@@ -355,7 +355,7 @@ class XmlReportTest(XmlTestHelpers, CoverageTest):
         assert len(named_sub_package) == 1
 
     def test_bug_1709(self) -> None:
-        # https://github.com/nedbat/coveragepy/issues/1709
+        # https://github.com/coveragepy/coveragepy/issues/1709
         self.make_file("main.py", "import x1y, x01y, x001y")
         self.make_file("x1y.py", "print('x1y')")
         self.make_file("x01y.py", "print('x01y')")
@@ -504,8 +504,8 @@ class XmlPackageStructureTest(XmlTestHelpers, CoverageTest):
         )
 
     def test_source_prefix(self) -> None:
-        # https://github.com/nedbat/coveragepy/issues/465
-        # https://github.com/nedbat/coveragepy/issues/526
+        # https://github.com/coveragepy/coveragepy/issues/465
+        # https://github.com/coveragepy/coveragepy/issues/526
         self.make_file("src/mod.py", "print(17)")
         cov = coverage.Coverage(source=["src"])
         self.start_import_stop(cov, "mod", modfile="src/mod.py")

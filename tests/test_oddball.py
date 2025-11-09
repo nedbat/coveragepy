@@ -112,7 +112,7 @@ class RecursionTest(CoverageTest):
                 )
 
     def test_long_recursion_recovery(self) -> None:
-        # Test the core of bug 93: https://github.com/nedbat/coveragepy/issues/93
+        # Test the core of bug 93: https://github.com/coveragepy/coveragepy/issues/93
         # When recovering from a stack overflow, the Python trace function is
         # disabled, but the C trace function is not.  So if we're using a
         # Python trace function, we won't trace anything after the stack
@@ -169,7 +169,7 @@ class MemoryLeakTest(CoverageTest):
     """Attempt the impossible: test that memory doesn't leak.
 
     Note: this test is truly unusual, and has had a colorful history.  See
-    for example: https://github.com/nedbat/coveragepy/issues/186
+    for example: https://github.com/coveragepy/coveragepy/issues/186
 
     It may still fail occasionally, especially on PyPy.
 
@@ -235,7 +235,7 @@ class MemoryLeakTest(CoverageTest):
     )
     @pytest.mark.parametrize("branch", [False, True])
     def test_eval_codeobject_leak(self, branch: bool) -> None:
-        # https://github.com/nedbat/coveragepy/issues/1924
+        # https://github.com/coveragepy/coveragepy/issues/1924
         code = """\
             for i in range(10_000):
                 r = eval("'a' + '1'")
@@ -343,7 +343,7 @@ class PyexpatTest(CoverageTest):
         assert missing == []
 
         # Make sure pyexpat isn't recorded as a source file.
-        # https://github.com/nedbat/coveragepy/issues/419
+        # https://github.com/coveragepy/coveragepy/issues/419
         files = cov.get_data().measured_files()
         msg = f"Pyexpat.c is in the measured files!: {files!r}:"
         assert not any(f.endswith("pyexpat.c") for f in files), msg
@@ -531,7 +531,7 @@ class GettraceTest(CoverageTest):
     """Tests that we work properly with `sys.gettrace()`."""
 
     def test_round_trip_in_untraced_function(self) -> None:
-        # https://github.com/nedbat/coveragepy/issues/575
+        # https://github.com/coveragepy/coveragepy/issues/575
         self.make_file("main.py", """import sample""")
         self.make_file(
             "sample.py",
@@ -570,7 +570,7 @@ class GettraceTest(CoverageTest):
         assert missing == []
 
     def test_setting_new_trace_function(self) -> None:
-        # https://github.com/nedbat/coveragepy/issues/436
+        # https://github.com/coveragepy/coveragepy/issues/436
         if testenv.SETTRACE_CORE or not env.PYBEHAVIOR.branch_right_left:
             missing = "5-7, 13-14"
         else:
@@ -654,7 +654,7 @@ class ExecTest(CoverageTest):
     """Tests of exec."""
 
     def test_correct_filename(self) -> None:
-        # https://github.com/nedbat/coveragepy/issues/380
+        # https://github.com/coveragepy/coveragepy/issues/380
         # Bug was that exec'd files would have their lines attributed to the
         # calling file.  Make two files, both with ~30 lines, but no lines in
         # common.  Line 30 in to_exec.py was recorded as line 30 in main.py,
@@ -689,7 +689,7 @@ class ExecTest(CoverageTest):
         assert missing == []
 
     def test_unencodable_filename(self) -> None:
-        # https://github.com/nedbat/coveragepy/issues/891
+        # https://github.com/coveragepy/coveragepy/issues/891
         self.make_file("bug891.py", r"""exec(compile("pass", "\udcff.py", "exec"))""")
         cov = coverage.Coverage()
         self.start_import_stop(cov, "bug891")
@@ -702,7 +702,7 @@ class ExecTest(CoverageTest):
 class MockingProtectionTest(CoverageTest):
     """Tests about protecting ourselves from aggressive mocking.
 
-    https://github.com/nedbat/coveragepy/issues/416
+    https://github.com/coveragepy/coveragepy/issues/416
 
     """
 

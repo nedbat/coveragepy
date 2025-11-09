@@ -1,4 +1,4 @@
-https://github.com/nedbat/coveragepy/issues/1303
+https://github.com/coveragepy/coveragepy/issues/1303
 
 Looks like the race condition is between erasing and creating...
 

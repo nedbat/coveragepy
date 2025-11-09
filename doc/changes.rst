@@ -21,8 +21,8 @@ Version 5.2.1 — 2020-07-23
 - The time stamp on the HTML report now includes the time zone. Thanks, Xie
   Yanbo (`pull request 960`_).
 
-.. _pull request 960: https://github.com/nedbat/coveragepy/pull/960
-.. _issue 1009: https://github.com/nedbat/coveragepy/issues/1009
+.. _pull request 960: https://github.com/coveragepy/coveragepy/pull/960
+.. _issue 1009: https://github.com/coveragepy/coveragepy/issues/1009
 
 
 .. _changes_52:
@@ -59,15 +59,15 @@ Version 5.2 — 2020-07-05
   ``--source`` option is being interpreted, and the module names being
   considered.
 
-.. _pull request 931: https://github.com/nedbat/coveragepy/pull/931
-.. _pull request 932: https://github.com/nedbat/coveragepy/pull/932
-.. _pull request 977: https://github.com/nedbat/coveragepy/pull/977
-.. _pull request 982: https://github.com/nedbat/coveragepy/pull/982
-.. _pull request 1005: https://github.com/nedbat/coveragepy/pull/1005
-.. _issue 779: https://github.com/nedbat/coveragepy/issues/779
-.. _issue 858: https://github.com/nedbat/coveragepy/issues/858
-.. _issue 976: https://github.com/nedbat/coveragepy/issues/976
-.. _issue 990: https://github.com/nedbat/coveragepy/issues/990
+.. _pull request 931: https://github.com/coveragepy/coveragepy/pull/931
+.. _pull request 932: https://github.com/coveragepy/coveragepy/pull/932
+.. _pull request 977: https://github.com/coveragepy/coveragepy/pull/977
+.. _pull request 982: https://github.com/coveragepy/coveragepy/pull/982
+.. _pull request 1005: https://github.com/coveragepy/coveragepy/pull/1005
+.. _issue 779: https://github.com/coveragepy/coveragepy/issues/779
+.. _issue 858: https://github.com/coveragepy/coveragepy/issues/858
+.. _issue 976: https://github.com/coveragepy/coveragepy/issues/976
+.. _issue 990: https://github.com/coveragepy/coveragepy/issues/990
 
 
 .. _changes_51:
@@ -87,8 +87,8 @@ Version 5.1 — 2020-04-12
   ``[paths]`` configuration setting.  Thanks to Bernát Gábor for the fix for
   `issue 967`_.
 
-.. _issue 964: https://github.com/nedbat/coveragepy/issues/964
-.. _issue 967: https://github.com/nedbat/coveragepy/issues/967
+.. _issue 964: https://github.com/coveragepy/coveragepy/issues/964
+.. _issue 967: https://github.com/coveragepy/coveragepy/issues/967
 
 
 .. _changes_504:
@@ -112,11 +112,11 @@ Version 5.0.4 — 2020-03-16
   fixed: sorting works even though the sorting setting isn't retained. (`issue
   944`_ and `pull request 945`_). Thanks, Abdeali Kothari.
 
-.. _issue 943: https://github.com/nedbat/coveragepy/issues/943
-.. _issue 944: https://github.com/nedbat/coveragepy/issues/944
-.. _pull request 945: https://github.com/nedbat/coveragepy/pull/945
-.. _issue 948: https://github.com/nedbat/coveragepy/issues/948
-.. _issue 949: https://github.com/nedbat/coveragepy/issues/949
+.. _issue 943: https://github.com/coveragepy/coveragepy/issues/943
+.. _issue 944: https://github.com/coveragepy/coveragepy/issues/944
+.. _pull request 945: https://github.com/coveragepy/coveragepy/pull/945
+.. _issue 948: https://github.com/coveragepy/coveragepy/issues/948
+.. _issue 949: https://github.com/coveragepy/coveragepy/issues/949
 
 
 .. _changes_503:
@@ -140,8 +140,8 @@ Version 5.0.3 — 2020-01-12
 
 - Added SQLite compile-time options to the "debug sys" output.
 
-.. _issue 862: https://github.com/nedbat/coveragepy/issues/862
-.. _issue 916: https://github.com/nedbat/coveragepy/issues/916
+.. _issue 862: https://github.com/coveragepy/coveragepy/issues/862
+.. _issue 916: https://github.com/coveragepy/coveragepy/issues/916
 
 
 .. _changes_502:
@@ -173,12 +173,12 @@ Version 5.0.2 — 2020-01-05
 - ``coverage run --debug=sys`` would fail with an AttributeError. This is now
   fixed (`issue 907`_).
 
-.. _issue 884: https://github.com/nedbat/coveragepy/issues/884
-.. _issue 890: https://github.com/nedbat/coveragepy/issues/890
-.. _issue 891: https://github.com/nedbat/coveragepy/issues/891
-.. _issue 901: https://github.com/nedbat/coveragepy/issues/901
-.. _issue 907: https://github.com/nedbat/coveragepy/issues/907
-.. _issue 909: https://github.com/nedbat/coveragepy/issues/909
+.. _issue 884: https://github.com/coveragepy/coveragepy/issues/884
+.. _issue 890: https://github.com/coveragepy/coveragepy/issues/890
+.. _issue 891: https://github.com/coveragepy/coveragepy/issues/891
+.. _issue 901: https://github.com/coveragepy/coveragepy/issues/901
+.. _issue 907: https://github.com/coveragepy/coveragepy/issues/907
+.. _issue 909: https://github.com/coveragepy/coveragepy/issues/909
 
 
 .. _changes_501:
@@ -205,11 +205,11 @@ Version 5.0.1 — 2019-12-22
 
 - Updated Python 3.9 support to 3.9a2.
 
-.. _issue 880: https://github.com/nedbat/coveragepy/issues/880
-.. _issue 886: https://github.com/nedbat/coveragepy/issues/886
-.. _issue 895: https://github.com/nedbat/coveragepy/issues/895
-.. _issue 899: https://github.com/nedbat/coveragepy/issues/899
-.. _issue 900: https://github.com/nedbat/coveragepy/issues/900
+.. _issue 880: https://github.com/coveragepy/coveragepy/issues/880
+.. _issue 886: https://github.com/coveragepy/coveragepy/issues/886
+.. _issue 895: https://github.com/coveragepy/coveragepy/issues/895
+.. _issue 899: https://github.com/coveragepy/coveragepy/issues/899
+.. _issue 900: https://github.com/coveragepy/coveragepy/issues/900
 
 
 .. _changes_50:
@@ -254,10 +254,10 @@ Version 5.0b2 — 2019-12-08
 
 - Coverage.py has a mascot: :ref:`Sleepy Snake <sleepy>`.
 
-.. _issue 649: https://github.com/nedbat/coveragepy/issues/649
-.. _issue 745: https://github.com/nedbat/coveragepy/issues/745
-.. _issue 838: https://github.com/nedbat/coveragepy/issues/838
-.. _issue 871: https://github.com/nedbat/coveragepy/issues/871
+.. _issue 649: https://github.com/coveragepy/coveragepy/issues/649
+.. _issue 745: https://github.com/coveragepy/coveragepy/issues/745
+.. _issue 838: https://github.com/coveragepy/coveragepy/issues/838
+.. _issue 871: https://github.com/coveragepy/coveragepy/issues/871
 
 
 .. _changes_50b1:
@@ -289,9 +289,9 @@ Version 5.0b1 — 2019-11-11
   contexts measured (`issue 851`_).
 
 .. _TOML: https://toml.io/
-.. _issue 664: https://github.com/nedbat/coveragepy/issues/664
-.. _issue 851: https://github.com/nedbat/coveragepy/issues/851
-.. _issue 855: https://github.com/nedbat/coveragepy/issues/855
+.. _issue 664: https://github.com/coveragepy/coveragepy/issues/664
+.. _issue 851: https://github.com/coveragepy/coveragepy/issues/851
+.. _issue 855: https://github.com/coveragepy/coveragepy/issues/855
 
 
 .. _changes_50a8:
@@ -336,11 +336,11 @@ Version 5.0a7 — 2019-09-21
 - ``debug=plugin`` didn't properly support configuration or dynamic context
   plugins, but now it does, closing `issue 834`_.
 
-.. _issue 720: https://github.com/nedbat/coveragepy/issues/720
-.. _issue 822: https://github.com/nedbat/coveragepy/issues/822
-.. _issue 834: https://github.com/nedbat/coveragepy/issues/834
-.. _issue 829: https://github.com/nedbat/coveragepy/issues/829
-.. _issue 846: https://github.com/nedbat/coveragepy/issues/846
+.. _issue 720: https://github.com/coveragepy/coveragepy/issues/720
+.. _issue 822: https://github.com/coveragepy/coveragepy/issues/822
+.. _issue 834: https://github.com/coveragepy/coveragepy/issues/834
+.. _issue 829: https://github.com/coveragepy/coveragepy/issues/829
+.. _issue 846: https://github.com/coveragepy/coveragepy/issues/846
 
 
 .. _changes_50a6:
@@ -407,8 +407,8 @@ Version 5.0a6 — 2019-07-16
 - The deprecated `Reporter.file_reporters` property has been removed.
 
 .. _ShiningPanda: https://plugins.jenkins.io/shiningpanda/
-.. _issue 806: https://github.com/nedbat/coveragepy/pull/806
-.. _issue 828: https://github.com/nedbat/coveragepy/issues/828
+.. _issue 806: https://github.com/coveragepy/coveragepy/pull/806
+.. _issue 828: https://github.com/coveragepy/coveragepy/issues/828
 
 
 .. _changes_50a5:
@@ -454,12 +454,12 @@ Version 5.0a5 — 2019-05-07
 - Line numbers in the HTML report now align properly with source lines, even
   when Chrome's minimum font size is set, fixing `issue 748`_.  Thanks Wen Ye.
 
-.. _issue 702: https://github.com/nedbat/coveragepy/issues/702
-.. _issue 708: https://github.com/nedbat/coveragepy/issues/708
-.. _issue 746: https://github.com/nedbat/coveragepy/issues/746
-.. _issue 748: https://github.com/nedbat/coveragepy/issues/748
-.. _issue 761: https://github.com/nedbat/coveragepy/issues/761
-.. _issue 797: https://github.com/nedbat/coveragepy/issues/797
+.. _issue 702: https://github.com/coveragepy/coveragepy/issues/702
+.. _issue 708: https://github.com/coveragepy/coveragepy/issues/708
+.. _issue 746: https://github.com/coveragepy/coveragepy/issues/746
+.. _issue 748: https://github.com/coveragepy/coveragepy/issues/748
+.. _issue 761: https://github.com/coveragepy/coveragepy/issues/761
+.. _issue 797: https://github.com/coveragepy/coveragepy/issues/797
 
 
 .. _changes_50a4:
@@ -486,10 +486,10 @@ Version 5.0a4 — 2018-11-25
 
 - Python 3.8 (as of today!) passes all tests.
 
-.. _issue 695: https://github.com/nedbat/coveragepy/issues/695
-.. _issue 715: https://github.com/nedbat/coveragepy/issues/715
-.. _issue 716: https://github.com/nedbat/coveragepy/issues/716
-.. _issue 721: https://github.com/nedbat/coveragepy/issues/721
+.. _issue 695: https://github.com/coveragepy/coveragepy/issues/695
+.. _issue 715: https://github.com/coveragepy/coveragepy/issues/715
+.. _issue 716: https://github.com/coveragepy/coveragepy/issues/716
+.. _issue 721: https://github.com/coveragepy/coveragepy/issues/721
 
 
 .. _changes_50a3:
@@ -519,7 +519,7 @@ Version 5.0a3 — 2018-10-06
     what else would be useful.  I'd like to use a pytest plugin to get better
     information directly from pytest, for example.
 
-.. _issue 170: https://github.com/nedbat/coveragepy/issues/170
+.. _issue 170: https://github.com/coveragepy/coveragepy/issues/170
 
 - Environment variable substitution in configuration files now supports two
   syntaxes for controlling the behavior of undefined variables: if ``VARNAME``
@@ -529,8 +529,8 @@ Version 5.0a3 — 2018-10-06
 - Partial support for Python 3.8, which has not yet released an alpha. Fixes
   `issue 707`_ and `issue 714`_.
 
-.. _issue 707: https://github.com/nedbat/coveragepy/issues/707
-.. _issue 714: https://github.com/nedbat/coveragepy/issues/714
+.. _issue 707: https://github.com/coveragepy/coveragepy/issues/707
+.. _issue 714: https://github.com/coveragepy/coveragepy/issues/714
 
 
 .. _changes_50a2:
@@ -566,7 +566,7 @@ Version 5.0a2 — 2018-09-03
 .. _Bitbucket: https://bitbucket.org
 .. _GitHub: https://github.com/nedbat/coveragepy
 
-.. _issue 611: https://github.com/nedbat/coveragepy/issues/611
+.. _issue 611: https://github.com/coveragepy/coveragepy/issues/611
 
 
 .. _changes_50a1:
@@ -591,9 +591,9 @@ Version 5.0a1 — 2018-06-05
 
 - Large HTML report pages load faster.  Thanks, Pankaj Pandey.
 
-.. _issue 625: https://github.com/nedbat/coveragepy/issues/625
-.. _issue 650: https://github.com/nedbat/coveragepy/issues/650
-.. _issue 700: https://github.com/nedbat/coveragepy/issues/700
+.. _issue 625: https://github.com/coveragepy/coveragepy/issues/625
+.. _issue 650: https://github.com/coveragepy/coveragepy/issues/650
+.. _issue 700: https://github.com/coveragepy/coveragepy/issues/700
 
 
 .. _changes_454:
@@ -604,7 +604,7 @@ Version 4.5.4 — 2019-07-29
 - Multiprocessing support in Python 3.8 was broken, but is now fixed.  Closes
   `issue 828`_.
 
-.. _issue 828: https://github.com/nedbat/coveragepy/issues/828
+.. _issue 828: https://github.com/coveragepy/coveragepy/issues/828
 
 
 .. _changes_453:
@@ -628,9 +628,9 @@ Version 4.5.2 — 2018-11-12
 
 - Development moved from `Bitbucket`_ to `GitHub`_.
 
-.. _issue 700: https://github.com/nedbat/coveragepy/issues/700
-.. _issue 707: https://github.com/nedbat/coveragepy/issues/707
-.. _issue 714: https://github.com/nedbat/coveragepy/issues/714
+.. _issue 700: https://github.com/coveragepy/coveragepy/issues/700
+.. _issue 707: https://github.com/coveragepy/coveragepy/issues/707
+.. _issue 714: https://github.com/coveragepy/coveragepy/issues/714
 
 .. _Bitbucket: https://bitbucket.org
 .. _GitHub: https://github.com/nedbat/coveragepy
@@ -652,8 +652,8 @@ Version 4.5.1 — 2018-02-10
 
 - Configurer plugins are now reported in the output of ``--debug=sys``.
 
-.. _issue 638: https://github.com/nedbat/coveragepy/issues/638
-.. _issue 640: https://github.com/nedbat/coveragepy/issues/640
+.. _issue 638: https://github.com/coveragepy/coveragepy/issues/638
+.. _issue 640: https://github.com/coveragepy/coveragepy/issues/640
 
 
 .. _changes_45:
@@ -692,13 +692,13 @@ Version 4.5 — 2018-02-03
   maximum.  Now filenames will never get much larger than 200 characters,
   fixing `issue 627`_.  Thanks to Alex Sandro for helping with the fix.
 
-.. _issue 563: https://github.com/nedbat/coveragepy/issues/563
-.. _issue 618: https://github.com/nedbat/coveragepy/issues/618
-.. _issue 621: https://github.com/nedbat/coveragepy/issues/621
-.. _issue 622: https://github.com/nedbat/coveragepy/issues/622
-.. _issue 627: https://github.com/nedbat/coveragepy/issues/627
-.. _issue 629: https://github.com/nedbat/coveragepy/issues/629
-.. _issue 631: https://github.com/nedbat/coveragepy/issues/631
+.. _issue 563: https://github.com/coveragepy/coveragepy/issues/563
+.. _issue 618: https://github.com/coveragepy/coveragepy/issues/618
+.. _issue 621: https://github.com/coveragepy/coveragepy/issues/621
+.. _issue 622: https://github.com/coveragepy/coveragepy/issues/622
+.. _issue 627: https://github.com/coveragepy/coveragepy/issues/627
+.. _issue 629: https://github.com/coveragepy/coveragepy/issues/629
+.. _issue 631: https://github.com/coveragepy/coveragepy/issues/631
 
 
 .. _changes_442:
@@ -730,11 +730,11 @@ Version 4.4.2 — 2017-11-05
 - Be more flexible about the command name displayed by help, fixing
   `issue 600`_. Thanks, Ben Finney.
 
-.. _issue 101: https://github.com/nedbat/coveragepy/issues/101
-.. _issue 581: https://github.com/nedbat/coveragepy/issues/581
-.. _issue 588: https://github.com/nedbat/coveragepy/issues/588
-.. _issue 589: https://github.com/nedbat/coveragepy/issues/589
-.. _issue 600: https://github.com/nedbat/coveragepy/issues/600
+.. _issue 101: https://github.com/coveragepy/coveragepy/issues/101
+.. _issue 581: https://github.com/coveragepy/coveragepy/issues/581
+.. _issue 588: https://github.com/coveragepy/coveragepy/issues/588
+.. _issue 589: https://github.com/coveragepy/coveragepy/issues/589
+.. _issue 600: https://github.com/coveragepy/coveragepy/issues/600
 
 
 .. _changes_441:
@@ -770,10 +770,10 @@ Version 4.4 — 2017-05-07
 - Running ``coverage xml`` in a directory named with non-ASCII characters would
   fail under Python 2. This is now fixed. (`issue 573`_)
 
-.. _issue 526: https://github.com/nedbat/coveragepy/issues/526
-.. _issue 572: https://github.com/nedbat/coveragepy/issues/572
-.. _issue 573: https://github.com/nedbat/coveragepy/issues/573
-.. _issue 575: https://github.com/nedbat/coveragepy/issues/575
+.. _issue 526: https://github.com/coveragepy/coveragepy/issues/526
+.. _issue 572: https://github.com/coveragepy/coveragepy/issues/572
+.. _issue 573: https://github.com/coveragepy/coveragepy/issues/573
+.. _issue 575: https://github.com/coveragepy/coveragepy/issues/575
 
 
 Version 4.4b1 — 2017-04-04
@@ -805,11 +805,11 @@ Version 4.4b1 — 2017-04-04
   the coverage of the standard library tests. This code was not installed by
   kitted versions of coverage.py.  Now it is.
 
-.. _issue 79: https://github.com/nedbat/coveragepy/issues/79
-.. _issue 96: https://github.com/nedbat/coveragepy/issues/96
-.. _issue 355: https://github.com/nedbat/coveragepy/issues/355
-.. _issue 448: https://github.com/nedbat/coveragepy/issues/448
-.. _issue 570: https://github.com/nedbat/coveragepy/issues/570
+.. _issue 79: https://github.com/coveragepy/coveragepy/issues/79
+.. _issue 96: https://github.com/coveragepy/coveragepy/issues/96
+.. _issue 355: https://github.com/coveragepy/coveragepy/issues/355
+.. _issue 448: https://github.com/coveragepy/coveragepy/issues/448
+.. _issue 570: https://github.com/coveragepy/coveragepy/issues/570
 
 
 .. _changes_434:
@@ -821,7 +821,7 @@ Version 4.3.4 — 2017-01-17
   exception wasn't properly derived from Exception, described in `issue 556`_.
   A newb mistake; it hasn't been a good few days.
 
-.. _issue 556: https://github.com/nedbat/coveragepy/issues/556
+.. _issue 556: https://github.com/coveragepy/coveragepy/issues/556
 
 
 .. _changes_433:
@@ -833,7 +833,7 @@ Version 4.3.3 — 2017-01-17
   benefit of the coverage.py test suite.  Properly conditionalizing it fixed
   `issue 554`_ so that Python 2.6 works again.
 
-.. _issue 554: https://github.com/nedbat/coveragepy/issues/554
+.. _issue 554: https://github.com/coveragepy/coveragepy/issues/554
 
 
 .. _changes_432:
@@ -876,11 +876,11 @@ Version 4.3.2 — 2017-01-16
   coverage.py 4.3, the old HTML file with the less-than-100% coverage would be
   left behind.  This file is now properly deleted.
 
-.. _issue 322: https://github.com/nedbat/coveragepy/issues/322
-.. _issue 426: https://github.com/nedbat/coveragepy/issues/426
-.. _issue 522: https://github.com/nedbat/coveragepy/issues/522
-.. _issue 549: https://github.com/nedbat/coveragepy/issues/549
-.. _issue 551: https://github.com/nedbat/coveragepy/issues/551
+.. _issue 322: https://github.com/coveragepy/coveragepy/issues/322
+.. _issue 426: https://github.com/coveragepy/coveragepy/issues/426
+.. _issue 522: https://github.com/coveragepy/coveragepy/issues/522
+.. _issue 549: https://github.com/coveragepy/coveragepy/issues/549
+.. _issue 551: https://github.com/coveragepy/coveragepy/issues/551
 
 
 .. _changes_431:
@@ -896,8 +896,8 @@ Version 4.3.1 — 2016-12-28
   in `issue 541`_.  The check has been reverted while we re-think the fix for
   `issue 265`_.
 
-.. _issue 540: https://github.com/nedbat/coveragepy/issues/540
-.. _issue 541: https://github.com/nedbat/coveragepy/issues/541
+.. _issue 540: https://github.com/coveragepy/coveragepy/issues/540
+.. _issue 541: https://github.com/coveragepy/coveragepy/issues/541
 
 
 .. _changes_43:
@@ -1009,24 +1009,24 @@ coverage.py and contributed a number of improvements in this release.
   author string in setup.py, though this might be too cute.
 
 .. _sys.excepthook: https://docs.python.org/3/library/sys.html#sys.excepthook
-.. _issue 265: https://github.com/nedbat/coveragepy/issues/265
-.. _issue 412: https://github.com/nedbat/coveragepy/issues/412
-.. _issue 433: https://github.com/nedbat/coveragepy/issues/433
-.. _issue 493: https://github.com/nedbat/coveragepy/issues/493
-.. _issue 496: https://github.com/nedbat/coveragepy/issues/496
-.. _issue 502: https://github.com/nedbat/coveragepy/issues/502
-.. _issue 505: https://github.com/nedbat/coveragepy/issues/505
-.. _issue 514: https://github.com/nedbat/coveragepy/issues/514
-.. _issue 510: https://github.com/nedbat/coveragepy/issues/510
-.. _issue 511: https://github.com/nedbat/coveragepy/issues/511
-.. _issue 516: https://github.com/nedbat/coveragepy/issues/516
-.. _issue 519: https://github.com/nedbat/coveragepy/issues/519
-.. _issue 524: https://github.com/nedbat/coveragepy/issues/524
-.. _issue 525: https://github.com/nedbat/coveragepy/issues/525
-.. _issue 529: https://github.com/nedbat/coveragepy/issues/529
-.. _issue 530: https://github.com/nedbat/coveragepy/issues/530
-.. _issue 533: https://github.com/nedbat/coveragepy/issues/533
-.. _issue 535: https://github.com/nedbat/coveragepy/issues/535
+.. _issue 265: https://github.com/coveragepy/coveragepy/issues/265
+.. _issue 412: https://github.com/coveragepy/coveragepy/issues/412
+.. _issue 433: https://github.com/coveragepy/coveragepy/issues/433
+.. _issue 493: https://github.com/coveragepy/coveragepy/issues/493
+.. _issue 496: https://github.com/coveragepy/coveragepy/issues/496
+.. _issue 502: https://github.com/coveragepy/coveragepy/issues/502
+.. _issue 505: https://github.com/coveragepy/coveragepy/issues/505
+.. _issue 514: https://github.com/coveragepy/coveragepy/issues/514
+.. _issue 510: https://github.com/coveragepy/coveragepy/issues/510
+.. _issue 511: https://github.com/coveragepy/coveragepy/issues/511
+.. _issue 516: https://github.com/coveragepy/coveragepy/issues/516
+.. _issue 519: https://github.com/coveragepy/coveragepy/issues/519
+.. _issue 524: https://github.com/coveragepy/coveragepy/issues/524
+.. _issue 525: https://github.com/coveragepy/coveragepy/issues/525
+.. _issue 529: https://github.com/coveragepy/coveragepy/issues/529
+.. _issue 530: https://github.com/coveragepy/coveragepy/issues/530
+.. _issue 533: https://github.com/coveragepy/coveragepy/issues/533
+.. _issue 535: https://github.com/coveragepy/coveragepy/issues/535
 
 
 .. _changes_42:
@@ -1044,7 +1044,7 @@ Version 4.2 — 2016-07-26
 
 - Filtering the HTML report is now faster, thanks to Ville Skyttä.
 
-.. _issue 495: https://github.com/nedbat/coveragepy/issues/495
+.. _issue 495: https://github.com/coveragepy/coveragepy/issues/495
 
 
 Version 4.2b1 — 2016-07-04
@@ -1097,14 +1097,14 @@ Work from the PyCon 2016 Sprints!
   package: `unittest-mixins`_.
 
 .. _automatic subprocess measurement: https://coverage.readthedocs.io/en/latest/subprocess.html
-.. _issue 199: https://github.com/nedbat/coveragepy/issues/199
-.. _issue 231: https://github.com/nedbat/coveragepy/issues/231
-.. _issue 298: https://github.com/nedbat/coveragepy/issues/298
-.. _issue 396: https://github.com/nedbat/coveragepy/issues/396
-.. _issue 454: https://github.com/nedbat/coveragepy/issues/454
-.. _issue 478: https://github.com/nedbat/coveragepy/issues/478
-.. _issue 484: https://github.com/nedbat/coveragepy/issues/484
-.. _issue 492: https://github.com/nedbat/coveragepy/issues/492
+.. _issue 199: https://github.com/coveragepy/coveragepy/issues/199
+.. _issue 231: https://github.com/coveragepy/coveragepy/issues/231
+.. _issue 298: https://github.com/coveragepy/coveragepy/issues/298
+.. _issue 396: https://github.com/coveragepy/coveragepy/issues/396
+.. _issue 454: https://github.com/coveragepy/coveragepy/issues/454
+.. _issue 478: https://github.com/coveragepy/coveragepy/issues/478
+.. _issue 484: https://github.com/coveragepy/coveragepy/issues/484
+.. _issue 492: https://github.com/coveragepy/coveragepy/issues/492
 .. _unittest-mixins: https://pypi.org/project/unittest-mixins/
 
 
@@ -1171,17 +1171,17 @@ Version 4.1b3 — 2016-05-10
 - Make a small tweak to how we compare threads, to avoid buggy custom
   comparison code in thread classes. (`issue 245`_)
 
-.. _issue 90: https://github.com/nedbat/coveragepy/issues/90
-.. _issue 245: https://github.com/nedbat/coveragepy/issues/245
-.. _issue 440: https://github.com/nedbat/coveragepy/issues/440
-.. _issue 456: https://github.com/nedbat/coveragepy/issues/456
-.. _issue 460: https://github.com/nedbat/coveragepy/issues/460
-.. _issue 469: https://github.com/nedbat/coveragepy/issues/469
-.. _issue 472: https://github.com/nedbat/coveragepy/issues/472
-.. _issue 475: https://github.com/nedbat/coveragepy/issues/475
-.. _issue 479: https://github.com/nedbat/coveragepy/issues/479
-.. _issue 481: https://github.com/nedbat/coveragepy/issues/481
-.. _issue 485: https://github.com/nedbat/coveragepy/issues/485
+.. _issue 90: https://github.com/coveragepy/coveragepy/issues/90
+.. _issue 245: https://github.com/coveragepy/coveragepy/issues/245
+.. _issue 440: https://github.com/coveragepy/coveragepy/issues/440
+.. _issue 456: https://github.com/coveragepy/coveragepy/issues/456
+.. _issue 460: https://github.com/coveragepy/coveragepy/issues/460
+.. _issue 469: https://github.com/coveragepy/coveragepy/issues/469
+.. _issue 472: https://github.com/coveragepy/coveragepy/issues/472
+.. _issue 475: https://github.com/coveragepy/coveragepy/issues/475
+.. _issue 479: https://github.com/coveragepy/coveragepy/issues/479
+.. _issue 481: https://github.com/coveragepy/coveragepy/issues/481
+.. _issue 485: https://github.com/coveragepy/coveragepy/issues/485
 
 
 Version 4.1b2 — 2016-01-23
@@ -1204,8 +1204,8 @@ Version 4.1b2 — 2016-01-23
 
 - ``coverage report`` won't produce trailing white space.
 
-.. _issue 465: https://github.com/nedbat/coveragepy/issues/465
-.. _issue 466: https://github.com/nedbat/coveragepy/issues/466
+.. _issue 465: https://github.com/coveragepy/coveragepy/issues/465
+.. _issue 466: https://github.com/coveragepy/coveragepy/issues/466
 
 
 Version 4.1b1 — 2016-01-10
@@ -1253,15 +1253,15 @@ Version 4.1b1 — 2016-01-10
 - Form-feed characters would prevent accurate determination of the beginning of
   statements in the rest of the file.  This is now fixed, closing `issue 461`_.
 
-.. _issue 129: https://github.com/nedbat/coveragepy/issues/129
-.. _issue 131: https://github.com/nedbat/coveragepy/issues/131
-.. _issue 146: https://github.com/nedbat/coveragepy/issues/146
-.. _issue 212: https://github.com/nedbat/coveragepy/issues/212
-.. _issue 422: https://github.com/nedbat/coveragepy/issues/422
-.. _issue 434: https://github.com/nedbat/coveragepy/issues/434
-.. _issue 453: https://github.com/nedbat/coveragepy/issues/453
-.. _issue 455: https://github.com/nedbat/coveragepy/issues/455
-.. _issue 461: https://github.com/nedbat/coveragepy/issues/461
+.. _issue 129: https://github.com/coveragepy/coveragepy/issues/129
+.. _issue 131: https://github.com/coveragepy/coveragepy/issues/131
+.. _issue 146: https://github.com/coveragepy/coveragepy/issues/146
+.. _issue 212: https://github.com/coveragepy/coveragepy/issues/212
+.. _issue 422: https://github.com/coveragepy/coveragepy/issues/422
+.. _issue 434: https://github.com/coveragepy/coveragepy/issues/434
+.. _issue 453: https://github.com/coveragepy/coveragepy/issues/453
+.. _issue 455: https://github.com/coveragepy/coveragepy/issues/455
+.. _issue 461: https://github.com/coveragepy/coveragepy/issues/461
 
 
 .. _changes_403:
@@ -1284,11 +1284,11 @@ Version 4.0.3 — 2015-11-24
   command name, which might be different than "coverage".  Thanks to Ben
   Finney, this closes `issue 438`_.
 
-.. _issue 420: https://github.com/nedbat/coveragepy/issues/420
-.. _issue 438: https://github.com/nedbat/coveragepy/issues/438
-.. _issue 439: https://github.com/nedbat/coveragepy/issues/439
-.. _issue 443: https://github.com/nedbat/coveragepy/issues/443
-.. _issue 445: https://github.com/nedbat/coveragepy/issues/445
+.. _issue 420: https://github.com/coveragepy/coveragepy/issues/420
+.. _issue 438: https://github.com/coveragepy/coveragepy/issues/438
+.. _issue 439: https://github.com/coveragepy/coveragepy/issues/439
+.. _issue 443: https://github.com/coveragepy/coveragepy/issues/443
+.. _issue 445: https://github.com/coveragepy/coveragepy/issues/445
 
 
 .. _changes_402:
@@ -1307,9 +1307,9 @@ Version 4.0.2 — 2015-11-04
 - Officially support PyPy 4.0, which required no changes, just updates to the
   docs.
 
-.. _issue 431: https://github.com/nedbat/coveragepy/issues/431
-.. _issue 432: https://github.com/nedbat/coveragepy/issues/432
-.. _issue 436: https://github.com/nedbat/coveragepy/issues/436
+.. _issue 431: https://github.com/coveragepy/coveragepy/issues/431
+.. _issue 432: https://github.com/coveragepy/coveragepy/issues/432
+.. _issue 436: https://github.com/coveragepy/coveragepy/issues/436
 
 
 .. _changes_401:
@@ -1350,14 +1350,14 @@ Version 4.0.1 — 2015-10-13
 - The source kit now contains all of the files needed to have a complete source
   tree, re-fixing `issue 137`_ and closing `issue 281`_.
 
-.. _issue 281: https://github.com/nedbat/coveragepy/issues/281
-.. _issue 397: https://github.com/nedbat/coveragepy/issues/397
-.. _issue 410: https://github.com/nedbat/coveragepy/issues/410
-.. _issue 415: https://github.com/nedbat/coveragepy/issues/415
-.. _issue 416: https://github.com/nedbat/coveragepy/issues/416
-.. _issue 418: https://github.com/nedbat/coveragepy/issues/418
-.. _issue 419: https://github.com/nedbat/coveragepy/issues/419
-.. _issue 423: https://github.com/nedbat/coveragepy/issues/423
+.. _issue 281: https://github.com/coveragepy/coveragepy/issues/281
+.. _issue 397: https://github.com/coveragepy/coveragepy/issues/397
+.. _issue 410: https://github.com/coveragepy/coveragepy/issues/410
+.. _issue 415: https://github.com/coveragepy/coveragepy/issues/415
+.. _issue 416: https://github.com/coveragepy/coveragepy/issues/416
+.. _issue 418: https://github.com/coveragepy/coveragepy/issues/418
+.. _issue 419: https://github.com/coveragepy/coveragepy/issues/419
+.. _issue 423: https://github.com/coveragepy/coveragepy/issues/423
 
 
 .. _changes_40:
@@ -1384,8 +1384,8 @@ Version 4.0b3 — 2015-09-07
   include tests and docs.  If you were using them from the older packages, get
   in touch and help me understand how.
 
-.. _issue 403: https://github.com/nedbat/coveragepy/issues/403
-.. _issue 404: https://github.com/nedbat/coveragepy/issues/404
+.. _issue 403: https://github.com/coveragepy/coveragepy/issues/403
+.. _issue 404: https://github.com/coveragepy/coveragepy/issues/404
 
 
 Version 4.0b2 — 2015-08-22
@@ -1415,9 +1415,9 @@ Version 4.0b2 — 2015-08-22
 - A new version identifier is available, `coverage.version_info`, a plain tuple
   of values similar to `sys.version_info`_.
 
-.. _issue 392: https://github.com/nedbat/coveragepy/issues/392
-.. _issue 395: https://github.com/nedbat/coveragepy/issues/395
-.. _issue 399: https://github.com/nedbat/coveragepy/issues/399
+.. _issue 392: https://github.com/coveragepy/coveragepy/issues/392
+.. _issue 395: https://github.com/coveragepy/coveragepy/issues/395
+.. _issue 399: https://github.com/coveragepy/coveragepy/issues/399
 .. _sys.version_info: https://docs.python.org/3/library/sys.html#sys.version_info
 
 
@@ -1487,15 +1487,15 @@ Version 4.0b1 — 2015-08-02
 - The speed is back to 3.7.1 levels, after having slowed down due to plugin
   support, finishing up `issue 387`_.
 
-.. _issue 236: https://github.com/nedbat/coveragepy/issues/236
-.. _issue 252: https://github.com/nedbat/coveragepy/issues/252
-.. _issue 262: https://github.com/nedbat/coveragepy/issues/262
-.. _issue 275: https://github.com/nedbat/coveragepy/issues/275
-.. _issue 313: https://github.com/nedbat/coveragepy/issues/313
-.. _issue 380: https://github.com/nedbat/coveragepy/issues/380
-.. _issue 385: https://github.com/nedbat/coveragepy/issues/385
-.. _issue 386: https://github.com/nedbat/coveragepy/issues/386
-.. _issue 387: https://github.com/nedbat/coveragepy/issues/387
+.. _issue 236: https://github.com/coveragepy/coveragepy/issues/236
+.. _issue 252: https://github.com/coveragepy/coveragepy/issues/252
+.. _issue 262: https://github.com/coveragepy/coveragepy/issues/262
+.. _issue 275: https://github.com/coveragepy/coveragepy/issues/275
+.. _issue 313: https://github.com/coveragepy/coveragepy/issues/313
+.. _issue 380: https://github.com/coveragepy/coveragepy/issues/380
+.. _issue 385: https://github.com/coveragepy/coveragepy/issues/385
+.. _issue 386: https://github.com/coveragepy/coveragepy/issues/386
+.. _issue 387: https://github.com/coveragepy/coveragepy/issues/387
 
 .. 40 issues closed in 4.0 below here
 
@@ -1549,17 +1549,17 @@ Version 4.0a6 — 2015-06-21
 - Plugin support had some bugs fixed, closing `issue 374`_ and `issue 375`_.
   Thanks, Stefan Behnel.
 
-.. _issue 299: https://github.com/nedbat/coveragepy/issues/299
-.. _issue 308: https://github.com/nedbat/coveragepy/issues/308
-.. _issue 324: https://github.com/nedbat/coveragepy/issues/324
-.. _issue 351: https://github.com/nedbat/coveragepy/issues/351
-.. _issue 354: https://github.com/nedbat/coveragepy/issues/354
-.. _issue 359: https://github.com/nedbat/coveragepy/issues/359
-.. _issue 360: https://github.com/nedbat/coveragepy/issues/360
-.. _issue 361: https://github.com/nedbat/coveragepy/issues/361
-.. _issue 363: https://github.com/nedbat/coveragepy/issues/363
-.. _issue 374: https://github.com/nedbat/coveragepy/issues/374
-.. _issue 375: https://github.com/nedbat/coveragepy/issues/375
+.. _issue 299: https://github.com/coveragepy/coveragepy/issues/299
+.. _issue 308: https://github.com/coveragepy/coveragepy/issues/308
+.. _issue 324: https://github.com/coveragepy/coveragepy/issues/324
+.. _issue 351: https://github.com/coveragepy/coveragepy/issues/351
+.. _issue 354: https://github.com/coveragepy/coveragepy/issues/354
+.. _issue 359: https://github.com/coveragepy/coveragepy/issues/359
+.. _issue 360: https://github.com/coveragepy/coveragepy/issues/360
+.. _issue 361: https://github.com/coveragepy/coveragepy/issues/361
+.. _issue 363: https://github.com/coveragepy/coveragepy/issues/363
+.. _issue 374: https://github.com/coveragepy/coveragepy/issues/374
+.. _issue 375: https://github.com/coveragepy/coveragepy/issues/375
 
 
 Version 4.0a5 — 2015-02-16
@@ -1589,11 +1589,11 @@ Version 4.0a5 — 2015-02-16
 
 - Added 3.5.0a1 to the list of supported CPython versions.
 
-.. _issue 117: https://github.com/nedbat/coveragepy/issues/117
-.. _issue 340: https://github.com/nedbat/coveragepy/issues/340
-.. _issue 353: https://github.com/nedbat/coveragepy/issues/353
-.. _issue 357: https://github.com/nedbat/coveragepy/issues/357
-.. _issue 358: https://github.com/nedbat/coveragepy/issues/358
+.. _issue 117: https://github.com/coveragepy/coveragepy/issues/117
+.. _issue 340: https://github.com/coveragepy/coveragepy/issues/340
+.. _issue 353: https://github.com/coveragepy/coveragepy/issues/353
+.. _issue 357: https://github.com/coveragepy/coveragepy/issues/357
+.. _issue 358: https://github.com/coveragepy/coveragepy/issues/358
 
 
 Version 4.0a4 — 2015-01-25
@@ -1633,11 +1633,11 @@ Version 4.0a3 — 2015-01-20
 - Regexes in the configuration file are now compiled as soon as they are read,
   to provide error messages earlier (`issue 349`_).
 
-.. _issue 69: https://github.com/nedbat/coveragepy/issues/69
-.. _issue 235: https://github.com/nedbat/coveragepy/issues/235
-.. _issue 290: https://github.com/nedbat/coveragepy/issues/290
-.. _issue 345: https://github.com/nedbat/coveragepy/issues/345
-.. _issue 349: https://github.com/nedbat/coveragepy/issues/349
+.. _issue 69: https://github.com/coveragepy/coveragepy/issues/69
+.. _issue 235: https://github.com/coveragepy/coveragepy/issues/235
+.. _issue 290: https://github.com/coveragepy/coveragepy/issues/290
+.. _issue 345: https://github.com/coveragepy/coveragepy/issues/345
+.. _issue 349: https://github.com/coveragepy/coveragepy/issues/349
 
 
 Version 4.0a2 — 2015-01-14
@@ -1697,15 +1697,15 @@ Version 4.0a2 — 2015-01-14
   haven't changed is now a JSON file instead of a pickle file.  This obviates
   `issue 287`_ and `issue 237`_.
 
-.. _issue 237: https://github.com/nedbat/coveragepy/issues/237
-.. _issue 287: https://github.com/nedbat/coveragepy/issues/287
-.. _issue 293: https://github.com/nedbat/coveragepy/issues/293
-.. _issue 314: https://github.com/nedbat/coveragepy/issues/314
-.. _issue 315: https://github.com/nedbat/coveragepy/issues/315
-.. _issue 328: https://github.com/nedbat/coveragepy/issues/328
-.. _issue 334: https://github.com/nedbat/coveragepy/issues/334
-.. _issue 342: https://github.com/nedbat/coveragepy/issues/342
-.. _issue 343: https://github.com/nedbat/coveragepy/issues/343
+.. _issue 237: https://github.com/coveragepy/coveragepy/issues/237
+.. _issue 287: https://github.com/coveragepy/coveragepy/issues/287
+.. _issue 293: https://github.com/coveragepy/coveragepy/issues/293
+.. _issue 314: https://github.com/coveragepy/coveragepy/issues/314
+.. _issue 315: https://github.com/coveragepy/coveragepy/issues/315
+.. _issue 328: https://github.com/coveragepy/coveragepy/issues/328
+.. _issue 334: https://github.com/coveragepy/coveragepy/issues/334
+.. _issue 342: https://github.com/coveragepy/coveragepy/issues/342
+.. _issue 343: https://github.com/coveragepy/coveragepy/issues/343
 
 
 Version 4.0a1 — 2014-09-27
@@ -1750,16 +1750,16 @@ Version 4.0a1 — 2014-09-27
 - Encoding declarations in source files are only considered if they are truly
   comments.  Thanks, Anthony Sottile.
 
-.. _issue 57: https://github.com/nedbat/coveragepy/issues/57
-.. _issue 94: https://github.com/nedbat/coveragepy/issues/94
-.. _issue 149: https://github.com/nedbat/coveragepy/issues/149
-.. _issue 230: https://github.com/nedbat/coveragepy/issues/230
-.. _issue 284: https://github.com/nedbat/coveragepy/issues/284
-.. _issue 285: https://github.com/nedbat/coveragepy/issues/285
-.. _issue 303: https://github.com/nedbat/coveragepy/issues/303
-.. _issue 304: https://github.com/nedbat/coveragepy/issues/304
-.. _issue 305: https://github.com/nedbat/coveragepy/issues/305
-.. _issue 331: https://github.com/nedbat/coveragepy/issues/331
+.. _issue 57: https://github.com/coveragepy/coveragepy/issues/57
+.. _issue 94: https://github.com/coveragepy/coveragepy/issues/94
+.. _issue 149: https://github.com/coveragepy/coveragepy/issues/149
+.. _issue 230: https://github.com/coveragepy/coveragepy/issues/230
+.. _issue 284: https://github.com/coveragepy/coveragepy/issues/284
+.. _issue 285: https://github.com/coveragepy/coveragepy/issues/285
+.. _issue 303: https://github.com/coveragepy/coveragepy/issues/303
+.. _issue 304: https://github.com/coveragepy/coveragepy/issues/304
+.. _issue 305: https://github.com/coveragepy/coveragepy/issues/305
+.. _issue 331: https://github.com/coveragepy/coveragepy/issues/331
 
 
 .. _changes_371:
@@ -1818,18 +1818,18 @@ Version 3.7 — 2013-10-06
 - The source kit now includes the ``__main__.py`` file in the root coverage
   directory, fixing `issue 255`_.
 
-.. _issue 92: https://github.com/nedbat/coveragepy/issues/92
-.. _issue 164: https://github.com/nedbat/coveragepy/issues/164
-.. _issue 175: https://github.com/nedbat/coveragepy/issues/175
-.. _issue 207: https://github.com/nedbat/coveragepy/issues/207
-.. _issue 242: https://github.com/nedbat/coveragepy/issues/242
-.. _issue 218: https://github.com/nedbat/coveragepy/issues/218
-.. _issue 250: https://github.com/nedbat/coveragepy/issues/250
-.. _issue 255: https://github.com/nedbat/coveragepy/issues/255
-.. _issue 259: https://github.com/nedbat/coveragepy/issues/259
-.. _issue 261: https://github.com/nedbat/coveragepy/issues/261
-.. _issue 264: https://github.com/nedbat/coveragepy/issues/264
-.. _issue 267: https://github.com/nedbat/coveragepy/issues/267
+.. _issue 92: https://github.com/coveragepy/coveragepy/issues/92
+.. _issue 164: https://github.com/coveragepy/coveragepy/issues/164
+.. _issue 175: https://github.com/coveragepy/coveragepy/issues/175
+.. _issue 207: https://github.com/coveragepy/coveragepy/issues/207
+.. _issue 242: https://github.com/coveragepy/coveragepy/issues/242
+.. _issue 218: https://github.com/coveragepy/coveragepy/issues/218
+.. _issue 250: https://github.com/coveragepy/coveragepy/issues/250
+.. _issue 255: https://github.com/coveragepy/coveragepy/issues/255
+.. _issue 259: https://github.com/coveragepy/coveragepy/issues/259
+.. _issue 261: https://github.com/coveragepy/coveragepy/issues/261
+.. _issue 264: https://github.com/coveragepy/coveragepy/issues/264
+.. _issue 267: https://github.com/coveragepy/coveragepy/issues/267
 
 
 .. _changes_36:
@@ -1840,8 +1840,8 @@ Version 3.6 — 2013-01-05
 - Added a page to the docs about troublesome situations, closing `issue 226`_,
   and added some info to the TODO file, closing `issue 227`_.
 
-.. _issue 226: https://github.com/nedbat/coveragepy/issues/226
-.. _issue 227: https://github.com/nedbat/coveragepy/issues/227
+.. _issue 226: https://github.com/coveragepy/coveragepy/issues/226
+.. _issue 227: https://github.com/coveragepy/coveragepy/issues/227
 
 
 Version 3.6b3 — 2012-12-29
@@ -1849,7 +1849,7 @@ Version 3.6b3 — 2012-12-29
 
 - Beta 2 broke the nose plugin. It's fixed again, closing `issue 224`_.
 
-.. _issue 224: https://github.com/nedbat/coveragepy/issues/224
+.. _issue 224: https://github.com/coveragepy/coveragepy/issues/224
 
 
 Version 3.6b2 — 2012-12-23
@@ -1869,7 +1869,7 @@ Version 3.6b2 — 2012-12-23
   file name, coverage.py no longer associates it with the directory name,
   fixing `issue 221`_.
 
-.. _issue 221: https://github.com/nedbat/coveragepy/issues/221
+.. _issue 221: https://github.com/coveragepy/coveragepy/issues/221
 
 
 Version 3.6b1 — 2012-11-28
@@ -1963,27 +1963,27 @@ Version 3.6b1 — 2012-11-28
   ``'NoneType' object has no attribute 'isabs'``.  It no longer does,
   so kiss `issue 153`_ goodbye.
 
-.. _issue 60: https://github.com/nedbat/coveragepy/issues/60
-.. _issue 67: https://github.com/nedbat/coveragepy/issues/67
-.. _issue 89: https://github.com/nedbat/coveragepy/issues/89
-.. _issue 97: https://github.com/nedbat/coveragepy/issues/97
-.. _issue 100: https://github.com/nedbat/coveragepy/issues/100
-.. _issue 111: https://github.com/nedbat/coveragepy/issues/111
-.. _issue 137: https://github.com/nedbat/coveragepy/issues/137
-.. _issue 139: https://github.com/nedbat/coveragepy/issues/139
-.. _issue 143: https://github.com/nedbat/coveragepy/issues/143
-.. _issue 153: https://github.com/nedbat/coveragepy/issues/153
-.. _issue 156: https://github.com/nedbat/coveragepy/issues/156
-.. _issue 163: https://github.com/nedbat/coveragepy/issues/163
-.. _issue 171: https://github.com/nedbat/coveragepy/issues/171
-.. _issue 193: https://github.com/nedbat/coveragepy/issues/193
-.. _issue 201: https://github.com/nedbat/coveragepy/issues/201
-.. _issue 202: https://github.com/nedbat/coveragepy/issues/202
-.. _issue 203: https://github.com/nedbat/coveragepy/issues/203
-.. _issue 205: https://github.com/nedbat/coveragepy/issues/205
-.. _issue 206: https://github.com/nedbat/coveragepy/issues/206
-.. _issue 210: https://github.com/nedbat/coveragepy/issues/210
-.. _issue 214: https://github.com/nedbat/coveragepy/issues/214
+.. _issue 60: https://github.com/coveragepy/coveragepy/issues/60
+.. _issue 67: https://github.com/coveragepy/coveragepy/issues/67
+.. _issue 89: https://github.com/coveragepy/coveragepy/issues/89
+.. _issue 97: https://github.com/coveragepy/coveragepy/issues/97
+.. _issue 100: https://github.com/coveragepy/coveragepy/issues/100
+.. _issue 111: https://github.com/coveragepy/coveragepy/issues/111
+.. _issue 137: https://github.com/coveragepy/coveragepy/issues/137
+.. _issue 139: https://github.com/coveragepy/coveragepy/issues/139
+.. _issue 143: https://github.com/coveragepy/coveragepy/issues/143
+.. _issue 153: https://github.com/coveragepy/coveragepy/issues/153
+.. _issue 156: https://github.com/coveragepy/coveragepy/issues/156
+.. _issue 163: https://github.com/coveragepy/coveragepy/issues/163
+.. _issue 171: https://github.com/coveragepy/coveragepy/issues/171
+.. _issue 193: https://github.com/coveragepy/coveragepy/issues/193
+.. _issue 201: https://github.com/coveragepy/coveragepy/issues/201
+.. _issue 202: https://github.com/coveragepy/coveragepy/issues/202
+.. _issue 203: https://github.com/coveragepy/coveragepy/issues/203
+.. _issue 205: https://github.com/coveragepy/coveragepy/issues/205
+.. _issue 206: https://github.com/coveragepy/coveragepy/issues/206
+.. _issue 210: https://github.com/coveragepy/coveragepy/issues/210
+.. _issue 214: https://github.com/coveragepy/coveragepy/issues/214
 
 
 .. _changes_353:
@@ -2018,12 +2018,12 @@ Version 3.5.3 — 2012-09-29
 
 - Testing is now done with `tox`_, thanks, Marc Abramowitz.
 
-.. _issue 147: https://github.com/nedbat/coveragepy/issues/147
-.. _issue 179: https://github.com/nedbat/coveragepy/issues/179
-.. _issue 183: https://github.com/nedbat/coveragepy/issues/183
-.. _issue 194: https://github.com/nedbat/coveragepy/issues/194
-.. _issue 195: https://github.com/nedbat/coveragepy/issues/195
-.. _issue 197: https://github.com/nedbat/coveragepy/issues/197
+.. _issue 147: https://github.com/coveragepy/coveragepy/issues/147
+.. _issue 179: https://github.com/coveragepy/coveragepy/issues/179
+.. _issue 183: https://github.com/coveragepy/coveragepy/issues/183
+.. _issue 194: https://github.com/coveragepy/coveragepy/issues/194
+.. _issue 195: https://github.com/coveragepy/coveragepy/issues/195
+.. _issue 197: https://github.com/coveragepy/coveragepy/issues/197
 .. _tox: https://tox.readthedocs.io/
 
 
@@ -2071,12 +2071,12 @@ Version 3.5.2b1 — 2012-04-29
 - When installing into PyPy, we no longer attempt (and fail) to compile
   the C tracer function, closing `issue 166`_.
 
-.. _issue 142: https://github.com/nedbat/coveragepy/issues/142
-.. _issue 155: https://github.com/nedbat/coveragepy/issues/155
-.. _issue 157: https://github.com/nedbat/coveragepy/issues/157
-.. _issue 166: https://github.com/nedbat/coveragepy/issues/166
-.. _issue 168: https://github.com/nedbat/coveragepy/issues/168
-.. _issue 173: https://github.com/nedbat/coveragepy/issues/173
+.. _issue 142: https://github.com/coveragepy/coveragepy/issues/142
+.. _issue 155: https://github.com/coveragepy/coveragepy/issues/155
+.. _issue 157: https://github.com/coveragepy/coveragepy/issues/157
+.. _issue 166: https://github.com/coveragepy/coveragepy/issues/166
+.. _issue 168: https://github.com/coveragepy/coveragepy/issues/168
+.. _issue 173: https://github.com/coveragepy/coveragepy/issues/173
 
 
 .. _changes_351:
@@ -2120,12 +2120,12 @@ Version 3.5.1b1 — 2011-08-28
   into running some coverage.py code before anything else in the process.
   See the coverage/fullcoverage directory if you are interested.
 
-.. _issue 17: https://github.com/nedbat/coveragepy/issues/17
-.. _issue 122: https://github.com/nedbat/coveragepy/issues/122
-.. _issue 124: https://github.com/nedbat/coveragepy/issues/124
-.. _issue 128: https://github.com/nedbat/coveragepy/issues/128
-.. _issue 138: https://github.com/nedbat/coveragepy/issues/138
-.. _issue 144: https://github.com/nedbat/coveragepy/issues/144
+.. _issue 17: https://github.com/coveragepy/coveragepy/issues/17
+.. _issue 122: https://github.com/coveragepy/coveragepy/issues/122
+.. _issue 124: https://github.com/coveragepy/coveragepy/issues/124
+.. _issue 128: https://github.com/coveragepy/coveragepy/issues/128
+.. _issue 138: https://github.com/coveragepy/coveragepy/issues/138
+.. _issue 144: https://github.com/coveragepy/coveragepy/issues/144
 
 
 .. _changes_35:
@@ -2207,15 +2207,15 @@ Version 3.5b1 — 2011-06-05
 - Internally, files are now closed explicitly, fixing `issue 104`_.  Thanks,
   Brett Cannon.
 
-.. _issue 80: https://github.com/nedbat/coveragepy/issues/80
-.. _issue 93: https://github.com/nedbat/coveragepy/issues/93
-.. _issue 95: https://github.com/nedbat/coveragepy/issues/95
-.. _issue 104: https://github.com/nedbat/coveragepy/issues/104
-.. _issue 107: https://github.com/nedbat/coveragepy/issues/107
-.. _issue 115: https://github.com/nedbat/coveragepy/issues/115
-.. _issue 121: https://github.com/nedbat/coveragepy/issues/121
-.. _issue 123: https://github.com/nedbat/coveragepy/issues/123
-.. _issue 125: https://github.com/nedbat/coveragepy/issues/125
+.. _issue 80: https://github.com/coveragepy/coveragepy/issues/80
+.. _issue 93: https://github.com/coveragepy/coveragepy/issues/93
+.. _issue 95: https://github.com/coveragepy/coveragepy/issues/95
+.. _issue 104: https://github.com/coveragepy/coveragepy/issues/104
+.. _issue 107: https://github.com/coveragepy/coveragepy/issues/107
+.. _issue 115: https://github.com/coveragepy/coveragepy/issues/115
+.. _issue 121: https://github.com/coveragepy/coveragepy/issues/121
+.. _issue 123: https://github.com/coveragepy/coveragepy/issues/123
+.. _issue 125: https://github.com/coveragepy/coveragepy/issues/125
 
 
 .. _changes_34:
@@ -2228,7 +2228,7 @@ Version 3.4 — 2010-09-19
 - Programs that exited with ``sys.exit()`` with no argument weren't handled
   properly, producing a coverage.py stack trace.  That is now fixed.
 
-.. _issue 88: https://github.com/nedbat/coveragepy/issues/88
+.. _issue 88: https://github.com/coveragepy/coveragepy/issues/88
 
 
 Version 3.4b2 — 2010-09-06
@@ -2254,12 +2254,12 @@ Version 3.4b2 — 2010-09-06
   would report no coverage for the `run` method.  This is now fixed, closing
   `issue 85`_.
 
-.. _issue 16: https://github.com/nedbat/coveragepy/issues/16
-.. _issue 41: https://github.com/nedbat/coveragepy/issues/41
-.. _issue 65: https://github.com/nedbat/coveragepy/issues/65
-.. _issue 70: https://github.com/nedbat/coveragepy/issues/70
-.. _issue 81: https://github.com/nedbat/coveragepy/issues/81
-.. _issue 85: https://github.com/nedbat/coveragepy/issues/85
+.. _issue 16: https://github.com/coveragepy/coveragepy/issues/16
+.. _issue 41: https://github.com/coveragepy/coveragepy/issues/41
+.. _issue 65: https://github.com/coveragepy/coveragepy/issues/65
+.. _issue 70: https://github.com/coveragepy/coveragepy/issues/70
+.. _issue 81: https://github.com/coveragepy/coveragepy/issues/81
+.. _issue 85: https://github.com/coveragepy/coveragepy/issues/85
 
 
 Version 3.4b1 — 2010-08-21
@@ -2335,17 +2335,17 @@ Version 3.4b1 — 2010-08-21
 - Asking for an HTML report with no files now shows a nice error message rather
   than a cryptic failure ('int' object is unsubscriptable). Fixes `issue 59`_.
 
-.. _issue 1:  https://github.com/nedbat/coveragepy/issues/1
-.. _issue 34: https://github.com/nedbat/coveragepy/issues/34
-.. _issue 36: https://github.com/nedbat/coveragepy/issues/36
-.. _issue 46: https://github.com/nedbat/coveragepy/issues/46
-.. _issue 53: https://github.com/nedbat/coveragepy/issues/53
-.. _issue 52: https://github.com/nedbat/coveragepy/issues/52
-.. _issue 56: https://github.com/nedbat/coveragepy/issues/56
-.. _issue 61: https://github.com/nedbat/coveragepy/issues/61
-.. _issue 62: https://github.com/nedbat/coveragepy/issues/62
-.. _issue 59: https://github.com/nedbat/coveragepy/issues/59
-.. _issue 82: https://github.com/nedbat/coveragepy/issues/82
+.. _issue 1:  https://github.com/coveragepy/coveragepy/issues/1
+.. _issue 34: https://github.com/coveragepy/coveragepy/issues/34
+.. _issue 36: https://github.com/coveragepy/coveragepy/issues/36
+.. _issue 46: https://github.com/coveragepy/coveragepy/issues/46
+.. _issue 53: https://github.com/coveragepy/coveragepy/issues/53
+.. _issue 52: https://github.com/coveragepy/coveragepy/issues/52
+.. _issue 56: https://github.com/coveragepy/coveragepy/issues/56
+.. _issue 61: https://github.com/coveragepy/coveragepy/issues/61
+.. _issue 62: https://github.com/coveragepy/coveragepy/issues/62
+.. _issue 59: https://github.com/coveragepy/coveragepy/issues/59
+.. _issue 82: https://github.com/coveragepy/coveragepy/issues/82
 
 
 .. _changes_331:
@@ -2359,8 +2359,8 @@ Version 3.3.1 — 2010-03-06
 - When running your code with "coverage run", if you call `sys.exit()`,
   coverage.py will exit with that status code, fixing `issue 50`_.
 
-.. _issue 49: https://github.com/nedbat/coveragepy/issues/49
-.. _issue 50: https://github.com/nedbat/coveragepy/issues/50
+.. _issue 49: https://github.com/coveragepy/coveragepy/issues/49
+.. _issue 50: https://github.com/coveragepy/coveragepy/issues/50
 
 
 .. _changes_33:
@@ -2399,9 +2399,9 @@ Version 3.3 — 2010-02-24
 
 - Added an AUTHORS.txt file.
 
-.. _issue 39: https://github.com/nedbat/coveragepy/issues/39
-.. _issue 40: https://github.com/nedbat/coveragepy/issues/40
-.. _issue 47: https://github.com/nedbat/coveragepy/issues/47
+.. _issue 39: https://github.com/coveragepy/coveragepy/issues/39
+.. _issue 40: https://github.com/coveragepy/coveragepy/issues/40
+.. _issue 47: https://github.com/coveragepy/coveragepy/issues/47
 
 
 .. _changes_32:
@@ -2459,12 +2459,12 @@ Version 3.2b2 — 2009-11-19
 - The --omit option now works much better than before, fixing `issue 14`_ and
   `issue 33`_.  Thanks, Danek Duvall.
 
-.. _issue 14: https://github.com/nedbat/coveragepy/issues/14
-.. _issue 30: https://github.com/nedbat/coveragepy/issues/30
-.. _issue 31: https://github.com/nedbat/coveragepy/issues/31
-.. _issue 32: https://github.com/nedbat/coveragepy/issues/32
-.. _issue 33: https://github.com/nedbat/coveragepy/issues/33
-.. _issue 35: https://github.com/nedbat/coveragepy/issues/35
+.. _issue 14: https://github.com/coveragepy/coveragepy/issues/14
+.. _issue 30: https://github.com/coveragepy/coveragepy/issues/30
+.. _issue 31: https://github.com/coveragepy/coveragepy/issues/31
+.. _issue 32: https://github.com/coveragepy/coveragepy/issues/32
+.. _issue 33: https://github.com/coveragepy/coveragepy/issues/33
+.. _issue 35: https://github.com/coveragepy/coveragepy/issues/35
 
 
 Version 3.2b1 — 2009-11-10
@@ -2479,7 +2479,7 @@ Version 3.2b1 — 2009-11-10
 - Some exceptions reported by the command line interface have been cleaned up
   so that tracebacks inside coverage.py aren't shown.  Fixes `issue 23`_.
 
-.. _issue 23: https://github.com/nedbat/coveragepy/issues/23
+.. _issue 23: https://github.com/coveragepy/coveragepy/issues/23
 
 
 .. _changes_31:
@@ -2490,7 +2490,7 @@ Version 3.1 — 2009-10-04
 - Source code can now be read from eggs.  Thanks, Ross Lawley.  Fixes
   `issue 25`_.
 
-.. _issue 25: https://github.com/nedbat/coveragepy/issues/25
+.. _issue 25: https://github.com/coveragepy/coveragepy/issues/25
 
 
 Version 3.1b1 — 2009-09-27
@@ -2520,10 +2520,10 @@ Version 3.1b1 — 2009-09-27
 - Added a "coverage debug" command for getting diagnostic information about the
   coverage.py installation.
 
-.. _issue 11: https://github.com/nedbat/coveragepy/issues/11
-.. _issue 12: https://github.com/nedbat/coveragepy/issues/12
-.. _issue 13: https://github.com/nedbat/coveragepy/issues/13
-.. _issue 24: https://github.com/nedbat/coveragepy/issues/24
+.. _issue 11: https://github.com/coveragepy/coveragepy/issues/11
+.. _issue 12: https://github.com/coveragepy/coveragepy/issues/12
+.. _issue 13: https://github.com/coveragepy/coveragepy/issues/13
+.. _issue 24: https://github.com/coveragepy/coveragepy/issues/24
 
 
 .. _changes_301:
@@ -2548,9 +2548,9 @@ Version 3.0.1 — 2009-07-07
   mode just like Python does.  This lets it run Windows files on Mac, for
   example.
 
-.. _issue 9: https://github.com/nedbat/coveragepy/issues/9
-.. _issue 10: https://github.com/nedbat/coveragepy/issues/10
-.. _issue 8: https://github.com/nedbat/coveragepy/issues/8
+.. _issue 9: https://github.com/coveragepy/coveragepy/issues/9
+.. _issue 10: https://github.com/coveragepy/coveragepy/issues/10
+.. _issue 8: https://github.com/coveragepy/coveragepy/issues/8
 
 
 .. _changes_30:
@@ -2566,7 +2566,7 @@ Version 3.0 — 2009-06-13
 
 - Nested modules now get a proper flat_rootname.  Thanks, Christian Heimes.
 
-.. _issue 6: https://github.com/nedbat/coveragepy/issues/6
+.. _issue 6: https://github.com/coveragepy/coveragepy/issues/6
 
 
 Version 3.0b3 — 2009-05-16

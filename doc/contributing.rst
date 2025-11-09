@@ -20,7 +20,7 @@ One source of history or ideas are the `bug reports`_ against coverage.py.
 There you can find ideas for requested features, or the remains of rejected
 ideas.
 
-.. _bug reports: https://github.com/nedbat/coveragepy/issues
+.. _bug reports: https://github.com/coveragepy/coveragepy/issues
 
 
 Before you begin
@@ -267,7 +267,7 @@ Continuous integration
 When you make a pull request, `GitHub actions`__ will run all of the tests and
 quality checks on your changes.  If any fail, either fix them or ask for help.
 
-__ https://github.com/nedbat/coveragepy/actions
+__ https://github.com/coveragepy/coveragepy/actions
 
 
 Dependencies

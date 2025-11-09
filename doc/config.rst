@@ -518,7 +518,7 @@ situations, but can also introduce problems (see `issue 1310`_).
 The signal handler is only registered on Linux and Mac.  On Windows, this
 setting has no effect.
 
-.. _issue 1310: https://github.com/nedbat/coveragepy/issues/1310
+.. _issue 1310: https://github.com/coveragepy/coveragepy/issues/1310
 
 .. versionadded:: 6.4 (in 6.3 this was always enabled)
 

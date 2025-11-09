@@ -56,7 +56,7 @@ MIXED_WS_TOKENS = [
     [("ws", "        "), ("nam", "b"), ("op", "="), ("str", '"indented"')],
 ]
 
-# https://github.com/nedbat/coveragepy/issues/822
+# https://github.com/coveragepy/coveragepy/issues/822
 BUG_822 = """\
 print( "Message 1" )
 array = [ 1,2,3,4,       # 4 numbers \\
@@ -108,7 +108,7 @@ class PhysTokensTest(CoverageTest):
         self.check_file_tokenization(real_file)
 
     def test_1828(self) -> None:
-        # https://github.com/nedbat/coveragepy/pull/1828
+        # https://github.com/coveragepy/coveragepy/pull/1828
         tokens = list(
             source_token_lines(
                 textwrap.dedent("""
