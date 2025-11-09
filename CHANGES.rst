@@ -20,8 +20,12 @@ upgrading your version of coverage.py.
     ..  Version 9.8.1 — 2027-07-27
     ..  --------------------------
 
-Unreleased
-----------
+.. start-releases
+
+.. _changes_7-11-3:
+
+Version 7.11.3 — 2025-11-09
+---------------------------
 
 - Fix: the 7.11.1 changes meant that conflicts between a requested measurement
   core and other settings would raise an error. This was a breaking change from
@@ -39,8 +43,6 @@ Unreleased
 .. _nedbat GitHub account: https://github.com/nedbat
 .. _coveragepy GitHub organization: https://github.com/coveragepy
 
-
-.. start-releases
 
 .. _changes_7-11-2:
 
