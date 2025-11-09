@@ -149,7 +149,7 @@ Licensed under the `Apache 2.0 License`_.  For details, see `NOTICE.txt`_.
     :target: https://github.com/coveragepy/coveragepy/blob/main/LICENSE.txt
     :alt: License
 .. |metacov| image:: https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/nedbat/8c6980f77988a327348f9b02bbaf67f5/raw/metacov.json
-    :target: https://nedbat.github.io/coverage-reports/latest.html
+    :target: https://coveragepy.github.io/metacov-reports/latest.html
     :alt: Coverage reports
 .. |tidelift| image:: https://tidelift.com/badges/package/pypi/coverage
     :target: https://tidelift.com/subscription/pkg/pypi-coverage?utm_source=pypi-coverage&utm_medium=referral&utm_campaign=readme
