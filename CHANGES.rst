@@ -78,14 +78,6 @@ Version 7.11.1 — 2025-11-07
     other settings conflict, an error is now raised. This used to produce a
     warning.
 
-- Fix: if the measurement core defaults to "sysmon" (the default for Python
-  3.14+ since v7.9.1), but sysmon can't support some aspect of your
-  configuration (concurrency settings, dynamic contexts, and so on), then the
-  ctrace core is used instead. Previously, this would result in an error.
-  An explicit request
-  for sysmon with conflicting settings will still result in an error. Closes
-  `issue 2064`_.
-
 - Fix: some multi-line case clauses or for loops (and probably other
   constructs) could cause incorrect claims of missing branches with the
   sys.monitoring core, as described in `issue 2070`_. This is now fixed.
