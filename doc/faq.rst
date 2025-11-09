@@ -1,5 +1,5 @@
 .. Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
-.. For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
+.. For details: https://github.com/coveragepy/coveragepy/blob/main/NOTICE.txt
 
 .. _faq:
 
@@ -199,4 +199,4 @@ Since 2004, `Ned Batchelder`_ has extended and maintained it with the help of
 
 .. _Gareth Rees: http://garethrees.org/
 .. _Ned Batchelder: https://nedbatchelder.com
-.. _many others: https://github.com/nedbat/coveragepy/blob/master/CONTRIBUTORS.txt
+.. _many others: https://github.com/coveragepy/coveragepy/blob/main/CONTRIBUTORS.txt

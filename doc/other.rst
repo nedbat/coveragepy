@@ -1,5 +1,5 @@
 .. Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
-.. For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
+.. For details: https://github.com/coveragepy/coveragepy/blob/main/NOTICE.txt
 
 .. _other:
 
@@ -14,7 +14,7 @@ There's no guarantee these items are maintained or work well.  Some of them
 seem to be quite old.  If you have suggestions for updates to this page, `open
 a pull request`_ or `get in touch`_ some other way.
 
-.. _open a pull request: https://github.com/nedbat/coveragepy/blob/master/doc/other.rst
+.. _open a pull request: https://github.com/coveragepy/coveragepy/blob/main/doc/other.rst
 .. _get in touch: https://nedbatchelder.com/site/aboutned.html
 
 

@@ -1,5 +1,5 @@
 .. Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
-.. For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
+.. For details: https://github.com/coveragepy/coveragepy/blob/main/NOTICE.txt
 
 .. This file is processed with cog to create the tabbed multi-syntax
    configuration examples.  If those are wrong, the quality checks will fail.

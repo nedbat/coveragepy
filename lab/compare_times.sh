@@ -1,6 +1,6 @@
 #!/bin/bash
 # Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
-# For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
+# For details: https://github.com/coveragepy/coveragepy/blob/main/NOTICE.txt
 
 # A suggestion about how to get less hyperfine output:
 #   https://github.com/sharkdp/hyperfine/issues/223

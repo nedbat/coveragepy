@@ -1,5 +1,5 @@
 .. Licensed under the Apache License: http://www.apache.org/licenses/LICENSE-2.0
-.. For details: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
+.. For details: https://github.com/coveragepy/coveragepy/blob/main/NOTICE.txt
 
 ===========
 Coverage.py
@@ -127,7 +127,7 @@ License
 Licensed under the `Apache 2.0 License`_.  For details, see `NOTICE.txt`_.
 
 .. _Apache 2.0 License: http://www.apache.org/licenses/LICENSE-2.0
-.. _NOTICE.txt: https://github.com/nedbat/coveragepy/blob/master/NOTICE.txt
+.. _NOTICE.txt: https://github.com/coveragepy/coveragepy/blob/main/NOTICE.txt
 
 
 .. |test-status| image:: https://github.com/nedbat/coveragepy/actions/workflows/testsuite.yml/badge.svg?branch=master&event=push
@@ -146,7 +146,7 @@ Licensed under the `Apache 2.0 License`_.  For details, see `NOTICE.txt`_.
     :target: https://pypi.org/project/coverage/
     :alt: Python versions supported
 .. |license| image:: https://img.shields.io/pypi/l/coverage.svg
-    :target: https://github.com/nedbat/coveragepy/blob/master/LICENSE.txt
+    :target: https://github.com/coveragepy/coveragepy/blob/main/LICENSE.txt
     :alt: License
 .. |metacov| image:: https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/nedbat/8c6980f77988a327348f9b02bbaf67f5/raw/metacov.json
     :target: https://nedbat.github.io/coverage-reports/latest.html
