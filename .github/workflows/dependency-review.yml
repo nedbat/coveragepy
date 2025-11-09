@@ -9,7 +9,7 @@ name: 'Dependency Review'
 on:
   push:
     branches:
-      - master
+      - main
       - nedbat/*
   pull_request:
   workflow_dispatch:
@@ -35,5 +35,5 @@ jobs:
       - name: 'Dependency Review'
         uses: actions/dependency-review-action@40c09b7dc99638e5ddb0bfd91c1673effc064d8a # v4.8.1
         with:
-          base-ref: ${{ github.event.pull_request.base.sha || 'master' }}
+          base-ref: ${{ github.event.pull_request.base.sha || 'main' }}
           head-ref: ${{ github.event.pull_request.head.sha || github.ref }}

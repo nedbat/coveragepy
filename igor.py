@@ -464,7 +464,7 @@ def do_cheats():
     )
 
     print("\n## To install this code:")
-    if facts.branch == "master":
+    if facts.branch == "main":
         print(f"python3 -m pip install git+{github}#{egg}")
     else:
         print(f"python3 -m pip install git+{github}@{facts.branch}#{egg}")

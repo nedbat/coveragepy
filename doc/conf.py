@@ -126,7 +126,7 @@ intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
 }
 
-rediraffe_branch = "origin/master"
+rediraffe_branch = "origin/main"
 rediraffe_redirects = {
     "cmd.rst": "commands/index.rst",
 }

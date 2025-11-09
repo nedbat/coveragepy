@@ -6,7 +6,7 @@ name: "Tests"
 on:
   push:
     branches:
-      - master
+      - main
       - nedbat/*
   pull_request:
   workflow_dispatch:

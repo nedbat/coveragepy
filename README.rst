@@ -130,10 +130,10 @@ Licensed under the `Apache 2.0 License`_.  For details, see `NOTICE.txt`_.
 .. _NOTICE.txt: https://github.com/coveragepy/coveragepy/blob/main/NOTICE.txt
 
 
-.. |test-status| image:: https://github.com/nedbat/coveragepy/actions/workflows/testsuite.yml/badge.svg?branch=master&event=push
+.. |test-status| image:: https://github.com/coveragepy/coveragepy/actions/workflows/testsuite.yml/badge.svg?branch=main&event=push
     :target: https://github.com/nedbat/coveragepy/actions/workflows/testsuite.yml
     :alt: Test suite status
-.. |quality-status| image:: https://github.com/nedbat/coveragepy/actions/workflows/quality.yml/badge.svg?branch=master&event=push
+.. |quality-status| image:: https://github.com/coveragepy/coveragepy/actions/workflows/quality.yml/badge.svg?branch=main&event=push
     :target: https://github.com/nedbat/coveragepy/actions/workflows/quality.yml
     :alt: Quality check status
 .. |docs| image:: https://readthedocs.org/projects/coverage/badge/?version=latest&style=flat

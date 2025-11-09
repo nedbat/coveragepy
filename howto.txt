@@ -46,7 +46,7 @@
     $ g puo; gshipit
         - check them in on the release prep branch
         - wait for ci to finish
-        - merge to master
+        - merge to main
         - git push
 - Start the kits:
     $ opvars github; make build_kits
@@ -73,5 +73,5 @@
         $ opvars
         $ make update_rtd
 $ deopvars
-- Once CI passes, merge the bump-version branch to master and push it
+- Once CI passes, merge the bump-version branch to main and push it
     $ gshipit
