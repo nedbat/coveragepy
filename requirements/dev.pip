@@ -3,9 +3,7 @@
 astroid==4.0.1
     # via pylint
 attrs==25.4.0
-    # via
-    #   hypothesis
-    #   scriv
+    # via scriv
 backports-tarfile==1.2.0 ; python_full_version < '3.12' and platform_machine != 'ppc64le' and platform_machine != 's390x'
     # via jaraco-context
 build==1.3.0
@@ -45,7 +43,7 @@ dill==0.4.0
     # via pylint
 distlib==0.4.0
     # via virtualenv
-docutils==0.22.2
+docutils==0.22.3
     # via readme-renderer
 exceptiongroup==1.3.0 ; python_full_version < '3.11'
     # via
@@ -61,7 +59,7 @@ flaky==3.8.1
     # via -r requirements/pytest.in
 greenlet==3.2.4
     # via -r requirements/dev.in
-hypothesis==6.142.4
+hypothesis==6.147.0
     # via -r requirements/pytest.in
 id==1.5.0
     # via twine
@@ -107,7 +105,7 @@ more-itertools==10.8.0 ; platform_machine != 'ppc64le' and platform_machine != '
     # via
     #   jaraco-classes
     #   jaraco-functools
-nh3==0.3.1
+nh3==0.3.2
     # via readme-renderer
 packaging==25.0
     # via
@@ -147,7 +145,7 @@ pyproject-api==1.10.0
     # via tox
 pyproject-hooks==1.2.0
     # via build
-pytest==8.4.2
+pytest==9.0.0
     # via
     #   -r requirements/pytest.in
     #   pytest-xdist
@@ -172,7 +170,7 @@ rfc3986==2.0.0
     # via twine
 rich==14.2.0
     # via twine
-ruff==0.14.2
+ruff==0.14.4
     # via -r requirements/dev.in
 scriv==1.7.0
     # via -r requirements/dev.in
