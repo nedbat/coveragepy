@@ -11,7 +11,7 @@ authors:
     given-names: Ned
     orcid: https://orcid.org/0009-0006-2659-884X
   - name: "Contributors to Coverage.py"
-repository-code: "https://github.com/nedbat/coveragepy"
+repository-code: "https://github.com/coveragepy/coveragepy"
 url: "https://coverage.readthedocs.io/"
 abstract: >-
   Coverage.py is a tool for measuring code coverage of Python programs. It monitors your program,

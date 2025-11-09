@@ -52,7 +52,7 @@
     $ opvars github; make build_kits
 - Kits:
     - Wait for kits to finish:
-        - https://github.com/nedbat/coveragepy/actions/workflows/kit.yml
+        - https://github.com/coveragepy/coveragepy/actions/workflows/kit.yml
     - test the pypi upload:
         $ make test_upload
         - approve the action using the url printed out

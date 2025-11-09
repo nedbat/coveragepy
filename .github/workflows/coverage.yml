@@ -285,7 +285,7 @@ jobs:
 
       - name: "Push to report repo"
         if: |
-          github.repository_owner == 'nedbat'
+          github.repository_owner == 'coveragepy'
           && github.ref == 'refs/heads/main'
         env:
           COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
@@ -312,7 +312,7 @@ jobs:
 
       - name: "Create badge"
         if: |
-          github.repository_owner == 'nedbat'
+          github.repository_owner == 'coveragepy'
           && github.ref == 'refs/heads/main'
         # https://gist.githubusercontent.com/nedbat/8c6980f77988a327348f9b02bbaf67f5
         uses: schneegans/dynamic-badges-action@e9a478b16159b4d31420099ba146cdc50f134483 # v1.7.0

@@ -236,7 +236,7 @@ if any("spell" in arg for arg in sys.argv):
 linkcheck_ignore = [
     # We have lots of links to GitHub, and they start refusing to serve them to linkcheck,
     # so don't bother checking them.
-    r"https://github.com/nedbat/coveragepy/(issues|pull)/\d+",
+    r"https://github.com/coveragepy/coveragepy/(issues|pull)/\d+",
     # When publishing a new version, the docs will refer to the version before
     # the docs have been published.  So don't check those links.
     rf"https://coverage.readthedocs.io/en/{release}$",

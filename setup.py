@@ -109,7 +109,7 @@ setup_args = dict(
     license="Apache-2.0",
     license_files=["LICENSE.txt"],
     classifiers=classifier_list,
-    url="https://github.com/nedbat/coveragepy",
+    url="https://github.com/coveragepy/coveragepy",
     project_urls={
         "Documentation": __url__,
         "Funding": (

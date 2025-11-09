@@ -450,7 +450,7 @@ def do_cheats():
     print()
     print(f"Coverage version is {facts.ver}")
 
-    repo = "nedbat/coveragepy"
+    repo = "coveragepy/coveragepy"
     github = f"https://github.com/{repo}"
     egg = "egg=coverage==0.0"  # to force a re-install
     print(
@@ -471,9 +471,9 @@ def do_cheats():
     print(f"python3 -m pip install git+{github}@{facts.sha[:20]}#{egg}")
 
     print("\n## To read this code on GitHub:")
-    print(f"https://github.com/nedbat/coveragepy/commit/{facts.sha}")
-    print(f"https://github.com/nedbat/coveragepy/commits/{facts.sha}")
-    print(f"https://github.com/nedbat/coveragepy/tree/{facts.branch}")
+    print(f"https://github.com/coveragepy/coveragepy/commit/{facts.sha}")
+    print(f"https://github.com/coveragepy/coveragepy/commits/{facts.sha}")
+    print(f"https://github.com/coveragepy/coveragepy/tree/{facts.branch}")
 
     print(
         "\n## For other collaborators to get this code:\n"

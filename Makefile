@@ -191,7 +191,7 @@ sample_html_beta: _sample_cog_html	## Generate sample HTML report for a beta rel
 .PHONY: kit pypi_upload test_upload kit_local build_kits update_rtd
 .PHONY: tag bump_version
 
-REPO_OWNER = nedbat/coveragepy
+REPO_OWNER = coveragepy/coveragepy
 RTD_PROJECT = coverage
 
 release_version:			#: Update the version for a release.

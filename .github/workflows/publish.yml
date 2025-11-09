@@ -38,7 +38,7 @@ jobs:
         id: runs
         uses: octokit/request-action@dad4362715b7fb2ddedf9772c8670824af564f0d # v2.4.0
         with:
-          route: GET /repos/nedbat/coveragepy/actions/workflows/kit.yml/runs
+          route: GET /repos/coveragepy/coveragepy/actions/workflows/kit.yml/runs
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -66,7 +66,7 @@ jobs:
       - name: "Download dists"
         uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
         with:
-          repository: "nedbat/coveragepy"
+          repository: "coveragepy/coveragepy"
           run-id: ${{ needs.find-run.outputs.run-id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
           pattern: "dist-*"
@@ -106,7 +106,7 @@ jobs:
       - name: "Download dists"
         uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6.0.0
         with:
-          repository: "nedbat/coveragepy"
+          repository: "coveragepy/coveragepy"
           run-id: ${{ needs.find-run.outputs.run-id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
           pattern: "dist-*"

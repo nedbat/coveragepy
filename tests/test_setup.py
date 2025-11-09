@@ -35,7 +35,7 @@ class SetupPyTest(CoverageTest):
         out = output.splitlines()
         assert "measurement" in out[0]
         assert coverage.__version__ == out[1]
-        assert "github.com/nedbat/coveragepy" in out[2]
+        assert "github.com/coveragepy/coveragepy" in out[2]
         assert "Ned Batchelder" in out[3]
 
     @pytest.mark.skipif(

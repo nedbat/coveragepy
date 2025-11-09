@@ -33,7 +33,7 @@ Documentation is on `Read the Docs`_.  Code repository and issue tracker are on
 `GitHub`_.
 
 .. _Read the Docs: https://coverage.readthedocs.io/
-.. _GitHub: https://github.com/nedbat/coveragepy
+.. _GitHub: https://github.com/coveragepy/coveragepy
 
 **New in 7.x:**
 ``[run] patch`` setting;
@@ -131,10 +131,10 @@ Licensed under the `Apache 2.0 License`_.  For details, see `NOTICE.txt`_.
 
 
 .. |test-status| image:: https://github.com/coveragepy/coveragepy/actions/workflows/testsuite.yml/badge.svg?branch=main&event=push
-    :target: https://github.com/nedbat/coveragepy/actions/workflows/testsuite.yml
+    :target: https://github.com/coveragepy/coveragepy/actions/workflows/testsuite.yml
     :alt: Test suite status
 .. |quality-status| image:: https://github.com/coveragepy/coveragepy/actions/workflows/quality.yml/badge.svg?branch=main&event=push
-    :target: https://github.com/nedbat/coveragepy/actions/workflows/quality.yml
+    :target: https://github.com/coveragepy/coveragepy/actions/workflows/quality.yml
     :alt: Quality check status
 .. |docs| image:: https://readthedocs.org/projects/coverage/badge/?version=latest&style=flat
     :target: https://coverage.readthedocs.io/
@@ -154,8 +154,8 @@ Licensed under the `Apache 2.0 License`_.  For details, see `NOTICE.txt`_.
 .. |tidelift| image:: https://tidelift.com/badges/package/pypi/coverage
     :target: https://tidelift.com/subscription/pkg/pypi-coverage?utm_source=pypi-coverage&utm_medium=referral&utm_campaign=readme
     :alt: Tidelift
-.. |stars| image:: https://img.shields.io/github/stars/nedbat/coveragepy.svg?logo=github&style=flat
-    :target: https://github.com/nedbat/coveragepy/stargazers
+.. |stars| image:: https://img.shields.io/github/stars/coveragepy/coveragepy.svg?logo=github&style=flat
+    :target: https://github.com/coveragepy/coveragepy/stargazers
     :alt: GitHub stars
 .. |mastodon-nedbat| image:: https://img.shields.io/badge/dynamic/json?style=flat&labelColor=450657&logo=mastodon&logoColor=ffffff&label=@nedbat&query=followers_count&url=https%3A%2F%2Fhachyderm.io%2Fapi%2Fv1%2Faccounts%2Flookup%3Facct=nedbat
     :target: https://hachyderm.io/@nedbat

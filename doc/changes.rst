@@ -564,7 +564,7 @@ Version 5.0a2 — 2018-09-03
 - pickle2json, for converting v3 data files to v4 data files, has been removed.
 
 .. _Bitbucket: https://bitbucket.org
-.. _GitHub: https://github.com/nedbat/coveragepy
+.. _GitHub: https://github.com/coveragepy/coveragepy
 
 .. _issue 611: https://github.com/coveragepy/coveragepy/issues/611
 
@@ -633,7 +633,7 @@ Version 4.5.2 — 2018-11-12
 .. _issue 714: https://github.com/coveragepy/coveragepy/issues/714
 
 .. _Bitbucket: https://bitbucket.org
-.. _GitHub: https://github.com/nedbat/coveragepy
+.. _GitHub: https://github.com/coveragepy/coveragepy
 
 
 .. _changes_451:

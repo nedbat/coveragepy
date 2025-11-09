@@ -24,7 +24,7 @@ concurrency:
 jobs:
   dependency-review:
     name: "Review dependencies"
-    if: github.repository_owner == 'nedbat'
+    if: github.repository_owner == 'coveragepy'
     runs-on: ubuntu-latest
     steps:
       - name: 'Checkout Repository'
