@@ -1810,7 +1810,7 @@ Version 6.1.2 — 2021-11-10
   I'd rather not "fix" unsupported interfaces, it's actually nicer with a
   default value.
 
-.. _django_coverage_plugin issue 78: https://github.com/nedbat/django_coverage_plugin/issues/78
+.. _django_coverage_plugin issue 78: https://github.com/coveragepy/django_coverage_plugin/issues/78
 .. _issue 840b: https://github.com/coveragepy/coveragepy/issues/840
 .. _issue 1147: https://github.com/coveragepy/coveragepy/issues/1147
 .. _issue 1270: https://github.com/coveragepy/coveragepy/issues/1270
