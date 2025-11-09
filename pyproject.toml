@@ -110,9 +110,20 @@ ignored-argument-names = "_|unused|.*_unused"
 
 ## PYTEST
 
-[tool.pytest.ini_options]
-addopts = "-q -n auto --dist=loadgroup -p no:legacypath --strict-markers --no-flaky-report -rfEX --failed-first"
-python_classes = "*Test"
+[tool.pytest]
+minversion = "9.0.0"
+addopts = [
+    "-q",
+    "-n", "auto",
+    "--dist", "loadgroup",
+    "-p", "no:legacypath",
+    "-p", "no:terminalprogress", # https://github.com/pytest-dev/pytest/issues/13896
+    "--no-flaky-report",
+    "-rfEX",
+    "--failed-first",
+]
+python_classes = ["*Test"]
+strict = true
 
 ### pytest.mark.xdist_group() values, and why:
 # "virtualenv_test": because of an expensive session-scoped fixture
@@ -133,11 +144,7 @@ filterwarnings = [
     "error::pytest.PytestCollectionWarning",
 ]
 
-# xfail tests that pass should fail the test suite
-xfail_strict = true
-
-# https://docs.pytest.org/en/stable/reference/reference.html#confval-verbosity_assertions
-verbosity_assertions = 5
+verbosity_assertions = "5"
 
 ## Scriv
 
