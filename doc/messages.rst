@@ -52,22 +52,6 @@ Can't combine (branch or statement) coverage data with (statement or branch) dat
   incompatible.  You'll need to ensure that all of your data files are
   collected with the same settings.
 
-.. _error_no_sysmon:
-
-Can't use core=sysmon: sys.monitoring isn't available in this version
-  You requested the sys.monitoring measurement core, but are running on
-  Python 3.11 or lower where it isn't available.
-
-Can't use core=sysmon: sys.monitoring can't measure branches in this version
-  You requested the sys.monitoring measurement core and also branch coverage.
-  This isn't supported until the Python 3.14.
-
-Can't use core=sysmon: it doesn't yet support dynamic contexts
-  You requested the sys.monitoring measurement core and also dynamic contexts.
-  This isn't supported by coverage.py yet.
-
-Can't use core=sysmon: it doesn't support concurrency=ZZZ
-
 
 .. _cmd_warnings:
 .. _warnings:
@@ -152,6 +136,27 @@ Conflicting dynamic contexts (dynamic-conflict)
 Couldn't import C tracer (no-ctracer)
   The core tracer implemented in C should have been used, but couldn't be
   imported.  The reason is included in the warning message.  The Python tracer
+  will be used instead.
+
+.. _warning_no_sysmon:
+
+Can't use core=sysmon: sys.monitoring isn't available in this version, using default core (no-sysmon)
+  You requested to the sys.monitoring measurement core, but are running on
+  Python 3.11 or lower where it isn't available.  A default core will be used
+  instead.
+
+Can't use core=sysmon: sys.monitoring can't measure branches in this version, using default core (no-sysmon)
+  You requested the sys.monitoring measurement core and also branch coverage.
+  This isn't supported until Python 3.14.  A default core will be used instead.
+
+Can't use core=sysmon: it doesn't yet support dynamic contexts, using default core (no-sysmon)
+  You requested the sys.monitoring measurement core and also dynamic contexts.
+  This isn't supported by coverage.py yet.  A default core will be used
+  instead.
+
+Can't use core=sysmon: it doesn't support concurrency=ZZZ, using default core (no-sysmon)
+  Your requested the sys.monitoring measurement core and also a particular
+  concurrency setting, but that combination isn't supported.  A default core
   will be used instead.
 
 

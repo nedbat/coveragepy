@@ -15,22 +15,16 @@ class CoverageException(Exception):
         self,
         *args: Any,
         slug: str | None = None,
-        skip_tests: bool = False,
     ) -> None:
         """Create an exception.
 
         Args:
             slug: A short string identifying the exception, will be used for
                 linking to documentation.
-            skip_tests: If True, raising this exception will skip the test it
-                is raised in.  This is used for shutting off large numbers of
-                tests that we know will not succeed because of a configuration
-                mismatch.
         """
 
         super().__init__(*args)
         self.slug = slug
-        self.skip_tests = skip_tests
 
 
 class ConfigError(CoverageException):

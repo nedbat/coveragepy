@@ -90,12 +90,9 @@ class Core:
             _debug(f"core.py: core from config is {core_name!r}")
 
         if core_name == "sysmon" and reason_no_sysmon:
-            _debug(f"core.py: raising ConfigError because sysmon not usable: {reason_no_sysmon}")
-            raise ConfigError(
-                f"Can't use core=sysmon: {reason_no_sysmon}",
-                skip_tests=True,
-                slug="no-sysmon",
-            )
+            _debug(f"core.py: defaulting because sysmon not usable: {reason_no_sysmon}")
+            warn(f"Can't use core=sysmon: {reason_no_sysmon}, using default core", slug="no-sysmon")
+            core_name = None
 
         if core_name is None:
             if env.SYSMON_DEFAULT and not reason_no_sysmon:

@@ -23,10 +23,19 @@ upgrading your version of coverage.py.
 Unreleased
 ----------
 
+- Fix: the 7.11.1 changes meant that conflicts between a requested measurement
+  core and other settings would raise an error. This was a breaking change from
+  previous behavior, as reported in `issue 2076`_ and `issue 2078`_.
+
+  The previous behavior has been restored: when the requested core conflicts
+  with other settings, another core is used instead, and a warning is issued.
+
 - For contributors: the repo has moved from Ned's `nedbat GitHub account`_ to
   the `coveragepy GitHub organization`_. The default branch has changed from
   master to main.
 
+.. _issue 2076: https://github.com/coveragepy/coveragepy/issues/2076
+.. _issue 2078: https://github.com/coveragepy/coveragepy/issues/2078
 .. _nedbat GitHub account: https://github.com/nedbat
 .. _coveragepy GitHub organization: https://github.com/coveragepy
 

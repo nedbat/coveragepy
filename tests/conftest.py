@@ -20,6 +20,8 @@ import pytest
 from coverage.files import set_relative_directory
 from coverage.patch import create_pth_files
 
+from tests import testenv
+
 
 # Pytest will rewrite assertions in test modules, but not elsewhere.
 # This tells pytest to also rewrite assertions in these files:
@@ -59,6 +61,11 @@ def set_warnings() -> None:
 
     # We have a test that has a return in a finally: test_bug_1891.
     warnings.filterwarnings("ignore", "'return' in a 'finally' block", category=SyntaxWarning)
+
+    # For when our own tests can't use sysmon though it was requested.
+    warnings.filterwarnings("ignore", r".*no-sysmon")
+    if testenv.REQUESTED_CORE != "ctrace":
+        warnings.filterwarnings("ignore", r".*no-ctracer")
 
 
 @pytest.fixture(autouse=True)
@@ -102,19 +109,3 @@ def create_pth_file_fixture() -> Iterable[None]:
     finally:
         for p in pth_files:
             p.unlink()
-
-
-@pytest.hookimpl(wrapper=True)
-def pytest_runtest_call() -> Iterable[None]:
-    """Check the exception raised by the test, and skip the test if needed."""
-    try:
-        yield
-    except Exception as e:  # pragma: never metacov
-        # This code is for dealing with the exception raised when we are
-        # measuring with a core that doesn't support branch measurement.
-        # During metacov, we skip those situations entirely by not running
-        # sysmon on 3.12 or 3.13, so this code is never needed during metacov.
-        if getattr(e, "skip_tests", False):
-            pytest.skip(f"Skipping for exception: {e}")
-        else:
-            raise
