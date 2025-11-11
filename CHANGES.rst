@@ -23,7 +23,8 @@ upgrading your version of coverage.py.
 Unreleased
 ----------
 
-Nothing yet.
+- A small tweak to the HTML report: file paths now use thin spaces around
+  slashes to make them easier to read.
 
 
 .. start-releases

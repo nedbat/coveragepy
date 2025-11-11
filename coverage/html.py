@@ -314,6 +314,7 @@ class HtmlReporter:
             "escape": escape,
             "pair": pair,
             "len": len,
+            "pretty_file": pretty_file,
             # Constants for this report.
             "__url__": __url__,
             "__version__": coverage.__version__,
@@ -854,3 +855,8 @@ def escape(t: str) -> str:
 def pair(ratio: tuple[int, int]) -> str:
     """Format a pair of numbers so JavaScript can read them in an attribute."""
     return "{} {}".format(*ratio)
+
+
+def pretty_file(filename: str) -> str:
+    """Return a prettier version of `filename` for display."""
+    return re.sub(r"[/\\]", "\N{THIN SPACE}\\g<0>\N{THIN SPACE}", filename)
