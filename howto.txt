@@ -70,8 +70,7 @@
         - keep just the latest version of each x.y release, make the rest active but hidden.
             - pre-releases should be hidden
     - IF NOT PRE-RELEASE:
-        $ opvars
-        $ make update_rtd
+        $ opvars; make update_rtd
 $ deopvars
 - Once CI passes, merge the bump-version branch to main and push it
     $ gshipit
