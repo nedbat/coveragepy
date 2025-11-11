@@ -313,7 +313,6 @@ class HtmlReporter:
             # Functions available in the templates.
             "escape": escape,
             "pair": pair,
-            "len": len,
             "pretty_file": pretty_file,
             # Constants for this report.
             "__url__": __url__,
@@ -322,7 +321,6 @@ class HtmlReporter:
             "time_stamp": format_local_datetime(datetime.datetime.now()),
             "extra_css": self.extra_css,
             "has_arcs": self.has_arcs,
-            "show_contexts": self.config.show_contexts,
             "statics": {},
             # Constants for all reports.
             # These css classes determine which lines are highlighted by default.
