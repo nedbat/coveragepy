@@ -24,7 +24,9 @@ from coverage.types import TArc, TLineNo, TMorf, TSourceTokenLines
 if TYPE_CHECKING:
     from coverage import Coverage
 
+# Protect ourselves against aggressive mocking.
 os = isolate_module(os)
+open = open
 
 
 def read_python_source(filename: str) -> bytes:
