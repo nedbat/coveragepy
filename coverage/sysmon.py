@@ -467,7 +467,7 @@ class SysMonitor(Tracer):
         return DISABLE
 
 
-@functools.lru_cache(maxsize=5)
+@functools.lru_cache(maxsize=20)
 def get_multiline_map(filename: str) -> dict[TLineNo, TLineNo]:
     """Get a PythonParser for the given filename, cached."""
     parser = PythonParser(filename=filename)
