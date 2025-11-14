@@ -5,6 +5,7 @@
 
 from __future__ import annotations
 
+import collections
 import functools
 import inspect
 import os
@@ -223,6 +224,10 @@ class SysMonitor(Tracer):
         # A list of code_objects, just to keep them alive so that id's are
         # useful as identity.
         self.code_objects: list[CodeType] = []
+
+        # Map filename:__name__ -> set(id(code_object))
+        self.filename_code_ids: dict[str, set[int]] = collections.defaultdict(set)
+
         self.sysmon_on = False
         self.lock = threading.Lock()
 
@@ -281,6 +286,22 @@ class SysMonitor(Tracer):
             self.sysmon_on = False
             sys_monitoring.free_tool_id(self.myid)
 
+        if LOG:
+            items = sorted(
+                self.filename_code_ids.items(),
+                key=lambda item: len(item[1]),
+                reverse=True,
+            )
+            code_objs = sum(len(code_ids) for _, code_ids in items)
+            dupes = code_objs - len(items)
+            if dupes:
+                log(f"==== Duplicate code objects: {dupes} duplicates, {code_objs} total")
+                for filename, code_ids in items:
+                    if len(code_ids) > 1:
+                        log(f"{len(code_ids):>5} objects: {filename}")
+            else:
+                log("==== Duplicate code objects: none")
+
     @panopticon()
     def post_fork(self) -> None:
         """The process has forked, clean up as needed."""
@@ -301,11 +322,11 @@ class SysMonitor(Tracer):
     @panopticon("code", "@")
     def sysmon_py_start(self, code: CodeType, instruction_offset: TOffset) -> MonitorReturn:
         """Handle sys.monitoring.events.PY_START events."""
-        # Entering a new frame.  Decide if we should trace in this file.
         self._activity = True
         if self.stats is not None:
             self.stats["starts"] += 1
 
+        # Entering a new frame.  Decide if we should trace in this file.
         code_info = self.code_infos.get(id(code))
         tracing_code: bool | None = None
         file_data: TTraceFileData | None = None
@@ -367,6 +388,12 @@ class SysMonitor(Tracer):
                                 | events.BRANCH_LEFT  # type:ignore[attr-defined]
                             )
                         sys_monitoring.set_local_events(self.myid, code, local_events)
+
+                        if LOG:
+                            if code.co_filename not in {"<string>"}:
+                                self.filename_code_ids[f"{code.co_filename}:{code.co_name}"].add(
+                                    id(code)
+                                )
 
         return DISABLE
 
