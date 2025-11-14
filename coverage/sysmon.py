@@ -383,7 +383,7 @@ class SysMonitor(Tracer):
         code_info = self.code_infos.get(id(code))
         # code_info is not None and code_info.file_data is not None, since we
         # wouldn't have enabled this event if they were.
-        last_line = code_info.byte_to_line[instruction_offset]  # type: ignore
+        last_line = code_info.byte_to_line.get(instruction_offset)  # type: ignore
         if last_line is not None:
             arc = (last_line, -code.co_firstlineno)
             code_info.file_data.add(arc)  # type: ignore
@@ -457,12 +457,13 @@ class SysMonitor(Tracer):
         if not added_arc:
             # This could be an exception jumping from line to line.
             assert code_info.byte_to_line is not None
-            l1 = code_info.byte_to_line[instruction_offset]
-            l2 = code_info.byte_to_line.get(destination_offset)
-            if l2 is not None and l1 != l2:
-                arc = (l1, l2)
-                code_info.file_data.add(arc)  # type: ignore
-                # log(f"adding unforeseen {arc=}")
+            l1 = code_info.byte_to_line.get(instruction_offset)
+            if l1 is not None:
+                l2 = code_info.byte_to_line.get(destination_offset)
+                if l2 is not None and l1 != l2:
+                    arc = (l1, l2)
+                    code_info.file_data.add(arc)  # type: ignore
+                    # log(f"adding unforeseen {arc=}")
 
         return DISABLE
 

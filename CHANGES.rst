@@ -23,8 +23,14 @@ upgrading your version of coverage.py.
 Unreleased
 ----------
 
+- Fix: ``except*`` clauses were not handled properly under the "sysmon"
+  measurement core, causing KeyError exceptions as described in `issue 2086`_.
+  This is now fixed.
+
 - A small tweak to the HTML report: file paths now use thin spaces around
   slashes to make them easier to read.
+
+.. _issue 2086: https://github.com/coveragepy/coveragepy/issues/2086
 
 
 .. start-releases

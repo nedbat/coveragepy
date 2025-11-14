@@ -13,6 +13,7 @@ from tests.coveragetest import CoverageTest
 from tests.helpers import assert_count_equal
 
 import coverage
+from coverage import env
 from coverage.data import sorted_lines
 from coverage.files import abs_file
 
@@ -1375,6 +1376,25 @@ class ExceptionArcTest(CoverageTest):
             assert func('other') == (2, 23, 2, 3)           # W 32
             """,
             branchz="45 4Q AB AD DE DG GH GJ JK JN",
+            branchz_missing="",
+        )
+
+    @pytest.mark.skipif(env.PYVERSION < (3, 11), reason="ExceptionGroup is new in Python 3.11")
+    def test_exception_group(self) -> None:
+        self.check_coverage(
+            """\
+            a = 1
+            try:
+                raise ExceptionGroup("Something bad happened", [ZeroDivisionError()])
+            except* ValueError:
+                a = 5
+            except* ZeroDivisionError:
+                a = 7
+            except* Exception:
+                a = 9
+            assert a == 7
+            """,
+            branchz="",
             branchz_missing="",
         )
 
