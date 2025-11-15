@@ -286,7 +286,7 @@ class SysMonitor(Tracer):
             self.sysmon_on = False
             sys_monitoring.free_tool_id(self.myid)
 
-        if LOG:
+        if LOG:  # pragma: debugging
             items = sorted(
                 self.filename_code_ids.items(),
                 key=lambda item: len(item[1]),
@@ -341,7 +341,7 @@ class SysMonitor(Tracer):
                 frame = inspect.currentframe()
                 if frame is not None:
                     frame = inspect.currentframe().f_back  # type: ignore[union-attr]
-                    if LOG:
+                    if LOG:  # pragma: debugging
                         # @panopticon adds a frame.
                         frame = frame.f_back  # type: ignore[union-attr]
                 disp = self.should_trace(filename, frame)  # type: ignore[arg-type]
@@ -389,7 +389,7 @@ class SysMonitor(Tracer):
                             )
                         sys_monitoring.set_local_events(self.myid, code, local_events)
 
-                        if LOG:
+                        if LOG:  # pragma: debugging
                             if code.co_filename not in {"<string>"}:
                                 self.filename_code_ids[f"{code.co_filename}:{code.co_name}"].add(
                                     id(code)
