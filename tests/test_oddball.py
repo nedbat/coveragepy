@@ -706,23 +706,39 @@ class MockingProtectionTest(CoverageTest):
 
     """
 
-    def test_os_path_exists(self) -> None:
+    def test_isolate_module_os(self) -> None:
         # To see if this test still detects the problem, change isolate_module
         # in misc.py to simply return its argument.  It should fail with a
-        # StopIteration error.
+        # stack trace like:
+        #     File "/private/var/folders/T/pytest-of-ned/pytest-118/t0/bug416.py", line 11, in test_path_exists
+        #       import bug416a
+        #     File "/Users/ned/coverage/trunk/coverage/control.py", line 446, in _should_trace
+        #       disp = self._inorout.should_trace(filename, frame)
+        #     File "/Users/ned/coverage/trunk/coverage/inorout.py", line 343, in should_trace
+        #       orig = os.path.basename(original_filename)
+        #     File "/private/var/folders/T/pytest-of-ned/pytest-118/t0/bug416.py", line 6, in __getattr__
+        #       raise ZeroDivisionError(f"boom: {name}")
+        #   ZeroDivisionError: boom: basename
+
         self.make_file(
             "bug416.py",
             """\
             import os.path
             from unittest import mock
 
-            @mock.patch('os.path.exists')
-            def test_path_exists(mock_exists):
-                mock_exists.side_effect = [17]
+            class BadMod:
+                def __getattr__(self, name):
+                    raise ZeroDivisionError(f"boom: {name}")
+
+            @mock.patch("os.path", new=BadMod())
+            def test_path_exists():
                 print("in test")
                 import bug416a
                 print(bug416a.foo)
-                print(os.path.exists("."))
+                try:
+                    os.path.exists(".")
+                except ZeroDivisionError as e:
+                    print(f"Got {e}!")
 
             test_path_exists()
             """,
@@ -739,4 +755,4 @@ class MockingProtectionTest(CoverageTest):
 
         py_compile.compile("bug416a.py")
         out = self.run_command("coverage run bug416.py")
-        assert out == "in test\nbug416a.py\n23\n17\n"
+        assert out == "in test\nbug416a.py\n23\nGot boom: exists!\n"
