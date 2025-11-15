@@ -114,7 +114,7 @@
         <tbody>
             {% for region in regions %}
             <tr class="region">
-                <td class="name left"><a href="{{region.url}}">{{region.file}}</a></td>
+                <td class="name left"><a href="{{region.url}}">{{region.file|escape|pretty_file}}</a></td>
                 {% if region_noun %}
                 <td class="name left"><a href="{{region.url}}">{{region.description}}</a></td>
                 {% endif %}

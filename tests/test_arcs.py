@@ -13,6 +13,7 @@ from tests.coveragetest import CoverageTest
 from tests.helpers import assert_count_equal
 
 import coverage
+from coverage import env
 from coverage.data import sorted_lines
 from coverage.files import abs_file
 
@@ -1375,6 +1376,36 @@ class ExceptionArcTest(CoverageTest):
             assert func('other') == (2, 23, 2, 3)           # W 32
             """,
             branchz="45 4Q AB AD DE DG GH GJ JK JN",
+            branchz_missing="",
+        )
+
+    @pytest.mark.skipif(env.PYVERSION < (3, 11), reason="ExceptionGroup is new in Python 3.11")
+    def test_exception_group(self) -> None:
+        # PyPy3.11 traces this incorrectly: https://github.com/pypy/pypy/issues/5354
+        if env.PYPY:
+            missing = "5, 11"
+        else:
+            missing = "5-6, 11-12"
+        self.check_coverage(
+            """\
+            a = 1
+            try:
+                raise ExceptionGroup("Zero!", [ZeroDivisionError()])
+            except* ValueError:
+                a = 5
+                b = 6/0
+            except* ZeroDivisionError:
+                a = 8
+                b = 9
+            except* Exception:
+                a = 11
+                b = 12/0
+            assert a == 8
+            assert b == 9
+            """,
+            lines=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
+            missing=missing,
+            branchz="",
             branchz_missing="",
         )
 

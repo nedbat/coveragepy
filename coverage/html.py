@@ -313,7 +313,7 @@ class HtmlReporter:
             # Functions available in the templates.
             "escape": escape,
             "pair": pair,
-            "len": len,
+            "pretty_file": pretty_file,
             # Constants for this report.
             "__url__": __url__,
             "__version__": coverage.__version__,
@@ -321,7 +321,6 @@ class HtmlReporter:
             "time_stamp": format_local_datetime(datetime.datetime.now()),
             "extra_css": self.extra_css,
             "has_arcs": self.has_arcs,
-            "show_contexts": self.config.show_contexts,
             "statics": {},
             # Constants for all reports.
             # These css classes determine which lines are highlighted by default.
@@ -854,3 +853,8 @@ def escape(t: str) -> str:
 def pair(ratio: tuple[int, int]) -> str:
     """Format a pair of numbers so JavaScript can read them in an attribute."""
     return "{} {}".format(*ratio)
+
+
+def pretty_file(filename: str) -> str:
+    """Return a prettier version of `filename` for display."""
+    return re.sub(r"[/\\]", "\N{THIN SPACE}\\g<0>\N{THIN SPACE}", filename)

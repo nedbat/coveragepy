@@ -139,8 +139,8 @@ class ReportMapsPathsTest(CoverageTest):
         cov = coverage.Coverage()
         cov.load()
         cov.html_report()
-        contains("htmlcov/index.html", os_sep("src/program.py"))
-        doesnt_contain("htmlcov/index.html", os_sep("ver1/program.py"), os_sep("ver2/program.py"))
+        contains("htmlcov/index.html", os_sep("src&#8201;/&#8201;program.py"))
+        doesnt_contain("htmlcov/index.html", "ver1", "ver2")
 
     def test_map_paths_during_xml_report(self) -> None:
         self.make_files(data="line", settings=True)
@@ -148,7 +148,7 @@ class ReportMapsPathsTest(CoverageTest):
         cov.load()
         cov.xml_report()
         contains("coverage.xml", "src/program.py")
-        doesnt_contain("coverage.xml", "ver1/program.py", "ver2/program.py")
+        doesnt_contain("coverage.xml", "ver1", "ver2")
 
     def test_map_paths_during_json_report(self) -> None:
         self.make_files(data="line", settings=True)
@@ -160,7 +160,7 @@ class ReportMapsPathsTest(CoverageTest):
             return os_sep(s).replace("\\", r"\\")
 
         contains("coverage.json", os_sepj("src/program.py"))
-        doesnt_contain("coverage.json", os_sepj("ver1/program.py"), os_sepj("ver2/program.py"))
+        doesnt_contain("coverage.json", "ver1", "ver2")
 
     def test_map_paths_during_lcov_report(self) -> None:
         self.make_files(data="line", settings=True)
@@ -168,7 +168,7 @@ class ReportMapsPathsTest(CoverageTest):
         cov.load()
         cov.lcov_report()
         contains("coverage.lcov", os_sep("src/program.py"))
-        doesnt_contain("coverage.lcov", os_sep("ver1/program.py"), os_sep("ver2/program.py"))
+        doesnt_contain("coverage.lcov", "ver1", "ver2")
 
 
 class ReportWithJinjaTest(CoverageTest):

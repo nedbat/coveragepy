@@ -1166,6 +1166,8 @@ class AstArcAnalyzer:
 
         return exits
 
+    _handle__TryStar = _handle__Try
+
     def _handle__While(self, node: ast.While) -> set[ArcStart]:
         start = to_top = self.line_for_node(node.test)
         constant_test, _ = is_constant_test_expr(node.test)

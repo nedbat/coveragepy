@@ -21,10 +21,10 @@ from unittest import mock
 import pytest
 
 import coverage
+import coverage.html
 from coverage import env, Coverage
 from coverage.exceptions import NoDataError, NotPython, NoSource
 from coverage.files import abs_file, flat_rootname
-import coverage.html
 from coverage.report_core import get_analysis_to_report
 from coverage.types import TLineNo, TMorf
 
@@ -787,6 +787,8 @@ def compare_html(
         (r"created at \d\d\d\d-\d\d-\d\d \d\d:\d\d", "created at DATE"),
         # Static files have cache busting.
         (r"_cb_\w{8}\.", "_CB."),
+        # Un-prettify file paths.
+        (r"&#8201;[/\\]&#8201;", "/"),
         # Occasionally an absolute path is in the HTML report.
         (filepath_to_regex(TESTS_DIR), "TESTS_DIR"),
         (filepath_to_regex(flat_rootname(str(TESTS_DIR))), "_TESTS_DIR"),
@@ -1428,7 +1430,9 @@ assert len(math) == 18
         self.assert_exists("htmlcov/z_5786906b6f0ffeb4_accented_py.html")
         with open("htmlcov/index.html", encoding="utf-8") as indexf:
             index = indexf.read()
-        expected = '<a href="z_5786906b6f0ffeb4_accented_py.html">&#226;%saccented.py</a>'
+        expected = (
+            '<a href="z_5786906b6f0ffeb4_accented_py.html">&#226;&#8201;%s&#8201;accented.py</a>'
+        )
         assert expected % os.sep in index
 
 
