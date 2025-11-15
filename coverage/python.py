@@ -24,7 +24,10 @@ from coverage.types import TArc, TLineNo, TMorf, TSourceTokenLines
 if TYPE_CHECKING:
     from coverage import Coverage
 
+# Protect ourselves against aggressive mocking.
 os = isolate_module(os)
+# Save the original `open` function so later mocks don't break us.
+open = open  # pylint: disable=redefined-builtin
 
 
 def read_python_source(filename: str) -> bytes:

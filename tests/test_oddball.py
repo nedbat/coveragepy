@@ -710,13 +710,13 @@ class MockingProtectionTest(CoverageTest):
         # To see if this test still detects the problem, change isolate_module
         # in misc.py to simply return its argument.  It should fail with a
         # stack trace like:
-        #     File "/private/var/folders/T/pytest-of-ned/pytest-118/t0/bug416.py", line 11, in test_path_exists
+        #     File "/tmp/pytest-of-ned/pytest-118/t0/bug416.py", line 11, in test_path_exists
         #       import bug416a
         #     File "/Users/ned/coverage/trunk/coverage/control.py", line 446, in _should_trace
         #       disp = self._inorout.should_trace(filename, frame)
         #     File "/Users/ned/coverage/trunk/coverage/inorout.py", line 343, in should_trace
         #       orig = os.path.basename(original_filename)
-        #     File "/private/var/folders/T/pytest-of-ned/pytest-118/t0/bug416.py", line 6, in __getattr__
+        #     File "/tmp/pytest-of-ned/pytest-118/t0/bug416.py", line 6, in __getattr__
         #       raise ZeroDivisionError(f"boom: {name}")
         #   ZeroDivisionError: boom: basename
 
@@ -756,3 +756,34 @@ class MockingProtectionTest(CoverageTest):
         py_compile.compile("bug416a.py")
         out = self.run_command("coverage run bug416.py")
         assert out == "in test\nbug416a.py\n23\nGot boom: exists!\n"
+
+    def test_defend_against_mock_open(self) -> None:
+        # We defend against mocking of builtins.open, which some test suites
+        # do although they shouldn't.
+        # See https://github.com/coveragepy/coveragepy/issues/2083
+        self.make_file(
+            "mock_open.py",
+            """\
+            from unittest import mock
+
+            @mock.patch("builtins.open", new=lambda *a, **k: 1/0)
+            def test_path_exists():
+                print("in test")
+                try:
+                    open("somefile")
+                except ZeroDivisionError as e:
+                    print(f"Got {e}!")
+
+            test_path_exists()
+            """,
+        )
+        self.make_file(
+            ".coveragerc",
+            """\
+            [run]
+            branch = True
+            disable_warnings = no-sysmon,no-ctracer
+            """,
+        )
+        out = self.run_command("coverage run --branch mock_open.py")
+        assert out == "in test\nGot division by zero!\n"

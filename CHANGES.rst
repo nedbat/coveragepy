@@ -27,9 +27,13 @@ Unreleased
   measurement core, causing KeyError exceptions as described in `issue 2086`_.
   This is now fixed.
 
+- Fix: we now defend against aggressive mocking of ``open()`` that could cause
+  errors inside coverage.py.  An example of a failure is in `issue 2083`_.
+
 - A small tweak to the HTML report: file paths now use thin spaces around
   slashes to make them easier to read.
 
+.. _issue 2083: https://github.com/coveragepy/coveragepy/issues/2083
 .. _issue 2086: https://github.com/coveragepy/coveragepy/issues/2086
 
 
