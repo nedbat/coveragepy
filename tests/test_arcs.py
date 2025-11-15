@@ -1381,19 +1381,30 @@ class ExceptionArcTest(CoverageTest):
 
     @pytest.mark.skipif(env.PYVERSION < (3, 11), reason="ExceptionGroup is new in Python 3.11")
     def test_exception_group(self) -> None:
+        # PyPy3.11 traces this incorrectly: https://github.com/pypy/pypy/issues/5354
+        if env.PYPY:
+            missing = "5, 11"
+        else:
+            missing = "5-6, 11-12"
         self.check_coverage(
             """\
             a = 1
             try:
-                raise ExceptionGroup("Something bad happened", [ZeroDivisionError()])
+                raise ExceptionGroup("Zero!", [ZeroDivisionError()])
             except* ValueError:
                 a = 5
+                b = 6/0
             except* ZeroDivisionError:
-                a = 7
+                a = 8
+                b = 9
             except* Exception:
-                a = 9
-            assert a == 7
+                a = 11
+                b = 12/0
+            assert a == 8
+            assert b == 9
             """,
+            lines=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
+            missing=missing,
             branchz="",
             branchz_missing="",
         )
